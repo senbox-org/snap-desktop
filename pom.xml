@@ -50,7 +50,7 @@
         <module>snap-sta-ui</module>
         <module>snap-smart-configurator-ui</module>
         <module>snap-virtual-file-system-preferences-ui</module>
-        <module>snap-cloud-exploitation-platform-ui</module>
+        <module>snap-remote-execution-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->

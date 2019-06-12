@@ -17,7 +17,6 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
-import org.esa.snap.cloud.exploitation.platform.operator.RemoteExecutionDialog;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.graph.GraphException;
@@ -34,6 +33,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.remote.execution.operator.RemoteExecutionDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;

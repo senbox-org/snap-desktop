@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-cloud-exploitation-platform-ui</artifactId>
+            <artifactId>snap-remote-execution-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

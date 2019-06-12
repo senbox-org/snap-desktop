@@ -185,7 +185,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-cloud-exploitation-platform-ui</artifactId>
+            <artifactId>snap-remote-execution-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
 
