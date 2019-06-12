@@ -145,12 +145,14 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     @Override
     public void applyChanges() {
-        try {
-            vfsRemoteFileRepositoriesController.saveProperties();
-            new Thread(() -> JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "VFS Remote File Repositories Properties saved successfully. Please restart SNAP to take effect.", "Save VFS Remote file repositories configurations", JOptionPane.INFORMATION_MESSAGE)).start();
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
-            JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE, "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+        if (isChanged()) {
+            try {
+                vfsRemoteFileRepositoriesController.saveProperties();
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "VFS Remote File Repositories Properties saved successfully. Please restart SNAP to take effect.", "Save VFS Remote file repositories configurations", JOptionPane.INFORMATION_MESSAGE));
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
+                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE, "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -191,11 +193,9 @@ public class VFSOptionsController extends DefaultConfigController {
      * Runs the event associated with button for adding remote file repository.
      */
     private void runAddRemoteRepositoryButtonActionEvent() {
-        String lastRepositoryName;
+        String lastRepositoryName = ".";
         if (remoteRepositoriesListTable.getRowCount() > 0) {
             lastRepositoryName = (String) remoteRepositoriesListTable.getModel().getValueAt(remoteRepositoriesListTable.getRowCount() - 1, REPO_NAME_COLUMN);
-        } else {
-            lastRepositoryName = " ";
         }
         if (!lastRepositoryName.isEmpty()) {
             try {
@@ -447,28 +447,24 @@ public class VFSOptionsController extends DefaultConfigController {
      * Runs the event associated with button for adding remote file repository property.
      */
     private void runAddRemoteRepositoryPropertyButtonActionEvent() {
-        String newRepositoryPropertyName = (String) remoteRepositoriesPropertiesListTable.getModel().getValueAt(0, REPO_PROP_NAME_COLUMN);
-        String newRepositoryPropertyValue = (String) remoteRepositoriesPropertiesListTable.getModel().getValueAt(0, REPO_PROP_VALUE_COLUMN);
-        try {
-            String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow()];
-            String remoteRepositoryPropertyId = vfsRemoteFileRepositoriesController.registerNewRemoteRepositoryProperty(remoteRepositoryId);
-            if (newRepositoryPropertyName.isEmpty() || newRepositoryPropertyValue.isEmpty()) {
-                throw new IllegalArgumentException("Empty");
-            }
-            vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId, newRepositoryPropertyName);
-            vfsRemoteFileRepositoriesController.setRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId, newRepositoryPropertyValue);
-            loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
-        } catch (IllegalArgumentException ex) {
-            logger.log(Level.FINE, "Unable to add remote file repository property. Details: " + ex.getMessage());
-            switch (ex.getMessage()) {
-                case "Invalid":
+        String lastRepositoryPropertyName = ".";
+        String lastRepositoryPropertyValue = ".";
+        if (remoteRepositoriesPropertiesListTable.getRowCount() > 0) {
+            lastRepositoryPropertyName = (String) remoteRepositoriesPropertiesListTable.getModel().getValueAt(remoteRepositoriesPropertiesListTable.getRowCount() - 1, REPO_PROP_NAME_COLUMN);
+            lastRepositoryPropertyValue = (String) remoteRepositoriesPropertiesListTable.getModel().getValueAt(remoteRepositoriesPropertiesListTable.getRowCount() - 1, REPO_PROP_VALUE_COLUMN);
+        }
+        if (!lastRepositoryPropertyName.isEmpty() && !lastRepositoryPropertyValue.isEmpty()) {
+            try {
+                String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow()];
+                vfsRemoteFileRepositoriesController.registerNewRemoteRepositoryProperty(remoteRepositoryId);
+                loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
+            } catch (IllegalArgumentException ex) {
+                logger.log(Level.FINE, "Unable to add remote file repository property. Details: " + ex.getMessage());
+                if (ex.getMessage().startsWith("Invalid")) {
                     JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.\n- Property value must be not null", "Add new remote file repository property", JOptionPane.WARNING_MESSAGE);
-                    break;
-                case "Empty":
-                    JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Empty VFS repository property! Please enter the required name and value on the first row.", "Add new remote file repository property", JOptionPane.WARNING_MESSAGE);
-                    break;
-                default:
+                } else {
                     JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Failed to add new remote repository property.\nreason: " + ex, "Add new remote file repository property", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
@@ -490,11 +486,11 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     private void runRemoveRemoteRepositoryPropertyButtonActionEvent() {
         try {
-            if (remoteRepositoriesPropertiesListTable.getSelectedRow() > 0) {
+            if (remoteRepositoriesPropertiesListTable.getSelectedRow() >= 0) {
                 String repositoryPropertyName = (String) remoteRepositoriesPropertiesListTable.getModel().getValueAt(remoteRepositoriesPropertiesListTable.getSelectedRow(), REPO_PROP_NAME_COLUMN);
                 if (JOptionPane.showConfirmDialog(remoteRepositoriesPropertiesListTable, "Are you sure to delete the following repository property?\n" + repositoryPropertyName, "Delete Repository Property Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                     String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow()];
-                    String remoteRepositoryPropertyId = remoteRepositoriesPropertiesIdsList[remoteRepositoriesPropertiesListTable.getSelectedRow() - 1];
+                    String remoteRepositoryPropertyId = remoteRepositoriesPropertiesIdsList[remoteRepositoriesPropertiesListTable.getSelectedRow()];
                     vfsRemoteFileRepositoriesController.removeRemoteRepositoryProperty(remoteRepositoryId, remoteRepositoryPropertyId);
                     loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
                 }
@@ -525,7 +521,7 @@ public class VFSOptionsController extends DefaultConfigController {
     private void runRemoteRepositoriesPropertiesListTableListSelectionEvent() {
         int selectedRow = remoteRepositoriesPropertiesListTable.getSelectedRow();
         int selectedColumn = remoteRepositoriesPropertiesListTable.getSelectedColumn();
-        if (selectedRow > 0 && selectedRow < remoteRepositoriesPropertiesListTable.getRowCount()) {
+        if (selectedRow >= 0 && selectedRow < remoteRepositoriesPropertiesListTable.getRowCount()) {
             currentValue = (String) remoteRepositoriesPropertiesListTable.getValueAt(selectedRow, selectedColumn);
         }
     }
@@ -536,9 +532,9 @@ public class VFSOptionsController extends DefaultConfigController {
     private void runRemoteRepositoriesPropertiesListTableModelEvent() {
         int selectedRow = remoteRepositoriesPropertiesListTable.getSelectedRow();
         int selectedColumn = remoteRepositoriesPropertiesListTable.getSelectedColumn();
-        if (selectedRow > 0 && selectedRow < remoteRepositoriesPropertiesListTable.getRowCount()) {
+        if (selectedRow >= 0 && selectedRow < remoteRepositoriesPropertiesListTable.getRowCount()) {
             String remoteRepositoryId = remoteRepositoriesIdsList[remoteRepositoriesListTable.getSelectedRow()];
-            String remoteRepositoryPropertyId = remoteRepositoriesPropertiesIdsList[selectedRow - 1];
+            String remoteRepositoryPropertyId = remoteRepositoriesPropertiesIdsList[selectedRow];
             String newValue = (String) remoteRepositoriesPropertiesListTable.getValueAt(selectedRow, selectedColumn);
             switch (selectedColumn) {
                 case REPO_PROP_NAME_COLUMN:
@@ -705,19 +701,15 @@ public class VFSOptionsController extends DefaultConfigController {
      * @param remoteRepositoryId The remote file repository id
      */
     private void loadRemoteRepositoryPropertiesOnTable(String remoteRepositoryId) {
-        ((DefaultTableModel) remoteRepositoriesPropertiesListTable.getModel()).setRowCount(1);
+        ((DefaultTableModel) remoteRepositoriesPropertiesListTable.getModel()).setRowCount(0);
         remoteRepositoriesPropertiesListTable.clearSelection();
-        remoteRepositoriesPropertiesListTable.getModel().setValueAt("", 0, REPO_PROP_NAME_COLUMN);
-        remoteRepositoriesPropertiesListTable.getModel().setValueAt("", 0, REPO_PROP_VALUE_COLUMN);
         String remoteRepositoryPropertiesIds = vfsRemoteFileRepositoriesController.getRemoteRepositoryPropertiesIds(remoteRepositoryId).getValue();
         if (remoteRepositoryPropertiesIds != null && !remoteRepositoryPropertiesIds.isEmpty()) {
             remoteRepositoriesPropertiesIdsList = remoteRepositoryPropertiesIds.split(VFSRemoteFileRepositoriesController.LIST_ITEM_SEPARATOR);
             for (String remoteRepositoryPropertyId : remoteRepositoriesPropertiesIdsList) {
                 String remoteRepositoryPropertyName = vfsRemoteFileRepositoriesController.getRemoteRepositoryPropertyName(remoteRepositoryId, remoteRepositoryPropertyId).getValue();
                 String remoteRepositoryPropertyValue = vfsRemoteFileRepositoriesController.getRemoteRepositoryPropertyValue(remoteRepositoryId, remoteRepositoryPropertyId).getValue();
-                if (remoteRepositoryPropertyName != null && !remoteRepositoryPropertyName.isEmpty() && remoteRepositoryPropertyValue != null && !remoteRepositoryPropertyValue.isEmpty()) {
-                    ((DefaultTableModel) remoteRepositoriesPropertiesListTable.getModel()).addRow(new Object[]{remoteRepositoryPropertyName, remoteRepositoryPropertyName.matches(VFSRemoteFileRepositoriesController.CREDENTIAL_PROPERTY_NAME_REGEX) ? remoteRepositoryPropertyValue.replaceAll("(?s).", "*") : remoteRepositoryPropertyValue});
-                }
+                ((DefaultTableModel) remoteRepositoriesPropertiesListTable.getModel()).addRow(new Object[]{remoteRepositoryPropertyName, remoteRepositoryPropertyName.matches(VFSRemoteFileRepositoriesController.CREDENTIAL_PROPERTY_NAME_REGEX) ? remoteRepositoryPropertyValue.replaceAll("(?s).", "*") : remoteRepositoryPropertyValue});
             }
         }
     }
