@@ -48,7 +48,7 @@
 			(ii) use the output products obtained in the previous step together with a another graph to create the final product.
 		</p>
 		<p>
-			The products executed on the remote machines must be placed into a shared folder. Each remote machine must have installed the SSH server and the GPT application. When running a graph on a remote machine, the output product is placed in the same shared folder.
+			The products executed on the remote machines must be placed into a shared folder. Each remote machine must have installed a SSH server and the GPT application. When running a graph on a remote machine, the output product is placed in the same shared folder.
 		</p>
 
 		<h4>Remote execution dialog</h4>
@@ -80,7 +80,7 @@
 						<b>Local shared drive</b>
 						Specify the folder on the host machine used to connect to the remote shared folder in order to select the source product to process the slave graph on the remote machines. The property is optional if the processor is running on a machine with Windows operating system.
                         <br />
-						<b>NOTE:</b> If the master shared folder resides on a machine which operating system is unix, then specify the local shared folder path.
+						<b>NOTE:</b> If the local shared folder resides on a machine which operating system is Unix, then specify the local shared folder path.
 					</p>
 					<p class="i1">
 						<b>Remote machines</b>
@@ -146,7 +146,7 @@
 					<br />
 
 					<p>
-						<b>NOTE:</b> The slave and master graphs must contains at least one read node and only one write node. 
+						<b>NOTE:</b> The slave and master graphs must contain at least one read node and only one write node.
 						The number of selected source products to be processed on the remote machines must be multiple of the number of read nodes from the slave graph file.				
 						When the master graph file is specified the number of its read nodes must be equal with the number of the output products created by the remote machines.
 					</p>
@@ -160,8 +160,8 @@
 		<h4>Remote machine dialog</h4>
 
 		<p>
-			The remote machine dialog contains the properties used to access a machine by means of the SSH protocol and process a slave graph using the GPT application installed on that machine. The dialog window can be accessed
-			by means of the add/edit buttons from the remote topology dialog.
+			The remote machine dialog contains the properties used to access a machine by means of the SSH protocol. The dialog window can be accessed by means of the add/edit buttons from the remote execution dialog.
+			Later, this machine is used for processing a slave graph using the GPT installed on this machine.
 		</p>
 
 		<table border="0">
@@ -192,13 +192,13 @@
 					</p>
 					<p class="i1">
 						<b>GPT file path</b>
-						Specify the path of the 'gpt' file to start the GPT application. If the property is not specified then the 'PATH' environment variable is used to find the GPT application.
+						Specify the path of the 'gpt' executable to start the GPT application. If the property is not specified then the 'PATH' environment variable is used to find the GPT executable.
 					</p>
 					<p class="i1">
 						<b>Shared drive</b>
-						Specify the drive of the machine used to connect to the remote shared folder in order to acccess the source products of the slave graph.
+						Specify the drive of the machine used to connect to the remote shared folder in order to access the source products of the slave graph.
 						<br />
-						<b>NOTE:</b> If the remote machine operating system is unix, then specify the folder path of the machine used to connect to the remote shared folder.
+						<b>NOTE:</b> If the remote machine operating system is Unix, then specify the folder path of the machine used to connect to the remote shared folder.
 
 					</p>
 					<p class="i1">
