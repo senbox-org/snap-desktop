@@ -44,11 +44,9 @@ public class ProductFileChooser extends SnapFileChooser {
     public void setProductToExport(Product product) {
         this.productToExport = product;
         if (productToExport != null) {
-            String fileName;
-            if (productToExport.getFileLocation() != null) {
+            String fileName = productToExport.getName();
+            if (StringUtils.isNullOrEmpty(fileName) && productToExport.getFileLocation() != null) {
                 fileName = productToExport.getFileLocation().getName();
-            } else {
-                fileName = productToExport.getName();
             }
             setCurrentFilename(fileName);
         }
