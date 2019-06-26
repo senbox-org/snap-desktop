@@ -1131,16 +1131,46 @@ public class ProductSceneView extends BasicView
          * @param height     the height of the image
          * @param name       the band's name
          * @param expression the expression
+         * @param products   the products used to evaluate the expression
          */
-        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression) {
+        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, Product[] products) {
             super(name,
                     ProductData.TYPE_FLOAT32,
                     width,
                     height,
                     expression);
-            deriveRasterPropertiesFromExpression(expression, product);
+            if(products == null || products.length == 0) {
+                deriveRasterPropertiesFromExpression(expression, product);
+            } else {
+                deriveRasterPropertiesFromExpression(expression, products);
+            }
             setOwner(product);
             setModified(false);
+        }
+
+        /**
+         * Constructs a new RGB image view band.
+         *
+         * @param product    the product which takes the ownership
+         * @param width      the width of the image
+         * @param height     the height of the image
+         * @param name       the band's name
+         * @param expression the expression
+         */
+        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression) {
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null);
+        }
+
+        /**
+         * Constructs a new RGB image view band.
+         *
+         * @param product    the product which takes the ownership
+         * @param name       the band's name
+         * @param expression the expression
+         * @param products   the products used to evaluate the expression
+         */
+        public RGBChannel(final Product product, final String name, final String expression, Product[] products) {
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, products);
         }
 
         /**
@@ -1151,13 +1181,13 @@ public class ProductSceneView extends BasicView
          * @param expression the expression
          */
         public RGBChannel(final Product product, final String name, final String expression) {
-            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression);
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null);
         }
 
-        private void deriveRasterPropertiesFromExpression(String expression, Product product) {
-            if (product != null) {
+        private void deriveRasterPropertiesFromExpression(String expression, Product... products) {
+            if (products != null) {
                 try {
-                    final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+                    final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
                     if (refRasters.length > 0) {
                         setGeoCoding(refRasters[0].getGeoCoding());
                         setImageToModelTransform(refRasters[0].getImageToModelTransform());
@@ -1166,6 +1196,7 @@ public class ProductSceneView extends BasicView
                     }
                 } catch (ParseException e) {
                     // do not set geocoding then
+
                 }
             }
         }
