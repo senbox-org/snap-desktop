@@ -65,7 +65,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @param defaultFileSystemView FileSystemView component for OS
      * @param vfsRepositories       The VFS Remote File Repositories
      */
-    public VirtualFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
+    protected VirtualFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
         super();
 
         this.defaultFileSystemView = defaultFileSystemView;
@@ -118,7 +118,7 @@ public class VirtualFileSystemView extends FileSystemView {
             error = e.getCause();
         }
         if (error instanceof ConnectException || error instanceof UnknownHostException) {
-            notifyUser("VFS connection failure", "Unable to contact the VFS service.\nPlease check the connection or teh Remote File Repository Address.");
+            notifyUser("VFS connection failure", "Unable to contact the VFS service.\nPlease check the connection or the Remote File Repository Address.");
         } else if (error instanceof IOException) {
             String report = error.getMessage().replaceAll("(.*)response code (.*)", "$2");
             notifyUser("VFS access failure", "The VFS service reported \"" + report + "\" error.\nPlease check the Remote File Repository Configurations.");
@@ -146,7 +146,7 @@ public class VirtualFileSystemView extends FileSystemView {
                     return child;
                 }
             }
-            return new NioFile(path.resolve(fileName));
+            return new NioFile(path.resolve(fileName).normalize());
         }
         return this.defaultFileSystemView.getChild(parent, fileName);
     }
@@ -270,18 +270,17 @@ public class VirtualFileSystemView extends FileSystemView {
             if (parentPath == null) {
                 return null;
             }
-            if (isFileSystem(parentPath)) {
-                Path p = parentPath;
-                if (!Files.exists(p)) {
-                    File ppsf = parentPath.getParent().toFile();
-                    if (ppsf == null || !isFileSystem(ppsf)) {
-                        p = createFileSystemRoot(p.toFile()).toPath();
-                    }
-                }
-                return p.toFile();
-            } else {
+            if (!isFileSystem(parentPath)) {
                 return parentPath.toFile();
             }
+            Path p = parentPath;
+            if (!Files.exists(p)) {
+                File ppsf = parentPath.getParent().toFile();
+                if (ppsf == null || !isFileSystem(ppsf)) {
+                    p = createFileSystemRoot(p.toFile()).toPath();
+                }
+            }
+            return p.toFile();
         }
         return this.defaultFileSystemView.getParentDirectory(dir);
     }
