@@ -10,7 +10,7 @@ OpenIDE-Module-Long-Description: <p>This module provides the ability t
  vers. The datasets may be filtered by a time range, by their geograph
  ical area, by the names of required raster values, and by a filename 
  pattern.</p><p><b>Funding:</b> EU</p><p><b>Vendor:</b> Brockmann Cons
- ult GmbH</p><p><b>Contact address:</b> Max-Planck-Str. 2, 21502 Geest
+ ult GmbH</p><p><b>Contact address:</b> Chrysanderstr. 1, 21502 Geest
  hacht (Germany)</p><p><b>Copyright:</b> (C) 2014 by Brockmann Consult
   GmbH</p><p><b>Vendor:</b> Brockmann Consult GmbH</p><p><b>License:</
  b> http://www.gnu.org/licenses/gpl.html</p>
