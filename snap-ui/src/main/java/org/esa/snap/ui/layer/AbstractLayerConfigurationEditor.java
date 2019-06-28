@@ -33,9 +33,11 @@ import java.beans.PropertyChangeListener;
  * Base class for editors allowing to modify a layer's configuration.
  *
  * @author Marco Zühlke
- * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
+// SEP2018 - Daniel Knowles - Modified to call a new method propertyPane.createJScrollPanel(), which returns
+// a JScrollPane instead of a JPanel in order to ensure all property components can be accessed by the user
+
 public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEditor {
 
     private BindingContext bindingContext;
@@ -54,7 +56,8 @@ public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEdit
         propertySet.addPropertyChangeListener(new PropertyChangeHandler());
         addEditablePropertyDescriptors();
         PropertyPane propertyPane = new PropertyPane(bindingContext);
-        return propertyPane.createPanel();
+
+        return propertyPane.createJScrollPanel();
     }
 
     @Override

@@ -67,6 +67,15 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-product-library</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-remote-execution-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>

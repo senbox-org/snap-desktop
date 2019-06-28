@@ -10,8 +10,10 @@ import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -63,7 +65,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @param defaultFileSystemView FileSystemView component for OS
      * @param vfsRepositories       The VFS Remote File Repositories
      */
-    public VirtualFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
+    protected VirtualFileSystemView(FileSystemView defaultFileSystemView, List<VFSRemoteFileRepository> vfsRepositories) {
         super();
 
         this.defaultFileSystemView = defaultFileSystemView;
@@ -106,6 +108,25 @@ public class VirtualFileSystemView extends FileSystemView {
         return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 
+    protected void notifyUser(String title, String message) {
+        logger.log(Level.FINE, () -> title + ": " + message);
+    }
+
+    private void notifyVFSError(Exception e) {
+        Throwable error = e;
+        while (error.getCause() != null) {
+            error = e.getCause();
+        }
+        if (error instanceof ConnectException || error instanceof UnknownHostException) {
+            notifyUser("VFS connection failure", "Unable to contact the VFS service.\nPlease check the connection or the Remote File Repository Address.");
+        } else if (error instanceof IOException) {
+            String report = error.getMessage().replaceAll("(.*)response code (.*)", "$2");
+            notifyUser("VFS access failure", "The VFS service reported \"" + report + "\" error.\nPlease check the Remote File Repository Configurations.");
+        } else {
+            notifyUser("VFS error", error.getMessage());
+        }
+    }
+
     /**
      * Gets the child of a file.
      *
@@ -125,7 +146,7 @@ public class VirtualFileSystemView extends FileSystemView {
                     return child;
                 }
             }
-            return new NioFile(path.resolve(fileName));
+            return new NioFile(path.resolve(fileName).normalize());
         }
         return this.defaultFileSystemView.getChild(parent, fileName);
     }
@@ -249,18 +270,17 @@ public class VirtualFileSystemView extends FileSystemView {
             if (parentPath == null) {
                 return null;
             }
-            if (isFileSystem(parentPath)) {
-                Path p = parentPath;
-                if (!Files.exists(p)) {
-                    File ppsf = parentPath.getParent().toFile();
-                    if (ppsf == null || !isFileSystem(ppsf)) {
-                        p = createFileSystemRoot(p.toFile()).toPath();
-                    }
-                }
-                return p.toFile();
-            } else {
+            if (!isFileSystem(parentPath)) {
                 return parentPath.toFile();
             }
+            Path p = parentPath;
+            if (!Files.exists(p)) {
+                File ppsf = parentPath.getParent().toFile();
+                if (ppsf == null || !isFileSystem(ppsf)) {
+                    p = createFileSystemRoot(p.toFile()).toPath();
+                }
+            }
+            return p.toFile();
         }
         return this.defaultFileSystemView.getParentDirectory(dir);
     }
@@ -533,13 +553,12 @@ public class VirtualFileSystemView extends FileSystemView {
      */
     private File[] getVirtualFiles(Path dirPath, boolean useFileHiding) {
         String pathName = dirPath.toString();
-        VirtualFileSystemHelper vfsFileSystemView = this.vfsFileSystemViews.get(pathName);
-        if (vfsFileSystemView != null) {
-            return vfsFileSystemView.getRootDirectories();
-        }
-
         DirectoryStream<Path> stream = null;
         try {
+            VirtualFileSystemHelper vfsFileSystemView = this.vfsFileSystemViews.get(pathName);
+            if (vfsFileSystemView != null) {
+                return vfsFileSystemView.getRootDirectories();
+            }
             List<File> files = new ArrayList<>();
             if (!isVirtualRoot(dirPath) && Files.isDirectory(dirPath)) {
                 DirectoryStream.Filter<Path> filter = entry -> !(useFileHiding && Files.isHidden(entry));
@@ -551,6 +570,7 @@ public class VirtualFileSystemView extends FileSystemView {
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unable to get files. Details: " + ex.getMessage(), ex);
+            notifyVFSError(ex);
         } finally {
             if (stream != null) {
                 try {

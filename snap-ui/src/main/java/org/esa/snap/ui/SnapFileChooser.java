@@ -29,21 +29,11 @@ import org.esa.snap.vfs.remote.VFSPath;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
 import sun.swing.FilePane;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -108,11 +98,20 @@ public class SnapFileChooser extends JFileChooser {
             throw new IllegalStateException(e);
         }
         if (vfsRepositories != null && !vfsRepositories.isEmpty()) {
-            VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories);
+            VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories) {
+                @Override
+                protected void notifyUser(String title, String message) {
+                    showMessageDialog(title, message);
+                }
+            };
             super.setFileSystemView(fileSystemViewWrapper);
         } else {
             super.setFileSystemView(fileSystemView);
         }
+    }
+
+    private void showMessageDialog(String title, String message) {
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
@@ -468,8 +467,8 @@ public class SnapFileChooser extends JFileChooser {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             baseIcon.paintIcon(c, g, x, y);
             compoundDocumentIcon.paintIcon(c, g,
-                    x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
-                    y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
+                                           x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
+                                           y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
         }
 
         @Override

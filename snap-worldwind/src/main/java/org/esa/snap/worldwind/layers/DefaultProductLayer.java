@@ -155,8 +155,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         } else {
 
             if (enableSurfaceImages) {
-                final InputProductValidator validator = new InputProductValidator(product);
-                if (validator.isMapProjected() && product.getSceneGeoCoding() != null) {
+                if (InputProductValidator.isMapProjected(product) && product.getSceneGeoCoding() != null) {
                     addSurfaceImage(product);
                 }
             }
@@ -409,8 +408,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         productSubsetDef.setNodeNames(new String[]{quicklookBandName});
         Product productSubset = product.createSubset(productSubsetDef, quicklookBandName, null);
 
-        final InputProductValidator validator = new InputProductValidator(product);
-        if (!validator.isMapProjected() && productSubset.getSceneGeoCoding() != null) {
+        if (!InputProductValidator.isMapProjected(product) && productSubset.getSceneGeoCoding() != null) {
             try {
                 final Map<String, Object> projParameters = new HashMap<>();
                 Map<String, Product> projProducts = new HashMap<>();

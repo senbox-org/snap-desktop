@@ -32,11 +32,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+
 /**
  * Contains some static helper functions.
  *
  * @author thomas
  */
+// SEP2018 - Daniel Knowles - Fixes bug where colorComboBox was not listening to properties change event when
+// DefaultConfigController was loading the user saved preferences
+
 public class PreferenceUtils {
 
     /**
@@ -113,6 +117,17 @@ public class PreferenceUtils {
             }
         });
         colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
+
+        // Modification by Daniel Knowles SEP2018
+        // Add PropertyChangeListener to the passed in property which when triggered sets the colorComboBox selected color.
+        // This fixes bug where colorComboBox was not listening to properties change event when DefaultConfigController was
+        // loading the user saved preferences
+        property.addPropertyChangeListener(evt -> colorComboBox.setSelectedColor(property.getValue()));
+
         return colorComboBox;
     }
+
+
+
+
 }

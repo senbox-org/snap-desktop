@@ -97,8 +97,9 @@ public class GraphNode {
             final DomElement child = config.getChild(i);
             final String name = child.getName();
             final String value = child.getValue();
-            if (name == null || value == null)
+            if (name == null || value == null || value.startsWith("$")) {
                 continue;
+            }
 
             try {
                 if (child.getChildCount() == 0) {

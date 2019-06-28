@@ -12,7 +12,7 @@ OpenIDE-Module-Long-Description: <p>This module provides the time seri
  i>. It additionally provides export components, such as export of tim
  e series as Google Earth KMZ file, animated gif, and CSV-file.</p><p>
  <b>Funding:</b> ESA, EU</p><p><b>Vendor:</b> Brockmann Consult GmbH</
- p><p><b>Contact address:</b> Max-Planck-Str. 2, 21502 Geesthacht (Ger
+ p><p><b>Contact address:</b> Chrysanderstr. 1, 21029 Hamburg (Ger
  many)</p><p><b>Copyright:</b> (C) 2014 by Brockmann Consult GmbH</p><
  p><b>Vendor:</b> Brockmann Consult GmbH</p><p><b>License:</b> http://
  www.gnu.org/licenses/gpl.html</p>
