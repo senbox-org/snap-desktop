@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Cursor;
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -35,6 +34,14 @@ public class DesktopVersionCheck {
 
         @Override
         public void run() {
+
+            // todo - use the follwoing code which is taken from org.netbeans.modules.autoupdate.ui.actions.CheckForUpdatesAction
+//            final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
+//            assert checkForUpdatesProvider != null : "An instance of CheckForUpdatesProvider found in Lookup: " + Lookup.getDefault();
+//            if (checkForUpdatesProvider != null) {
+//                checkForUpdatesProvider.openCheckForUpdatesWizard(true);
+//            }
+
             boolean checkNow = false;
             final LocalDateTime dateTimeOfLastCheck = VERSION_CHECKER.getDateTimeOfLastCheck();
             if (dateTimeOfLastCheck != null && !VERSION_CHECKER.mustCheck()) {
@@ -44,7 +51,7 @@ public class DesktopVersionCheck {
                 final String message = "The last SNAP version check was done on " + dateTimeOfLastCheck + ".\n" +
                                        "The next automated SNAP version check will be done on " + nextCheck + ".\n" +
                                        "Press 'Yes' if you want to do the version check now.";
-                final Dialogs.Answer answer = Dialogs.requestDecision("Check Version", message, false, "optional_version_check_on_startup_");
+                final Dialogs.Answer answer = Dialogs.requestDecision("Check Version", message, false, "optional.version.check.onstartup");
                 checkNow = Dialogs.Answer.YES.equals(answer);
             }
 
