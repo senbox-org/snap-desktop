@@ -459,7 +459,7 @@ class MaskFormActions {
             final FileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
             fileChooser.setFileFilter(xmlFilter);
             fileChooser.setCurrentDirectory(getDirectory());
-
+            fileChooser.setMultiSelectionEnabled(true);
             if (fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(maskTopComponent)) == JFileChooser.APPROVE_OPTION) {
                 final File file = fileChooser.getSelectedFile();
                 if (file != null) {
