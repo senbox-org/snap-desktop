@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Cursor;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 /**
  * @author Marco Peters
@@ -33,7 +35,20 @@ public class DesktopVersionCheck {
 
         @Override
         public void run() {
-            if (VERSION_CHECKER.mustCheck()) {
+            boolean checkNow = false;
+            final LocalDateTime dateTimeOfLastCheck = VERSION_CHECKER.getDateTimeOfLastCheck();
+            if (dateTimeOfLastCheck != null && !VERSION_CHECKER.mustCheck()) {
+                final VersionChecker.CHECK checkInterval = VERSION_CHECKER.getCheckInterval();
+                final LocalDateTime nextCheck = dateTimeOfLastCheck.plusDays(checkInterval.days);
+
+                final String message = "The last SNAP version check was done on " + dateTimeOfLastCheck + ".\n" +
+                                       "The next automated SNAP version check will be done on " + nextCheck + ".\n" +
+                                       "Press 'Yes' if you want to do the version check now.";
+                final Dialogs.Answer answer = Dialogs.requestDecision("Check Version", message, false, "optional_version_check_on_startup_");
+                checkNow = Dialogs.Answer.YES.equals(answer);
+            }
+
+            if (VERSION_CHECKER.mustCheck() || checkNow) {
                 hasChecked = true;
                 if (VERSION_CHECKER.checkForNewRelease()) {
                     final JPanel panel = new JPanel();
@@ -49,6 +64,8 @@ public class DesktopVersionCheck {
                     panel.add(LinkLabel);
 
                     JOptionPane.showMessageDialog(null, panel);
+                } else if(checkNow) {
+                    Dialogs.showInformation("Snap is up to date.");
                 }
             }
         }
