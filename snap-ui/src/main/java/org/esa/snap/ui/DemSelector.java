@@ -104,7 +104,7 @@ public class DemSelector extends JPanel {
         };
 
         _paramProductDem = new Parameter("useProductDem", Boolean.FALSE);
-        _paramProductDem.getProperties().setLabel("Use elevation from tie-points");        /*I18N*/
+        _paramProductDem.getProperties().setLabel("Use internal elevation");        /*I18N*/
         _paramProductDem.getProperties().setEditorClass(RadioButtonEditor.class);
         _paramProductDem.addParamChangeListener(paramChangeListener);
 
