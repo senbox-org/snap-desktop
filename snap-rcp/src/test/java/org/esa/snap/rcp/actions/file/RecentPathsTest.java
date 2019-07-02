@@ -1,5 +1,7 @@
 package org.esa.snap.rcp.actions.file;
 
+import com.bc.ceres.core.runtime.internal.Platform;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,6 +52,7 @@ public class RecentPathsTest {
 
     @Test
     public void testEntriesWithIllegalCharsAreNotAdded() {
+        Assume.assumeTrue(Platform.ID.win.equals(Platform.getCurrentPlatform().getId()));
         recentPaths.add("a");
         recentPaths.add("C:\\Users\\Anton\\AppData\\Local\\Temp\\AERONET:AOD@551(@ESA)-2015-10-10.tif");
         recentPaths.add("c");
