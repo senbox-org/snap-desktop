@@ -26,14 +26,14 @@ public class RecentPathsTest {
     }
 
     @Test
-    public void testEmpty() throws Exception {
+    public void testEmpty() {
         List<String> paths = recentPaths.get();
         assertNotNull(paths);
         assertTrue(paths.isEmpty());
     }
 
     @Test
-    public void testLastInIsFirstOut() throws Exception {
+    public void testLastInIsFirstOut() {
         recentPaths.add("a");
         recentPaths.add("b");
         recentPaths.add("c");
@@ -41,7 +41,7 @@ public class RecentPathsTest {
     }
 
     @Test
-    public void testEmptyEntriesAreNotAdded() throws Exception {
+    public void testEmptyEntriesAreNotAdded() {
         recentPaths.add("a");
         recentPaths.add("");
         recentPaths.add("c");
@@ -49,7 +49,15 @@ public class RecentPathsTest {
     }
 
     @Test
-    public void testEqualEntriesAreRemoved() throws Exception {
+    public void testEntriesWithIllegalCharsAreNotAdded() {
+        recentPaths.add("a");
+        recentPaths.add("C:\\Users\\Anton\\AppData\\Local\\Temp\\AERONET:AOD@551(@ESA)-2015-10-10.tif");
+        recentPaths.add("c");
+        assertEquals(Arrays.asList("c", "a"), recentPaths.get());
+    }
+
+    @Test
+    public void testEqualEntriesAreRemoved() {
         recentPaths.add("a");
         recentPaths.add("b");
         recentPaths.add("a");
