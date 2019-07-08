@@ -1,7 +1,6 @@
 package org.esa.snap.ui.vfs.preferences;
 
 import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -12,6 +11,8 @@ import org.openide.util.HelpCtx;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
@@ -69,9 +70,9 @@ public class VFSOptionsController extends DefaultConfigController {
         }
     }
 
-    private final JTextField remoteRepositoryNameField = new JTextField(30);
-    private final JTextField remoteRepositorySchemaField = new JTextField(30);
-    private final JTextField remoteRepositoryAddressField = new JTextField(30);
+    private final JTextField remoteRepositoryNameField = new JTextField();
+    private final JTextField remoteRepositorySchemaField = new JTextField();
+    private final JTextField remoteRepositoryAddressField = new JTextField();
     private VFSRemoteFileRepositoriesController vfsRemoteFileRepositoriesController;
     private JPanel remoteRepositoriesConfigsPanel;
     private String currentRemoteRepositoryName = "";
@@ -316,7 +317,7 @@ public class VFSOptionsController extends DefaultConfigController {
         remoteRepositoriesListActionsPanel.setLayout(new BoxLayout(remoteRepositoriesListActionsPanel, BoxLayout.PAGE_AXIS));
         remoteRepositoriesListActionsPanel.add(getAddRemoteRepositoryButton());
         remoteRepositoriesListActionsPanel.add(getRemoveRemoteRepositoryButton());
-        remoteRepositoriesListActionsPanel.add(new Box.Filler(new Dimension(0, 0), new Dimension(0, 0), new Dimension(0, 32767)));
+        remoteRepositoriesListActionsPanel.add(Box.createVerticalGlue());
         return remoteRepositoriesListActionsPanel;
     }
 
@@ -335,7 +336,6 @@ public class VFSOptionsController extends DefaultConfigController {
         remoteRepositoriesListPanel.setAutoscrolls(false);
         remoteRepositoriesListPanel.add(getRemoteRepositoriesListActionsPanel());
         remoteRepositoriesListPanel.add(remoteRepositoriesListSP);
-        remoteRepositoriesListPanel.setPreferredSize(new Dimension(200, 300));
         return remoteRepositoriesListPanel;
     }
 
@@ -397,14 +397,13 @@ public class VFSOptionsController extends DefaultConfigController {
      * @return The panel with fields for remote file repository name, schema and address
      */
     private JPanel getRemoteRepositoriesSettingsPanel() {
-        TableLayout remoteRepositoriesSettingsLayout = new TableLayout(2);
-        remoteRepositoriesSettingsLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
-        remoteRepositoriesSettingsLayout.setTablePadding(new Insets(4, 10, 0, 0));
-        remoteRepositoriesSettingsLayout.setTableFill(TableLayout.Fill.BOTH);
-        remoteRepositoriesSettingsLayout.setColumnWeightX(0, 1.0);
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.LINE_AXIS));
 
         JLabel remoteRepositoryNameLabel = new JLabel("Name:", SwingConstants.LEFT);
+        remoteRepositoryNameLabel.setPreferredSize(new Dimension(50, 10));
 
+        remoteRepositoryNameField.setAutoscrolls(true);
         remoteRepositoryNameField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent evt) {
@@ -412,8 +411,16 @@ public class VFSOptionsController extends DefaultConfigController {
             }
         });
 
-        JLabel remoteRepositorySchemaLabel = new JLabel("Schema:", SwingConstants.LEFT);
+        namePanel.add(remoteRepositoryNameLabel);
+        namePanel.add(remoteRepositoryNameField);
 
+        JPanel schemaPanel = new JPanel();
+        schemaPanel.setLayout(new BoxLayout(schemaPanel, BoxLayout.LINE_AXIS));
+
+        JLabel remoteRepositorySchemaLabel = new JLabel("Schema:", SwingConstants.LEFT);
+        remoteRepositorySchemaLabel.setPreferredSize(new Dimension(50, 10));
+
+        remoteRepositorySchemaField.setAutoscrolls(true);
         remoteRepositorySchemaField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent evt) {
@@ -421,8 +428,16 @@ public class VFSOptionsController extends DefaultConfigController {
             }
         });
 
-        JLabel remoteRepositoryAddressLabel = new JLabel("Address:", SwingConstants.LEFT);
+        schemaPanel.add(remoteRepositorySchemaLabel);
+        schemaPanel.add(remoteRepositorySchemaField);
 
+        JPanel addressPanel = new JPanel();
+        addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.LINE_AXIS));
+
+        JLabel remoteRepositoryAddressLabel = new JLabel("Address:", SwingConstants.LEFT);
+        remoteRepositoryAddressLabel.setPreferredSize(new Dimension(50, 10));
+
+        remoteRepositoryAddressField.setAutoscrolls(true);
         remoteRepositoryAddressField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent evt) {
@@ -430,16 +445,19 @@ public class VFSOptionsController extends DefaultConfigController {
             }
         });
 
+        addressPanel.add(remoteRepositoryAddressLabel);
+        addressPanel.add(remoteRepositoryAddressField);
+
         JPanel remoteRepositoriesSettingsPanel = new JPanel();
         remoteRepositoriesSettingsPanel.setBorder(BorderFactory.createTitledBorder("Settings"));
-        remoteRepositoriesSettingsPanel.setLayout(remoteRepositoriesSettingsLayout);
+        remoteRepositoriesSettingsPanel.setLayout(new BoxLayout(remoteRepositoriesSettingsPanel, BoxLayout.PAGE_AXIS));
         remoteRepositoriesSettingsPanel.setAutoscrolls(false);
-        remoteRepositoriesSettingsPanel.add(remoteRepositoryNameLabel);
-        remoteRepositoriesSettingsPanel.add(remoteRepositoryNameField);
-        remoteRepositoriesSettingsPanel.add(remoteRepositorySchemaLabel);
-        remoteRepositoriesSettingsPanel.add(remoteRepositorySchemaField);
-        remoteRepositoriesSettingsPanel.add(remoteRepositoryAddressLabel);
-        remoteRepositoriesSettingsPanel.add(remoteRepositoryAddressField);
+        remoteRepositoriesSettingsPanel.add(namePanel);
+        remoteRepositoriesSettingsPanel.add(Box.createVerticalStrut(5));
+        remoteRepositoriesSettingsPanel.add(schemaPanel);
+        remoteRepositoriesSettingsPanel.add(Box.createVerticalStrut(5));
+        remoteRepositoriesSettingsPanel.add(addressPanel);
+        remoteRepositoriesSettingsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
         return remoteRepositoriesSettingsPanel;
     }
 
@@ -604,7 +622,7 @@ public class VFSOptionsController extends DefaultConfigController {
         remoteRepositoriesPropertiesActionsPanel.setLayout(new BoxLayout(remoteRepositoriesPropertiesActionsPanel, BoxLayout.PAGE_AXIS));
         remoteRepositoriesPropertiesActionsPanel.add(getAddRemoteRepositoryPropertyButton());
         remoteRepositoriesPropertiesActionsPanel.add(getRemoveRemoteRepositoryPropertyButton());
-        remoteRepositoriesPropertiesActionsPanel.add(new Box.Filler(new Dimension(0, 0), new Dimension(0, 0), new Dimension(0, 32767)));
+        remoteRepositoriesPropertiesActionsPanel.add(Box.createVerticalGlue());
         return remoteRepositoriesPropertiesActionsPanel;
     }
 
@@ -622,7 +640,6 @@ public class VFSOptionsController extends DefaultConfigController {
         remoteRepositoriesPropertiesListPanel.setLayout(new BoxLayout(remoteRepositoriesPropertiesListPanel, BoxLayout.LINE_AXIS));
         remoteRepositoriesPropertiesListPanel.add(getRemoteRepositoriesPropertiesListActionsPanel());
         remoteRepositoriesPropertiesListPanel.add(remoteRepositoriesPropertiesListSP);
-        remoteRepositoriesPropertiesListPanel.setPreferredSize(new Dimension(150, 250));
         return remoteRepositoriesPropertiesListPanel;
     }
 
@@ -632,17 +649,12 @@ public class VFSOptionsController extends DefaultConfigController {
      * @return The panel with remote file repository configurations
      */
     private JPanel getRemoteRepositoriesConfigsPanel() {
-        TableLayout remoteRepositoriesConfigsLayout = new TableLayout(1);
-        remoteRepositoriesConfigsLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
-        remoteRepositoriesConfigsLayout.setTablePadding(new Insets(4, 10, 0, 0));
-        remoteRepositoriesConfigsLayout.setTableFill(TableLayout.Fill.BOTH);
-        remoteRepositoriesConfigsLayout.setColumnWeightX(0, 1.0);
-
         remoteRepositoriesConfigsPanel = new JPanel();
         remoteRepositoriesConfigsPanel.setBorder(BorderFactory.createTitledBorder("Remote File Repository Configurations"));
-        remoteRepositoriesConfigsPanel.setLayout(remoteRepositoriesConfigsLayout);
+        remoteRepositoriesConfigsPanel.setLayout(new BoxLayout(remoteRepositoriesConfigsPanel, BoxLayout.PAGE_AXIS));
         remoteRepositoriesConfigsPanel.setAutoscrolls(false);
         remoteRepositoriesConfigsPanel.add(getRemoteRepositoriesSettingsPanel());
+        remoteRepositoriesConfigsPanel.add(Box.createVerticalStrut(5));
         remoteRepositoriesConfigsPanel.add(getRemoteRepositoriesPropertiesListPanel());
         remoteRepositoriesConfigsPanel.setVisible(false);
         return remoteRepositoriesConfigsPanel;
@@ -653,17 +665,40 @@ public class VFSOptionsController extends DefaultConfigController {
      *
      * @return The panel with remote file repositories table and remote file repository configurations panel
      */
-    private JPanel getRemoteFileRepositoriesPanel() {
-        TableLayout remoteFileRepositoriesLayout = new TableLayout(2);
-        remoteFileRepositoriesLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
-        remoteFileRepositoriesLayout.setTablePadding(new Insets(4, 10, 0, 0));
-        remoteFileRepositoriesLayout.setTableFill(TableLayout.Fill.BOTH);
-        remoteFileRepositoriesLayout.setColumnWeightX(0, 1.0);
+    private JSplitPane getRemoteFileRepositoriesPanel() {
+        JSplitPane remoteFileRepositoriesPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        remoteFileRepositoriesPanel.setOneTouchExpandable(false);
+        remoteFileRepositoriesPanel.setContinuousLayout(true);
+        remoteFileRepositoriesPanel.setDividerSize(5);
+        remoteFileRepositoriesPanel.setDividerLocation(0.5);
+        JPanel remoteRepositoriesListPane = getRemoteRepositoriesListPanel();
+        JPanel remoteRepositoriesConfigsPane = getRemoteRepositoriesConfigsPanel();
+        Dimension minimumSize = new Dimension(350, 410);
+        remoteRepositoriesListPane.setMinimumSize(minimumSize);
+        remoteRepositoriesConfigsPane.setMinimumSize(minimumSize);
+        remoteRepositoriesConfigsPane.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                //nothing
+            }
 
-        JPanel remoteFileRepositoriesPanel = new JPanel();
-        remoteFileRepositoriesPanel.setLayout(remoteFileRepositoriesLayout);
-        remoteFileRepositoriesPanel.add(getRemoteRepositoriesListPanel());
-        remoteFileRepositoriesPanel.add(getRemoteRepositoriesConfigsPanel());
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                //nothing
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                remoteFileRepositoriesPanel.setDividerLocation(0.5);
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                //nothing
+            }
+        });
+        remoteFileRepositoriesPanel.setLeftComponent(remoteRepositoriesListPane);
+        remoteFileRepositoriesPanel.setRightComponent(remoteRepositoriesConfigsPane);
         return remoteFileRepositoriesPanel;
     }
 
@@ -674,8 +709,8 @@ public class VFSOptionsController extends DefaultConfigController {
      */
     private JPanel getRemoteFileRepositoriesTabUI() {
         JPanel remoteFileRepositoriesTabUI = new JPanel(new BorderLayout());
-        remoteFileRepositoriesTabUI.add(getRemoteFileRepositoriesPanel(), BorderLayout.PAGE_START);
-        remoteFileRepositoriesTabUI.add(Box.createVerticalGlue(), BorderLayout.PAGE_END);
+        remoteFileRepositoriesTabUI.add(getRemoteFileRepositoriesPanel());
+        remoteFileRepositoriesTabUI.setPreferredSize(new Dimension(730, 410));
         return remoteFileRepositoriesTabUI;
     }
 

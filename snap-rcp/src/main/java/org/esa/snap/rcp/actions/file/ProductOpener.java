@@ -196,6 +196,10 @@ public class ProductOpener {
         List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
+            if(!file.exists()) {
+                fileList.remove(file);
+                continue;
+            }
             if (openedFiles.contains(file)) {
                 Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
                                                                 MessageFormat.format("Product\n" +

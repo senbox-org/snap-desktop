@@ -13,8 +13,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.Presenter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
@@ -59,10 +61,11 @@ public final class ReopenProductAction extends AbstractAction implements Present
 
 
         pathList.stream().limit(maxFileList).forEach(path->{
-            if (!openedFiles.contains(new File(path))) {
+            File theFile = new File(path);
+            if (!openedFiles.contains(theFile) && theFile.exists()) {
                 JMenuItem menuItem = new JMenuItem(path);
                 OpenProductAction openProductAction = new OpenProductAction();
-                openProductAction.setFile(new File(path));
+                openProductAction.setFile(theFile);
                 menuItem.addActionListener(openProductAction);
                 menu.add(menuItem);
             }

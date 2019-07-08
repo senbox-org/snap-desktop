@@ -459,7 +459,7 @@ class MaskFormActions {
             final FileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
             fileChooser.setFileFilter(xmlFilter);
             fileChooser.setCurrentDirectory(getDirectory());
-
+            fileChooser.setMultiSelectionEnabled(true);
             if (fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(maskTopComponent)) == JFileChooser.APPROVE_OPTION) {
                 final File file = fileChooser.getSelectedFile();
                 if (file != null) {
@@ -975,7 +975,8 @@ class MaskFormActions {
             int dataType = mask.getDataType();
             Band band = targetProduct.addBand(bandName, dataType);
             String description = mask.getDescription() + " (from " + mask.getProduct().getDisplayName() + ")";
-            targetProduct.addMask(maskName, bandName, description, mask.getImageColor(), mask.getImageTransparency());
+            String expression = (String) mask.getImageConfig().getValue("expression");
+            targetProduct.addMask(maskName, expression, description, mask.getImageColor(), mask.getImageTransparency());
             return band;
         }
 

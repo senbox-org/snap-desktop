@@ -3,10 +3,12 @@ package org.esa.snap.rcp.actions.file;
 import org.esa.snap.vfs.NioPaths;
 
 import java.io.File;
-import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ class RecentPaths {
     }
 
     public void add(String path) {
-        if (path.isEmpty()) {
+        if (path.isEmpty() || !isPathValid(path)) {
             return;
         }
         String value = Stream
@@ -41,6 +43,15 @@ class RecentPaths {
                 .collect(Collectors.joining(File.pathSeparator));
         preferences.put(key, value);
         flush();
+    }
+
+    private boolean isPathValid(String path) {
+        try {
+            Paths.get(path);
+        } catch (InvalidPathException e) {
+            return false;
+        }
+        return true;
     }
 
     public void clear() {
@@ -55,20 +66,20 @@ class RecentPaths {
         }
         return Arrays
                 .stream(value.split(File.pathSeparator))
-                .map(p -> convertToPath(p))
-                .filter(path -> (path != null))
+                .map(this::convertToPath)
+                .filter(Objects::nonNull)
                 .map(Path::toString);
     }
 
-    private Path convertToPath(String pasAsString) {
+    private Path convertToPath(String pathAsString) {
         try {
-            return NioPaths.get(pasAsString);
+            return NioPaths.get(pathAsString);
         } catch (java.nio.file.InvalidPathException e) {
             return null;
         }
     }
 
-    void flush() {
+    private void flush() {
         try {
             preferences.flush();
         } catch (BackingStoreException e) {
