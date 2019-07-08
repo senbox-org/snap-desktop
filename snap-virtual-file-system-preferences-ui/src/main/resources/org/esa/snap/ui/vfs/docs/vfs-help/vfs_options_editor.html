@@ -175,7 +175,7 @@
     <tr>
         <td style="border-style:none;padding: 5px;" width="300px" valign="top">
             <p class="inote">
-                <b>Note</b>: The current VFS implementations allow only one instance for each VFS, meaning each VFS can have only one Remote File Repository. In conclusion the "schema" must be unique for each Remote File Repository.
+                <b>Note</b>: The current VFS implementations (http, swift, s3) allow multiple Remote File Repositories for each type of VFS (schema), with the condition that the configured name is unique.
             </p>
         </td>
         <td style="border-style:none;padding: 5px;">
