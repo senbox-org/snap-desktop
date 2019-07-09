@@ -16,7 +16,7 @@
 -->
 <html>
 <head>
-    <title>SNAP Virtual File System (VFS)</title>
+    <title>Virtual File System</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -25,7 +25,7 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            SNAP Virtual File System (VFS)
+            Virtual File System
         </td>
         <td class="header" align="right">
             <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
@@ -34,7 +34,7 @@
         </td>
     </tr>
 </table>
-<h1>SNAP Virtual File System (VFS)</h1>
+<h1>Virtual File System (VFS)</h1>
 
 <h2>I. Introduction</h2>
 
@@ -171,13 +171,11 @@
 <p>
     The VFS Remote File Repositories represents a set of configurations which designate a VFS.
 </p>
+<p class="inote">
+    <b>Note</b>: The current VFS implementations (http, swift, s3) allow multiple Remote File Repositories for each type of VFS (schema), with the condition that the configured name is unique.
+</p>
 <table style="border-width:0">
     <tr>
-        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
-            <p class="inote">
-                <b>Note</b>: The current VFS implementations (http, swift, s3) allow multiple Remote File Repositories for each type of VFS (schema), with the condition that the configured name is unique.
-            </p>
-        </td>
         <td style="border-style:none;padding: 5px;">
             <img src="images/repos.png" alt="VFS Remote File Repositories"/>
         </td>

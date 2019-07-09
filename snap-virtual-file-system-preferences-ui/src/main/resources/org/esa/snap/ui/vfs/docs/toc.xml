@@ -6,9 +6,7 @@
 
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Import and Export">
-            <tocitem text="Virtual File System (VFS)">
-                <tocitem text="Remote File Repositories" target="vfs_editor"/>
-            </tocitem>
+            <tocitem text="Virtual File System" target="vfs_editor"/>
         </tocitem>
     </tocitem>
 </toc>
