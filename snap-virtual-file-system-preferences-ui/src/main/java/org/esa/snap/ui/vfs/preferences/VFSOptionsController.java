@@ -401,7 +401,7 @@ public class VFSOptionsController extends DefaultConfigController {
         namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.LINE_AXIS));
 
         JLabel remoteRepositoryNameLabel = new JLabel("Name:", SwingConstants.LEFT);
-        remoteRepositoryNameLabel.setPreferredSize(new Dimension(50, 10));
+        remoteRepositoryNameLabel.setPreferredSize(new Dimension(80, 10));
 
         remoteRepositoryNameField.setAutoscrolls(true);
         remoteRepositoryNameField.addFocusListener(new FocusAdapter() {
@@ -418,7 +418,7 @@ public class VFSOptionsController extends DefaultConfigController {
         schemaPanel.setLayout(new BoxLayout(schemaPanel, BoxLayout.LINE_AXIS));
 
         JLabel remoteRepositorySchemaLabel = new JLabel("Schema:", SwingConstants.LEFT);
-        remoteRepositorySchemaLabel.setPreferredSize(new Dimension(50, 10));
+        remoteRepositorySchemaLabel.setPreferredSize(new Dimension(80, 10));
 
         remoteRepositorySchemaField.setAutoscrolls(true);
         remoteRepositorySchemaField.addFocusListener(new FocusAdapter() {
@@ -435,7 +435,7 @@ public class VFSOptionsController extends DefaultConfigController {
         addressPanel.setLayout(new BoxLayout(addressPanel, BoxLayout.LINE_AXIS));
 
         JLabel remoteRepositoryAddressLabel = new JLabel("Address:", SwingConstants.LEFT);
-        remoteRepositoryAddressLabel.setPreferredSize(new Dimension(50, 10));
+        remoteRepositoryAddressLabel.setPreferredSize(new Dimension(80, 10));
 
         remoteRepositoryAddressField.setAutoscrolls(true);
         remoteRepositoryAddressField.addFocusListener(new FocusAdapter() {
