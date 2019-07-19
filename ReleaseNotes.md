@@ -7,7 +7,16 @@ Threshold variable names are shortened by getting rid of the threshold name part
 altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not 
 incremented per measure, but correspond to a band name or a time interval
 (e.g., vrg_4_2 will correspond to the average of band 4 during time interval 2).
-  
+
+    [STEP-3] Virtual File System for Remote Data Access
+    [STEP-4] Graphical User Interface for Remote Execution
+    [SNAP-1116] Remote File Repositories UI permanently brings popup message dialog about saving Remote File Repositories configurations
+    [SNAP-1117] Issue with Remote Execution operator on Linux and Mac
+    [SNAP-1118] Product data access does not work via http for NASA SeaDAS
+    [SNAP-1125] Virtual File System help page screenshots are blurry
+    [SNAP-1131] Issue with File/Dir Attributes for files from S3 VFS
+    [SNAP-1132] Unexpected closing of channels on S3 VFS
+    [SNAP-1138] Virtual File System Display Issue - Remote File Repositories Configuration: labels truncated on Unix
     [SNAP-1063] Numerical overflow cause empty binning result
     [SNAP-1056] ceres-ui module is needed by some operations in snappy
     [SNAP-948]  GLCM does not work properly when working with scaled values
