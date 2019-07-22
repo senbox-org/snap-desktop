@@ -1,28 +1,28 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <title>Import-Vector Operator</title>
+    <title>Find-Image-Pair Operator</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <table class="header">
     <tr class="header">
-        <td class="header">&nbsp;Import-Vector Operator</td>
+        <td class="header">&nbsp;Find-Image-Pair Operator</td>
         <td class="header" align="right">
           <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
-<h1>Import-Vector Operator Description</h1>
+<h1>Find-Image-Pair Operator Description</h1>
 <h2>Overview</h2>
 <table>
-  <tr><td><b>Name:</b></td><td><code>Import-Vector</code></td></tr>
-  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.core.gpf.common.ImportVectorOp</code></td></tr>
-  <tr><td><b>Purpose:</b></td><td>Imports a shape file into a product</td></tr>
-  <tr><td><b>Version:</b></td><td>1.1</td></tr>
+  <tr><td><b>Name:</b></td><td><code>Find-Image-Pair</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.productlibrary.gpf.FindImagePairOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>DB query to find matching image pair</td></tr>
+  <tr><td><b>Version:</b></td><td>1.0</td></tr>
 </table>
 <h2>Description</h2>
-The import vector operator.
+Find image pair from the database
 <h2>Sources</h2>
 <table>
 <tr>
@@ -44,17 +44,17 @@ The import vector operator.
   <th>Constraints</th>
 </tr>
 <tr>
-  <td><code>vectorFile</code></td>
-  <td><code>File</code></td>
-  <td><code></code></td>
-  <td></td>
+  <td><code>minMJD</code></td>
+  <td><code>double</code></td>
+  <td><code>1</code></td>
+  <td>Minimum days apart from master</td>
   <td></td>
 </tr>
 <tr>
-  <td><code>separateShapes</code></td>
-  <td><code>boolean</code></td>
-  <td><code>true</code></td>
-  <td></td>
+  <td><code>maxMJD</code></td>
+  <td><code>double</code></td>
+  <td><code>99999</code></td>
+  <td>Maximum days apart from master</td>
   <td></td>
 </tr>
 </table>

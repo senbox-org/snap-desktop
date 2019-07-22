@@ -32,11 +32,15 @@ This operator is used to spatially collocate two data products. It requires two 
   <th>Description</th>
 </tr>
 <tr>
-  <td><code>masterProduct</code></td>
+  <td><code>master</code></td>
   <td>The source product which serves as master.</td>
 </tr>
 <tr>
   <td><code>slaveProduct</code></td>
+  <td>The source product which serves as slave.</td>
+</tr>
+<tr>
+  <td><code>sourceProducts</code></td>
   <td>The source product which serves as slave.</td>
 </tr>
 </table>
@@ -48,6 +52,20 @@ This operator is used to spatially collocate two data products. It requires two 
   <th>Default</th>
   <th>Description</th>
   <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>sourceProductPaths</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>A comma-separated list of file paths specifying the source products</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>masterProductName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>The name of the master product.</td>
+  <td></td>
 </tr>
 <tr>
   <td><code>targetProductName</code></td>
@@ -87,7 +105,7 @@ This operator is used to spatially collocate two data products. It requires two 
 <tr>
   <td><code>slaveComponentPattern</code></td>
   <td><code>String</code></td>
-  <td><code>${ORIGINAL_NAME}_S</code></td>
+  <td><code>${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}</code></td>
   <td>The text pattern to be used when renaming slave components.</td>
   <td></td>
 </tr>
