@@ -10,17 +10,55 @@ incremented per measure, but correspond to a band name or a time interval
 
     [STEP-3] Virtual File System for Remote Data Access
     [STEP-4] Graphical User Interface for Remote Execution
+    [SNAP-1138]	Virtual File System Display Issue - Remote File Repositories Configuration: labels truncated on Unix
+    [SNAP-1133]	BigGeoTiffReader has threading issues
+    [SNAP-1132]	Unexpected closing of channels on S3 VFS
+    [SNAP-1131]	Issue with File/Dir Attributes for files from S3 VFS
+    [SNAP-1130]	When opening products it shall be first checked if they exist
+    [SNAP-1128]	GeoTools swallows exception within by registering a JAI listener
+    [SNAP-1125]	Virtual File System help page screenshots are blurry
+    [SNAP-1124]	Paths of recently opened products, containing illegal characters, can break product opening
+    [SNAP-1120]	Export dialog suggests inconvenient file name
     [SNAP-1116] Remote File Repositories UI permanently brings popup message dialog about saving Remote File Repositories configurations
     [SNAP-1117] Issue with Remote Execution operator on Linux and Mac
-    [SNAP-1118] Product data access does not work via http for NASA SeaDAS
-    [SNAP-1125] Virtual File System help page screenshots are blurry
-    [SNAP-1131] Issue with File/Dir Attributes for files from S3 VFS
-    [SNAP-1132] Unexpected closing of channels on S3 VFS
-    [SNAP-1138] Virtual File System Display Issue - Remote File Repositories Configuration: labels truncated on Unix
-    [SNAP-1063] Numerical overflow cause empty binning result
-    [SNAP-1056] ceres-ui module is needed by some operations in snappy
-    [SNAP-948]  GLCM does not work properly when working with scaled values
+    [SNAP-1118]	Product data access does not work via http for NASA SeaDAS
+    [SNAP-1115]	GeoTiffProductReader pattern should exclude RapidEye L1 products
+    [SNAP-1114]	Preferred color for a layer is not preserved when changed in option dialog
+    [SNAP-1113]	Drawn line of range finder tool is hardly visible
+    [SNAP-1112]	Show popup-window on startup indicating to check for updates
+    [SNAP-1111]	CommandLineToolTemplateTest not running on Mac
+    [SNAP-1100]	Specral unmixing shall be tested
+    [SNAP-1097]	File chooser should use the selection mode of the filter if there is only one filter
+    [SNAP-1094]	Prevent that SampleCoding can have two samples with the same name
+    [SNAP-1093]	THIRDPARTY_LICENSES file is not included in the installer
+    [SNAP-1089]	FileLocation not set in ReadOp for opened products
+    [SNAP-1087]	Product names with dots are not correctly handled by pconvert
+    [SNAP-1080]	Make AddElevation operator compatible with multi-size products
+    [SNAP-1069]	Create wiki page for graph tests
+    [SNAP-1068]	Data gets lost when reprojecting or mosaicking small areas
+    [SNAP-1063]	Numerical overflow cause empty binning result
+    [SNAP-1056]	ceres-ui module is needed by some operations in snappy
+    [SNAP-1047]	Investigate concurrent-tile-cache implementation
+    [SNAP-1012]	Define a "test schedule"
+    [SNAP-1010]	Install and configure the test and build platform
+    [SNAP-1009]	Merge operator does not retain order of bands in source products
+    [SNAP-991]	URL in help outdated for ASTER data
+    [SNAP-988]	Display third party licenses
+    [SNAP-978]	Make the "Export Transect pixels" action compatible with multi-size products.
+    [SNAP-976]	Make the "Export Mask pixels" action compatible with multi-size products.
+    [SNAP-974]	Make the "Copy pixel Info to clipboard" action compatible with multi-size products.
+    [SNAP-971]	Make the Reproject operator compatible with multi-size products.
+    [SNAP-950]	Opening high resolution data with longitude values from 0-360 from NetCDF lead to a NPE
+    [SNAP-949]	Option incorrectly named for Orthorectification
+    [SNAP-948]	GLCM does not work properly when working with scaled values
+    [SNAP-940]	Pixel position not shown in status bar if  scene has no geo-coding
+    [SNAP-917]	NetCDF does not support wavelength attribute of bands
+    [SNAP-886]	Implement outlier aware averaging aggregator
+    [SNAP-885]	Allow growable vector in spatial binning
     [SNAP-866]  NetCdf files with extension '.nc.gz' are not read
+    [SNAP-849]	Allow import of several masks at once
+    [SNAP-769]	Allow disabling the access to external auxdata
+    [SNAP-593]	NetCDF file containing bands with same name lead to exception
 
 # New in SNAP 6.0.9
 
