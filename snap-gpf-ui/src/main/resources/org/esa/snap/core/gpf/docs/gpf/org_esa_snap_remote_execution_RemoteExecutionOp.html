@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>RemoteExecutionOp Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;RemoteExecutionOp Operator</td>
+        <td class="header" align="right">
+          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>RemoteExecutionOp Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>RemoteExecutionOp</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.remote.execution.RemoteExecutionOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>The Remote Execution Processor executes on the remote machines a slave graph and then on the host machine it executes a master graph using the products created by the remote machines.</td></tr>
+  <tr><td><b>Version:</b></td><td>1.0</td></tr>
+</table>
+<h2>Description</h2>
+Created by jcoravu on 27/12/2018.
+<h2>Sources</h2>
+<p><i>This operator does not have any sources.</i>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>remoteSharedFolderPath</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the shared folder path.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>remoteSharedFolderUsername</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the username account of the machine where the shared folder is created.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>remoteSharedFolderPassword</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the password account of the machine where the shared folder is created.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>localSharedFolderPath</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the local shared folder path used to connect to the remote shared folder.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>localPassword</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the password of the local machine.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>slaveGraphFilePath</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the slave graph file path to be executed on the remote machines.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>sourceProductFiles</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>Specifies the product files.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>remoteMachines</code></td>
+  <td><code>RemoteMachineProperties[]</code></td>
+  <td><code></code></td>
+  <td>Specifies the remote machines credentials.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>masterGraphFilePath</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the master graph file path.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>continueOnFailure</code></td>
+  <td><code>Boolean</code></td>
+  <td><code></code></td>
+  <td>Specifies the flag to continue or not when a remote machine fails.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>masterProductFormatName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the master product format name.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>masterProductFilePath</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the master product file path.</td>
+  <td>not null</td>
+</tr>
+<tr>
+  <td><code>waitingSecondsTimeout</code></td>
+  <td><code>int</code></td>
+  <td><code></code></td>
+  <td>Specifies the waiting seconds to complete the output products on the remote machines.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>slaveProductsFolderNamePrefix</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the folder name prefix of the slave output products.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>slaveProductsName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the name of the output products obtained using the slave graph.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>slaveProductsFormatName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>Specifies the format name of the output products obtained using the slave graph.</td>
+  <td></td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>

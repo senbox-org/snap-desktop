@@ -22,17 +22,19 @@
   <tr><td><b>Version:</b></td><td>1.0</td></tr>
 </table>
 <h2>Description</h2>
-An operator that is used to compute statistics for any number of source products, restricted to regions given by an
- ESRI shapefile.
+An operator that is used to compute statistics for any number of source products, restricted to time intervals and
+ regions given by an ESRI shapefile. If no time intervals are defined, statistics are aggregated over the whole period.
+ If no region is given, all pixels of a product are considered.
+
  <p>
- It writes two different sorts of output:
+ The operator writes two different sorts of output:
  <ul>
- <li>an ASCII file in tab-separated CSV format, in which the statistics are mapped to the source regions</li>
+ <li>an ASCII file in tab-separated CSV format, in which the statistics are mapped to the source regions, time intervals and bands</li>
  <li>a shapefile that corresponds to the input shapefile, enriched with the statistics for the regions defined by the shapefile</li>
  </ul>
  <p>
  Unlike most other operators, that can compute single {@link Tile tiles},
- the statistics operator processes all of its source products in its {@link #initialize()} method.
+ the statistics operator processes all of its source products in its {@link #doExecute(ProgressMonitor)} method.
 <h2>Sources</h2>
 <table>
 <tr>
@@ -119,6 +121,20 @@ ASCII output will only be written if this parameter is set.</td>
   <td><code>int</code></td>
   <td><code>3</code></td>
   <td>The degree of accuracy used for statistics computation. Higher numbers indicate higher accuracy but may lead to a considerably longer computation time.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>interval</code></td>
+  <td><code>TimeIntervalDefinition</code></td>
+  <td><code></code></td>
+  <td>If set, the StatisticsOp will divide the time between start and end time into time intervalsdefined by this parameter. All measures will be aggregated from products within these intervals. This parameter will only have an effect if the parameters start date and end date are set.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>writeDataTypesSeparately</code></td>
+  <td><code>boolean</code></td>
+  <td><code>false</code></td>
+  <td>If true, categorical measures and quantitative measures will be written separately.</td>
   <td></td>
 </tr>
 </table>
