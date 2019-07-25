@@ -95,6 +95,14 @@ public class SubsetUI extends BaseOperatorUI {
         OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
         String _oldSelected = (String) referenceCombo.getSelectedItem();
         referenceCombo.removeAllItems();
+        if (_oldSelected == null) {
+            String refBand = (String) paramMap.get("referenceBand");
+            if (refBand != null && !refBand.isEmpty()){
+                _oldSelected = refBand;
+                referenceCombo.addItem(refBand);
+                referenceCombo.setSelectedItem(refBand);
+            }
+        }
         for( int i = 0 ; i < bandList.getModel().getSize() ; i++) {
             String string = (String) bandList.getModel().getElementAt(i);
             referenceCombo.addItem(string);
