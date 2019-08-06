@@ -70,14 +70,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
     private boolean initialized;
     private JComboBox<AbstractProductsDataSource> repositoryListComboBox;
-    private JComboBox<String> supportedMissionsComboBox;
     private JTextField productNameTextField;
     private JPanel dataSourceParametersPanel;
 
     public ProductLibraryToolViewV2() {
         this.initialized = false;
 
-        setDisplayName("Product Library v2");
+        setDisplayName(Bundle.CTL_ProductLibraryTopComponentV2Name());
         setLayout(new BorderLayout());
     }
 
@@ -85,118 +84,98 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     protected void componentShowing() {
         if (!this.initialized) {
             this.initialized = true;
-
-            this.dataSourceParametersPanel = new JPanel(new GridBagLayout());
-
-            Insets defaultTextFieldMargins = buildDefaultTextFieldMargins();
-            Insets defaultListItemMargins = buildDefaultListItemMargins();
-
-            this.productNameTextField = new JTextField();
-            this.productNameTextField.setMargin(defaultTextFieldMargins);
-
-            int textFieldPreferredHeight = this.productNameTextField.getPreferredSize().height;
-
-            AbstractProductsDataSource[] availableDataSources = new AbstractProductsDataSource[2];
-            availableDataSources[0] = new SciHubProductsDataSource(textFieldPreferredHeight, defaultListItemMargins);
-            availableDataSources[1] = new LocalProductsDataSource();
-            this.repositoryListComboBox = new JComboBox<AbstractProductsDataSource>(availableDataSources);
-            Dimension comboBoxSize = this.repositoryListComboBox.getPreferredSize();
-            comboBoxSize.height = textFieldPreferredHeight;
-            this.repositoryListComboBox.setPreferredSize(comboBoxSize);
-            this.repositoryListComboBox.setMinimumSize(comboBoxSize);
-            LabelListCellRenderer<AbstractProductsDataSource> renderer = new LabelListCellRenderer<AbstractProductsDataSource>(defaultListItemMargins) {
-                @Override
-                protected String getItemDisplayText(AbstractProductsDataSource value) {
-                    return (value == null) ? "" : value.getName();
-                }
-            };
-            this.repositoryListComboBox.setMaximumRowCount(5);
-            this.repositoryListComboBox.setRenderer(renderer);
-            this.repositoryListComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
-            this.repositoryListComboBox.setOpaque(true);
-            this.repositoryListComboBox.setSelectedItem(null);
-            this.repositoryListComboBox.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        System.out.println("itemStateChanged e="+e);
-                        newDataSourceSelected((AbstractProductsDataSource)e.getItem());
-                    }
-                }
-            });
-
-            createSupportedMissionsComboBox(textFieldPreferredHeight, defaultListItemMargins);
-
-            Dimension buttonSize = new Dimension(textFieldPreferredHeight, textFieldPreferredHeight);
-
-            ActionListener searchButtonListener = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-
-            JButton searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", searchButtonListener, buttonSize);
-            JButton helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", searchButtonListener, buttonSize);
-
-            JPanel headerPanel = new JPanel(new GridBagLayout());
-
-            int gapBetweenRows = 5;
-            int gapBetweenColumns = 5;
-            GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-            headerPanel.add(new JLabel("Data source"), c);
-
-            c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-            headerPanel.add(this.repositoryListComboBox, c);
-
-            c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-            headerPanel.add(searchButton, c);
-
-            c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-            headerPanel.add(helpButton, c);
-
-            add(headerPanel, BorderLayout.NORTH);
-            add(this.dataSourceParametersPanel, BorderLayout.CENTER);
-            setBorder(new EmptyBorder(5, 5, 5, 5));
+            initialize();
         }
     }
 
-    private void createSupportedMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {
-        this.supportedMissionsComboBox = new JComboBox<String>();
+    private void initialize() {
+        this.dataSourceParametersPanel = new JPanel(new GridBagLayout());
 
-        Dimension comboBoxSize = this.supportedMissionsComboBox.getPreferredSize();
+        Insets defaultTextFieldMargins = buildDefaultTextFieldMargins();
+        Insets defaultListItemMargins = buildDefaultListItemMargins();
+
+        this.productNameTextField = new JTextField();
+        this.productNameTextField.setMargin(defaultTextFieldMargins);
+
+        int textFieldPreferredHeight = this.productNameTextField.getPreferredSize().height;
+
+        AbstractProductsDataSource[] availableDataSources = new AbstractProductsDataSource[2];
+        availableDataSources[0] = new SciHubProductsDataSource(textFieldPreferredHeight, defaultListItemMargins);
+        availableDataSources[1] = new LocalProductsDataSource();
+        this.repositoryListComboBox = new JComboBox<AbstractProductsDataSource>(availableDataSources);
+        Dimension comboBoxSize = this.repositoryListComboBox.getPreferredSize();
         comboBoxSize.height = textFieldPreferredHeight;
-        this.supportedMissionsComboBox.setPreferredSize(comboBoxSize);
-        this.supportedMissionsComboBox.setMinimumSize(comboBoxSize);
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
+        this.repositoryListComboBox.setPreferredSize(comboBoxSize);
+        LabelListCellRenderer<AbstractProductsDataSource> renderer = new LabelListCellRenderer<AbstractProductsDataSource>(defaultListItemMargins) {
             @Override
-            protected String getItemDisplayText(String value) {
-                return (value == null) ? "" : value;
+            protected String getItemDisplayText(AbstractProductsDataSource value) {
+                return (value == null) ? "" : value.getName();
             }
         };
-        this.supportedMissionsComboBox.setMaximumRowCount(5);
-        this.supportedMissionsComboBox.setRenderer(renderer);
-        this.supportedMissionsComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
-        this.supportedMissionsComboBox.setOpaque(true);
-        this.supportedMissionsComboBox.setSelectedItem(null);
-        this.supportedMissionsComboBox.addItemListener(new ItemListener() {
+        this.repositoryListComboBox.setMaximumRowCount(5);
+        this.repositoryListComboBox.setRenderer(renderer);
+        this.repositoryListComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
+        this.repositoryListComboBox.setOpaque(true);
+        this.repositoryListComboBox.setSelectedItem(null);
+        this.repositoryListComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    System.out.println("itemStateChanged e="+e);
-                    newDataSourceSelected((AbstractProductsDataSource)e.getItem());
+                    newDataSourceSelected((AbstractProductsDataSource) e.getItem());
                 }
             }
         });
 
+        Dimension buttonSize = new Dimension(textFieldPreferredHeight, textFieldPreferredHeight);
+
+        ActionListener searchButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        };
+
+        JButton searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", searchButtonListener, buttonSize);
+        JButton helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", searchButtonListener, buttonSize);
+
+        JPanel headerPanel = new JPanel(new GridBagLayout());
+
+        int gapBetweenRows = 5;
+        int gapBetweenColumns = 5;
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
+        headerPanel.add(new JLabel("Data source"), c);
+
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        headerPanel.add(this.repositoryListComboBox, c);
+
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        headerPanel.add(searchButton, c);
+
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        headerPanel.add(helpButton, c);
+
+        c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, 0);
+        this.dataSourceParametersPanel.add(new JLabel(), c);
+
+        setLayout(new BorderLayout(0, gapBetweenRows));
+
+        add(headerPanel, BorderLayout.NORTH);
+        add(this.dataSourceParametersPanel, BorderLayout.CENTER);
+
+        setBorder(new EmptyBorder(5, 5, 5, 5));
     }
 
     private void newDataSourceSelected(AbstractProductsDataSource selectedDataSource) {
-        this.dataSourceParametersPanel.removeAll();
-        JPanel parametersPanel = selectedDataSource.buildParametersPanel();
-        if (parametersPanel != null) {
-            GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
-            this.dataSourceParametersPanel.add(parametersPanel, c);
+        int count = this.dataSourceParametersPanel.getComponentCount();
+        for (int i = 0; i < count; i++) {
+            if (this.dataSourceParametersPanel.getComponent(i) instanceof AbstractProductsDataSource) {
+                this.dataSourceParametersPanel.remove(i);
+                break;
+            }
         }
+
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
+        this.dataSourceParametersPanel.add(selectedDataSource, c);
+
         this.dataSourceParametersPanel.revalidate();
         this.dataSourceParametersPanel.repaint();
     }
