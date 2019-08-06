@@ -13,12 +13,9 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.product.library.v2;
+package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView;
-import org.esa.snap.productlibrary.rcp.toolviews.model.repositories.RepositoryInterface;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.openide.awt.ActionID;
@@ -27,7 +24,6 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,6 +39,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.net.URL;
 
 @TopComponent.Description(
@@ -55,7 +53,7 @@ import java.net.URL;
         openAtStartup = true,
         position = 0
 )
-@ActionID(category = "Window", id = "org.esa.snap.product.library.v2.ProductLibraryToolViewV2")
+@ActionID(category = "Window", id = "org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
         @ActionReference(path = "Menu/File", position = 17)
@@ -65,18 +63,21 @@ import java.net.URL;
         preferredID = "ProductLibraryTopComponentV2"
 )
 @NbBundle.Messages({
-        "CTL_ProductLibraryTopComponentV2Name=Product Library V2",
-        "CTL_ProductLibraryTopComponentV2Description=Product Library V2",
+        "CTL_ProductLibraryTopComponentV2Name=Product Library v2",
+        "CTL_ProductLibraryTopComponentV2Description=Product Library v2",
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
     private boolean initialized;
-    private JComboBox<String> repositoryListComboBox;
+    private JComboBox<AbstractProductsDataSource> repositoryListComboBox;
+    private JComboBox<String> supportedMissionsComboBox;
     private JTextField productNameTextField;
+    private JPanel dataSourceParametersPanel;
 
     public ProductLibraryToolViewV2() {
         this.initialized = false;
 
+        setDisplayName("Product Library v2");
         setLayout(new BorderLayout());
     }
 
@@ -84,6 +85,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     protected void componentShowing() {
         if (!this.initialized) {
             this.initialized = true;
+
+            this.dataSourceParametersPanel = new JPanel(new GridBagLayout());
 
             Insets defaultTextFieldMargins = buildDefaultTextFieldMargins();
             Insets defaultListItemMargins = buildDefaultListItemMargins();
@@ -93,32 +96,42 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
             int textFieldPreferredHeight = this.productNameTextField.getPreferredSize().height;
 
-            String[] availableDataSources = new String[] {"Scientific Hub", "Local data folder"};
-            this.repositoryListComboBox = new JComboBox<String>(availableDataSources);
-//            Dimension formatNameComboBoxSize = productFormatNameComboBox.getPreferredSize();
-//            formatNameComboBoxSize.height = textFieldPreferredHeight;
-//            productFormatNameComboBox.setPreferredSize(formatNameComboBoxSize);
-//            productFormatNameComboBox.setMinimumSize(formatNameComboBoxSize);
-//            LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
-//                @Override
-//                protected String getItemDisplayText(String value) {
-//                    return value;
-//                }
-//            };
+            AbstractProductsDataSource[] availableDataSources = new AbstractProductsDataSource[2];
+            availableDataSources[0] = new SciHubProductsDataSource(textFieldPreferredHeight, defaultListItemMargins);
+            availableDataSources[1] = new LocalProductsDataSource();
+            this.repositoryListComboBox = new JComboBox<AbstractProductsDataSource>(availableDataSources);
+            Dimension comboBoxSize = this.repositoryListComboBox.getPreferredSize();
+            comboBoxSize.height = textFieldPreferredHeight;
+            this.repositoryListComboBox.setPreferredSize(comboBoxSize);
+            this.repositoryListComboBox.setMinimumSize(comboBoxSize);
+            LabelListCellRenderer<AbstractProductsDataSource> renderer = new LabelListCellRenderer<AbstractProductsDataSource>(defaultListItemMargins) {
+                @Override
+                protected String getItemDisplayText(AbstractProductsDataSource value) {
+                    return (value == null) ? "" : value.getName();
+                }
+            };
             this.repositoryListComboBox.setMaximumRowCount(5);
-//            this.repositoryListComboBox.setRenderer(renderer);
+            this.repositoryListComboBox.setRenderer(renderer);
             this.repositoryListComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
             this.repositoryListComboBox.setOpaque(true);
+            this.repositoryListComboBox.setSelectedItem(null);
+            this.repositoryListComboBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        System.out.println("itemStateChanged e="+e);
+                        newDataSourceSelected((AbstractProductsDataSource)e.getItem());
+                    }
+                }
+            });
+
+            createSupportedMissionsComboBox(textFieldPreferredHeight, defaultListItemMargins);
 
             Dimension buttonSize = new Dimension(textFieldPreferredHeight, textFieldPreferredHeight);
-
-            JPanel verticalButtonsPanel = new JPanel();
-            verticalButtonsPanel.setLayout(new BoxLayout(verticalButtonsPanel, BoxLayout.Y_AXIS));
 
             ActionListener searchButtonListener = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
                 }
             };
 
@@ -142,8 +155,50 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
             headerPanel.add(helpButton, c);
 
             add(headerPanel, BorderLayout.NORTH);
+            add(this.dataSourceParametersPanel, BorderLayout.CENTER);
             setBorder(new EmptyBorder(5, 5, 5, 5));
         }
+    }
+
+    private void createSupportedMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {
+        this.supportedMissionsComboBox = new JComboBox<String>();
+
+        Dimension comboBoxSize = this.supportedMissionsComboBox.getPreferredSize();
+        comboBoxSize.height = textFieldPreferredHeight;
+        this.supportedMissionsComboBox.setPreferredSize(comboBoxSize);
+        this.supportedMissionsComboBox.setMinimumSize(comboBoxSize);
+        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
+            @Override
+            protected String getItemDisplayText(String value) {
+                return (value == null) ? "" : value;
+            }
+        };
+        this.supportedMissionsComboBox.setMaximumRowCount(5);
+        this.supportedMissionsComboBox.setRenderer(renderer);
+        this.supportedMissionsComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
+        this.supportedMissionsComboBox.setOpaque(true);
+        this.supportedMissionsComboBox.setSelectedItem(null);
+        this.supportedMissionsComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    System.out.println("itemStateChanged e="+e);
+                    newDataSourceSelected((AbstractProductsDataSource)e.getItem());
+                }
+            }
+        });
+
+    }
+
+    private void newDataSourceSelected(AbstractProductsDataSource selectedDataSource) {
+        this.dataSourceParametersPanel.removeAll();
+        JPanel parametersPanel = selectedDataSource.buildParametersPanel();
+        if (parametersPanel != null) {
+            GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
+            this.dataSourceParametersPanel.add(parametersPanel, c);
+        }
+        this.dataSourceParametersPanel.revalidate();
+        this.dataSourceParametersPanel.repaint();
     }
 
     private Insets buildDefaultTextFieldMargins() {
