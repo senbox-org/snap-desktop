@@ -9,6 +9,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
+import org.esa.snap.ui.product.ProductAdvancedDialog;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
 import javax.swing.JButton;
@@ -30,6 +31,7 @@ public class ProductFileChooser extends SnapFileChooser {
     private static int numSubsetProducts = 0;
 
     private JButton subsetButton;
+    private JButton advancedButton;
     private Product subsetProduct;
 
     private JLabel sizeLabel;
@@ -100,6 +102,8 @@ public class ProductFileChooser extends SnapFileChooser {
 
         if (isSubsetEnabled()) {
             addSubsetAcessory();
+        }else{
+            addAdvancedAcessory();
         }
     }
 
@@ -123,10 +127,43 @@ public class ProductFileChooser extends SnapFileChooser {
         addPropertyChangeListener(e -> updateState());
     }
 
+    private void addAdvancedAcessory() {
+        String selectedPlugIn = null;
+        advancedButton = new JButton("Advanced");
+        advancedButton.setMnemonic('A');
+        advancedButton.addActionListener(e -> openAdvancedDialog());
+        advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
+
+        sizeLabel = new JLabel("0 M");
+        sizeLabel.setHorizontalAlignment(JLabel.RIGHT);
+        JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbc = GridBagUtils.createConstraints(
+                "fill=HORIZONTAL,weightx=1,anchor=NORTHWEST,insets.left=7,insets.right=7,insets.bottom=4");
+        GridBagUtils.addToPanel(panel, advancedButton, gbc, "gridy=0");
+        GridBagUtils.addToPanel(panel, sizeLabel, gbc, "gridy=1");
+        GridBagUtils.addVerticalFiller(panel, gbc);
+
+        setAccessory(panel);
+        addPropertyChangeListener(e -> updateState());
+    }
+
     private void updateState() {
         if (isSubsetEnabled()) {
             subsetButton.setEnabled(getSelectedFile() != null || productToExport != null);
 
+            File file = getSelectedFile();
+            if (file != null && file.isFile()) {
+                long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
+                if (fileSize >= 1) {
+                    sizeLabel.setText("File size: " + fileSize + " M");
+                } else {
+                    sizeLabel.setText("File size: < 1 M");
+                }
+            } else {
+                sizeLabel.setText("");
+            }
+        }else {
+            advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
             File file = getSelectedFile();
             if (file != null && file.isFile()) {
                 long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
@@ -213,6 +250,11 @@ public class ProductFileChooser extends SnapFileChooser {
             }
         }
         return false;
+    }
+
+    private boolean openAdvancedDialog() {
+        ProductAdvancedDialog productAdvancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame().getParent(), "Advanced Options");
+        return true;
     }
 
     private String createNewProductName(String sourceProductName, int productIndex) {
