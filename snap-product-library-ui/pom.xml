@@ -76,15 +76,14 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-graph-builder</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ro.cs.tao</groupId>
-            <artifactId>tao-datasources-scihub</artifactId>
+            <artifactId>tao-data-model</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>ro.cs.tao</groupId>
-            <artifactId>tao-data-model</artifactId>
+            <artifactId>tao-datasources-scihub</artifactId>
             <version>1.0</version>
         </dependency>
 
