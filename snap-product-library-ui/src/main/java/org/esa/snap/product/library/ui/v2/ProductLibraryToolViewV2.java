@@ -15,6 +15,7 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
+import com.jidesoft.swing.JideSplitPane;
 import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
 import org.esa.snap.product.library.ui.v2.table.CustomTable;
 import org.esa.snap.product.library.ui.v2.table.CustomTableModel;
@@ -32,11 +33,15 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import ro.cs.tao.datasource.param.CommonParameterNames;
 import ro.cs.tao.eodata.EOProduct;
+import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -46,6 +51,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,6 +64,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
@@ -203,7 +210,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         Border border = new CompoundBorder(outsideBorder, tableScrollPane.getBorder());
         tableScrollPane.setBorder(border);
 
-        verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT) {
+        this.verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT) {
             @Override
             public void doLayout() {
                 super.doLayout();
@@ -211,21 +218,41 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
                 setDividerLocation(0.5d);
             }
         };
-        verticalSplitPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-        verticalSplitPane.setTopComponent((selectedDataSource == null) ? new JLabel() : selectedDataSource);
-        verticalSplitPane.setBottomComponent(tableScrollPane);
-        verticalSplitPane.setOneTouchExpandable(true);
+        this.verticalSplitPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+        this.verticalSplitPane.setTopComponent((selectedDataSource == null) ? new JLabel() : selectedDataSource);
+        this.verticalSplitPane.setBottomComponent(tableScrollPane);
+        this.verticalSplitPane.setOneTouchExpandable(true);
 
         IComponentsEnabled componentsEnabled = new IComponentsEnabled() {
             @Override
             public void setComponentsEnabled(boolean enabled) {
+                setComponentsEnabledWhileDownloading(enabled);
             }
         };
         this.loadingIndicatorPanel = new LoadingIndicatorPanel(componentsEnabled);
 
         layeredPane.addToContentPanel(headerPanel, BorderLayout.NORTH);
-        layeredPane.addToContentPanel(verticalSplitPane, BorderLayout.CENTER);
+        layeredPane.addToContentPanel(this.verticalSplitPane, BorderLayout.CENTER);
         layeredPane.addPanelToModalLayerAndPositionInCenter(this.loadingIndicatorPanel);
+    }
+
+    private void setComponentsEnabledWhileDownloading(boolean enabled) {
+        AbstractProductsDataSource selectedDataSource = (AbstractProductsDataSource)this.dataSourcesComboBox.getSelectedItem();
+        Stack<JComponent> stack = new Stack<JComponent>();
+        stack.push(selectedDataSource);
+        while (!stack.isEmpty()) {
+            JComponent component = stack.pop();
+            component.setEnabled(enabled);
+            int childrenCount = component.getComponentCount();
+            for (int i=0; i<childrenCount; i++) {
+                Component child = component.getComponent(i);
+                if (child instanceof JComponent) {
+                    JComponent childComponent = (JComponent) child;
+                    // add the component in the stack to be enabled/disabled
+                    stack.push(childComponent);
+                }
+            }
+        }
     }
 
     private void createTableProducts() {
@@ -238,7 +265,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         AbstractTableColumn<EOProduct> productNameColumn = new AbstractTableColumn<EOProduct>("Product name", EOProduct.class) {
             @Override
             public Object getCellValue(EOProduct record, int rowIndex, int columnIndex) {
-                return record.getName();
+                return record;
             }
         };
         AbstractTableColumn<EOProduct> quickLookColumn = new AbstractTableColumn<EOProduct>("Quick look", Number.class) {
@@ -252,13 +279,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         columnNames.add(productNameColumn);
         columnNames.add(quickLookColumn);
 
+        ProductTableCellRenderer productNameRenderer = new ProductTableCellRenderer();
+        int rowHeight = productNameRenderer.getPreferredSize().height;
+
         CustomTableModel<EOProduct> tableModel = new CustomTableModel<EOProduct>(columnNames);
         this.productsTable = new CustomTable<EOProduct>(tableModel);
         this.productsTable.setVisibleRowCount(3);
         this.productsTable.setDefaultRenderer(Number.class, new LabelTableCellRenderer(JLabel.CENTER));
-        this.productsTable.setDefaultRenderer(EOProduct.class, new LabelTableCellRenderer(JLabel.LEFT));
+        this.productsTable.setDefaultRenderer(EOProduct.class, new ProductTableCellRenderer());
         this.productsTable.setBackground(Color.WHITE);
         this.productsTable.setFillsViewportHeight(true);
+        this.productsTable.setRowHeight(rowHeight);
         this.productsTable.setOpaque(true);
     }
 
@@ -267,17 +298,40 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         String selectedMission = selectedDataSource.getSelectedMission();
         Map<String, Object> parametersValues = selectedDataSource.getParameterValues();
         int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, selectedMission, parametersValues) {
+        this.productsTable.getModel().clearRecordsAndFireEvent();
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(), selectedMission, parametersValues) {
             @Override
             protected void onSuccessfullyFinish(List<EOProduct> results) {
                 onSuccessfullyDownloadedProductList(results);
             }
+
+            @Override
+            protected void onFailed(Exception exception) {
+                showErrorDialog("Failed to download the list containing the products.", "Error");
+            }
+
+            @Override
+            protected void onDownloadPageProducts(List<EOProduct> pageResults) {
+                productsTable.getModel().addRecordsAndFireEvent(pageResults);
+            }
         };
-        thread.executeAsync();
+        thread.executeAsync(); // start the thread
+    }
+
+    private void showErrorDialog(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void showInformationDialog(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void onSuccessfullyDownloadedProductList(List<EOProduct> results) {
-        this.productsTable.getModel().setRecordsAndFireEvent(results);
+        if (results.size() > 0) {
+            //this.productsTable.getModel().setRecordsAndFireEvent(results);
+        } else {
+            showInformationDialog("No product available according to the filter values.", "Information");
+        }
     }
 
     private void newDataSourceSelected(AbstractProductsDataSource selectedDataSource) {

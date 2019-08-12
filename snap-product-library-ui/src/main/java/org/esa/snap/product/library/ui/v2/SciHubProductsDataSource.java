@@ -8,6 +8,7 @@ import ro.cs.tao.datasource.remote.scihub.parameters.SciHubParameterProvider;
 import ro.cs.tao.eodata.Polygon2D;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -49,6 +50,17 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
     @Override
     public String getName() {
         return "ESA SciHub";
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        this.missionsComboBox.setEnabled(enabled);
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            JComponent component = this.parameterComponents.get(i).getComponent();
+            component.setEnabled(enabled);
+        }
     }
 
     private void createSupportedMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {

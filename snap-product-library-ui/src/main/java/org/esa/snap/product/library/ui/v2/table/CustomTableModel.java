@@ -28,7 +28,7 @@ public class CustomTableModel<RecordType> extends AbstractTableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         AbstractTableColumn<RecordType> tableColumn = this.columnNames.get(columnIndex);
-        return tableColumn.getClass();
+        return tableColumn.getColumnClass();
     }
 
     @Override

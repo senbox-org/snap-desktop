@@ -99,6 +99,16 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
         return this.loadingIndicator.isRunning(this.threadId);
     }
 
+    protected final void updateLoadingIndicatorMessageLater(String message) {
+        Runnable runnable = new GenericRunnable<String>(message) {
+            @Override
+            protected void execute(String messageToDisplay) {
+                onDisplayLoadingIndicatorMessage(messageToDisplay);
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
     private void stopTimer() {
         if (this.timer != null) {
             this.timer.cancel();
@@ -106,11 +116,12 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     }
 
     private void timerWakeUp() {
-        SwingUtilities.invokeLater(new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 onTimerWakeUp(null);
             }
-        });
+        };
+        SwingUtilities.invokeLater(runnable);
     }
 }
