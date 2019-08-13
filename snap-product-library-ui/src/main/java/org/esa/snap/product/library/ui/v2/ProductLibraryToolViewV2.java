@@ -15,12 +15,12 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
-import com.jidesoft.swing.JideSplitPane;
 import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
+import org.esa.snap.product.library.ui.v2.table.CustomLayeredPane;
 import org.esa.snap.product.library.ui.v2.table.CustomTable;
 import org.esa.snap.product.library.ui.v2.table.CustomTableModel;
-import org.esa.snap.product.library.ui.v2.table.LabelTableCellRenderer;
-import org.esa.snap.product.library.v2.SciHubDownloader;
+import org.esa.snap.product.library.ui.v2.table.TextLabelTableCellRenderer;
+import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.IComponentsEnabled;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
@@ -31,21 +31,17 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
-import ro.cs.tao.datasource.param.CommonParameterNames;
-import ro.cs.tao.eodata.EOProduct;
-import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -91,9 +87,12 @@ import java.util.Stack;
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
+    public static final short QUICK_LOOK_IMAGE_WIDTH = 150;
+    public static final byte QUICK_LOOK_IMAGE_HEIGHT = 100;
+
     private boolean initialized;
     private JComboBox<AbstractProductsDataSource> dataSourcesComboBox;
-    private CustomTable<EOProduct> productsTable;
+    private CustomTable<ProductLibraryItem> productsTable;
     private LoadingIndicatorPanel loadingIndicatorPanel;
     private JSplitPane verticalSplitPane;
 
@@ -256,41 +255,49 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     }
 
     private void createTableProducts() {
-        AbstractTableColumn<EOProduct> numberColumn = new AbstractTableColumn<EOProduct>("Number", Number.class) {
+        AbstractTableColumn<ProductLibraryItem> numberColumn = new AbstractTableColumn<ProductLibraryItem>("Number", Number.class) {
             @Override
-            public Object getCellValue(EOProduct record, int rowIndex, int columnIndex) {
+            public Object getCellValue(ProductLibraryItem record, int rowIndex, int columnIndex) {
                 return Integer.toString(rowIndex + 1);
             }
         };
-        AbstractTableColumn<EOProduct> productNameColumn = new AbstractTableColumn<EOProduct>("Product name", EOProduct.class) {
+        AbstractTableColumn<ProductLibraryItem> productNameColumn = new AbstractTableColumn<ProductLibraryItem>("Product Properties", ProductLibraryItem.class) {
             @Override
-            public Object getCellValue(EOProduct record, int rowIndex, int columnIndex) {
+            public Object getCellValue(ProductLibraryItem record, int rowIndex, int columnIndex) {
                 return record;
             }
         };
-        AbstractTableColumn<EOProduct> quickLookColumn = new AbstractTableColumn<EOProduct>("Quick look", Number.class) {
+        AbstractTableColumn<ProductLibraryItem> quickLookColumn = new AbstractTableColumn<ProductLibraryItem>("Quick Look", URL.class) {
             @Override
-            public Object getCellValue(EOProduct record, int rowIndex, int columnIndex) {
-                return Integer.toString(rowIndex + 1);
+            public Object getCellValue(ProductLibraryItem record, int rowIndex, int columnIndex) {
+                ProductsTableModel tableModel = (ProductsTableModel)productsTable.getModel();
+                return tableModel.getProductQuickLookImage(record);
             }
         };
-        List<AbstractTableColumn<EOProduct>> columnNames = new ArrayList<AbstractTableColumn<EOProduct>>();
+        List<AbstractTableColumn<ProductLibraryItem>> columnNames = new ArrayList<AbstractTableColumn<ProductLibraryItem>>();
         columnNames.add(numberColumn);
         columnNames.add(productNameColumn);
         columnNames.add(quickLookColumn);
 
-        ProductTableCellRenderer productNameRenderer = new ProductTableCellRenderer();
-        int rowHeight = productNameRenderer.getPreferredSize().height;
+        ProductPropertiesTableCellRenderer productNameRenderer = new ProductPropertiesTableCellRenderer();
+        int rowHeight = Math.max(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, productNameRenderer.getPreferredSize().height);
 
-        CustomTableModel<EOProduct> tableModel = new CustomTableModel<EOProduct>(columnNames);
-        this.productsTable = new CustomTable<EOProduct>(tableModel);
+        CustomTableModel<ProductLibraryItem> tableModel = new ProductsTableModel(columnNames);
+        this.productsTable = new CustomTable<ProductLibraryItem>(tableModel);
         this.productsTable.setVisibleRowCount(3);
-        this.productsTable.setDefaultRenderer(Number.class, new LabelTableCellRenderer(JLabel.CENTER));
-        this.productsTable.setDefaultRenderer(EOProduct.class, new ProductTableCellRenderer());
+
+        this.productsTable.setDefaultRenderer(Number.class, new TextLabelTableCellRenderer(JLabel.CENTER));
+        this.productsTable.setDefaultRenderer(ProductLibraryItem.class, new ProductPropertiesTableCellRenderer());
+        this.productsTable.setDefaultRenderer(URL.class, new QuickLookImageTableCellRenderer(JLabel.CENTER, JLabel.CENTER));
+
         this.productsTable.setBackground(Color.WHITE);
         this.productsTable.setFillsViewportHeight(true);
         this.productsTable.setRowHeight(rowHeight);
         this.productsTable.setOpaque(true);
+        this.productsTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        this.productsTable.setShowVerticalLines(true);
+        this.productsTable.setShowHorizontalLines(true);
+        this.productsTable.setIntercellSpacing(new Dimension(1, 1));
     }
 
     private void searchButtonPressed() {
@@ -299,39 +306,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         Map<String, Object> parametersValues = selectedDataSource.getParameterValues();
         int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
         this.productsTable.getModel().clearRecordsAndFireEvent();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(), selectedMission, parametersValues) {
-            @Override
-            protected void onSuccessfullyFinish(List<EOProduct> results) {
-                onSuccessfullyDownloadedProductList(results);
-            }
-
-            @Override
-            protected void onFailed(Exception exception) {
-                showErrorDialog("Failed to download the list containing the products.", "Error");
-            }
-
-            @Override
-            protected void onDownloadPageProducts(List<EOProduct> pageResults) {
-                productsTable.getModel().addRecordsAndFireEvent(pageResults);
-            }
-        };
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, this, this.productsTable,
+                                                                                       selectedDataSource.getName(), selectedMission, parametersValues);
         thread.executeAsync(); // start the thread
-    }
-
-    private void showErrorDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
-    }
-
-    private void showInformationDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void onSuccessfullyDownloadedProductList(List<EOProduct> results) {
-        if (results.size() > 0) {
-            //this.productsTable.getModel().setRecordsAndFireEvent(results);
-        } else {
-            showInformationDialog("No product available according to the filter values.", "Information");
-        }
     }
 
     private void newDataSourceSelected(AbstractProductsDataSource selectedDataSource) {

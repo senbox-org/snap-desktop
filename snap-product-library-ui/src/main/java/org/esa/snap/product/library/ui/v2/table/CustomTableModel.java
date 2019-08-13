@@ -54,7 +54,7 @@ public class CustomTableModel<RecordType> extends AbstractTableModel {
     }
 
     public void setRecordsAndFireEvent(List<RecordType> records) {
-        this.records = records;
+        this.records = new ArrayList<RecordType>(records);
         fireTableDataChanged();
     }
 

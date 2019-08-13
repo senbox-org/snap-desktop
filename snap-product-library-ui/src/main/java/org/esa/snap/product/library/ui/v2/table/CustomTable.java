@@ -15,11 +15,6 @@ public class CustomTable<RecordType> extends JTable {
         super(tableModel);
 
         this.visibleRowCount = 0;
-
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setShowVerticalLines(false);
-        setShowHorizontalLines(false);
-        setIntercellSpacing(new Dimension(0, 0));
     }
 
     @Override
