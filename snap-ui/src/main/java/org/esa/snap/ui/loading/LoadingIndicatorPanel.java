@@ -90,12 +90,7 @@ public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
     @Override
     public boolean onHide(int threadId) {
         if (isRunning(threadId)) {
-            setRunningAndIncreaseThreadId(false);
-            try {
-                setEnabledControls(true);
-            } finally {
-                stopAndHide();
-            }
+            stopRunningAndHide();
             return true;
         }
         return false;
@@ -103,6 +98,15 @@ public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
 
     public final int getNewCurrentThreadId() {
         return setRunningAndIncreaseThreadId(true);
+    }
+
+    public void stopRunningAndHide() {
+        setRunningAndIncreaseThreadId(false);
+        try {
+            setEnabledControls(true);
+        } finally {
+            stopAndHide();
+        }
     }
 
     private void showAndStart(int threadId, String messageToDisplay) {

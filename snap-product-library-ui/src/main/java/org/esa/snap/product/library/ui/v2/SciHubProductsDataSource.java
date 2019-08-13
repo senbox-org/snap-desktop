@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -93,7 +94,7 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    newMissionSelected((String)e.getItem());
+                    newSelectedMission((String)e.getItem());
                 }
             }
         });
@@ -117,7 +118,7 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
         return result;
     }
 
-    protected void newMissionSelected(String selectedMission) {
+    protected void newSelectedMission(String selectedMission) {
         removeAll();
         addParameters();
         revalidate();
@@ -233,9 +234,11 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
             PolygonParameterComponent polygonParameterComponent = new PolygonParameterComponent(polygonParameter.getName());
             this.parameterComponents.add(polygonParameterComponent);
 
+            JLabel areaOfInterestLabel = new JLabel(polygonParameter.getLabel());
+
             JPanel areaOfInterestPanel = new JPanel(new GridBagLayout());
             c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, 0, 0);
-            areaOfInterestPanel.add(new JLabel(polygonParameter.getLabel()), c);
+            areaOfInterestPanel.add(areaOfInterestLabel, c);
             c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
             JPanel worldPanel = polygonParameterComponent.getComponent();
             worldPanel.setBackground(Color.WHITE);
@@ -244,7 +247,34 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
             areaOfInterestPanel.add(worldPanel, c);
 
             add(areaOfInterestPanel, BorderLayout.CENTER);
+
+            // compute the maximum label width for the left column
+            int maximumLabelWidth = areaOfInterestLabel.getPreferredSize().width;
+            for (int i=0; i<leftParametersPanel.getComponentCount(); i++) {
+                Component component = leftParametersPanel.getComponent(i);
+                if (component instanceof JLabel) {
+                    int labelWidth = component.getPreferredSize().width;
+                    if (maximumLabelWidth < labelWidth) {
+                        maximumLabelWidth = labelWidth;
+                    }
+                }
+            }
+
+            setLabelSize(areaOfInterestLabel, maximumLabelWidth);
+            for (int i=0; i<leftParametersPanel.getComponentCount(); i++) {
+                Component component = leftParametersPanel.getComponent(i);
+                if (component instanceof JLabel) {
+                    setLabelSize((JLabel)component, maximumLabelWidth);
+                }
+            }
         }
+    }
+
+    private static void setLabelSize(JLabel label, int maximumLabelWidth) {
+        Dimension labelSize = label.getPreferredSize();
+        labelSize.width = maximumLabelWidth;
+        label.setPreferredSize(labelSize);
+        label.setMinimumSize(labelSize);
     }
 }
 

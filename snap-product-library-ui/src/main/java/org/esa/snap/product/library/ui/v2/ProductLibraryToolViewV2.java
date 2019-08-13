@@ -15,6 +15,8 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
 import org.esa.snap.product.library.ui.v2.table.CustomLayeredPane;
 import org.esa.snap.product.library.ui.v2.table.CustomTable;
@@ -114,10 +116,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         AbstractProductsDataSource[] availableDataSources = new AbstractProductsDataSource[2];
         availableDataSources[0] = new SciHubProductsDataSource(textFieldPreferredHeight, defaultListItemMargins) {
             @Override
-            protected void newMissionSelected(String selectedMission) {
-                super.newMissionSelected(selectedMission);
+            protected void newSelectedMission(String selectedMission) {
+                super.newSelectedMission(selectedMission);
 
-                productsTable.getModel().clearRecordsAndFireEvent();
+                ProductLibraryToolViewV2.this.newMissionSelected(selectedMission);
             }
         };
         availableDataSources[1] = new LocalProductsDataSource();
@@ -140,7 +142,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    newDataSourceSelected((AbstractProductsDataSource) e.getItem());
+                    newSelectedDataSource((AbstractProductsDataSource) e.getItem());
                 }
             }
         });
@@ -280,7 +282,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         columnNames.add(quickLookColumn);
 
         ProductPropertiesTableCellRenderer productNameRenderer = new ProductPropertiesTableCellRenderer();
-        int rowHeight = Math.max(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, productNameRenderer.getPreferredSize().height);
+        int rowHeight = Math.max(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT + 6, productNameRenderer.getPreferredSize().height);
 
         CustomTableModel<ProductLibraryItem> tableModel = new ProductsTableModel(columnNames);
         this.productsTable = new CustomTable<ProductLibraryItem>(tableModel);
@@ -305,14 +307,45 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         String selectedMission = selectedDataSource.getSelectedMission();
         Map<String, Object> parametersValues = selectedDataSource.getParameterValues();
         int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-        this.productsTable.getModel().clearRecordsAndFireEvent();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, this, this.productsTable,
-                                                                                       selectedDataSource.getName(), selectedMission, parametersValues);
+        Credentials credentials = new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com");
+        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
+        productsTableModel.clearRecordsAndFireEvent();
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, credentials, this, productsTableModel,
+                                                                                       selectedDataSource.getName(), selectedMission, parametersValues) {
+            @Override
+            protected void onSuccessfullyFinish(List<ProductLibraryItem> downloadedProductList) {
+                super.onSuccessfullyFinish(downloadedProductList);
+
+                downloadQuickLookImagesAsync(downloadedProductList, getCredentials());
+            }
+        };
         thread.executeAsync(); // start the thread
     }
 
-    private void newDataSourceSelected(AbstractProductsDataSource selectedDataSource) {
+    private void downloadQuickLookImagesAsync(List<ProductLibraryItem> downloadedProductList, Credentials credentials) {
+        int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
+        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
+        Runnable runnable = new DownloadQuickLookImagesRunnable(this.loadingIndicatorPanel, threadId, downloadedProductList, credentials, productsTableModel);
+        Thread thread = new Thread(runnable);
+        thread.start(); // start the thread
+    }
+
+    private void newSelectedDataSource(AbstractProductsDataSource selectedDataSource) {
+        hideLoadingIndicatorPanel();
         this.verticalSplitPane.setTopComponent(selectedDataSource);
+        clearTableRecords();
+    }
+
+    private void newMissionSelected(String selectedMission) {
+        hideLoadingIndicatorPanel();
+        clearTableRecords();
+    }
+
+    private void hideLoadingIndicatorPanel() {
+        this.loadingIndicatorPanel.stopRunningAndHide();
+    }
+
+    private void clearTableRecords() {
         this.productsTable.getModel().clearRecordsAndFireEvent();
     }
 

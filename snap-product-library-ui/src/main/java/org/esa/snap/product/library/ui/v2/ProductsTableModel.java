@@ -18,7 +18,7 @@ public class ProductsTableModel extends CustomTableModel<ProductLibraryItem> {
 
     public static ImageIcon EMPTY_ICON;
     static {
-        Image image = new BufferedImage(150, 100, BufferedImage.TYPE_INT_ARGB);
+        Image image = new BufferedImage(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_WIDTH, ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         EMPTY_ICON = new ImageIcon(image);
     }
 

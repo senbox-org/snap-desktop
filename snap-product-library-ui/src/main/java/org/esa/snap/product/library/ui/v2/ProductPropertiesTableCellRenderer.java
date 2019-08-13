@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.table.AbstractTableCellRenderer;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.ui.DecimalFormatter;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JLabel;
@@ -11,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 /**
@@ -19,6 +21,7 @@ import java.text.SimpleDateFormat;
 public class ProductPropertiesTableCellRenderer extends AbstractTableCellRenderer<JPanel> {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+    private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
 
     private final JLabel nameLabel;
     private final JLabel acquisitionDateLabel;
@@ -51,7 +54,9 @@ public class ProductPropertiesTableCellRenderer extends AbstractTableCellRendere
         String dateAsString = DATE_FORMAT.format(product.getAcquisitionDate());
         this.acquisitionDateLabel.setText(dateAsString);
 
-        String size = "    ("  + Long.toString(product.getApproximateSize()) + " MB)";
+        float oneMegaByte = 1024.0f * 1024.0f;
+        double sizeInMegaBytes = product.getApproximateSize() / oneMegaByte;
+        String size = "    ("  + FORMAT.format(sizeInMegaBytes) + " MB)";
         this.sizeLabel.setText(size);
 
         return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
