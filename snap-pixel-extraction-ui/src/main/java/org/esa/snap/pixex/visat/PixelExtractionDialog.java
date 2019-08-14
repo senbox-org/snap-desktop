@@ -199,6 +199,10 @@ class PixelExtractionDialog extends ModelessDialog implements ParameterUpdater {
             expression = (String) expressionObject;
         }
         parametersForm.setExpression(expression);
+        Object outputDirObject = parameterMap.get("outputDir");
+        if (outputDirObject instanceof  File) {
+            ioForm.setOutputDirPath(outputDirObject.toString());
+        }
         Object exportExpressionResultObject = parameterMap.get("exportExpressionResult");
         if (exportExpressionResultObject instanceof Boolean) {
             parametersForm.setExportExpressionResultSelected((Boolean) exportExpressionResultObject);

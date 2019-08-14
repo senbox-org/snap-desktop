@@ -142,7 +142,7 @@ class PixelExtractionIOForm {
         return path;
     }
 
-    private void setOutputDirPath(String path) {
+    void setOutputDirPath(String path) {
         outputDirTextField.setText(path);
         outputDirTextField.setToolTipText(path);
     }
