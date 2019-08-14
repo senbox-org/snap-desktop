@@ -3,20 +3,18 @@ package org.esa.snap.product.library.ui.v2;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
-import ro.cs.tao.eodata.Polygon2D;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.awt.geom.Path2D;
 
 /**
  * Created by jcoravu on 7/8/2019.
  */
-public class PolygonParameterComponent extends AbstractParameterComponent<String> {
+public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle.Double> {
 
-    private WorldMapUI worldMapUI;
+    private final WorldMapUI worldMapUI;
 
-    public PolygonParameterComponent(String parameterName) {
+    public SelectionAreaParameterComponent(String parameterName) {
         super(parameterName);
 
         this.worldMapUI = new WorldMapUI();
@@ -75,28 +73,20 @@ public class PolygonParameterComponent extends AbstractParameterComponent<String
 //        return "";
 //    }
     @Override
-    public String getParameterValue() {
+    public Rectangle.Double getParameterValue() {
         GeoPos[] geoPositions = this.worldMapUI.getSelectionBox();
-        Rectangle.Double rect = getBoundingRect(geoPositions);
-        Polygon2D polygon2D = new Polygon2D();
-        polygon2D.append(rect.x, rect.y);
-        polygon2D.append(rect.x + rect.width, rect.y);
-        polygon2D.append(rect.x + rect.width, rect.y + rect.height);
-        polygon2D.append(rect.x, rect.y + rect.height);
-        polygon2D.append(rect.x, rect.y);
-        return polygon2D.toWKT();
+        return getBoundingRect(geoPositions);
     }
 
-    public static Rectangle.Double getBoundingRect(final GeoPos[] geoPositions) {
+    private static Rectangle.Double getBoundingRect(GeoPos[] geoPositions) {
         double minX = Float.MAX_VALUE;
         double maxX = -Float.MAX_VALUE;
         double minY = Float.MAX_VALUE;
         double maxY = -Float.MAX_VALUE;
 
-        for (final GeoPos pos : geoPositions) {
-            final double x = pos.getLat();
-            final double y = pos.getLon();
-
+        for (GeoPos pos : geoPositions) {
+            double x = pos.getLat();
+            double y = pos.getLon();
             if (x < minX) {
                 minX = x;
             }
@@ -113,7 +103,6 @@ public class PolygonParameterComponent extends AbstractParameterComponent<String
         if (minX >= maxX || minY >= maxY) {
             return new Rectangle.Double(minX, minY, 0, 0);
         }
-
         return new Rectangle.Double(minX, minY, maxX - minX, maxY - minY);
     }
 }

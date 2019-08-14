@@ -52,22 +52,18 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
                 }
 
                 ProductLibraryItem product = this.productList.get(i);
-                Image scaledQuickLookImage = null;
+                BufferedImage quickLookImage = null;
                 if (product.getQuickLookLocation() != null) {
                     try {
-                        BufferedImage image = SciHubDownloader.downloadQuickLookImage(product.getQuickLookLocation(), this.credentials, thread);
+                        quickLookImage = SciHubDownloader.downloadQuickLookImage(product.getQuickLookLocation(), this.credentials, thread);
                         if (!isRunning()) {
                             return;
-                        }
-
-                        if (image != null) {
-                            scaledQuickLookImage = image.getScaledInstance(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_WIDTH, ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, BufferedImage.SCALE_FAST);
                         }
                     } catch (Exception exception) {
                         logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
                     }
                 }
-                notifyDownloadedQuickLookImageLater(product, scaledQuickLookImage);
+                notifyDownloadedQuickLookImageLater(product, quickLookImage);
             }
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to download the quick look images.", exception);
@@ -78,10 +74,10 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
         return this.loadingIndicator.isRunning(this.threadId);
     }
 
-    private void notifyDownloadedQuickLookImageLater(ProductLibraryItem product, Image quickLookImage) {
+    private void notifyDownloadedQuickLookImageLater(ProductLibraryItem product, BufferedImage quickLookImage) {
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
-            protected void execute(ProductLibraryItem productItem, Image quickLookImageItem) {
+            protected void execute(ProductLibraryItem productItem, BufferedImage quickLookImageItem) {
                 if (isRunning()) {
                     onDownloadedQuickLookImage(productItem, quickLookImageItem);
                 }
@@ -90,7 +86,7 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void onDownloadedQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
+    private void onDownloadedQuickLookImage(ProductLibraryItem product, BufferedImage quickLookImage) {
         this.productsTableModel.setProductQuickLookImage(product, quickLookImage);
         this.productsTableModel.fireTableDataChanged();
     }
@@ -98,14 +94,14 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
     private static abstract class ProductQuickLookImageRunnable implements Runnable {
 
         private final ProductLibraryItem product;
-        private final Image quickLookImage;
+        private final BufferedImage quickLookImage;
 
-        public ProductQuickLookImageRunnable(ProductLibraryItem product, Image quickLookImage) {
+        public ProductQuickLookImageRunnable(ProductLibraryItem product, BufferedImage quickLookImage) {
             this.product = product;
             this.quickLookImage = quickLookImage;
         }
 
-        protected abstract void execute(ProductLibraryItem product, Image quickLookImage);
+        protected abstract void execute(ProductLibraryItem product, BufferedImage quickLookImage);
 
         @Override
         public void run() {

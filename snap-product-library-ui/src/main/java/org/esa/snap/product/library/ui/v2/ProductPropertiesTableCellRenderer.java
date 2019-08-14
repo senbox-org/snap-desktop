@@ -5,6 +5,7 @@ import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.ui.DecimalFormatter;
 import org.esa.snap.ui.loading.SwingUtils;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;

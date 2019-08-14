@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.table;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 

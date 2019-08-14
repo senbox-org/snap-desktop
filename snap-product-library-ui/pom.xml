@@ -76,30 +76,6 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-graph-builder</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ro.cs.tao</groupId>
-            <artifactId>tao-data-model</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>ro.cs.tao</groupId>
-            <artifactId>tao-datasources-scihub</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!-- Private classes referenced in module: [javax.annotation.Nonnull]
-             Project depends on packages not accessible at runtime in module org.netbeans.api:org-netbeans-api-annotations-common:jar:RELEASE82 -->
-        <!-- See: http://netbeans-org.1045718.n5.nabble.com/8-2-Issue-td5751440.html -->
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>RELEASE82</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>2.0.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.netbeans.api</groupId>

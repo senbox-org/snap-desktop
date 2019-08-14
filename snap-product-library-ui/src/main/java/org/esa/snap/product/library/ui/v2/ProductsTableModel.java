@@ -4,8 +4,6 @@ import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
 import org.esa.snap.product.library.ui.v2.table.CustomTableModel;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 
-import javax.swing.ImageIcon;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -16,45 +14,40 @@ import java.util.Map;
  */
 public class ProductsTableModel extends CustomTableModel<ProductLibraryItem> {
 
-    public static ImageIcon EMPTY_ICON;
-    static {
-        Image image = new BufferedImage(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_WIDTH, ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        EMPTY_ICON = new ImageIcon(image);
-    }
+    public static final BufferedImage EMPTY_ICON = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
-    private Map<ProductLibraryItem, ImageIcon> quickLookImages;
+    private Map<ProductLibraryItem, BufferedImage> quickLookImages;
 
     public ProductsTableModel(List<AbstractTableColumn<ProductLibraryItem>> columnNames) {
         super(columnNames);
 
-        this.quickLookImages = new HashMap<ProductLibraryItem, ImageIcon>();
+        clearImagesMap();
     }
 
     @Override
     public void setRecordsAndFireEvent(List<ProductLibraryItem> records) {
-        this.quickLookImages = new HashMap<ProductLibraryItem, ImageIcon>();
+        clearImagesMap();
 
         super.setRecordsAndFireEvent(records);
     }
 
     @Override
     public void clearRecordsAndFireEvent() {
-        this.quickLookImages = new HashMap<ProductLibraryItem, ImageIcon>();
+        clearImagesMap();
 
         super.clearRecordsAndFireEvent();
     }
 
-    public ImageIcon getProductQuickLookImage(ProductLibraryItem product) {
+    public BufferedImage getProductQuickLookImage(ProductLibraryItem product) {
         return this.quickLookImages.get(product);
     }
 
-    public void setProductQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
-        ImageIcon imageIcon;
-        if (quickLookImage == null) {
-            imageIcon = EMPTY_ICON;
-        } else {
-            imageIcon = new ImageIcon(quickLookImage);
-        }
-        this.quickLookImages.put(product, imageIcon);
+    public void setProductQuickLookImage(ProductLibraryItem product, BufferedImage quickLookImage) {
+        BufferedImage image = (quickLookImage == null) ? EMPTY_ICON : quickLookImage;
+        this.quickLookImages.put(product, image);
+    }
+
+    private void clearImagesMap() {
+        this.quickLookImages = new HashMap<ProductLibraryItem, BufferedImage>();
     }
 }

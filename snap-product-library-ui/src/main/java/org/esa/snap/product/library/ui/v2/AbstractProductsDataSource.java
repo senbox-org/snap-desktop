@@ -20,4 +20,8 @@ public abstract class AbstractProductsDataSource extends JPanel {
     public Map<String, Object> getParameterValues() {
         return null;
     }
+
+    public int computeLeftPanelMaximumLabelWidth() {
+        return 70;
+    }
 }

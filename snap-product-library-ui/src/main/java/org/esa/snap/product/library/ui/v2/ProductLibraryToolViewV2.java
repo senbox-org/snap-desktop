@@ -34,6 +34,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -89,7 +90,6 @@ import java.util.Stack;
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
-    public static final short QUICK_LOOK_IMAGE_WIDTH = 150;
     public static final byte QUICK_LOOK_IMAGE_HEIGHT = 100;
 
     private boolean initialized;
@@ -97,6 +97,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     private CustomTable<ProductLibraryItem> productsTable;
     private LoadingIndicatorPanel loadingIndicatorPanel;
     private JSplitPane verticalSplitPane;
+    private JLabel dataSourceLabel;
 
     public ProductLibraryToolViewV2() {
         this.initialized = false;
@@ -123,6 +124,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
             }
         };
         availableDataSources[1] = new LocalProductsDataSource();
+
         this.dataSourcesComboBox = new JComboBox<AbstractProductsDataSource>(availableDataSources);
         Dimension comboBoxSize = this.dataSourcesComboBox.getPreferredSize();
         comboBoxSize.height = textFieldPreferredHeight;
@@ -162,9 +164,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         JPanel headerPanel = new JPanel(new GridBagLayout());
 
         int gapBetweenColumns = getGapBetweenColumns();
+        this.dataSourceLabel = new JLabel("Data source");
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        headerPanel.add(new JLabel("Data source"), c);
+        headerPanel.add(this.dataSourceLabel, c);
 
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         headerPanel.add(this.dataSourcesComboBox, c);
@@ -202,6 +205,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         int textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
         JPanel headerPanel = buildDataSourceHeaderPanel(defaultListItemMargins, textFieldPreferredHeight);
+
         createTableProducts();
 
         AbstractProductsDataSource selectedDataSource = (AbstractProductsDataSource)this.dataSourcesComboBox.getSelectedItem();
@@ -211,14 +215,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         Border border = new CompoundBorder(outsideBorder, tableScrollPane.getBorder());
         tableScrollPane.setBorder(border);
 
-        this.verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT) {
-            @Override
-            public void doLayout() {
-                super.doLayout();
-
-                setDividerLocation(0.5d);
-            }
-        };
+        this.verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         this.verticalSplitPane.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.verticalSplitPane.setTopComponent((selectedDataSource == null) ? new JLabel() : selectedDataSource);
         this.verticalSplitPane.setBottomComponent(tableScrollPane);
@@ -235,6 +232,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         layeredPane.addToContentPanel(headerPanel, BorderLayout.NORTH);
         layeredPane.addToContentPanel(this.verticalSplitPane, BorderLayout.CENTER);
         layeredPane.addPanelToModalLayerAndPositionInCenter(this.loadingIndicatorPanel);
+
+        refreshDataSourceLabelWidth();
+    }
+
+    private void refreshDataSourceLabelWidth() {
+        AbstractProductsDataSource selectedDataSource = (AbstractProductsDataSource)this.dataSourcesComboBox.getSelectedItem();
+        int maximumLabelWidth = selectedDataSource.computeLeftPanelMaximumLabelWidth();
+        SciHubProductsDataSource.setLabelSize(this.dataSourceLabel, maximumLabelWidth);
+        this.dataSourceLabel.getParent().revalidate();
+        this.dataSourceLabel.getParent().repaint();
     }
 
     private void setComponentsEnabledWhileDownloading(boolean enabled) {
@@ -282,7 +289,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         columnNames.add(quickLookColumn);
 
         ProductPropertiesTableCellRenderer productNameRenderer = new ProductPropertiesTableCellRenderer();
-        int rowHeight = Math.max(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT + 6, productNameRenderer.getPreferredSize().height);
+        int rowHeight = Math.max(ProductLibraryToolViewV2.QUICK_LOOK_IMAGE_HEIGHT, productNameRenderer.getPreferredSize().height);
 
         CustomTableModel<ProductLibraryItem> tableModel = new ProductsTableModel(columnNames);
         this.productsTable = new CustomTable<ProductLibraryItem>(tableModel);
@@ -334,11 +341,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         hideLoadingIndicatorPanel();
         this.verticalSplitPane.setTopComponent(selectedDataSource);
         clearTableRecords();
+        refreshDataSourceLabelWidth();
     }
 
     private void newMissionSelected(String selectedMission) {
         hideLoadingIndicatorPanel();
         clearTableRecords();
+        refreshDataSourceLabelWidth();
     }
 
     private void hideLoadingIndicatorPanel() {
