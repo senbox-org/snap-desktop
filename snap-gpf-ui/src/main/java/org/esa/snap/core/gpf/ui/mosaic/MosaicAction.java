@@ -27,14 +27,14 @@ import org.openide.util.NbBundle;
 import java.awt.event.ActionEvent;
 
 /**
- * Mosaicing action.
+ * Mosaicking action.
  *
  * @author Norman Fomferra
  */
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.mosaic.MosaicAction")
 @ActionRegistration(displayName = "#CTL_MosaicAction_Name")
 @ActionReference(path = "Menu/Raster/Geometric Operations")
-@NbBundle.Messages("CTL_MosaicAction_Name=Mosaicing")
+@NbBundle.Messages("CTL_MosaicAction_Name=Mosaicking")
 public class MosaicAction extends AbstractSnapAction {
 
     private ModelessDialog dialog;
