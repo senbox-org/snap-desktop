@@ -34,7 +34,7 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
 
     private JComboBox<String> missionsComboBox;
     private List<AbstractParameterComponent> parameterComponents;
-    private JComboBox<String> selectionRectangleComboBox;
+    private JComboBox<AbstractFilterProducts> selectionRectangleComboBox;
     private JLabel areaOfInterestLabel;
     private JPanel leftParametersPanel;
 
@@ -63,6 +63,31 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
             JComponent component = this.parameterComponents.get(i).getComponent();
             component.setEnabled(enabled);
         }
+    }
+
+    @Override
+    public String getSelectedMission() {
+        return (String) this.missionsComboBox.getSelectedItem();
+    }
+
+    @Override
+    public Map<String, Object> getParameterValues() {
+        Map<String, Object> result = new HashMap<>();
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            Object value = parameterComponent.getParameterValue();
+            if (value != null) {
+                result.put(parameterComponent.getParameterName(), value);
+            }
+        }
+        return result;
+    }
+
+    protected void newSelectedMission(String selectedMission) {
+        removeAll();
+        addParameters();
+        revalidate();
+        repaint();
     }
 
     private void createSupportedMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {
@@ -100,31 +125,6 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
         });
     }
 
-    @Override
-    public String getSelectedMission() {
-        return (String) this.missionsComboBox.getSelectedItem();
-    }
-
-    @Override
-    public Map<String, Object> getParameterValues() {
-        Map<String, Object> result = new HashMap<>();
-        for (int i=0; i<this.parameterComponents.size(); i++) {
-            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
-            Object value = parameterComponent.getParameterValue();
-            if (value != null) {
-                result.put(parameterComponent.getParameterName(), value);
-            }
-        }
-        return result;
-    }
-
-    protected void newSelectedMission(String selectedMission) {
-        removeAll();
-        addParameters();
-        revalidate();
-        repaint();
-    }
-
     private void addParameters() {
         this.parameterComponents = new ArrayList<>();
 
@@ -153,6 +153,7 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
 
         leftParametersRowIndex++;
 
+        // the rectangle parameter is added last to the panel
         QueryFilter rectangleParameter = null;
         List<QueryFilter> sensorParameters = SciHubDownloader.getSensorParameters(selectedMission);
         for (int i=0; i<sensorParameters.size(); i++) {
@@ -163,7 +164,7 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
                 parameterComponent = new StringParameterComponent(param.getName(), defaultValue);
             } else if (param.getType() == Double.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new StringParameterComponent(param.getName(), defaultValue);
+                parameterComponent = new DoubleParameterComponent(param.getName(), defaultValue);
             } else if (param.getType() == Date.class) {
                 parameterComponent = new DateParameterComponent(param.getName());
             } else if (param.getType() == Rectangle.Double.class) {
@@ -254,13 +255,49 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
         return maximumLabelWidth;
     }
 
+    private SelectionAreaParameterComponent findSelectionAreaParameterComponent() {
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            if (parameterComponent instanceof SelectionAreaParameterComponent) {
+                return (SelectionAreaParameterComponent)parameterComponent;
+            }
+        }
+        throw new IllegalStateException("The selection area parameter is missing.");
+    }
+
     private void createSelectionRectangleComboBox() {
-        this.selectionRectangleComboBox = new JComboBox<String>();
-        this.selectionRectangleComboBox.addItem("Inside");
-        this.selectionRectangleComboBox.addItem("Intersect");
+        AbstractFilterProducts[] filters = new AbstractFilterProducts[3];
+        filters[0] = new NoSelectionRectangleFilter();
+        filters[1] = new InsideSelectionRectangleFilter();
+        filters[2] = new IntersectSelectionRectangleFilter();
+        this.selectionRectangleComboBox = new JComboBox<AbstractFilterProducts>(filters);
         this.selectionRectangleComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
         this.selectionRectangleComboBox.setOpaque(true);
         this.selectionRectangleComboBox.setSelectedItem(null);
+        this.selectionRectangleComboBox.setMaximumRowCount(3);
+        this.selectionRectangleComboBox.setRenderer(new LabelListCellRenderer<AbstractFilterProducts>(buildDefaultListItemMargins()) {
+            @Override
+            protected String getItemDisplayText(AbstractFilterProducts value) {
+                return (value == null) ? "" : value.getName();
+            }
+        });
+        this.selectionRectangleComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    SelectionAreaParameterComponent selectionAreaParameterComponent = findSelectionAreaParameterComponent();
+                    Rectangle.Double selectionRectangle = selectionAreaParameterComponent.getParameterValue();
+                    filterTableProducts((AbstractFilterProducts) e.getItem(), selectionRectangle);
+                }
+            }
+        });
+    }
+
+    private Insets buildDefaultListItemMargins() {
+        return new Insets(3, 2, 3, 2);
+    }
+
+    protected void filterTableProducts(AbstractFilterProducts filterProducts, Rectangle.Double selectionRectangle) {
     }
 
     public static void setLabelSize(JLabel label, int maximumLabelWidth) {

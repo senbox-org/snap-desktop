@@ -13,6 +13,7 @@ import org.esa.snap.ui.loading.ILoadingIndicator;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +25,12 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
     private final String sensor;
     private final Map<String, Object> parametersValues;
     private final String dataSourceName;
-    private final ProductsTableModel productsTableModel;
+    private final CustomTable<ProductLibraryItem> productsTable;
     private final JComponent parentComponent;
     private final Credentials credentials;
 
     public DownloadProductListTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, Credentials credentials,
-                                            JComponent parentComponent, ProductsTableModel productsTableModel,
+                                            JComponent parentComponent, CustomTable<ProductLibraryItem> productsTable,
                                             String dataSourceName, String sensor, Map<String, Object> parametersValues) {
 
         super(loadingIndicator, threadId, 500);
@@ -39,26 +40,21 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
         this.dataSourceName = dataSourceName;
         this.credentials = credentials;
         this.parentComponent = parentComponent;
-        this.productsTableModel = productsTableModel;
+        this.productsTable = productsTable;
     }
 
     @Override
     protected List<ProductLibraryItem> execute() throws Exception {
         IProductsDownloaderListener downloaderListener = new IProductsDownloaderListener() {
             @Override
-            public void notifyProductCount(long productCount) {
-                String loadingIndicatorMessage;
-                if (productCount == 1) {
-                    loadingIndicatorMessage = "Download " + productCount + " product from " + dataSourceName + "...";
-                } else {
-                    loadingIndicatorMessage = "Download " + productCount + " products from " + dataSourceName + "...";
-                }
+            public void notifyProductCount(long totalProductCount) {
+                String loadingIndicatorMessage = buildLoadingIndicatorMessage(totalProductCount, 0);
                 notifyUpdateLoadingIndicatorMessageLater(loadingIndicatorMessage);
             }
 
             @Override
-            public void notifyPageProducts(int pageNumber, List<ProductLibraryItem> pageResults) {
-                notifyPageProductsLater(pageResults);
+            public void notifyPageProducts(int pageNumber, List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+                notifyPageProductsLater(pageResults, totalProductCount, retrievedProductCount);
             }
         };
         IThread thread = new IThread() {
@@ -72,12 +68,12 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
 
     @Override
     protected String getExceptionLoggingMessage() {
-        return "Failed to download the product list.";
+        return "Failed to retrieve the product list from '" + this.dataSourceName + "'.";
     }
 
     @Override
     protected void onTimerWakeUp(String messageToDisplay) {
-        onDisplayLoadingIndicatorMessage("Searching products to " + this.dataSourceName+"...");
+        onDisplayLoadingIndicatorMessage("Retrieving product list from " + this.dataSourceName+"...");
     }
 
     @Override
@@ -91,27 +87,39 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorDialog("Failed to download the list containing the products.", "Error");
+        onShowErrorDialog("Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
     }
 
     protected final Credentials getCredentials() {
         return credentials;
     }
 
-    private void notifyPageProductsLater(List<ProductLibraryItem> pageResults) {
-        Runnable runnable = new GenericRunnable<List<ProductLibraryItem>>(pageResults) {
+    private void notifyPageProductsLater(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+        Runnable runnable = new ProductPageResultsRunnable(pageResults, totalProductCount, retrievedProductCount) {
             @Override
-            protected void execute(List<ProductLibraryItem> results) {
+            protected void execute(List<ProductLibraryItem> results, long totalProductCount, int retrievedProductCount) {
                 if (isRunning()) {
-                    onDownloadPageProducts(results);
+                    onDownloadPageProducts(results, totalProductCount, retrievedProductCount);
                 }
             }
         };
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void onDownloadPageProducts(List<ProductLibraryItem> pageResults) {
-        this.productsTableModel.addRecordsAndFireEvent(pageResults);
+    private String buildLoadingIndicatorMessage(long totalProductCount, int retrievedProductCount) {
+        return "Retrieving product list from " + this.dataSourceName+": " + retrievedProductCount + " out of " + totalProductCount;
+    }
+
+    private void onDownloadPageProducts(List<ProductLibraryItem> results, long totalProductCount, int retrievedProductCount) {
+        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
+        int[] selectedRows = this.productsTable.getSelectedRows();
+        productsTableModel.addAvailableProducts(results);
+        // selected again the rows
+        for (int i=0; i<selectedRows.length; i++) {
+            this.productsTable.setRowSelectionInterval(selectedRows[i], selectedRows[i]);
+        }
+        String loadingIndicatorMessage = buildLoadingIndicatorMessage(totalProductCount, retrievedProductCount);
+        onDisplayLoadingIndicatorMessage(loadingIndicatorMessage);
     }
 
     private void onShowErrorDialog(String message, String title) {
@@ -120,5 +128,25 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
 
     private void onShowInformationDialog(String message, String title) {
         JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static abstract class ProductPageResultsRunnable implements Runnable {
+
+        private final List<ProductLibraryItem> pageResults;
+        private final long totalProductCount;
+        private final int retrievedProductCount;
+
+        public ProductPageResultsRunnable(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+            this.pageResults = pageResults;
+            this.totalProductCount = totalProductCount;
+            this.retrievedProductCount = retrievedProductCount;
+        }
+
+        protected abstract void execute(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount);
+
+        @Override
+        public void run() {
+            execute(this.pageResults, this.totalProductCount, this.retrievedProductCount);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.product.library.ui.v2.table.CustomTable;
 import org.esa.snap.product.library.v2.IThread;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.product.library.v2.SciHubDownloader;
@@ -24,16 +25,16 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
     private final ILoadingIndicator loadingIndicator;
     private final List<ProductLibraryItem> productList;
     private final Credentials credentials;
-    private final ProductsTableModel productsTableModel;
+    private final CustomTable<ProductLibraryItem> productsTable;
 
     public DownloadQuickLookImagesRunnable(ILoadingIndicator loadingIndicator, int threadId, List<ProductLibraryItem> productList,
-                                           Credentials credentials, ProductsTableModel productsTableModel) {
+                                           Credentials credentials, CustomTable<ProductLibraryItem> productsTable) {
 
         this.loadingIndicator = loadingIndicator;
         this.threadId = threadId;
         this.productList = productList;
         this.credentials = credentials;
-        this.productsTableModel = productsTableModel;
+        this.productsTable = productsTable;
     }
 
     @Override
@@ -87,8 +88,14 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
     }
 
     private void onDownloadedQuickLookImage(ProductLibraryItem product, BufferedImage quickLookImage) {
-        this.productsTableModel.setProductQuickLookImage(product, quickLookImage);
-        this.productsTableModel.fireTableDataChanged();
+        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
+        int[] selectedRows = this.productsTable.getSelectedRows();
+        productsTableModel.setProductQuickLookImage(product, quickLookImage);
+        productsTableModel.fireTableDataChanged();
+        // selected again the rows
+        for (int i=0; i<selectedRows.length; i++) {
+            this.productsTable.setRowSelectionInterval(selectedRows[i], selectedRows[i]);
+        }
     }
 
     private static abstract class ProductQuickLookImageRunnable implements Runnable {

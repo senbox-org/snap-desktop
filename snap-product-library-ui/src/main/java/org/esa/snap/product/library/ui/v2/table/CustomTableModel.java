@@ -5,6 +5,7 @@ import ro.cs.tao.eodata.EOProduct;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -61,5 +62,16 @@ public class CustomTableModel<RecordType> extends AbstractTableModel {
     public void addRecordsAndFireEvent(List<RecordType> records) {
         this.records.addAll(records);
         fireTableDataChanged();
+    }
+
+    public void sortRecordsAndFireEvent(Comparator<RecordType> comparator) {
+        if (this.records.size() > 1) {
+            Collections.sort(this.records, comparator);
+            fireTableDataChanged();
+        }
+    }
+
+    public RecordType getRecordAt(int rowIndex) {
+        return this.records.get(rowIndex);
     }
 }

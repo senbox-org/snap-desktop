@@ -4,7 +4,9 @@ import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
 import org.esa.snap.product.library.ui.v2.table.CustomTableModel;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,25 +19,46 @@ public class ProductsTableModel extends CustomTableModel<ProductLibraryItem> {
     public static final BufferedImage EMPTY_ICON = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     private Map<ProductLibraryItem, BufferedImage> quickLookImages;
+    private List<ProductLibraryItem> allProducts;
 
     public ProductsTableModel(List<AbstractTableColumn<ProductLibraryItem>> columnNames) {
         super(columnNames);
 
-        clearImagesMap();
+        clearItems();
     }
 
     @Override
     public void setRecordsAndFireEvent(List<ProductLibraryItem> records) {
-        clearImagesMap();
+        throw new UnsupportedOperationException();
+    }
 
-        super.setRecordsAndFireEvent(records);
+    @Override
+    public void addRecordsAndFireEvent(List<ProductLibraryItem> records) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clearRecordsAndFireEvent() {
-        clearImagesMap();
+        clearItems();
 
         super.clearRecordsAndFireEvent();
+    }
+
+    public void addAvailableProducts(List<ProductLibraryItem> records) {
+        this.allProducts.addAll(records);
+
+        super.addRecordsAndFireEvent(records);
+    }
+
+    public void filterProducts(AbstractFilterProducts filterProducts, Rectangle2D.Double selectionRectangle) {
+        List<ProductLibraryItem> filteredProducts = new ArrayList<>();
+        for (int i = 0; i<this.allProducts.size(); i++) {
+            ProductLibraryItem product = this.allProducts.get(i);
+            if (filterProducts.matches(product.getPath(), selectionRectangle)) {
+                filteredProducts.add(product);
+            }
+        }
+        super.setRecordsAndFireEvent(filteredProducts);
     }
 
     public BufferedImage getProductQuickLookImage(ProductLibraryItem product) {
@@ -47,7 +70,8 @@ public class ProductsTableModel extends CustomTableModel<ProductLibraryItem> {
         this.quickLookImages.put(product, image);
     }
 
-    private void clearImagesMap() {
+    private void clearItems() {
         this.quickLookImages = new HashMap<ProductLibraryItem, BufferedImage>();
+        this.allProducts = new ArrayList<>();
     }
 }

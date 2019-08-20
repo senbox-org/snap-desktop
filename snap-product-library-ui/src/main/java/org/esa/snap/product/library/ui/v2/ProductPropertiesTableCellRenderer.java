@@ -25,6 +25,7 @@ public class ProductPropertiesTableCellRenderer extends AbstractTableCellRendere
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
 
     private final JLabel nameLabel;
+    private final JLabel typeLabel;
     private final JLabel acquisitionDateLabel;
     private final JLabel sizeLabel;
 
@@ -32,6 +33,7 @@ public class ProductPropertiesTableCellRenderer extends AbstractTableCellRendere
         super(new JPanel());
 
         this.nameLabel = new JLabel("");
+        this.typeLabel = new JLabel("");
         this.acquisitionDateLabel = new JLabel("");
         this.sizeLabel = new JLabel("");
 
@@ -41,24 +43,35 @@ public class ProductPropertiesTableCellRenderer extends AbstractTableCellRendere
         this.cellComponent.add(this.nameLabel, c);
 
         c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
-        this.cellComponent.add(this.acquisitionDateLabel, c);
+        this.cellComponent.add(this.typeLabel, c);
 
         c = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
+        this.cellComponent.add(this.acquisitionDateLabel, c);
+
+        c = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
         this.cellComponent.add(this.sizeLabel, c);
     }
 
     @Override
     public JPanel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         ProductLibraryItem product = (ProductLibraryItem)value;
+
         this.nameLabel.setText(product.getName());
+        this.typeLabel.setText(product.getType());
 
         String dateAsString = DATE_FORMAT.format(product.getAcquisitionDate());
         this.acquisitionDateLabel.setText(dateAsString);
 
-        float oneMegaByte = 1024.0f * 1024.0f;
-        double sizeInMegaBytes = product.getApproximateSize() / oneMegaByte;
-        String size = "    ("  + FORMAT.format(sizeInMegaBytes) + " MB)";
-        this.sizeLabel.setText(size);
+        float oneKyloByte = 1024.0f;
+        double sizeInMegaBytes = product.getApproximateSize() / (oneKyloByte * oneKyloByte);
+        String size;
+        if (sizeInMegaBytes > oneKyloByte) {
+            double sizeInGigaBytes = sizeInMegaBytes / oneKyloByte;
+            size = FORMAT.format(sizeInGigaBytes) + " GB";
+        } else {
+            size = FORMAT.format(sizeInMegaBytes) + " MB";
+        }
+        this.sizeLabel.setText("    ("  + size + ")");
 
         return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
     }

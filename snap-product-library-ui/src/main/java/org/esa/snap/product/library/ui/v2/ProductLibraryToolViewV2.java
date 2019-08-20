@@ -15,6 +15,7 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.table.AbstractTableColumn;
@@ -24,6 +25,7 @@ import org.esa.snap.product.library.ui.v2.table.CustomTableModel;
 import org.esa.snap.product.library.ui.v2.table.TextLabelTableCellRenderer;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.IComponentsEnabled;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.LoadingIndicatorPanel;
@@ -39,12 +41,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -55,12 +62,19 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -98,6 +112,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     private LoadingIndicatorPanel loadingIndicatorPanel;
     private JSplitPane verticalSplitPane;
     private JLabel dataSourceLabel;
+    private Path lastSelectedFolderPath;
 
     public ProductLibraryToolViewV2() {
         this.initialized = false;
@@ -121,6 +136,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
                 super.newSelectedMission(selectedMission);
 
                 ProductLibraryToolViewV2.this.newMissionSelected(selectedMission);
+            }
+
+            @Override
+            protected void filterTableProducts(AbstractFilterProducts filterProducts, Rectangle.Double selectionRectangle) {
+                ProductsTableModel productsTableModel = (ProductsTableModel)productsTable.getModel();
+                productsTableModel.filterProducts(filterProducts, selectionRectangle);
             }
         };
         availableDataSources[1] = new LocalProductsDataSource();
@@ -307,6 +328,144 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         this.productsTable.setShowVerticalLines(true);
         this.productsTable.setShowHorizontalLines(true);
         this.productsTable.setIntercellSpacing(new Dimension(1, 1));
+        this.productsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (productsTable.isEnabled()) {
+                    productsTableMouseClicked(mouseEvent);
+                }
+            }
+        });
+    }
+
+    private void productsTableMouseClicked(MouseEvent mouseEvent) {
+        int rowIndex = this.productsTable.rowAtPoint(mouseEvent.getPoint());
+        if (rowIndex >= 0) {
+            if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                if (!this.productsTable.getSelectionModel().isSelectedIndex(rowIndex)) {
+                    this.productsTable.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+                }
+                showProductsTablePopupMenu(mouseEvent.getX(), mouseEvent.getY()); // right mouse click
+            }
+        }
+    }
+
+    private void showProductsTablePopupMenu(int mouseX, int mouseY) {
+        JMenuItem selectAllMenuItem = new JMenuItem("Select All");
+        selectAllMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int rowCount = productsTable.getModel().getRowCount();
+                productsTable.getSelectionModel().setSelectionInterval(0, rowCount-1);
+            }
+        });
+        JMenuItem selectNoneMenuItem = new JMenuItem("Select None");
+        selectNoneMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                productsTable.getSelectionModel().clearSelection();
+            }
+        });
+        JMenuItem downloadSelectedMenuItem = new JMenuItem("Download Selected");
+        downloadSelectedMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                downloadSelectedProductAsync();
+            }
+        });
+
+        JMenuItem sortByProductNameMenuItem = new JMenuItem("Product Name");
+        sortByProductNameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName());
+                    }
+                };
+                sortTableProducts(comparator);
+            }
+        });
+        JMenuItem sortByProductTypeMenuItem = new JMenuItem("Product Type");
+        sortByProductTypeMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getType(), o2.getType());
+                    }
+                };
+                sortTableProducts(comparator);
+            }
+        });
+        JMenuItem sortByAcquisitionDateMenuItem = new JMenuItem("Acquisition Date");
+        sortByAcquisitionDateMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        JMenuItem sortByProductSizeMenuItem = new JMenuItem("File Size");
+        sortByProductSizeMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return Long.compare(o1.getApproximateSize(), o2.getApproximateSize());
+                    }
+                };
+                sortTableProducts(comparator);
+            }
+        });
+
+        JMenu sortByPopupMenu = new JMenu("Sort By");
+        sortByPopupMenu.add(sortByProductNameMenuItem);
+        sortByPopupMenu.add(sortByProductTypeMenuItem);
+        sortByPopupMenu.add(sortByAcquisitionDateMenuItem);
+        sortByPopupMenu.add(sortByProductSizeMenuItem);
+
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(selectAllMenuItem);
+        popup.add(selectNoneMenuItem);
+        popup.add(downloadSelectedMenuItem);
+        popup.add(sortByPopupMenu);
+
+        popup.show(this.productsTable, mouseX, mouseY);
+    }
+
+    public void sortTableProducts(Comparator<ProductLibraryItem> comparator) {
+        this.productsTable.getModel().sortRecordsAndFireEvent(comparator);
+    }
+
+    private void downloadSelectedProductAsync() {
+        CustomFileChooser fileChooser = buildFileChooser("Select folder to download the product", false, JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        if (this.lastSelectedFolderPath != null) {
+            fileChooser.setCurrentDirectoryPath(this.lastSelectedFolderPath);
+        }
+        int result = fileChooser.showDialog(this, "Select");
+        if (result == JFileChooser.APPROVE_OPTION) {
+            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
+            AbstractProductsDataSource selectedDataSource = (AbstractProductsDataSource)this.dataSourcesComboBox.getSelectedItem();
+            int selectedRowIndex = this.productsTable.getSelectedRow();
+            ProductLibraryItem selectedProduct = this.productsTable.getModel().getRecordAt(selectedRowIndex);
+            int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
+            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(),
+                                                                                   selectedProduct, this.lastSelectedFolderPath, this);
+            thread.executeAsync(); // start the thread
+        }
+    }
+
+    private static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {
+        boolean previousReadOnlyFlag = UIManager.getDefaults().getBoolean(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY);
+        CustomFileChooser fileChooser = new CustomFileChooser(previousReadOnlyFlag);
+        fileChooser.setDialogTitle(dialogTitle);
+        fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
+        fileChooser.setFileSelectionMode(fileSelectionMode);
+        return fileChooser;
     }
 
     private void searchButtonPressed() {
@@ -317,7 +476,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         Credentials credentials = new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com");
         ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
         productsTableModel.clearRecordsAndFireEvent();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, credentials, this, productsTableModel,
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, credentials, this, this.productsTable,
                                                                                        selectedDataSource.getName(), selectedMission, parametersValues) {
             @Override
             protected void onSuccessfullyFinish(List<ProductLibraryItem> downloadedProductList) {
@@ -331,8 +490,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
     private void downloadQuickLookImagesAsync(List<ProductLibraryItem> downloadedProductList, Credentials credentials) {
         int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
-        Runnable runnable = new DownloadQuickLookImagesRunnable(this.loadingIndicatorPanel, threadId, downloadedProductList, credentials, productsTableModel);
+        Runnable runnable = new DownloadQuickLookImagesRunnable(this.loadingIndicatorPanel, threadId, downloadedProductList, credentials, this.productsTable);
         Thread thread = new Thread(runnable);
         thread.start(); // start the thread
     }

@@ -6,11 +6,12 @@ import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Created by jcoravu on 7/8/2019.
  */
-public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle.Double> {
+public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle2D.Double> {
 
     private final WorldMapUI worldMapUI;
 
@@ -73,12 +74,12 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
 //        return "";
 //    }
     @Override
-    public Rectangle.Double getParameterValue() {
+    public Rectangle2D.Double getParameterValue() {
         GeoPos[] geoPositions = this.worldMapUI.getSelectionBox();
         return getBoundingRect(geoPositions);
     }
 
-    private static Rectangle.Double getBoundingRect(GeoPos[] geoPositions) {
+    private static Rectangle2D.Double getBoundingRect(GeoPos[] geoPositions) {
         double minX = Float.MAX_VALUE;
         double maxX = -Float.MAX_VALUE;
         double minY = Float.MAX_VALUE;
@@ -101,8 +102,8 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
             }
         }
         if (minX >= maxX || minY >= maxY) {
-            return new Rectangle.Double(minX, minY, 0, 0);
+            return new Rectangle.Double(minX, minY, 0.0d, 0.0d);
         }
-        return new Rectangle.Double(minX, minY, maxX - minX, maxY - minY);
+        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 }
