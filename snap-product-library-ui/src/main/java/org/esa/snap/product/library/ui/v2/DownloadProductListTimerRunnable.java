@@ -1,19 +1,16 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.table.CustomTable;
 import org.esa.snap.product.library.v2.IProductsDownloaderListener;
 import org.esa.snap.product.library.v2.IThread;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.product.library.v2.SciHubDownloader;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.GenericRunnable;
 import org.esa.snap.ui.loading.ILoadingIndicator;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -25,12 +22,12 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
     private final String sensor;
     private final Map<String, Object> parametersValues;
     private final String dataSourceName;
-    private final CustomTable<ProductLibraryItem> productsTable;
     private final JComponent parentComponent;
     private final Credentials credentials;
+    private final QueryProductResultsPanel productResultsPanel;
 
     public DownloadProductListTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, Credentials credentials,
-                                            JComponent parentComponent, CustomTable<ProductLibraryItem> productsTable,
+                                            JComponent parentComponent, QueryProductResultsPanel productResultsPanel,
                                             String dataSourceName, String sensor, Map<String, Object> parametersValues) {
 
         super(loadingIndicator, threadId, 500);
@@ -40,7 +37,7 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
         this.dataSourceName = dataSourceName;
         this.credentials = credentials;
         this.parentComponent = parentComponent;
-        this.productsTable = productsTable;
+        this.productResultsPanel = productResultsPanel;
     }
 
     @Override
@@ -111,13 +108,16 @@ public class DownloadProductListTimerRunnable extends AbstractTimerRunnable<List
     }
 
     private void onDownloadPageProducts(List<ProductLibraryItem> results, long totalProductCount, int retrievedProductCount) {
-        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
-        int[] selectedRows = this.productsTable.getSelectedRows();
-        productsTableModel.addAvailableProducts(results);
-        // selected again the rows
-        for (int i=0; i<selectedRows.length; i++) {
-            this.productsTable.setRowSelectionInterval(selectedRows[i], selectedRows[i]);
-        }
+//        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
+//        int[] selectedRows = this.productsTable.getSelectedRows();
+//        productsTableModel.addAvailableProducts(results);
+//        // selected again the rows
+//        for (int i=0; i<selectedRows.length; i++) {
+//            this.productsTable.setRowSelectionInterval(selectedRows[i], selectedRows[i]);
+//        }
+
+
+        this.productResultsPanel.addProducts(results);
         String loadingIndicatorMessage = buildLoadingIndicatorMessage(totalProductCount, retrievedProductCount);
         onDisplayLoadingIndicatorMessage(loadingIndicatorMessage);
     }

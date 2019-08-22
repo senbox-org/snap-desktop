@@ -1,7 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.table.CustomTable;
 import org.esa.snap.product.library.v2.IThread;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.product.library.v2.SciHubDownloader;
@@ -25,16 +24,16 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
     private final ILoadingIndicator loadingIndicator;
     private final List<ProductLibraryItem> productList;
     private final Credentials credentials;
-    private final CustomTable<ProductLibraryItem> productsTable;
+    private final QueryProductResultsPanel productResultsPanel;
 
     public DownloadQuickLookImagesRunnable(ILoadingIndicator loadingIndicator, int threadId, List<ProductLibraryItem> productList,
-                                           Credentials credentials, CustomTable<ProductLibraryItem> productsTable) {
+                                           Credentials credentials, QueryProductResultsPanel productResultsPanel) {
 
         this.loadingIndicator = loadingIndicator;
         this.threadId = threadId;
         this.productList = productList;
         this.credentials = credentials;
-        this.productsTable = productsTable;
+        this.productResultsPanel = productResultsPanel;
     }
 
     @Override
@@ -47,6 +46,8 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
                 }
             };
 
+            int iconWidth = ProductListCellRenderer.EMPTY_ICON.getIconWidth();
+            int iconHeight = ProductListCellRenderer.EMPTY_ICON.getIconHeight();
             for (int i=0; i<this.productList.size(); i++) {
                 if (!isRunning()) {
                     return;
@@ -54,17 +55,21 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
 
                 ProductLibraryItem product = this.productList.get(i);
                 BufferedImage quickLookImage = null;
+                Image scaledQuickLookImage = null;
                 if (product.getQuickLookLocation() != null) {
                     try {
                         quickLookImage = SciHubDownloader.downloadQuickLookImage(product.getQuickLookLocation(), this.credentials, thread);
                         if (!isRunning()) {
                             return;
                         }
+                        if (quickLookImage != null) {
+                            scaledQuickLookImage = quickLookImage.getScaledInstance(iconWidth, iconHeight, BufferedImage.SCALE_FAST);
+                        }
                     } catch (Exception exception) {
                         logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
                     }
                 }
-                notifyDownloadedQuickLookImageLater(product, quickLookImage);
+                notifyDownloadedQuickLookImageLater(product, scaledQuickLookImage);
             }
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to download the quick look images.", exception);
@@ -75,10 +80,10 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
         return this.loadingIndicator.isRunning(this.threadId);
     }
 
-    private void notifyDownloadedQuickLookImageLater(ProductLibraryItem product, BufferedImage quickLookImage) {
+    private void notifyDownloadedQuickLookImageLater(ProductLibraryItem product, Image quickLookImage) {
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
-            protected void execute(ProductLibraryItem productItem, BufferedImage quickLookImageItem) {
+            protected void execute(ProductLibraryItem productItem, Image quickLookImageItem) {
                 if (isRunning()) {
                     onDownloadedQuickLookImage(productItem, quickLookImageItem);
                 }
@@ -87,28 +92,21 @@ public class DownloadQuickLookImagesRunnable implements Runnable {
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void onDownloadedQuickLookImage(ProductLibraryItem product, BufferedImage quickLookImage) {
-        ProductsTableModel productsTableModel = (ProductsTableModel)this.productsTable.getModel();
-        int[] selectedRows = this.productsTable.getSelectedRows();
-        productsTableModel.setProductQuickLookImage(product, quickLookImage);
-        productsTableModel.fireTableDataChanged();
-        // selected again the rows
-        for (int i=0; i<selectedRows.length; i++) {
-            this.productsTable.setRowSelectionInterval(selectedRows[i], selectedRows[i]);
-        }
+    private void onDownloadedQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
+        this.productResultsPanel.setProductQuickLookImage(product, quickLookImage);
     }
 
     private static abstract class ProductQuickLookImageRunnable implements Runnable {
 
         private final ProductLibraryItem product;
-        private final BufferedImage quickLookImage;
+        private final Image quickLookImage;
 
-        public ProductQuickLookImageRunnable(ProductLibraryItem product, BufferedImage quickLookImage) {
+        public ProductQuickLookImageRunnable(ProductLibraryItem product, Image quickLookImage) {
             this.product = product;
             this.quickLookImage = quickLookImage;
         }
 
-        protected abstract void execute(ProductLibraryItem product, BufferedImage quickLookImage);
+        protected abstract void execute(ProductLibraryItem product, Image quickLookImage);
 
         @Override
         public void run() {

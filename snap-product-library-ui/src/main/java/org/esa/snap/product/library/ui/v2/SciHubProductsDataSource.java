@@ -1,22 +1,24 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.product.library.ui.v2.table.CustomSplitPane;
 import org.esa.snap.product.library.v2.SciHubDownloader;
 import org.esa.snap.product.library.v2.parameters.QueryFilter;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
@@ -32,20 +34,23 @@ import java.util.Map;
  */
 public class SciHubProductsDataSource extends AbstractProductsDataSource {
 
+    private final int gapBetweenRows;
+    private final int gapBetweenColumns;
     private JComboBox<String> missionsComboBox;
     private List<AbstractParameterComponent> parameterComponents;
-    private JComboBox<AbstractFilterProducts> selectionRectangleComboBox;
-    private JLabel areaOfInterestLabel;
-    private JPanel leftParametersPanel;
+    private JLabel missionsLabel;
+    private int textFieldPreferredHeight;
+    private final IMissionParameterListener missionParameterListener;
 
-    public SciHubProductsDataSource(int textFieldPreferredHeight, Insets defaultListItemMargins) {
-        int gapBetweenRows = 5;
-        int gapBetweenColumns = 5;
+    public SciHubProductsDataSource(int textFieldPreferredHeight, Insets defaultListItemMargins, int gapBetweenRows, int gapBetweenColumns, IMissionParameterListener missionParameterListener) {
+        this.gapBetweenRows = gapBetweenRows;
+        this.gapBetweenColumns = gapBetweenColumns;
+        this.textFieldPreferredHeight = textFieldPreferredHeight;
+        this.missionParameterListener = missionParameterListener;
 
-        setLayout(new BorderLayout(gapBetweenColumns, gapBetweenRows));
+        createMissionsComboBox(textFieldPreferredHeight, defaultListItemMargins);
 
-        createSupportedMissionsComboBox(textFieldPreferredHeight, defaultListItemMargins);
-
+        setLayout(new BorderLayout(this.gapBetweenColumns, this.gapBetweenRows));
         addParameters();
     }
 
@@ -83,14 +88,17 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
         return result;
     }
 
-    protected void newSelectedMission(String selectedMission) {
+    @Override
+    public void refreshMissionParameters() {
         removeAll();
         addParameters();
         revalidate();
         repaint();
     }
 
-    private void createSupportedMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {
+    private void createMissionsComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins) {
+        this.missionsLabel = new JLabel("Mission");
+
         this.missionsComboBox = new JComboBox<String>();
 
         Dimension comboBoxSize = this.missionsComboBox.getPreferredSize();
@@ -110,194 +118,105 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
         this.missionsComboBox.setSelectedItem(null);
 
         this.missionsComboBox.removeAllItems();
-        String[] sensors = SciHubDownloader.getSupportedSensors();
-        for (int i = 0; i < sensors.length; i++) {
-            this.missionsComboBox.addItem(sensors[i]);
+        String[] supportedMissions = SciHubDownloader.getSupportedMissions();
+        for (int i = 0; i < supportedMissions.length; i++) {
+            this.missionsComboBox.addItem(supportedMissions[i]);
         }
 
         this.missionsComboBox.addItemListener(new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    newSelectedMission((String)e.getItem());
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    missionParameterListener.newSelectedMission(getSelectedMission(), SciHubProductsDataSource.this);
                 }
             }
         });
     }
 
     private void addParameters() {
+        JComponent panel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
+        panel.add(this.missionsLabel, c);
+
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        panel.add(this.missionsComboBox, c);
+
         this.parameterComponents = new ArrayList<>();
 
         String selectedMission = (String) this.missionsComboBox.getSelectedItem();
-
-        int gapBetweenRows = 5;
-        int gapBetweenColumns = 5;
-
-        JPanel parametersPanel = new JPanel(new GridLayout(1, 2, gapBetweenColumns, gapBetweenRows));
-
-        this.leftParametersPanel = new JPanel(new GridBagLayout());
-        JPanel rightParametersPanel = new JPanel(new GridBagLayout());
-        parametersPanel.add(this.leftParametersPanel);
-        parametersPanel.add(rightParametersPanel);
-
-        add(parametersPanel, BorderLayout.NORTH);
-
-        int leftParametersRowIndex = 0;
-        int rightParametersRowIndex = 0;
-
-        GridBagConstraints c = SwingUtils.buildConstraints(0, leftParametersRowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        this.leftParametersPanel.add(new JLabel("Mission"), c);
-
-        c = SwingUtils.buildConstraints(1, leftParametersRowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        this.leftParametersPanel.add(this.missionsComboBox, c);
-
-        leftParametersRowIndex++;
-
-        // the rectangle parameter is added last to the panel
+        int rowIndex = 1;
         QueryFilter rectangleParameter = null;
-        List<QueryFilter> sensorParameters = SciHubDownloader.getSensorParameters(selectedMission);
+        List<QueryFilter> sensorParameters = SciHubDownloader.getMissionParameters(selectedMission);
         for (int i=0; i<sensorParameters.size(); i++) {
             QueryFilter param = sensorParameters.get(i);
             AbstractParameterComponent parameterComponent = null;
             if (param.getType() == String.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new StringParameterComponent(param.getName(), defaultValue);
+                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), this.textFieldPreferredHeight);
             } else if (param.getType() == Double.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new DoubleParameterComponent(param.getName(), defaultValue);
+                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), this.textFieldPreferredHeight);
             } else if (param.getType() == Date.class) {
-                parameterComponent = new DateParameterComponent(param.getName());
+                parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), this.textFieldPreferredHeight);
             } else if (param.getType() == Rectangle.Double.class) {
                 rectangleParameter = param;
             }
             if (parameterComponent != null) {
                 this.parameterComponents.add(parameterComponent);
-                int rowIndex;
-                JPanel panel;
-                if (leftParametersRowIndex > rightParametersRowIndex) {
-                    panel = rightParametersPanel;
-                    rowIndex = rightParametersRowIndex++;
-                } else {
-                    panel = this.leftParametersPanel;
-                    rowIndex = leftParametersRowIndex++;
-                }
-                int verticalGapBetweenRows = (rowIndex > 0) ? gapBetweenRows : 0;
-                c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, verticalGapBetweenRows, 0);
-                panel.add(new JLabel(param.getLabel()), c);
-                c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, verticalGapBetweenRows, gapBetweenColumns);
+                c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
+                panel.add(parameterComponent.getLabel(), c);
+                c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
                 panel.add(parameterComponent.getComponent(), c);
+                rowIndex++;
             }
         }
+
+        c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, 0);
+        panel.add(Box.createVerticalGlue(), c); // add an empty label
+
         if (rectangleParameter != null) {
-            createSelectionRectangleComboBox();
-
-            int rowIndex;
-            JPanel panel;
-            if (leftParametersRowIndex > rightParametersRowIndex) {
-                panel = rightParametersPanel;
-                rowIndex = rightParametersRowIndex++;
-            } else {
-                panel = this.leftParametersPanel;
-                rowIndex = leftParametersRowIndex++;
-            }
-            int verticalGapBetweenRows = (rowIndex > 0) ? gapBetweenRows : 0;
-            c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, verticalGapBetweenRows, 0);
-            panel.add(new JLabel("Selection area"), c);
-            c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, verticalGapBetweenRows, gapBetweenColumns);
-            panel.add(this.selectionRectangleComboBox, c);
-
-            if (leftParametersRowIndex > rightParametersRowIndex) {
-                c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, verticalGapBetweenRows, 0);
-                rightParametersPanel.add(new JLabel(), c); // add an empty label
-            }
-
-            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(rectangleParameter.getName());
+            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(rectangleParameter.getName(), rectangleParameter.getLabel());
             this.parameterComponents.add(selectionAreaParameterComponent);
             JPanel worldPanel = selectionAreaParameterComponent.getComponent();
             worldPanel.setBackground(Color.WHITE);
             worldPanel.setOpaque(true);
             worldPanel.setBorder(new EtchedBorder());
 
-            this.areaOfInterestLabel = new JLabel(rectangleParameter.getLabel());
-
             JPanel areaOfInterestPanel = new JPanel(new GridBagLayout());
             c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, 0, 0);
-            areaOfInterestPanel.add(this.areaOfInterestLabel, c);
+            areaOfInterestPanel.add(selectionAreaParameterComponent.getLabel(), c);
             c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
             areaOfInterestPanel.add(worldPanel, c);
 
-            add(areaOfInterestPanel, BorderLayout.CENTER);
+            CustomSplitPane verticalSplitPane = new CustomSplitPane(JSplitPane.VERTICAL_SPLIT, 1, 2);
+            verticalSplitPane.setTopComponent(panel);
+            verticalSplitPane.setBottomComponent(areaOfInterestPanel);
 
-            // compute the maximum label width for the left column
-            int maximumLabelWidth = computeLeftPanelMaximumLabelWidth();
-            setLabelSize(this.areaOfInterestLabel, maximumLabelWidth);
-            for (int i=0; i<this.leftParametersPanel.getComponentCount(); i++) {
-                Component component = this.leftParametersPanel.getComponent(i);
-                if (component instanceof JLabel) {
-                    setLabelSize((JLabel)component, maximumLabelWidth);
-                }
-            }
+            panel = verticalSplitPane;
         }
+
+        // set the same label with
+        int maximumLabelWidth = computeLeftPanelMaximumLabelWidth();
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            SciHubProductsDataSource.setLabelSize(parameterComponent.getLabel(), maximumLabelWidth);
+        }
+
+        add(panel, BorderLayout.CENTER);
     }
 
     @Override
     public int computeLeftPanelMaximumLabelWidth() {
-        int maximumLabelWidth = this.areaOfInterestLabel.getPreferredSize().width;
-        for (int i=0; i<this.leftParametersPanel.getComponentCount(); i++) {
-            Component component = this.leftParametersPanel.getComponent(i);
-            if (component instanceof JLabel) {
-                int labelWidth = component.getPreferredSize().width;
-                if (maximumLabelWidth < labelWidth) {
-                    maximumLabelWidth = labelWidth;
-                }
+        int maximumLabelWidth = this.missionsLabel.getPreferredSize().width;
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            int labelWidth = parameterComponent.getLabel().getPreferredSize().width;
+            if (maximumLabelWidth < labelWidth) {
+                maximumLabelWidth = labelWidth;
             }
         }
         return maximumLabelWidth;
-    }
-
-    private SelectionAreaParameterComponent findSelectionAreaParameterComponent() {
-        for (int i=0; i<this.parameterComponents.size(); i++) {
-            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
-            if (parameterComponent instanceof SelectionAreaParameterComponent) {
-                return (SelectionAreaParameterComponent)parameterComponent;
-            }
-        }
-        throw new IllegalStateException("The selection area parameter is missing.");
-    }
-
-    private void createSelectionRectangleComboBox() {
-        AbstractFilterProducts[] filters = new AbstractFilterProducts[3];
-        filters[0] = new NoSelectionRectangleFilter();
-        filters[1] = new InsideSelectionRectangleFilter();
-        filters[2] = new IntersectSelectionRectangleFilter();
-        this.selectionRectangleComboBox = new JComboBox<AbstractFilterProducts>(filters);
-        this.selectionRectangleComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
-        this.selectionRectangleComboBox.setOpaque(true);
-        this.selectionRectangleComboBox.setSelectedItem(null);
-        this.selectionRectangleComboBox.setMaximumRowCount(3);
-        this.selectionRectangleComboBox.setRenderer(new LabelListCellRenderer<AbstractFilterProducts>(buildDefaultListItemMargins()) {
-            @Override
-            protected String getItemDisplayText(AbstractFilterProducts value) {
-                return (value == null) ? "" : value.getName();
-            }
-        });
-        this.selectionRectangleComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    SelectionAreaParameterComponent selectionAreaParameterComponent = findSelectionAreaParameterComponent();
-                    Rectangle.Double selectionRectangle = selectionAreaParameterComponent.getParameterValue();
-                    filterTableProducts((AbstractFilterProducts) e.getItem(), selectionRectangle);
-                }
-            }
-        });
-    }
-
-    private Insets buildDefaultListItemMargins() {
-        return new Insets(3, 2, 3, 2);
-    }
-
-    protected void filterTableProducts(AbstractFilterProducts filterProducts, Rectangle.Double selectionRectangle) {
     }
 
     public static void setLabelSize(JLabel label, int maximumLabelWidth) {

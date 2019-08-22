@@ -15,8 +15,8 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
 
     private final WorldMapUI worldMapUI;
 
-    public SelectionAreaParameterComponent(String parameterName) {
-        super(parameterName);
+    public SelectionAreaParameterComponent(String parameterName, String parameterLabelText) {
+        super(parameterName, parameterLabelText);
 
         this.worldMapUI = new WorldMapUI();
         this.worldMapUI.getWorlMapPane().getLayerCanvas().setBackground(Color.WHITE);

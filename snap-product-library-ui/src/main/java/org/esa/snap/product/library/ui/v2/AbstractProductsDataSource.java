@@ -17,6 +17,10 @@ public abstract class AbstractProductsDataSource extends JPanel {
         return null;
     }
 
+    public void refreshMissionParameters() {
+
+    }
+
     public Map<String, Object> getParameterValues() {
         return null;
     }
