@@ -9,7 +9,6 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
-import org.esa.snap.ui.product.ProductAdvancedDialog;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
 import javax.swing.JButton;
@@ -253,7 +252,7 @@ public class ProductFileChooser extends SnapFileChooser {
     }
 
     private boolean openAdvancedDialog() {
-        ProductAdvancedDialog productAdvancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame().getParent(), "Advanced Options");
+        ProductAdvancedDialog productAdvancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame().getParent(), "Advanced Options", getSelectedFile());
         return true;
     }
 

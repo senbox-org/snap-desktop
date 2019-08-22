@@ -258,7 +258,7 @@ public class ProductOpener {
         return true;
     }
 
-    private static List<PluginEntry> getPluginsForFile(File file, DecodeQualification desiredQualification) {
+    static List<PluginEntry> getPluginsForFile(File file, DecodeQualification desiredQualification) {
         final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         final List<PluginEntry> possiblePlugIns = new ArrayList<>();
         allReaderPlugIns.forEachRemaining(plugIn -> {
@@ -270,7 +270,7 @@ public class ProductOpener {
         return possiblePlugIns;
     }
 
-    private static String getUserSelection(List<PluginEntry> intendedPlugins, List<PluginEntry> suitablePlugIns) {
+    static String getUserSelection(List<PluginEntry> intendedPlugins, List<PluginEntry> suitablePlugIns) {
         final PluginEntry leadPlugin;
         if (!intendedPlugins.isEmpty()) {
             leadPlugin = intendedPlugins.get(0);
@@ -333,7 +333,7 @@ public class ProductOpener {
     }
 
 
-    private static class PluginEntry implements Comparable<PluginEntry> {
+    static class PluginEntry implements Comparable<PluginEntry> {
 
         ProductReaderPlugIn plugin;
         DecodeQualification qualification;

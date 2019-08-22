@@ -1,11 +1,17 @@
-package org.esa.snap.ui.product;
+package org.esa.snap.rcp.actions.file;
 
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.ProductReaderExposedParams;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 
 public class ProductAdvancedDialog {
 
@@ -38,10 +44,51 @@ public class ProductAdvancedDialog {
     private final JPanel pixelPanel = new JPanel(new GridBagLayout());
     private final JPanel geoPanel = new JPanel(new GridBagLayout());
 
-    public ProductAdvancedDialog(Container parent, String title) {
+    private ProductReaderExposedParams readerExposedParams;
+
+    public ProductAdvancedDialog(Container parent, String title, File file) {
         this.parent = (Window) parent;
         this.dialog = new ModalDialog(this.parent, title, ModalDialog.ID_OK_CANCEL, "");
-        createUI();
+
+        final List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
+        List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
+        if (intendedPlugIns.size() == 0) { // check for suitable readers only if no intended reader was found
+            suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
+        }
+
+        String fileFormatName;
+        boolean showUI = true;
+        if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
+            Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
+        } else if (intendedPlugIns.size() == 1) {
+            ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
+            fileFormatName = entry.plugin.getFormatNames()[0];
+             this.readerExposedParams = entry.plugin.createReaderInstance().getExposedParams();
+        } else if (intendedPlugIns.size() == 0 && suitablePlugIns.size() == 1) {
+            ProductOpener.PluginEntry entry = suitablePlugIns.get(0);
+            fileFormatName = entry.plugin.getFormatNames()[0];
+            this.readerExposedParams = entry.plugin.createReaderInstance().getExposedParams();
+        } else {
+            Collections.sort(intendedPlugIns);
+            Collections.sort(suitablePlugIns);
+            // ask user to select a desired reader plugin
+            fileFormatName = ProductOpener.getUserSelection(intendedPlugIns, suitablePlugIns);
+            if (fileFormatName == null) { // User clicked cancel
+                showUI = false;
+            }
+            else
+            {
+                // TODO get user selected plugin
+            }
+        }
+
+        if (showUI) {
+            if (this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null && this.readerExposedParams.getBandNames().size() > 0) {
+                // set the possible selectable values
+                this.bandList.setListData(this.readerExposedParams.getBandNames().toArray());
+            }
+            createUI();
+        }
     }
 
     public void createUI() {
