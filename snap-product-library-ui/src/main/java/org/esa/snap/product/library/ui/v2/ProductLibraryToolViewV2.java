@@ -19,6 +19,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.table.CustomLayeredPane;
 import org.esa.snap.product.library.ui.v2.table.CustomSplitPane;
+import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
@@ -71,10 +72,13 @@ import java.util.Map;
 public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
     private boolean initialized;
-    private LoadingIndicatorPanel loadingIndicatorPanel;
     private Path lastSelectedFolderPath;
-    private QueryParametersPanel parameretersPanel;
     private QueryProductResultsPanel productResultsPanel;
+    private DataSourcesPanel dataSourcesPanel;
+    private CustomSplitPane verticalSplitPane;
+
+    private AbstractProgressTimerRunnable<?> currentRunningThread;
+    private DownloadQuickLookImagesRunnable downloadQuickLookImagesRunnable;
 
     public ProductLibraryToolViewV2() {
         this.initialized = false;
@@ -115,7 +119,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         IMissionParameterListener missionParameterListener = new IMissionParameterListener() {
             @Override
             public void newSelectedMission(String mission, AbstractProductsDataSource parentDataSource) {
-                if (parentDataSource == parameretersPanel.getSelectedDataSource()) {
+                if (parentDataSource == dataSourcesPanel.getSelectedDataSource()) {
                     refreshDataSourceMissionParameters();
                 } else {
                     throw new IllegalStateException("The selected mission '"+mission+"' does not belong to the visible data source.");
@@ -128,9 +132,21 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
                 searchButtonPressed();
             }
         };
-        this.parameretersPanel = new QueryParametersPanel(defaultListItemMargins, textFieldPreferredHeight, gapBetweenRows, gapBetweenColumns, searchButtonListener,
-                                         dataSourceListener, missionParameterListener);
-        this.parameretersPanel.setBorder(new EmptyBorder(0, 0, 0, 1));
+        ActionListener stopButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stopProgressPanel();
+            }
+        };
+        IComponentsEnabled componentsEnabled = new IComponentsEnabled() {
+            @Override
+            public void setComponentsEnabled(boolean enabled) {
+                dataSourcesPanel.setParametersEnabledWhileDownloading(enabled);
+            }
+        };
+        this.dataSourcesPanel = new DataSourcesPanel(componentsEnabled, defaultListItemMargins, textFieldPreferredHeight, gapBetweenRows, gapBetweenColumns, searchButtonListener,
+                                                     dataSourceListener, stopButtonListener, missionParameterListener);
+        this.dataSourcesPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         ActionListener downloadProductListener = new ActionListener() {
             @Override
@@ -141,37 +157,46 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         this.productResultsPanel = new QueryProductResultsPanel(downloadProductListener);
         this.productResultsPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
 
-        CustomSplitPane verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
-        verticalSplitPane.setLeftComponent(this.parameretersPanel);
-        verticalSplitPane.setRightComponent(this.productResultsPanel);
-
-        IComponentsEnabled componentsEnabled = new IComponentsEnabled() {
-            @Override
-            public void setComponentsEnabled(boolean enabled) {
-                parameretersPanel.setParametersEnabledWhileDownloading(enabled);
-            }
-        };
-        this.loadingIndicatorPanel = new LoadingIndicatorPanel(componentsEnabled);
+        this.verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
+        this.verticalSplitPane.setLeftComponent(this.dataSourcesPanel.getSelectedDataSource());
+        this.verticalSplitPane.setRightComponent(this.productResultsPanel);
 
         CustomLayeredPane layeredPane = new CustomLayeredPane(new BorderLayout(0, gapBetweenRows));
-        layeredPane.addToContentPanel(verticalSplitPane, BorderLayout.CENTER);
-        layeredPane.addPanelToModalLayerAndPositionInCenter(this.loadingIndicatorPanel);
+        layeredPane.addToContentPanel(this.dataSourcesPanel, BorderLayout.NORTH);
+        layeredPane.addToContentPanel(this.verticalSplitPane, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns));
         add(layeredPane, BorderLayout.CENTER);
     }
 
+    private void stopProgressPanel() {
+        this.dataSourcesPanel.hideProgressPanel();
+        if (this.currentRunningThread != null) {
+            this.currentRunningThread.stopRunning();
+        }
+    }
+
     private void refreshDataSourceParameters() {
-        hideLoadingIndicatorPanel();
-        this.parameretersPanel.refreshDataSourceParameters();
+        stopProgressPanel();
+        stopRunningDownloadQuickLookImagesThreads();
+        this.verticalSplitPane.setLeftComponent(this.dataSourcesPanel.getSelectedDataSource());
+        this.verticalSplitPane.revalidate();
+        this.verticalSplitPane.repaint();
         this.productResultsPanel.clearProducts();
     }
 
     private void refreshDataSourceMissionParameters() {
-        hideLoadingIndicatorPanel();
-        this.parameretersPanel.refreshDataSourceMissionParameters();
+        stopProgressPanel();
+        stopRunningDownloadQuickLookImagesThreads();
+        this.dataSourcesPanel.refreshDataSourceMissionParameters();
         this.productResultsPanel.clearProducts();
+    }
+
+    private void stopRunningDownloadQuickLookImagesThreads() {
+        if (this.downloadQuickLookImagesRunnable != null) {
+            this.downloadQuickLookImagesRunnable.stopRunning();
+        }
     }
 
     private void downloadSelectedProductAsync() {
@@ -182,13 +207,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         }
         int result = fileChooser.showDialog(this, "Select");
         if (result == JFileChooser.APPROVE_OPTION) {
-            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
-            AbstractProductsDataSource selectedDataSource = this.parameretersPanel.getSelectedDataSource();
-            ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
-            int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(),
-                                                                                   selectedProduct, this.lastSelectedFolderPath, this);
-            thread.executeAsync(); // start the thread
+//            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
+//            AbstractProductsDataSource selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+//            ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
+//            int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
+//            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(),
+//                                                                                   selectedProduct, this.lastSelectedFolderPath, this);
+//            thread.executeAsync(); // start the thread
         }
     }
 
@@ -202,13 +227,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     }
 
     private void searchButtonPressed() {
-        AbstractProductsDataSource selectedDataSource = this.parameretersPanel.getSelectedDataSource();
+        AbstractProductsDataSource selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
         String selectedMission = selectedDataSource.getSelectedMission();
         Map<String, Object> parametersValues = selectedDataSource.getParameterValues();
-        int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
+        int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
         Credentials credentials = new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com");
         this.productResultsPanel.clearProducts();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.loadingIndicatorPanel, threadId, credentials, this, this.productResultsPanel,
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, this, this.productResultsPanel,
                                                                                        selectedDataSource.getName(), selectedMission, parametersValues) {
             @Override
             protected void onSuccessfullyFinish(List<ProductLibraryItem> downloadedProductList) {
@@ -216,19 +241,29 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
                 downloadQuickLookImagesAsync(downloadedProductList, getCredentials());
             }
+
+            @Override
+            protected void onStopExecuting() {
+                ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
+
+            }
         };
-        thread.executeAsync(); // start the thread
+        startRunningThread(thread);
+    }
+
+    private void startRunningThread(AbstractProgressTimerRunnable<?> newRunningThread) {
+        this.currentRunningThread = newRunningThread;
+        this.currentRunningThread.executeAsync(); // start the thread
     }
 
     private void downloadQuickLookImagesAsync(List<ProductLibraryItem> downloadedProductList, Credentials credentials) {
-        int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-        Runnable runnable = new DownloadQuickLookImagesRunnable(this.loadingIndicatorPanel, threadId, downloadedProductList, credentials, this.productResultsPanel);
-        Thread thread = new Thread(runnable);
-        thread.start(); // start the thread
-    }
-
-    private void hideLoadingIndicatorPanel() {
-        this.loadingIndicatorPanel.stopRunningAndHide();
+        this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, this.productResultsPanel) {
+            @Override
+            protected void onStopExecuting() {
+                ProductLibraryToolViewV2.this.downloadQuickLookImagesRunnable = null; // reset
+            }
+        };
+        this.downloadQuickLookImagesRunnable.executeAsync();
     }
 
     private Insets buildDefaultTextFieldMargins() {

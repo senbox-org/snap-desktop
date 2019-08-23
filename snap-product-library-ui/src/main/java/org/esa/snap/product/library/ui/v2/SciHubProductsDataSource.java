@@ -136,10 +136,10 @@ public class SciHubProductsDataSource extends AbstractProductsDataSource {
     private void addParameters() {
         JComponent panel = new JPanel(new GridBagLayout());
 
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
         panel.add(this.missionsLabel, c);
 
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         panel.add(this.missionsComboBox, c);
 
         this.parameterComponents = new ArrayList<>();

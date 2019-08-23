@@ -50,10 +50,10 @@ public class QueryProductResultsPanel extends JPanel {
         return this.productList.getSelectedValue();
     }
 
-    public void addProducts(List<ProductLibraryItem> products) {
+    public void addProducts(List<ProductLibraryItem> products, long totalProductCount, int retrievedProductCount, String dataSourceName) {
         ProductListModel productListModel = (ProductListModel)this.productList.getModel();
         productListModel.addProducts(products);
-        this.titleLabel.setText(getTitle() + ": " + productListModel.getSize());
+        this.titleLabel.setText(getTitle() + ": " + "retrieving " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
     }
 
     public void setProductQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
@@ -65,6 +65,29 @@ public class QueryProductResultsPanel extends JPanel {
         ProductListModel productListModel = (ProductListModel)this.productList.getModel();
         productListModel.clearProducts();
         this.titleLabel.setText(getTitle());
+    }
+
+    public void startSearchingProductList(String dataSourceName) {
+        this.titleLabel.setText(getTitle() + ": " + "retrieving product list from " + dataSourceName+"...");
+        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        if (productListModel.getSize() > 0) {
+            throw new IllegalStateException("The product list must be empty before start retrieving the list.");
+        }
+    }
+
+    public void startDownloadingProductList(long totalProductCount, String dataSourceName) {
+        this.titleLabel.setText(getTitle() + ": " + "retrieving " + totalProductCount + " products from "+ dataSourceName+"...");
+    }
+
+    public void finishDownloadingProductList() {
+        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        String text = getTitle() + ": " + productListModel.getSize();
+        if (productListModel.getSize() == 1) {
+            text += " product";
+        } else {
+            text += " products";
+        }
+        this.titleLabel.setText(text);
     }
 
     private void productListMouseClicked(MouseEvent mouseEvent) {
