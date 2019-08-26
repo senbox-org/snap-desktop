@@ -17,14 +17,16 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.esa.snap.product.library.ui.v2.table.CustomLayeredPane;
-import org.esa.snap.product.library.ui.v2.table.CustomSplitPane;
+import org.esa.snap.product.library.ui.v2.data.source.AbstractProductsDataSourcePanel;
+import org.esa.snap.product.library.ui.v2.data.source.DataSourcesPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.v2.DataSourceProductDownloader;
+import org.esa.snap.product.library.v2.DataSourceProductsProvider;
+import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.scihub.SciHubDataSourceProductsProvider;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
-import org.esa.snap.ui.loading.IComponentsEnabled;
-import org.esa.snap.ui.loading.LoadingIndicatorPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -32,6 +34,7 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -69,7 +72,9 @@ import java.util.Map;
         "CTL_ProductLibraryTopComponentV2Name=Product Library v2",
         "CTL_ProductLibraryTopComponentV2Description=Product Library v2",
 })
-public class ProductLibraryToolViewV2 extends ToolTopComponent {
+public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension {
+
+    private static final Insets LIST_ITEM_MARGINS = new Insets(3, 2, 3, 2);
 
     private boolean initialized;
     private Path lastSelectedFolderPath;
@@ -79,8 +84,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
 
     private AbstractProgressTimerRunnable<?> currentRunningThread;
     private DownloadQuickLookImagesRunnable downloadQuickLookImagesRunnable;
+    private int textFieldPreferredHeight;
 
     public ProductLibraryToolViewV2() {
+        super();
+
         this.initialized = false;
 
         setDisplayName(Bundle.CTL_ProductLibraryTopComponentV2Name());
@@ -94,19 +102,31 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         }
     }
 
-    private int getGapBetweenRows() {
+    @Override
+    public Insets getListItemMargins() {
+        return LIST_ITEM_MARGINS;
+    }
+
+    @Override
+    public int getGapBetweenRows() {
         return 5;
     }
 
-    private void initialize() {
-        int gapBetweenRows = getGapBetweenRows();
-        int gapBetweenColumns = getGapBetweenRows();
+    @Override
+    public int getGapBetweenColumns() {
+        return 5;
+    }
 
-        Insets defaultTextFieldMargins = buildDefaultTextFieldMargins();
-        Insets defaultListItemMargins = buildDefaultListItemMargins();
+    @Override
+    public int getTextFieldPreferredHeight() {
+        return this.textFieldPreferredHeight;
+    }
+
+    private void initialize() {
+        Insets defaultTextFieldMargins = new Insets(3, 2, 3, 2);
         JTextField productNameTextField = new JTextField();
         productNameTextField.setMargin(defaultTextFieldMargins);
-        int textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
+        this.textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
         ItemListener dataSourceListener = new ItemListener() {
             @Override
@@ -118,7 +138,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         };
         IMissionParameterListener missionParameterListener = new IMissionParameterListener() {
             @Override
-            public void newSelectedMission(String mission, AbstractProductsDataSource parentDataSource) {
+            public void newSelectedMission(String mission, AbstractProductsDataSourcePanel parentDataSource) {
                 if (parentDataSource == dataSourcesPanel.getSelectedDataSource()) {
                     refreshDataSourceMissionParameters();
                 } else {
@@ -138,14 +158,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
                 stopProgressPanel();
             }
         };
-        IComponentsEnabled componentsEnabled = new IComponentsEnabled() {
-            @Override
-            public void setComponentsEnabled(boolean enabled) {
-                dataSourcesPanel.setParametersEnabledWhileDownloading(enabled);
-            }
-        };
-        this.dataSourcesPanel = new DataSourcesPanel(componentsEnabled, defaultListItemMargins, textFieldPreferredHeight, gapBetweenRows, gapBetweenColumns, searchButtonListener,
-                                                     dataSourceListener, stopButtonListener, missionParameterListener);
+        DataSourceProductsProvider[] dataSourceProductProviders = new DataSourceProductsProvider[1];
+        dataSourceProductProviders[0] = new SciHubDataSourceProductsProvider();
+
+        this.dataSourcesPanel = new DataSourcesPanel(dataSourceProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
         this.dataSourcesPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         ActionListener downloadProductListener = new ActionListener() {
@@ -161,13 +177,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         this.verticalSplitPane.setLeftComponent(this.dataSourcesPanel.getSelectedDataSource());
         this.verticalSplitPane.setRightComponent(this.productResultsPanel);
 
-        CustomLayeredPane layeredPane = new CustomLayeredPane(new BorderLayout(0, gapBetweenRows));
-        layeredPane.addToContentPanel(this.dataSourcesPanel, BorderLayout.NORTH);
-        layeredPane.addToContentPanel(this.verticalSplitPane, BorderLayout.CENTER);
+        int gapBetweenRows = getGapBetweenRows();
+        int gapBetweenColumns = getGapBetweenRows();
+
+        JPanel contentPanel = new JPanel(new BorderLayout(0, gapBetweenRows));
+        contentPanel.add(this.dataSourcesPanel, BorderLayout.NORTH);
+        contentPanel.add(this.verticalSplitPane, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns));
-        add(layeredPane, BorderLayout.CENTER);
+        add(contentPanel, BorderLayout.CENTER);
     }
 
     private void stopProgressPanel() {
@@ -207,13 +226,20 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
         }
         int result = fileChooser.showDialog(this, "Select");
         if (result == JFileChooser.APPROVE_OPTION) {
-//            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
-//            AbstractProductsDataSource selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
-//            ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
-//            int threadId = this.loadingIndicatorPanel.getNewCurrentThreadId();
-//            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.loadingIndicatorPanel, threadId, selectedDataSource.getName(),
-//                                                                                   selectedProduct, this.lastSelectedFolderPath, this);
-//            thread.executeAsync(); // start the thread
+            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
+            AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+            ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
+            DataSourceProductDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission(), this.lastSelectedFolderPath);
+            int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
+            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.dataSourcesPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
+                                                                                   selectedProduct, this.productResultsPanel, this) {
+
+                @Override
+                protected void onStopExecuting() {
+                    ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
+                }
+            };
+            startRunningThread(thread);
         }
     }
 
@@ -227,14 +253,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     }
 
     private void searchButtonPressed() {
-        AbstractProductsDataSource selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+        AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+        DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
         String selectedMission = selectedDataSource.getSelectedMission();
-        Map<String, Object> parametersValues = selectedDataSource.getParameterValues();
+        Map<String, Object> parameterValues = selectedDataSource.getParameterValues();
         int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
         Credentials credentials = new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com");
         this.productResultsPanel.clearProducts();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, this, this.productResultsPanel,
-                                                                                       selectedDataSource.getName(), selectedMission, parametersValues) {
+        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, dataSourceResults,
+                                                                                        this, this.productResultsPanel,
+                                                                                       selectedDataSource.getName(), selectedMission, parameterValues) {
             @Override
             protected void onSuccessfullyFinish(List<ProductLibraryItem> downloadedProductList) {
                 super.onSuccessfullyFinish(downloadedProductList);
@@ -257,20 +285,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent {
     }
 
     private void downloadQuickLookImagesAsync(List<ProductLibraryItem> downloadedProductList, Credentials credentials) {
-        this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, this.productResultsPanel) {
+        AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+        DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
+        this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, dataSourceResults, this.productResultsPanel) {
             @Override
             protected void onStopExecuting() {
                 ProductLibraryToolViewV2.this.downloadQuickLookImagesRunnable = null; // reset
             }
         };
         this.downloadQuickLookImagesRunnable.executeAsync();
-    }
-
-    private Insets buildDefaultTextFieldMargins() {
-        return new Insets(3, 2, 3, 2);
-    }
-
-    private Insets buildDefaultListItemMargins() {
-        return new Insets(3, 2, 3, 2);
     }
 }

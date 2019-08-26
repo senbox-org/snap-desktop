@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.data.source;
 
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;

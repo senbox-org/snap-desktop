@@ -1,13 +1,9 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.ui.v2.thread.IProgressPanel;
-import org.esa.snap.product.library.v2.IThread;
+import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
-import org.esa.snap.product.library.v2.SciHubDownloader;
-import org.esa.snap.ui.loading.ILoadingIndicator;
 
 import javax.swing.SwingUtilities;
 import java.awt.Image;
@@ -25,11 +21,15 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     private final List<ProductLibraryItem> productList;
     private final Credentials credentials;
+    private final DataSourceResultsDownloader dataSourceResults;
     private final QueryProductResultsPanel productResultsPanel;
 
-    public DownloadQuickLookImagesRunnable(List<ProductLibraryItem> productList, Credentials credentials, QueryProductResultsPanel productResultsPanel) {
+    public DownloadQuickLookImagesRunnable(List<ProductLibraryItem> productList, Credentials credentials,
+                                           DataSourceResultsDownloader dataSourceResults, QueryProductResultsPanel productResultsPanel) {
+
         super();
 
+        this.dataSourceResults = dataSourceResults;
         this.productList = productList;
         this.credentials = credentials;
         this.productResultsPanel = productResultsPanel;
@@ -41,18 +41,17 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
         int iconHeight = ProductListCellRenderer.EMPTY_ICON.getIconHeight();
         for (int i=0; i<this.productList.size(); i++) {
             if (!isRunning()) {
-                return null;
+                return null; // nothing to return
             }
 
             ProductLibraryItem product = this.productList.get(i);
-            BufferedImage quickLookImage = null;
             Image scaledQuickLookImage = null;
             if (product.getQuickLookLocation() != null) {
                 try {
-                    quickLookImage = SciHubDownloader.downloadQuickLookImage(product.getQuickLookLocation(), this.credentials, this);
+                    BufferedImage quickLookImage = this.dataSourceResults.downloadProductQuickLookImage(this.credentials, product.getQuickLookLocation(), this);
 
                     if (!isRunning()) {
-                        return null;
+                        return null; // nothing to return
                     }
 
                     if (quickLookImage != null) {
@@ -60,14 +59,15 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
                     }
                 } catch (InterruptedException exception) {
                     logger.log(Level.SEVERE, "Stop downloading the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
-                    return null;
+                    return null; // nothing to return
                 } catch (Exception exception) {
                     logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
                 }
             }
             notifyDownloadedQuickLookImageLater(product, scaledQuickLookImage);
         }
-        return null;
+
+        return null; // nothing to return
     }
 
     @Override
@@ -95,9 +95,7 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
             protected void execute(ProductLibraryItem productValue, Image quickLookImageValue) {
-                if (isRunning()) {
-                    productResultsPanel.setProductQuickLookImage(productValue, quickLookImageValue);
-                }
+                productResultsPanel.setProductQuickLookImage(productValue, quickLookImageValue);
             }
         };
         SwingUtilities.invokeLater(runnable);

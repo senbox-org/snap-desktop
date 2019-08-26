@@ -2,11 +2,10 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.IProgressPanel;
-import org.esa.snap.product.library.v2.IProductsDownloaderListener;
-import org.esa.snap.product.library.v2.IThread;
+import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
+import org.esa.snap.product.library.v2.ProductsDownloaderListener;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
-import org.esa.snap.product.library.v2.SciHubDownloader;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
@@ -21,20 +20,23 @@ import java.util.Map;
 public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<ProductLibraryItem>> {
 
     private final String mission;
-    private final Map<String, Object> parametersValues;
+    private final Map<String, Object> parameterValues;
     private final String dataSourceName;
     private final JComponent parentComponent;
     private final Credentials credentials;
     private final QueryProductResultsPanel productResultsPanel;
+    private final DataSourceResultsDownloader dataSourceResults;
 
-    public DownloadProductListTimerRunnable(IProgressPanel progressPanel, int threadId, Credentials credentials,
+    public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
+                                            DataSourceResultsDownloader dataSourceResults,
                                             JComponent parentComponent, QueryProductResultsPanel productResultsPanel,
-                                            String dataSourceName, String mission, Map<String, Object> parametersValues) {
+                                            String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
         super(progressPanel, threadId, 500);
 
         this.mission = mission;
-        this.parametersValues = parametersValues;
+        this.dataSourceResults = dataSourceResults;
+        this.parameterValues = parameterValues;
         this.dataSourceName = dataSourceName;
         this.credentials = credentials;
         this.parentComponent = parentComponent;
@@ -43,7 +45,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected List<ProductLibraryItem> execute() throws Exception {
-        IProductsDownloaderListener downloaderListener = new IProductsDownloaderListener() {
+        ProductsDownloaderListener downloaderListener = new ProductsDownloaderListener() {
             @Override
             public void notifyProductCount(long totalProductCount) {
                 if (isRunning()) {
@@ -58,7 +60,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 }
             }
         };
-        return SciHubDownloader.downloadProductList(this.credentials, this.mission, this.parametersValues, downloaderListener, this, 1);
+        return this.dataSourceResults.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
     }
 
     @Override

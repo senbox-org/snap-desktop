@@ -13,7 +13,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,6 +46,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
     private final JLabel urlLabel;
     private final JLabel instrumentLabel;
     private final JLabel missionLabel;
+    private final JLabel downloadingStatusLabel;
 
     public ProductListCellRenderer() {
         super(new BorderLayout(0, 5));
@@ -64,6 +64,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.urlLabel = new JLabel("");
         this.instrumentLabel = new JLabel("");
         this.missionLabel = new JLabel("");
+        this.downloadingStatusLabel = new JLabel("");
 
         add(this.nameLabel, BorderLayout.NORTH);
 
@@ -87,8 +88,11 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 3, 1, 5, 5);
         panel.add(this.acquisitionDateLabel, c);
 
-        c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 3, 1, 5, 5);
+        c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 5, 5);
         panel.add(this.sizeLabel, c);
+
+        c = SwingUtils.buildConstraints(2, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 5, 5);
+        panel.add(this.downloadingStatusLabel, c);
 
         c = SwingUtils.buildConstraints(1, 4, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 3, 1, 5, 5);
         panel.add(Box.createVerticalGlue(), c);
@@ -117,9 +121,21 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.instrumentLabel.setText("Instrument: " + product.getInstrument());
 
         ProductListModel productListModel = (ProductListModel)list.getModel();
+
         ImageIcon productQuickLookImage = productListModel.getProductQuickLookImage(product);
         ImageIcon imageIcon = (productQuickLookImage == null) ? EMPTY_ICON : productQuickLookImage;
         this.quickLookImageLabel.setIcon(imageIcon);
+
+        Short percent = productListModel.getProductDownloadPercent(product);
+        String percentText = "";
+        if (percent != null) {
+            if (percent < 100) {
+                percentText = "Downloading: " + percent.toString() + "%";
+            } else {
+                percentText = "Downloaded";
+            }
+        }
+        this.downloadingStatusLabel.setText(percentText);
 
         String dateAsString = DATE_FORMAT.format(product.getAcquisitionDate());
         this.acquisitionDateLabel.setText("Date: " + dateAsString);

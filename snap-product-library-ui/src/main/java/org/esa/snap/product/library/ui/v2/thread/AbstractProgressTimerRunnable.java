@@ -12,12 +12,12 @@ import java.util.TimerTask;
  */
 public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> {
 
-    private final IProgressPanel progressPanel;
+    private final ProgressPanel progressPanel;
     private final Timer timer;
     private final int timerDelayInMilliseconds;
     private final int threadId;
 
-    protected AbstractProgressTimerRunnable(IProgressPanel progressPanel, int threadId, int timerDelayInMilliseconds) {
+    protected AbstractProgressTimerRunnable(ProgressPanel progressPanel, int threadId, int timerDelayInMilliseconds) {
         super();
 
         this.progressPanel = progressPanel;
@@ -53,7 +53,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
     }
 
     @Override
-    public final void stopRunning() {
+    public void stopRunning() {
         super.stopRunning();
 
         stopTimer();

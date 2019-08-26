@@ -1,8 +1,9 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.data.source;
 
-import org.esa.snap.product.library.ui.v2.thread.IProgressPanel;
-import org.esa.snap.ui.loading.IComponentsEnabled;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
+import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.v2.DataSourceProductsProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -21,7 +22,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -31,31 +31,29 @@ import java.util.Stack;
 /**
  * Created by jcoravu on 22/8/2019.
  */
-public class DataSourcesPanel extends JPanel implements IProgressPanel {
+public class DataSourcesPanel extends JPanel implements ProgressPanel {
 
-    private JComboBox<AbstractProductsDataSource> dataSourcesComboBox;
+    private JComboBox<AbstractProductsDataSourcePanel> dataSourcesComboBox;
     private final JButton searchButton;
     private final JButton helpButton;
     private JLabel dataSourceLabel;
     private JButton stopButton;
     private JProgressBar progressBar;
     private int currentThreadId;
-    private IComponentsEnabled componentsEnabled;
 
-    public DataSourcesPanel(IComponentsEnabled componentsEnabled, Insets defaultListItemMargins, int textFieldPreferredHeight, int gapBetweenRows, int gapBetweenColumns,
-                            ActionListener searchButtonListener, ItemListener dataSourceListener, ActionListener stopButtonListener,
-                            IMissionParameterListener missionParameterListener) {
+    public DataSourcesPanel(DataSourceProductsProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
+                            ItemListener dataSourceListener, ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
 
-        this.componentsEnabled = componentsEnabled;
         this.currentThreadId = 0;
 
-        createDataSourcesComboBox(textFieldPreferredHeight, defaultListItemMargins, gapBetweenRows, gapBetweenColumns, dataSourceListener, missionParameterListener);
+        createDataSourcesComboBox(dataSourceProductProviders, componentDimension, dataSourceListener, missionParameterListener);
 
-        Dimension buttonSize = new Dimension(textFieldPreferredHeight, textFieldPreferredHeight);
+        Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
         this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", searchButtonListener, buttonSize);
+        this.searchButton.setToolTipText("Search");
 
         ActionListener helpButtonListener = new ActionListener() {
             @Override
@@ -63,8 +61,10 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
             }
         };
         this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize);
+        this.helpButton.setToolTipText("Help");
 
         this.stopButton = buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", stopButtonListener, buttonSize);
+        this.stopButton.setToolTipText("Stop");
 
         this.dataSourceLabel = new JLabel("Data source");
 
@@ -75,6 +75,8 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
 
         refreshDataSourceLabelWidth();
         setProgressPanelVisible(false);
+
+        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
         add(this.dataSourceLabel, c);
@@ -105,7 +107,7 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
             if (this.currentThreadId == threadId) {
                 this.currentThreadId++;
                 setProgressPanelVisible(false);
-                setEnabledControls(true);
+                setParametersEnabledWhileDownloading(true);
                 return true;
             }
             return false;
@@ -119,7 +121,7 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
         if (EventQueue.isDispatchThread()) {
             if (this.currentThreadId == threadId) {
                 setProgressPanelVisible(true);
-                setEnabledControls(false);
+                setParametersEnabledWhileDownloading(false);
                 return true;
             }
             return false;
@@ -140,14 +142,14 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
         if (EventQueue.isDispatchThread()) {
             this.currentThreadId++;
             setProgressPanelVisible(false);
-            setEnabledControls(true);
+            setParametersEnabledWhileDownloading(true);
         } else {
             throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
         }
     }
 
-    public AbstractProductsDataSource getSelectedDataSource() {
-        return (AbstractProductsDataSource)this.dataSourcesComboBox.getSelectedItem();
+    public AbstractProductsDataSourcePanel getSelectedDataSource() {
+        return (AbstractProductsDataSourcePanel)this.dataSourcesComboBox.getSelectedItem();
     }
 
     public void refreshDataSourceMissionParameters() {
@@ -158,14 +160,16 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
     public void setDataSourcesBorder(Border border) {
         int count = this.dataSourcesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
-            AbstractProductsDataSource productsDataSource = this.dataSourcesComboBox.getModel().getElementAt(i);
+            AbstractProductsDataSourcePanel productsDataSource = this.dataSourcesComboBox.getModel().getElementAt(i);
             productsDataSource.setBorder(border);
         }
     }
 
-    public void setParametersEnabledWhileDownloading(boolean enabled) {
+    private void setParametersEnabledWhileDownloading(boolean enabled) {
         this.searchButton.setEnabled(enabled);
-        AbstractProductsDataSource selectedDataSource = getSelectedDataSource();
+        this.dataSourceLabel.setEnabled(enabled);
+        this.dataSourcesComboBox.setEnabled(enabled);
+        AbstractProductsDataSourcePanel selectedDataSource = getSelectedDataSource();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);
         while (!stack.isEmpty()) {
@@ -183,12 +187,6 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
         }
     }
 
-    private void setEnabledControls(boolean enabled) {
-        if (this.componentsEnabled != null) {
-            this.componentsEnabled.setComponentsEnabled(enabled);
-        }
-    }
-
     private void setProgressPanelVisible(boolean visible) {
         this.progressBar.setVisible(visible);
         this.stopButton.setVisible(visible);
@@ -196,7 +194,7 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
 
     private void refreshDataSourceLabelWidth() {
         int maximumLabelWidth = getSelectedDataSource().computeLeftPanelMaximumLabelWidth();
-        SciHubProductsDataSource.setLabelSize(this.dataSourceLabel, maximumLabelWidth);
+        RemoteProductsDataSourcePanel.setLabelSize(this.dataSourceLabel, maximumLabelWidth);
         Container parentContainer = this.dataSourceLabel.getParent();
         if (parentContainer != null) {
             parentContainer.revalidate();
@@ -204,20 +202,27 @@ public class DataSourcesPanel extends JPanel implements IProgressPanel {
         }
     }
 
-    private void createDataSourcesComboBox(int textFieldPreferredHeight, Insets defaultListItemMargins, int gapBetweenRows, int gapBetweenColumns,
+    private void createDataSourcesComboBox(DataSourceProductsProvider[] dataSourceProductProviders, ComponentDimension componentDimension,
                                            ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
 
-        AbstractProductsDataSource[] availableDataSources = new AbstractProductsDataSource[2];
-        availableDataSources[0] = new SciHubProductsDataSource(textFieldPreferredHeight, defaultListItemMargins, gapBetweenRows, gapBetweenColumns, missionParameterListener);
-        availableDataSources[1] = new LocalProductsDataSource();
+        AbstractProductsDataSourcePanel[] availableDataSources = new AbstractProductsDataSourcePanel[dataSourceProductProviders.length + 1];
+        for (int i=0; i<dataSourceProductProviders.length; i++) {
+            availableDataSources[i] = new RemoteProductsDataSourcePanel(dataSourceProductProviders[i], componentDimension, missionParameterListener);
+        }
+        availableDataSources[dataSourceProductProviders.length] = new LocalProductsDataSourcePanel();
 
-        this.dataSourcesComboBox = new JComboBox<AbstractProductsDataSource>(availableDataSources);
-        Dimension comboBoxSize = this.dataSourcesComboBox.getPreferredSize();
-        comboBoxSize.height = textFieldPreferredHeight;
-        this.dataSourcesComboBox.setPreferredSize(comboBoxSize);
-        LabelListCellRenderer<AbstractProductsDataSource> renderer = new LabelListCellRenderer<AbstractProductsDataSource>(defaultListItemMargins) {
+        this.dataSourcesComboBox = new JComboBox<AbstractProductsDataSourcePanel>(availableDataSources) {
             @Override
-            protected String getItemDisplayText(AbstractProductsDataSource value) {
+            public Color getBackground() {
+                return Color.WHITE;
+            }
+        };
+        Dimension comboBoxSize = this.dataSourcesComboBox.getPreferredSize();
+        comboBoxSize.height = componentDimension.getTextFieldPreferredHeight();
+        this.dataSourcesComboBox.setPreferredSize(comboBoxSize);
+        LabelListCellRenderer<AbstractProductsDataSourcePanel> renderer = new LabelListCellRenderer<AbstractProductsDataSourcePanel>(componentDimension.getListItemMargins()) {
+            @Override
+            protected String getItemDisplayText(AbstractProductsDataSourcePanel value) {
                 return (value == null) ? "" : value.getName();
             }
         };

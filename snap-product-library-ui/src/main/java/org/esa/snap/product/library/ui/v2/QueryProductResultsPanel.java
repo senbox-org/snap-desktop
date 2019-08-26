@@ -67,6 +67,11 @@ public class QueryProductResultsPanel extends JPanel {
         this.titleLabel.setText(getTitle());
     }
 
+    public void setProductDownloadPercent(ProductLibraryItem productLibraryItem, short percent) {
+        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        productListModel.setProductDownloadPercent(productLibraryItem, percent);
+    }
+
     public void startSearchingProductList(String dataSourceName) {
         this.titleLabel.setText(getTitle() + ": " + "retrieving product list from " + dataSourceName+"...");
         ProductListModel productListModel = (ProductListModel)this.productList.getModel();

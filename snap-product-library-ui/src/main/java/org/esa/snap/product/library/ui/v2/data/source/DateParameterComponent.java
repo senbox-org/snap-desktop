@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.data.source;
 
 import org.jdesktop.swingx.JXDatePicker;
 

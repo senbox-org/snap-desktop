@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.data.source;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

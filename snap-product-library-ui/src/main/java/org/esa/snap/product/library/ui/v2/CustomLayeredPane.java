@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.table;
+package org.esa.snap.product.library.ui.v2;
 
 /**
  * Created by jcoravu on 9/8/2019.

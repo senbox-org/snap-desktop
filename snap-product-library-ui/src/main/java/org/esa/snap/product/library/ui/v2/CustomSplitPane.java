@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.table;
+package org.esa.snap.product.library.ui.v2;
 
 import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;

@@ -15,11 +15,14 @@ import java.util.Map;
  */
 public class ProductListModel extends AbstractListModel<ProductLibraryItem> {
 
+    private Map<ProductLibraryItem, Short> downloadingProductsProgressValue;
     private Map<ProductLibraryItem, ImageIcon> quickLookImages;
     private List<ProductLibraryItem> items;
 
     public ProductListModel() {
-        clearProducts();
+        super();
+
+        clear();
     }
 
     @Override
@@ -38,6 +41,12 @@ public class ProductListModel extends AbstractListModel<ProductLibraryItem> {
         fireIntervalAdded(this, oldSize, this.items.size());
     }
 
+    public void clearProducts() {
+        int oldSize = this.items.size();
+        clear();
+        fireIntervalRemoved(this, 0, oldSize);
+    }
+
     public ImageIcon getProductQuickLookImage(ProductLibraryItem product) {
         return this.quickLookImages.get(product);
     }
@@ -48,8 +57,19 @@ public class ProductListModel extends AbstractListModel<ProductLibraryItem> {
         fireContentsChanged(this, 0, this.items.size());
     }
 
-    public void clearProducts() {
+    public void setProductDownloadPercent(ProductLibraryItem product, short percent) {
+        this.downloadingProductsProgressValue.put(product, percent);
+        fireContentsChanged(this, 0, this.items.size());
+    }
+
+    public Short getProductDownloadPercent(ProductLibraryItem product) {
+        return this.downloadingProductsProgressValue.get(product);
+    }
+
+    private void clear() {
         this.items = new ArrayList<>();
         this.quickLookImages = new HashMap<ProductLibraryItem, ImageIcon>();
+        this.downloadingProductsProgressValue = new HashMap<ProductLibraryItem, Short>();
     }
 }
+

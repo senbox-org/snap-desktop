@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2.thread;
 /**
  * Created by jcoravu on 23/8/2019.
  */
-public interface IProgressPanel {
+public interface ProgressPanel {
 
     public boolean hideProgressPanel(int threadId);
 

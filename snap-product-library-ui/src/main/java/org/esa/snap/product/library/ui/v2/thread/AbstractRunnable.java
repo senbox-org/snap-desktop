@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
-import org.esa.snap.product.library.v2.IThread;
+import org.esa.snap.product.library.v2.ThreadStatus;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 23/8/2019.
  */
-public abstract class AbstractRunnable<OutputType> implements Runnable, IThread {
+public abstract class AbstractRunnable<OutputType> implements Runnable, ThreadStatus {
 
     private static final Logger logger = Logger.getLogger(AbstractRunnable.class.getName());
 
