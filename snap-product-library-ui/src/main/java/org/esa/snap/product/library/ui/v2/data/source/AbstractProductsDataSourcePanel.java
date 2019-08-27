@@ -30,7 +30,7 @@ public abstract class AbstractProductsDataSourcePanel extends JPanel {
         return null;
     }
 
-    public DataSourceProductDownloader buidProductDownloader(String mission, Path targetFolderPath) {
+    public DataSourceProductDownloader buidProductDownloader(String mission) {
         return null;
     }
 

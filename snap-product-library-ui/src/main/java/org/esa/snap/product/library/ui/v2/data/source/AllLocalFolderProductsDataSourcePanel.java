@@ -5,14 +5,14 @@ import java.awt.BorderLayout;
 /**
  * Created by jcoravu on 5/8/2019.
  */
-public class LocalProductsDataSourcePanel extends AbstractProductsDataSourcePanel {
+public class AllLocalFolderProductsDataSourcePanel extends AbstractProductsDataSourcePanel {
 
-    public LocalProductsDataSourcePanel() {
+    public AllLocalFolderProductsDataSourcePanel() {
         super(new BorderLayout());
     }
 
     @Override
     public String getName() {
-        return "Local";
+        return "All Local Folders";
     }
 }

@@ -4,6 +4,7 @@ import org.esa.snap.product.library.v2.ProductLibraryItem;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -12,9 +13,12 @@ import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -120,6 +124,107 @@ public class QueryProductResultsPanel extends JPanel {
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(downloadSelectedMenuItem);
+
+        JMenu sortMenu = new JMenu("Sort By");
+        JMenuItem productNameMenuItem = new JMenuItem("Product Name");
+        productNameMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return o1.getName().compareToIgnoreCase(o2.getName());
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        JMenuItem productTypeMenuItem = new JMenuItem("Product Type");
+        productTypeMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return o1.getType().compareToIgnoreCase(o2.getType());
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        JMenuItem instrumentMenuItem = new JMenuItem("Instrument");
+        instrumentMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return o1.getType().compareToIgnoreCase(o2.getType());
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
+        acquisitionDateMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        Date acquisitionDate1 = o1.getAcquisitionDate();
+                        Date acquisitionDate2 = o2.getAcquisitionDate();
+                        if (acquisitionDate1 == null && acquisitionDate2 == null) {
+                            return 0; // both acquisition dates are null
+                        }
+                        if (acquisitionDate1 == null && acquisitionDate2 != null) {
+                            return -1; // the first acquisition date is null
+                        }
+                        if (acquisitionDate1 != null && acquisitionDate2 == null) {
+                            return 1; // the second acquisition date is null
+                        }
+                        return acquisitionDate1.compareTo(acquisitionDate2);
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        JMenuItem missionMenuItem = new JMenuItem("Mission");
+        missionMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        return o1.getMission().compareToIgnoreCase(o2.getMission());
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        JMenuItem fileSizeMenuItem = new JMenuItem("File Size");
+        fileSizeMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
+                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                    @Override
+                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                        long fileSize1 = o1.getApproximateSize();
+                        long fileSize2 = o2.getApproximateSize();
+                        if (fileSize1 == fileSize2) {
+                            return 0;
+                        }
+                        if (fileSize1 < fileSize2) {
+                            return -1;
+                        }
+                        return 1;
+                    }
+                };
+                getListModel().sortProducts(comparator);
+            }
+        });
+        sortMenu.add(productNameMenuItem);
+        sortMenu.add(productTypeMenuItem);
+        sortMenu.add(instrumentMenuItem);
+        sortMenu.add(acquisitionDateMenuItem);
+        sortMenu.add(missionMenuItem);
+        sortMenu.add(fileSizeMenuItem);
+
+        popup.add(sortMenu);
 
         popup.show(this.productList, mouseX, mouseY);
     }

@@ -20,6 +20,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
 import org.esa.snap.product.library.ui.v2.data.source.AbstractProductsDataSourcePanel;
 import org.esa.snap.product.library.ui.v2.data.source.DataSourcesPanel;
+import org.esa.snap.product.library.ui.v2.data.source.LocalFolderProductsDataSourcePanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.v2.DataSourceProductDownloader;
 import org.esa.snap.product.library.v2.DataSourceProductsProvider;
@@ -233,10 +234,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             this.lastSelectedFolderPath = fileChooser.getSelectedPath();
             AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
             ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
-            DataSourceProductDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission(), this.lastSelectedFolderPath);
+            DataSourceProductDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission());
             int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
             DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.dataSourcesPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
-                                                                                   selectedProduct, this.productResultsPanel, this) {
+                                                                                   selectedProduct, this.lastSelectedFolderPath, this.productResultsPanel, this) {
+
+                @Override
+                protected void onSuccessfullyFinish(Path targetFolderPath) {
+                    super.onSuccessfullyFinish(targetFolderPath);
+
+                    onSuccessfullyDownloadedProduct(targetFolderPath);
+                }
 
                 @Override
                 protected void onStopExecuting() {
@@ -247,13 +255,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {
-        boolean previousReadOnlyFlag = UIManager.getDefaults().getBoolean(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY);
-        CustomFileChooser fileChooser = new CustomFileChooser(previousReadOnlyFlag);
-        fileChooser.setDialogTitle(dialogTitle);
-        fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
-        fileChooser.setFileSelectionMode(fileSelectionMode);
-        return fileChooser;
+    private void onSuccessfullyDownloadedProduct(Path targetFolderPath) {
+        LocalFolderProductsDataSourcePanel localFolderProducts = new LocalFolderProductsDataSourcePanel(targetFolderPath);
+        this.dataSourcesPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
     }
 
     private Credentials getUserCredentials() {
@@ -307,5 +311,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
         this.downloadQuickLookImagesRunnable.executeAsync();
+    }
+
+    private static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {
+        boolean previousReadOnlyFlag = UIManager.getDefaults().getBoolean(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY);
+        CustomFileChooser fileChooser = new CustomFileChooser(previousReadOnlyFlag);
+        fileChooser.setDialogTitle(dialogTitle);
+        fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
+        fileChooser.setFileSelectionMode(fileSelectionMode);
+        return fileChooser;
     }
 }

@@ -2,6 +2,8 @@ package org.esa.snap.product.library.ui.v2.thread;
 
 import org.esa.snap.ui.loading.GenericRunnable;
 
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.awt.EventQueue;
 import java.util.Timer;
@@ -92,6 +94,14 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         } else {
             throw new IllegalStateException("The method must be invoked from the current AWT thread.");
         }
+    }
+
+    protected final void onShowErrorMessageDialog(JComponent parentDialogComponent, String message, String title) {
+        JOptionPane.showMessageDialog(parentDialogComponent, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    protected final void onShowInformationMessageDialog(JComponent parentDialogComponent, String message, String title) {
+        JOptionPane.showMessageDialog(parentDialogComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void startTimerIfDefined() {

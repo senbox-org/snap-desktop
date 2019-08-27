@@ -123,8 +123,8 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
     }
 
     @Override
-    public DataSourceProductDownloader buidProductDownloader(String mission, Path targetFolderPath) {
-        return this.dataSourceProductsProvider.buidProductDownloader(mission, targetFolderPath);
+    public DataSourceProductDownloader buidProductDownloader(String mission) {
+        return this.dataSourceProductsProvider.buidProductDownloader(mission);
     }
 
     @Override

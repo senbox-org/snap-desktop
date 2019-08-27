@@ -4,12 +4,11 @@ import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
 import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
-import org.esa.snap.product.library.v2.ProductsDownloaderListener;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.ProductsDownloaderListener;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.util.List;
 import java.util.Map;
@@ -81,14 +80,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected void onSuccessfullyFinish(List<ProductLibraryItem> results) {
         this.productResultsPanel.finishDownloadingProductList();
         if (results.size() == 0) {
-            onShowInformationMessageDialog("No product available according to the filter values.", "Information");
+            onShowInformationMessageDialog(this.parentComponent, "No product available according to the filter values.", "Information");
         }
     }
 
     @Override
     protected void onFailed(Exception exception) {
         this.productResultsPanel.finishDownloadingProductList();
-        onShowErrorMessageDialog("Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
+        onShowErrorMessageDialog(this.parentComponent, "Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
     }
 
     protected final Credentials getCredentials() {
@@ -117,14 +116,6 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             }
         };
         SwingUtilities.invokeLater(runnable);
-    }
-
-    private void onShowErrorMessageDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.ERROR_MESSAGE);
-    }
-
-    private void onShowInformationMessageDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static abstract class ProductPageResultsRunnable implements Runnable {

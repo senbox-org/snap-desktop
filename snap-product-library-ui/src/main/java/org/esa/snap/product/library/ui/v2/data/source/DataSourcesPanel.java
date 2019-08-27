@@ -165,6 +165,10 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         }
     }
 
+    public void addNewLocalFolderProductsDataSource(LocalFolderProductsDataSourcePanel localFolderProductsDataSourcePanel) {
+        this.dataSourcesComboBox.addItem(localFolderProductsDataSourcePanel);
+    }
+
     private void setParametersEnabledWhileDownloading(boolean enabled) {
         this.searchButton.setEnabled(enabled);
         this.dataSourceLabel.setEnabled(enabled);
@@ -209,7 +213,7 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         for (int i=0; i<dataSourceProductProviders.length; i++) {
             availableDataSources[i] = new RemoteProductsDataSourcePanel(dataSourceProductProviders[i], componentDimension, missionParameterListener);
         }
-        availableDataSources[dataSourceProductProviders.length] = new LocalProductsDataSourcePanel();
+        availableDataSources[dataSourceProductProviders.length] = new AllLocalFolderProductsDataSourcePanel();
 
         this.dataSourcesComboBox = new JComboBox<AbstractProductsDataSourcePanel>(availableDataSources) {
             @Override
@@ -228,8 +232,6 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         };
         this.dataSourcesComboBox.setRenderer(renderer);
         this.dataSourcesComboBox.setMaximumRowCount(5);
-        this.dataSourcesComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
-        this.dataSourcesComboBox.setOpaque(true);
         this.dataSourcesComboBox.setSelectedIndex(0);
         this.dataSourcesComboBox.addItemListener(dataSourceListener);
     }

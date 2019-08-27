@@ -6,6 +6,8 @@ import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,13 @@ public class ProductListModel extends AbstractListModel<ProductLibraryItem> {
 
     public Short getProductDownloadPercent(ProductLibraryItem product) {
         return this.downloadingProductsProgressValue.get(product);
+    }
+
+    public void sortProducts(Comparator<ProductLibraryItem> comparator) {
+        if (this.items.size() > 1) {
+            Collections.sort(this.items, comparator);
+            fireContentsChanged(this, 0, this.items.size());
+        }
     }
 
     private void clear() {

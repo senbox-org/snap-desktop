@@ -8,35 +8,37 @@ import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import java.nio.file.Path;
 
 /**
  * Created by jcoravu on 19/8/2019.
  */
-public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<Void> {
+public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<Path> {
 
     private final String dataSourceName;
-    private final ProductLibraryItem selectedProduct;
+    private final ProductLibraryItem productToDownload;
     private final JComponent parentComponent;
     private final QueryProductResultsPanel productResultsPanel;
     private final DataSourceProductDownloader dataSourceProductDownloader;
+    private final Path targetFolderPath;
 
     public DownloadProductTimerRunnable(ProgressPanel progressPanel, int threadId, String dataSourceName,
-                                        DataSourceProductDownloader dataSourceProductDownloader, ProductLibraryItem selectedProduct,
-                                        QueryProductResultsPanel productResultsPanel, JComponent parentComponent) {
+                                        DataSourceProductDownloader dataSourceProductDownloader, ProductLibraryItem productToDownload,
+                                        Path targetFolderPath, QueryProductResultsPanel productResultsPanel, JComponent parentComponent) {
 
         super(progressPanel, threadId, 500);
 
         this.dataSourceName = dataSourceName;
+        this.targetFolderPath = targetFolderPath;
         this.dataSourceProductDownloader = dataSourceProductDownloader;
-        this.selectedProduct = selectedProduct;
+        this.productToDownload = productToDownload;
         this.parentComponent = parentComponent;
         this.productResultsPanel = productResultsPanel;
     }
 
     @Override
-    protected Void execute() throws Exception {
+    protected Path execute() throws Exception {
         notifyDownloadingProgressValueLater((short)0);
 
         ProgressListener progressListener = new ProgressListener() {
@@ -45,12 +47,12 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
                 notifyDownloadingProgressValueLater(progressPercent);
             }
         };
-        this.dataSourceProductDownloader.download(this.selectedProduct, progressListener);
+        this.dataSourceProductDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
 
         // successfully downloaded the product
         notifyDownloadingProgressValueLater((short)100);
 
-        return null; // nothing to return
+        return this.targetFolderPath; // nothing to return
     }
 
     @Override
@@ -67,11 +69,7 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorMessageDialog("Failed to download the product from " + this.dataSourceName + ".", "Error");
-    }
-
-    private void onShowErrorMessageDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.ERROR_MESSAGE);
+        onShowErrorMessageDialog(this.parentComponent, "Failed to download the product from " + this.dataSourceName + ".", "Error");
     }
 
     private void notifyDownloadingProgressValueLater(short progressPercent) {
@@ -79,7 +77,7 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
             @Override
             protected void execute(Short progressPercentValue) {
                 if (isCurrentProgressPanelThread()) {
-                    productResultsPanel.setProductDownloadPercent(selectedProduct, progressPercentValue);
+                    productResultsPanel.setProductDownloadPercent(productToDownload, progressPercentValue);
                 }
             }
         };
