@@ -205,11 +205,7 @@ public class VFSOptionsController extends DefaultConfigController {
                 remoteRepositoriesListTable.changeSelection(remoteRepositoriesListTable.getRowCount() - 1, 0, false, false);
             } catch (IllegalArgumentException ex) {
                 logger.log(Level.FINE, "Unable to add remote file repository. Details: " + ex.getMessage());
-                if (ex.getMessage().startsWith("Invalid")) {
-                    JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Invalid VFS repository name! Please check if it meets following requirements:\n- It must be unique\n- It must be alphanumeric.\n- Underscores are allowed.\n- Length is between 3 and 25 characters.", "Add new remote file repository", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Failed to add new remote repository.\nreason: " + ex, "Add new remote file repository", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Failed to add new remote repository.\nreason: " + ex, "Add new remote file repository", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -351,7 +347,7 @@ public class VFSOptionsController extends DefaultConfigController {
                 remoteRepositoriesListTable.getModel().setValueAt(remoteRepositoryNameField.getText(), remoteRepositoriesListTable.getSelectedRow(), REPO_NAME_COLUMN);
                 currentRemoteRepositoryName = newRepositoryName;
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Invalid VFS repository name! Please check if it meets following requirements:\n- It must be unique\n- It must be alphanumeric.\n- Underscores are allowed.\n- Length is between 3 and 25 characters.", "Update name for remote file repository", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Invalid VFS repository name! Please check if it meets following requirements:\n- It must be unique\n- It must be alphanumeric.\n- Underscores and hyphens are allowed.\n- Length is between 3 and 25 characters.", "Update name for remote file repository", JOptionPane.WARNING_MESSAGE);
                 remoteRepositoryNameField.setText(currentRemoteRepositoryName);
             }
         }
@@ -478,11 +474,7 @@ public class VFSOptionsController extends DefaultConfigController {
                 loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
             } catch (IllegalArgumentException ex) {
                 logger.log(Level.FINE, "Unable to add remote file repository property. Details: " + ex.getMessage());
-                if (ex.getMessage().startsWith("Invalid")) {
-                    JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.\n- Property value must be not null", "Add new remote file repository property", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Failed to add new remote repository property.\nreason: " + ex, "Add new remote file repository property", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "Failed to add new remote repository property.\nreason: " + ex, "Add new remote file repository property", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -562,7 +554,7 @@ public class VFSOptionsController extends DefaultConfigController {
                             currentValue = newValue;
                             loadRemoteRepositoryPropertiesOnTable(remoteRepositoryId);
                         } catch (IllegalArgumentException ex) {
-                            JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property name! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores are allowed in property name.\n- Length of property name is between 3 and 25 characters.", "Update remote file repository property name", JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(remoteRepositoriesPropertiesListTable, "Invalid VFS repository property name! Please check if it meets following requirements:\n- Property name must be unique\n- Property name must be alphanumeric.\n- Underscores and hyphens are allowed in property name.\n- Length of property name is between 3 and 25 characters.", "Update remote file repository property name", JOptionPane.WARNING_MESSAGE);
                             remoteRepositoriesPropertiesListTable.setValueAt(currentValue, selectedRow, selectedColumn);
                         }
                     }
