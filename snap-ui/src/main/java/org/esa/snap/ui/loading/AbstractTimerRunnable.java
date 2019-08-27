@@ -14,15 +14,15 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     private static final Logger logger = Logger.getLogger(AbstractTimerRunnable.class.getName());
 
     private final Timer timer;
-    private final int timerDelayInMiliseconds;
+    private final int timerDelayInMilliseconds;
     private final int threadId;
     private final ILoadingIndicator loadingIndicator;
 
-    protected AbstractTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, int timerDelayInMiliseconds) {
+    protected AbstractTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, int timerDelayInMilliseconds) {
         this.loadingIndicator = loadingIndicator;
         this.threadId = threadId;
-        this.timerDelayInMiliseconds = timerDelayInMiliseconds;
-        this.timer = (this.timerDelayInMiliseconds > 0) ? new Timer() : null;
+        this.timerDelayInMilliseconds = timerDelayInMilliseconds;
+        this.timer = (this.timerDelayInMilliseconds > 0) ? new Timer() : null;
     }
 
     protected abstract OutputType execute() throws Exception;
@@ -74,16 +74,16 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     }
 
     private void startTimerIfDefined() {
-        if (this.timerDelayInMiliseconds > 0) {
+        if (this.timerDelayInMilliseconds > 0) {
             TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
                     if (isRunning()) {
-                        notifyTimerWakeUpLater();
+                        timerWakeUp();
                     }
                 }
             };
-            this.timer.schedule(timerTask, this.timerDelayInMiliseconds);
+            this.timer.schedule(timerTask, this.timerDelayInMilliseconds);
         }
     }
 
@@ -99,33 +99,18 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
         return this.loadingIndicator.isRunning(this.threadId);
     }
 
-    protected final void notifyUpdateLoadingIndicatorMessageLater(String message) {
-        Runnable runnable = new GenericRunnable<String>(message) {
-            @Override
-            protected void execute(String messageToDisplay) {
-                if (isRunning()) {
-                    onDisplayLoadingIndicatorMessage(messageToDisplay);
-                }
-            }
-        };
-        SwingUtilities.invokeLater(runnable);
-    }
-
     private void stopTimer() {
         if (this.timer != null) {
             this.timer.cancel();
         }
     }
 
-    private void notifyTimerWakeUpLater() {
-        Runnable runnable = new Runnable() {
+    private void timerWakeUp() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (isRunning()) {
-                    onTimerWakeUp(null);
-                }
+                onTimerWakeUp(null);
             }
-        };
-        SwingUtilities.invokeLater(runnable);
+        });
     }
 }

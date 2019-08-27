@@ -15,8 +15,8 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
 
     private final WorldMapUI worldMapUI;
 
-    public SelectionAreaParameterComponent(String parameterName, String parameterLabelText) {
-        super(parameterName, parameterLabelText);
+    public SelectionAreaParameterComponent(String parameterName, String parameterLabelText, boolean required) {
+        super(parameterName, parameterLabelText, required);
 
         this.worldMapUI = new WorldMapUI();
         this.worldMapUI.getWorlMapPane().getLayerCanvas().setBackground(Color.WHITE);
@@ -76,7 +76,11 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
     @Override
     public Rectangle2D.Double getParameterValue() {
         GeoPos[] geoPositions = this.worldMapUI.getSelectionBox();
-        return getBoundingRect(geoPositions);
+        Rectangle2D.Double selectedArea = getBoundingRect(geoPositions);
+        if (selectedArea.width == 0 && selectedArea.height == 0) {
+            return null;
+        }
+        return selectedArea;
     }
 
     private static Rectangle2D.Double getBoundingRect(GeoPos[] geoPositions) {

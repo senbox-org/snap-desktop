@@ -67,10 +67,10 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorDialog("Failed to download the product from " + this.dataSourceName + ".", "Error");
+        onShowErrorMessageDialog("Failed to download the product from " + this.dataSourceName + ".", "Error");
     }
 
-    private void onShowErrorDialog(String message, String title) {
+    private void onShowErrorMessageDialog(String message, String title) {
         JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.ERROR_MESSAGE);
     }
 

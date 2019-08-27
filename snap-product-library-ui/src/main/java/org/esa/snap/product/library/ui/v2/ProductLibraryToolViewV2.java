@@ -17,6 +17,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
 import org.esa.snap.product.library.ui.v2.data.source.AbstractProductsDataSourcePanel;
 import org.esa.snap.product.library.ui.v2.data.source.DataSourcesPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
@@ -25,6 +26,8 @@ import org.esa.snap.product.library.v2.DataSourceProductsProvider;
 import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
 import org.esa.snap.product.library.v2.ProductLibraryItem;
 import org.esa.snap.product.library.v2.scihub.SciHubDataSourceProductsProvider;
+import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.openide.awt.ActionID;
@@ -85,6 +88,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private AbstractProgressTimerRunnable<?> currentRunningThread;
     private DownloadQuickLookImagesRunnable downloadQuickLookImagesRunnable;
     private int textFieldPreferredHeight;
+    private Credentials credentials;
 
     public ProductLibraryToolViewV2() {
         super();
@@ -252,31 +256,39 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return fileChooser;
     }
 
+    private Credentials getUserCredentials() {
+        if (this.credentials == null) {
+            LoginDialog loginDialog = new LoginDialog(SnapApp.getDefault().getMainFrame(), "User credentials");
+            loginDialog.show();
+            if (loginDialog.areCredentialsEntered()) {
+                this.credentials = new UsernamePasswordCredentials(loginDialog.getUsername(), loginDialog.getPassword());
+            }
+        }
+        return this.credentials;
+    }
+
     private void searchButtonPressed() {
         AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
-        DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
-        String selectedMission = selectedDataSource.getSelectedMission();
         Map<String, Object> parameterValues = selectedDataSource.getParameterValues();
-        int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
-        Credentials credentials = new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com");
-        this.productResultsPanel.clearProducts();
-        DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, dataSourceResults,
-                                                                                        this, this.productResultsPanel,
-                                                                                       selectedDataSource.getName(), selectedMission, parameterValues) {
-            @Override
-            protected void onSuccessfullyFinish(List<ProductLibraryItem> downloadedProductList) {
-                super.onSuccessfullyFinish(downloadedProductList);
+        if (parameterValues != null) {
+            Credentials credentials = getUserCredentials();
+            if (credentials != null) {
+                DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
+                String selectedMission = selectedDataSource.getSelectedMission();
+                int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
+                this.productResultsPanel.clearProducts();
+                DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, dataSourceResults,
+                        this, this.productResultsPanel, selectedDataSource.getName(), selectedMission, parameterValues) {
 
-                downloadQuickLookImagesAsync(downloadedProductList, getCredentials());
+                    @Override
+                    protected void onStopExecuting() {
+                        ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
+                        downloadQuickLookImagesAsync(getCredentials());
+                    }
+                };
+                startRunningThread(thread);
             }
-
-            @Override
-            protected void onStopExecuting() {
-                ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
-
-            }
-        };
-        startRunningThread(thread);
+        }
     }
 
     private void startRunningThread(AbstractProgressTimerRunnable<?> newRunningThread) {
@@ -284,7 +296,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.currentRunningThread.executeAsync(); // start the thread
     }
 
-    private void downloadQuickLookImagesAsync(List<ProductLibraryItem> downloadedProductList, Credentials credentials) {
+    private void downloadQuickLookImagesAsync(Credentials credentials) {
+        List<ProductLibraryItem> downloadedProductList = this.productResultsPanel.getListModel().getProducts();
         AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
         DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
         this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, dataSourceResults, this.productResultsPanel) {

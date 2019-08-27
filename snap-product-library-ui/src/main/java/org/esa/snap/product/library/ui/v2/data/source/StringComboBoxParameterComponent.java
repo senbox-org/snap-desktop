@@ -12,9 +12,9 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
     private final JComboBox<String> component;
 
     public StringComboBoxParameterComponent(String parameterName, String defaultValue, String parameterLabelText,
-                                            String[] values, ComponentDimension componentDimension) {
+                                            boolean required, String[] values, ComponentDimension componentDimension) {
 
-        super(parameterName, parameterLabelText);
+        super(parameterName, parameterLabelText, required);
 
         this.component = RemoteProductsDataSourcePanel.buildComboBox(values, defaultValue, componentDimension);
     }

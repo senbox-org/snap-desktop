@@ -1,8 +1,8 @@
 package org.esa.snap.product.library.ui.v2.data.source;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.ui.v2.CustomSplitPane;
+import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.v2.DataSourceProductDownloader;
 import org.esa.snap.product.library.v2.DataSourceProductsProvider;
 import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
@@ -102,7 +103,14 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
             Object value = parameterComponent.getParameterValue();
-            if (value != null) {
+            if (value == null) {
+                if (parameterComponent.isRequired()) {
+                    String message = "The value of the '" + parameterComponent.getLabel().getText()+"' parameter is required.";
+                    showErrorMessageDialog(message, "Required parameter");
+                    parameterComponent.getComponent().requestFocus();
+                    return null;
+                }
+            } else {
                 result.put(parameterComponent.getParameterName(), value);
             }
         }
@@ -140,6 +148,10 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
         return maximumLabelWidth;
     }
 
+    private void showErrorMessageDialog(String message, String title) {
+        JOptionPane.showMessageDialog(getParent(), message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
     private void newSelectedMission() {
         this.missionParameterListener.newSelectedMission(getSelectedMission(), RemoteProductsDataSourcePanel.this);
     }
@@ -168,18 +180,18 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
             if (param.getType() == String.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : (String)param.getDefaultValue();
                 if (param.getValueSet() == null) {
-                    parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), textFieldPreferredHeight);
+                    parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
                 } else {
                     String[] defaultValues = (String[])param.getValueSet();
                     String[] values = new String[defaultValues.length + 1];
                     System.arraycopy(defaultValues, 0, values, 1, defaultValues.length);
-                    parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), values, this.componentDimension);
+                    parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, this.componentDimension);
                 }
             } else if (param.getType() == Double.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), textFieldPreferredHeight);
+                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
             } else if (param.getType() == Date.class) {
-                parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), textFieldPreferredHeight);
+                parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight);
             } else if (param.getType() == Rectangle.Double.class) {
                 rectangleParameter = param;
             } else {
@@ -199,7 +211,7 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
         panel.add(Box.createVerticalGlue(), c); // add an empty label
 
         if (rectangleParameter != null) {
-            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(rectangleParameter.getName(), rectangleParameter.getLabel());
+            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(rectangleParameter.getName(), rectangleParameter.getLabel(), rectangleParameter.isRequired());
             this.parameterComponents.add(selectionAreaParameterComponent);
             JPanel worldPanel = selectionAreaParameterComponent.getComponent();
             worldPanel.setBackground(Color.WHITE);

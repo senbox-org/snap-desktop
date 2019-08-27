@@ -47,6 +47,10 @@ public class ProductListModel extends AbstractListModel<ProductLibraryItem> {
         fireIntervalRemoved(this, 0, oldSize);
     }
 
+    public List<ProductLibraryItem> getProducts() {
+        return new ArrayList<>(this.items);
+    }
+
     public ImageIcon getProductQuickLookImage(ProductLibraryItem product) {
         return this.quickLookImages.get(product);
     }

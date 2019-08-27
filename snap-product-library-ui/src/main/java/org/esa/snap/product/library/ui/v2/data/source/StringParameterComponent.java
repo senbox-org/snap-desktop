@@ -10,8 +10,8 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
 
     private final JTextField component;
 
-    public StringParameterComponent(String parameterName, String defaultValue, String parameterLabelText, int textFieldPreferredHeight) {
-        super(parameterName, parameterLabelText);
+    public StringParameterComponent(String parameterName, String defaultValue, String parameterLabelText, boolean required, int textFieldPreferredHeight) {
+        super(parameterName, parameterLabelText, required);
 
         this.component = new JTextField();
 
@@ -33,6 +33,6 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
     @Override
     public String getParameterValue() {
         String value = this.component.getText().trim();
-        return (value.equals("") ? null : value);
+        return (value.trim().equals("") ? null : value);
     }
 }

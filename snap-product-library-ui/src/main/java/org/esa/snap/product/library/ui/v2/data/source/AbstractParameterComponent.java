@@ -10,9 +10,11 @@ public abstract class AbstractParameterComponent<ValueType> {
 
     private final String parameterName;
     private final JLabel label;
+    private final boolean required;
 
-    protected AbstractParameterComponent(String parameterName, String parameterLabelText) {
+    protected AbstractParameterComponent(String parameterName, String parameterLabelText, boolean required) {
         this.parameterName = parameterName;
+        this.required = required;
         this.label = new JLabel(parameterLabelText);
     }
 
@@ -26,5 +28,9 @@ public abstract class AbstractParameterComponent<ValueType> {
 
     public JLabel getLabel() {
         return label;
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 }

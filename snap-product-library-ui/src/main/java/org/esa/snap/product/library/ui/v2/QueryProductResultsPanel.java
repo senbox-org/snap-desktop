@@ -50,19 +50,23 @@ public class QueryProductResultsPanel extends JPanel {
         return this.productList.getSelectedValue();
     }
 
+    public ProductListModel getListModel() {
+        return (ProductListModel)this.productList.getModel();
+    }
+
     public void addProducts(List<ProductLibraryItem> products, long totalProductCount, int retrievedProductCount, String dataSourceName) {
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        ProductListModel productListModel = getListModel();
         productListModel.addProducts(products);
-        this.titleLabel.setText(getTitle() + ": " + "retrieving " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
+        this.titleLabel.setText(getTitle() + ": " + "retrieved " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
     }
 
     public void setProductQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        ProductListModel productListModel = getListModel();
         productListModel.setProductQuickLookImage(product, quickLookImage);
     }
 
     public void clearProducts() {
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        ProductListModel productListModel = getListModel();
         productListModel.clearProducts();
         this.titleLabel.setText(getTitle());
     }
@@ -74,7 +78,7 @@ public class QueryProductResultsPanel extends JPanel {
 
     public void startSearchingProductList(String dataSourceName) {
         this.titleLabel.setText(getTitle() + ": " + "retrieving product list from " + dataSourceName+"...");
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        ProductListModel productListModel = getListModel();
         if (productListModel.getSize() > 0) {
             throw new IllegalStateException("The product list must be empty before start retrieving the list.");
         }
@@ -85,7 +89,7 @@ public class QueryProductResultsPanel extends JPanel {
     }
 
     public void finishDownloadingProductList() {
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
+        ProductListModel productListModel = getListModel();
         String text = getTitle() + ": " + productListModel.getSize();
         if (productListModel.getSize() == 1) {
             text += " product";

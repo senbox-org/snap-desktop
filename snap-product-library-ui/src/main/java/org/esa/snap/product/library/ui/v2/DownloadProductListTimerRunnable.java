@@ -80,16 +80,15 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     @Override
     protected void onSuccessfullyFinish(List<ProductLibraryItem> results) {
         this.productResultsPanel.finishDownloadingProductList();
-        if (results.size() > 0) {
-            // do nothing
-        } else {
-            onShowInformationDialog("No product available according to the filter values.", "Information");
+        if (results.size() == 0) {
+            onShowInformationMessageDialog("No product available according to the filter values.", "Information");
         }
     }
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorDialog("Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
+        this.productResultsPanel.finishDownloadingProductList();
+        onShowErrorMessageDialog("Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
     }
 
     protected final Credentials getCredentials() {
@@ -120,11 +119,11 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void onShowErrorDialog(String message, String title) {
+    private void onShowErrorMessageDialog(String message, String title) {
         JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    private void onShowInformationDialog(String message, String title) {
+    private void onShowInformationMessageDialog(String message, String title) {
         JOptionPane.showMessageDialog(this.parentComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 

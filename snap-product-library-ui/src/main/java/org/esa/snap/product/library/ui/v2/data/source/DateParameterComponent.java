@@ -12,8 +12,8 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
 
     private final JXDatePicker component;
 
-    public DateParameterComponent(String parameterName, String parameterLabelText, int textFieldPreferredHeight) {
-        super(parameterName, parameterLabelText);
+    public DateParameterComponent(String parameterName, String parameterLabelText, boolean required, int textFieldPreferredHeight) {
+        super(parameterName, parameterLabelText, required);
 
         this.component = new JXDatePicker();
 
