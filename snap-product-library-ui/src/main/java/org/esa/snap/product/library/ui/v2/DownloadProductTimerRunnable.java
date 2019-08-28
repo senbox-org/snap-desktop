@@ -2,9 +2,9 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.DataSourceProductDownloader;
+import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
 import org.esa.snap.product.library.v2.ProgressListener;
-import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
@@ -17,14 +17,14 @@ import java.nio.file.Path;
 public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<Path> {
 
     private final String dataSourceName;
-    private final ProductLibraryItem productToDownload;
+    private final RepositoryProduct productToDownload;
     private final JComponent parentComponent;
     private final QueryProductResultsPanel productResultsPanel;
-    private final DataSourceProductDownloader dataSourceProductDownloader;
+    private final ProductRepositoryDownloader dataSourceProductDownloader;
     private final Path targetFolderPath;
 
     public DownloadProductTimerRunnable(ProgressPanel progressPanel, int threadId, String dataSourceName,
-                                        DataSourceProductDownloader dataSourceProductDownloader, ProductLibraryItem productToDownload,
+                                        ProductRepositoryDownloader dataSourceProductDownloader, RepositoryProduct productToDownload,
                                         Path targetFolderPath, QueryProductResultsPanel productResultsPanel, JComponent parentComponent) {
 
         super(progressPanel, threadId, 500);

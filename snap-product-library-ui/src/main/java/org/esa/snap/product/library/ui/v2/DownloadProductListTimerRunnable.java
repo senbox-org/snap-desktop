@@ -3,8 +3,8 @@ package org.esa.snap.product.library.ui.v2;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
-import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.product.library.v2.ProductsDownloaderListener;
 import org.esa.snap.ui.loading.GenericRunnable;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Created by jcoravu on 9/8/2019.
  */
-public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<ProductLibraryItem>> {
+public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<RepositoryProduct>> {
 
     private final String mission;
     private final Map<String, Object> parameterValues;
@@ -24,10 +24,10 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final JComponent parentComponent;
     private final Credentials credentials;
     private final QueryProductResultsPanel productResultsPanel;
-    private final DataSourceResultsDownloader dataSourceResults;
+    private final ProductListRepositoryDownloader dataSourceResults;
 
     public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
-                                            DataSourceResultsDownloader dataSourceResults,
+                                            ProductListRepositoryDownloader dataSourceResults,
                                             JComponent parentComponent, QueryProductResultsPanel productResultsPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
@@ -43,7 +43,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     @Override
-    protected List<ProductLibraryItem> execute() throws Exception {
+    protected List<RepositoryProduct> execute() throws Exception {
         ProductsDownloaderListener downloaderListener = new ProductsDownloaderListener() {
             @Override
             public void notifyProductCount(long totalProductCount) {
@@ -53,7 +53,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             }
 
             @Override
-            public void notifyPageProducts(int pageNumber, List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+            public void notifyPageProducts(int pageNumber, List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
                 if (isRunning()) {
                     notifyPageProductsLater(pageResults, totalProductCount, retrievedProductCount);
                 }
@@ -77,7 +77,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     @Override
-    protected void onSuccessfullyFinish(List<ProductLibraryItem> results) {
+    protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
         this.productResultsPanel.finishDownloadingProductList();
         if (results.size() == 0) {
             onShowInformationMessageDialog(this.parentComponent, "No product available according to the filter values.", "Information");
@@ -106,10 +106,10 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void notifyPageProductsLater(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+    private void notifyPageProductsLater(List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
         Runnable runnable = new ProductPageResultsRunnable(pageResults, totalProductCount, retrievedProductCount) {
             @Override
-            protected void execute(List<ProductLibraryItem> pageResultsValue, long totalProductCountValue, int retrievedProductCountValue) {
+            protected void execute(List<RepositoryProduct> pageResultsValue, long totalProductCountValue, int retrievedProductCountValue) {
                 if (isCurrentProgressPanelThread()) {
                     productResultsPanel.addProducts(pageResultsValue, totalProductCountValue, retrievedProductCountValue, dataSourceName);
                 }
@@ -120,17 +120,17 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     private static abstract class ProductPageResultsRunnable implements Runnable {
 
-        private final List<ProductLibraryItem> pageResults;
+        private final List<RepositoryProduct> pageResults;
         private final long totalProductCount;
         private final int retrievedProductCount;
 
-        public ProductPageResultsRunnable(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount) {
+        public ProductPageResultsRunnable(List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
             this.pageResults = pageResults;
             this.totalProductCount = totalProductCount;
             this.retrievedProductCount = retrievedProductCount;
         }
 
-        protected abstract void execute(List<ProductLibraryItem> pageResults, long totalProductCount, int retrievedProductCount);
+        protected abstract void execute(List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount);
 
         @Override
         public void run() {

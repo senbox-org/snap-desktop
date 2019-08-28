@@ -1,19 +1,18 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
-import org.esa.snap.product.library.v2.DataSourceProductDownloader;
-import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
+import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
+import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
 
 import javax.swing.JPanel;
 import java.awt.LayoutManager;
-import java.nio.file.Path;
 import java.util.Map;
 
 /**
  * Created by jcoravu on 5/8/2019.
  */
-public abstract class AbstractProductsDataSourcePanel extends JPanel {
+public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
-    protected AbstractProductsDataSourcePanel(LayoutManager layoutManager) {
+    protected AbstractProductsRepositoryPanel(LayoutManager layoutManager) {
         super(layoutManager);
     }
 
@@ -26,11 +25,11 @@ public abstract class AbstractProductsDataSourcePanel extends JPanel {
     public void refreshMissionParameters() {
     }
 
-    public DataSourceResultsDownloader buildResultsDownloader() {
+    public ProductListRepositoryDownloader buildResultsDownloader() {
         return null;
     }
 
-    public DataSourceProductDownloader buidProductDownloader(String mission) {
+    public ProductRepositoryDownloader buidProductDownloader(String mission) {
         return null;
     }
 

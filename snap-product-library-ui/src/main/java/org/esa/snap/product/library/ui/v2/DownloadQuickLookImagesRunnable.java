@@ -2,8 +2,8 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
-import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 
 import javax.swing.SwingUtilities;
 import java.awt.Image;
@@ -19,13 +19,13 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     private static final Logger logger = Logger.getLogger(DownloadQuickLookImagesRunnable.class.getName());
 
-    private final List<ProductLibraryItem> productList;
+    private final List<RepositoryProduct> productList;
     private final Credentials credentials;
-    private final DataSourceResultsDownloader dataSourceResults;
+    private final ProductListRepositoryDownloader dataSourceResults;
     private final QueryProductResultsPanel productResultsPanel;
 
-    public DownloadQuickLookImagesRunnable(List<ProductLibraryItem> productList, Credentials credentials,
-                                           DataSourceResultsDownloader dataSourceResults, QueryProductResultsPanel productResultsPanel) {
+    public DownloadQuickLookImagesRunnable(List<RepositoryProduct> productList, Credentials credentials,
+                                           ProductListRepositoryDownloader dataSourceResults, QueryProductResultsPanel productResultsPanel) {
 
         super();
 
@@ -44,7 +44,7 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
                 return null; // nothing to return
             }
 
-            ProductLibraryItem product = this.productList.get(i);
+            RepositoryProduct product = this.productList.get(i);
             Image scaledQuickLookImage = null;
             if (product.getQuickLookLocation() != null) {
                 try {
@@ -91,10 +91,10 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
     protected void onStopExecuting() {
     }
 
-    private void notifyDownloadedQuickLookImageLater(ProductLibraryItem product, Image quickLookImage) {
+    private void notifyDownloadedQuickLookImageLater(RepositoryProduct product, Image quickLookImage) {
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
-            protected void execute(ProductLibraryItem productValue, Image quickLookImageValue) {
+            protected void execute(RepositoryProduct productValue, Image quickLookImageValue) {
                 productResultsPanel.setProductQuickLookImage(productValue, quickLookImageValue);
             }
         };
@@ -103,15 +103,15 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     private static abstract class ProductQuickLookImageRunnable implements Runnable {
 
-        private final ProductLibraryItem product;
+        private final RepositoryProduct product;
         private final Image quickLookImage;
 
-        public ProductQuickLookImageRunnable(ProductLibraryItem product, Image quickLookImage) {
+        public ProductQuickLookImageRunnable(RepositoryProduct product, Image quickLookImage) {
             this.product = product;
             this.quickLookImage = quickLookImage;
         }
 
-        protected abstract void execute(ProductLibraryItem product, Image quickLookImage);
+        protected abstract void execute(RepositoryProduct product, Image quickLookImage);
 
         @Override
         public void run() {

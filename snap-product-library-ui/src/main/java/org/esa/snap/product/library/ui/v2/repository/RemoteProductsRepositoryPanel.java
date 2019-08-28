@@ -1,11 +1,11 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.CustomSplitPane;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
-import org.esa.snap.product.library.v2.DataSourceProductDownloader;
-import org.esa.snap.product.library.v2.DataSourceProductsProvider;
-import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
+import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
 import org.esa.snap.product.library.v2.parameters.QueryFilter;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -26,7 +26,6 @@ import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,17 +35,17 @@ import java.util.Map;
 /**
  * Created by jcoravu on 5/8/2019.
  */
-public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePanel {
+public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
 
     private final ComponentDimension componentDimension;
     private final IMissionParameterListener missionParameterListener;
     private final JLabel missionsLabel;
     private final JComboBox<String> missionsComboBox;
-    private final DataSourceProductsProvider dataSourceProductsProvider;
+    private final ProductsRepositoryProvider dataSourceProductsProvider;
 
     private List<AbstractParameterComponent> parameterComponents;
 
-    public RemoteProductsDataSourcePanel(DataSourceProductsProvider dataSourceProductsProvider, ComponentDimension componentDimension,
+    public RemoteProductsRepositoryPanel(ProductsRepositoryProvider dataSourceProductsProvider, ComponentDimension componentDimension,
                                          IMissionParameterListener missionParameterListener) {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
@@ -78,7 +77,7 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
 
     @Override
     public String getName() {
-        return this.dataSourceProductsProvider.getName();
+        return this.dataSourceProductsProvider.getRepositoryName();
     }
 
     @Override
@@ -118,12 +117,12 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
     }
 
     @Override
-    public DataSourceResultsDownloader buildResultsDownloader() {
+    public ProductListRepositoryDownloader buildResultsDownloader() {
         return this.dataSourceProductsProvider.buildResultsDownloader();
     }
 
     @Override
-    public DataSourceProductDownloader buidProductDownloader(String mission) {
+    public ProductRepositoryDownloader buidProductDownloader(String mission) {
         return this.dataSourceProductsProvider.buidProductDownloader(mission);
     }
 
@@ -153,7 +152,7 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
     }
 
     private void newSelectedMission() {
-        this.missionParameterListener.newSelectedMission(getSelectedMission(), RemoteProductsDataSourcePanel.this);
+        this.missionParameterListener.newSelectedMission(getSelectedMission(), RemoteProductsRepositoryPanel.this);
     }
 
     private void addParameters() {
@@ -235,7 +234,7 @@ public class RemoteProductsDataSourcePanel extends AbstractProductsDataSourcePan
         int maximumLabelWidth = computeLeftPanelMaximumLabelWidth();
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
-            RemoteProductsDataSourcePanel.setLabelSize(parameterComponent.getLabel(), maximumLabelWidth);
+            RemoteProductsRepositoryPanel.setLabelSize(parameterComponent.getLabel(), maximumLabelWidth);
         }
 
         add(panel, BorderLayout.CENTER);

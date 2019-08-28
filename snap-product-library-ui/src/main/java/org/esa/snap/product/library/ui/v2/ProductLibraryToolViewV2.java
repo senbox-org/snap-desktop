@@ -15,19 +15,19 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
+import com.bc.ceres.core.ServiceRegistry;
+import com.bc.ceres.core.ServiceRegistryManager;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
-import org.esa.snap.product.library.ui.v2.data.source.AbstractProductsDataSourcePanel;
-import org.esa.snap.product.library.ui.v2.data.source.DataSourcesPanel;
-import org.esa.snap.product.library.ui.v2.data.source.LocalFolderProductsDataSourcePanel;
+import org.esa.snap.core.util.ServiceLoader;
+import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.repository.LocalFolderProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.v2.DataSourceProductDownloader;
-import org.esa.snap.product.library.v2.DataSourceProductsProvider;
-import org.esa.snap.product.library.v2.DataSourceResultsDownloader;
-import org.esa.snap.product.library.v2.ProductLibraryItem;
-import org.esa.snap.product.library.v2.scihub.SciHubDataSourceProductsProvider;
-import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
+import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
@@ -50,8 +50,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
@@ -83,7 +85,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private boolean initialized;
     private Path lastSelectedFolderPath;
     private QueryProductResultsPanel productResultsPanel;
-    private DataSourcesPanel dataSourcesPanel;
+    private RepositorySelectionPanel repositoriesPanel;
     private CustomSplitPane verticalSplitPane;
 
     private AbstractProgressTimerRunnable<?> currentRunningThread;
@@ -137,14 +139,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                    refreshDataSourceParameters();
+                    refreshRepositoryParameters();
                 }
             }
         };
         IMissionParameterListener missionParameterListener = new IMissionParameterListener() {
             @Override
-            public void newSelectedMission(String mission, AbstractProductsDataSourcePanel parentDataSource) {
-                if (parentDataSource == dataSourcesPanel.getSelectedDataSource()) {
+            public void newSelectedMission(String mission, AbstractProductsRepositoryPanel parentDataSource) {
+                if (parentDataSource == repositoriesPanel.getSelectedDataSource()) {
                     refreshDataSourceMissionParameters();
                 } else {
                     throw new IllegalStateException("The selected mission '"+mission+"' does not belong to the visible data source.");
@@ -163,11 +165,22 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 stopProgressPanel();
             }
         };
-        DataSourceProductsProvider[] dataSourceProductProviders = new DataSourceProductsProvider[1];
-        dataSourceProductProviders[0] = new SciHubDataSourceProductsProvider();
 
-        this.dataSourcesPanel = new DataSourcesPanel(dataSourceProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
-        this.dataSourcesPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
+        ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
+        ServiceRegistry<ProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(ProductsRepositoryProvider.class);
+        ServiceLoader.loadServices(serviceRegistry);
+        Set<ProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
+
+        ProductsRepositoryProvider[] dataSourceProductProviders = new ProductsRepositoryProvider[repositoryProductsProviders.size()];
+        Iterator<ProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
+        int index = 0;
+        while (it.hasNext()) {
+            ProductsRepositoryProvider productsProvider = it.next();
+            dataSourceProductProviders[index++] = productsProvider;
+        }
+
+        this.repositoriesPanel = new RepositorySelectionPanel(dataSourceProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
+        this.repositoriesPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         ActionListener downloadProductListener = new ActionListener() {
             @Override
@@ -179,14 +192,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.productResultsPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
 
         this.verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
-        this.verticalSplitPane.setLeftComponent(this.dataSourcesPanel.getSelectedDataSource());
+        this.verticalSplitPane.setLeftComponent(this.repositoriesPanel.getSelectedDataSource());
         this.verticalSplitPane.setRightComponent(this.productResultsPanel);
 
         int gapBetweenRows = getGapBetweenRows();
         int gapBetweenColumns = getGapBetweenRows();
 
         JPanel contentPanel = new JPanel(new BorderLayout(0, gapBetweenRows));
-        contentPanel.add(this.dataSourcesPanel, BorderLayout.NORTH);
+        contentPanel.add(this.repositoriesPanel, BorderLayout.NORTH);
         contentPanel.add(this.verticalSplitPane, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
@@ -195,16 +208,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void stopProgressPanel() {
-        this.dataSourcesPanel.hideProgressPanel();
+        this.repositoriesPanel.hideProgressPanel();
         if (this.currentRunningThread != null) {
             this.currentRunningThread.stopRunning();
         }
     }
 
-    private void refreshDataSourceParameters() {
+    private void refreshRepositoryParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.verticalSplitPane.setLeftComponent(this.dataSourcesPanel.getSelectedDataSource());
+        this.verticalSplitPane.setLeftComponent(this.repositoriesPanel.getSelectedDataSource());
         this.verticalSplitPane.revalidate();
         this.verticalSplitPane.repaint();
         this.productResultsPanel.clearProducts();
@@ -213,7 +226,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void refreshDataSourceMissionParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.dataSourcesPanel.refreshDataSourceMissionParameters();
+        this.repositoriesPanel.refreshDataSourceMissionParameters();
         this.productResultsPanel.clearProducts();
     }
 
@@ -232,11 +245,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         int result = fileChooser.showDialog(this, "Select");
         if (result == JFileChooser.APPROVE_OPTION) {
             this.lastSelectedFolderPath = fileChooser.getSelectedPath();
-            AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
-            ProductLibraryItem selectedProduct = this.productResultsPanel.getSelectedProduct();
-            DataSourceProductDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission());
-            int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
-            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.dataSourcesPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
+            AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
+            RepositoryProduct selectedProduct = this.productResultsPanel.getSelectedProduct();
+            ProductRepositoryDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission());
+            int threadId = this.repositoriesPanel.incrementAndGetCurrentThreadId();
+            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.repositoriesPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
                                                                                    selectedProduct, this.lastSelectedFolderPath, this.productResultsPanel, this) {
 
                 @Override
@@ -256,8 +269,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void onSuccessfullyDownloadedProduct(Path targetFolderPath) {
-        LocalFolderProductsDataSourcePanel localFolderProducts = new LocalFolderProductsDataSourcePanel(targetFolderPath);
-        this.dataSourcesPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
+        LocalFolderProductsRepositoryPanel localFolderProducts = new LocalFolderProductsRepositoryPanel(targetFolderPath);
+        this.repositoriesPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
     }
 
     private Credentials getUserCredentials() {
@@ -272,16 +285,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void searchButtonPressed() {
-        AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
+        AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
         Map<String, Object> parameterValues = selectedDataSource.getParameterValues();
         if (parameterValues != null) {
             Credentials credentials = getUserCredentials();
             if (credentials != null) {
-                DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
+                ProductListRepositoryDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
                 String selectedMission = selectedDataSource.getSelectedMission();
-                int threadId = this.dataSourcesPanel.incrementAndGetCurrentThreadId();
+                int threadId = this.repositoriesPanel.incrementAndGetCurrentThreadId();
                 this.productResultsPanel.clearProducts();
-                DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.dataSourcesPanel, threadId, credentials, dataSourceResults,
+                DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.repositoriesPanel, threadId, credentials, dataSourceResults,
                         this, this.productResultsPanel, selectedDataSource.getName(), selectedMission, parameterValues) {
 
                     @Override
@@ -301,9 +314,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void downloadQuickLookImagesAsync(Credentials credentials) {
-        List<ProductLibraryItem> downloadedProductList = this.productResultsPanel.getListModel().getProducts();
-        AbstractProductsDataSourcePanel selectedDataSource = this.dataSourcesPanel.getSelectedDataSource();
-        DataSourceResultsDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
+        List<RepositoryProduct> downloadedProductList = this.productResultsPanel.getListModel().getProducts();
+        AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
+        ProductListRepositoryDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
         this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, dataSourceResults, this.productResultsPanel) {
             @Override
             protected void onStopExecuting() {

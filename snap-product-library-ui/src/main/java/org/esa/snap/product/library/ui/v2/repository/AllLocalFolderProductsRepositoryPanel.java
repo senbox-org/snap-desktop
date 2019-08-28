@@ -1,13 +1,13 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import java.awt.BorderLayout;
 
 /**
  * Created by jcoravu on 5/8/2019.
  */
-public class AllLocalFolderProductsDataSourcePanel extends AbstractProductsDataSourcePanel {
+public class AllLocalFolderProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
 
-    public AllLocalFolderProductsDataSourcePanel() {
+    public AllLocalFolderProductsRepositoryPanel() {
         super(new BorderLayout());
     }
 

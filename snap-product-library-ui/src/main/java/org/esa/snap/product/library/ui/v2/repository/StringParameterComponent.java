@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import javax.swing.JTextField;
 import java.awt.Dimension;

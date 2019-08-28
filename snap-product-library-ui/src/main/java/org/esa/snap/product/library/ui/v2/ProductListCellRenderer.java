@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.Box;
@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class ProductListCellRenderer extends JPanel implements ListCellRenderer<ProductLibraryItem> {
+public class ProductListCellRenderer extends JPanel implements ListCellRenderer<RepositoryProduct> {
 
     public static final ImageIcon EMPTY_ICON;
     static {
@@ -101,7 +101,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends ProductLibraryItem> list, ProductLibraryItem product, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends RepositoryProduct> list, RepositoryProduct product, int index, boolean isSelected, boolean cellHasFocus) {
         Color backgroundColor;
         Color foregroundColor;
         if (isSelected) {

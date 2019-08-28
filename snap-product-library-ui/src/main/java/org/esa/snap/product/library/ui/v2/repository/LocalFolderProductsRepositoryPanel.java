@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import java.awt.BorderLayout;
 import java.nio.file.Path;
@@ -6,11 +6,11 @@ import java.nio.file.Path;
 /**
  * Created by jcoravu on 5/8/2019.
  */
-public class LocalFolderProductsDataSourcePanel extends AbstractProductsDataSourcePanel {
+public class LocalFolderProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
 
     private final Path localFolderPath;
 
-    public LocalFolderProductsDataSourcePanel(Path localFolderPath) {
+    public LocalFolderProductsRepositoryPanel(Path localFolderPath) {
         super(new BorderLayout());
 
         this.localFolderPath = localFolderPath;

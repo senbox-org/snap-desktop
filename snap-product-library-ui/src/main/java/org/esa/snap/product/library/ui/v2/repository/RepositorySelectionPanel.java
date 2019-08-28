@@ -1,9 +1,9 @@
-package org.esa.snap.product.library.ui.v2.data.source;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.DataSourceProductsProvider;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -31,24 +31,25 @@ import java.util.Stack;
 /**
  * Created by jcoravu on 22/8/2019.
  */
-public class DataSourcesPanel extends JPanel implements ProgressPanel {
+public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
-    private JComboBox<AbstractProductsDataSourcePanel> dataSourcesComboBox;
+    private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
     private final JButton searchButton;
     private final JButton helpButton;
-    private JLabel dataSourceLabel;
-    private JButton stopButton;
-    private JProgressBar progressBar;
+    private final JLabel repositoryLabel;
+    private final JButton stopButton;
+    private final JProgressBar progressBar;
+
     private int currentThreadId;
 
-    public DataSourcesPanel(DataSourceProductsProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
-                            ItemListener dataSourceListener, ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
+    public RepositorySelectionPanel(ProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
+                                    ItemListener dataSourceListener, ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
 
         this.currentThreadId = 0;
 
-        createDataSourcesComboBox(dataSourceProductProviders, componentDimension, dataSourceListener, missionParameterListener);
+        createRepositoriesComboBox(dataSourceProductProviders, componentDimension, dataSourceListener, missionParameterListener);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
@@ -66,22 +67,22 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         this.stopButton = buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", stopButtonListener, buttonSize);
         this.stopButton.setToolTipText("Stop");
 
-        this.dataSourceLabel = new JLabel("Data source");
+        this.repositoryLabel = new JLabel("Repository");
 
         this.progressBar = new JProgressBar(JProgressBar.HORIZONTAL);
         this.progressBar.setIndeterminate(true);
         this.progressBar.setPreferredSize(new Dimension(100, 10));
         this.progressBar.setMinimumSize(new Dimension(100, 10));
 
-        refreshDataSourceLabelWidth();
+        refreshRepositoryLabelWidth();
         setProgressPanelVisible(false);
 
         int gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        add(this.dataSourceLabel, c);
+        add(this.repositoryLabel, c);
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.dataSourcesComboBox, c);
+        add(this.repositoriesComboBox, c);
         c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.searchButton, c);
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
@@ -148,32 +149,32 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         }
     }
 
-    public AbstractProductsDataSourcePanel getSelectedDataSource() {
-        return (AbstractProductsDataSourcePanel)this.dataSourcesComboBox.getSelectedItem();
+    public AbstractProductsRepositoryPanel getSelectedDataSource() {
+        return (AbstractProductsRepositoryPanel)this.repositoriesComboBox.getSelectedItem();
     }
 
     public void refreshDataSourceMissionParameters() {
         getSelectedDataSource().refreshMissionParameters();
-        refreshDataSourceLabelWidth();
+        refreshRepositoryLabelWidth();
     }
 
     public void setDataSourcesBorder(Border border) {
-        int count = this.dataSourcesComboBox.getModel().getSize();
+        int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
-            AbstractProductsDataSourcePanel productsDataSource = this.dataSourcesComboBox.getModel().getElementAt(i);
+            AbstractProductsRepositoryPanel productsDataSource = this.repositoriesComboBox.getModel().getElementAt(i);
             productsDataSource.setBorder(border);
         }
     }
 
-    public void addNewLocalFolderProductsDataSource(LocalFolderProductsDataSourcePanel localFolderProductsDataSourcePanel) {
-        this.dataSourcesComboBox.addItem(localFolderProductsDataSourcePanel);
+    public void addNewLocalFolderProductsDataSource(LocalFolderProductsRepositoryPanel localFolderProductsDataSourcePanel) {
+        this.repositoriesComboBox.addItem(localFolderProductsDataSourcePanel);
     }
 
     private void setParametersEnabledWhileDownloading(boolean enabled) {
         this.searchButton.setEnabled(enabled);
-        this.dataSourceLabel.setEnabled(enabled);
-        this.dataSourcesComboBox.setEnabled(enabled);
-        AbstractProductsDataSourcePanel selectedDataSource = getSelectedDataSource();
+        this.repositoryLabel.setEnabled(enabled);
+        this.repositoriesComboBox.setEnabled(enabled);
+        AbstractProductsRepositoryPanel selectedDataSource = getSelectedDataSource();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);
         while (!stack.isEmpty()) {
@@ -196,44 +197,44 @@ public class DataSourcesPanel extends JPanel implements ProgressPanel {
         this.stopButton.setVisible(visible);
     }
 
-    private void refreshDataSourceLabelWidth() {
+    private void refreshRepositoryLabelWidth() {
         int maximumLabelWidth = getSelectedDataSource().computeLeftPanelMaximumLabelWidth();
-        RemoteProductsDataSourcePanel.setLabelSize(this.dataSourceLabel, maximumLabelWidth);
-        Container parentContainer = this.dataSourceLabel.getParent();
+        RemoteProductsRepositoryPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
+        Container parentContainer = this.repositoryLabel.getParent();
         if (parentContainer != null) {
             parentContainer.revalidate();
             parentContainer.repaint();
         }
     }
 
-    private void createDataSourcesComboBox(DataSourceProductsProvider[] dataSourceProductProviders, ComponentDimension componentDimension,
-                                           ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
+    private void createRepositoriesComboBox(ProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension,
+                                            ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
 
-        AbstractProductsDataSourcePanel[] availableDataSources = new AbstractProductsDataSourcePanel[dataSourceProductProviders.length + 1];
+        AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[dataSourceProductProviders.length + 1];
         for (int i=0; i<dataSourceProductProviders.length; i++) {
-            availableDataSources[i] = new RemoteProductsDataSourcePanel(dataSourceProductProviders[i], componentDimension, missionParameterListener);
+            availableDataSources[i] = new RemoteProductsRepositoryPanel(dataSourceProductProviders[i], componentDimension, missionParameterListener);
         }
-        availableDataSources[dataSourceProductProviders.length] = new AllLocalFolderProductsDataSourcePanel();
+        availableDataSources[dataSourceProductProviders.length] = new AllLocalFolderProductsRepositoryPanel();
 
-        this.dataSourcesComboBox = new JComboBox<AbstractProductsDataSourcePanel>(availableDataSources) {
+        this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
             @Override
             public Color getBackground() {
                 return Color.WHITE;
             }
         };
-        Dimension comboBoxSize = this.dataSourcesComboBox.getPreferredSize();
+        Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
         comboBoxSize.height = componentDimension.getTextFieldPreferredHeight();
-        this.dataSourcesComboBox.setPreferredSize(comboBoxSize);
-        LabelListCellRenderer<AbstractProductsDataSourcePanel> renderer = new LabelListCellRenderer<AbstractProductsDataSourcePanel>(componentDimension.getListItemMargins()) {
+        this.repositoriesComboBox.setPreferredSize(comboBoxSize);
+        LabelListCellRenderer<AbstractProductsRepositoryPanel> renderer = new LabelListCellRenderer<AbstractProductsRepositoryPanel>(componentDimension.getListItemMargins()) {
             @Override
-            protected String getItemDisplayText(AbstractProductsDataSourcePanel value) {
+            protected String getItemDisplayText(AbstractProductsRepositoryPanel value) {
                 return (value == null) ? "" : value.getName();
             }
         };
-        this.dataSourcesComboBox.setRenderer(renderer);
-        this.dataSourcesComboBox.setMaximumRowCount(5);
-        this.dataSourcesComboBox.setSelectedIndex(0);
-        this.dataSourcesComboBox.addItemListener(dataSourceListener);
+        this.repositoriesComboBox.setRenderer(renderer);
+        this.repositoriesComboBox.setMaximumRowCount(5);
+        this.repositoriesComboBox.setSelectedIndex(0);
+        this.repositoriesComboBox.addItemListener(dataSourceListener);
     }
 
     private static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize) {

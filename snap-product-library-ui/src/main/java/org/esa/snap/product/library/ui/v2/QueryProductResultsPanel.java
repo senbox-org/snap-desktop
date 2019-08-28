@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.product.library.v2.ProductLibraryItem;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -27,7 +27,7 @@ import java.util.List;
 public class QueryProductResultsPanel extends JPanel {
 
     private final JLabel titleLabel;
-    private final JList<ProductLibraryItem> productList;
+    private final JList<RepositoryProduct> productList;
     private final ActionListener downloadProductListener;
 
     public QueryProductResultsPanel(ActionListener downloadProductListener) {
@@ -35,7 +35,7 @@ public class QueryProductResultsPanel extends JPanel {
 
         this.downloadProductListener = downloadProductListener;
         this.titleLabel = new JLabel(getTitle());
-        this.productList = new JList<ProductLibraryItem>(new ProductListModel());
+        this.productList = new JList<RepositoryProduct>(new ProductListModel());
         this.productList.setCellRenderer(new ProductListCellRenderer());
         this.productList.setVisibleRowCount(4);
         this.productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -50,7 +50,7 @@ public class QueryProductResultsPanel extends JPanel {
         add(new JScrollPane(this.productList), BorderLayout.CENTER);
     }
 
-    public ProductLibraryItem getSelectedProduct() {
+    public RepositoryProduct getSelectedProduct() {
         return this.productList.getSelectedValue();
     }
 
@@ -58,13 +58,13 @@ public class QueryProductResultsPanel extends JPanel {
         return (ProductListModel)this.productList.getModel();
     }
 
-    public void addProducts(List<ProductLibraryItem> products, long totalProductCount, int retrievedProductCount, String dataSourceName) {
+    public void addProducts(List<RepositoryProduct> products, long totalProductCount, int retrievedProductCount, String dataSourceName) {
         ProductListModel productListModel = getListModel();
         productListModel.addProducts(products);
         this.titleLabel.setText(getTitle() + ": " + "retrieved " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
     }
 
-    public void setProductQuickLookImage(ProductLibraryItem product, Image quickLookImage) {
+    public void setProductQuickLookImage(RepositoryProduct product, Image quickLookImage) {
         ProductListModel productListModel = getListModel();
         productListModel.setProductQuickLookImage(product, quickLookImage);
     }
@@ -75,7 +75,7 @@ public class QueryProductResultsPanel extends JPanel {
         this.titleLabel.setText(getTitle());
     }
 
-    public void setProductDownloadPercent(ProductLibraryItem productLibraryItem, short percent) {
+    public void setProductDownloadPercent(RepositoryProduct productLibraryItem, short percent) {
         ProductListModel productListModel = (ProductListModel)this.productList.getModel();
         productListModel.setProductDownloadPercent(productLibraryItem, percent);
     }
@@ -129,9 +129,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem productNameMenuItem = new JMenuItem("Product Name");
         productNameMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         return o1.getName().compareToIgnoreCase(o2.getName());
                     }
                 };
@@ -141,9 +141,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem productTypeMenuItem = new JMenuItem("Product Type");
         productTypeMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         return o1.getType().compareToIgnoreCase(o2.getType());
                     }
                 };
@@ -153,9 +153,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem instrumentMenuItem = new JMenuItem("Instrument");
         instrumentMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         return o1.getType().compareToIgnoreCase(o2.getType());
                     }
                 };
@@ -165,9 +165,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
         acquisitionDateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         Date acquisitionDate1 = o1.getAcquisitionDate();
                         Date acquisitionDate2 = o2.getAcquisitionDate();
                         if (acquisitionDate1 == null && acquisitionDate2 == null) {
@@ -188,9 +188,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem missionMenuItem = new JMenuItem("Mission");
         missionMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         return o1.getMission().compareToIgnoreCase(o2.getMission());
                     }
                 };
@@ -200,9 +200,9 @@ public class QueryProductResultsPanel extends JPanel {
         JMenuItem fileSizeMenuItem = new JMenuItem("File Size");
         fileSizeMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<ProductLibraryItem> comparator = new Comparator<ProductLibraryItem>() {
+                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
                     @Override
-                    public int compare(ProductLibraryItem o1, ProductLibraryItem o2) {
+                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                         long fileSize1 = o1.getApproximateSize();
                         long fileSize2 = o2.getApproximateSize();
                         if (fileSize1 == fileSize2) {
