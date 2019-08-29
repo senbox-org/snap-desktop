@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -42,7 +42,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
     private int currentThreadId;
 
-    public RepositorySelectionPanel(ProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
+    public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
                                     ItemListener dataSourceListener, ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
@@ -194,7 +194,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         }
     }
 
-    private void createRepositoriesComboBox(ProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
+    private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                             ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
 
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];

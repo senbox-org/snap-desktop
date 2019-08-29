@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
-import org.esa.snap.product.library.v2.ThreadStatus;
+import org.esa.snap.remote.products.repository.ThreadStatus;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

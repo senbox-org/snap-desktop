@@ -2,9 +2,9 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
-import org.esa.snap.product.library.v2.ProgressListener;
-import org.esa.snap.product.library.v2.RepositoryProduct;
+import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
+import org.esa.snap.remote.products.repository.listener.ProgressListener;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;

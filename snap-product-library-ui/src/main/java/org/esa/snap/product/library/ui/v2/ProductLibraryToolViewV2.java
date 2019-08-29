@@ -17,16 +17,15 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.apache.http.auth.Credentials;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.LocalFolderProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.openide.awt.ActionID;
@@ -48,7 +47,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -165,23 +163,23 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         };
 
         ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
-        ServiceRegistry<ProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(ProductsRepositoryProvider.class);
+        ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
         ServiceLoader.loadServices(serviceRegistry);
-        Set<ProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
+        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
 
-        ProductsRepositoryProvider[] remoteRepositoryProductProviders = new ProductsRepositoryProvider[repositoryProductsProviders.size()];
-        Iterator<ProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
+        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = new RemoteProductsRepositoryProvider[repositoryProductsProviders.size()];
+        Iterator<RemoteProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
         int index = 0;
         while (it.hasNext()) {
-            ProductsRepositoryProvider productsProvider = it.next();
+            RemoteProductsRepositoryProvider productsProvider = it.next();
             remoteRepositoryProductProviders[index++] = productsProvider;
         }
 
         if (remoteRepositoryProductProviders.length > 1) {
             // sort alphabetically by repository name
-            Comparator<ProductsRepositoryProvider> comparator = new Comparator<ProductsRepositoryProvider>() {
+            Comparator<RemoteProductsRepositoryProvider> comparator = new Comparator<RemoteProductsRepositoryProvider>() {
                 @Override
-                public int compare(ProductsRepositoryProvider o1, ProductsRepositoryProvider o2) {
+                public int compare(RemoteProductsRepositoryProvider o1, RemoteProductsRepositoryProvider o2) {
                     return o1.getRepositoryName().compareToIgnoreCase(o2.getRepositoryName());
                 }
             };
@@ -189,7 +187,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 for (int j=i+1; j<remoteRepositoryProductProviders.length; j++) {
                     int result = comparator.compare(remoteRepositoryProductProviders[i], remoteRepositoryProductProviders[j]);
                     if (result > 0) {
-                        ProductsRepositoryProvider aux = remoteRepositoryProductProviders[i];
+                        RemoteProductsRepositoryProvider aux = remoteRepositoryProductProviders[i];
                         remoteRepositoryProductProviders[i] = remoteRepositoryProductProviders[j];
                         remoteRepositoryProductProviders[j] = aux;
                     }

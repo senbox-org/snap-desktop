@@ -4,9 +4,9 @@ import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.ProductsDownloaderListener;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.listener.ProductListDownloaderListener;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
@@ -24,11 +24,11 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final AbstractProductsRepositoryPanel productsRepositoryPanel;
     private final Credentials credentials;
     private final QueryProductResultsPanel productResultsPanel;
-    private final ProductsRepositoryProvider productsRepositoryProvider;
+    private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
 
     public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
-                                            ProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
+                                            RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
                                             AbstractProductsRepositoryPanel productsRepositoryPanel, QueryProductResultsPanel productResultsPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
@@ -46,7 +46,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected List<RepositoryProduct> execute() throws Exception {
-        ProductsDownloaderListener downloaderListener = new ProductsDownloaderListener() {
+        ProductListDownloaderListener downloaderListener = new ProductListDownloaderListener() {
             @Override
             public void notifyProductCount(long totalProductCount) {
                 if (isRunning()) {

@@ -9,16 +9,16 @@ import org.esa.snap.product.library.ui.v2.DownloadQuickLookImagesRunnable;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.ui.v2.LoginDialog;
 import org.esa.snap.product.library.ui.v2.QueryProductResultsPanel;
+import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.RemoteRepositoryCredentials;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.product.library.v2.parameters.QueryFilter;
-import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
+import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -58,12 +57,12 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final IMissionParameterListener missionParameterListener;
     private final JLabel missionsLabel;
     private final JComboBox<String> missionsComboBox;
-    private final ProductsRepositoryProvider productsRepositoryProvider;
+    private final RemoteProductsRepositoryProvider productsRepositoryProvider;
 
     private List<AbstractParameterComponent> parameterComponents;
     private Credentials credentials;
 
-    public RemoteProductsRepositoryPanel(ProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
+    public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
                                          IMissionParameterListener missionParameterListener) {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
@@ -121,7 +120,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         DownloadProductListTimerRunnable thread = null;
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {
-            Credentials credentials = getUserCredentials();
+            if (this.credentials == null) {
+                readUserCredentials();
+            }
             if (credentials != null) {
                 String selectedMission = getSelectedMission();
                 thread = new DownloadProductListTimerRunnable(progressPanel, threadId, credentials, this.productsRepositoryProvider, threadListener,
@@ -161,7 +162,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public ProductsRepositoryProvider buildProductListDownloader() {
+    public RemoteProductsRepositoryProvider buildProductListDownloader() {
         return this.productsRepositoryProvider;
     }
 
@@ -199,24 +200,25 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.missionParameterListener.newSelectedMission(getSelectedMission(), RemoteProductsRepositoryPanel.this);
     }
 
-    private Credentials getUserCredentials() {
-        if (this.credentials == null) {
-            RemoteRepositoryCredentials remoteRepositoryCredentials = RemoteRepositoryCredentials.getInstance();
+    private void readUserCredentials() {
+        RemoteRepositoryCredentials remoteRepositoryCredentials = RemoteRepositoryCredentials.getInstance();
+        try {
             this.credentials = remoteRepositoryCredentials.read(this.productsRepositoryProvider.getRepositoryId());
-            if (this.credentials == null) {
-                LoginDialog loginDialog = new LoginDialog(SnapApp.getDefault().getMainFrame(), "User credentials");
-                loginDialog.show();
-                if (loginDialog.areCredentialsEntered()) {
-                    try {
-                        this.credentials = remoteRepositoryCredentials.save(this.productsRepositoryProvider.getRepositoryId(), loginDialog.getUsername(), loginDialog.getPassword());
-                    } catch (BackingStoreException exception) {
-                        logger.log(Level.SEVERE, "Failed to save the credentials into the application preferences.", exception);
-                        this.credentials = new UsernamePasswordCredentials(loginDialog.getUsername(), loginDialog.getPassword());
-                    }
+        } catch (Exception exception) {
+            logger.log(Level.SEVERE, "Failed to read the credentials from the application preferences.", exception);
+        }
+        if (this.credentials == null) {
+            LoginDialog loginDialog = new LoginDialog(SnapApp.getDefault().getMainFrame(), "User credentials");
+            loginDialog.show();
+            if (loginDialog.areCredentialsEntered()) {
+                this.credentials = new UsernamePasswordCredentials(loginDialog.getUsername(), loginDialog.getPassword());
+                try {
+                    remoteRepositoryCredentials.save(this.productsRepositoryProvider.getRepositoryId(), this.credentials);
+                } catch (Exception exception) {
+                    logger.log(Level.SEVERE, "Failed to save the credentials into the application preferences.", exception);
                 }
             }
         }
-        return this.credentials;
     }
 
     private void addParameters() {

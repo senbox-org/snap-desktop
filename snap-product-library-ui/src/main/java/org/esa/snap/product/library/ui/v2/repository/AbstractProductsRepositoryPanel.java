@@ -5,9 +5,9 @@ import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 
 import javax.swing.JPanel;
 import java.awt.LayoutManager;
@@ -32,7 +32,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public void refreshMissionParameters() {
     }
 
-    public ProductsRepositoryProvider buildProductListDownloader() {
+    public RemoteProductsRepositoryProvider buildProductListDownloader() {
         return null;
     }
 

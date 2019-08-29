@@ -3,8 +3,8 @@ package org.esa.snap.product.library.ui.v2;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 
 import javax.swing.SwingUtilities;
 import java.awt.Image;
@@ -22,13 +22,13 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     private final List<RepositoryProduct> productList;
     private final Credentials credentials;
-    private final ProductsRepositoryProvider productsRepositoryProvider;
+    private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final QueryProductResultsPanel productResultsPanel;
     private final ThreadListener threadListener;
     private final AbstractProductsRepositoryPanel productsRepositoryPanel;
 
     public DownloadQuickLookImagesRunnable(List<RepositoryProduct> productList, Credentials credentials, ThreadListener threadListener,
-                                           AbstractProductsRepositoryPanel productsRepositoryPanel, ProductsRepositoryProvider productsRepositoryProvider,
+                                           AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteProductsRepositoryProvider productsRepositoryProvider,
                                            QueryProductResultsPanel productResultsPanel) {
 
         super();

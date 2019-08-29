@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.product.library.v2.RepositoryProduct;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
