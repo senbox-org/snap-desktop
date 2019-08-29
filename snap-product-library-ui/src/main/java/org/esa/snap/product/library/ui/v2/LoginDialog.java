@@ -69,10 +69,6 @@ public class LoginDialog extends AbstractModalDialog {
     protected void onAboutToShow() {
         Dimension size = getJDialog().getPreferredSize();
         getJDialog().setMinimumSize(size);
-
-        //TODO Jean remote
-        this.usernameTextField.setText("jcoravu");
-        this.passwordTextField.setText("jcoravu@yahoo.com");
     }
 
     public boolean areCredentialsEntered() {

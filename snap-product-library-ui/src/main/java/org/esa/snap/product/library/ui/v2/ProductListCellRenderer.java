@@ -49,7 +49,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
     private final JLabel downloadingStatusLabel;
 
     public ProductListCellRenderer() {
-        super(new BorderLayout(0, 5));
+        super(new GridBagLayout());
 
         setOpaque(true);
         Border border = new CompoundBorder(new MatteBorder(0, 0, 1, 0, UIManager.getColor("controlShadow")), new EmptyBorder(5, 5, 5, 5));
@@ -66,38 +66,39 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.missionLabel = new JLabel("");
         this.downloadingStatusLabel = new JLabel("");
 
-        add(this.nameLabel, BorderLayout.NORTH);
+        int gapBetweenRows = 5;
+        int gapBetweenColumns = 5;
+        int number = 7;
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
-
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 5, 0, 0);
-        panel.add(this.quickLookImageLabel, c);
-
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 3, 1, 0, 5);
-        panel.add(this.urlLabel, c);
-
-        c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 5, 5);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
         panel.add(this.missionLabel, c);
-        c = SwingUtils.buildConstraints(2, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 5, 4*5);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, number * gapBetweenColumns);
         panel.add(this.typeLabel, c);
-        c = SwingUtils.buildConstraints(3, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 5, 4*5);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, number * gapBetweenColumns);
         panel.add(this.instrumentLabel, c);
 
-
-        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 3, 1, 5, 5);
+        c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         panel.add(this.acquisitionDateLabel, c);
+        c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, gapBetweenRows, gapBetweenColumns);
+        panel.add(new JLabel(), c);
 
-        c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 5, 5);
+        c = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         panel.add(this.sizeLabel, c);
-
-        c = SwingUtils.buildConstraints(2, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 5, 5);
+        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, gapBetweenRows, number * gapBetweenColumns);
         panel.add(this.downloadingStatusLabel, c);
 
-        c = SwingUtils.buildConstraints(1, 4, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 3, 1, 5, 5);
-        panel.add(Box.createVerticalGlue(), c);
+        c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 0, 0);
+        add(this.nameLabel, c);
 
-        add(panel, BorderLayout.CENTER);
+        c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 2, gapBetweenRows, 0);
+        add(this.quickLookImageLabel, c);
+        c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        add(this.urlLabel, c);
+
+        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        add(panel, c);
     }
 
     @Override
@@ -116,7 +117,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
 
         this.nameLabel.setText(product.getName());
         this.typeLabel.setText("Product type: " + product.getType());
-        this.urlLabel.setText("Download URL: " + product.getLocation());
+        this.urlLabel.setText("URL: " + product.getLocation());
         this.missionLabel.setText("Mission: " + product.getMission());
         this.instrumentLabel.setText("Instrument: " + product.getInstrument());
 

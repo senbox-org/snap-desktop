@@ -18,17 +18,15 @@ package org.esa.snap.product.library.ui.v2;
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.LocalFolderProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
 import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
-import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
-import org.esa.snap.product.library.v2.RepositoryProduct;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.openide.awt.ActionID;
@@ -50,9 +48,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @TopComponent.Description(
@@ -85,13 +84,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private boolean initialized;
     private Path lastSelectedFolderPath;
     private QueryProductResultsPanel productResultsPanel;
-    private RepositorySelectionPanel repositoriesPanel;
+    private RepositorySelectionPanel repositorySelectionPanel;
     private CustomSplitPane verticalSplitPane;
 
     private AbstractProgressTimerRunnable<?> currentRunningThread;
-    private DownloadQuickLookImagesRunnable downloadQuickLookImagesRunnable;
+    private AbstractRunnable<?> downloadQuickLookImagesRunnable;
     private int textFieldPreferredHeight;
-    private Credentials credentials;
 
     public ProductLibraryToolViewV2() {
         super();
@@ -146,7 +144,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         IMissionParameterListener missionParameterListener = new IMissionParameterListener() {
             @Override
             public void newSelectedMission(String mission, AbstractProductsRepositoryPanel parentDataSource) {
-                if (parentDataSource == repositoriesPanel.getSelectedDataSource()) {
+                if (parentDataSource == repositorySelectionPanel.getSelectedDataSource()) {
                     refreshDataSourceMissionParameters();
                 } else {
                     throw new IllegalStateException("The selected mission '"+mission+"' does not belong to the visible data source.");
@@ -171,16 +169,36 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ServiceLoader.loadServices(serviceRegistry);
         Set<ProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
 
-        ProductsRepositoryProvider[] dataSourceProductProviders = new ProductsRepositoryProvider[repositoryProductsProviders.size()];
+        ProductsRepositoryProvider[] remoteRepositoryProductProviders = new ProductsRepositoryProvider[repositoryProductsProviders.size()];
         Iterator<ProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
         int index = 0;
         while (it.hasNext()) {
             ProductsRepositoryProvider productsProvider = it.next();
-            dataSourceProductProviders[index++] = productsProvider;
+            remoteRepositoryProductProviders[index++] = productsProvider;
         }
 
-        this.repositoriesPanel = new RepositorySelectionPanel(dataSourceProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
-        this.repositoriesPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
+        if (remoteRepositoryProductProviders.length > 1) {
+            // sort alphabetically by repository name
+            Comparator<ProductsRepositoryProvider> comparator = new Comparator<ProductsRepositoryProvider>() {
+                @Override
+                public int compare(ProductsRepositoryProvider o1, ProductsRepositoryProvider o2) {
+                    return o1.getRepositoryName().compareToIgnoreCase(o2.getRepositoryName());
+                }
+            };
+            for (int i=0; i<remoteRepositoryProductProviders.length-1; i++) {
+                for (int j=i+1; j<remoteRepositoryProductProviders.length; j++) {
+                    int result = comparator.compare(remoteRepositoryProductProviders[i], remoteRepositoryProductProviders[j]);
+                    if (result > 0) {
+                        ProductsRepositoryProvider aux = remoteRepositoryProductProviders[i];
+                        remoteRepositoryProductProviders[i] = remoteRepositoryProductProviders[j];
+                        remoteRepositoryProductProviders[j] = aux;
+                    }
+                }
+            }
+        }
+
+        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
+        this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         ActionListener downloadProductListener = new ActionListener() {
             @Override
@@ -192,14 +210,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.productResultsPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
 
         this.verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
-        this.verticalSplitPane.setLeftComponent(this.repositoriesPanel.getSelectedDataSource());
+        this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedDataSource());
         this.verticalSplitPane.setRightComponent(this.productResultsPanel);
 
         int gapBetweenRows = getGapBetweenRows();
         int gapBetweenColumns = getGapBetweenRows();
 
         JPanel contentPanel = new JPanel(new BorderLayout(0, gapBetweenRows));
-        contentPanel.add(this.repositoriesPanel, BorderLayout.NORTH);
+        contentPanel.add(this.repositorySelectionPanel, BorderLayout.NORTH);
         contentPanel.add(this.verticalSplitPane, BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
@@ -208,7 +226,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void stopProgressPanel() {
-        this.repositoriesPanel.hideProgressPanel();
+        this.repositorySelectionPanel.hideProgressPanel();
         if (this.currentRunningThread != null) {
             this.currentRunningThread.stopRunning();
         }
@@ -217,16 +235,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void refreshRepositoryParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.verticalSplitPane.setLeftComponent(this.repositoriesPanel.getSelectedDataSource());
+        this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedDataSource());
         this.verticalSplitPane.revalidate();
         this.verticalSplitPane.repaint();
+        this.repositorySelectionPanel.refreshDataSourceMissionParameters();
         this.productResultsPanel.clearProducts();
     }
 
     private void refreshDataSourceMissionParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.repositoriesPanel.refreshDataSourceMissionParameters();
+        this.repositorySelectionPanel.refreshDataSourceMissionParameters();
         this.productResultsPanel.clearProducts();
     }
 
@@ -245,11 +264,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         int result = fileChooser.showDialog(this, "Select");
         if (result == JFileChooser.APPROVE_OPTION) {
             this.lastSelectedFolderPath = fileChooser.getSelectedPath();
-            AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
+            AbstractProductsRepositoryPanel selectedDataSource = this.repositorySelectionPanel.getSelectedDataSource();
             RepositoryProduct selectedProduct = this.productResultsPanel.getSelectedProduct();
             ProductRepositoryDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission());
-            int threadId = this.repositoriesPanel.incrementAndGetCurrentThreadId();
-            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.repositoriesPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
+            int threadId = this.repositorySelectionPanel.incrementAndGetCurrentThreadId();
+            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.repositorySelectionPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
                                                                                    selectedProduct, this.lastSelectedFolderPath, this.productResultsPanel, this) {
 
                 @Override
@@ -270,41 +289,23 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void onSuccessfullyDownloadedProduct(Path targetFolderPath) {
         LocalFolderProductsRepositoryPanel localFolderProducts = new LocalFolderProductsRepositoryPanel(targetFolderPath);
-        this.repositoriesPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
-    }
-
-    private Credentials getUserCredentials() {
-        if (this.credentials == null) {
-            LoginDialog loginDialog = new LoginDialog(SnapApp.getDefault().getMainFrame(), "User credentials");
-            loginDialog.show();
-            if (loginDialog.areCredentialsEntered()) {
-                this.credentials = new UsernamePasswordCredentials(loginDialog.getUsername(), loginDialog.getPassword());
-            }
-        }
-        return this.credentials;
+        this.repositorySelectionPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
     }
 
     private void searchButtonPressed() {
-        AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
-        Map<String, Object> parameterValues = selectedDataSource.getParameterValues();
-        if (parameterValues != null) {
-            Credentials credentials = getUserCredentials();
-            if (credentials != null) {
-                ProductListRepositoryDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
-                String selectedMission = selectedDataSource.getSelectedMission();
-                int threadId = this.repositoriesPanel.incrementAndGetCurrentThreadId();
-                this.productResultsPanel.clearProducts();
-                DownloadProductListTimerRunnable thread = new DownloadProductListTimerRunnable(this.repositoriesPanel, threadId, credentials, dataSourceResults,
-                        this, this.productResultsPanel, selectedDataSource.getName(), selectedMission, parameterValues) {
-
-                    @Override
-                    protected void onStopExecuting() {
-                        ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
-                        downloadQuickLookImagesAsync(getCredentials());
-                    }
-                };
-                startRunningThread(thread);
+        ThreadListener threadListener = new ThreadListener() {
+            @Override
+            public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
+                ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
+                displayQuickLookImagesAsync(productsRepositoryPanel);
             }
+        };
+        int threadId = this.repositorySelectionPanel.incrementAndGetCurrentThreadId();
+        AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedDataSource();
+        AbstractProgressTimerRunnable<?> thread = selectedRepository.buildThreadToSearchProducts(this.repositorySelectionPanel, threadId, threadListener, this.productResultsPanel);
+        if (thread != null) {
+            this.productResultsPanel.clearProducts();
+            startRunningThread(thread);
         }
     }
 
@@ -313,17 +314,21 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.currentRunningThread.executeAsync(); // start the thread
     }
 
-    private void downloadQuickLookImagesAsync(Credentials credentials) {
-        List<RepositoryProduct> downloadedProductList = this.productResultsPanel.getListModel().getProducts();
-        AbstractProductsRepositoryPanel selectedDataSource = this.repositoriesPanel.getSelectedDataSource();
-        ProductListRepositoryDownloader dataSourceResults = selectedDataSource.buildResultsDownloader();
-        this.downloadQuickLookImagesRunnable = new DownloadQuickLookImagesRunnable(downloadedProductList, credentials, dataSourceResults, this.productResultsPanel) {
-            @Override
-            protected void onStopExecuting() {
-                ProductLibraryToolViewV2.this.downloadQuickLookImagesRunnable = null; // reset
-            }
-        };
-        this.downloadQuickLookImagesRunnable.executeAsync();
+    private void displayQuickLookImagesAsync(AbstractProductsRepositoryPanel productsRepositoryPanel) {
+        AbstractProductsRepositoryPanel selectedDataSource = this.repositorySelectionPanel.getSelectedDataSource();
+        if (productsRepositoryPanel == selectedDataSource) {
+            ThreadListener threadListener = new ThreadListener() {
+                @Override
+                public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
+                    ProductLibraryToolViewV2.this.downloadQuickLookImagesRunnable = null; // reset
+                }
+            };
+            List<RepositoryProduct> productList = this.productResultsPanel.getListModel().getProducts();
+            this.downloadQuickLookImagesRunnable = selectedDataSource.buildThreadToDisplayQuickLookImages(productList, threadListener, this.productResultsPanel);
+            this.downloadQuickLookImagesRunnable.executeAsync();
+        } else {
+            throw new IllegalStateException("The repository providers do not match.");
+        }
     }
 
     private static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {

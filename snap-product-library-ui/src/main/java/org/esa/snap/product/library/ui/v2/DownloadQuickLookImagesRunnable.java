@@ -1,9 +1,10 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
 import org.esa.snap.product.library.v2.RepositoryProduct;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
 
 import javax.swing.SwingUtilities;
 import java.awt.Image;
@@ -21,17 +22,22 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     private final List<RepositoryProduct> productList;
     private final Credentials credentials;
-    private final ProductListRepositoryDownloader dataSourceResults;
+    private final ProductsRepositoryProvider productsRepositoryProvider;
     private final QueryProductResultsPanel productResultsPanel;
+    private final ThreadListener threadListener;
+    private final AbstractProductsRepositoryPanel productsRepositoryPanel;
 
-    public DownloadQuickLookImagesRunnable(List<RepositoryProduct> productList, Credentials credentials,
-                                           ProductListRepositoryDownloader dataSourceResults, QueryProductResultsPanel productResultsPanel) {
+    public DownloadQuickLookImagesRunnable(List<RepositoryProduct> productList, Credentials credentials, ThreadListener threadListener,
+                                           AbstractProductsRepositoryPanel productsRepositoryPanel, ProductsRepositoryProvider productsRepositoryProvider,
+                                           QueryProductResultsPanel productResultsPanel) {
 
         super();
 
-        this.dataSourceResults = dataSourceResults;
+        this.productsRepositoryProvider = productsRepositoryProvider;
         this.productList = productList;
         this.credentials = credentials;
+        this.threadListener = threadListener;
+        this.productsRepositoryPanel = productsRepositoryPanel;
         this.productResultsPanel = productResultsPanel;
     }
 
@@ -48,7 +54,7 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
             Image scaledQuickLookImage = null;
             if (product.getQuickLookLocation() != null) {
                 try {
-                    BufferedImage quickLookImage = this.dataSourceResults.downloadProductQuickLookImage(this.credentials, product.getQuickLookLocation(), this);
+                    BufferedImage quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, product.getQuickLookLocation(), this);
 
                     if (!isRunning()) {
                         return null; // nothing to return
@@ -89,6 +95,7 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
     }
 
     protected void onStopExecuting() {
+        this.threadListener.onStopExecuting(this.productsRepositoryPanel);
     }
 
     private void notifyDownloadedQuickLookImageLater(RepositoryProduct product, Image quickLookImage) {

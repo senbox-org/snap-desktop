@@ -1,10 +1,17 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
+import org.esa.snap.product.library.ui.v2.QueryProductResultsPanel;
+import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.product.library.v2.repository.ProductRepositoryDownloader;
-import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
 
 import javax.swing.JPanel;
 import java.awt.LayoutManager;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +32,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public void refreshMissionParameters() {
     }
 
-    public ProductListRepositoryDownloader buildResultsDownloader() {
+    public ProductsRepositoryProvider buildProductListDownloader() {
         return null;
     }
 
@@ -39,5 +46,14 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     public int computeLeftPanelMaximumLabelWidth() {
         return 70;
+    }
+
+    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
+                                                                                              QueryProductResultsPanel productResultsPanel) {
+        return null;
+    }
+
+    public AbstractRunnable<?> buildThreadToDisplayQuickLookImages(List<RepositoryProduct> productList, ThreadListener threadListener, QueryProductResultsPanel productResultsPanel) {
+        return null;
     }
 }

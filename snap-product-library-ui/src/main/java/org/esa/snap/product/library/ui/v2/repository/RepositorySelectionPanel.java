@@ -77,20 +77,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         refreshRepositoryLabelWidth();
         setProgressPanelVisible(false);
 
-        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
-
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        add(this.repositoryLabel, c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.repositoriesComboBox, c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.searchButton, c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.helpButton, c);
-        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(progressBar, c);
-        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.stopButton, c);
+        addComponents(componentDimension);
     }
 
     @Override
@@ -207,14 +194,14 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         }
     }
 
-    private void createRepositoriesComboBox(ProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension,
+    private void createRepositoriesComboBox(ProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                             ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
 
-        AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[dataSourceProductProviders.length + 1];
-        for (int i=0; i<dataSourceProductProviders.length; i++) {
-            availableDataSources[i] = new RemoteProductsRepositoryPanel(dataSourceProductProviders[i], componentDimension, missionParameterListener);
+        AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
+        for (int i=0; i<productsRepositoryProviders.length; i++) {
+            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener);
         }
-        availableDataSources[dataSourceProductProviders.length] = new AllLocalFolderProductsRepositoryPanel();
+        availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel();
 
         this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
             @Override
@@ -235,6 +222,23 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         this.repositoriesComboBox.setMaximumRowCount(5);
         this.repositoriesComboBox.setSelectedIndex(0);
         this.repositoriesComboBox.addItemListener(dataSourceListener);
+    }
+
+    private void addComponents(ComponentDimension componentDimension) {
+        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
+
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
+        add(this.repositoryLabel, c);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(this.repositoriesComboBox, c);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(this.searchButton, c);
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(this.helpButton, c);
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(progressBar, c);
+        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(this.stopButton, c);
     }
 
     private static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize) {

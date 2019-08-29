@@ -1,14 +1,14 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.repository.ProductListRepositoryDownloader;
-import org.esa.snap.product.library.v2.RepositoryProduct;
 import org.esa.snap.product.library.v2.ProductsDownloaderListener;
+import org.esa.snap.product.library.v2.RepositoryProduct;
+import org.esa.snap.product.library.v2.repository.ProductsRepositoryProvider;
 import org.esa.snap.ui.loading.GenericRunnable;
 
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import java.util.List;
 import java.util.Map;
@@ -21,24 +21,26 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final String mission;
     private final Map<String, Object> parameterValues;
     private final String dataSourceName;
-    private final JComponent parentComponent;
+    private final AbstractProductsRepositoryPanel productsRepositoryPanel;
     private final Credentials credentials;
     private final QueryProductResultsPanel productResultsPanel;
-    private final ProductListRepositoryDownloader dataSourceResults;
+    private final ProductsRepositoryProvider productsRepositoryProvider;
+    private final ThreadListener threadListener;
 
     public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
-                                            ProductListRepositoryDownloader dataSourceResults,
-                                            JComponent parentComponent, QueryProductResultsPanel productResultsPanel,
+                                            ProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
+                                            AbstractProductsRepositoryPanel productsRepositoryPanel, QueryProductResultsPanel productResultsPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
         super(progressPanel, threadId, 500);
 
         this.mission = mission;
-        this.dataSourceResults = dataSourceResults;
+        this.productsRepositoryProvider = productsRepositoryProvider;
         this.parameterValues = parameterValues;
         this.dataSourceName = dataSourceName;
         this.credentials = credentials;
-        this.parentComponent = parentComponent;
+        this.productsRepositoryPanel = productsRepositoryPanel;
+        this.threadListener = threadListener;
         this.productResultsPanel = productResultsPanel;
     }
 
@@ -59,7 +61,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 }
             }
         };
-        return this.dataSourceResults.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
+        return this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
     }
 
     @Override
@@ -80,18 +82,19 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
         this.productResultsPanel.finishDownloadingProductList();
         if (results.size() == 0) {
-            onShowInformationMessageDialog(this.parentComponent, "No product available according to the filter values.", "Information");
+            onShowInformationMessageDialog(this.productsRepositoryPanel, "No product available according to the filter values.", "Information");
         }
     }
 
     @Override
     protected void onFailed(Exception exception) {
         this.productResultsPanel.finishDownloadingProductList();
-        onShowErrorMessageDialog(this.parentComponent, "Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
+        onShowErrorMessageDialog(this.productsRepositoryPanel, "Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
     }
 
-    protected final Credentials getCredentials() {
-        return credentials;
+    @Override
+    protected void onStopExecuting() {
+        this.threadListener.onStopExecuting(this.productsRepositoryPanel);
     }
 
     private void notifyProductCountLater(long totalProductCount) {
