@@ -143,7 +143,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             @Override
             public void newSelectedMission(String mission, AbstractProductsRepositoryPanel parentDataSource) {
                 if (parentDataSource == repositorySelectionPanel.getSelectedDataSource()) {
-                    refreshDataSourceMissionParameters();
+                    refreshRepositoryMissionParameters();
                 } else {
                     throw new IllegalStateException("The selected mission '"+mission+"' does not belong to the visible data source.");
                 }
@@ -195,7 +195,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         }
 
-        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener, dataSourceListener, stopButtonListener, missionParameterListener);
+        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener,
+                                                                     dataSourceListener, stopButtonListener, missionParameterListener);
         this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         ActionListener downloadProductListener = new ActionListener() {
@@ -221,6 +222,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns));
         add(contentPanel, BorderLayout.CENTER);
+
+        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
     }
 
     private void stopProgressPanel() {
@@ -236,14 +239,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedDataSource());
         this.verticalSplitPane.revalidate();
         this.verticalSplitPane.repaint();
-        this.repositorySelectionPanel.refreshDataSourceMissionParameters();
+        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
         this.productResultsPanel.clearProducts();
     }
 
-    private void refreshDataSourceMissionParameters() {
+    private void refreshRepositoryMissionParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.repositorySelectionPanel.refreshDataSourceMissionParameters();
+        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
         this.productResultsPanel.clearProducts();
     }
 

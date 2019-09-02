@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -42,14 +43,15 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
     private int currentThreadId;
 
-    public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] dataSourceProductProviders, ComponentDimension componentDimension, ActionListener searchButtonListener,
-                                    ItemListener dataSourceListener, ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
+    public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
+                                    ActionListener searchButtonListener, ItemListener dataSourceListener,
+                                    ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
 
         this.currentThreadId = 0;
 
-        createRepositoriesComboBox(dataSourceProductProviders, componentDimension, dataSourceListener, missionParameterListener);
+        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, dataSourceListener, missionParameterListener);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
@@ -74,7 +76,6 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         this.progressBar.setPreferredSize(new Dimension(100, 10));
         this.progressBar.setMinimumSize(new Dimension(100, 10));
 
-        refreshRepositoryLabelWidth();
         setProgressPanelVisible(false);
 
         addComponents(componentDimension);
@@ -140,7 +141,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         return (AbstractProductsRepositoryPanel)this.repositoriesComboBox.getSelectedItem();
     }
 
-    public void refreshDataSourceMissionParameters() {
+    public void refreshRepositoryMissionParameters() {
         getSelectedDataSource().refreshMissionParameters();
         refreshRepositoryLabelWidth();
     }
@@ -197,9 +198,13 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                             ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
 
+        WorldWindowPanelWrapper worldWindowPanel = new WorldWindowPanelWrapper();
+        worldWindowPanel.setPreferredSize(new Dimension(500, 500));
+        worldWindowPanel.addWorldWindowPanelAsync(false, true);
+
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
-            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener);
+            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener, worldWindowPanel);
         }
         availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel();
 

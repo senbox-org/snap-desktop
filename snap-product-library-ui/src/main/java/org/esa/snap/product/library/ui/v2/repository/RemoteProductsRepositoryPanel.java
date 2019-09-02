@@ -3,7 +3,6 @@ package org.esa.snap.product.library.ui.v2.repository;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.CustomSplitPane;
 import org.esa.snap.product.library.ui.v2.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.DownloadQuickLookImagesRunnable;
 import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
@@ -14,6 +13,7 @@ import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.QueryFilter;
@@ -28,8 +28,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.border.EtchedBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -39,6 +37,7 @@ import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,18 +57,20 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final JLabel missionsLabel;
     private final JComboBox<String> missionsComboBox;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
+    private final WorldWindowPanelWrapper worlWindPanel;
 
     private List<AbstractParameterComponent> parameterComponents;
     private Credentials credentials;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
-                                         IMissionParameterListener missionParameterListener) {
+                                         IMissionParameterListener missionParameterListener, WorldWindowPanelWrapper worlWindPanel) {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
 
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.componentDimension = componentDimension;
         this.missionParameterListener = missionParameterListener;
+        this.worlWindPanel = worlWindPanel;
 
         this.missionsLabel = new JLabel("Mission");
 
@@ -89,7 +90,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             throw new IllegalStateException("At least one supported mission must be defined.");
         }
 
-        addParameters();
+        this.parameterComponents = Collections.emptyList();
     }
 
     @Override
@@ -222,6 +223,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     private void addParameters() {
+        //TODO Jean remote 'panel' variable and use parent panel
         JComponent panel = new JPanel(new GridBagLayout());
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
         int gapBetweenRows = this.componentDimension.getGapBetweenRows();
@@ -276,28 +278,20 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             }
         }
 
-        c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, 0);
-        panel.add(Box.createVerticalGlue(), c); // add an empty label
+        if (rectangleParameter == null) {
+            c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, 0);
+            panel.add(Box.createVerticalGlue(), c); // add an empty label
+        } else {
+            this.worlWindPanel.clearSelectedArea();
 
-        if (rectangleParameter != null) {
-            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(rectangleParameter.getName(), rectangleParameter.getLabel(), rectangleParameter.isRequired());
+            SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(this.worlWindPanel, rectangleParameter.getName(), rectangleParameter.getLabel(), rectangleParameter.isRequired());
             this.parameterComponents.add(selectionAreaParameterComponent);
-            JPanel worldPanel = selectionAreaParameterComponent.getComponent();
-            worldPanel.setBackground(Color.WHITE);
-            worldPanel.setOpaque(true);
-            worldPanel.setBorder(new EtchedBorder());
 
-            JPanel areaOfInterestPanel = new JPanel(new GridBagLayout());
-            c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, 0, 0);
-            areaOfInterestPanel.add(selectionAreaParameterComponent.getLabel(), c);
-            c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-            areaOfInterestPanel.add(worldPanel, c);
-
-            CustomSplitPane verticalSplitPane = new CustomSplitPane(JSplitPane.VERTICAL_SPLIT, 1, 2);
-            verticalSplitPane.setTopComponent(panel);
-            verticalSplitPane.setBottomComponent(areaOfInterestPanel);
-
-            panel = verticalSplitPane;
+            c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, 0);
+            panel.add(selectionAreaParameterComponent.getLabel(), c);
+            c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+            panel.add(selectionAreaParameterComponent.getComponent(), c);
+            rowIndex++;
         }
 
         // set the same label with
