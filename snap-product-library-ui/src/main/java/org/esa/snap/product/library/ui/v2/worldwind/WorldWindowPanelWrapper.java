@@ -52,13 +52,15 @@ public class WorldWindowPanelWrapper extends JPanel {
     }
 
     private void addWorldWindowPanel(WorldWindowPanel worldWindowPanel) {
-        this.worldWindowPanel = worldWindowPanel;
-        this.worldWindowPanel.setBackgroundColor(getBackground());
-
         removeAll();
 
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
-        add(this.worldWindowPanel, c);
+        if (worldWindowPanel != null) {
+            this.worldWindowPanel = worldWindowPanel;
+            this.worldWindowPanel.setBackgroundColor(getBackground());
+
+            GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
+            add(this.worldWindowPanel, c);
+        }
 
         Container parent = getParent();
         if (parent != null) {
@@ -95,6 +97,17 @@ public class WorldWindowPanelWrapper extends JPanel {
                 @Override
                 protected void execute(WorldWindowPanel item) {
                     worldWindowPanel.addWorldWindowPanel(item);
+                }
+            };
+            SwingUtilities.invokeLater(runnable);
+        }
+
+        @Override
+        protected void failedExecuting(Exception exception) {
+            GenericRunnable<Exception> runnable = new GenericRunnable<Exception>(exception) {
+                @Override
+                protected void execute(Exception item) {
+                    worldWindowPanel.addWorldWindowPanel(null);
                 }
             };
             SwingUtilities.invokeLater(runnable);

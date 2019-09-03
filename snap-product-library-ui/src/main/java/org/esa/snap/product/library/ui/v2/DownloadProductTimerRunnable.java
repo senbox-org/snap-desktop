@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.v2.database.DerbyDAL;
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -10,6 +11,7 @@ import org.esa.snap.ui.loading.GenericRunnable;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by jcoravu on 19/8/2019.
@@ -47,12 +49,14 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
                 notifyDownloadingProgressValueLater(progressPercent);
             }
         };
-        this.dataSourceProductDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
+        Path productPath = this.dataSourceProductDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
 
         // successfully downloaded the product
         notifyDownloadingProgressValueLater((short)100);
 
-        return this.targetFolderPath; // nothing to return
+        DerbyDAL.saveProduct(this.productToDownload, productPath);
+
+        return productPath;
     }
 
     @Override
