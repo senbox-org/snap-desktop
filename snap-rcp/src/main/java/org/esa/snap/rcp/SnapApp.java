@@ -2,6 +2,8 @@ package org.esa.snap.rcp;
 
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
+import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
@@ -9,6 +11,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.util.PreferencesPropertyMap;
@@ -580,12 +583,25 @@ public class SnapApp {
     }
 
     private void initGPF() {
-        OperatorSpiRegistry operatorSpiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
+        GPF gpf = GPF.getDefaultInstance();
+        OperatorSpiRegistry operatorSpiRegistry = gpf.getOperatorSpiRegistry();
         Set<OperatorSpi> services = operatorSpiRegistry.getServiceRegistry().getServices();
         for (OperatorSpi service : services) {
             LOG.info(String.format("GPF operator SPI: %s (alias '%s')", service.getClass(), service.getOperatorAlias()));
         }
-        GPF.getDefaultInstance().setProductManager(getProductManager());
+        gpf.setProductManager(getProductManager());
+        gpf.setProgressMonitoredOperatorExecutor(operator -> {
+            SnapAppGPFOperatorExecutor snapAppGPFOperatorExecutor = new SnapAppGPFOperatorExecutor(operator);
+            snapAppGPFOperatorExecutor.executeWithBlocking();
+        });
+    }
+
+    private static String getOperatorName(Operator operator) {
+        String operatorName = operator.getSpi().getOperatorDescriptor().getAlias();
+        if (operatorName == null) {
+            operatorName = operator.getSpi().getOperatorDescriptor().getName();
+        }
+        return operatorName;
     }
 
     private void updateMainFrameTitle(ProductSceneView sceneView) {
@@ -806,6 +822,22 @@ public class SnapApp {
             if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
                 updateMainFrameTitle(event.getSourceNode());
             }
+        }
+    }
+
+    private class SnapAppGPFOperatorExecutor extends ProgressMonitorSwingWorker<Void, Void> {
+
+        private final Operator operator;
+
+        private SnapAppGPFOperatorExecutor(Operator operator) {
+            super(SnapApp.getDefault().getMainFrame(), "Executing " + getOperatorName(operator));
+            this.operator = operator;
+        }
+
+        @Override
+        protected Void doInBackground(ProgressMonitor pm) throws Exception {
+            operator.execute(pm);
+            return null;
         }
     }
 
