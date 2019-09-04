@@ -52,9 +52,9 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
             RepositoryProduct product = this.productList.get(i);
             Image scaledQuickLookImage = null;
-            if (product.getQuickLookLocation() != null) {
+            if (product.getDownloadQuickLookImageURL() != null) {
                 try {
-                    BufferedImage quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, product.getQuickLookLocation(), this);
+                    BufferedImage quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, product.getDownloadQuickLookImageURL(), this);
 
                     if (!isRunning()) {
                         return null; // nothing to return
@@ -64,10 +64,10 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
                         scaledQuickLookImage = quickLookImage.getScaledInstance(iconWidth, iconHeight, BufferedImage.SCALE_FAST);
                     }
                 } catch (InterruptedException exception) {
-                    logger.log(Level.SEVERE, "Stop downloading the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
+                    logger.log(Level.SEVERE, "Stop downloading the product quick look image from url '" + product.getDownloadQuickLookImageURL() + "'.", exception);
                     return null; // nothing to return
                 } catch (Exception exception) {
-                    logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getQuickLookLocation() + "'.", exception);
+                    logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getDownloadQuickLookImageURL() + "'.", exception);
                 }
             }
             notifyDownloadedQuickLookImageLater(product, scaledQuickLookImage);

@@ -4,8 +4,8 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
 import org.esa.snap.product.library.v2.database.DerbyDAL;
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
-import org.esa.snap.remote.products.repository.listener.ProgressListener;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.listener.ProgressListener;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
@@ -22,18 +22,18 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
     private final RepositoryProduct productToDownload;
     private final JComponent parentComponent;
     private final QueryProductResultsPanel productResultsPanel;
-    private final ProductRepositoryDownloader dataSourceProductDownloader;
+    private final ProductRepositoryDownloader productRepositoryDownloader;
     private final Path targetFolderPath;
 
     public DownloadProductTimerRunnable(ProgressPanel progressPanel, int threadId, String dataSourceName,
-                                        ProductRepositoryDownloader dataSourceProductDownloader, RepositoryProduct productToDownload,
+                                        ProductRepositoryDownloader productRepositoryDownloader, RepositoryProduct productToDownload,
                                         Path targetFolderPath, QueryProductResultsPanel productResultsPanel, JComponent parentComponent) {
 
         super(progressPanel, threadId, 500);
 
         this.dataSourceName = dataSourceName;
         this.targetFolderPath = targetFolderPath;
-        this.dataSourceProductDownloader = dataSourceProductDownloader;
+        this.productRepositoryDownloader = productRepositoryDownloader;
         this.productToDownload = productToDownload;
         this.parentComponent = parentComponent;
         this.productResultsPanel = productResultsPanel;
@@ -49,21 +49,22 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
                 notifyDownloadingProgressValueLater(progressPercent);
             }
         };
-        Path productPath = this.dataSourceProductDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
+        Path productMetadataFilePath = this.productRepositoryDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
 
         // successfully downloaded the product
         notifyDownloadingProgressValueLater((short)100);
 
-        DerbyDAL.saveProduct(this.productToDownload, productPath);
+//        Path productMetadataFilePath = Paths.get("D:\\_download-sentinel2\\S2B_MSIL1C_20190803T070629_N0208_R106_T38NQG_20190803T105217.SAFE", "MTD_MSIL1C.xml");
+        DerbyDAL.saveProduct(this.productToDownload, productMetadataFilePath, this.productRepositoryDownloader.getRepositoryId());
 
-        return productPath;
+        return productMetadataFilePath;
     }
 
     @Override
     public void stopRunning() {
         super.stopRunning();
 
-        this.dataSourceProductDownloader.cancel();
+        this.productRepositoryDownloader.cancel();
     }
 
     @Override

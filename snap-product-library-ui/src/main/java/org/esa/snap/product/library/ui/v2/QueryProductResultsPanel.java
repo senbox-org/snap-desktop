@@ -138,30 +138,30 @@ public class QueryProductResultsPanel extends JPanel {
                 getListModel().sortProducts(comparator);
             }
         });
-        JMenuItem productTypeMenuItem = new JMenuItem("Product Type");
-        productTypeMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        return o1.getType().compareToIgnoreCase(o2.getType());
-                    }
-                };
-                getListModel().sortProducts(comparator);
-            }
-        });
-        JMenuItem instrumentMenuItem = new JMenuItem("Instrument");
-        instrumentMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        return o1.getType().compareToIgnoreCase(o2.getType());
-                    }
-                };
-                getListModel().sortProducts(comparator);
-            }
-        });
+//        JMenuItem productTypeMenuItem = new JMenuItem("Product Type");
+//        productTypeMenuItem.addActionListener(new ActionListener() {
+//            public void actionPerformed(final ActionEvent actionEvent) {
+//                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
+//                    @Override
+//                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+//                        return o1.getType().compareToIgnoreCase(o2.getType());
+//                    }
+//                };
+//                getListModel().sortProducts(comparator);
+//            }
+//        });
+//        JMenuItem instrumentMenuItem = new JMenuItem("Instrument");
+//        instrumentMenuItem.addActionListener(new ActionListener() {
+//            public void actionPerformed(final ActionEvent actionEvent) {
+//                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
+//                    @Override
+//                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+//                        return o1.getType().compareToIgnoreCase(o2.getType());
+//                    }
+//                };
+//                getListModel().sortProducts(comparator);
+//            }
+//        });
         JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
         acquisitionDateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
@@ -218,8 +218,8 @@ public class QueryProductResultsPanel extends JPanel {
             }
         });
         sortMenu.add(productNameMenuItem);
-        sortMenu.add(productTypeMenuItem);
-        sortMenu.add(instrumentMenuItem);
+//        sortMenu.add(productTypeMenuItem);
+//        sortMenu.add(instrumentMenuItem);
         sortMenu.add(acquisitionDateMenuItem);
         sortMenu.add(missionMenuItem);
         sortMenu.add(fileSizeMenuItem);
