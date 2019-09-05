@@ -16,7 +16,7 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
 
         super(parameterName, parameterLabelText, required);
 
-        this.component = RemoteProductsRepositoryPanel.buildComboBox(values, defaultValue, componentDimension);
+        this.component = RemoteRepositoryParametersPanel.buildComboBox(values, defaultValue, componentDimension);
     }
 
     @Override

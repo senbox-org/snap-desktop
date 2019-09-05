@@ -44,14 +44,14 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
     private int currentThreadId;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    ActionListener searchButtonListener, ItemListener dataSourceListener,
+                                    ActionListener searchButtonListener, ItemListener dataSourceListener, ActionListener downloadRemoteProductListener,
                                     ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
 
         this.currentThreadId = 0;
 
-        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, dataSourceListener, missionParameterListener);
+        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, dataSourceListener, missionParameterListener);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
@@ -141,8 +141,8 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         return (AbstractProductsRepositoryPanel)this.repositoriesComboBox.getSelectedItem();
     }
 
-    public void refreshRepositoryMissionParameters() {
-        getSelectedDataSource().refreshMissionParameters();
+    public void refreshRepositoryParameterComponents() {
+        getSelectedDataSource().refreshParameterComponents();
         refreshRepositoryLabelWidth();
     }
 
@@ -152,10 +152,6 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
             AbstractProductsRepositoryPanel productsDataSource = this.repositoriesComboBox.getModel().getElementAt(i);
             productsDataSource.setBorder(border);
         }
-    }
-
-    public void addNewLocalFolderProductsDataSource(LocalFolderProductsRepositoryPanel localFolderProductsDataSourcePanel) {
-        this.repositoriesComboBox.addItem(localFolderProductsDataSourcePanel);
     }
 
     private void setParametersEnabledWhileDownloading(boolean enabled) {
@@ -187,7 +183,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
     private void refreshRepositoryLabelWidth() {
         int maximumLabelWidth = getSelectedDataSource().computeLeftPanelMaximumLabelWidth();
-        RemoteProductsRepositoryPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
+        RemoteRepositoryParametersPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
         Container parentContainer = this.repositoryLabel.getParent();
         if (parentContainer != null) {
             parentContainer.revalidate();
@@ -196,7 +192,8 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
     }
 
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                            ItemListener dataSourceListener, IMissionParameterListener missionParameterListener) {
+                                            ActionListener downloadRemoteProductListener, ItemListener dataSourceListener,
+                                            IMissionParameterListener missionParameterListener) {
 
         WorldWindowPanelWrapper worldWindowPanel = new WorldWindowPanelWrapper();
         worldWindowPanel.setPreferredSize(new Dimension(500, 500));
@@ -204,9 +201,11 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
-            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener, worldWindowPanel);
+            availableDataSources[i] = new RemoteRepositoryParametersPanel(productsRepositoryProviders[i], componentDimension, downloadRemoteProductListener,
+                                                                          missionParameterListener, worldWindowPanel);
         }
-        availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel();
+
+        availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel(componentDimension, worldWindowPanel);
 
         this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
             @Override
@@ -241,7 +240,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.helpButton, c);
         c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(progressBar, c);
+        add(this.progressBar, c);
         c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.stopButton, c);
     }

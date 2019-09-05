@@ -23,13 +23,13 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
     private final List<RepositoryProduct> productList;
     private final Credentials credentials;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
-    private final QueryProductResultsPanel productResultsPanel;
+    private final RemoteRepositoryProductListPanel productResultsPanel;
     private final ThreadListener threadListener;
     private final AbstractProductsRepositoryPanel productsRepositoryPanel;
 
     public DownloadQuickLookImagesRunnable(List<RepositoryProduct> productList, Credentials credentials, ThreadListener threadListener,
                                            AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteProductsRepositoryProvider productsRepositoryProvider,
-                                           QueryProductResultsPanel productResultsPanel) {
+                                           RemoteRepositoryProductListPanel productResultsPanel) {
 
         super();
 

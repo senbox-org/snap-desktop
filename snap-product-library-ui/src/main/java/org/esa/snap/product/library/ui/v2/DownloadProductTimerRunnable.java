@@ -11,7 +11,6 @@ import org.esa.snap.ui.loading.GenericRunnable;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Created by jcoravu on 19/8/2019.
@@ -21,22 +20,24 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
     private final String dataSourceName;
     private final RepositoryProduct productToDownload;
     private final JComponent parentComponent;
-    private final QueryProductResultsPanel productResultsPanel;
+    private final RemoteRepositoryProductListPanel productResultsPanel;
     private final ProductRepositoryDownloader productRepositoryDownloader;
-    private final Path targetFolderPath;
+    private final Path localRepositoryFolderPath;
+    private final ThreadListener threadListener;
 
-    public DownloadProductTimerRunnable(ProgressPanel progressPanel, int threadId, String dataSourceName,
+    public DownloadProductTimerRunnable(ProgressPanel progressPanel, int threadId, String dataSourceName, ThreadListener threadListener,
                                         ProductRepositoryDownloader productRepositoryDownloader, RepositoryProduct productToDownload,
-                                        Path targetFolderPath, QueryProductResultsPanel productResultsPanel, JComponent parentComponent) {
+                                        Path localRepositoryFolderPath, RemoteRepositoryProductListPanel productResultsPanel, JComponent parentComponent) {
 
         super(progressPanel, threadId, 500);
 
         this.dataSourceName = dataSourceName;
-        this.targetFolderPath = targetFolderPath;
+        this.localRepositoryFolderPath = localRepositoryFolderPath;
         this.productRepositoryDownloader = productRepositoryDownloader;
         this.productToDownload = productToDownload;
         this.parentComponent = parentComponent;
         this.productResultsPanel = productResultsPanel;
+        this.threadListener = threadListener;
     }
 
     @Override
@@ -49,15 +50,20 @@ public class DownloadProductTimerRunnable extends AbstractProgressTimerRunnable<
                 notifyDownloadingProgressValueLater(progressPercent);
             }
         };
-        Path productMetadataFilePath = this.productRepositoryDownloader.download(this.productToDownload, this.targetFolderPath, progressListener);
+        Path productMetadataFilePath = this.productRepositoryDownloader.download(this.productToDownload, this.localRepositoryFolderPath, progressListener);
 
         // successfully downloaded the product
         notifyDownloadingProgressValueLater((short)100);
 
-//        Path productMetadataFilePath = Paths.get("D:\\_download-sentinel2\\S2B_MSIL1C_20190803T070629_N0208_R106_T38NQG_20190803T105217.SAFE", "MTD_MSIL1C.xml");
-        DerbyDAL.saveProduct(this.productToDownload, productMetadataFilePath, this.productRepositoryDownloader.getRepositoryId());
+//        Path productMetadataFilePath = java.nio.file.Paths.get("D:\\_download-sentinel2\\S2B_MSIL1C_20190803T070629_N0208_R106_T38NQG_20190803T105217.SAFE", "MTD_MSIL1C.xml");
+        DerbyDAL.saveProduct(this.productToDownload, productMetadataFilePath, this.productRepositoryDownloader.getRepositoryId(), this.localRepositoryFolderPath);
 
         return productMetadataFilePath;
+    }
+
+    @Override
+    protected void onStopExecuting() {
+        this.threadListener.onStopExecuting(null);
     }
 
     @Override

@@ -19,14 +19,12 @@ import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.LocalFolderProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
-import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -81,7 +79,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private boolean initialized;
     private Path lastSelectedFolderPath;
-    private QueryProductResultsPanel productResultsPanel;
+    private RemoteRepositoryProductListPanel productResultsPanel;
     private RepositorySelectionPanel repositorySelectionPanel;
     private CustomSplitPane verticalSplitPane;
 
@@ -131,11 +129,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         productNameTextField.setMargin(defaultTextFieldMargins);
         this.textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
-        ItemListener dataSourceListener = new ItemListener() {
+        ItemListener repositoryListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                    refreshRepositoryParameters();
+                    refreshRepositoryParameterComponents();
                 }
             }
         };
@@ -195,17 +193,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         }
 
-        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener,
-                                                                     dataSourceListener, stopButtonListener, missionParameterListener);
-        this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
-
-        ActionListener downloadProductListener = new ActionListener() {
+        ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 downloadSelectedProductAsync();
             }
         };
-        this.productResultsPanel = new QueryProductResultsPanel(downloadProductListener);
+        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener,
+                                                                     repositoryListener, downloadRemoteProductListener, stopButtonListener, missionParameterListener);
+        this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
+
+        this.productResultsPanel = new RemoteRepositoryProductListPanel(this.repositorySelectionPanel);
         this.productResultsPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
 
         this.verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
@@ -223,7 +221,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         setBorder(new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns));
         add(contentPanel, BorderLayout.CENTER);
 
-        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
+        this.repositorySelectionPanel.refreshRepositoryParameterComponents();
     }
 
     private void stopProgressPanel() {
@@ -233,20 +231,20 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private void refreshRepositoryParameters() {
+    private void refreshRepositoryParameterComponents() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
         this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedDataSource());
         this.verticalSplitPane.revalidate();
         this.verticalSplitPane.repaint();
-        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
+        this.repositorySelectionPanel.refreshRepositoryParameterComponents();
         this.productResultsPanel.clearProducts();
     }
 
     private void refreshRepositoryMissionParameters() {
         stopProgressPanel();
         stopRunningDownloadQuickLookImagesThreads();
-        this.repositorySelectionPanel.refreshRepositoryMissionParameters();
+        this.repositorySelectionPanel.refreshRepositoryParameterComponents();
         this.productResultsPanel.clearProducts();
     }
 
@@ -267,30 +265,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             this.lastSelectedFolderPath = fileChooser.getSelectedPath();
             AbstractProductsRepositoryPanel selectedDataSource = this.repositorySelectionPanel.getSelectedDataSource();
             RepositoryProduct selectedProduct = this.productResultsPanel.getSelectedProduct();
-            ProductRepositoryDownloader dataSourceProductDownloader = selectedDataSource.buidProductDownloader(selectedProduct.getMission());
-            int threadId = this.repositorySelectionPanel.incrementAndGetCurrentThreadId();
-            DownloadProductTimerRunnable thread = new DownloadProductTimerRunnable(this.repositorySelectionPanel, threadId, selectedDataSource.getName(), dataSourceProductDownloader,
-                                                                                   selectedProduct, this.lastSelectedFolderPath, this.productResultsPanel, this) {
-
+            ThreadListener threadListener = new ThreadListener() {
                 @Override
-                protected void onSuccessfullyFinish(Path targetFolderPath) {
-                    super.onSuccessfullyFinish(targetFolderPath);
-
-                    onSuccessfullyDownloadedProduct(targetFolderPath);
-                }
-
-                @Override
-                protected void onStopExecuting() {
+                public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
                     ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
                 }
             };
+            int threadId = this.repositorySelectionPanel.incrementAndGetCurrentThreadId();
+            AbstractProgressTimerRunnable<?> thread = selectedDataSource.buildThreadToDownloadProduct(this.repositorySelectionPanel, threadId, threadListener, selectedProduct, this.lastSelectedFolderPath, this.productResultsPanel);
             startRunningThread(thread);
         }
-    }
-
-    private void onSuccessfullyDownloadedProduct(Path targetFolderPath) {
-        LocalFolderProductsRepositoryPanel localFolderProducts = new LocalFolderProductsRepositoryPanel(targetFolderPath);
-        this.repositorySelectionPanel.addNewLocalFolderProductsDataSource(localFolderProducts);
     }
 
     private void searchButtonPressed() {
@@ -326,7 +310,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             };
             List<RepositoryProduct> productList = this.productResultsPanel.getListModel().getProducts();
             this.downloadQuickLookImagesRunnable = selectedDataSource.buildThreadToDisplayQuickLookImages(productList, threadListener, this.productResultsPanel);
-            this.downloadQuickLookImagesRunnable.executeAsync();
+            this.downloadQuickLookImagesRunnable.executeAsync(); // stgar the thread
         } else {
             throw new IllegalStateException("The repository providers do not match.");
         }

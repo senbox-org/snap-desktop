@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.JLabel;
@@ -24,16 +25,16 @@ import java.util.List;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class QueryProductResultsPanel extends JPanel {
+public class RemoteRepositoryProductListPanel extends JPanel {
 
+    private final RepositorySelectionPanel repositorySelectionPanel;
     private final JLabel titleLabel;
     private final JList<RepositoryProduct> productList;
-    private final ActionListener downloadProductListener;
 
-    public QueryProductResultsPanel(ActionListener downloadProductListener) {
+    public RemoteRepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel) {
         super(new BorderLayout());
 
-        this.downloadProductListener = downloadProductListener;
+        this.repositorySelectionPanel = repositorySelectionPanel;
         this.titleLabel = new JLabel(getTitle());
         this.productList = new JList<RepositoryProduct>(new ProductListModel());
         this.productList.setCellRenderer(new ProductListCellRenderer());
@@ -119,12 +120,6 @@ public class QueryProductResultsPanel extends JPanel {
     }
 
     private void showProductsPopupMenu(int mouseX, int mouseY) {
-        JMenuItem downloadSelectedMenuItem = new JMenuItem("Download");
-        downloadSelectedMenuItem.addActionListener(this.downloadProductListener);
-
-        JPopupMenu popup = new JPopupMenu();
-        popup.add(downloadSelectedMenuItem);
-
         JMenu sortMenu = new JMenu("Sort By");
         JMenuItem productNameMenuItem = new JMenuItem("Product Name");
         productNameMenuItem.addActionListener(new ActionListener() {
@@ -138,30 +133,6 @@ public class QueryProductResultsPanel extends JPanel {
                 getListModel().sortProducts(comparator);
             }
         });
-//        JMenuItem productTypeMenuItem = new JMenuItem("Product Type");
-//        productTypeMenuItem.addActionListener(new ActionListener() {
-//            public void actionPerformed(final ActionEvent actionEvent) {
-//                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-//                    @Override
-//                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-//                        return o1.getType().compareToIgnoreCase(o2.getType());
-//                    }
-//                };
-//                getListModel().sortProducts(comparator);
-//            }
-//        });
-//        JMenuItem instrumentMenuItem = new JMenuItem("Instrument");
-//        instrumentMenuItem.addActionListener(new ActionListener() {
-//            public void actionPerformed(final ActionEvent actionEvent) {
-//                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-//                    @Override
-//                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-//                        return o1.getType().compareToIgnoreCase(o2.getType());
-//                    }
-//                };
-//                getListModel().sortProducts(comparator);
-//            }
-//        });
         JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
         acquisitionDateMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent actionEvent) {
@@ -218,12 +189,11 @@ public class QueryProductResultsPanel extends JPanel {
             }
         });
         sortMenu.add(productNameMenuItem);
-//        sortMenu.add(productTypeMenuItem);
-//        sortMenu.add(instrumentMenuItem);
         sortMenu.add(acquisitionDateMenuItem);
         sortMenu.add(missionMenuItem);
         sortMenu.add(fileSizeMenuItem);
 
+        JPopupMenu popup = this.repositorySelectionPanel.getSelectedDataSource().buildProductListPopupMenu();
         popup.add(sortMenu);
 
         popup.show(this.productList, mouseX, mouseY);

@@ -23,13 +23,13 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final String dataSourceName;
     private final AbstractProductsRepositoryPanel productsRepositoryPanel;
     private final Credentials credentials;
-    private final QueryProductResultsPanel productResultsPanel;
+    private final RemoteRepositoryProductListPanel productResultsPanel;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
 
     public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
                                             RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
-                                            AbstractProductsRepositoryPanel productsRepositoryPanel, QueryProductResultsPanel productResultsPanel,
+                                            AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteRepositoryProductListPanel productResultsPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
         super(progressPanel, threadId, 500);
