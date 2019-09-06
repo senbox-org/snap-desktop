@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -134,9 +135,17 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
 
         ProductListModel productListModel = (ProductListModel)list.getModel();
 
-        ImageIcon productQuickLookImage = productListModel.getProductQuickLookImage(product);
-        ImageIcon imageIcon = (productQuickLookImage == null) ? EMPTY_ICON : productQuickLookImage;
+        BufferedImage quickLookImage = product.getQuickLookImage();
+        ImageIcon imageIcon = EMPTY_ICON;
+        if (quickLookImage != null) {
+            Image scaledQuickLookImage = quickLookImage.getScaledInstance(EMPTY_ICON.getIconWidth(), EMPTY_ICON.getIconHeight(), BufferedImage.SCALE_FAST);
+            imageIcon = new ImageIcon(scaledQuickLookImage);
+        }
         this.quickLookImageLabel.setIcon(imageIcon);
+
+//        ImageIcon productQuickLookImage = productListModel.getProductQuickLookImage(product);
+//        ImageIcon imageIcon = (productQuickLookImage == null) ? EMPTY_ICON : productQuickLookImage;
+//        this.quickLookImageLabel.setIcon(imageIcon);
 
         Short percent = productListModel.getProductDownloadPercent(product);
         String percentText = "";
@@ -150,7 +159,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.downloadingStatusLabel.setText(percentText);
 
         String dateAsString = DATE_FORMAT.format(product.getAcquisitionDate());
-        this.acquisitionDateLabel.setText("Date: " + dateAsString);
+        this.acquisitionDateLabel.setText("Acquisition date: " + dateAsString);
 
         String sizeText = "Size: ";
         if (product.getApproximateSize() > 0) {

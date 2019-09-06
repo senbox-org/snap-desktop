@@ -6,7 +6,7 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.DownloadProductTimerRunnable;
 import org.esa.snap.product.library.ui.v2.DownloadQuickLookImagesRunnable;
-import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
+import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.LoginDialog;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
@@ -51,7 +51,7 @@ public class RemoteRepositoryParametersPanel extends AbstractProductsRepositoryP
 
     private static final Logger logger = Logger.getLogger(RemoteRepositoryParametersPanel.class.getName());
 
-    private final IMissionParameterListener missionParameterListener;
+    private final MissionParameterListener missionParameterListener;
     private final JLabel missionsLabel;
     private final JComboBox<String> missionsComboBox;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
@@ -60,7 +60,7 @@ public class RemoteRepositoryParametersPanel extends AbstractProductsRepositoryP
     private Credentials credentials;
 
     public RemoteRepositoryParametersPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
-                                           ActionListener downloadRemoteProductListener, IMissionParameterListener missionParameterListener,
+                                           ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener,
                                            WorldWindowPanelWrapper worlWindPanel) {
 
         super(worlWindPanel, componentDimension, new GridBagLayout());

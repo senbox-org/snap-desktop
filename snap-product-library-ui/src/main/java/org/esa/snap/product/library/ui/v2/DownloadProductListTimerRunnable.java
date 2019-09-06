@@ -23,13 +23,13 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final String dataSourceName;
     private final AbstractProductsRepositoryPanel productsRepositoryPanel;
     private final Credentials credentials;
-    private final RemoteRepositoryProductListPanel productResultsPanel;
+    private final RemoteRepositoryProductListPanel repositoryProductListPanel;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
 
     public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
                                             RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
-                                            AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteRepositoryProductListPanel productResultsPanel,
+                                            AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteRepositoryProductListPanel repositoryProductListPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
 
         super(progressPanel, threadId, 500);
@@ -41,7 +41,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         this.credentials = credentials;
         this.productsRepositoryPanel = productsRepositoryPanel;
         this.threadListener = threadListener;
-        this.productResultsPanel = productResultsPanel;
+        this.repositoryProductListPanel = repositoryProductListPanel;
     }
 
     @Override
@@ -73,14 +73,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected boolean onTimerWakeUp() {
         boolean progressPanelVisible = super.onTimerWakeUp();
         if (progressPanelVisible) {
-            this.productResultsPanel.startSearchingProductList(this.dataSourceName);
+            this.repositoryProductListPanel.startSearchingProductList(this.dataSourceName);
         }
         return progressPanelVisible;
     }
 
     @Override
     protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
-        this.productResultsPanel.finishDownloadingProductList();
+        this.repositoryProductListPanel.finishDownloadingProductList();
         if (results.size() == 0) {
             onShowInformationMessageDialog(this.productsRepositoryPanel, "No product available according to the filter values.", "Information");
         }
@@ -88,7 +88,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected void onFailed(Exception exception) {
-        this.productResultsPanel.finishDownloadingProductList();
+        this.repositoryProductListPanel.finishDownloadingProductList();
         onShowErrorMessageDialog(this.productsRepositoryPanel, "Failed to retrieve the product list from " + this.dataSourceName + ".", "Error");
     }
 
@@ -102,7 +102,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             @Override
             protected void execute(Long totalProductCountValue) {
                 if (isCurrentProgressPanelThread()) {
-                    productResultsPanel.startDownloadingProductList(totalProductCountValue.longValue(), dataSourceName);
+                    repositoryProductListPanel.startDownloadingProductList(totalProductCountValue.longValue(), dataSourceName);
                 }
             }
         };
@@ -114,7 +114,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             @Override
             protected void execute(List<RepositoryProduct> pageResultsValue, long totalProductCountValue, int retrievedProductCountValue) {
                 if (isCurrentProgressPanelThread()) {
-                    productResultsPanel.addProducts(pageResultsValue, totalProductCountValue, retrievedProductCountValue, dataSourceName);
+                    repositoryProductListPanel.addProducts(pageResultsValue, totalProductCountValue, retrievedProductCountValue, dataSourceName);
                 }
             }
         };

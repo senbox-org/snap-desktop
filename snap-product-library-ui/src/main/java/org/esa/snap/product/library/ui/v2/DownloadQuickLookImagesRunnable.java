@@ -7,7 +7,6 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 
 import javax.swing.SwingUtilities;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,26 +42,16 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
 
     @Override
     protected Void execute() throws Exception {
-        int iconWidth = ProductListCellRenderer.EMPTY_ICON.getIconWidth();
-        int iconHeight = ProductListCellRenderer.EMPTY_ICON.getIconHeight();
         for (int i=0; i<this.productList.size(); i++) {
             if (!isRunning()) {
                 return null; // nothing to return
             }
 
             RepositoryProduct product = this.productList.get(i);
-            Image scaledQuickLookImage = null;
+            BufferedImage quickLookImage = null;
             if (product.getDownloadQuickLookImageURL() != null) {
                 try {
-                    BufferedImage quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, product.getDownloadQuickLookImageURL(), this);
-
-                    if (!isRunning()) {
-                        return null; // nothing to return
-                    }
-
-                    if (quickLookImage != null) {
-                        scaledQuickLookImage = quickLookImage.getScaledInstance(iconWidth, iconHeight, BufferedImage.SCALE_FAST);
-                    }
+                    quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, product.getDownloadQuickLookImageURL(), this);
                 } catch (InterruptedException exception) {
                     logger.log(Level.SEVERE, "Stop downloading the product quick look image from url '" + product.getDownloadQuickLookImageURL() + "'.", exception);
                     return null; // nothing to return
@@ -70,7 +59,7 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
                     logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + product.getDownloadQuickLookImageURL() + "'.", exception);
                 }
             }
-            notifyDownloadedQuickLookImageLater(product, scaledQuickLookImage);
+            setProductQuickLookImageLater(product, quickLookImage);
         }
 
         return null; // nothing to return
@@ -98,11 +87,12 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
         this.threadListener.onStopExecuting(this.productsRepositoryPanel);
     }
 
-    private void notifyDownloadedQuickLookImageLater(RepositoryProduct product, Image quickLookImage) {
+    private void setProductQuickLookImageLater(RepositoryProduct product, BufferedImage quickLookImage) {
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
-            protected void execute(RepositoryProduct productValue, Image quickLookImageValue) {
-                productResultsPanel.setProductQuickLookImage(productValue, quickLookImageValue);
+            protected void execute(RepositoryProduct productValue, BufferedImage quickLookImageValue) {
+                productValue.setQuickLookImage(quickLookImageValue);
+                productResultsPanel.repaint();
             }
         };
         SwingUtilities.invokeLater(runnable);
@@ -111,14 +101,14 @@ public class DownloadQuickLookImagesRunnable extends AbstractRunnable<Void> {
     private static abstract class ProductQuickLookImageRunnable implements Runnable {
 
         private final RepositoryProduct product;
-        private final Image quickLookImage;
+        private final BufferedImage quickLookImage;
 
-        public ProductQuickLookImageRunnable(RepositoryProduct product, Image quickLookImage) {
+        public ProductQuickLookImageRunnable(RepositoryProduct product, BufferedImage quickLookImage) {
             this.product = product;
             this.quickLookImage = quickLookImage;
         }
 
-        protected abstract void execute(RepositoryProduct product, Image quickLookImage);
+        protected abstract void execute(RepositoryProduct product, BufferedImage quickLookImage);
 
         @Override
         public void run() {

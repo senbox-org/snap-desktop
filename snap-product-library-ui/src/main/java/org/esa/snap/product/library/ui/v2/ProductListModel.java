@@ -43,6 +43,13 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         fireIntervalAdded(this, oldSize, this.items.size());
     }
 
+    public void setProducts(List<RepositoryProduct> products) {
+        this.items = new ArrayList<>(products);
+        this.quickLookImages = new HashMap<RepositoryProduct, ImageIcon>();
+        this.downloadingProductsProgressValue = new HashMap<RepositoryProduct, Short>();
+        fireIntervalAdded(this, 0, this.items.size());
+    }
+
     public void clearProducts() {
         int oldSize = this.items.size();
         clear();

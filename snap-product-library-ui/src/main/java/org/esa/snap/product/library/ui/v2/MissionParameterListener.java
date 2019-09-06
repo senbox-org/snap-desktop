@@ -5,7 +5,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryP
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public interface IMissionParameterListener {
+public interface MissionParameterListener {
 
     public void newSelectedMission(String mission, AbstractProductsRepositoryPanel parentDataSource);
 }

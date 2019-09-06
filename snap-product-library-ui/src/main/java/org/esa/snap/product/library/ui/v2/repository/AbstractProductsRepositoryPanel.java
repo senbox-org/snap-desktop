@@ -60,7 +60,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     }
 
     public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RemoteRepositoryProductListPanel productResultsPanel) {
+                                                                                              RemoteRepositoryProductListPanel repositoryProductListPanel) {
         return null;
     }
 

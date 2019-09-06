@@ -65,6 +65,12 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         this.titleLabel.setText(getTitle() + ": " + "retrieved " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
     }
 
+    public void setProducts(List<RepositoryProduct> products) {
+        ProductListModel productListModel = getListModel();
+        productListModel.setProducts(products);
+        finishDownloadingProductList();
+    }
+
     public void setProductQuickLookImage(RepositoryProduct product, Image quickLookImage) {
         ProductListModel productListModel = getListModel();
         productListModel.setProductQuickLookImage(product, quickLookImage);

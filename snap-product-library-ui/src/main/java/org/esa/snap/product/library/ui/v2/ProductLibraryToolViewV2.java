@@ -19,6 +19,7 @@ import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.RemoteRepositoryParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
@@ -137,7 +138,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 }
             }
         };
-        IMissionParameterListener missionParameterListener = new IMissionParameterListener() {
+        MissionParameterListener missionParameterListener = new MissionParameterListener() {
             @Override
             public void newSelectedMission(String mission, AbstractProductsRepositoryPanel parentDataSource) {
                 if (parentDataSource == repositorySelectionPanel.getSelectedDataSource()) {
@@ -282,7 +283,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             @Override
             public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
                 ProductLibraryToolViewV2.this.currentRunningThread = null; // reset
-                displayQuickLookImagesAsync(productsRepositoryPanel);
+                if (productsRepositoryPanel instanceof RemoteRepositoryParametersPanel) {
+                    displayQuickLookImagesAsync(productsRepositoryPanel);
+                }
             }
         };
         int threadId = this.repositorySelectionPanel.incrementAndGetCurrentThreadId();

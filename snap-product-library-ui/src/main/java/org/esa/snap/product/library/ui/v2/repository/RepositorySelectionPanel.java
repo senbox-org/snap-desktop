@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.IMissionParameterListener;
+import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -45,7 +45,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     ActionListener searchButtonListener, ItemListener dataSourceListener, ActionListener downloadRemoteProductListener,
-                                    ActionListener stopButtonListener, IMissionParameterListener missionParameterListener) {
+                                    ActionListener stopButtonListener, MissionParameterListener missionParameterListener) {
 
         super(new GridBagLayout());
 
@@ -193,7 +193,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
 
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                             ActionListener downloadRemoteProductListener, ItemListener dataSourceListener,
-                                            IMissionParameterListener missionParameterListener) {
+                                            MissionParameterListener missionParameterListener) {
 
         WorldWindowPanelWrapper worldWindowPanel = new WorldWindowPanelWrapper();
         worldWindowPanel.setPreferredSize(new Dimension(500, 500));
