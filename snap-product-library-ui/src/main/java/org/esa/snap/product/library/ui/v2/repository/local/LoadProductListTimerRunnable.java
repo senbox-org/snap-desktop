@@ -4,7 +4,7 @@ import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
-import org.esa.snap.product.library.v2.database.DerbyDAL;
+import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
 
     @Override
     protected List<RepositoryProduct> execute() throws Exception {
-        return DerbyDAL.loadProductList();
+        return ProductLibraryDAL.loadProductList();
     }
 
     @Override

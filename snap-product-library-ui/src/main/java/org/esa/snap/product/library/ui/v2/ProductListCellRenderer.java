@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by jcoravu on 21/8/2019.
@@ -121,13 +122,13 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
 
         String firstLabelText = "";
         String secondLabelText = "";
-        Attribute[] attributes = product.getAttributes();
+        List<Attribute> attributes = product.getAttributes();
         if (attributes != null) {
-            if (attributes.length >= 1) {
-                firstLabelText = attributes[0].getName() + ": " + attributes[0].getValue();
+            if (attributes.size() >= 1) {
+                firstLabelText = buildAttributeLabelText(attributes.get(0));
             }
-            if (attributes.length >= 2) {
-                secondLabelText = attributes[1].getName() + ": " + attributes[1].getValue();
+            if (attributes.size() >= 2) {
+                secondLabelText = buildAttributeLabelText(attributes.get(1));
             }
         }
         this.firstAttributeLabel.setText(firstLabelText);
@@ -142,10 +143,6 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
             imageIcon = new ImageIcon(scaledQuickLookImage);
         }
         this.quickLookImageLabel.setIcon(imageIcon);
-
-//        ImageIcon productQuickLookImage = productListModel.getProductQuickLookImage(product);
-//        ImageIcon imageIcon = (productQuickLookImage == null) ? EMPTY_ICON : productQuickLookImage;
-//        this.quickLookImageLabel.setIcon(imageIcon);
 
         Short percent = productListModel.getProductDownloadPercent(product);
         String percentText = "";
@@ -177,5 +174,17 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.sizeLabel.setText(sizeText);
 
         return this;
+    }
+
+    private static String buildAttributeLabelText(Attribute attribute) {
+        String displayName;
+        if (attribute.getName().equalsIgnoreCase("producttype")) {
+            displayName = "Product Type";
+        } else if (attribute.getName().equalsIgnoreCase("instrumentshortname")) {
+            displayName = "Instrument";
+        } else {
+            displayName = attribute.getName();
+        }
+        return displayName + ": " + attribute.getValue();
     }
 }
