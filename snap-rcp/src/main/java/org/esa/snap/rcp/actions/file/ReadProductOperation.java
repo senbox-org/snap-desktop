@@ -2,6 +2,8 @@ package org.esa.snap.rcp.actions.file;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -22,6 +24,8 @@ class ReadProductOperation implements Runnable {
     private final File file;
     private final String formatName;
     private ProgressWrapper ph;
+    private ProductSubsetDef productSubsetDef = null;
+    private ProductReaderPlugIn plugin = null;
 
     public ReadProductOperation(File file, String formatName) {
         Assert.notNull(file, "file");
@@ -52,7 +56,12 @@ class ReadProductOperation implements Runnable {
         try {
             ph.start();
             ph.switchToIndeterminate();
-            Product product = ProductIO.readProduct(file, formatName);
+            Product product;
+            if(productSubsetDef==null) {
+                product = ProductIO.readProduct(file, formatName);
+            }else{
+                product = plugin.createReaderInstance().readProductNodes(file,productSubsetDef);
+            }
             boolean interrupted = Thread.interrupted();
             if (!interrupted) {
                 if (product == null) {
@@ -126,5 +135,13 @@ class ReadProductOperation implements Runnable {
         void finish() {
             handle.finish();
         }
+    }
+
+    public void setProductSubsetDef(ProductSubsetDef productSubsetDef) {
+        this.productSubsetDef = productSubsetDef;
+    }
+
+    public void setProductReaderPlugIn(ProductReaderPlugIn plugin) {
+        this.plugin = plugin;
     }
 }

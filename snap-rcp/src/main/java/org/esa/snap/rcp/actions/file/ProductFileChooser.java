@@ -1,6 +1,8 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -11,14 +13,9 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -32,6 +29,8 @@ public class ProductFileChooser extends SnapFileChooser {
     private JButton subsetButton;
     private JButton advancedButton;
     private Product subsetProduct;
+    private ProductSubsetDef productSubsetDef;
+    private ProductReaderPlugIn plugin;
 
     private JLabel sizeLabel;
     private boolean useSubset;
@@ -54,13 +53,14 @@ public class ProductFileChooser extends SnapFileChooser {
     }
 
     /**
-     * File chooser only returns a product, if a product subset was created.
+     * File chooser only returns a product, if a product with advance options was created.
      *
-     * @return the product subset or null
+     * @return the product with advance options or null
      */
     public Product getSubsetProduct() {
         return subsetProduct;
     }
+
 
     public boolean isSubsetEnabled() {
         return useSubset;
@@ -74,6 +74,7 @@ public class ProductFileChooser extends SnapFileChooser {
     public int showDialog(Component parent, String approveButtonText) {
         initUI();
         clearCurrentSubsetProduct();
+        clearCurrentAdvancedProductOptions();
         updateState();
         return super.showDialog(parent, approveButtonText);
     }
@@ -101,7 +102,7 @@ public class ProductFileChooser extends SnapFileChooser {
 
         if (isSubsetEnabled()) {
             addSubsetAcessory();
-        }else{
+        } else {
             addAdvancedAcessory();
         }
     }
@@ -127,19 +128,15 @@ public class ProductFileChooser extends SnapFileChooser {
     }
 
     private void addAdvancedAcessory() {
-        String selectedPlugIn = null;
         advancedButton = new JButton("Advanced");
         advancedButton.setMnemonic('A');
         advancedButton.addActionListener(e -> openAdvancedDialog());
         advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
 
-        sizeLabel = new JLabel("0 M");
-        sizeLabel.setHorizontalAlignment(JLabel.RIGHT);
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints(
                 "fill=HORIZONTAL,weightx=1,anchor=NORTHWEST,insets.left=7,insets.right=7,insets.bottom=4");
         GridBagUtils.addToPanel(panel, advancedButton, gbc, "gridy=0");
-        GridBagUtils.addToPanel(panel, sizeLabel, gbc, "gridy=1");
         GridBagUtils.addVerticalFiller(panel, gbc);
 
         setAccessory(panel);
@@ -161,24 +158,26 @@ public class ProductFileChooser extends SnapFileChooser {
             } else {
                 sizeLabel.setText("");
             }
-        }else {
+        } else {
             advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
-            File file = getSelectedFile();
-            if (file != null && file.isFile()) {
-                long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
-                if (fileSize >= 1) {
-                    sizeLabel.setText("File size: " + fileSize + " M");
-                } else {
-                    sizeLabel.setText("File size: < 1 M");
-                }
-            } else {
-                sizeLabel.setText("");
-            }
         }
     }
 
     private void clearCurrentSubsetProduct() {
         subsetProduct = null;
+    }
+
+    private void clearCurrentAdvancedProductOptions() {
+        productSubsetDef = null;
+        plugin = null;
+    }
+
+    public ProductSubsetDef getProductSubsetDef() {
+        return productSubsetDef;
+    }
+
+    public ProductReaderPlugIn getProductReaderPlugin() {
+        return plugin;
     }
 
     private void openProductSubsetDialog() {
@@ -196,7 +195,7 @@ public class ProductFileChooser extends SnapFileChooser {
                 final FileFilter fileFilter = getFileFilter();
                 String formatName = (fileFilter instanceof SnapFileFilter) ? ((SnapFileFilter) fileFilter).getFormatName() : null;
                 product = ProductIO.readProduct(file, formatName);
-                if(product == null) {
+                if (product == null) {
                     String msg = "The product could not be read.";
                     String optionalMsg = file.isDirectory() ? "\nSelection points to a directory." : "";
                     Dialogs.showError(msg + optionalMsg);
@@ -251,9 +250,30 @@ public class ProductFileChooser extends SnapFileChooser {
         return false;
     }
 
-    private boolean openAdvancedDialog() {
-        ProductAdvancedDialog productAdvancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame().getParent(), "Advanced Options", getSelectedFile());
-        return true;
+    private void openAdvancedDialog() {
+        clearCurrentAdvancedProductOptions();
+        boolean approve = openAdvancedProduct();
+        if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
+            approveSelection();
+        }
+        updateState();
+    }
+
+    private boolean openAdvancedProduct() {
+        try {
+            ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", getSelectedFile());
+            productSubsetDef = advancedDialog.getProductSubsetDef();
+            plugin = advancedDialog.getPlugin();
+            //if the Reader does nor support Advanced option action
+            if (advancedDialog.getJDialog().getComponentCount()>0) {//the user agree to open the product normally
+                return true;
+            }else{//the advanced option dialog is not shown and the Open product File chooser will remain on the screen
+                advancedDialog.close();
+            }
+        } catch (Exception e) {
+            Dialogs.showError("The file " + getSelectedFile() + " could not be opened with advanced options!");
+        }
+        return false;
     }
 
     private String createNewProductName(String sourceProductName, int productIndex) {

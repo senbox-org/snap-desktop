@@ -4,6 +4,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
@@ -50,6 +51,8 @@ public class ProductOpener {
     private boolean subsetImportEnabled;
     private File[] files;
     private boolean multiSelectionEnabled;
+    private ProductSubsetDef productSubsetDef = null;
+    private ProductReaderPlugIn plugin = null;
 
 
     public void setFiles(File... files) {
@@ -172,9 +175,15 @@ public class ProductOpener {
             return true;
         }
 
-        String formatName = (fc.getFileFilter() instanceof SnapFileFilter)
-                            ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
-                            : null;
+        String formatName;
+        if (fc.getProductSubsetDef() != null) {
+            productSubsetDef = fc.getProductSubsetDef();
+            plugin = fc.getProductReaderPlugin();
+        }
+
+        formatName = (fc.getFileFilter() instanceof SnapFileFilter)
+                ? ((SnapFileFilter) fc.getFileFilter()).getFormatName()
+                : null;
 
         return openProductFilesCheckOpened(formatName, files);
     }
@@ -192,11 +201,11 @@ public class ProductOpener {
         return files;
     }
 
-    private static Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
+    private Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
         List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
         for (File file : files) {
-            if(!file.exists()) {
+            if (!file.exists()) {
                 fileList.remove(file);
                 continue;
             }
@@ -218,7 +227,7 @@ public class ProductOpener {
         RequestProcessor rp = new RequestProcessor("Opening Products", 4, true, true);
         for (File file : fileList) {
             String fileFormatName;
-            if (formatName == null) {
+            if (formatName == null && plugin == null) {
                 final List<PluginEntry> intendedPlugIns = getPluginsForFile(file, DecodeQualification.INTENDED);
                 List<PluginEntry> suitablePlugIns = new ArrayList<>();
                 if (intendedPlugIns.size() == 0) { // check for suitable readers only if no intended reader was found
@@ -242,11 +251,15 @@ public class ProductOpener {
                         return null;
                     }
                 }
+            } else if (formatName == null && plugin != null) {
+                fileFormatName = plugin.getFormatNames()[0];
             } else {
                 fileFormatName = formatName;
             }
 
             ReadProductOperation operation = new ReadProductOperation(file, fileFormatName);
+            operation.setProductSubsetDef(productSubsetDef);
+            operation.setProductReaderPlugIn(plugin);
             RequestProcessor.Task task = rp.create(operation);
             // TODO (mp/20160830) - Cancellation is not working; the thread is not interrupted. Why?
             ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + file.getName()/*, operation.createCancellable(task)*/);

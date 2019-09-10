@@ -1,8 +1,10 @@
 package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.MetadataInspector;
 import org.esa.snap.core.dataio.ProductReaderExposedParams;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.core.dataio.ProductReaderPlugIn;
+import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.*;
@@ -10,15 +12,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class ProductAdvancedDialog {
-
-    private final ModalDialog dialog;
-    private final Window parent;
+public class ProductAdvancedDialog extends ModalDialog {
 
     private final JList bandList = new JList();
+    private final JList maskList = new JList();
 
     private final JTextField bandListTextField = new JTextField("");
     private final JTextField regionX = new JTextField("");
@@ -27,16 +30,14 @@ public class ProductAdvancedDialog {
     private final JTextField height = new JTextField("");
     private final JTextField subSamplingX = new JTextField("");
     private final JTextField subSamplingY = new JTextField("");
-    private final JTextField onlyMasksTextField = new JTextField("");
+    private final JTextField copyMasksTextField = new JTextField("");
     private final JTextField latitudeNorth = new JTextField("");
     private final JTextField longitudeWest = new JTextField("");
     private final JTextField latitudeSouth = new JTextField("");
     private final JTextField longitudeEast = new JTextField("");
 
-    private final JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
-    private final JCheckBox copyMasks = new JCheckBox("Copy All Masks", true);
-    private final JCheckBox onlyMasks = new JCheckBox("Only Masks", false);
-    private final JCheckBox noneMask = new JCheckBox("Do not copy Masks", false);
+    private JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
+    private final JCheckBox copyMasks = new JCheckBox("Copy Masks", true);
 
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
     private final JRadioButton geoCoordRadio = new JRadioButton("Geographic Coordinates");
@@ -46,28 +47,30 @@ public class ProductAdvancedDialog {
 
     private ProductReaderExposedParams readerExposedParams;
 
-    public ProductAdvancedDialog(Container parent, String title, File file) {
-        this.parent = (Window) parent;
-        this.dialog = new ModalDialog(this.parent, title, ModalDialog.ID_OK_CANCEL, "");
+    private MetadataInspector.Metadata readerInspectorExposeParameters;
 
+    private ProductSubsetDef productSubsetDef = null;
+
+    private ProductReaderPlugIn plugin;
+
+    public ProductAdvancedDialog(Window window, String title, File file) throws Exception {
+        super(window, title, ID_OK | ID_CANCEL | ID_HELP, "advancedDialog");
         final List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
         List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
-        if (intendedPlugIns.size() == 0) { // check for suitable readers only if no intended reader was found
+        if (intendedPlugIns.isEmpty()) { // check for suitable readers only if no intended reader was found
             suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
         }
 
         String fileFormatName;
         boolean showUI = true;
         if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
-            Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
+            showUI = false;
         } else if (intendedPlugIns.size() == 1) {
             ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
-            fileFormatName = entry.plugin.getFormatNames()[0];
-             this.readerExposedParams = entry.plugin.createReaderInstance().getExposedParams();
-        } else if (intendedPlugIns.size() == 0 && suitablePlugIns.size() == 1) {
+            plugin = entry.plugin;
+        } else if (intendedPlugIns.isEmpty() && suitablePlugIns.size() == 1) {
             ProductOpener.PluginEntry entry = suitablePlugIns.get(0);
-            fileFormatName = entry.plugin.getFormatNames()[0];
-            this.readerExposedParams = entry.plugin.createReaderInstance().getExposedParams();
+            plugin = entry.plugin;
         } else {
             Collections.sort(intendedPlugIns);
             Collections.sort(suitablePlugIns);
@@ -75,90 +78,188 @@ public class ProductAdvancedDialog {
             fileFormatName = ProductOpener.getUserSelection(intendedPlugIns, suitablePlugIns);
             if (fileFormatName == null) { // User clicked cancel
                 showUI = false;
-            }
-            else
-            {
-                // TODO get user selected plugin
+            } else {
+                if (!suitablePlugIns.isEmpty() && suitablePlugIns.stream()
+                        .anyMatch(entry -> entry.plugin.getFormatNames()[0].equals(fileFormatName))) {
+                    ProductOpener.PluginEntry entry = suitablePlugIns.stream()
+                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
+                            .findAny()
+                            .orElse(null);
+                    plugin = entry.plugin;
+                } else {
+                    ProductOpener.PluginEntry entry = intendedPlugIns.stream()
+                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
+                            .findAny()
+                            .orElse(null);
+                    plugin = entry.plugin;
+                }
             }
         }
+        if (plugin != null) {
+            this.readerExposedParams = plugin.createReaderInstance().getExposedParams();
+            MetadataInspector metadatainsp = plugin.createReaderInstance().getMetadataInspector();
+            if (metadatainsp != null) {
+                Path input = convertInputToPath(file);
+                readerInspectorExposeParameters = metadatainsp.getMetadata(input);
+            }
+        }
+        //if the user does not support Advanced option action
+        if (showUI && this.readerExposedParams == null && this.readerInspectorExposeParameters == null) {
+            int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support Open with advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
+            //if the user want to open the product normally the Advanced Options window will not be displayed
+            if (confirm == JOptionPane.YES_OPTION) {
+                showUI = false;
+            } else {//if the user choose not to open the product normally the Advanced Option window components are removed
+                getJDialog().removeAll();
+                showUI = false;
+            }
 
+        }
         if (showUI) {
-            if (this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null && this.readerExposedParams.getBandNames().size() > 0) {
-                // set the possible selectable values
-                this.bandList.setListData(this.readerExposedParams.getBandNames().toArray());
+            if (this.readerInspectorExposeParameters == null) {
+                if (this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null && this.readerExposedParams.getBandNames().isEmpty()) {
+                    // set the possible selectable values
+                    this.bandList.setListData(this.readerExposedParams.getBandNames().toArray());
+                }
+                if (this.readerExposedParams != null && this.readerExposedParams.getMaskNames() != null && this.readerExposedParams.getMaskNames().isEmpty()) {
+                    // set the possible selectable values
+                    this.maskList.setListData(this.readerExposedParams.getMaskNames().toArray());
+                }
+                if (this.readerExposedParams != null && !this.readerExposedParams.isHasMasks()) {
+                    copyMasks.setSelected(false);
+                }
+            } else {
+                if (this.readerInspectorExposeParameters.getBandList() != null && !this.readerInspectorExposeParameters.getBandList().isEmpty()) {
+                    // set the possible selectable values
+                    this.bandList.setListData(this.readerInspectorExposeParameters.getBandList().toArray());
+                }
+                if (this.readerInspectorExposeParameters.isHasMasks() && this.readerInspectorExposeParameters.getMaskList() != null && !this.readerInspectorExposeParameters.getMaskList().isEmpty()) {
+                    // set the possible selectable values
+                    this.maskList.setListData(this.readerInspectorExposeParameters.getMaskList().toArray());
+                }
+                if (!this.readerInspectorExposeParameters.isHasMasks()) {
+                    copyMasks.setSelected(false);
+                }
             }
             createUI();
         }
     }
 
-    public void createUI() {
-        dialog.setContent(createPanel());
-        dialog.show();
+    public void createUI() throws Exception {
+        setContent(createPanel());
+        if (show() == ID_OK) {
+            updateSubsetDefNodeNameList();
+        }
+    }
+
+    @Override
+    protected void onCancel() {
+        getJDialog().removeAll();
+        super.onCancel();
+    }
+
+    private void updateSubsetDefNodeNameList() {
+        productSubsetDef = new ProductSubsetDef();
+        //if the user specify the bands that want to be added in the product add only them, else mark the fact that the product must have all the bands
+        if (!bandList.isSelectionEmpty()) {
+            productSubsetDef.addNodeNames((String[]) bandList.getSelectedValuesList().stream().toArray(String[]::new));
+        } else if (!bandListTextField.getText().replaceAll(" ", "").equals("")) {
+            if (bandListTextField.getText().contains(",")) {
+                //remove all blank spaces
+                bandListTextField.setText(bandListTextField.getText().replaceAll(" ", ""));
+                //if there are blank values remove them
+                bandListTextField.setText(bandListTextField.getText().replaceAll(",,", ","));
+                //split the content by comma
+                String[] bandAddedValues = bandListTextField.getText().split(",");
+                //add all values into productSubsetDef
+                productSubsetDef.addNodeNames(bandAddedValues);
+            }
+        } else {
+            productSubsetDef.addNodeName("allBands");
+        }
+
+        //if the user specify the masks that want to be added in the product add only them, else mark the fact that the product must have all the masks
+        if (!maskList.isSelectionEmpty()) {
+            productSubsetDef.addNodeNames((String[]) maskList.getSelectedValuesList().stream().toArray(String[]::new));
+        } else if (!copyMasksTextField.getText().equals("")) {
+            if (copyMasksTextField.getText().contains(",")) {
+                //remove all blank spaces
+                copyMasksTextField.setText(copyMasksTextField.getText().replaceAll(" ", ""));
+                //if there are blank values remove them
+                copyMasksTextField.setText(copyMasksTextField.getText().replaceAll(",,", ","));
+                //split the content by comma
+                String[] maskAddedValues = copyMasksTextField.getText().split(",");
+                //add all values into productSubsetDef
+                productSubsetDef.addNodeNames(maskAddedValues);
+            }
+        } else if (copyMasks.isSelected()) {
+            productSubsetDef.addNodeName("allMasks");
+        }
+        if (!copyMetadata.isSelected()) {
+            productSubsetDef.setIgnoreMetadata(true);
+        }
     }
 
     private JComponent createPanel() {
+
         JPanel contentPane = new JPanel(new GridBagLayout());
+        JScrollPane scrollPaneMask = new JScrollPane(maskList);
         final GridBagConstraints gbc = createGridBagConstraints();
 
         contentPane.add(new JLabel("Source Bands:"), gbc);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
-        //TODO: if there are no valueSet for bands add a text field
-        contentPane.add(new JScrollPane(bandList), gbc);
+        if (bandList.getModel().getSize() > 0) {
+            contentPane.add(new JScrollPane(bandList), gbc);
+        } else {
+            contentPane.add(bandListTextField, gbc);
+        }
+
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy++;
         contentPane.add(copyMetadata, gbc);
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(copyMasks);
-        buttonGroup.add(onlyMasks);
-        buttonGroup.add(noneMask);
-
-        copyMasks.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (copyMasks.isSelected()) {
-                    onlyMasksTextField.setEnabled(false);
+        if ((this.readerExposedParams != null && this.readerExposedParams.isHasMasks())
+                || (this.readerInspectorExposeParameters != null
+                && this.readerInspectorExposeParameters.isHasMasks())) {
+            copyMasks.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (copyMasks.isSelected()) {
+                        if (!scrollPaneMask.isVisible()) {
+                            scrollPaneMask.setVisible(true);
+                        }
+                        if (!copyMasksTextField.isVisible()) {
+                            copyMasksTextField.setVisible(true);
+                        }
+                    } else {
+                        if (scrollPaneMask.isVisible()) {
+                            maskList.clearSelection();
+                            scrollPaneMask.setVisible(false);
+                        }
+                        if (copyMasksTextField.isVisible()) {
+                            copyMasksTextField.setText(null);
+                            copyMasksTextField.setVisible(false);
+                        }
+                    }
                 }
+            });
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy++;
+            contentPane.add(copyMasks, gbc);
+            gbc.gridx++;
+            if (maskList.getModel().getSize() > 0) {
+                contentPane.add(scrollPaneMask, gbc);
+            } else {
+                contentPane.add(copyMasksTextField, gbc);
             }
-        });
-        onlyMasks.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (onlyMasks.isSelected()) {
-                    onlyMasksTextField.setEnabled(true);
-                }
-            }
-        });
-        noneMask.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (noneMask.isSelected()) {
-                    onlyMasksTextField.setEnabled(false);
-                }
-            }
-        });
+        }
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
-        gbc.gridy++;
-        contentPane.add(copyMasks, gbc);
-
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy++;
-        contentPane.add(onlyMasks, gbc);
-        gbc.gridx++;
-        onlyMasksTextField.setEnabled(false);
-        contentPane.add(onlyMasksTextField, gbc);
-
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy++;
-        contentPane.add(noneMask, gbc);
-
         gbc.gridy++;
         contentPane.add(pixelCoordRadio, gbc);
         gbc.gridx = 1;
@@ -257,6 +358,28 @@ public class ProductAdvancedDialog {
                 pixelPanel.setVisible(false);
                 geoPanel.setVisible(true);
             }
+        }
+    }
+
+    public ProductSubsetDef getProductSubsetDef() {
+        return productSubsetDef;
+    }
+
+    public ProductReaderPlugIn getPlugin() {
+        return plugin;
+    }
+
+    public static Path convertInputToPath(Object input) {
+        if (input == null) {
+            throw new NullPointerException();
+        } else if (input instanceof File) {
+            return ((File) input).toPath();
+        } else if (input instanceof Path) {
+            return (Path) input;
+        } else if (input instanceof String) {
+            return Paths.get((String) input);
+        } else {
+            throw new IllegalArgumentException("Unknown input '" + input + "'.");
         }
     }
 }
