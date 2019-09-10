@@ -218,6 +218,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         productSetPanel.onApply();
 
         skipExistingTargetFiles = productSetPanel.isSkippingExistingTargetFiles();
+        replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
 
         try {
             doProcessing();
@@ -337,8 +338,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     private void initGraphs() {
         try {
-            replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
-
             deleteGraphs();
             createGraphs();
         } catch (Exception e) {
