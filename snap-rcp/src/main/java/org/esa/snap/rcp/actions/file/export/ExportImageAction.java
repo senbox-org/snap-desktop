@@ -61,6 +61,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Action for exporting scene views as images.
@@ -68,6 +70,14 @@ import java.awt.image.RenderedImage;
  * @author Marco Peters
  * @author Ralf Quast
  */
+// SEPT 2019 - Authors: Bing Yang, Daniel Knowles
+//           - Modified to use fixed-ratio for the width and height of exported image when using custom user resolution.
+//             If the user adjusts the width field then the height field adjusts accordingly, and vice versa.  There is
+//             likely not a need for the user to want to stretch the image, so fixed-ratio does prevent this.  If this
+//             functionality of independently setting the width and height fields is desired then this code could be
+//             modified to add a fixed-ratio selector.
+//           - Added many tooltips to add the user in understanding the functionality of the various components.
+
 @ActionID(category = "File", id = "org.esa.snap.rcp.actions.file.export.ExportImageAction")
 @ActionRegistration(
         displayName = "#CTL_ExportImageAction_MenuText",
@@ -161,8 +171,10 @@ public class ExportImageAction extends AbstractExportImageAction {
         final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
         regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region"));
         buttonFullRegion = new JRadioButton("Full scene");
+        buttonFullRegion.setToolTipText("Use the image boundaries of the source data");
         buttonFullRegion.setActionCommand(AC_FULL_REGION);
         buttonVisibleRegion = new JRadioButton("View region");
+        buttonVisibleRegion.setToolTipText("Use the image boundaries of the view window");
         buttonVisibleRegion.setActionCommand(AC_VIEW_REGION);
         regionPanel.add(buttonVisibleRegion);
         regionPanel.add(buttonFullRegion);
@@ -174,10 +186,13 @@ public class ExportImageAction extends AbstractExportImageAction {
         final JPanel resolutionPanel = new JPanel(new GridLayout(3, 1));
         resolutionPanel.setBorder(BorderFactory.createTitledBorder("Image Resolution"));
         buttonViewResolution = new JRadioButton("View resolution");
+        buttonViewResolution.setToolTipText("Use the resolution of the view window as it is on the computer screen");
         buttonViewResolution.setActionCommand(AC_VIEW_RES);
         buttonFullResolution = new JRadioButton("Full resolution");
+        buttonFullResolution.setToolTipText("Use the resolution of the source data");
         buttonFullResolution.setActionCommand(AC_FULL_RES);
         buttonUserResolution = new JRadioButton("User resolution");
+        buttonUserResolution.setToolTipText("Use a custom resolution set by the user");
         buttonUserResolution.setActionCommand(AC_USER_RES);
         resolutionPanel.add(buttonViewResolution);
         resolutionPanel.add(buttonFullResolution);
@@ -191,6 +206,7 @@ public class ExportImageAction extends AbstractExportImageAction {
         sizeComponent = new SizeComponent(view);
         JComponent sizePanel = sizeComponent.createComponent();
         sizePanel.setBorder(BorderFactory.createTitledBorder("Image Dimension")); /*I18N*/
+        sizePanel.setToolTipText("Fixed ratio is automatically applied to width and height");
 
         final JPanel accessory = new JPanel();
         accessory.setLayout(new BoxLayout(accessory, BoxLayout.Y_AXIS));
@@ -334,6 +350,10 @@ public class ExportImageAction extends AbstractExportImageAction {
         private static final String PROPERTY_NAME_HEIGHT = "height";
         private static final String PROPERTY_NAME_WIDTH = "width";
 
+        boolean widthListenerEnabled = false;
+        boolean heightListenerEnabled = false;
+        Double heightWidthRatio = null;
+
         private final PropertyContainer propertyContainer;
         private final ProductSceneView view;
         private BindingContext bindingContext;
@@ -397,8 +417,16 @@ public class ExportImageAction extends AbstractExportImageAction {
                 }
             }
 
+            // initialize heightWidthRatio
+            heightWidthRatio = (double) h / (double) w;
+
+            // disable listener and set components then re-enable.
+            widthListenerEnabled = false;
+            heightListenerEnabled = false;
             setWidth(w);
             setHeight(h);
+            widthListenerEnabled = true;
+            heightListenerEnabled = true;
         }
 
         private int toInteger(double value) {
@@ -422,6 +450,32 @@ public class ExportImageAction extends AbstractExportImageAction {
             final PropertyDescriptor heightDescriptor = new PropertyDescriptor(PROPERTY_NAME_HEIGHT, Integer.class);
             heightDescriptor.setConverter(new IntegerConverter());
             propertyContainer.addProperty(new Property(heightDescriptor, new DefaultPropertyAccessor()));
+
+            propertyContainer.addPropertyChangeListener(PROPERTY_NAME_WIDTH, new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    // Width has been changed to auto-adjust the height to maintain the current heightWidthRatio
+                    boolean originalHeightListenerEnable = heightListenerEnabled;
+                    heightListenerEnabled = false;
+                    if (widthListenerEnabled) {
+                        Double newHeight = (double) getWidth() * heightWidthRatio;
+                        setHeight((int) Math.round(newHeight));
+                    }
+                    heightListenerEnabled = originalHeightListenerEnable;
+                }
+            });
+
+            propertyContainer.addPropertyChangeListener(PROPERTY_NAME_HEIGHT, new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    // Height has been changed to auto-adjust the width to maintain the current heightWidthRatio
+                    boolean originalWidthListenerEnabled = widthListenerEnabled;
+                    widthListenerEnabled = false;
+                    if (heightListenerEnabled) {
+                        Double newWidth = (double) getHeight() / heightWidthRatio;
+                        setWidth((int) Math.round(newWidth));
+                    }
+                    widthListenerEnabled = originalWidthListenerEnabled;
+                }
+            });
         }
 
         private Dialogs.Answer showQuestionDialog() {
@@ -455,6 +509,8 @@ public class ExportImageAction extends AbstractExportImageAction {
         private void setHeight(Object value) {
             propertyContainer.setValue(PROPERTY_NAME_HEIGHT, value);
         }
+
+
     }
 
 
