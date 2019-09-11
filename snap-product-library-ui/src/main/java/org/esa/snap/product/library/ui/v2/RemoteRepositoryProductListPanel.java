@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.JLabel;
@@ -11,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -18,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Path2D;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -35,11 +39,12 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         super(new BorderLayout());
 
         this.repositorySelectionPanel = repositorySelectionPanel;
+
         this.titleLabel = new JLabel(getTitle());
         this.productList = new JList<RepositoryProduct>(new ProductListModel());
         this.productList.setCellRenderer(new ProductListCellRenderer());
         this.productList.setVisibleRowCount(4);
-        this.productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.productList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         this.productList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -49,6 +54,33 @@ public class RemoteRepositoryProductListPanel extends JPanel {
 
         add(this.titleLabel, BorderLayout.NORTH);
         add(new JScrollPane(this.productList), BorderLayout.CENTER);
+    }
+
+    public void setListDataListener(ListDataListener listDataListener) {
+        this.productList.getModel().addListDataListener(listDataListener);
+    }
+
+    public void setProductListSelectionListener(ListSelectionListener listSelectionListener) {
+        this.productList.addListSelectionListener(listSelectionListener);
+    }
+
+    public Path2D.Double[] getPolygonPaths() {
+        ProductListModel productListModel = getListModel();
+        Path2D.Double[] polygonPaths = new Path2D.Double[productListModel.getSize()];
+        for (int i=0; i<productListModel.getSize(); i++) {
+            polygonPaths[i] = productListModel.getElementAt(i).getPolygon().getPath();
+        }
+        return polygonPaths;
+    }
+
+    public RepositoryProduct[] getSelectedProducts() {
+        int[] selectedIndices = this.productList.getSelectedIndices();
+        RepositoryProduct[] selectedProducts = new RepositoryProduct[selectedIndices.length];
+        ProductListModel productListModel = getListModel();
+        for (int i=0; i<selectedIndices.length; i++) {
+            selectedProducts[i] = productListModel.getElementAt(selectedIndices[i]);
+        }
+        return selectedProducts;
     }
 
     public RepositoryProduct getSelectedProduct() {
@@ -69,11 +101,6 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         ProductListModel productListModel = getListModel();
         productListModel.setProducts(products);
         finishDownloadingProductList();
-    }
-
-    public void setProductQuickLookImage(RepositoryProduct product, Image quickLookImage) {
-        ProductListModel productListModel = getListModel();
-        productListModel.setProductQuickLookImage(product, quickLookImage);
     }
 
     public void clearProducts() {

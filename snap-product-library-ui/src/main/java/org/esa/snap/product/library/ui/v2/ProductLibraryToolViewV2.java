@@ -17,12 +17,12 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RemoteRepositoryParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -39,12 +39,18 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Path2D;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -87,6 +93,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private AbstractProgressTimerRunnable<?> currentRunningThread;
     private AbstractRunnable<?> downloadQuickLookImagesRunnable;
     private int textFieldPreferredHeight;
+    private WorldWindowPanelWrapper worldWindowPanel;
 
     public ProductLibraryToolViewV2() {
         super();
@@ -130,7 +137,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         productNameTextField.setMargin(defaultTextFieldMargins);
         this.textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
-        ItemListener repositoryListener = new ItemListener() {
+        ItemListener repositoriesItemListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
@@ -163,7 +170,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
         ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
-        ServiceLoader.loadServices(serviceRegistry);
         Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
 
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = new RemoteProductsRepositoryProvider[repositoryProductsProviders.size()];
@@ -194,18 +200,48 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         }
 
+        this.worldWindowPanel = new WorldWindowPanelWrapper();
+        this.worldWindowPanel.setPreferredSize(new Dimension(500, 500));
+        this.worldWindowPanel.addWorldWindowPanelAsync(false, true);
+
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 downloadSelectedProductAsync();
             }
         };
-        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, searchButtonListener,
-                                                                     repositoryListener, downloadRemoteProductListener, stopButtonListener, missionParameterListener);
+        this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, downloadRemoteProductListener, missionParameterListener, worldWindowPanel);
+        this.repositorySelectionPanel.setRepositoriesItemListener(repositoriesItemListener);
+        this.repositorySelectionPanel.setSearchButtonListener(searchButtonListener);
+        this.repositorySelectionPanel.setStopButtonListener(stopButtonListener);
         this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 
         this.productResultsPanel = new RemoteRepositoryProductListPanel(this.repositorySelectionPanel);
         this.productResultsPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
+        this.productResultsPanel.setListDataListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent listDataEvent) {
+                showPolygonPaths();
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent listDataEvent) {
+                showPolygonPaths();
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent listDataEvent) {
+                showPolygonPaths();
+            }
+        });
+        this.productResultsPanel.setProductListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+                if (!listSelectionEvent.getValueIsAdjusting()) {
+                    newSelectedRepositoryProducts();
+                }
+            }
+        });
 
         this.verticalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1, 2);
         this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedDataSource());
@@ -223,6 +259,23 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         add(contentPanel, BorderLayout.CENTER);
 
         this.repositorySelectionPanel.refreshRepositoryParameterComponents();
+    }
+
+    private void showPolygonPaths() {
+        Path2D.Double[] polygonPaths = this.productResultsPanel.getPolygonPaths();
+        this.worldWindowPanel.setPolygons(polygonPaths);
+    }
+
+    private void newSelectedRepositoryProducts() {
+        RepositoryProduct[] selectedProducts = this.productResultsPanel.getSelectedProducts();
+        Path2D.Double[] polygonPaths = new Path2D.Double[selectedProducts.length];
+        for (int i = 0; i < selectedProducts.length; i++) {
+            polygonPaths[i] = selectedProducts[i].getPolygon().getPath();
+        }
+        this.worldWindowPanel.highlightPolygons(polygonPaths);
+        if (polygonPaths.length == 1) {
+            this.worldWindowPanel.setEyePosition(polygonPaths[0]);
+        }
     }
 
     private void stopProgressPanel() {

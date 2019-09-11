@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.worldwind;
 
+import gov.nasa.worldwind.geom.Position;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.ui.loading.CircularProgressIndicatorLabel;
 import org.esa.snap.ui.loading.GenericRunnable;
@@ -12,6 +13,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 public class WorldWindowPanelWrapper extends JPanel {
@@ -44,11 +46,37 @@ public class WorldWindowPanelWrapper extends JPanel {
         }
     }
 
-    public Rectangle2D.Double getSelectedArea() {
+    public Rectangle2D getSelectedArea() {
         if (this.worldWindowPanel != null) {
             return this.worldWindowPanel.getSelectedArea();
         }
         return null;
+    }
+
+    public void setEyePosition(Path2D.Double polygonPath) {
+        if (this.worldWindowPanel != null) {
+            Rectangle2D rectangleBounds = polygonPath.getBounds2D();
+            Position eyePosition = this.worldWindowPanel.getView().getEyePosition();
+            Position position = Position.fromDegrees(rectangleBounds.getCenterY(), rectangleBounds.getCenterX(), eyePosition.getElevation());
+            this.worldWindowPanel.getView().setEyePosition(position);
+            this.worldWindowPanel.redrawNow();
+        }
+    }
+
+    public void highlightPolygons(Path2D.Double[] polygonPaths) {
+        if (this.worldWindowPanel != null) {
+            PolygonLayer polygonLayer = this.worldWindowPanel.getPolygonLayer();
+            polygonLayer.highlightPolygons(polygonPaths);
+            this.worldWindowPanel.redrawNow();
+        }
+    }
+
+    public void setPolygons(Path2D.Double[] polygonPaths) {
+        if (this.worldWindowPanel != null) {
+            PolygonLayer polygonLayer = this.worldWindowPanel.getPolygonLayer();
+            polygonLayer.setPolygons(polygonPaths);
+            this.worldWindowPanel.redrawNow();
+        }
     }
 
     private void addWorldWindowPanel(WorldWindowPanel worldWindowPanel) {

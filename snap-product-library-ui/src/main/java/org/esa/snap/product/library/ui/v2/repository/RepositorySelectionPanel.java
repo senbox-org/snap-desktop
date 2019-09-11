@@ -44,18 +44,17 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
     private int currentThreadId;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    ActionListener searchButtonListener, ItemListener dataSourceListener, ActionListener downloadRemoteProductListener,
-                                    ActionListener stopButtonListener, MissionParameterListener missionParameterListener) {
+                                    ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         super(new GridBagLayout());
 
         this.currentThreadId = 0;
 
-        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, dataSourceListener, missionParameterListener);
+        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, missionParameterListener, worldWindowPanel);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
-        this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", searchButtonListener, buttonSize);
+        this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize);
         this.searchButton.setToolTipText("Search");
 
         ActionListener helpButtonListener = new ActionListener() {
@@ -66,7 +65,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize);
         this.helpButton.setToolTipText("Help");
 
-        this.stopButton = buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", stopButtonListener, buttonSize);
+        this.stopButton = buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize);
         this.stopButton.setToolTipText("Stop");
 
         this.repositoryLabel = new JLabel("Repository");
@@ -117,6 +116,14 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         } else {
             throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
         }
+    }
+
+    public void setSearchButtonListener(ActionListener searchButtonListener) {
+        this.searchButton.addActionListener(searchButtonListener);
+    }
+
+    public void setStopButtonListener(ActionListener stopButtonListener) {
+        this.stopButton.addActionListener(stopButtonListener);
     }
 
     public final int incrementAndGetCurrentThreadId() {
@@ -191,20 +198,18 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         }
     }
 
-    private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                            ActionListener downloadRemoteProductListener, ItemListener dataSourceListener,
-                                            MissionParameterListener missionParameterListener) {
+    public void setRepositoriesItemListener(ItemListener repositoriesItemListener) {
+        this.repositoriesComboBox.addItemListener(repositoriesItemListener);
+    }
 
-        WorldWindowPanelWrapper worldWindowPanel = new WorldWindowPanelWrapper();
-        worldWindowPanel.setPreferredSize(new Dimension(500, 500));
-        worldWindowPanel.addWorldWindowPanelAsync(false, true);
+    private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
+                                            ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
             availableDataSources[i] = new RemoteRepositoryParametersPanel(productsRepositoryProviders[i], componentDimension, downloadRemoteProductListener,
                                                                           missionParameterListener, worldWindowPanel);
         }
-
         availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel(componentDimension, worldWindowPanel);
 
         this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
@@ -225,7 +230,6 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         this.repositoriesComboBox.setRenderer(renderer);
         this.repositoriesComboBox.setMaximumRowCount(5);
         this.repositoriesComboBox.setSelectedIndex(0);
-        this.repositoriesComboBox.addItemListener(dataSourceListener);
     }
 
     private void addComponents(ComponentDimension componentDimension) {

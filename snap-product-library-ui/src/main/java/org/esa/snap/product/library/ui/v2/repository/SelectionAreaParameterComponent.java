@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Created by jcoravu on 7/8/2019.
  */
-public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle2D.Double> {
+public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle2D> {
 
     private final WorldWindowPanelWrapper worlWindPanel;
 
@@ -23,7 +23,7 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
     }
 
     @Override
-    public Rectangle2D.Double getParameterValue() {
+    public Rectangle2D getParameterValue() {
         return this.worlWindPanel.getSelectedArea();
     }
 }

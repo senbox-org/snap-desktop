@@ -33,9 +33,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 
 /**
@@ -44,14 +43,15 @@ import java.lang.reflect.Field;
 public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private final SectorSelector selector;
+    private final PolygonLayer polygonLayer;
 
     public WorldWindowPanel(boolean flatWorld, boolean removeExtraLayers) {
         super(null, Configuration.getRequiredGLCapabilities(), new BasicGLCapabilitiesChooser());
 
         // create the default model as described in the current worldwind properties
         Model model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        LayerList layerList = model.getLayers();
         if (removeExtraLayers) {
-            LayerList layerList = model.getLayers();
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer
                         || layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer) {
@@ -60,6 +60,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
             }
         }
+        this.polygonLayer = new PolygonLayer();
+        layerList.add(polygonLayer);
+
         setModel(model);
         if (flatWorld) {
             setFlatEarth();
@@ -79,13 +82,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         this.selector.setInteriorColor(new Color(1f, 1f, 1f, 0.1f));
         this.selector.setBorderColor(new Color(1f, 0f, 0f, 0.5f));
         this.selector.setBorderWidth(2);
-        this.selector.addPropertyChangeListener(SectorSelector.SECTOR_PROPERTY, new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                Sector sector = (Sector) evt.getNewValue();
-                if (null != sector) {
-                }
-            }
-        });
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -97,46 +93,23 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         });
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
+    PolygonLayer getPolygonLayer() {
+        return polygonLayer;
+    }
+
+    void setBackgroundColor(Color backgroundColor) {
         DrawContext drawContext = getSceneController().getDrawContext();
         Color color = drawContext.getClearColor();
         setValueByReflection(color, "value", backgroundColor.getRGB());
     }
 
-    public void clearSelectedArea() {
+    void clearSelectedArea() {
         this.selector.disable();
     }
 
-    public Rectangle2D.Double getSelectedArea() {
+    Rectangle2D getSelectedArea() {
         Sector selectedSector = this.selector.getSector();
-        if (selectedSector == null) {
-            return null;
-        }
-        LatLon[] corners = selectedSector.getCorners();
-        double minX = Float.MAX_VALUE;
-        double maxX = -Float.MAX_VALUE;
-        double minY = Float.MAX_VALUE;
-        double maxY = -Float.MAX_VALUE;
-        for (LatLon pos : corners) {
-            double x = pos.getLatitude().getDegrees();
-            double y = pos.getLongitude().getDegrees();
-            if (x < minX) {
-                minX = x;
-            }
-            if (x > maxX) {
-                maxX = x;
-            }
-            if (y < minY) {
-                minY = y;
-            }
-            if (y > maxY) {
-                maxY = y;
-            }
-        }
-        if (minX >= maxX || minY >= maxY) {
-            return new Rectangle.Double(minX, minY, 0.0d, 0.0d);
-        }
-        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+        return selectedSector.toRectangleDegrees();
     }
 
     private void setEarthGlobe() {
