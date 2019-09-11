@@ -71,12 +71,14 @@ import java.beans.PropertyChangeListener;
  * @author Ralf Quast
  */
 // SEPT 2019 - Authors: Bing Yang, Daniel Knowles
-//           - Modified to use fixed-ratio for the width and height of exported image when using custom user resolution.
-//             If the user adjusts the width field then the height field adjusts accordingly, and vice versa.  There is
-//             likely not a need for the user to want to stretch the image, so fixed-ratio does prevent this.  If this
-//             functionality of independently setting the width and height fields is desired then this code could be
-//             modified to add a fixed-ratio selector.
-//           - Added many tooltips to add the user in understanding the functionality of the various components.
+//   Modifications to the Export Image tool:
+//        1. Modified to use fixed-ratio for the width and height of exported image when using custom user resolution.
+//           If the user adjusts the width field then the height field auto-adjusts accordingly, and vice versa.
+//           There is likely not a need for the user to want to stretch the image, so fixed-ratio does prevent this.
+//           If this functionality of independently setting the width and height fields is desired then this code could
+//           be further modified to add a fixed-ratio selector.
+//        2. Added many tooltips to aid the user in understanding the functionality of the various components.
+
 
 @ActionID(category = "File", id = "org.esa.snap.rcp.actions.file.export.ExportImageAction")
 @ActionRegistration(
