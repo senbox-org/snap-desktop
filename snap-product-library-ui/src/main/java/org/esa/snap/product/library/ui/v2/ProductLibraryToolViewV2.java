@@ -22,6 +22,7 @@ import org.esa.snap.product.library.ui.v2.repository.RemoteRepositoryParametersP
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -200,9 +201,15 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         }
 
+        PolygonMouseListener worldWindowMouseListener = new PolygonMouseListener() {
+            @Override
+            public void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {
+                ProductLibraryToolViewV2.this.leftMouseButtonClicked(polygonPaths);
+            }
+        };
         this.worldWindowPanel = new WorldWindowPanelWrapper();
         this.worldWindowPanel.setPreferredSize(new Dimension(500, 500));
-        this.worldWindowPanel.addWorldWindowPanelAsync(false, true);
+        this.worldWindowPanel.addWorldWindowPanelAsync(false, true, worldWindowMouseListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -259,6 +266,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         add(contentPanel, BorderLayout.CENTER);
 
         this.repositorySelectionPanel.refreshRepositoryParameterComponents();
+    }
+
+    private void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {
+        this.productResultsPanel.selectProductsByPolygonPath(polygonPaths);
     }
 
     private void showPolygonPaths() {

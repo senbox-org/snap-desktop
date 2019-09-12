@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.JLabel;
@@ -62,6 +63,29 @@ public class RemoteRepositoryProductListPanel extends JPanel {
 
     public void setProductListSelectionListener(ListSelectionListener listSelectionListener) {
         this.productList.addListSelectionListener(listSelectionListener);
+    }
+
+    public void selectProductsByPolygonPath(List<Path2D.Double> polygonPaths) {
+        ProductListModel productListModel = getListModel();
+        int count = 0;
+        for (int k=0; k<polygonPaths.size(); k++) {
+            int foundProductIndex = -1;
+            for (int i=0; i<productListModel.getSize() && foundProductIndex<0; i++) {
+                Polygon2D polygon = productListModel.getElementAt(i).getPolygon();
+                if (polygon.getPath() == polygonPaths.get(k)) {
+                    foundProductIndex = i;
+                }
+            }
+            if (foundProductIndex >= 0) {
+                if (count == 0) {
+                    this.productList.getSelectionModel().clearSelection();
+                }
+                count++;
+                this.productList.getSelectionModel().addSelectionInterval(foundProductIndex, foundProductIndex);
+            } else {
+                throw new IllegalArgumentException("The polygon path does not exist in the list.");
+            }
+        }
     }
 
     public Path2D.Double[] getPolygonPaths() {

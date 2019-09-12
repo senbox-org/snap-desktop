@@ -17,6 +17,18 @@ public class PolygonLayer extends RenderableLayer {
     public PolygonLayer() {
     }
 
+    public List<Path2D.Double> findPolygonsContainsPoint(double longitude, double latitude) {
+        List<Path2D.Double> polygonPaths = new ArrayList<>();
+        Iterator<Renderable> it1 = this.renderables.iterator();
+        while (it1.hasNext()) {
+            CustomPolyline polyline = (CustomPolyline)it1.next();
+            if (polyline.getPath().contains(longitude, latitude)) {
+                polygonPaths.add(polyline.getPath());
+            }
+        }
+        return polygonPaths;
+    }
+
     public void setPolygons(Path2D.Double[] polygonPaths) {
         List<CustomPolyline> polygonsToRemove = new ArrayList<>();
         Iterator<Renderable> it1 = this.renderables.iterator();

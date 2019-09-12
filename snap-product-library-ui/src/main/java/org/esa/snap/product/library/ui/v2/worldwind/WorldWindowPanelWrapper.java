@@ -15,6 +15,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
+import java.util.List;
 
 public class WorldWindowPanelWrapper extends JPanel {
 
@@ -35,9 +37,19 @@ public class WorldWindowPanelWrapper extends JPanel {
         add(circularProgressLabel, c);
     }
 
-    public void addWorldWindowPanelAsync(boolean flatWorld, boolean removeExtraLayers) {
-        InitWorldWindPanelRunnable thread = new InitWorldWindPanelRunnable(this, flatWorld, removeExtraLayers);
+    public void addWorldWindowPanelAsync(boolean flatWorld, boolean removeExtraLayers, PolygonMouseListener mouseListener) {
+        InitWorldWindPanelRunnable thread = new InitWorldWindPanelRunnable(this, flatWorld, removeExtraLayers, mouseListener);
         thread.executeAsync(); // start the thread
+    }
+
+    public List<Path2D.Double> findPolygonsContainsPoint(double longitude, double latitude) {
+        List<Path2D.Double> polygonPaths;
+        if (this.worldWindowPanel == null) {
+            polygonPaths = Collections.emptyList();
+        } else {
+            polygonPaths = this.worldWindowPanel.getPolygonLayer().findPolygonsContainsPoint(longitude, latitude);
+        }
+        return polygonPaths;
     }
 
     public void clearSelectedArea() {
@@ -102,16 +114,18 @@ public class WorldWindowPanelWrapper extends JPanel {
         private final WorldWindowPanelWrapper worldWindowPanel;
         private final boolean flatWorld;
         private final boolean removeExtraLayers;
+        private final PolygonMouseListener mouseListener;
 
-        public InitWorldWindPanelRunnable(WorldWindowPanelWrapper worldWindowPanel, boolean flatWorld, boolean removeExtraLayers) {
+        public InitWorldWindPanelRunnable(WorldWindowPanelWrapper worldWindowPanel, boolean flatWorld, boolean removeExtraLayers, PolygonMouseListener mouseListener) {
             this.worldWindowPanel = worldWindowPanel;
             this.flatWorld = flatWorld;
             this.removeExtraLayers = removeExtraLayers;
+            this.mouseListener = mouseListener;
         }
 
         @Override
         protected WorldWindowPanel execute() throws Exception {
-            return new WorldWindowPanel(this.flatWorld, this.removeExtraLayers);
+            return new WorldWindowPanel(this.flatWorld, this.removeExtraLayers, this.mouseListener);
         }
 
         @Override
