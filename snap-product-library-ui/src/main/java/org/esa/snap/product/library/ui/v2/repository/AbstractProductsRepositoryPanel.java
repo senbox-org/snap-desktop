@@ -5,11 +5,10 @@ import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.Box;
@@ -22,7 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -59,19 +57,13 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         return null;
     }
 
-    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
+    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                               RemoteRepositoryProductListPanel repositoryProductListPanel) {
         return null;
     }
 
     public AbstractRunnable<?> buildThreadToDisplayQuickLookImages(List<RepositoryProduct> productList, ThreadListener threadListener, RemoteRepositoryProductListPanel productResultsPanel) {
         return null;
-    }
-
-    public AbstractProgressTimerRunnable<?> buildThreadToDownloadProduct(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
-                                                                         RepositoryProduct selectedProduct, Path targetFolderPath,
-                                                                         RemoteRepositoryProductListPanel productResultsPanel) {
-        return  null;
     }
 
     public int computeLeftPanelMaximumLabelWidth() {

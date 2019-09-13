@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -17,7 +17,7 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
     private final ThreadListener threadListener;
     private final RemoteRepositoryProductListPanel repositoryProductListPanel;
 
-    public LoadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
+    public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                         RemoteRepositoryProductListPanel repositoryProductListPanel) {
 
         super(progressPanel, threadId, 500);

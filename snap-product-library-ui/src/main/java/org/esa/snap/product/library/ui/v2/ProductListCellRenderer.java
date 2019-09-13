@@ -144,13 +144,22 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         }
         this.quickLookImageLabel.setIcon(imageIcon);
 
-        Short percent = productListModel.getProductDownloadPercent(product);
+        ProgressPercent progressPercent = productListModel.getProductDownloadPercent(product);
         String percentText = "";
-        if (percent != null) {
-            if (percent < 100) {
-                percentText = "Downloading: " + percent.toString() + "%";
+        if (progressPercent != null) {
+            // the product is pending download or downloading
+            if (progressPercent.isDownloading()) {
+                if (progressPercent.getValue() < 100) {
+                    percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "%";
+                } else {
+                    percentText = "Downloaded";
+                }
+            } else if (progressPercent.isPendingDownload()){
+                percentText = "Pending download";
+            } else if (progressPercent.isStoppedDownload()) {
+                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (stopped)";
             } else {
-                percentText = "Downloaded";
+                throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue());
             }
         }
         this.downloadingStatusLabel.setText(percentText);

@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
@@ -14,47 +14,47 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.Stack;
 
 /**
  * Created by jcoravu on 22/8/2019.
  */
-public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
+public class RepositorySelectionPanel extends JPanel {
 
     private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
+
     private final JButton searchButton;
     private final JButton helpButton;
     private final JLabel repositoryLabel;
-    private final JButton stopButton;
-    private final JProgressBar progressBar;
-
-    private int currentThreadId;
+    private final ProgressBarHelperImpl progressBarHelper;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         super(new GridBagLayout());
 
-        this.currentThreadId = 0;
-
         createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, missionParameterListener, worldWindowPanel);
 
-        Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
+        Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
 
-        this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize);
+        Dimension buttonSize = new Dimension(comboBoxSize.height, comboBoxSize.height);
+
+        this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
         this.searchButton.setToolTipText("Search");
 
         ActionListener helpButtonListener = new ActionListener() {
@@ -62,60 +62,23 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
             public void actionPerformed(ActionEvent e) {
             }
         };
-        this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize);
+        this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize, 1);
         this.helpButton.setToolTipText("Help");
 
-        this.stopButton = buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize);
-        this.stopButton.setToolTipText("Stop");
+        this.progressBarHelper = new ProgressBarHelperImpl(100, buttonSize.height) {
+            @Override
+            protected void setParametersEnabledWhileDownloading(boolean enabled) {
+                RepositorySelectionPanel.this.setParametersEnabledWhileDownloading(enabled);
+            }
+        };
 
         this.repositoryLabel = new JLabel("Repository");
-
-        this.progressBar = new JProgressBar(JProgressBar.HORIZONTAL);
-        this.progressBar.setIndeterminate(true);
-        this.progressBar.setPreferredSize(new Dimension(100, 10));
-        this.progressBar.setMinimumSize(new Dimension(100, 10));
-
-        setProgressPanelVisible(false);
 
         addComponents(componentDimension);
     }
 
-    @Override
-    public boolean isCurrentThread(int threadId) {
-        if (EventQueue.isDispatchThread()) {
-            return (this.currentThreadId == threadId);
-        } else {
-            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
-        }
-    }
-
-    @Override
-    public boolean hideProgressPanel(int threadId) {
-        if (EventQueue.isDispatchThread()) {
-            if (this.currentThreadId == threadId) {
-                this.currentThreadId++;
-                setProgressPanelVisible(false);
-                setParametersEnabledWhileDownloading(true);
-                return true;
-            }
-            return false;
-        } else {
-            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
-        }
-    }
-
-    @Override
-    public boolean showProgressPanel(int threadId) {
-        if (EventQueue.isDispatchThread()) {
-            if (this.currentThreadId == threadId) {
-                setProgressPanelVisible(true);
-                setParametersEnabledWhileDownloading(false);
-                return true;
-            }
-            return false;
-        } else {
-            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
-        }
+    public ProgressBarHelperImpl getProgressBarHelper() {
+        return progressBarHelper;
     }
 
     public void setSearchButtonListener(ActionListener searchButtonListener) {
@@ -123,33 +86,15 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
     }
 
     public void setStopButtonListener(ActionListener stopButtonListener) {
-        this.stopButton.addActionListener(stopButtonListener);
+        this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
     }
 
-    public final int incrementAndGetCurrentThreadId() {
-        if (EventQueue.isDispatchThread()) {
-            return ++this.currentThreadId;
-        } else {
-            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
-        }
-    }
-
-    public void hideProgressPanel() {
-        if (EventQueue.isDispatchThread()) {
-            this.currentThreadId++;
-            setProgressPanelVisible(false);
-            setParametersEnabledWhileDownloading(true);
-        } else {
-            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
-        }
-    }
-
-    public AbstractProductsRepositoryPanel getSelectedDataSource() {
+    public AbstractProductsRepositoryPanel getSelectedRepository() {
         return (AbstractProductsRepositoryPanel)this.repositoriesComboBox.getSelectedItem();
     }
 
     public void refreshRepositoryParameterComponents() {
-        getSelectedDataSource().refreshParameterComponents();
+        getSelectedRepository().refreshParameterComponents();
         refreshRepositoryLabelWidth();
     }
 
@@ -165,7 +110,7 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         this.searchButton.setEnabled(enabled);
         this.repositoryLabel.setEnabled(enabled);
         this.repositoriesComboBox.setEnabled(enabled);
-        AbstractProductsRepositoryPanel selectedDataSource = getSelectedDataSource();
+        AbstractProductsRepositoryPanel selectedDataSource = getSelectedRepository();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);
         while (!stack.isEmpty()) {
@@ -183,13 +128,8 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         }
     }
 
-    private void setProgressPanelVisible(boolean visible) {
-        this.progressBar.setVisible(visible);
-        this.stopButton.setVisible(visible);
-    }
-
     private void refreshRepositoryLabelWidth() {
-        int maximumLabelWidth = getSelectedDataSource().computeLeftPanelMaximumLabelWidth();
+        int maximumLabelWidth = getSelectedRepository().computeLeftPanelMaximumLabelWidth();
         RemoteRepositoryParametersPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
         Container parentContainer = this.repositoryLabel.getParent();
         if (parentContainer != null) {
@@ -244,15 +184,19 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.helpButton, c);
         c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.progressBar, c);
+        add(this.progressBarHelper.getProgressBar(), c);
         c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.stopButton, c);
+        add(this.progressBarHelper.getStopButton(), c);
     }
 
-    private static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize) {
+    public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL imageURL = classLoader.getResource(resourceImagePath);
         ImageIcon icon = new ImageIcon(imageURL);
+        if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
+            Image scaledImage = getScaledImage(icon.getImage(), buttonSize.width, buttonSize.height, scaledImagePadding.intValue());
+            icon = new ImageIcon(scaledImage);
+        }
         JButton button = new JButton(icon);
         button.setFocusable(false);
         button.addActionListener(buttonListener);
@@ -260,5 +204,14 @@ public class RepositorySelectionPanel extends JPanel implements ProgressPanel {
         button.setMinimumSize(buttonSize);
         button.setMaximumSize(buttonSize);
         return button;
+    }
+
+    private static Image getScaledImage(Image srcImg, int destinationImageWidth, int destinationImageHeight, int padding) {
+        BufferedImage resizedImg = new BufferedImage(destinationImageWidth, destinationImageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, padding, padding, destinationImageWidth-padding, destinationImageHeight-padding, 0, 0, srcImg.getWidth(null), srcImg.getHeight(null), null);
+        g2.dispose();
+        return resizedImg;
     }
 }

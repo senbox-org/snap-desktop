@@ -4,19 +4,17 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.DownloadProductListTimerRunnable;
-import org.esa.snap.product.library.ui.v2.DownloadProductTimerRunnable;
 import org.esa.snap.product.library.ui.v2.DownloadQuickLookImagesRunnable;
-import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.LoginDialog;
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -36,7 +34,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -112,7 +109,7 @@ public class RemoteRepositoryParametersPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
+    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                               RemoteRepositoryProductListPanel productResultsPanel) {
 
         DownloadProductListTimerRunnable thread = null;
@@ -139,15 +136,6 @@ public class RemoteRepositoryParametersPanel extends AbstractProductsRepositoryP
         } else {
             return new DownloadQuickLookImagesRunnable(productList, this.credentials, threadListener, this, this.productsRepositoryProvider, productResultsPanel);
         }
-    }
-
-    @Override
-    public AbstractProgressTimerRunnable<?> buildThreadToDownloadProduct(ProgressPanel progressPanel, int threadId, ThreadListener threadListener,
-                                                                         RepositoryProduct selectedProduct, Path targetFolderPath,
-                                                                         RemoteRepositoryProductListPanel productResultsPanel) {
-
-        ProductRepositoryDownloader productRepositoryDownloader = this.productsRepositoryProvider.buidProductDownloader(selectedProduct.getMission());
-        return new DownloadProductTimerRunnable(progressPanel, threadId, getName(), threadListener, productRepositoryDownloader, selectedProduct, targetFolderPath, productResultsPanel, this);
     }
 
     @Override
@@ -178,6 +166,10 @@ public class RemoteRepositoryParametersPanel extends AbstractProductsRepositoryP
         String selectedMission = (String) this.missionsComboBox.getSelectedItem();
         List<QueryFilter> missionParameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
         addParameterComponents(missionParameters, 1, gapBetweenRows);
+    }
+
+    public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
+        return productsRepositoryProvider;
     }
 
     private void showErrorMessageDialog(String message, String title) {

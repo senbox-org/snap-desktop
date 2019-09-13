@@ -14,12 +14,12 @@ import java.util.TimerTask;
  */
 public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> {
 
-    private final ProgressPanel progressPanel;
+    private final ProgressBarHelper progressPanel;
     private final Timer timer;
     private final int timerDelayInMilliseconds;
     private final int threadId;
 
-    protected AbstractProgressTimerRunnable(ProgressPanel progressPanel, int threadId, int timerDelayInMilliseconds) {
+    protected AbstractProgressTimerRunnable(ProgressBarHelper progressPanel, int threadId, int timerDelayInMilliseconds) {
         super();
 
         this.progressPanel = progressPanel;
@@ -102,6 +102,18 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
 
     protected final void onShowInformationMessageDialog(JComponent parentDialogComponent, String message, String title) {
         JOptionPane.showMessageDialog(parentDialogComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    protected final void updateProgressBarTextLater(String text) {
+        GenericRunnable<String> runnable = new GenericRunnable<String>(text) {
+            @Override
+            protected void execute(String textValue) {
+                if (isCurrentProgressPanelThread()) {
+                    progressPanel.updateProgressBarText(threadId, textValue);
+                }
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
     }
 
     private void startTimerIfDefined() {

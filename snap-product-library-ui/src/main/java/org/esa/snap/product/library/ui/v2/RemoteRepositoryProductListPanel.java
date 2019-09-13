@@ -1,10 +1,12 @@
 package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.SwingUtils;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -16,7 +18,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
-import java.awt.Image;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,13 +40,17 @@ public class RemoteRepositoryProductListPanel extends JPanel {
     private final RepositorySelectionPanel repositorySelectionPanel;
     private final JLabel titleLabel;
     private final JList<RepositoryProduct> productList;
+    private final ProgressBarHelperImpl progressBarHelper;
 
-    public RemoteRepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel) {
-        super(new BorderLayout());
+    public RemoteRepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, ActionListener stopButtonListener) {
+        super(new BorderLayout(0, componentDimension.getGapBetweenRows()/2));
 
         this.repositorySelectionPanel = repositorySelectionPanel;
 
         this.titleLabel = new JLabel(getTitle());
+        Dimension size = this.titleLabel.getPreferredSize();
+        int height = size.height + 2;
+
         this.productList = new JList<RepositoryProduct>(new ProductListModel());
         this.productList.setCellRenderer(new ProductListCellRenderer());
         this.productList.setVisibleRowCount(4);
@@ -53,8 +62,32 @@ public class RemoteRepositoryProductListPanel extends JPanel {
             }
         });
 
-        add(this.titleLabel, BorderLayout.NORTH);
+        this.progressBarHelper = new ProgressBarHelperImpl(100, height) {
+            @Override
+            protected void setParametersEnabledWhileDownloading(boolean enabled) {
+            }
+        };
+        this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
+
+        Insets progressBarMargins = new Insets(0, 0, componentDimension.getGapBetweenRows()/2, 0);
+        Insets stopButtonMargins = new Insets(0, componentDimension.getGapBetweenRows(), componentDimension.getGapBetweenRows()/2, 0);
+
+        JPanel northPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.SOUTH, 1, 1, 0, 0);
+        northPanel.add(this.titleLabel, c);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
+        northPanel.add(Box.createHorizontalGlue(), c);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, progressBarMargins);
+        northPanel.add(this.progressBarHelper.getProgressBar(), c);
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, stopButtonMargins);
+        northPanel.add(this.progressBarHelper.getStopButton(), c);
+
+        add(northPanel, BorderLayout.NORTH);
         add(new JScrollPane(this.productList), BorderLayout.CENTER);
+    }
+
+    public ProgressBarHelperImpl getProgressBarHelper() {
+        return progressBarHelper;
     }
 
     public void setListDataListener(ListDataListener listDataListener) {
@@ -107,10 +140,6 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         return selectedProducts;
     }
 
-    public RepositoryProduct getSelectedProduct() {
-        return this.productList.getSelectedValue();
-    }
-
     public ProductListModel getListModel() {
         return (ProductListModel)this.productList.getModel();
     }
@@ -133,9 +162,8 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         this.titleLabel.setText(getTitle());
     }
 
-    public void setProductDownloadPercent(RepositoryProduct productLibraryItem, short percent) {
-        ProductListModel productListModel = (ProductListModel)this.productList.getModel();
-        productListModel.setProductDownloadPercent(productLibraryItem, percent);
+    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short percent) {
+        getListModel().setProductDownloadPercent(repositoryProduct, percent);
     }
 
     public void startSearchingProductList(String dataSourceName) {
@@ -250,7 +278,7 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         sortMenu.add(missionMenuItem);
         sortMenu.add(fileSizeMenuItem);
 
-        JPopupMenu popup = this.repositorySelectionPanel.getSelectedDataSource().buildProductListPopupMenu();
+        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu();
         popup.add(sortMenu);
 
         popup.show(this.productList, mouseX, mouseY);

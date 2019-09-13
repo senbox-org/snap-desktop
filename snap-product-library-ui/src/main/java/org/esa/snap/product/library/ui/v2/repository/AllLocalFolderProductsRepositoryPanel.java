@@ -5,7 +5,7 @@ import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.local.LoadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.product.library.v2.AllLocalFolderProductsRepository;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -37,8 +37,8 @@ public class AllLocalFolderProductsRepositoryPanel extends AbstractProductsRepos
     }
 
     @Override
-    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressPanel progressPanel, int threadId,
-                                                       ThreadListener threadListener, RemoteRepositoryProductListPanel repositoryProductListPanel) {
+    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId,
+                                                                                              ThreadListener threadListener, RemoteRepositoryProductListPanel repositoryProductListPanel) {
 
         return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, repositoryProductListPanel);
     }

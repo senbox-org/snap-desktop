@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.ProgressPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.remote.products.repository.listener.ProductListDownloaderListener;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -27,7 +27,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
 
-    public DownloadProductListTimerRunnable(ProgressPanel progressPanel, int threadId, Credentials credentials,
+    public DownloadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, Credentials credentials,
                                             RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
                                             AbstractProductsRepositoryPanel productsRepositoryPanel, RemoteRepositoryProductListPanel repositoryProductListPanel,
                                             String dataSourceName, String mission, Map<String, Object> parameterValues) {
