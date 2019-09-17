@@ -12,6 +12,7 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import java.awt.GridBagConstraints;
@@ -20,7 +21,9 @@ import java.awt.Rectangle;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -53,9 +56,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         repaint();
     }
 
-    public JPopupMenu buildProductListPopupMenu() {
-        return null;
-    }
+    public abstract JPopupMenu buildProductListPopupMenu();
 
     public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                               RemoteRepositoryProductListPanel repositoryProductListPanel) {
@@ -76,6 +77,29 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
             }
         }
         return maximumLabelWidth;
+    }
+
+    protected final Map<String, Object> getParameterValues() {
+        Map<String, Object> result = new HashMap<>();
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            Object value = parameterComponent.getParameterValue();
+            if (value == null) {
+                if (parameterComponent.isRequired()) {
+                    String message = "The value of the '" + parameterComponent.getLabel().getText()+"' parameter is required.";
+                    showErrorMessageDialog(message, "Required parameter");
+                    parameterComponent.getComponent().requestFocus();
+                    return null;
+                }
+            } else {
+                result.put(parameterComponent.getParameterName(), value);
+            }
+        }
+        return result;
+    }
+
+    protected final void showErrorMessageDialog(String message, String title) {
+        JOptionPane.showMessageDialog(getParent(), message, title, JOptionPane.ERROR_MESSAGE);
     }
 
     protected final void addParameterComponents(List<QueryFilter> parameters, int startRowIndex, int startGapBetweenRows) {

@@ -1,12 +1,15 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository.remote;
 
-import org.esa.snap.product.library.ui.v2.repository.DownloadRemoteProductsQueue;
-import org.esa.snap.product.library.ui.v2.repository.RemoteProductDownloader;
+import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
+import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
+import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -62,10 +65,12 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
                     this.currentRemoteProductDownloader = null; // reset
                 }
 
-                ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productFolderPath, null, remoteProductDownloader.getLocalRepositoryFolderPath());
+                SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productFolderPath,
+                                                                                remoteProductDownloader.getRepositoryId(), remoteProductDownloader.getLocalRepositoryFolderPath());
 
                 // successfully downloaded the product
                 updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)100);
+                updateFinishSavingProductDataLater(saveProductData);
 
                 synchronized (this.downloadRemoteProductsQueue) {
                     // remove the downloaded product from the queue
@@ -104,6 +109,10 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
         onShowErrorMessageDialog(this.parentComponent, "Failed to download the products.", "Error");
     }
 
+    protected void onFinishSavingProduct(SaveProductData saveProductData) {
+
+    }
+
     public void updateDownloadedProgressPercentLater() {
         int downloadedProducts;
         int totalProductsToDownload;
@@ -113,6 +122,16 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
         }
         String text = Integer.toString(downloadedProducts) + " out of " + Integer.toString(totalProductsToDownload);
         updateProgressBarTextLater(text);
+    }
+
+    private void updateFinishSavingProductDataLater(SaveProductData saveProductData) {
+        GenericRunnable<SaveProductData> runnable = new GenericRunnable<SaveProductData>(saveProductData) {
+            @Override
+            protected void execute(SaveProductData item) {
+                onFinishSavingProduct(item);
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
     }
 
     private void updateDownloadedProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent) {

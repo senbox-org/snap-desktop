@@ -5,6 +5,9 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.runtime.Config;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -43,5 +46,16 @@ public class RemoteRepositoryCredentials {
         final String encryptedPassword = this.credentialsPreferences.get(PREFIX + remoteRepositoryId + PASSWORD, null);
         String password = this.encryptor.decrypt(encryptedPassword);
         return (username == null || password == null) ? null : new UsernamePasswordCredentials(username, password);
+    }
+
+    public void read(Path credentialsFile) {
+
+    }
+
+    public List<Credentials> getRepositoryCredentials(String repositoryId) {
+        List<Credentials> credentials = new ArrayList<>();
+        credentials.add(new UsernamePasswordCredentials("jcoravu", "jcoravu@yahoo.com"));
+        credentials.add(new UsernamePasswordCredentials("kraftek", "cei7pitici."));
+        return credentials;
     }
 }

@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.repository;
+package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -37,5 +37,9 @@ public class RemoteProductDownloader {
 
     public RepositoryProduct getProductToDownload() {
         return productToDownload;
+    }
+
+    public String getRepositoryId() {
+        return this.productRepositoryDownloader.getRepositoryId();
     }
 }

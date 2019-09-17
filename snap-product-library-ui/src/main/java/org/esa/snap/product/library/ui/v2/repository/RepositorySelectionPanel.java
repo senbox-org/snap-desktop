@@ -2,6 +2,8 @@ package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -101,9 +103,20 @@ public class RepositorySelectionPanel extends JPanel {
     public void setDataSourcesBorder(Border border) {
         int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
-            AbstractProductsRepositoryPanel productsDataSource = this.repositoriesComboBox.getModel().getElementAt(i);
-            productsDataSource.setBorder(border);
+            AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
+            repositoryPanel.setBorder(border);
         }
+    }
+
+    public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
+        int count = this.repositoriesComboBox.getModel().getSize();
+        for (int i=0; i<count; i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
+            if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
+                return (AllLocalProductsRepositoryPanel)repositoryPanel;
+            }
+        }
+        throw new IllegalStateException("The all local products repository does not exist.");
     }
 
     private void setParametersEnabledWhileDownloading(boolean enabled) {
@@ -130,7 +143,7 @@ public class RepositorySelectionPanel extends JPanel {
 
     private void refreshRepositoryLabelWidth() {
         int maximumLabelWidth = getSelectedRepository().computeLeftPanelMaximumLabelWidth();
-        RemoteRepositoryParametersPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
+        RemoteProductsRepositoryPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
         Container parentContainer = this.repositoryLabel.getParent();
         if (parentContainer != null) {
             parentContainer.revalidate();
@@ -147,10 +160,10 @@ public class RepositorySelectionPanel extends JPanel {
 
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
-            availableDataSources[i] = new RemoteRepositoryParametersPanel(productsRepositoryProviders[i], componentDimension, downloadRemoteProductListener,
+            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, downloadRemoteProductListener,
                                                                           missionParameterListener, worldWindowPanel);
         }
-        availableDataSources[productsRepositoryProviders.length] = new AllLocalFolderProductsRepositoryPanel(componentDimension, worldWindowPanel);
+        availableDataSources[productsRepositoryProviders.length] = new AllLocalProductsRepositoryPanel(componentDimension, worldWindowPanel);
 
         this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
             @Override

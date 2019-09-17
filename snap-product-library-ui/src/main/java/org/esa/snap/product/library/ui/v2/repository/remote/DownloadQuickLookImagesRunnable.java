@@ -1,6 +1,8 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;

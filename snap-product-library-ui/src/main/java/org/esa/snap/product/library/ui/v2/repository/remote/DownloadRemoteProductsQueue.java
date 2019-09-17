@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.repository;
+package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import java.util.ArrayList;
 import java.util.List;

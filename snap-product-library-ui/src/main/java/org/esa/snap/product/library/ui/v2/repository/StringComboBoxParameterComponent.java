@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 
 import javax.swing.JComboBox;
 
@@ -16,7 +17,7 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
 
         super(parameterName, parameterLabelText, required);
 
-        this.component = RemoteRepositoryParametersPanel.buildComboBox(values, defaultValue, componentDimension);
+        this.component = RemoteProductsRepositoryPanel.buildComboBox(values, defaultValue, componentDimension);
     }
 
     @Override

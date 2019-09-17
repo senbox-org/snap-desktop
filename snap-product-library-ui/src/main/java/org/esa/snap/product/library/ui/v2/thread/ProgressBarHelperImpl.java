@@ -23,7 +23,6 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         this.progressBar.setPreferredSize(new Dimension(progressbarWidth, progressBarHeight));
         this.progressBar.setMinimumSize(new Dimension(progressbarWidth, progressBarHeight));
         this.progressBar.setMaximumSize(new Dimension(progressbarWidth, progressBarHeight));
-        this.progressBar.setStringPainted(true);
 
         Dimension buttonSize = new Dimension(progressBarHeight, progressBarHeight);
         this.stopButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);

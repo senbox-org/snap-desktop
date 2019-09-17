@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.remote.products.repository.Polygon2D;
@@ -67,6 +68,7 @@ public class RemoteRepositoryProductListPanel extends JPanel {
             protected void setParametersEnabledWhileDownloading(boolean enabled) {
             }
         };
+        this.progressBarHelper.getProgressBar().setStringPainted(true);
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
         Insets progressBarMargins = new Insets(0, 0, componentDimension.getGapBetweenRows()/2, 0);
@@ -100,6 +102,7 @@ public class RemoteRepositoryProductListPanel extends JPanel {
 
     public void selectProductsByPolygonPath(List<Path2D.Double> polygonPaths) {
         ProductListModel productListModel = getListModel();
+        ListSelectionModel selectionModel = this.productList.getSelectionModel();
         int count = 0;
         for (int k=0; k<polygonPaths.size(); k++) {
             int foundProductIndex = -1;
@@ -111,10 +114,11 @@ public class RemoteRepositoryProductListPanel extends JPanel {
             }
             if (foundProductIndex >= 0) {
                 if (count == 0) {
-                    this.productList.getSelectionModel().clearSelection();
+                    selectionModel.clearSelection();
                 }
                 count++;
-                this.productList.getSelectionModel().addSelectionInterval(foundProductIndex, foundProductIndex);
+                selectionModel.addSelectionInterval(foundProductIndex, foundProductIndex);
+                this.productList.ensureIndexIsVisible(foundProductIndex);
             } else {
                 throw new IllegalArgumentException("The polygon path does not exist in the list.");
             }
