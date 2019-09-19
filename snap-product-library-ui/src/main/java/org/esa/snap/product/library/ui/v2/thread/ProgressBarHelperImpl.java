@@ -17,12 +17,12 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
 
     private int currentThreadId;
 
-    public ProgressBarHelperImpl(int progressbarWidth, int progressBarHeight) {
+    public ProgressBarHelperImpl(int progressBarWidth, int progressBarHeight) {
         this.progressBar = new JProgressBar(JProgressBar.HORIZONTAL);
         this.progressBar.setIndeterminate(true);
-        this.progressBar.setPreferredSize(new Dimension(progressbarWidth, progressBarHeight));
-        this.progressBar.setMinimumSize(new Dimension(progressbarWidth, progressBarHeight));
-        this.progressBar.setMaximumSize(new Dimension(progressbarWidth, progressBarHeight));
+        this.progressBar.setPreferredSize(new Dimension(progressBarWidth, progressBarHeight));
+        this.progressBar.setMinimumSize(new Dimension(progressBarWidth, progressBarHeight));
+        this.progressBar.setMaximumSize(new Dimension(progressBarWidth, progressBarHeight));
 
         Dimension buttonSize = new Dimension(progressBarHeight, progressBarHeight);
         this.stopButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);

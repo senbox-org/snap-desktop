@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.AbstractListModel;
@@ -12,11 +13,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jcoravu on 21/8/2019.
  */
 public class ProductListModel extends AbstractListModel<RepositoryProduct> {
+
+    private final Map<String, Map<String, String>> visibleAttributesPerMission;
 
     private Map<RepositoryProduct, ProgressPercent> downloadingProductsProgressValue;
     private List<RepositoryProduct> items;
@@ -24,6 +28,7 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
     public ProductListModel() {
         super();
 
+        this.visibleAttributesPerMission = new HashMap<>();
         clear();
     }
 
@@ -35,6 +40,24 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
     @Override
     public RepositoryProduct getElementAt(int index) {
         return this.items.get(index);
+    }
+
+    public Map<String, String> getMissionVisibleAttributes(String mission) {
+        Map<String, String> visibleAttributes = this.visibleAttributesPerMission.get(mission);
+        if (visibleAttributes == null) {
+            Set<RemoteProductsRepositoryProvider> remoteProductsRepositoryProviders = ProductLibraryToolViewV2.getRemoteProductsRepositoryProviders();
+            for (RemoteProductsRepositoryProvider repositoryProvider : remoteProductsRepositoryProviders) {
+                String[] availableMissions = repositoryProvider.getAvailableMissions();
+                for (int i=0; i<availableMissions.length; i++) {
+                    if (availableMissions[i].equalsIgnoreCase(mission)) {
+                        visibleAttributes = repositoryProvider.getDisplayedAttributes();
+                        this.visibleAttributesPerMission.put(mission, visibleAttributes);
+                        break;
+                    }
+                }
+            }
+        }
+        return visibleAttributes;
     }
 
     public void addProducts(List<RepositoryProduct> products) {
@@ -53,10 +76,6 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         int oldSize = this.items.size();
         clear();
         fireIntervalRemoved(this, 0, oldSize);
-    }
-
-    public List<RepositoryProduct> getProducts() {
-        return new ArrayList<>(this.items);
     }
 
     public void removePendingDownloadProducts() {
@@ -81,7 +100,6 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
 
     public void addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
         for (int i=0; i<pendingProducts.length; i++) {
-            ProgressPercent progressPercent = new ProgressPercent();
             this.downloadingProductsProgressValue.put(pendingProducts[i], new ProgressPercent());
         }
         fireContentsChanged(this, 0, this.items.size());
@@ -91,7 +109,7 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         if (progressPercent >=0 && progressPercent <= 100) {
             ProgressPercent progressPercentItem = this.downloadingProductsProgressValue.get(product);
             if (progressPercentItem == null) {
-                throw new IllegalArgumentException("The product '"+product.getName()+"' to update the progress percent does not exist.");
+                // the product does not exist into the list
             } else {
                 progressPercentItem.setValue(progressPercent);
                 fireContentsChanged(this, 0, this.items.size());

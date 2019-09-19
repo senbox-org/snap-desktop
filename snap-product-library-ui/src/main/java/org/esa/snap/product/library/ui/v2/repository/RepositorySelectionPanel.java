@@ -28,6 +28,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -44,11 +45,17 @@ public class RepositorySelectionPanel extends JPanel {
     private final JButton helpButton;
     private final JLabel repositoryLabel;
     private final ProgressBarHelperImpl progressBarHelper;
+    private final int gapBetweenColumns;
+
+    private JButton repositoryTopBarButton;
+    private ItemListener repositoriesItemListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         super(new GridBagLayout());
+
+        this.gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
         createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, missionParameterListener, worldWindowPanel);
 
@@ -76,7 +83,7 @@ public class RepositorySelectionPanel extends JPanel {
 
         this.repositoryLabel = new JLabel("Repository");
 
-        addComponents(componentDimension);
+        addComponents();
     }
 
     public ProgressBarHelperImpl getProgressBarHelper() {
@@ -152,7 +159,7 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     public void setRepositoriesItemListener(ItemListener repositoriesItemListener) {
-        this.repositoriesComboBox.addItemListener(repositoriesItemListener);
+        this.repositoriesItemListener = repositoriesItemListener;
     }
 
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
@@ -183,22 +190,52 @@ public class RepositorySelectionPanel extends JPanel {
         this.repositoriesComboBox.setRenderer(renderer);
         this.repositoriesComboBox.setMaximumRowCount(5);
         this.repositoriesComboBox.setSelectedIndex(0);
+        this.repositoriesComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    newSelectedRepository();
+                }
+                if (repositoriesItemListener != null) {
+                    repositoriesItemListener.itemStateChanged(itemEvent);
+                }
+            }
+        });
     }
 
-    private void addComponents(ComponentDimension componentDimension) {
-        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
+    private void newSelectedRepository() {
+        if (this.repositoryTopBarButton != null) {
+            remove(this.repositoryTopBarButton);
+            revalidate();
+            repaint();
+        }
+        this.repositoryTopBarButton = getSelectedRepository().getTopBarButton();
+        if (this.repositoryTopBarButton != null) {
+            GridBagConstraints c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+            add(this.repositoryTopBarButton, c);
+            revalidate();
+            repaint();
+        }
+    }
+
+    private void addComponents() {
+        this.repositoryTopBarButton = getSelectedRepository().getTopBarButton();
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
         add(this.repositoryLabel, c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
         add(this.repositoriesComboBox, c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
         add(this.searchButton, c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        if (this.repositoryTopBarButton != null) {
+            c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+            add(this.repositoryTopBarButton, c);
+        }
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
         add(this.helpButton, c);
-        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
         add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(6, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
         add(this.progressBarHelper.getStopButton(), c);
     }
 

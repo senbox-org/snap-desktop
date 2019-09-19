@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jcoravu on 21/8/2019.
@@ -120,21 +121,35 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.urlLabel.setText("URL: " + product.getDownloadURL());
         this.missionLabel.setText("Mission: " + product.getMission());
 
+        ProductListModel productListModel = (ProductListModel)list.getModel();
+
         String firstLabelText = "";
         String secondLabelText = "";
+        Map<String, String> visibleAttributes = productListModel.getMissionVisibleAttributes(product.getMission());
         List<Attribute> attributes = product.getAttributes();
-        if (attributes != null) {
-            if (attributes.size() >= 1) {
-                firstLabelText = buildAttributeLabelText(attributes.get(0));
-            }
-            if (attributes.size() >= 2) {
-                secondLabelText = buildAttributeLabelText(attributes.get(1));
+        if (visibleAttributes != null && visibleAttributes.size() > 0 && attributes != null && attributes.size() > 0) {
+            for (Map.Entry<String, String> entry : visibleAttributes.entrySet()) {
+                String attributeName = entry.getKey();
+                String attributeDisplayName = entry.getValue();
+                Attribute foundAttribute = null;
+                for (int i = 0; i < attributes.size() && foundAttribute == null; i++) {
+                    Attribute attribute = attributes.get(i);
+                    if (attributeName.equals(attribute.getName())) {
+                        foundAttribute = attribute;
+                    }
+                }
+                if (foundAttribute != null) {
+                    if (firstLabelText.length() == 0) {
+                        firstLabelText = buildAttributeLabelText(attributeDisplayName, foundAttribute.getValue());
+                    } else if (secondLabelText.length() == 0) {
+                        secondLabelText = buildAttributeLabelText(attributeDisplayName, foundAttribute.getValue());
+                        break;
+                    }
+                }
             }
         }
         this.firstAttributeLabel.setText(firstLabelText);
         this.secondAttributeLabel.setText(secondLabelText);
-
-        ProductListModel productListModel = (ProductListModel)list.getModel();
 
         BufferedImage quickLookImage = product.getQuickLookImage();
         ImageIcon imageIcon = EMPTY_ICON;
@@ -185,15 +200,7 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         return this;
     }
 
-    private static String buildAttributeLabelText(Attribute attribute) {
-        String displayName;
-        if (attribute.getName().equalsIgnoreCase("producttype")) {
-            displayName = "Product Type";
-        } else if (attribute.getName().equalsIgnoreCase("instrumentshortname")) {
-            displayName = "Instrument";
-        } else {
-            displayName = attribute.getName();
-        }
-        return displayName + ": " + attribute.getValue();
+    private static String buildAttributeLabelText(String attributeDisplayName, String attributeValue) {
+        return attributeDisplayName + ": " + attributeValue;
     }
 }

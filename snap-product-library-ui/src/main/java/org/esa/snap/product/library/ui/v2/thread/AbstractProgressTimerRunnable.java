@@ -33,7 +33,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         GenericRunnable<Exception> runnable = new GenericRunnable<Exception>(exception) {
             @Override
             protected void execute(Exception threadException) {
-                if (progressPanel.hideProgressPanel(threadId)) {
+                if (onHideProgressPanelLater()) {
                     onFailed(threadException);
                 }
             }
@@ -46,7 +46,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         GenericRunnable<OutputType> runnable = new GenericRunnable<OutputType>(result) {
             @Override
             protected void execute(OutputType item) {
-                if (progressPanel.hideProgressPanel(threadId)) {
+                if (onHideProgressPanelLater()) {
                     onSuccessfullyFinish(item);
                 }
             }
@@ -73,6 +73,19 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         startTimerIfDefined();
 
         super.executeAsync();
+    }
+
+    protected final void hideProgressPanelLater() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                onHideProgressPanelLater();
+            }
+        });
+    }
+
+    protected boolean onHideProgressPanelLater() {
+        return this.progressPanel.hideProgressPanel(this.threadId);
     }
 
     protected void onStopExecuting() {

@@ -44,15 +44,15 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
 
     @Override
     protected void onStopExecuting() {
-        this.threadListener.onStopExecuting(null);
+        this.threadListener.onStopExecuting();
     }
 
     @Override
     protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
         this.repositoryProductListPanel.setProducts(results);
-        if (results.size() == 0) {
-            onShowInformationMessageDialog(this.repositoryProductListPanel, "No product available according to the filter values.", "Information");
-        }
+//        if (results.size() == 0) {
+//            onShowInformationMessageDialog(this.repositoryProductListPanel, "No product available according to the filter values.", "Information");
+//        }
     }
 
     @Override

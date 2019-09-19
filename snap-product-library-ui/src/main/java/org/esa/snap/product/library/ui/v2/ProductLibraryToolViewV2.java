@@ -98,7 +98,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private CustomSplitPane verticalSplitPane;
 
     private AbstractProgressTimerRunnable<?> searchProductListThread;
-    private AbstractRunnable<?> downloadQuickLookImagesRunnable;
+    private DownloadProductsTimerRunnable downloadProductsThread;
     private int textFieldPreferredHeight;
     private WorldWindowPanelWrapper worldWindowPanel;
     private DownloadRemoteProductsQueue downloadRemoteProductsQueue;
@@ -173,10 +173,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
 
-        ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
-        ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
-        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
-
+        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = getRemoteProductsRepositoryProviders();
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = new RemoteProductsRepositoryProvider[repositoryProductsProviders.size()];
         Iterator<RemoteProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
         int index = 0;
@@ -212,7 +209,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
         this.worldWindowPanel = new WorldWindowPanelWrapper();
-        this.worldWindowPanel.setPreferredSize(new Dimension(500, 500));
+        this.worldWindowPanel.setPreferredSize(new Dimension(400, 250));
         this.worldWindowPanel.addWorldWindowPanelAsync(false, true, worldWindowMouseListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
@@ -304,13 +301,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void stopSearchingProductList() {
         this.repositorySelectionPanel.getProgressBarHelper().hideProgressPanel();
         if (this.searchProductListThread != null) {
-            this.searchProductListThread.stopRunning();
+            this.searchProductListThread.stopRunning(); // stop the thread
         }
     }
 
     private void refreshRepositoryParameterComponents() {
         stopSearchingProductList();
-        stopDownloadingQuickLookImages();
         this.verticalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedRepository());
         this.verticalSplitPane.revalidate();
         this.verticalSplitPane.repaint();
@@ -320,7 +316,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void refreshRepositoryMissionParameters() {
         stopSearchingProductList();
-        stopDownloadingQuickLookImages();
         this.repositorySelectionPanel.refreshRepositoryParameterComponents();
         this.productResultsPanel.clearProducts();
     }
@@ -332,17 +327,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.productResultsPanel.getListModel().removePendingDownloadProducts();
         this.productResultsPanel.getProgressBarHelper().hideProgressPanel();
         if (this.downloadProductsThread != null) {
-            this.downloadProductsThread.stopRunning();
+            this.downloadProductsThread.stopRunning(); // stop the thread
         }
     }
-
-    private void stopDownloadingQuickLookImages() {
-        if (this.downloadQuickLookImagesRunnable != null) {
-            this.downloadQuickLookImagesRunnable.stopRunning();
-        }
-    }
-
-    private DownloadProductsTimerRunnable downloadProductsThread;
 
     private void downloadSelectedProductAsync() {
         CustomFileChooser fileChooser = buildFileChooser("Select folder to download the product", false, JFileChooser.DIRECTORIES_ONLY);
@@ -406,11 +393,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void searchButtonPressed() {
         ThreadListener threadListener = new ThreadListener() {
             @Override
-            public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
+            public void onStopExecuting() {
                 ProductLibraryToolViewV2.this.searchProductListThread = null; // reset
-                if (productsRepositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                    displayQuickLookImagesAsync(productsRepositoryPanel);
-                }
             }
         };
         ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
@@ -424,23 +408,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private void displayQuickLookImagesAsync(AbstractProductsRepositoryPanel productsRepositoryPanel) {
-        AbstractProductsRepositoryPanel selectedDataSource = this.repositorySelectionPanel.getSelectedRepository();
-        if (productsRepositoryPanel == selectedDataSource) {
-            ThreadListener threadListener = new ThreadListener() {
-                @Override
-                public void onStopExecuting(AbstractProductsRepositoryPanel productsRepositoryPanel) {
-                    ProductLibraryToolViewV2.this.downloadQuickLookImagesRunnable = null; // reset
-                }
-            };
-            List<RepositoryProduct> productList = this.productResultsPanel.getListModel().getProducts();
-            this.downloadQuickLookImagesRunnable = selectedDataSource.buildThreadToDisplayQuickLookImages(productList, threadListener, this.productResultsPanel);
-            this.downloadQuickLookImagesRunnable.executeAsync(); // stgar the thread
-        } else {
-            throw new IllegalStateException("The repository providers do not match.");
-        }
-    }
-
     private static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {
         boolean previousReadOnlyFlag = UIManager.getDefaults().getBoolean(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY);
         CustomFileChooser fileChooser = new CustomFileChooser(previousReadOnlyFlag);
@@ -448,5 +415,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
         fileChooser.setFileSelectionMode(fileSelectionMode);
         return fileChooser;
+    }
+
+    public static Set<RemoteProductsRepositoryProvider> getRemoteProductsRepositoryProviders() {
+        ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
+        ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
+        return serviceRegistry.getServices();
     }
 }

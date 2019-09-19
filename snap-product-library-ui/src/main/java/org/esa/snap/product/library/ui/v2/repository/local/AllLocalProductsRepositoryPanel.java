@@ -3,26 +3,47 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.repository.SelectionAreaParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.product.library.v2.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.RemoteMission;
+import org.esa.snap.remote.products.repository.Attribute;
+import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.ComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -31,14 +52,18 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
     private final JComboBox<RemoteMission> missionsComboBox;
+    private final JComboBox<String> attributesComboBox;
+    private final JButton scanFoldersButton;
 
     private boolean initialized;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
-        super(worlWindPanel, componentDimension, new GridBagLayout());
+        super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
         this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository();
         this.initialized = false;
+
+        Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
         this.missionsComboBox = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
         LabelListCellRenderer<RemoteMission> renderer = new LabelListCellRenderer<RemoteMission>(componentDimension.getListItemMargins()) {
@@ -48,6 +73,16 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
         };
         this.missionsComboBox.setRenderer(renderer);
+
+        this.attributesComboBox = RemoteProductsRepositoryPanel.buildComboBox(null, null, componentDimension);
+
+        this.scanFoldersButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/refresh24.png", null, buttonSize, 1);
+        this.scanFoldersButton.setToolTipText("Scan folders");
+    }
+
+    @Override
+    public JButton getTopBarButton() {
+        return this.scanFoldersButton;
     }
 
     @Override
@@ -58,8 +93,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             this.initialized = true;
             LoadLocalParametersRunnable thread = new LoadLocalParametersRunnable() {
                 @Override
-                protected void onSuccessfullyExecuting(List<RemoteMission> missions) {
-                    setInputData(missions);
+                protected void onSuccessfullyExecuting(LocalParameterValues parameterValues) {
+                    setInputData(parameterValues);
                 }
             };
             thread.executeAsync();
@@ -73,15 +108,51 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     protected void addParameterComponents() {
+        ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
         int gapBetweenRows = this.componentDimension.getGapBetweenRows();
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        add(new JLabel("Mission"), c);
+        panel.add(new JLabel("Mission"), c);
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.missionsComboBox, c);
+        panel.add(this.missionsComboBox, c);
 
-        addParameterComponents(this.allLocalFolderProductsRepository.getParameters(), 1, gapBetweenRows);
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        Class<?> attributesClass = Attribute.class;
+        Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass, attributesClass};
+        List<QueryFilter> parameters = this.allLocalFolderProductsRepository.getParameters();
+        int startRowIndex = 1;
+        this.parameterComponents = panel.addParameterComponents(parameters, startRowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
+
+        QueryFilter areaOfInterestParameter = null;
+        QueryFilter attributesParameter = null;
+        for (int i=0; i<parameters.size(); i++) {
+            QueryFilter param = parameters.get(i);
+            if (param.getType() == areaOfInterestClass) {
+                areaOfInterestParameter = param;
+            } else if (param.getType() == attributesClass) {
+                attributesParameter = param;
+            }
+        }
+
+        if (attributesParameter != null) {
+            int nextRowIndex = startRowIndex + this.parameterComponents.size() + 1;
+            MetadataAttributesParameterComponent parameterComponent = new MetadataAttributesParameterComponent(this.attributesComboBox, attributesParameter.getName(), attributesParameter.getLabel(), attributesParameter.isRequired(), this.componentDimension);
+            this.parameterComponents.add(parameterComponent);
+
+            c = SwingUtils.buildConstraints(0, nextRowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, 0);
+            panel.add(parameterComponent.getLabel(), c);
+            c = SwingUtils.buildConstraints(1, nextRowIndex, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+            panel.add(parameterComponent.getComponent(), c);
+        }
+
+        add(panel, BorderLayout.NORTH);
+
+        if (areaOfInterestParameter != null) {
+            addAreaParameterComponent(areaOfInterestParameter);
+        }
+
+        refreshLabelWidths();
     }
 
     @Override
@@ -99,8 +170,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public JPopupMenu buildProductListPopupMenu() {
         JMenuItem openMenuItem = new JMenuItem("Open");
+        JMenuItem deleteMenuItem = new JMenuItem("Delete");
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(openMenuItem);
+        popupMenu.add(deleteMenuItem);
         return popupMenu;
     }
 
@@ -108,8 +181,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         ComboBoxModel<RemoteMission> model = this.missionsComboBox.getModel();
         boolean found = false;
         for (int i=0; i<model.getSize() && !found; i++) {
-            RemoteMission existingMision = model.getElementAt(i);
-            if (existingMision != null && existingMision.getId() == mission.getId()) {
+            RemoteMission existingMission = model.getElementAt(i);
+            if (existingMission != null && existingMission.getId() == mission.getId()) {
                 found = true;
             }
         }
@@ -121,12 +194,24 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    private void setInputData(List<RemoteMission> missions) {
+    private void setInputData(LocalParameterValues parameterValues) {
+        List<RemoteMission> missions = parameterValues.getMissions();
         if (missions.size() > 0) {
             this.missionsComboBox.addItem(null);
             for (int i = 0; i < missions.size(); i++) {
                 this.missionsComboBox.addItem(missions.get(i));
             }
+        }
+        Map<Short, Set<String>> attributes = parameterValues.getAttributes();
+        if (attributes.size() > 0) {
+            Set<String> uniqueAttributes = new HashSet<>();
+            for (Map.Entry<Short, Set<String>> entry : attributes.entrySet()) {
+                uniqueAttributes.addAll(entry.getValue());
+            }
+            for (String attributeName : uniqueAttributes) {
+                this.attributesComboBox.addItem(attributeName);
+            }
+            this.attributesComboBox.setSelectedItem(null);
         }
     }
 }

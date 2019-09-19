@@ -50,7 +50,8 @@ public class RemoteRepositoryProductListPanel extends JPanel {
 
         this.titleLabel = new JLabel(getTitle());
         Dimension size = this.titleLabel.getPreferredSize();
-        int height = size.height + 2;
+        size.height += 2; // add more pixels
+        this.titleLabel.setPreferredSize(size);
 
         this.productList = new JList<RepositoryProduct>(new ProductListModel());
         this.productList.setCellRenderer(new ProductListCellRenderer());
@@ -63,7 +64,7 @@ public class RemoteRepositoryProductListPanel extends JPanel {
             }
         });
 
-        this.progressBarHelper = new ProgressBarHelperImpl(100, height) {
+        this.progressBarHelper = new ProgressBarHelperImpl(100, size.height) {
             @Override
             protected void setParametersEnabledWhileDownloading(boolean enabled) {
             }
@@ -71,17 +72,16 @@ public class RemoteRepositoryProductListPanel extends JPanel {
         this.progressBarHelper.getProgressBar().setStringPainted(true);
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
-        Insets progressBarMargins = new Insets(0, 0, componentDimension.getGapBetweenRows()/2, 0);
-        Insets stopButtonMargins = new Insets(0, componentDimension.getGapBetweenRows(), componentDimension.getGapBetweenRows()/2, 0);
+        int bottomMargin = componentDimension.getGapBetweenRows()/2;
+        Insets progressBarMargins = new Insets(0, 0, bottomMargin, 0);
+        Insets stopButtonMargins = new Insets(0, componentDimension.getGapBetweenRows(), bottomMargin, 0);
 
         JPanel northPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.SOUTH, 1, 1, 0, 0);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.SOUTH, 1, 1, bottomMargin, 0);
         northPanel.add(this.titleLabel, c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
-        northPanel.add(Box.createHorizontalGlue(), c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, progressBarMargins);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, progressBarMargins);
         northPanel.add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, stopButtonMargins);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, stopButtonMargins);
         northPanel.add(this.progressBarHelper.getStopButton(), c);
 
         add(northPanel, BorderLayout.NORTH);

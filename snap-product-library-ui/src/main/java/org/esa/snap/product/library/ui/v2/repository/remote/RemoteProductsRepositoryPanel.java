@@ -6,11 +6,16 @@ import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
+import org.esa.snap.product.library.ui.v2.repository.SelectionAreaParameterComponent;
+import org.esa.snap.product.library.ui.v2.repository.local.MetadataAttributesParameterComponent;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -21,7 +26,9 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -29,6 +36,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,23 +56,27 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                                          ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener,
                                          WorldWindowPanelWrapper worlWindPanel) {
 
-        super(worlWindPanel, componentDimension, new GridBagLayout());
+        super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.missionParameterListener = missionParameterListener;
         this.downloadRemoteProductListener = downloadRemoteProductListener;
 
-        this.userAccountsComboBox = buildComboBox(componentDimension);
-        LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(componentDimension.getListItemMargins()) {
-            @Override
-            protected String getItemDisplayText(Credentials value) {
-                return (value == null) ? " " : value.getUserPrincipal().getName();
+        if (this.productsRepositoryProvider.hasAuthentication()) {
+            this.userAccountsComboBox = buildComboBox(componentDimension);
+            LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(componentDimension.getListItemMargins()) {
+                @Override
+                protected String getItemDisplayText(Credentials value) {
+                    return (value == null) ? " " : value.getUserPrincipal().getName();
+                }
+            };
+            this.userAccountsComboBox.setRenderer(renderer);
+            List<Credentials> credentials = RemoteRepositoryCredentials.getInstance().getRepositoryCredentials(productsRepositoryProvider.getRepositoryId());
+            for (int i=0; i<credentials.size(); i++) {
+                this.userAccountsComboBox.addItem(credentials.get(i));
             }
-        };
-        this.userAccountsComboBox.setRenderer(renderer);
-        List<Credentials> credentials = RemoteRepositoryCredentials.getInstance().getRepositoryCredentials(productsRepositoryProvider.getRepositoryId());
-        for (int i=0; i<credentials.size(); i++) {
-            this.userAccountsComboBox.addItem(credentials.get(i));
+        } else {
+            this.userAccountsComboBox = null;
         }
 
         String[] availableMissions = this.productsRepositoryProvider.getAvailableMissions();
@@ -95,6 +107,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
 
+        if (this.userAccountsComboBox != null) {
+            this.userAccountsComboBox.setEnabled(enabled);
+        }
         this.missionsComboBox.setEnabled(enabled);
         for (int i=0; i<this.parameterComponents.size(); i++) {
             JComponent component = this.parameterComponents.get(i).getComponent();
@@ -103,41 +118,29 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public String getSelectedMission() {
-        return (String) this.missionsComboBox.getSelectedItem();
-    }
+    public AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
+                                                                        RemoteRepositoryProductListPanel productResultsPanel) {
 
-    @Override
-    public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RemoteRepositoryProductListPanel productResultsPanel) {
-
-        DownloadProductListTimerRunnable thread = null;
-        Credentials selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
-        if (selectedCredentials == null) {
-            String message = "Select the account used to download the data.";
-            showErrorMessageDialog(message, "Required credentials");
-            this.userAccountsComboBox.requestFocus();
-        } else {
+        Credentials selectedCredentials = null;
+        boolean canContinue = true;
+        if (this.userAccountsComboBox != null) {
+            selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
+            if (selectedCredentials == null) {
+                String message = "Select the account used to download the data.";
+                showErrorMessageDialog(message, "Required credentials");
+                this.userAccountsComboBox.requestFocus();
+                canContinue = false;
+            }
+        }
+        if (canContinue) {
             Map<String, Object> parameterValues = getParameterValues();
             if (parameterValues != null) {
                 String selectedMission = getSelectedMission();
-                thread = new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
-                                                              this, productResultsPanel, getName(), selectedMission, parameterValues);
+                return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
+                                                              productResultsPanel, getName(), selectedMission, parameterValues);
             }
         }
-        return thread;
-    }
-
-    @Override
-    public AbstractRunnable<?> buildThreadToDisplayQuickLookImages(List<RepositoryProduct> productList, ThreadListener threadListener,
-                                                                   RemoteRepositoryProductListPanel productResultsPanel) {
-
-        Credentials selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
-        if (selectedCredentials == null) {
-            throw new NullPointerException("The credentials are null.");
-        } else {
-            return new DownloadQuickLookImagesRunnable(productList, selectedCredentials, threadListener, this, this.productsRepositoryProvider, productResultsPanel);
-        }
+        return null;
     }
 
     @Override
@@ -151,26 +154,55 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     @Override
     protected void addParameterComponents() {
+        ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
         int gapBetweenRows = this.componentDimension.getGapBetweenRows();
 
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
-        add(new JLabel("Account"), c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.userAccountsComboBox, c);
+        int rowIndex = 0;
+        if (this.userAccountsComboBox != null) {
+            GridBagConstraints c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
+            panel.add(new JLabel("Account"), c);
+            c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+            panel.add(this.userAccountsComboBox, c);
+            rowIndex++;
+            gapBetweenRows = this.componentDimension.getGapBetweenRows();
+        }
 
-        c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
-        add(new JLabel("Mission"), c);
-        c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        add(this.missionsComboBox, c);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
+        panel.add(new JLabel("Mission"), c);
+        c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        panel.add(this.missionsComboBox, c);
+        rowIndex++;
 
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
         String selectedMission = (String) this.missionsComboBox.getSelectedItem();
-        List<QueryFilter> missionParameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
-        addParameterComponents(missionParameters, 2, gapBetweenRows);
+        List<QueryFilter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
+        this.parameterComponents = panel.addParameterComponents(parameters, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
+
+        QueryFilter areaOfInterestParameter = null;
+        for (int i=0; i<parameters.size(); i++) {
+            QueryFilter param = parameters.get(i);
+            if (param.getType() == areaOfInterestClass) {
+                areaOfInterestParameter = param;
+            }
+        }
+
+        add(panel, BorderLayout.NORTH);
+
+        if (areaOfInterestParameter != null) {
+            addAreaParameterComponent(areaOfInterestParameter);
+        }
+
+        refreshLabelWidths();
     }
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
         return productsRepositoryProvider;
+    }
+
+    private String getSelectedMission() {
+        return (String) this.missionsComboBox.getSelectedItem();
     }
 
     private void newSelectedMission() {
