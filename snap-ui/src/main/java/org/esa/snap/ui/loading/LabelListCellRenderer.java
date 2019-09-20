@@ -14,6 +14,14 @@ public abstract class LabelListCellRenderer<ItemType> extends JLabel implements 
         setBorder(new EmptyBorder(margins));
     }
 
+    public LabelListCellRenderer(int itemHeight) {
+        setOpaque(true);
+
+        Dimension rendererSize = getPreferredSize();
+        rendererSize.height = itemHeight;
+        setPreferredSize(rendererSize);
+    }
+
     @Override
     public JLabel getListCellRendererComponent(JList<? extends ItemType> list, ItemType value, int index, boolean isSelected, boolean cellHasFocus) {
         Color backgroundColor;

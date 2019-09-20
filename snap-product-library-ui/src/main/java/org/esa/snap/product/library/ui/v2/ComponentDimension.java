@@ -7,8 +7,6 @@ import java.awt.Insets;
  */
 public interface ComponentDimension {
 
-    public Insets getListItemMargins();
-
     public int getGapBetweenRows();
 
     public int getGapBetweenColumns();

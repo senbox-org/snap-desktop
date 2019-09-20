@@ -4,21 +4,15 @@ import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
-import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
-import org.esa.snap.product.library.ui.v2.repository.SelectionAreaParameterComponent;
-import org.esa.snap.product.library.ui.v2.repository.local.MetadataAttributesParameterComponent;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
-import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
-import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -26,13 +20,12 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -49,22 +42,21 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final MissionParameterListener missionParameterListener;
     private final JComboBox<String> missionsComboBox;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
-    private final ActionListener downloadRemoteProductListener;
+    private ActionListener downloadProductListener;
     private final JComboBox<Credentials> userAccountsComboBox;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
-                                         ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener,
-                                         WorldWindowPanelWrapper worlWindPanel) {
+                                         MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worlWindPanel) {
 
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.missionParameterListener = missionParameterListener;
-        this.downloadRemoteProductListener = downloadRemoteProductListener;
 
         if (this.productsRepositoryProvider.hasAuthentication()) {
             this.userAccountsComboBox = buildComboBox(componentDimension);
-            LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(componentDimension.getListItemMargins()) {
+            int cellItemHeight = this.userAccountsComboBox.getPreferredSize().height;
+            LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(cellItemHeight) {
                 @Override
                 protected String getItemDisplayText(Credentials value) {
                     return (value == null) ? " " : value.getUserPrincipal().getName();
@@ -119,7 +111,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     @Override
     public AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                        RemoteRepositoryProductListPanel productResultsPanel) {
+                                                                        RepositoryProductListPanel productResultsPanel) {
 
         Credentials selectedCredentials = null;
         boolean canContinue = true;
@@ -146,7 +138,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     @Override
     public JPopupMenu buildProductListPopupMenu() {
         JMenuItem downloadMenuItem = new JMenuItem("Download");
-        downloadMenuItem.addActionListener(this.downloadRemoteProductListener);
+        downloadMenuItem.addActionListener(this.downloadProductListener);
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(downloadMenuItem);
         return popupMenu;
@@ -197,6 +189,10 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         refreshLabelWidths();
     }
 
+    public void setDownloadProductListener(ActionListener downloadProductListener) {
+        this.downloadProductListener = downloadProductListener;
+    }
+
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
         return productsRepositoryProvider;
     }
@@ -233,7 +229,8 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, ComponentDimension componentDimension) {
         JComboBox<String> comboBox = buildComboBox(componentDimension);
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(componentDimension.getListItemMargins()) {
+        int cellItemHeight = comboBox.getPreferredSize().height;
+        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(String value) {
                 return (value == null) ? " " : value;

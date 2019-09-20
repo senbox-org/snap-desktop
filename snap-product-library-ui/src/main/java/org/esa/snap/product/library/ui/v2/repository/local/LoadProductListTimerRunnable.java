@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
@@ -17,12 +17,12 @@ import java.util.Map;
 public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<RepositoryProduct>> {
 
     private final ThreadListener threadListener;
-    private final RemoteRepositoryProductListPanel repositoryProductListPanel;
+    private final RepositoryProductListPanel repositoryProductListPanel;
     private final RemoteMission mission;
     private final Map<String, Object> parameterValues;
 
     public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                        RemoteMission mission, Map<String, Object> parameterValues, RemoteRepositoryProductListPanel repositoryProductListPanel) {
+                                        RemoteMission mission, Map<String, Object> parameterValues, RepositoryProductListPanel repositoryProductListPanel) {
 
         super(progressPanel, threadId, 500);
 

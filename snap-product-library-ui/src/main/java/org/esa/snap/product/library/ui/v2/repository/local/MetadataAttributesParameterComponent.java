@@ -21,6 +21,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -68,7 +69,8 @@ public class MetadataAttributesParameterComponent extends AbstractParameterCompo
         this.addedAttributesList = new JList<Attribute>(new DefaultListModel<Attribute>());
         this.addedAttributesList.setVisibleRowCount(5);
         this.addedAttributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        this.addedAttributesList.setCellRenderer(new LabelListCellRenderer<Attribute>(componentDimension.getListItemMargins()) {
+        int cellItemHeight = this.attributesComboBox.getPreferredSize().height;
+        this.addedAttributesList.setCellRenderer(new LabelListCellRenderer<Attribute>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(Attribute attribute) {
                 if (attribute == null) {

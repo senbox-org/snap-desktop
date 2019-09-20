@@ -36,14 +36,14 @@ import java.util.List;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class RemoteRepositoryProductListPanel extends JPanel {
+public class RepositoryProductListPanel extends JPanel {
 
     private final RepositorySelectionPanel repositorySelectionPanel;
     private final JLabel titleLabel;
     private final JList<RepositoryProduct> productList;
     private final ProgressBarHelperImpl progressBarHelper;
 
-    public RemoteRepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, ActionListener stopButtonListener) {
+    public RepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, ActionListener stopButtonListener) {
         super(new BorderLayout(0, componentDimension.getGapBetweenRows()/2));
 
         this.repositorySelectionPanel = repositorySelectionPanel;

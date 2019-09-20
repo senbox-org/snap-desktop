@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import java.awt.Color;
 import java.awt.Graphics;
 
 /**
@@ -15,12 +16,18 @@ public class CustomSplitPane extends JSplitPane {
 
     private final int visibleDividerSize;
     private final int dividerMargins;
+    private final Color dividerColor;
 
     public CustomSplitPane(int newOrientation, int visibleDividerSize, int dividerMargins) {
+        this(newOrientation, visibleDividerSize, dividerMargins, UIManager.getColor("controlShadow"));
+    }
+
+    public CustomSplitPane(int newOrientation, int visibleDividerSize, int dividerMargins, Color dividerColor) {
         super(newOrientation);
 
         this.visibleDividerSize = visibleDividerSize;
         this.dividerMargins = dividerMargins;
+        this.dividerColor = dividerColor;
 
         super.setDividerSize((2*this.dividerMargins) + this.visibleDividerSize);
         setContinuousLayout(true);
@@ -55,7 +62,7 @@ public class CustomSplitPane extends JSplitPane {
             super(ui);
 
             super.setBorder(BorderFactory.createEmptyBorder());
-            setBackground(UIManager.getColor("controlShadow"));
+            setBackground(CustomSplitPane.this.dividerColor);
         }
 
         @Override
@@ -67,9 +74,9 @@ public class CustomSplitPane extends JSplitPane {
         public void paint(Graphics graphics) {
             graphics.setColor(getBackground());
             if (this.orientation == HORIZONTAL_SPLIT) {
-                graphics.fillRect(dividerMargins, 0, visibleDividerSize, getHeight());
+                graphics.fillRect(CustomSplitPane.this.dividerMargins, 0, CustomSplitPane.this.visibleDividerSize, getHeight());
             } else {
-                graphics.fillRect(0, dividerMargins, getWidth(), visibleDividerSize);
+                graphics.fillRect(0, CustomSplitPane.this.dividerMargins, getWidth(), CustomSplitPane.this.visibleDividerSize);
             }
         }
     }

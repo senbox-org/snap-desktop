@@ -30,6 +30,9 @@ public class DownloadRemoteProductsQueue {
     }
 
     public void push(RemoteProductDownloader remoteProductDownloader) {
+        if (this.queue.size() == 0) {
+            this.totalPushed = 0; // reset the counter
+        }
         this.queue.add(remoteProductDownloader);
         this.totalPushed++;
     }

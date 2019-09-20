@@ -1,31 +1,22 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
-import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
-import org.esa.snap.remote.products.repository.ItemRenderer;
 import org.esa.snap.remote.products.repository.QueryFilter;
-import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +55,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public abstract JPopupMenu buildProductListPopupMenu();
 
     public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RemoteRepositoryProductListPanel repositoryProductListPanel);
+                                                                                              RepositoryProductListPanel repositoryProductListPanel);
 
     public int computeLeftPanelMaximumLabelWidth() {
         int maximumLabelWidth = 0;
@@ -112,9 +103,13 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     protected final void addAreaParameterComponent(QueryFilter areaOfInterestParameter) {
         SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(this.worlWindPanel, areaOfInterestParameter.getName(), areaOfInterestParameter.getLabel(), areaOfInterestParameter.isRequired());
         this.parameterComponents.add(selectionAreaParameterComponent);
-        selectionAreaParameterComponent.getLabel().setVerticalAlignment(JLabel.TOP);
+
+        JLabel label = selectionAreaParameterComponent.getLabel();
+        label.setVerticalAlignment(JLabel.TOP);
+        int difference = this.componentDimension.getTextFieldPreferredHeight() - label.getPreferredSize().height;
+        label.setBorder(new EmptyBorder((difference/2), 0, 0 , 0));
         JPanel centerPanel = new JPanel(new BorderLayout(this.componentDimension.getGapBetweenColumns(), 0));
-        centerPanel.add(selectionAreaParameterComponent.getLabel(), BorderLayout.WEST);
+        centerPanel.add(label, BorderLayout.WEST);
         centerPanel.add(selectionAreaParameterComponent.getComponent(), BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
     }

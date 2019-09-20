@@ -1,13 +1,11 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
-import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.product.library.ui.v2.repository.SelectionAreaParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
@@ -24,22 +22,14 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +45,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     private final JComboBox<String> attributesComboBox;
     private final JButton scanFoldersButton;
 
+    private ActionListener openProductListener;
+    private ActionListener deleteProductListener;
     private boolean initialized;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
@@ -66,7 +58,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
         this.missionsComboBox = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
-        LabelListCellRenderer<RemoteMission> renderer = new LabelListCellRenderer<RemoteMission>(componentDimension.getListItemMargins()) {
+        int cellItemHeight = this.missionsComboBox.getPreferredSize().height;
+        LabelListCellRenderer<RemoteMission> renderer = new LabelListCellRenderer<RemoteMission>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(RemoteMission value) {
                 return (value == null) ? " " : value.getName();
@@ -140,7 +133,9 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             MetadataAttributesParameterComponent parameterComponent = new MetadataAttributesParameterComponent(this.attributesComboBox, attributesParameter.getName(), attributesParameter.getLabel(), attributesParameter.isRequired(), this.componentDimension);
             this.parameterComponents.add(parameterComponent);
 
-            c = SwingUtils.buildConstraints(0, nextRowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, 0);
+            int difference = this.componentDimension.getTextFieldPreferredHeight() - parameterComponent.getLabel().getPreferredSize().height;
+
+            c = SwingUtils.buildConstraints(0, nextRowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows + (difference/2) , 0);
             panel.add(parameterComponent.getLabel(), c);
             c = SwingUtils.buildConstraints(1, nextRowIndex, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
             panel.add(parameterComponent.getComponent(), c);
@@ -157,7 +152,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RemoteRepositoryProductListPanel repositoryProductListPanel) {
+                                                                                              RepositoryProductListPanel repositoryProductListPanel) {
 
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {
@@ -170,7 +165,9 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public JPopupMenu buildProductListPopupMenu() {
         JMenuItem openMenuItem = new JMenuItem("Open");
+        openMenuItem.addActionListener(this.openProductListener);
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
+        deleteMenuItem.addActionListener(this.deleteProductListener);
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(openMenuItem);
         popupMenu.add(deleteMenuItem);
@@ -192,6 +189,11 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
             this.missionsComboBox.addItem(mission);
         }
+    }
+
+    public void setOpenAndDeleteProductListeners(ActionListener openProductListener, ActionListener deleteProductListener) {
+        this.openProductListener = openProductListener;
+        this.deleteProductListener = deleteProductListener;
     }
 
     private void setInputData(LocalParameterValues parameterValues) {

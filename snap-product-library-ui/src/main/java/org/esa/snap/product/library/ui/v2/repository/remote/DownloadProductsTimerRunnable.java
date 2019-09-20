@@ -1,8 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
+import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
@@ -21,13 +19,13 @@ import java.nio.file.Path;
 public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable<Void> {
 
     private final JComponent parentComponent;
-    private final RemoteRepositoryProductListPanel repositoryProductListPanel;
+    private final RepositoryProductListPanel repositoryProductListPanel;
     private final DownloadRemoteProductsQueue downloadRemoteProductsQueue;
 
     private RemoteProductDownloader currentRemoteProductDownloader;
 
     public DownloadProductsTimerRunnable(ProgressBarHelper progressPanel, int threadId, DownloadRemoteProductsQueue downloadRemoteProductsQueue,
-                                         RemoteRepositoryProductListPanel repositoryProductListPanel, JComponent parentComponent) {
+                                         RepositoryProductListPanel repositoryProductListPanel, JComponent parentComponent) {
 
         super(progressPanel, threadId, 500);
 
@@ -163,9 +161,9 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
 
         private final RepositoryProduct productToDownload;
         private final short progressPercent;
-        private final RemoteRepositoryProductListPanel repositoryProductListPanel;
+        private final RepositoryProductListPanel repositoryProductListPanel;
 
-        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent, RemoteRepositoryProductListPanel repositoryProductListPanel) {
+        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent, RepositoryProductListPanel repositoryProductListPanel) {
             this.productToDownload = productToDownload;
             this.progressPercent = progressPercent;
             this.repositoryProductListPanel = repositoryProductListPanel;

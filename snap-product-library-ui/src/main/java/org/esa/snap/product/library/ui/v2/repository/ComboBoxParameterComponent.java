@@ -7,6 +7,7 @@ import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 
 import javax.swing.JComboBox;
+import java.awt.Dimension;
 import java.awt.Insets;
 
 /**
@@ -32,7 +33,14 @@ public class ComboBoxParameterComponent extends AbstractParameterComponent<Objec
 
         this.itemRenderer = parameter.getValueRenderer();
         this.component = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
-        this.component.setRenderer(buildRenderer(componentDimension.getListItemMargins()));
+        int cellItemHeight = this.component.getPreferredSize().height;
+        LabelListCellRenderer<Object> renderer = new LabelListCellRenderer<Object>(cellItemHeight) {
+            @Override
+            protected String getItemDisplayText(Object value) {
+                return (value == null) ? " " : itemRenderer.getDisplayName(value);
+            }
+        };
+        this.component.setRenderer(renderer);
 
         Object[] values = parameter.getValueSet();
         if (!isRequired()) {
@@ -59,14 +67,5 @@ public class ComboBoxParameterComponent extends AbstractParameterComponent<Objec
     @Override
     public Object getParameterValue() {
         return this.component.getModel().getSelectedItem();
-    }
-
-    private LabelListCellRenderer<Object> buildRenderer(Insets listItemMargins) {
-        return new LabelListCellRenderer<Object>(listItemMargins) {
-            @Override
-            protected String getItemDisplayText(Object value) {
-                return (value == null) ? " " : itemRenderer.getDisplayName(value);
-            }
-        };
     }
 }

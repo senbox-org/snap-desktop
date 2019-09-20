@@ -10,6 +10,7 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -51,13 +52,13 @@ public class RepositorySelectionPanel extends JPanel {
     private ItemListener repositoriesItemListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
+                                    MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         super(new GridBagLayout());
 
         this.gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
-        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, downloadRemoteProductListener, missionParameterListener, worldWindowPanel);
+        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, missionParameterListener, worldWindowPanel);
 
         Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
 
@@ -163,25 +164,20 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                            ActionListener downloadRemoteProductListener, MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
+                                            MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
-            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, downloadRemoteProductListener,
-                                                                          missionParameterListener, worldWindowPanel);
+            availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener, worldWindowPanel);
         }
         availableDataSources[productsRepositoryProviders.length] = new AllLocalProductsRepositoryPanel(componentDimension, worldWindowPanel);
 
-        this.repositoriesComboBox = new JComboBox<AbstractProductsRepositoryPanel>(availableDataSources) {
-            @Override
-            public Color getBackground() {
-                return Color.WHITE;
-            }
-        };
-        Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
-        comboBoxSize.height = componentDimension.getTextFieldPreferredHeight();
-        this.repositoriesComboBox.setPreferredSize(comboBoxSize);
-        LabelListCellRenderer<AbstractProductsRepositoryPanel> renderer = new LabelListCellRenderer<AbstractProductsRepositoryPanel>(componentDimension.getListItemMargins()) {
+        this.repositoriesComboBox = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
+        for (int i = 0; i < availableDataSources.length; i++) {
+            this.repositoriesComboBox.addItem(availableDataSources[i]);
+        }
+        int cellItemHeight = this.repositoriesComboBox.getPreferredSize().height;
+        LabelListCellRenderer<AbstractProductsRepositoryPanel> renderer = new LabelListCellRenderer<AbstractProductsRepositoryPanel>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(AbstractProductsRepositoryPanel value) {
                 return (value == null) ? "" : value.getName();
@@ -201,6 +197,26 @@ public class RepositorySelectionPanel extends JPanel {
                 }
             }
         });
+    }
+
+    public void setOpenAndDeleteLocalProductListeners(ActionListener openLocalProductListener, ActionListener deleteLocalProductListener) {
+        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+        for (int i=0; i<model.getSize(); i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+            if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
+                ((AllLocalProductsRepositoryPanel)repositoryPanel).setOpenAndDeleteProductListeners(openLocalProductListener, deleteLocalProductListener);
+            }
+        }
+    }
+
+    public void setDownloadRemoteProductListener(ActionListener downloadRemoteProductListener) {
+        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+        for (int i=0; i<model.getSize(); i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+            if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListener(downloadRemoteProductListener);
+            }
+        }
     }
 
     private void newSelectedRepository() {
