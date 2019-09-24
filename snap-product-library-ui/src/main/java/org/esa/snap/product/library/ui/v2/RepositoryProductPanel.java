@@ -1,14 +1,15 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -16,9 +17,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -27,9 +32,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by jcoravu on 21/8/2019.
+ * Created by jcoravu on 23/9/2019.
  */
-public class ProductListCellRenderer extends JPanel implements ListCellRenderer<RepositoryProduct> {
+public class RepositoryProductPanel extends JPanel {
 
     public static final ImageIcon EMPTY_ICON;
     static {
@@ -49,13 +54,15 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
     private final JLabel secondAttributeLabel;
     private final JLabel missionLabel;
     private final JLabel downloadingStatusLabel;
+    private final JButton expandOrCollapseButton;
+    private final ImageIcon expandImageIcon;
+    private final ImageIcon collapseImageIcon;
 
-    public ProductListCellRenderer() {
+    private RepositoryProduct repositoryProduct;
+    private JPanel attributesPanel;
+
+    public RepositoryProductPanel(ComponentDimension componentDimension) {
         super(new GridBagLayout());
-
-        setOpaque(true);
-        Border border = new CompoundBorder(new MatteBorder(0, 0, 1, 0, UIManager.getColor("controlShadow")), new EmptyBorder(5, 5, 5, 5));
-        setBorder(border);
 
         this.nameLabel = new JLabel("");
         this.quickLookImageLabel = new JLabel("");
@@ -66,10 +73,35 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         this.urlLabel = new JLabel("");
         this.secondAttributeLabel = new JLabel("");
         this.missionLabel = new JLabel("");
+
+        Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
+
+        this.expandImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-40.png", buttonSize, 2);
+        this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-40.png", buttonSize, 2);
+
+        this.expandOrCollapseButton = new JButton(this.expandImageIcon);
+        this.expandOrCollapseButton.setPreferredSize(buttonSize);
+        this.expandOrCollapseButton.setMinimumSize(buttonSize);
+        this.expandOrCollapseButton.setMaximumSize(buttonSize);
+        this.expandOrCollapseButton.setFocusable(false);
+        this.expandOrCollapseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (attributesPanel == null) {
+                    addAttributesPanel();
+                } else {
+                    remoteAttributesPanel();
+                }
+            }
+        });
+
         this.downloadingStatusLabel = new JLabel("");
 
-        int gapBetweenRows = 5;
-        int gapBetweenColumns = 5;
+        Border border = new CompoundBorder(new MatteBorder(0, 0, 1, 0, UIManager.getColor("controlShadow")), new EmptyBorder(5, 5, 5, 5));
+        setBorder(border);
+
+        int gapBetweenRows = componentDimension.getGapBetweenRows();
+        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
         int number = 7;
 
         JPanel panel = new JPanel(new GridBagLayout());
@@ -91,6 +123,12 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, gapBetweenRows, number * gapBetweenColumns);
         panel.add(this.downloadingStatusLabel, c);
 
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 3, gapBetweenRows, 0);
+        panel.add(new JLabel(""), c);
+
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.SOUTH, 1, 3, gapBetweenRows, 0);
+        panel.add(this.expandOrCollapseButton, c);
+
         c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 0, 0);
         add(this.nameLabel, c);
 
@@ -99,34 +137,61 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         add(this.urlLabel, c);
 
-        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         add(panel, c);
     }
 
-    @Override
-    public Component getListCellRendererComponent(JList<? extends RepositoryProduct> list, RepositoryProduct product, int index, boolean isSelected, boolean cellHasFocus) {
-        Color backgroundColor;
-        Color foregroundColor;
-        if (isSelected) {
-            backgroundColor = list.getSelectionBackground();
-            foregroundColor = list.getSelectionForeground();
-        } else {
-            backgroundColor = list.getBackground();
-            foregroundColor = list.getForeground();
+    private void addAttributesPanel() {
+        int gapBetweenRows = 5;
+        int gapBetweenColumns = 5;
+
+        int columnCount = 3;
+        int rowCount = this.repositoryProduct.getAttributes().size() / columnCount;
+        if (this.repositoryProduct.getAttributes().size() % columnCount != 0) {
+            rowCount++;
         }
-        setBackground(backgroundColor);
-        setForeground(foregroundColor);
+        attributesPanel = new JPanel(new GridLayout(rowCount, columnCount, 5, 5));
+        attributesPanel.setOpaque(false);
+        for (int i=0; i<repositoryProduct.getAttributes().size(); i++) {
+            Attribute attribute = repositoryProduct.getAttributes().get(i);
+            JLabel label = new JLabel(attribute.getName() + ": " + attribute.getValue());
+            attributesPanel.add(label);
+        }
 
-        this.nameLabel.setText(product.getName());
-        this.urlLabel.setText("URL: " + product.getDownloadURL());
-        this.missionLabel.setText("Mission: " + product.getMission());
+        GridBagConstraints c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        add(attributesPanel, c);
 
-        ProductListModel productListModel = (ProductListModel)list.getModel();
+        this.expandOrCollapseButton.setIcon(this.collapseImageIcon);
+        revalidate();
+        repaint();
+    }
 
+    private void remoteAttributesPanel() {
+        remove(this.attributesPanel);
+        this.expandOrCollapseButton.setIcon(this.expandImageIcon);
+        this.attributesPanel = null;
+        revalidate();
+        repaint();
+    }
+
+    public RepositoryProduct getProduct() {
+        return repositoryProduct;
+    }
+
+    public void updateQuickLookImage() {
+        BufferedImage quickLookImage = repositoryProduct.getQuickLookImage();
+        ImageIcon imageIcon = EMPTY_ICON;
+        if (quickLookImage != null) {
+            Image scaledQuickLookImage = quickLookImage.getScaledInstance(EMPTY_ICON.getIconWidth(), EMPTY_ICON.getIconHeight(), BufferedImage.SCALE_FAST);
+            imageIcon = new ImageIcon(scaledQuickLookImage);
+        }
+        this.quickLookImageLabel.setIcon(imageIcon);
+    }
+
+    private void updateVisibleAttributes(Map<String, String> visibleAttributes) {
         String firstLabelText = "";
         String secondLabelText = "";
-        Map<String, String> visibleAttributes = productListModel.getMissionVisibleAttributes(product.getMission());
-        List<Attribute> attributes = product.getAttributes();
+        List<Attribute> attributes = repositoryProduct.getAttributes();
         if (visibleAttributes != null && visibleAttributes.size() > 0 && attributes != null && attributes.size() > 0) {
             for (Map.Entry<String, String> entry : visibleAttributes.entrySet()) {
                 String attributeName = entry.getKey();
@@ -150,16 +215,11 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
         }
         this.firstAttributeLabel.setText(firstLabelText);
         this.secondAttributeLabel.setText(secondLabelText);
+    }
 
-        BufferedImage quickLookImage = product.getQuickLookImage();
-        ImageIcon imageIcon = EMPTY_ICON;
-        if (quickLookImage != null) {
-            Image scaledQuickLookImage = quickLookImage.getScaledInstance(EMPTY_ICON.getIconWidth(), EMPTY_ICON.getIconHeight(), BufferedImage.SCALE_FAST);
-            imageIcon = new ImageIcon(scaledQuickLookImage);
-        }
-        this.quickLookImageLabel.setIcon(imageIcon);
+    public void updateDownloadingPercent(ProductListModel productListModel) {
+        ProgressPercent progressPercent = productListModel.getProductDownloadPercent(repositoryProduct);
 
-        ProgressPercent progressPercent = productListModel.getProductDownloadPercent(product);
         String percentText = "";
         if (progressPercent != null) {
             // the product is pending download or downloading
@@ -178,14 +238,33 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
             }
         }
         this.downloadingStatusLabel.setText(percentText);
+    }
 
-        String dateAsString = DATE_FORMAT.format(product.getAcquisitionDate());
+    public void setProduct(RepositoryProduct repositoryProduct, ProductListModel productListModel) {
+        if (this.attributesPanel != null) {
+            remoteAttributesPanel();
+        }
+        this.repositoryProduct = repositoryProduct;
+
+        this.nameLabel.setText(repositoryProduct.getName());
+        this.urlLabel.setText("URL: " + repositoryProduct.getDownloadURL());
+        this.missionLabel.setText("Mission: " + repositoryProduct.getMission());
+
+        Map<String, String> visibleAttributes = productListModel.getMissionVisibleAttributes(repositoryProduct.getMission());
+
+        updateVisibleAttributes(visibleAttributes);
+
+        updateQuickLookImage();
+
+        updateDownloadingPercent(productListModel);
+
+        String dateAsString = DATE_FORMAT.format(repositoryProduct.getAcquisitionDate());
         this.acquisitionDateLabel.setText("Acquisition date: " + dateAsString);
 
         String sizeText = "Size: ";
-        if (product.getApproximateSize() > 0) {
+        if (repositoryProduct.getApproximateSize() > 0) {
             float oneKyloByte = 1024.0f;
-            double sizeInMegaBytes = product.getApproximateSize() / (oneKyloByte * oneKyloByte);
+            double sizeInMegaBytes = repositoryProduct.getApproximateSize() / (oneKyloByte * oneKyloByte);
             if (sizeInMegaBytes > oneKyloByte) {
                 double sizeInGigaBytes = sizeInMegaBytes / oneKyloByte;
                 sizeText += FORMAT.format(sizeInGigaBytes) + " GB";
@@ -196,8 +275,6 @@ public class ProductListCellRenderer extends JPanel implements ListCellRenderer<
             sizeText += "N/A";
         }
         this.sizeLabel.setText(sizeText);
-
-        return this;
     }
 
     private static String buildAttributeLabelText(String attributeDisplayName, String attributeValue) {

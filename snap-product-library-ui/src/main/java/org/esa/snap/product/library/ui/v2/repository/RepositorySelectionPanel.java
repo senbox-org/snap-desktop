@@ -255,14 +255,22 @@ public class RepositorySelectionPanel extends JPanel {
         add(this.progressBarHelper.getStopButton(), c);
     }
 
-    public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
+    public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL imageURL = classLoader.getResource(resourceImagePath);
+        if (imageURL == null) {
+            throw new NullPointerException("The image '"+resourceImagePath+"' does not exist into the sources.");
+        }
         ImageIcon icon = new ImageIcon(imageURL);
         if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
             Image scaledImage = getScaledImage(icon.getImage(), buttonSize.width, buttonSize.height, scaledImagePadding.intValue());
             icon = new ImageIcon(scaledImage);
         }
+        return icon;
+    }
+
+    public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
+        ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);
         JButton button = new JButton(icon);
         button.setFocusable(false);
         button.addActionListener(buttonListener);

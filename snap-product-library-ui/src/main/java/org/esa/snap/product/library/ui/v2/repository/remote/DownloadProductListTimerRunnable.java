@@ -156,8 +156,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         Runnable runnable = new ProductQuickLookImageRunnable(product, quickLookImage) {
             @Override
             protected void execute(RepositoryProduct productValue, BufferedImage quickLookImageValue) {
-                productValue.setQuickLookImage(quickLookImageValue);
-                repositoryProductListPanel.repaint();
+                repositoryProductListPanel.getProductListPanel().setProductQuickLookImage(productValue, quickLookImageValue);
             }
         };
         SwingUtilities.invokeLater(runnable);

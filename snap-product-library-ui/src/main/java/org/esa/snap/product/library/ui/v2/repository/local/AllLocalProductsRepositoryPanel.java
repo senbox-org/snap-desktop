@@ -27,7 +27,6 @@ import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
@@ -130,7 +129,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
         if (attributesParameter != null) {
             int nextRowIndex = startRowIndex + this.parameterComponents.size() + 1;
-            MetadataAttributesParameterComponent parameterComponent = new MetadataAttributesParameterComponent(this.attributesComboBox, attributesParameter.getName(), attributesParameter.getLabel(), attributesParameter.isRequired(), this.componentDimension);
+            AttributesParameterComponent parameterComponent = new AttributesParameterComponent(this.attributesComboBox, attributesParameter.getName(), attributesParameter.getLabel(), attributesParameter.isRequired(), this.componentDimension);
             this.parameterComponents.add(parameterComponent);
 
             int difference = this.componentDimension.getTextFieldPreferredHeight() - parameterComponent.getLabel().getPreferredSize().height;

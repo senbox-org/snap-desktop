@@ -62,6 +62,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Path2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -170,28 +172,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         };
         this.repositoryProductListPanel = new RepositoryProductListPanel(this.repositorySelectionPanel, this, stopDownloadingProductsButtonListener);
         this.repositoryProductListPanel.setBorder(new EmptyBorder(0, 1, 0, 0));
-        this.repositoryProductListPanel.setListDataListener(new ListDataListener() {
+        this.repositoryProductListPanel.getProductListPanel().setDataChangedListener(new PropertyChangeListener() {
             @Override
-            public void intervalAdded(ListDataEvent listDataEvent) {
-                productListChanged();
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent listDataEvent) {
-                productListChanged();
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent listDataEvent) {
+            public void propertyChange(PropertyChangeEvent evt) {
                 productListChanged();
             }
         });
-        this.repositoryProductListPanel.setProductListSelectionListener(new ListSelectionListener() {
+        this.repositoryProductListPanel.getProductListPanel().setSelectionChangedListener(new PropertyChangeListener() {
             @Override
-            public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                if (!listSelectionEvent.getValueIsAdjusting()) {
-                    newSelectedRepositoryProducts();
-                }
+            public void propertyChange(PropertyChangeEvent evt) {
+                newSelectedRepositoryProducts();
             }
         });
         addListeners();
@@ -300,7 +290,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void openSelectedProducts() {
-        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getSelectedProducts();
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         String productPath = selectedProducts[0].getDownloadURL();
         try {
             Product product = ProductIO.readProduct(productPath);
@@ -314,16 +304,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {
-        this.repositoryProductListPanel.selectProductsByPolygonPath(polygonPaths);
+        this.repositoryProductListPanel.getProductListPanel().selectProductsByPolygonPath(polygonPaths);
     }
 
     private void productListChanged() {
-        Path2D.Double[] polygonPaths = this.repositoryProductListPanel.getPolygonPaths();
+        Path2D.Double[] polygonPaths = this.repositoryProductListPanel.getProductListPanel().getPolygonPaths();
         this.worldWindowPanel.setPolygons(polygonPaths);
     }
 
     private void newSelectedRepositoryProducts() {
-        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getSelectedProducts();
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         Path2D.Double[] polygonPaths = new Path2D.Double[selectedProducts.length];
         for (int i = 0; i < selectedProducts.length; i++) {
             polygonPaths[i] = selectedProducts[i].getPolygon().getPath();
@@ -362,7 +352,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         synchronized (this.downloadRemoteProductsQueue) {
             this.downloadRemoteProductsQueue.clear();
         }
-        this.repositoryProductListPanel.getListModel().removePendingDownloadProducts();
+        this.repositoryProductListPanel.getProductListPanel().removePendingDownloadProducts();
         this.repositoryProductListPanel.getProgressBarHelper().hideProgressPanel();
         if (this.downloadProductsThread != null) {
             this.downloadProductsThread.stopRunning(); // stop the thread
@@ -381,9 +371,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedRepository();
             if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                 RemoteProductsRepositoryProvider productsRepositoryProvider = ((RemoteProductsRepositoryPanel) selectedRepository).getProductsRepositoryProvider();
-                RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getSelectedProducts();
+                RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
 
-                this.repositoryProductListPanel.getListModel().addPendingDownloadProducts(selectedProducts);
+                this.repositoryProductListPanel.getProductListPanel().addPendingDownloadProducts(selectedProducts);
 
                 int queueSizeBeforeAddingProducts;
                 synchronized (this.downloadRemoteProductsQueue) {
@@ -415,7 +405,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     };
                     this.downloadProductsThread.executeAsync();
                 } else {
-                    this.downloadProductsThread.updateDownloadedProgressPercentLater();
+                    this.downloadProductsThread.updateProgressBarDownloadedProductsLater();
                 }
             } else {
                 throw new IllegalStateException("The selected repository is not a remote repository.");

@@ -3,13 +3,9 @@ package org.esa.snap.product.library.ui.v2;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ImageIcon;
-import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,28 +14,18 @@ import java.util.Set;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class ProductListModel extends AbstractListModel<RepositoryProduct> {
+public class ProductListModel {
 
     private final Map<String, Map<String, String>> visibleAttributesPerMission;
 
     private Map<RepositoryProduct, ProgressPercent> downloadingProductsProgressValue;
-    private List<RepositoryProduct> items;
+    private Set<RepositoryProductPanel> selectedProducts;
 
     public ProductListModel() {
         super();
 
         this.visibleAttributesPerMission = new HashMap<>();
         clear();
-    }
-
-    @Override
-    public int getSize() {
-        return this.items.size();
-    }
-
-    @Override
-    public RepositoryProduct getElementAt(int index) {
-        return this.items.get(index);
     }
 
     public Map<String, String> getMissionVisibleAttributes(String mission) {
@@ -60,25 +46,7 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         return visibleAttributes;
     }
 
-    public void addProducts(List<RepositoryProduct> products) {
-        int oldSize = this.items.size();
-        this.items.addAll(products);
-        fireIntervalAdded(this, oldSize, this.items.size());
-    }
-
-    public void setProducts(List<RepositoryProduct> products) {
-        this.items = new ArrayList<>(products);
-        this.downloadingProductsProgressValue = new HashMap<RepositoryProduct, ProgressPercent>();
-        fireIntervalAdded(this, 0, this.items.size());
-    }
-
-    public void clearProducts() {
-        int oldSize = this.items.size();
-        clear();
-        fireIntervalRemoved(this, 0, oldSize);
-    }
-
-    public void removePendingDownloadProducts() {
+    public List<RepositoryProduct> removePendingDownloadProducts() {
         List<RepositoryProduct> keysToRemove = new ArrayList<>(this.downloadingProductsProgressValue.size());
         Iterator<Map.Entry<RepositoryProduct, ProgressPercent>> it = this.downloadingProductsProgressValue.entrySet().iterator();
         while (it.hasNext()) {
@@ -95,14 +63,13 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         for (int i=0; i<keysToRemove.size(); i++) {
             this.downloadingProductsProgressValue.remove(keysToRemove.get(i));
         }
-        fireContentsChanged(this, 0, this.items.size());
+        return keysToRemove;
     }
 
     public void addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
         for (int i=0; i<pendingProducts.length; i++) {
             this.downloadingProductsProgressValue.put(pendingProducts[i], new ProgressPercent());
         }
-        fireContentsChanged(this, 0, this.items.size());
     }
 
     public void setProductDownloadPercent(RepositoryProduct product, short progressPercent) {
@@ -112,7 +79,6 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
                 // the product does not exist into the list
             } else {
                 progressPercentItem.setValue(progressPercent);
-                fireContentsChanged(this, 0, this.items.size());
             }
         } else {
             throw new IllegalArgumentException("The progress percent value " + progressPercent + " is out of bounds.");
@@ -123,16 +89,9 @@ public class ProductListModel extends AbstractListModel<RepositoryProduct> {
         return this.downloadingProductsProgressValue.get(product);
     }
 
-    public void sortProducts(Comparator<RepositoryProduct> comparator) {
-        if (this.items.size() > 1) {
-            Collections.sort(this.items, comparator);
-            fireContentsChanged(this, 0, this.items.size());
-        }
-    }
-
-    private void clear() {
-        this.items = new ArrayList<>();
+    public void clear() {
         this.downloadingProductsProgressValue = new HashMap<RepositoryProduct, ProgressPercent>();
+        this.selectedProducts = new HashSet<RepositoryProductPanel>();
     }
 }
 

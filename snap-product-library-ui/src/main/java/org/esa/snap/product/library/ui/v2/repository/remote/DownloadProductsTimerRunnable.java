@@ -48,7 +48,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
             }
 
             if (isRunning()) {
-                updateDownloadedProgressPercentLater();
+                updateProgressBarDownloadedProductsLater();
 
                 RemoteProductProgressListener progressListener = new RemoteProductProgressListener(remoteProductDownloader.getProductToDownload()) {
                     @Override
@@ -80,7 +80,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
                     remoteProductDownloader = this.downloadRemoteProductsQueue.peek();
                 }
 
-                updateDownloadedProgressPercentLater();
+                updateProgressBarDownloadedProductsLater();
             }
         }
         return null;
@@ -111,7 +111,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
 
     }
 
-    public void updateDownloadedProgressPercentLater() {
+    public void updateProgressBarDownloadedProductsLater() {
         int downloadedProducts;
         int totalProductsToDownload;
         synchronized (this.downloadRemoteProductsQueue) {
@@ -171,7 +171,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
 
         @Override
         public void run() {
-            this.repositoryProductListPanel.setProductDownloadPercent(this.productToDownload, this.progressPercent);
+            this.repositoryProductListPanel.getProductListPanel().setProductDownloadPercent(this.productToDownload, this.progressPercent);
         }
     }
 }
