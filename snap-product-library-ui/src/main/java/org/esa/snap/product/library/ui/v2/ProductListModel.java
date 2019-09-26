@@ -89,10 +89,13 @@ public class ProductListModel {
         throw new IllegalArgumentException("The repository product '"+repositoryProduct.getName()+"' does not exist into the list.");
     }
 
-    public void addProducts(List<RepositoryProduct> products) {
+    public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
         if (products.size() > 0) {
             int startIndex = this.products.size();
             this.products.addAll(products);
+            if (this.products.size() > 1) {
+                Collections.sort(this.products, comparator);
+            }
             int endIndex = this.products.size() - 1;
             fireIntervalAdded(startIndex, endIndex);
         }
@@ -155,11 +158,27 @@ public class ProductListModel {
         throw new IllegalArgumentException("The repository product '"+repositoryProductToFind.getName()+"' does not exist into the list.");
     }
 
+    public void setStopDownloadingProduct(RepositoryProduct repositoryProduct) {
+        ProgressPercent progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
+        if (progressPercent != null) {
+            progressPercent.setStopDownloading();
+            int index = findProductIndex(repositoryProduct);
+            fireIntervalChanged(index, index);
+        }
+    }
+
+    public void setFailedDownloadingProduct(RepositoryProduct repositoryProduct) {
+        ProgressPercent progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
+        if (progressPercent != null) {
+            progressPercent.setFailedDownloading();
+            int index = findProductIndex(repositoryProduct);
+            fireIntervalChanged(index, index);
+        }
+    }
+
     public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
         ProgressPercent progressPercentItem = this.downloadingProductsProgressValue.get(repositoryProduct);
-        if (progressPercentItem == null) {
-            throw new NullPointerException("The repository product '"+repositoryProduct.getName()+"' does not exist into the downloading list.");
-        } else {
+        if (progressPercentItem != null) {
             progressPercentItem.setValue(progressPercent);
             int index = findProductIndex(repositoryProduct);
             fireIntervalChanged(index, index);

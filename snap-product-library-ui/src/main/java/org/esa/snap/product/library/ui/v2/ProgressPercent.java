@@ -9,6 +9,7 @@ public class ProgressPercent {
     public static final byte DOWNLOADING = 2;
     public static final byte STOP_DOWNLOADING = 3;
     public static final byte DOWNLOADED = 4;
+    public static final byte FAILED_DOWNLOADING = 5;
 
     private short value;
     private byte status;
@@ -35,6 +36,10 @@ public class ProgressPercent {
         this.status = STOP_DOWNLOADING;
     }
 
+    public void setFailedDownloading() {
+        this.status = FAILED_DOWNLOADING;
+    }
+
     public boolean isPendingDownload() {
         return (this.status == PENDING_DOWNLOAD);
     }
@@ -46,7 +51,12 @@ public class ProgressPercent {
     public boolean isDownloading() {
         return (this.status == DOWNLOADING);
     }
+
     public boolean isDownloaded() {
         return (this.status == DOWNLOADED);
+    }
+
+    public boolean isFailedDownload() {
+        return (this.status == FAILED_DOWNLOADING);
     }
 }

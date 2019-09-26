@@ -31,11 +31,11 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
     @Override
     protected LocalParameterValues execute() throws Exception {
         List<RepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
-        Map<Short, Set<String>> attributes;
+        Map<Short, Set<String>> attributeNamesPerMission;
         List<RemoteMission> missions;
         try (Connection connection = H2DatabaseAccessor.getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                attributes = ProductLibraryDAL.loadAttributesNames(statement);
+                attributeNamesPerMission = ProductLibraryDAL.loadAttributesNamesPerMission(statement);
                 missions = ProductLibraryDAL.loadMissions(statement);
                 if (missions.size() > 1) {
                     Comparator<RemoteMission> comparator = new Comparator<RemoteMission>() {
@@ -48,7 +48,7 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
                 }
             }
         }
-        return new LocalParameterValues(repositoriesCredentials, missions, attributes);
+        return new LocalParameterValues(repositoriesCredentials, missions, attributeNamesPerMission);
     }
 
     @Override

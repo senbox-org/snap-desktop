@@ -151,6 +151,9 @@ public class RepositorySelectionPanel extends JPanel {
         this.searchButton.setEnabled(enabled);
         this.repositoryLabel.setEnabled(enabled);
         this.repositoriesComboBox.setEnabled(enabled);
+        if (this.repositoryTopBarButton != null) {
+            this.repositoryTopBarButton.setEnabled(enabled);
+        }
         AbstractProductsRepositoryPanel selectedDataSource = getSelectedRepository();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);

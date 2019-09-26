@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.product.library.v2.database.SaveProductData;
@@ -11,12 +12,18 @@ import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jcoravu on 19/8/2019.
  */
 public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable<Void> {
+
+    private static final Logger logger = Logger.getLogger(DownloadProductsTimerRunnable.class.getName());
 
     private final JComponent parentComponent;
     private final RepositoryProductListPanel repositoryProductListPanel;
@@ -41,39 +48,22 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
             // get the product to download
             remoteProductDownloader = this.downloadRemoteProductsQueue.peek();
         }
-        while (remoteProductDownloader != null) {
-            // download the product from the remote repository
-            synchronized (this) {
-                this.currentRemoteProductDownloader = remoteProductDownloader;
-            }
-
-            if (isRunning()) {
+        while (remoteProductDownloader != null && isRunning()) {
+            try {
                 updateProgressBarDownloadedProductsLater();
 
-                RemoteProductProgressListener progressListener = new RemoteProductProgressListener(remoteProductDownloader.getProductToDownload()) {
-                    @Override
-                    public void notifyProgress(short progressPercent) {
-                        updateDownloadedProgressPercentLater(getProductToDownload(), progressPercent);
-                    }
-                };
-                updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)0);
-                Path productFolderPath = remoteProductDownloader.download(progressListener);
-
-                synchronized (this) {
-                    this.currentRemoteProductDownloader = null; // reset
-                }
-
-                SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productFolderPath,
-                                                                                remoteProductDownloader.getRepositoryId(), remoteProductDownloader.getLocalRepositoryFolderPath());
-
-                // successfully downloaded the product
-                updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)100);
-                updateFinishSavingProductDataLater(saveProductData);
-
+                downloadAndSaveProduct(remoteProductDownloader);
+            } catch (java.lang.InterruptedException exception) {
+                updateStopDownloadingProductLater(remoteProductDownloader.getProductToDownload());
+                throw exception;
+            } catch (java.lang.Exception exception) {
+                updateFailedDownloadingProductLater(remoteProductDownloader.getProductToDownload());
+                logger.log(Level.SEVERE, "Failed to download the remote product '" + remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
+            } finally {
                 synchronized (this.downloadRemoteProductsQueue) {
                     // remove the downloaded product from the queue
                     RemoteProductDownloader removedProduct = this.downloadRemoteProductsQueue.pop();
-                    if (removedProduct != remoteProductDownloader) {
+                    if (removedProduct != null && removedProduct != remoteProductDownloader) {
                         throw new IllegalStateException("The removed product from the queue does not match with the downloaded product.");
                     }
                     // get the product to download
@@ -84,6 +74,32 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
             }
         }
         return null;
+    }
+
+    private void downloadAndSaveProduct(RemoteProductDownloader remoteProductDownloader) throws IOException, SQLException, InterruptedException {
+        RemoteProductProgressListener progressListener = new RemoteProductProgressListener(remoteProductDownloader.getProductToDownload()) {
+            @Override
+            public void notifyProgress(short progressPercent) {
+                updateDownloadedProgressPercentLater(getProductToDownload(), progressPercent);
+            }
+        };
+        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)0);
+
+        // download the product from the remote repository
+        synchronized (this) {
+            this.currentRemoteProductDownloader = remoteProductDownloader;
+        }
+        Path productFolderPath = remoteProductDownloader.download(progressListener);
+        synchronized (this) {
+            this.currentRemoteProductDownloader = null; // reset
+        }
+
+        SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productFolderPath,
+                                                     remoteProductDownloader.getRepositoryId(), remoteProductDownloader.getLocalRepositoryFolderPath());
+
+        // successfully downloaded and saved the product
+        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)100);
+        updateFinishSavingProductDataLater(saveProductData);
     }
 
     @Override
@@ -138,6 +154,30 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
             public void run() {
                 if (isCurrentProgressPanelThread()) {
                     super.run();
+                }
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    private void updateStopDownloadingProductLater(RepositoryProduct repositoryProduct) {
+        Runnable runnable = new GenericRunnable<RepositoryProduct>(repositoryProduct) {
+            @Override
+            protected void execute(RepositoryProduct item) {
+                if (isCurrentProgressPanelThread()) {
+                    repositoryProductListPanel.getProductListPanel().setStopDownloadingProduct(item);
+                }
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    private void updateFailedDownloadingProductLater(RepositoryProduct repositoryProduct) {
+        Runnable runnable = new GenericRunnable<RepositoryProduct>(repositoryProduct) {
+            @Override
+            protected void execute(RepositoryProduct item) {
+                if (isCurrentProgressPanelThread()) {
+                    repositoryProductListPanel.getProductListPanel().setFailedDownloadingProduct(item);
                 }
             }
         };

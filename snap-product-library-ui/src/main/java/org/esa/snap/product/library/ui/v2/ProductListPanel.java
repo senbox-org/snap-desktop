@@ -91,8 +91,8 @@ public class ProductListPanel extends VerticalScrollablePanel {
         setBackground(this.backgroundColor);
     }
 
-    public void addProducts(List<RepositoryProduct> products) {
-        this.productListModel.addProducts(products);
+    public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
+        this.productListModel.addProducts(products, comparator);
     }
 
     private void productsChanged(int startIndex, int endIndex) {
@@ -179,13 +179,25 @@ public class ProductListPanel extends VerticalScrollablePanel {
         return this.productListModel.addPendingDownloadProducts(pendingProducts);
     }
 
+    public void setStopDownloadingProduct(RepositoryProduct repositoryProduct) {
+        this.productListModel.setStopDownloadingProduct(repositoryProduct);
+    }
+
+    public void setFailedDownloadingProduct(RepositoryProduct repositoryProduct) {
+        this.productListModel.setFailedDownloadingProduct(repositoryProduct);
+    }
+
     public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
         this.productListModel.setProductDownloadPercent(repositoryProduct, progressPercent);
     }
 
-    public void setProducts(List<RepositoryProduct> products) {
+    public void setProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
         clearProducts();
-        addProducts(products);
+        addProducts(products, comparator);
+    }
+
+    public void sortProducts(Comparator<RepositoryProduct> comparator) {
+        this.productListModel.sortProducts(comparator);
     }
 
     public Path2D.Double[] getPolygonPaths() {
@@ -264,82 +276,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
     }
 
     private void showProductsPopupMenu(RepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {
-        JMenu sortMenu = new JMenu("Sort By");
-        JMenuItem productNameMenuItem = new JMenuItem("Product Name");
-        productNameMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        return o1.getName().compareToIgnoreCase(o2.getName());
-                    }
-                };
-                productListModel.sortProducts(comparator);
-            }
-        });
-        JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
-        acquisitionDateMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        Date acquisitionDate1 = o1.getAcquisitionDate();
-                        Date acquisitionDate2 = o2.getAcquisitionDate();
-                        if (acquisitionDate1 == null && acquisitionDate2 == null) {
-                            return 0; // both acquisition dates are null
-                        }
-                        if (acquisitionDate1 == null && acquisitionDate2 != null) {
-                            return -1; // the first acquisition date is null
-                        }
-                        if (acquisitionDate1 != null && acquisitionDate2 == null) {
-                            return 1; // the second acquisition date is null
-                        }
-                        return acquisitionDate1.compareTo(acquisitionDate2);
-                    }
-                };
-                productListModel.sortProducts(comparator);
-            }
-        });
-        JMenuItem missionMenuItem = new JMenuItem("Mission");
-        missionMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        return o1.getMission().compareToIgnoreCase(o2.getMission());
-                    }
-                };
-                productListModel.sortProducts(comparator);
-            }
-        });
-        JMenuItem fileSizeMenuItem = new JMenuItem("File Size");
-        fileSizeMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent actionEvent) {
-                Comparator<RepositoryProduct> comparator = new Comparator<RepositoryProduct>() {
-                    @Override
-                    public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                        long fileSize1 = o1.getApproximateSize();
-                        long fileSize2 = o2.getApproximateSize();
-                        if (fileSize1 == fileSize2) {
-                            return 0;
-                        }
-                        if (fileSize1 < fileSize2) {
-                            return -1;
-                        }
-                        return 1;
-                    }
-                };
-                productListModel.sortProducts(comparator);
-            }
-        });
-        sortMenu.add(productNameMenuItem);
-        sortMenu.add(acquisitionDateMenuItem);
-        sortMenu.add(missionMenuItem);
-        sortMenu.add(fileSizeMenuItem);
-
         JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu();
-        popup.add(sortMenu);
-
         popup.show(repositoryProductPanel, mouseX, mouseY);
     }
 }

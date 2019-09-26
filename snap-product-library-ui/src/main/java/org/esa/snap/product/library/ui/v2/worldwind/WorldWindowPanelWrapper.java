@@ -8,6 +8,7 @@ import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import java.awt.Container;
@@ -15,8 +16,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.List;
 
 public class WorldWindowPanelWrapper extends JPanel {
 
@@ -35,6 +34,11 @@ public class WorldWindowPanelWrapper extends JPanel {
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, 0, 0);
         add(circularProgressLabel, c);
+    }
+
+    @Override
+    public Color getBackground() {
+        return isEnabled() ? super.getBackground() : UIManager.getColor("TextField.inactiveBackground");
     }
 
     public void addWorldWindowPanelAsync(boolean flatWorld, boolean removeExtraLayers, PolygonMouseListener mouseListener) {
@@ -86,7 +90,8 @@ public class WorldWindowPanelWrapper extends JPanel {
 
         if (worldWindowPanel != null) {
             this.worldWindowPanel = worldWindowPanel;
-            this.worldWindowPanel.setBackgroundColor(getBackground());
+            //this.worldWindowPanel.setBackgroundColor(getBackground());
+            this.worldWindowPanel.setOpaque(false);
 
             GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
             add(this.worldWindowPanel, c);

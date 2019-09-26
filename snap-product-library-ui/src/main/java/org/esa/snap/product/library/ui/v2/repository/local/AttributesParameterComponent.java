@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -111,7 +113,12 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
             }
         });
 
-        this.attributesList = new JList<AttributeFilter>(new DefaultListModel<AttributeFilter>());
+        this.attributesList = new JList<AttributeFilter>(new DefaultListModel<AttributeFilter>()) {
+            @Override
+            public Color getBackground() {
+                return isEnabled() ? super.getBackground() : UIManager.getColor("TextField.inactiveBackground");
+            }
+        };
         this.attributesList.setVisibleRowCount(5);
         this.attributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         int cellItemHeight = this.attributeNamesComboBox.getPreferredSize().height;

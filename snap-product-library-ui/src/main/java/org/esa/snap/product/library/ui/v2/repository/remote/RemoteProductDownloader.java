@@ -22,7 +22,7 @@ public class RemoteProductDownloader {
         this.localRepositoryFolderPath = localRepositoryFolderPath;
     }
 
-    public Path download(ProgressListener progressListener) throws IOException {
+    public Path download(ProgressListener progressListener) throws IOException, InterruptedException {
         Path productFolderPath = this.productRepositoryDownloader.download(this.productToDownload, this.localRepositoryFolderPath, progressListener);
         return productFolderPath;
     }

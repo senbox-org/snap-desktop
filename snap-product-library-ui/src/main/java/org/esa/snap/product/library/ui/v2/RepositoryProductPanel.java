@@ -134,7 +134,9 @@ public class RepositoryProductPanel extends JPanel {
 
     public void refresh(int index, ProductListModel productListModel) {
         if (this.attributesPanel != null) {
-            remoteAttributesPanel();
+            if (this.repositoryProduct == null || this.repositoryProduct != productListModel.getProductAt(index)) {
+                remoteAttributesPanel();
+            }
         }
 
         repositoryProduct = productListModel.getProductAt(index);
@@ -256,6 +258,9 @@ public class RepositoryProductPanel extends JPanel {
             } else if (progressPercent.isDownloaded()) {
                 percentText = "Downloaded";
                 foregroundColor = Color.GREEN;
+            } else if (progressPercent.isFailedDownload()) {
+                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (failed)";
+                foregroundColor = Color.RED;
             } else {
                 throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue());
             }

@@ -63,6 +63,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +94,9 @@ import java.util.Set;
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension {
 
-    private Path lastSelectedFolderPath;
+    public static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
+
+    private Path lastLocalRepositoryFolderPath;
     private RepositoryProductListPanel repositoryProductListPanel;
     private RepositorySelectionPanel repositorySelectionPanel;
     private CustomSplitPane horizontalSplitPane;
@@ -104,6 +107,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private WorldWindowPanelWrapper worldWindowPanel;
     private DownloadRemoteProductsQueue downloadRemoteProductsQueue;
     private boolean inputDataLoaded;
+    private AppContext appContext;
 
     public ProductLibraryToolViewV2() {
         super();
@@ -151,6 +155,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void initialize() {
+        this.appContext = SnapApp.getDefault().getAppContext();
+        String lastFolderPath = this.appContext.getPreferences().getPropertyString(PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH, null);
+        if (lastFolderPath != null) {
+            this.lastLocalRepositoryFolderPath = Paths.get(lastFolderPath);
+        }
+
         Insets defaultTextFieldMargins = new Insets(3, 2, 3, 2);
         JTextField productNameTextField = new JTextField();
         productNameTextField.setMargin(defaultTextFieldMargins);
@@ -166,7 +176,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.horizontalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, gapBetweenColumns-2, 0, transparentDividerColor);
         this.horizontalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedRepository());
         this.horizontalSplitPane.setRightComponent(this.repositoryProductListPanel);
-
 
         setLayout(new BorderLayout(0, gapBetweenRows));
         setBorder(new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns));
@@ -377,12 +386,15 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void downloadSelectedProductAsync() {
         CustomFileChooser fileChooser = buildFileChooser("Select folder to download the product", false, JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
-        if (this.lastSelectedFolderPath != null) {
-            fileChooser.setCurrentDirectoryPath(this.lastSelectedFolderPath);
+        if (this.lastLocalRepositoryFolderPath != null) {
+            fileChooser.setCurrentDirectoryPath(this.lastLocalRepositoryFolderPath);
         }
         int result = fileChooser.showDialog(this, "Select");
         if (result == JFileChooser.APPROVE_OPTION) {
-            this.lastSelectedFolderPath = fileChooser.getSelectedPath();
+            this.lastLocalRepositoryFolderPath = fileChooser.getSelectedPath();
+            // save the folder path into the preferences
+            this.appContext.getPreferences().setPropertyString(PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH, this.lastLocalRepositoryFolderPath.toString());
+
             AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedRepository();
             if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                 RemoteProductsRepositoryProvider productsRepositoryProvider = ((RemoteProductsRepositoryPanel) selectedRepository).getProductsRepositoryProvider();
@@ -396,7 +408,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         for (int i=0; i<productsToDownload.size(); i++) {
                             RepositoryProduct repositoryProduct = productsToDownload.get(i);
                             ProductRepositoryDownloader productRepositoryDownloader = productsRepositoryProvider.buidProductDownloader(repositoryProduct.getMission());
-                            RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(repositoryProduct, productRepositoryDownloader, this.lastSelectedFolderPath);
+                            RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(repositoryProduct, productRepositoryDownloader, this.lastLocalRepositoryFolderPath);
                             this.downloadRemoteProductsQueue.push(remoteProductDownloader);
                         }
                     }
@@ -411,7 +423,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         this.downloadProductsThread = new DownloadProductsTimerRunnable(progressBarHelper, threadId, this.downloadRemoteProductsQueue, this.repositoryProductListPanel, this) {
                             @Override
                             protected void onStopExecuting() {
-                                ProductLibraryToolViewV2.this.downloadProductsThread = null; // reset
+                                if (ProductLibraryToolViewV2.this.downloadProductsThread == this) {
+                                    ProductLibraryToolViewV2.this.downloadProductsThread = null; // reset
+                                }
                             }
 
                             @Override
