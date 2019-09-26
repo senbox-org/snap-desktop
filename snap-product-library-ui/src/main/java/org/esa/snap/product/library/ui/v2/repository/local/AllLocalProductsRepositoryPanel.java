@@ -46,13 +46,11 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     private ActionListener openProductListener;
     private ActionListener deleteProductListener;
-    private boolean initialized;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
         this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository();
-        this.initialized = false;
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
@@ -75,22 +73,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public JButton getTopBarButton() {
         return this.scanFoldersButton;
-    }
-
-    @Override
-    public void addNotify() {
-        super.addNotify();
-
-        if (!this.initialized) {
-            this.initialized = true;
-            LoadLocalParametersRunnable thread = new LoadLocalParametersRunnable() {
-                @Override
-                protected void onSuccessfullyExecuting(LocalParameterValues parameterValues) {
-                    setInputData(parameterValues);
-                }
-            };
-            thread.executeAsync();
-        }
     }
 
     @Override
@@ -195,7 +177,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.deleteProductListener = deleteProductListener;
     }
 
-    private void setInputData(LocalParameterValues parameterValues) {
+    public void setLocalParameterValues(LocalParameterValues parameterValues) {
         List<RemoteMission> missions = parameterValues.getMissions();
         if (missions.size() > 0) {
             this.missionsComboBox.addItem(null);

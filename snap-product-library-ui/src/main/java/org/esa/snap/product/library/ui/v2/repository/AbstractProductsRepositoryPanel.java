@@ -26,7 +26,8 @@ import java.util.Map;
  */
 public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
-    protected final WorldWindowPanelWrapper worlWindPanel;
+    private final WorldWindowPanelWrapper worlWindPanel;
+
     protected final ComponentDimension componentDimension;
     protected List<AbstractParameterComponent<?>> parameterComponents;
 
@@ -41,6 +42,11 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     protected abstract void addParameterComponents();
 
+    public abstract JPopupMenu buildProductListPopupMenu();
+
+    public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
+                                                                                              RepositoryProductListPanel repositoryProductListPanel);
+
     public JButton getTopBarButton() {
         return null;
     }
@@ -51,11 +57,6 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         revalidate();
         repaint();
     }
-
-    public abstract JPopupMenu buildProductListPopupMenu();
-
-    public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RepositoryProductListPanel repositoryProductListPanel);
 
     public int computeLeftPanelMaximumLabelWidth() {
         int maximumLabelWidth = 0;
@@ -101,6 +102,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     }
 
     protected final void addAreaParameterComponent(QueryFilter areaOfInterestParameter) {
+        this.worlWindPanel.clearSelectedArea();
         SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(this.worlWindPanel, areaOfInterestParameter.getName(), areaOfInterestParameter.getLabel(), areaOfInterestParameter.isRequired());
         this.parameterComponents.add(selectionAreaParameterComponent);
 

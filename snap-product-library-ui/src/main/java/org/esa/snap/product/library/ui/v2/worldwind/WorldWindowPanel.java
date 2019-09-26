@@ -26,6 +26,7 @@ import gov.nasa.worldwindx.examples.util.SectorSelector;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -79,16 +80,16 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 WorldWindowPanel.this.setCursor((cursor == null) ? Cursor.getDefaultCursor() : cursor);
             }
         };
-        this.selector.setInteriorColor(new Color(1f, 1f, 1f, 0.1f));
-        this.selector.setBorderColor(new Color(1f, 0f, 0f, 0.5f));
+        this.selector.setInteriorColor(new Color(1f, 0f, 0.0f, 0.4f));
+        this.selector.setBorderColor(new Color(1f, 0f, 0f, 1f));
         this.selector.setBorderWidth(2);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                if (SwingUtilities.isRightMouseButton(mouseEvent)) {
                     processRightMouseClick(mouseEvent.getX(), mouseEvent.getY()); // right mouse click
-                } else if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
                     processLeftMouseClick(mouseEvent.getX(), mouseEvent.getY());
                 }
             }
@@ -184,10 +185,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 field.set(object, fieldValue);
                 return true;
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
                 clazz = clazz.getSuperclass();
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new IllegalStateException(e);
             }
         }

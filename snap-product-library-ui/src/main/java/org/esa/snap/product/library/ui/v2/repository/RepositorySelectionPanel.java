@@ -3,9 +3,11 @@ package org.esa.snap.product.library.ui.v2.repository;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.v2.preferences.model.RepositoryCredentials;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -18,7 +20,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -33,6 +34,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -87,6 +89,24 @@ public class RepositorySelectionPanel extends JPanel {
         addComponents();
     }
 
+    public void setInputData(LocalParameterValues parameterValues) {
+        List<RepositoryCredentials> repositoriesCredentials = parameterValues.getRepositoriesCredentials();
+        int repositoryCount = this.repositoriesComboBox.getModel().getSize();
+        for (int i=0; i<repositoriesCredentials.size(); i++) {
+            RepositoryCredentials repositoryCredentials = repositoriesCredentials.get(i);
+            for (int k=0; k<repositoryCount; k++) {
+                AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(k);
+                if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                    RemoteProductsRepositoryPanel remoteRepositoryPanel = (RemoteProductsRepositoryPanel)repositoryPanel;
+                    if (remoteRepositoryPanel.getProductsRepositoryProvider().getRepositoryId().equals(repositoryCredentials.getRepositoryId())) {
+                        remoteRepositoryPanel.setUserAccounts(repositoryCredentials.getCredentialsList());
+                    }
+                }
+            }
+        }
+        getAllLocalProductsRepositoryPanel().setLocalParameterValues(parameterValues);
+    }
+
     public ProgressBarHelperImpl getProgressBarHelper() {
         return progressBarHelper;
     }
@@ -131,6 +151,9 @@ public class RepositorySelectionPanel extends JPanel {
         this.searchButton.setEnabled(enabled);
         this.repositoryLabel.setEnabled(enabled);
         this.repositoriesComboBox.setEnabled(enabled);
+        if (this.repositoryTopBarButton != null) {
+            this.repositoryTopBarButton.setEnabled(enabled);
+        }
         AbstractProductsRepositoryPanel selectedDataSource = getSelectedRepository();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);
@@ -255,19 +278,24 @@ public class RepositorySelectionPanel extends JPanel {
         add(this.progressBarHelper.getStopButton(), c);
     }
 
-    public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
+    public static ImageIcon loadImage(String resourceImagePath) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL imageURL = classLoader.getResource(resourceImagePath);
         if (imageURL == null) {
             throw new NullPointerException("The image '"+resourceImagePath+"' does not exist into the sources.");
         }
-        ImageIcon icon = new ImageIcon(imageURL);
+        return new ImageIcon(imageURL);
+    }
+
+    public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
+        ImageIcon icon = loadImage(resourceImagePath);
         if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
             Image scaledImage = getScaledImage(icon.getImage(), buttonSize.width, buttonSize.height, scaledImagePadding.intValue());
             icon = new ImageIcon(scaledImage);
         }
         return icon;
     }
+
 
     public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
         ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);

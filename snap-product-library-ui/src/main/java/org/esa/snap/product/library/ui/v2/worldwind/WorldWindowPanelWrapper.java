@@ -8,6 +8,7 @@ import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import java.awt.Container;
@@ -15,8 +16,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.List;
 
 public class WorldWindowPanelWrapper extends JPanel {
 
@@ -37,19 +36,14 @@ public class WorldWindowPanelWrapper extends JPanel {
         add(circularProgressLabel, c);
     }
 
+    @Override
+    public Color getBackground() {
+        return isEnabled() ? super.getBackground() : UIManager.getColor("TextField.inactiveBackground");
+    }
+
     public void addWorldWindowPanelAsync(boolean flatWorld, boolean removeExtraLayers, PolygonMouseListener mouseListener) {
         InitWorldWindPanelRunnable thread = new InitWorldWindPanelRunnable(this, flatWorld, removeExtraLayers, mouseListener);
         thread.executeAsync(); // start the thread
-    }
-
-    public List<Path2D.Double> findPolygonsContainsPoint(double longitude, double latitude) {
-        List<Path2D.Double> polygonPaths;
-        if (this.worldWindowPanel == null) {
-            polygonPaths = Collections.emptyList();
-        } else {
-            polygonPaths = this.worldWindowPanel.getPolygonLayer().findPolygonsContainsPoint(longitude, latitude);
-        }
-        return polygonPaths;
     }
 
     public void clearSelectedArea() {
@@ -96,7 +90,8 @@ public class WorldWindowPanelWrapper extends JPanel {
 
         if (worldWindowPanel != null) {
             this.worldWindowPanel = worldWindowPanel;
-            this.worldWindowPanel.setBackgroundColor(getBackground());
+            //this.worldWindowPanel.setBackgroundColor(getBackground());
+            this.worldWindowPanel.setOpaque(false);
 
             GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
             add(this.worldWindowPanel, c);
