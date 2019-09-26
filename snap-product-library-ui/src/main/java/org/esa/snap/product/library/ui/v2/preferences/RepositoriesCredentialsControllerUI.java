@@ -56,9 +56,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
 
     static {
         try {
-            addButtonIcon = loadImageIcon("icons/list-add.png");
-            removeButtonIcon = loadImageIcon("icons/list-remove.png");
-            passwordSeeIcon = loadImageIcon("icons/password-see.png");
+            addButtonIcon = loadImageIcon("/tango/16x16/actions/list-add.png");
+            removeButtonIcon = loadImageIcon("/tango/16x16/actions/list-remove.png");
+            passwordSeeIcon = loadImageIcon("/org/esa/snap/rcp/icons/quicklook16.png");
         } catch (Exception ex) {
             logger.log(Level.WARNING, "Unable to load image resource. Details: " + ex.getMessage());
         }
@@ -85,7 +85,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private static ImageIcon loadImageIcon(String imagePath) {
-        URL imageURL = RepositoriesCredentialsControllerUI.class.getResource(imagePath);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL imageURL = classLoader.getResource(imagePath);
         return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 
@@ -107,7 +108,11 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         ServiceLoader.loadServices(serviceRegistry);
         Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
 
-        remoteRepositories.addAll(repositoryProductsProviders);
+        for (RemoteProductsRepositoryProvider repositoryProductsProvider : repositoryProductsProviders) {
+            if (repositoryProductsProvider.requiresAuthentication()) {
+                remoteRepositories.add(repositoryProductsProvider);
+            }
+        }
     }
 
     private List<Credentials> getRemoteRepositoryCredentials(String remoteRepositoryId) {
@@ -173,7 +178,6 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             try {
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
                 repositoriesCredentialsController.saveCredentials(createCopy(repositoriesCredentials));
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(credentialsListPanel, "Remote repositories credentials saved successfully.", "Save remote repositories credentials", JOptionPane.INFORMATION_MESSAGE));
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
                 JOptionPane.showMessageDialog(credentialsListPanel, SAVE_ERROR_MESSAGE, "Error saving remote repositories credentials", JOptionPane.ERROR_MESSAGE);
@@ -200,7 +204,37 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         if (repositoriesListTable.getSelectedRow() >= 0) {
             RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
             List<RepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
-            return !savedRepositoriesCredentials.equals(repositoriesCredentials);
+            if (savedRepositoriesCredentials.size() != repositoriesCredentials.size()) {
+                return true;
+            }
+            for (RepositoryCredentials savedRepositoryCredentials : savedRepositoriesCredentials) {
+                boolean repositoryChanged = true;
+                for (RepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+                    if (savedRepositoryCredentials.getRepositoryId().equals(repositoryCredentials.getRepositoryId()) && savedRepositoryCredentials.getCredentialsList().size() == repositoryCredentials.getCredentialsList().size()) {
+                        for (Credentials savedCredentials : savedRepositoryCredentials.getCredentialsList()) {
+                            boolean credentialChanged = true;
+                            for (Credentials credentials : repositoryCredentials.getCredentialsList()) {
+                                String savedUsername = savedCredentials.getUserPrincipal().getName();
+                                String username = credentials.getUserPrincipal().getName();
+                                String savedPassword = savedCredentials.getPassword();
+                                String password = credentials.getPassword();
+                                if (savedUsername.contentEquals(username) && savedPassword.contentEquals(password)) {
+                                    credentialChanged = false;
+                                    break;
+                                }
+                            }
+                            if (credentialChanged) {
+                                return true;
+                            }
+                        }
+                        repositoryChanged = false;
+                        break;
+                    }
+                }
+                if (repositoryChanged) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -257,8 +291,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         }
         RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
         Credentials newCredential = new RepositoryCredential("", "");
-        repositoryCredentials.add(newCredential);
-        repositoriesCredentialsTableModel.add(newCredential);
+        if (repositoriesCredentialsTableModel.add(newCredential)) {
+            repositoryCredentials.add(newCredential);
+        }
     }
 
     /**
@@ -313,16 +348,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         return removeCredentialButton;
     }
 
-    /**
-     * Creates and gets the remote repository credentials table.
-     *
-     * @return The remote repository credentials table
-     */
-    private JTable buildCredentialsListTable() {
-        JTable newCredentialsListTable = new JTable();
-        RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = new RepositoriesCredentialsTableModel(new ArrayList<>());
-        newCredentialsListTable.setModel(repositoriesCredentialsTableModel);
-        newCredentialsListTable.setDefaultRenderer(JTextField.class, new DefaultTableCellRenderer() {
+    private DefaultTableCellRenderer buildTextCellRenderer() {
+        return new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
                 JTextField textField = (JTextField) value;
@@ -335,28 +362,20 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 }
                 return textField;
             }
-        });
-        newCredentialsListTable.setDefaultRenderer(JPasswordField.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-                JPasswordField passwordField = (JPasswordField) value;
-                if (isSelected) {
-                    passwordField.setForeground(table.getSelectionForeground());
-                    passwordField.setBackground(table.getSelectionBackground());
-                } else {
-                    passwordField.setForeground(table.getForeground());
-                    passwordField.setBackground(table.getBackground());
-                }
-                return passwordField;
-            }
-        });
-        newCredentialsListTable.setDefaultRenderer(JButton.class, new DefaultTableCellRenderer() {
+        };
+    }
+
+    private DefaultTableCellRenderer buildButtonCellRenderer() {
+        return new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
                 return (JButton) value;
             }
-        });
-        DefaultCellEditor usernameCellEditor = new DefaultCellEditor(new JTextField()) {
+        };
+    }
+
+    private DefaultCellEditor buildTextCellEditor(JTextField textField) {
+        DefaultCellEditor textCellEditor = new DefaultCellEditor(textField) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                 JTextField textField = (JTextField) value;
@@ -371,26 +390,12 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 return true;
             }
         };
-        usernameCellEditor.setClickCountToStart(1);
-        newCredentialsListTable.setDefaultEditor(JTextField.class, usernameCellEditor);
-        DefaultCellEditor passwordCellEditor = new DefaultCellEditor(new JPasswordField()) {
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                JPasswordField passwordField = (JPasswordField) value;
-                passwordField.setForeground(table.getSelectionForeground());
-                passwordField.setBackground(table.getSelectionBackground());
-                return passwordField;
-            }
+        textCellEditor.setClickCountToStart(1);
+        return textCellEditor;
+    }
 
-            @Override
-            public boolean stopCellEditing() {
-                fireEditingStopped();
-                return true;
-            }
-        };
-        passwordCellEditor.setClickCountToStart(1);
-        newCredentialsListTable.setDefaultEditor(JPasswordField.class, passwordCellEditor);
-        DefaultCellEditor passwordSeeCellEditor = new DefaultCellEditor(new JTextField()) {
+    private DefaultCellEditor buildButtonCellEditor() {
+        DefaultCellEditor buttonCellEditor = new DefaultCellEditor(new JTextField()) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
                 return (JButton) value;
@@ -402,10 +407,28 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 return true;
             }
         };
-        passwordSeeCellEditor.setClickCountToStart(1);
-        newCredentialsListTable.setDefaultEditor(JButton.class, passwordSeeCellEditor);
+        buttonCellEditor.setClickCountToStart(1);
+        return buttonCellEditor;
+    }
+
+    /**
+     * Creates and gets the remote repository credentials table.
+     *
+     * @return The remote repository credentials table
+     */
+    private JTable buildCredentialsListTable() {
+        JTable newCredentialsListTable = new JTable();
+        RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = new RepositoriesCredentialsTableModel(new ArrayList<>());
+        newCredentialsListTable.setModel(repositoriesCredentialsTableModel);
+        newCredentialsListTable.setDefaultRenderer(JTextField.class, buildTextCellRenderer());
+        newCredentialsListTable.setDefaultRenderer(JPasswordField.class, buildTextCellRenderer());
+        newCredentialsListTable.setDefaultRenderer(JButton.class, buildButtonCellRenderer());
+        newCredentialsListTable.setDefaultEditor(JTextField.class, buildTextCellEditor(new JTextField()));
+        newCredentialsListTable.setDefaultEditor(JPasswordField.class, buildTextCellEditor(new JPasswordField()));
+        newCredentialsListTable.setDefaultEditor(JButton.class, buildButtonCellEditor());
         newCredentialsListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         newCredentialsListTable.getColumnModel().getColumn(RepositoriesCredentialsTableModel.REPO_CRED_PASS_SEE_COLUMN).setMaxWidth(20);
+        newCredentialsListTable.setRowHeight(new JTextField().getPreferredSize().height);
         return newCredentialsListTable;
     }
 
@@ -435,8 +458,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         credentialsListPanel = new JPanel();
         credentialsListPanel.setBorder(BorderFactory.createTitledBorder("Credentials List"));
         credentialsListPanel.setLayout(new BoxLayout(credentialsListPanel, BoxLayout.LINE_AXIS));
-        credentialsListPanel.add(buildCredentialsListActionsPanel());
         credentialsListPanel.add(credentialsListPanelSP);
+        credentialsListPanel.add(buildCredentialsListActionsPanel());
         return credentialsListPanel;
     }
 

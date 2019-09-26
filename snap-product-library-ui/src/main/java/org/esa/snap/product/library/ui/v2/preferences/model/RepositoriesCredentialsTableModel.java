@@ -23,7 +23,7 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
-    public static final int REPO_CRED_PASS_COLUMN = 1;
+    private static final int REPO_CRED_PASS_COLUMN = 1;
     /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
@@ -140,10 +140,15 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         return credentialsTableData.get(row).getCredentials();
     }
 
-    public void add(Credentials credential) {
+    public boolean add(Credentials credential) {
         boolean exists = false;
         for (CredentialsTableRow credentialsTableRow : credentialsTableData) {
-            if (credentialsTableRow.getCredentials().equals(credential)) {
+            Credentials savedCredential = credentialsTableRow.getCredentials();
+            String savedUsername = savedCredential.getUserPrincipal().getName();
+            String username = credential.getUserPrincipal().getName();
+            String savedPassword = savedCredential.getPassword();
+            String password = credential.getPassword();
+            if (savedUsername.contentEquals(username) && savedPassword.contentEquals(password)) {
                 exists = true;
                 break;
             }
@@ -153,7 +158,9 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
             credentialsTableData.add(credentialsTableRow);
             int row = credentialsTableData.indexOf(credentialsTableRow);
             fireTableRowsInserted(row, row);
+            return true;
         }
+        return false;
     }
 
     public void remove(int row) {
@@ -226,17 +233,11 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     passwordField.setEchoChar('\u0000');
-                    passwordField.revalidate();
-                    passwordField.repaint();
-                    System.out.println("mousePressed");
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
                     passwordField.setEchoChar('\u25cf');
-                    passwordField.revalidate();
-                    passwordField.repaint();
-                    System.out.println("mouseReleased");
                 }
             });
         }
@@ -257,4 +258,5 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
             return repositoryCredential;
         }
     }
+
 }
