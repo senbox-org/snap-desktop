@@ -5,13 +5,13 @@ import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,8 +20,6 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,10 +37,12 @@ public class ProductListPanel extends VerticalScrollablePanel {
     private final ComponentDimension componentDimension;
     private final Color backgroundColor;
     private final Color selectionBackgroundColor;
-    private final ProductListModel productListModel;
     private final MouseListener mouseListener;
     private final RepositorySelectionPanel repositorySelectionPanel;
     private final Set<RepositoryProductPanel> selectedProducts;
+    private final ProductListModel productListModel;
+    private final ImageIcon expandImageIcon;
+    private final ImageIcon collapseImageIcon;
 
     public ProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension) {
         super(null);
@@ -50,8 +50,26 @@ public class ProductListPanel extends VerticalScrollablePanel {
         this.repositorySelectionPanel = repositorySelectionPanel;
         this.componentDimension = componentDimension;
 
+        this.expandImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
+        this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
+
+        this.productListModel = new ProductListModel() {
+            @Override
+            protected void fireIntervalAdded(int startIndex, int endIndex) {
+                productsAdded(startIndex, endIndex);
+            }
+
+            @Override
+            protected void fireIntervalRemoved(int startIndex, int endIndex) {
+                productsRemoved(startIndex, endIndex);
+            }
+
+            @Override
+            protected void fireIntervalChanged(int startIndex, int endIndex) {
+                productsChanged(startIndex, endIndex);
+            }
+        };
         this.selectedProducts = new HashSet<>();
-        this.productListModel = new ProductListModel();
 
         JList list = new JList();
         this.backgroundColor = list.getBackground();
@@ -73,18 +91,69 @@ public class ProductListPanel extends VerticalScrollablePanel {
         setBackground(this.backgroundColor);
     }
 
-    public int getProductCount() {
-        return getComponentCount();
+    public void addProducts(List<RepositoryProduct> products) {
+        this.productListModel.addProducts(products);
     }
 
-    public void clearProducts() {
-        removeAll();
-        this.productListModel.clear();
-        this.selectedProducts.clear();
+    private void productsChanged(int startIndex, int endIndex) {
+        boolean fireListSelectionChanged = false;
+        for (int i=startIndex; i<=endIndex; i++) {
+            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+            repositoryProductPanel.refresh(i, this.productListModel);
+            if (this.selectedProducts.contains(repositoryProductPanel)) {
+                fireListSelectionChanged = true;
+            }
+        }
+        repaint();
+        firePropertyChange(LIST_DATA_CHANGED, null, null);
+        if (fireListSelectionChanged) {
+            firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+        }
+    }
+
+    private void productsAdded(int startIndex, int endIndex) {
+        for (int i=startIndex; i<=endIndex; i++) {
+            RepositoryProductPanel repositoryProductPanel = new RepositoryProductPanel(this.componentDimension, this.expandImageIcon, this.collapseImageIcon) {
+                @Override
+                public Color getBackground() {
+                    return getProductPanelBackground(this);
+                }
+            };
+            repositoryProductPanel.setOpaque(true);
+            repositoryProductPanel.setBackground(this.backgroundColor);
+            repositoryProductPanel.addMouseListener(this.mouseListener);
+            add(repositoryProductPanel);
+
+            repositoryProductPanel.refresh(i, this.productListModel);
+        }
         revalidate();
         repaint();
         firePropertyChange(LIST_DATA_CHANGED, null, null);
-        firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+    }
+
+    private void productsRemoved(int startIndex, int endIndex) {
+        boolean fireListSelectionChanged = false;
+        for (int i=endIndex; i>=startIndex; i--) {
+            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+            if (this.selectedProducts.remove(repositoryProductPanel)) {
+                fireListSelectionChanged = true;
+            }
+            remove(i);
+        }
+        revalidate();
+        repaint();
+        firePropertyChange(LIST_DATA_CHANGED, null, null);
+        if (fireListSelectionChanged) {
+            firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+        }
+    }
+
+    public int getProductCount() {
+        return this.productListModel.getProductCount();
+    }
+
+    public void clearProducts() {
+        this.productListModel.clear();
     }
 
     public RepositoryProduct[] getSelectedProducts() {
@@ -92,95 +161,50 @@ public class ProductListPanel extends VerticalScrollablePanel {
         for (int i=0, k=0; i<getComponentCount(); i++) {
             RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
             if (this.selectedProducts.contains(repositoryProductPanel)) {
-                selectedProducts[k++] = repositoryProductPanel.getProduct();
+                selectedProducts[k++] = this.productListModel.getProductAt(i);
             }
         }
         return selectedProducts;
     }
 
     public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
-        RepositoryProductPanel repositoryProductPanel = findExistingRepositoryProductPanel(repositoryProduct);
-        repositoryProductPanel.getProduct().setQuickLookImage(quickLookImage);
-        repositoryProductPanel.updateQuickLookImage();
-    }
-
-    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short percent) {
-        this.productListModel.setProductDownloadPercent(repositoryProduct, percent);
-        RepositoryProductPanel repositoryProductPanel = findExistingRepositoryProductPanel(repositoryProduct);
-        repositoryProductPanel.updateDownloadingPercent(this.productListModel);
-    }
-
-    public void addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
-        this.productListModel.addPendingDownloadProducts(pendingProducts);
-        for (int i=0; i<pendingProducts.length; i++) {
-            RepositoryProductPanel repositoryProductPanel = findExistingRepositoryProductPanel(pendingProducts[i]);
-            repositoryProductPanel.updateDownloadingPercent(this.productListModel);
-        }
+        this.productListModel.setProductQuickLookImage(repositoryProduct, quickLookImage);
     }
 
     public void removePendingDownloadProducts() {
-        List<RepositoryProduct> pendingProducts = this.productListModel.removePendingDownloadProducts();
-        for (int i=0; i<pendingProducts.size(); i++) {
-            RepositoryProductPanel repositoryProductPanel = findExistingRepositoryProductPanel(pendingProducts.get(i));
-            repositoryProductPanel.updateDownloadingPercent(this.productListModel);
-        }
+        this.productListModel.removePendingDownloadProducts();
     }
 
-    private RepositoryProductPanel findExistingRepositoryProductPanel(RepositoryProduct repositoryProduct) {
-        for (int i=0; i<getComponentCount(); i++) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
-            if (repositoryProductPanel.getProduct() == repositoryProduct) {
-                return repositoryProductPanel;
-            }
-        }
-        throw new IllegalArgumentException("The repository product '"+repositoryProduct.getName()+"' does not exist into the list.");
+    public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
+        return this.productListModel.addPendingDownloadProducts(pendingProducts);
     }
 
-    public void addProducts(List<RepositoryProduct> products) {
-        for (int i=0; i<products.size(); i++) {
-            RepositoryProductPanel repositoryProductPanel = new RepositoryProductPanel(this.componentDimension) {
-                @Override
-                public Color getBackground() {
-                    return getProductPanelBackground(this);
-                }
-            };
-            RepositoryProduct repositoryProduct = products.get(i);
-            repositoryProductPanel.setProduct(repositoryProduct, this.productListModel);
-
-            repositoryProductPanel.setOpaque(true);
-            repositoryProductPanel.setBackground(this.backgroundColor);
-            repositoryProductPanel.addMouseListener(this.mouseListener);
-            add(repositoryProductPanel);
-        }
-        revalidate();
-        repaint();
-        firePropertyChange(LIST_DATA_CHANGED, null, null);
+    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
+        this.productListModel.setProductDownloadPercent(repositoryProduct, progressPercent);
     }
 
     public void setProducts(List<RepositoryProduct> products) {
-        removeAll();
+        clearProducts();
         addProducts(products);
     }
 
     public Path2D.Double[] getPolygonPaths() {
-        Path2D.Double[] polygonPaths = new Path2D.Double[getComponentCount()];
+        Path2D.Double[] polygonPaths = new Path2D.Double[this.productListModel.getProductCount()];
         for (int i=0; i<getComponentCount(); i++) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
-            polygonPaths[i] = repositoryProductPanel.getProduct().getPolygon().getPath();
+            polygonPaths[i] = this.productListModel.getProductAt(i).getPolygon().getPath();
         }
         return polygonPaths;
     }
 
     public void selectProductsByPolygonPath(List<Path2D.Double> polygonPaths) {
         int count = 0;
-        int productListSize = getComponentCount();
+        int productListSize = this.productListModel.getProductCount();
         for (int k=0; k<polygonPaths.size(); k++) {
             RepositoryProductPanel foundRepositoryProductPanel = null;
             for (int i=0; i<productListSize && foundRepositoryProductPanel == null; i++) {
-                RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
-                Polygon2D polygon = repositoryProductPanel.getProduct().getPolygon();
+                Polygon2D polygon = this.productListModel.getProductAt(i).getPolygon();
                 if (polygon.getPath() == polygonPaths.get(k)) {
-                    foundRepositoryProductPanel = repositoryProductPanel;
+                    foundRepositoryProductPanel = (RepositoryProductPanel) getComponent(i);
                 }
             }
             if (foundRepositoryProductPanel != null) {
@@ -200,10 +224,12 @@ public class ProductListPanel extends VerticalScrollablePanel {
 
     private void rightMouseClicked(MouseEvent mouseEvent) {
         RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) mouseEvent.getSource();
-        this.selectedProducts.clear();
-        this.selectedProducts.add(repositoryProductPanel);
-        repaint();
-
+        if (!this.selectedProducts.contains(repositoryProductPanel)) {
+            this.selectedProducts.clear();
+            this.selectedProducts.add(repositoryProductPanel);
+            repaint();
+            firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+        }
         showProductsPopupMenu(repositoryProductPanel, mouseEvent.getX(), mouseEvent.getY());
     }
 
@@ -248,7 +274,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
                         return o1.getName().compareToIgnoreCase(o2.getName());
                     }
                 };
-                sortProducts(comparator);
+                productListModel.sortProducts(comparator);
             }
         });
         JMenuItem acquisitionDateMenuItem = new JMenuItem("Acquisition Date");
@@ -271,7 +297,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
                         return acquisitionDate1.compareTo(acquisitionDate2);
                     }
                 };
-                sortProducts(comparator);
+                productListModel.sortProducts(comparator);
             }
         });
         JMenuItem missionMenuItem = new JMenuItem("Mission");
@@ -283,7 +309,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
                         return o1.getMission().compareToIgnoreCase(o2.getMission());
                     }
                 };
-                sortProducts(comparator);
+                productListModel.sortProducts(comparator);
             }
         });
         JMenuItem fileSizeMenuItem = new JMenuItem("File Size");
@@ -303,7 +329,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
                         return 1;
                     }
                 };
-                sortProducts(comparator);
+                productListModel.sortProducts(comparator);
             }
         });
         sortMenu.add(productNameMenuItem);
@@ -315,19 +341,5 @@ public class ProductListPanel extends VerticalScrollablePanel {
         popup.add(sortMenu);
 
         popup.show(repositoryProductPanel, mouseX, mouseY);
-    }
-
-    private void sortProducts(Comparator<RepositoryProduct> comparator) {
-        List<RepositoryProduct> productList = new ArrayList<>(getComponentCount());
-        for (int i=0; i<getComponentCount(); i++) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
-            productList.add(repositoryProductPanel.getProduct());
-        }
-        Collections.sort(productList, comparator);
-        for (int i=0; i<productList.size(); i++) {
-            RepositoryProduct repositoryProduct = productList.get(i);
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
-            repositoryProductPanel.setProduct(repositoryProduct, productListModel);
-        }
     }
 }

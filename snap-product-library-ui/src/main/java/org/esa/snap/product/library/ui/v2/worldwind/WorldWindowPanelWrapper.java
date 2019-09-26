@@ -42,16 +42,6 @@ public class WorldWindowPanelWrapper extends JPanel {
         thread.executeAsync(); // start the thread
     }
 
-    public List<Path2D.Double> findPolygonsContainsPoint(double longitude, double latitude) {
-        List<Path2D.Double> polygonPaths;
-        if (this.worldWindowPanel == null) {
-            polygonPaths = Collections.emptyList();
-        } else {
-            polygonPaths = this.worldWindowPanel.getPolygonLayer().findPolygonsContainsPoint(longitude, latitude);
-        }
-        return polygonPaths;
-    }
-
     public void clearSelectedArea() {
         if (this.worldWindowPanel != null) {
             this.worldWindowPanel.clearSelectedArea();

@@ -79,8 +79,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 WorldWindowPanel.this.setCursor((cursor == null) ? Cursor.getDefaultCursor() : cursor);
             }
         };
-        this.selector.setInteriorColor(new Color(1f, 1f, 1f, 0.1f));
-        this.selector.setBorderColor(new Color(1f, 0f, 0f, 0.5f));
+        this.selector.setInteriorColor(new Color(1f, 0f, 0.0f, 0.4f));
+        this.selector.setBorderColor(new Color(1f, 0f, 0f, 1f));
         this.selector.setBorderWidth(2);
 
         addMouseListener(new MouseAdapter() {

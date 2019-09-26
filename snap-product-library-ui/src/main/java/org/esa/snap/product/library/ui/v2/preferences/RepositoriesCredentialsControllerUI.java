@@ -356,40 +356,13 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 return (JButton) value;
             }
         });
-        DefaultCellEditor usernameCellEditor = new DefaultCellEditor(new JTextField()) {
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                JTextField textField = (JTextField) value;
-                textField.setForeground(table.getSelectionForeground());
-                textField.setBackground(table.getSelectionBackground());
-                return textField;
-            }
 
-            @Override
-            public boolean stopCellEditing() {
-                fireEditingStopped();
-                return true;
-            }
-        };
-        usernameCellEditor.setClickCountToStart(1);
+        DefaultCellEditor usernameCellEditor = buildCellEditor(new JTextField());
         newCredentialsListTable.setDefaultEditor(JTextField.class, usernameCellEditor);
-        DefaultCellEditor passwordCellEditor = new DefaultCellEditor(new JPasswordField()) {
-            @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                JPasswordField passwordField = (JPasswordField) value;
-                passwordField.setForeground(table.getSelectionForeground());
-                passwordField.setBackground(table.getSelectionBackground());
-                return passwordField;
-            }
 
-            @Override
-            public boolean stopCellEditing() {
-                fireEditingStopped();
-                return true;
-            }
-        };
-        passwordCellEditor.setClickCountToStart(1);
+        DefaultCellEditor passwordCellEditor = buildCellEditor(new JPasswordField());
         newCredentialsListTable.setDefaultEditor(JPasswordField.class, passwordCellEditor);
+
         DefaultCellEditor passwordSeeCellEditor = new DefaultCellEditor(new JTextField()) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
@@ -407,6 +380,26 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         newCredentialsListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         newCredentialsListTable.getColumnModel().getColumn(RepositoriesCredentialsTableModel.REPO_CRED_PASS_SEE_COLUMN).setMaxWidth(20);
         return newCredentialsListTable;
+    }
+
+    private DefaultCellEditor buildCellEditor(JTextField textField) {
+        DefaultCellEditor defaultCellEditor = new DefaultCellEditor(textField) {
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                JTextField textField = (JTextField) value;
+                textField.setForeground(table.getSelectionForeground());
+                textField.setBackground(table.getSelectionBackground());
+                return textField;
+            }
+
+            @Override
+            public boolean stopCellEditing() {
+                fireEditingStopped();
+                return true;
+            }
+        };
+        defaultCellEditor.setClickCountToStart(1);
+        return defaultCellEditor;
     }
 
     /**

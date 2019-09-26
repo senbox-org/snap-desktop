@@ -3,7 +3,6 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
-import org.esa.snap.product.library.ui.v2.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
@@ -25,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -53,7 +51,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.missionParameterListener = missionParameterListener;
 
-        if (this.productsRepositoryProvider.hasAuthentication()) {
+        if (this.productsRepositoryProvider.requiresAuthentication()) {
             this.userAccountsComboBox = buildComboBox(componentDimension);
             int cellItemHeight = this.userAccountsComboBox.getPreferredSize().height;
             LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(cellItemHeight) {
@@ -63,10 +61,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 }
             };
             this.userAccountsComboBox.setRenderer(renderer);
-            List<Credentials> credentials = RemoteRepositoryCredentials.getInstance().getRepositoryCredentials(productsRepositoryProvider.getRepositoryId());
-            for (int i=0; i<credentials.size(); i++) {
-                this.userAccountsComboBox.addItem(credentials.get(i));
-            }
         } else {
             this.userAccountsComboBox = null;
         }
@@ -116,6 +110,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         Credentials selectedCredentials = null;
         boolean canContinue = true;
         if (this.userAccountsComboBox != null) {
+            // the repository provider requires authentication
             selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
             if (selectedCredentials == null) {
                 String message = "Select the account used to download the data.";
@@ -195,6 +190,14 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
         return productsRepositoryProvider;
+    }
+
+    public void setUserAccounts(List<Credentials> repositoryCredentials) {
+        if (this.userAccountsComboBox != null) {
+            for (int i = 0; i < repositoryCredentials.size(); i++) {
+                this.userAccountsComboBox.addItem(repositoryCredentials.get(i));
+            }
+        }
     }
 
     private String getSelectedMission() {
