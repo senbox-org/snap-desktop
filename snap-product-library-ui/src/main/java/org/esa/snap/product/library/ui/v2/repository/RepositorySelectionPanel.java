@@ -222,12 +222,12 @@ public class RepositorySelectionPanel extends JPanel {
         });
     }
 
-    public void setOpenAndDeleteLocalProductListeners(ActionListener openLocalProductListener, ActionListener deleteLocalProductListener) {
+    public void setOpenAndDeleteLocalProductListeners(ActionListener openLocalProductListener, ActionListener deleteLocalProductListener, ActionListener batchProcessingListener) {
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
         for (int i=0; i<model.getSize(); i++) {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
-                ((AllLocalProductsRepositoryPanel)repositoryPanel).setOpenAndDeleteProductListeners(openLocalProductListener, deleteLocalProductListener);
+                ((AllLocalProductsRepositoryPanel)repositoryPanel).setOpenAndDeleteProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener);
             }
         }
     }
