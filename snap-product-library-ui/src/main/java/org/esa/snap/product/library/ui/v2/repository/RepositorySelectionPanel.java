@@ -7,7 +7,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -90,10 +90,10 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     public void setInputData(LocalParameterValues parameterValues) {
-        List<RepositoryCredentials> repositoriesCredentials = parameterValues.getRepositoriesCredentials();
+        List<RemoteRepositoryCredentials> repositoriesCredentials = parameterValues.getRepositoriesCredentials();
         int repositoryCount = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<repositoriesCredentials.size(); i++) {
-            RepositoryCredentials repositoryCredentials = repositoriesCredentials.get(i);
+            RemoteRepositoryCredentials repositoryCredentials = repositoriesCredentials.get(i);
             for (int k=0; k<repositoryCount; k++) {
                 AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(k);
                 if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {

@@ -89,6 +89,11 @@
         </dependency>
 
         <dependency>
+            <groupId>ro.cs.tao</groupId>
+            <artifactId>tao-utils</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>gov.nasa</groupId>
             <artifactId>worldwind</artifactId>
             <version>2.1.0</version>

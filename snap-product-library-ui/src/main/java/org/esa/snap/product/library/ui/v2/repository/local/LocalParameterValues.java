@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.v2.database.RemoteMission;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 
 import java.util.List;
 import java.util.Map;
@@ -12,11 +12,11 @@ import java.util.Set;
  */
 public class LocalParameterValues {
 
-    private final List<RepositoryCredentials> repositoriesCredentials;
+    private final List<RemoteRepositoryCredentials> repositoriesCredentials;
     private final List<RemoteMission> missions;
     private final Map<Short, Set<String>> attributes;
 
-    public LocalParameterValues(List<RepositoryCredentials> repositoriesCredentials, List<RemoteMission> missions, Map<Short, Set<String>> attributes) {
+    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, List<RemoteMission> missions, Map<Short, Set<String>> attributes) {
         this.repositoriesCredentials = repositoriesCredentials;
         this.missions = missions;
         this.attributes = attributes;
@@ -30,7 +30,7 @@ public class LocalParameterValues {
         return attributes;
     }
 
-    public List<RepositoryCredentials> getRepositoriesCredentials() {
+    public List<RemoteRepositoryCredentials> getRepositoriesCredentials() {
         return repositoriesCredentials;
     }
 }

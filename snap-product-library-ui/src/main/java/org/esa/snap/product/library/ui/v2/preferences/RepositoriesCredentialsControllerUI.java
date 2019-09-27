@@ -8,9 +8,8 @@ import org.apache.http.auth.Credentials;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
-import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredential;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -69,7 +68,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     private final List<RemoteProductsRepositoryProvider> remoteRepositories = new ArrayList<>();
     private JPanel credentialsListPanel;
     private RepositoriesCredentialsBean repositoriesCredentialsBean = new RepositoriesCredentialsBean();
-    private List<RepositoryCredentials> repositoriesCredentials;
+    private List<RemoteRepositoryCredentials> repositoriesCredentials;
     private boolean isInitialized = false;
 
     public RepositoriesCredentialsControllerUI() {
@@ -90,14 +89,15 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         return (imageURL == null) ? null : new ImageIcon(imageURL);
     }
 
-    private static List<RepositoryCredentials> createCopy(List<RepositoryCredentials> repositoriesCredentialsSource) {
-        List<RepositoryCredentials> repositoriesCredentialsCopy = new ArrayList<>();
-        for (RepositoryCredentials repositoryCredentialsSource : repositoriesCredentialsSource) {
+    private static List<RemoteRepositoryCredentials> createCopy(List<RemoteRepositoryCredentials> repositoriesCredentialsSource) {
+        List<RemoteRepositoryCredentials> repositoriesCredentialsCopy = new ArrayList<>();
+        for (RemoteRepositoryCredentials repositoryCredentialsSource : repositoriesCredentialsSource) {
             List<Credentials> credentialsCopy = new ArrayList<>();
             for (Credentials credentialsSource : repositoryCredentialsSource.getCredentialsList()) {
-                credentialsCopy.add(new RepositoryCredential(credentialsSource));
+                UserCredential repositoryCredential = new UserCredential(credentialsSource.getUserPrincipal().getName(), credentialsSource.getPassword());
+                credentialsCopy.add(repositoryCredential);
             }
-            repositoriesCredentialsCopy.add(new RepositoryCredentials(repositoryCredentialsSource.getRepositoryId(), credentialsCopy));
+            repositoriesCredentialsCopy.add(new RemoteRepositoryCredentials(repositoryCredentialsSource.getRepositoryId(), credentialsCopy));
         }
         return repositoriesCredentialsCopy;
     }
@@ -116,7 +116,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private List<Credentials> getRemoteRepositoryCredentials(String remoteRepositoryId) {
-        for (RepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
             if (repositoryCredentials.getRepositoryId().contentEquals(remoteRepositoryId)) {
                 return repositoryCredentials.getCredentialsList();
             }
@@ -125,7 +125,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private void cleanupRemoteRepositories() {
-        for (RepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
             if (repositoryCredentials.getCredentialsList().isEmpty()) {
                 repositoriesCredentials.remove(repositoryCredentials);
                 break;
@@ -203,13 +203,13 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     public boolean isChanged() {
         if (repositoriesListTable.getSelectedRow() >= 0) {
             RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
-            List<RepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
+            List<RemoteRepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
             if (savedRepositoriesCredentials.size() != repositoriesCredentials.size()) {
                 return true;
             }
-            for (RepositoryCredentials savedRepositoryCredentials : savedRepositoriesCredentials) {
+            for (RemoteRepositoryCredentials savedRepositoryCredentials : savedRepositoriesCredentials) {
                 boolean repositoryChanged = true;
-                for (RepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+                for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
                     if (savedRepositoryCredentials.getRepositoryId().equals(repositoryCredentials.getRepositoryId()) && savedRepositoryCredentials.getCredentialsList().size() == repositoryCredentials.getCredentialsList().size()) {
                         for (Credentials savedCredentials : savedRepositoryCredentials.getCredentialsList()) {
                             boolean credentialChanged = true;
@@ -287,10 +287,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         if (repositoryCredentials == null) {
             // the repository not exists, so it wil be created with empty Credentials list
             repositoryCredentials = new ArrayList<>();
-            repositoriesCredentials.add(new RepositoryCredentials(remoteRepositoryId, repositoryCredentials));
+            repositoriesCredentials.add(new RemoteRepositoryCredentials(remoteRepositoryId, repositoryCredentials));
         }
         RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
-        Credentials newCredential = new RepositoryCredential("", "");
+        Credentials newCredential = new UserCredential("", "");
         if (repositoriesCredentialsTableModel.add(newCredential)) {
             repositoryCredentials.add(newCredential);
         }

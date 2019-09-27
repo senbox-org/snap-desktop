@@ -2,7 +2,6 @@ package org.esa.snap.product.library.ui.v2.preferences.model;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredential;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -184,13 +183,13 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     }
 
     private class CredentialsTableRow {
-        private RepositoryCredential repositoryCredential;
+        private UserCredential repositoryCredential;
         private JTextField textField;
         private JPasswordField passwordField;
         private JButton button;
 
         CredentialsTableRow(Credentials credential) {
-            this.repositoryCredential = (RepositoryCredential) credential;
+            this.repositoryCredential = (UserCredential) credential;
             this.textField = new JTextField();
             PlainDocument usernameDocument = new PlainDocument() {
                 @Override

@@ -2,17 +2,15 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.database.DatabaseTableNames;
 import org.esa.snap.product.library.v2.database.H2DatabaseAccessor;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
-import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
-import org.esa.snap.product.library.v2.preferences.model.RepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,7 +28,7 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
 
     @Override
     protected LocalParameterValues execute() throws Exception {
-        List<RepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
+        List<RemoteRepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
         Map<Short, Set<String>> attributeNamesPerMission;
         List<RemoteMission> missions;
         try (Connection connection = H2DatabaseAccessor.getConnection()) {
