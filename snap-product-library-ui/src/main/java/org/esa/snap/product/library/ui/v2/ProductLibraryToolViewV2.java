@@ -20,6 +20,9 @@ import com.bc.ceres.core.ServiceRegistryManager;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
+import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
+import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
@@ -51,6 +54,7 @@ import org.openide.windows.TopComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
@@ -158,6 +162,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return this.textFieldPreferredHeight;
     }
 
+    private void refreshUserAccounts() {
+        List<RemoteRepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
+        this.repositorySelectionPanel.refreshUserAccounts(repositoriesCredentials);
+    }
+
     private void initialize() {
         this.appContext = SnapApp.getDefault().getAppContext();
         String lastFolderPath = this.appContext.getPreferences().getPropertyString(PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH, null);
@@ -187,6 +196,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         add(this.horizontalSplitPane, BorderLayout.CENTER);
 
         this.repositorySelectionPanel.refreshRepositoryParameterComponents();
+
+        this.appContext.getApplicationWindow().addPropertyChangeListener(RepositoriesCredentialsControllerUI.REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshUserAccounts();
+                    }
+                });
+            }
+        });
 
         this.downloadRemoteProductsQueue = new DownloadRemoteProductsQueue();
     }

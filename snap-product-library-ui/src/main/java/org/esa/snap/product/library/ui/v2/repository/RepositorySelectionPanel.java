@@ -89,8 +89,7 @@ public class RepositorySelectionPanel extends JPanel {
         addComponents();
     }
 
-    public void setInputData(LocalParameterValues parameterValues) {
-        List<RemoteRepositoryCredentials> repositoriesCredentials = parameterValues.getRepositoriesCredentials();
+    public void refreshUserAccounts(List<RemoteRepositoryCredentials> repositoriesCredentials) {
         int repositoryCount = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<repositoriesCredentials.size(); i++) {
             RemoteRepositoryCredentials repositoryCredentials = repositoriesCredentials.get(i);
@@ -104,7 +103,13 @@ public class RepositorySelectionPanel extends JPanel {
                 }
             }
         }
-        getAllLocalProductsRepositoryPanel().setLocalParameterValues(parameterValues);
+    }
+
+    public void setInputData(LocalParameterValues parameterValues) {
+        if (parameterValues.getRepositoriesCredentials() != null) {
+            refreshUserAccounts(parameterValues.getRepositoriesCredentials());
+        }
+        getAllLocalProductsRepositoryPanel().setLocalParameterValues(parameterValues.getMissions(), parameterValues.getAttributes());
     }
 
     public ProgressBarHelperImpl getProgressBarHelper() {

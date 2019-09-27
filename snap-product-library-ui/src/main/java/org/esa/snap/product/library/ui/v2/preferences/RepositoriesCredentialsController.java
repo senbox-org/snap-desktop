@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.preferences;
 
-import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.runtime.EngineConfig;
 
@@ -25,7 +24,7 @@ public class RepositoriesCredentialsController {
     private static Logger logger = Logger.getLogger(RepositoriesCredentialsController.class.getName());
 
     private final Path plConfigFile;
-    private List<RemoteRepositoryCredentials> repositoriesCredentials = new ArrayList<>();
+    private List<RemoteRepositoryCredentials> repositoriesCredentials;
 
 
     /**
@@ -33,6 +32,7 @@ public class RepositoriesCredentialsController {
      */
     private RepositoriesCredentialsController(Path plConfigFile) {
         this.plConfigFile = plConfigFile;
+        this.repositoriesCredentials = new ArrayList<>();
         try {
             this.repositoriesCredentials = RepositoriesCredentialsPersistence.load(this.plConfigFile);
         } catch (IOException e) {
@@ -48,10 +48,6 @@ public class RepositoriesCredentialsController {
         return instance;
     }
 
-    public static RepositoriesCredentialsController getCustomInstance(Path plConfigFile) {
-        return new RepositoriesCredentialsController(plConfigFile);
-    }
-
     public List<RemoteRepositoryCredentials> getRepositoriesCredentials() {
         return this.repositoriesCredentials;
     }
@@ -63,20 +59,4 @@ public class RepositoriesCredentialsController {
         this.repositoriesCredentials = repositoriesCredentialsForSave;
         RepositoriesCredentialsPersistence.save(this.plConfigFile, this.repositoriesCredentials);
     }
-
-    /**
-     * Gets the list of remote repository credentials.
-     *
-     * @param remoteRepositoryId The remote repository id
-     * @return The list of remote repository properties
-     */
-    public List<Credentials> getRemoteRepositoryCredentials(String remoteRepositoryId) {
-        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
-            if (repositoryCredentials.getRepositoryId().contentEquals(remoteRepositoryId)) {
-                return repositoryCredentials.getCredentialsList();
-            }
-        }
-        return new ArrayList<>();
-    }
-
 }

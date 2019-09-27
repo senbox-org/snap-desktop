@@ -192,18 +192,16 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.batchProcessingListener = batchProcessingListener;
     }
 
-    public void setLocalParameterValues(LocalParameterValues parameterValues) {
-        List<RemoteMission> missions = parameterValues.getMissions();
-        if (missions.size() > 0) {
+    public void setLocalParameterValues(List<RemoteMission> missions, Map<Short, Set<String>> attributeNamesPerMission) {
+        if (missions != null && missions.size() > 0) {
             this.missionsComboBox.addItem(null);
             for (int i = 0; i < missions.size(); i++) {
                 this.missionsComboBox.addItem(missions.get(i));
             }
         }
-        Map<Short, Set<String>> attributes = parameterValues.getAttributes();
-        if (attributes.size() > 0) {
+        if (attributeNamesPerMission != null && attributeNamesPerMission.size() > 0) {
             Set<String> uniqueAttributes = new HashSet<>();
-            for (Map.Entry<Short, Set<String>> entry : attributes.entrySet()) {
+            for (Map.Entry<Short, Set<String>> entry : attributeNamesPerMission.entrySet()) {
                 uniqueAttributes.addAll(entry.getValue());
             }
             for (String attributeName : uniqueAttributes) {

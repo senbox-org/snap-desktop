@@ -203,10 +203,12 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     public void setUserAccounts(List<Credentials> repositoryCredentials) {
-        if (this.userAccountsComboBox != null) {
+        if (this.userAccountsComboBox != null && repositoryCredentials.size() > 0) {
+            this.userAccountsComboBox.removeAllItems();
             for (int i = 0; i < repositoryCredentials.size(); i++) {
                 this.userAccountsComboBox.addItem(repositoryCredentials.get(i));
             }
+            this.userAccountsComboBox.setSelectedItem(null);
         }
     }
 

@@ -10,9 +10,11 @@ import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredenti
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.ui.AppContext;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -47,6 +49,7 @@ import java.util.logging.Logger;
 public class RepositoriesCredentialsControllerUI extends DefaultConfigController {
 
     private static final String SAVE_ERROR_MESSAGE = "Unable to save Remote Repositories Credentials to SNAP configuration file.";
+    public static final String REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS = "remoteProductsRepositoryCredentials";
 
     private static Logger logger = Logger.getLogger(RepositoriesCredentialsControllerUI.class.getName());
     private static ImageIcon addButtonIcon;
@@ -178,6 +181,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             try {
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
                 repositoriesCredentialsController.saveCredentials(createCopy(repositoriesCredentials));
+
+                AppContext appContext = SnapApp.getDefault().getAppContext();
+                appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
                 JOptionPane.showMessageDialog(credentialsListPanel, SAVE_ERROR_MESSAGE, "Error saving remote repositories credentials", JOptionPane.ERROR_MESSAGE);
