@@ -46,6 +46,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     private ActionListener openProductListener;
     private ActionListener deleteProductListener;
+    private ActionListener batchProcessingListener;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
@@ -149,9 +150,12 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         openMenuItem.addActionListener(this.openProductListener);
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
         deleteMenuItem.addActionListener(this.deleteProductListener);
+        JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing");
+        batchProcessingMenuItem.addActionListener(this.batchProcessingListener);
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(openMenuItem);
         popupMenu.add(deleteMenuItem);
+        popupMenu.add(batchProcessingMenuItem);
         return popupMenu;
     }
 
@@ -172,9 +176,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    public void setOpenAndDeleteProductListeners(ActionListener openProductListener, ActionListener deleteProductListener) {
+    public void setOpenAndDeleteProductListeners(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener) {
         this.openProductListener = openProductListener;
         this.deleteProductListener = deleteProductListener;
+        this.batchProcessingListener = batchProcessingListener;
     }
 
     public void setLocalParameterValues(LocalParameterValues parameterValues) {

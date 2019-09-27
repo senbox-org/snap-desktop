@@ -19,6 +19,7 @@ import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
@@ -31,6 +32,7 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -61,6 +63,7 @@ import java.awt.event.ItemListener;
 import java.awt.geom.Path2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -302,7 +305,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             public void actionPerformed(ActionEvent actionEvent) {
             }
         };
-        this.repositorySelectionPanel.setOpenAndDeleteLocalProductListeners(openLocalProductListener, deleteLocalProductListener);
+        ActionListener batchProcessingListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                openBatchProcessingDialog();
+            }
+        };
+        this.repositorySelectionPanel.setOpenAndDeleteLocalProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -325,6 +334,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void openBatchProcessingDialog(){
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        File[] selectedProductsFiles = new File[selectedProducts.length];
+        for (int i = 0; i < selectedProducts.length; i++) {
+            selectedProductsFiles[i] = ((LocalRepositoryProduct) selectedProducts[i]).getPath().toFile();
+        }
+        final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
+                "Batch Processing", "batchProcessing", false);
+        batchDlg.setInputFiles(selectedProductsFiles);
+        batchDlg.show();
     }
 
     private void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {
