@@ -1,9 +1,9 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository.remote;
 
 /**
  * Created by jcoravu on 13/9/2019.
  */
-public class ProgressPercent {
+public class DownloadProgressStatus {
 
     public static final byte PENDING_DOWNLOAD = 1;
     public static final byte DOWNLOADING = 2;
@@ -14,7 +14,7 @@ public class ProgressPercent {
     private short value;
     private byte status;
 
-    public ProgressPercent() {
+    public DownloadProgressStatus() {
         this.value = 0;
         this.status = PENDING_DOWNLOAD;
     }

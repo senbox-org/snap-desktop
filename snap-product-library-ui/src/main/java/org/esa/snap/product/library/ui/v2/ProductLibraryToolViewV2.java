@@ -22,6 +22,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
+import org.esa.snap.product.library.ui.v2.repository.local.OpenProductRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
@@ -315,15 +316,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void openSelectedProducts() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
-        String productPath = selectedProducts[0].getDownloadURL();
-        try {
-            Product product = ProductIO.readProduct(productPath);
-            if (product != null) {
-                AppContext appContext = SnapApp.getDefault().getAppContext();
-                appContext.getProductManager().addProduct(product);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+        List<RepositoryProduct> productsToOpen = productListModel.addPendingOpenProducts(selectedProducts);
+        if (productsToOpen.size() > 0) {
+            OpenProductRunnable runnable = new OpenProductRunnable(this.appContext, this.repositoryProductListPanel, productsToOpen);
+            runnable.executeAsync(); // start the thread
         }
     }
 

@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * Created by jcoravu on 23/9/2019.
  */
-public class ProductListPanel extends VerticalScrollablePanel {
+public class ProductListPanel extends VerticalScrollablePanel implements RepositoryProductPanelBackground {
 
     private static final String LIST_SELECTION_CHANGED = "listSelectionChanged";
     private static final String LIST_DATA_CHANGED = "listDataChanged";
@@ -91,8 +92,20 @@ public class ProductListPanel extends VerticalScrollablePanel {
         setBackground(this.backgroundColor);
     }
 
+    @Override
+    public Color getProductPanelBackground(RepositoryProductPanel productPanel) {
+        if (this.selectedProducts.contains(productPanel)) {
+            return this.selectionBackgroundColor;
+        }
+        return this.backgroundColor;
+    }
+
     public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
         this.productListModel.addProducts(products, comparator);
+    }
+
+    public ProductListModel getProductListModel() {
+        return productListModel;
     }
 
     private void productsChanged(int startIndex, int endIndex) {
@@ -112,13 +125,9 @@ public class ProductListPanel extends VerticalScrollablePanel {
     }
 
     private void productsAdded(int startIndex, int endIndex) {
+        AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedRepository();
         for (int i=startIndex; i<=endIndex; i++) {
-            RepositoryProductPanel repositoryProductPanel = new RepositoryProductPanel(this.componentDimension, this.expandImageIcon, this.collapseImageIcon) {
-                @Override
-                public Color getBackground() {
-                    return getProductPanelBackground(this);
-                }
-            };
+            RepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension, this.expandImageIcon, this.collapseImageIcon);
             repositoryProductPanel.setOpaque(true);
             repositoryProductPanel.setBackground(this.backgroundColor);
             repositoryProductPanel.addMouseListener(this.mouseListener);
@@ -202,7 +211,7 @@ public class ProductListPanel extends VerticalScrollablePanel {
 
     public Path2D.Double[] getPolygonPaths() {
         Path2D.Double[] polygonPaths = new Path2D.Double[this.productListModel.getProductCount()];
-        for (int i=0; i<getComponentCount(); i++) {
+        for (int i=0; i<this.productListModel.getProductCount(); i++) {
             polygonPaths[i] = this.productListModel.getProductAt(i).getPolygon().getPath();
         }
         return polygonPaths;
@@ -266,13 +275,6 @@ public class ProductListPanel extends VerticalScrollablePanel {
 
     public void setSelectionChangedListener(PropertyChangeListener listSelectionChangedListener) {
         addPropertyChangeListener(LIST_SELECTION_CHANGED, listSelectionChangedListener);
-    }
-
-    private Color getProductPanelBackground(RepositoryProductPanel productPanel) {
-        if (this.selectedProducts.contains(productPanel)) {
-            return this.selectionBackgroundColor;
-        }
-        return this.backgroundColor;
     }
 
     private void showProductsPopupMenu(RepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {

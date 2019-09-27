@@ -43,18 +43,23 @@ public class RepositoryProductPanel extends JPanel {
     private final JLabel urlLabel;
     private final JLabel secondAttributeLabel;
     private final JLabel missionLabel;
-    private final JLabel downloadingStatusLabel;
     private final JButton expandOrCollapseButton;
     private final ImageIcon expandImageIcon;
     private final ImageIcon collapseImageIcon;
     private final ComponentDimension componentDimension;
+    private final RepositoryProductPanelBackground repositoryProductPanelBackground;
+
+    protected final JLabel statusLabel;
 
     private JPanel attributesPanel;
     private RepositoryProduct repositoryProduct;
 
-    public RepositoryProductPanel(ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+    public RepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+                                  ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
 
+        this.repositoryProductPanelBackground = repositoryProductPanelBackground;
         this.componentDimension = componentDimension;
         this.expandImageIcon = expandImageIcon;
         this.collapseImageIcon = collapseImageIcon;
@@ -67,7 +72,7 @@ public class RepositoryProductPanel extends JPanel {
         this.urlLabel = new JLabel("");
         this.secondAttributeLabel = new JLabel("");
         this.missionLabel = new JLabel("");
-        this.downloadingStatusLabel = new JLabel("");
+        this.statusLabel = new JLabel("");
 
         Dimension buttonSize = new Dimension(this.expandImageIcon.getIconWidth() + 2, this.expandImageIcon.getIconHeight() + 2);
 
@@ -117,7 +122,7 @@ public class RepositoryProductPanel extends JPanel {
         c = SwingUtils.buildConstraints(0, 3, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         panel.add(this.sizeLabel, c);
         c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 1, gapBetweenRows, number * gapBetweenColumns);
-        panel.add(this.downloadingStatusLabel, c);
+        panel.add(this.statusLabel, c);
 
         JPanel expandCollapsePanel = new JPanel(new GridBagLayout());
         expandCollapsePanel.setOpaque(false);
@@ -130,6 +135,18 @@ public class RepositoryProductPanel extends JPanel {
         add(this.quickLookImageLabel, BorderLayout.WEST);
         add(panel, BorderLayout.CENTER);
         add(expandCollapsePanel, BorderLayout.EAST);
+    }
+
+    @Override
+    public Color getBackground() {
+        if (this.repositoryProductPanelBackground != null) {
+            return this.repositoryProductPanelBackground.getProductPanelBackground(this);
+        }
+        return super.getBackground();
+    }
+
+    protected final Color getDefaultForegroundColor() {
+        return this.sizeLabel.getForeground();
     }
 
     public void refresh(int index, ProductListModel productListModel) {
@@ -150,9 +167,6 @@ public class RepositoryProductPanel extends JPanel {
 
         ImageIcon imageIcon = productListModel.getProductQuickLookImage(repositoryProduct);
         this.quickLookImageLabel.setIcon(imageIcon);
-
-        ProgressPercent progressPercent = productListModel.getProductDownloadPercent(repositoryProduct);
-        updateDownloadingPercent(progressPercent);
 
         String dateAsString = DATE_FORMAT.format(repositoryProduct.getAcquisitionDate());
         this.acquisitionDateLabel.setText("Acquisition date: " + dateAsString);
@@ -242,31 +256,6 @@ public class RepositoryProductPanel extends JPanel {
         }
         this.firstAttributeLabel.setText(firstLabelText);
         this.secondAttributeLabel.setText(secondLabelText);
-    }
-
-    private void updateDownloadingPercent(ProgressPercent progressPercent) {
-        Color foregroundColor = this.sizeLabel.getForeground();
-        String percentText = "";
-        if (progressPercent != null) {
-            // the product is pending download or downloading
-            if (progressPercent.isDownloading()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "%";
-            } else if (progressPercent.isPendingDownload()) {
-                percentText = "Pending download";
-            } else if (progressPercent.isStoppedDownload()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (stopped)";
-            } else if (progressPercent.isDownloaded()) {
-                percentText = "Downloaded";
-                foregroundColor = Color.GREEN;
-            } else if (progressPercent.isFailedDownload()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (failed)";
-                foregroundColor = Color.RED;
-            } else {
-                throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue());
-            }
-        }
-        this.downloadingStatusLabel.setForeground(foregroundColor);
-        this.downloadingStatusLabel.setText(percentText);
     }
 
     private static String buildAttributeLabelText(String attributeDisplayName, String attributeValue) {
