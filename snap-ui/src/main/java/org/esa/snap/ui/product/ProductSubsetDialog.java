@@ -577,7 +577,9 @@ public class ProductSubsetDialog extends ModalDialog {
 
             imageScrollPane = new JScrollPane(imageCanvas);
             imageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            imageScrollPane.getVerticalScrollBar().setUnitIncrement(20);
             imageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            imageScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
             imageScrollPane.getViewport().setExtentSize(new Dimension(MAX_THUMBNAIL_WIDTH, 2 * MAX_THUMBNAIL_WIDTH));
             setComponentName(imageScrollPane, "ImageScrollPane");
 
@@ -1284,7 +1286,9 @@ public class ProductSubsetDialog extends ModalDialog {
 
             JScrollPane scrollPane = new JScrollPane(checkersPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.getVerticalScrollBar().setUnitIncrement(20);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(20);
 
             JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
             buttonRow.add(allCheck);

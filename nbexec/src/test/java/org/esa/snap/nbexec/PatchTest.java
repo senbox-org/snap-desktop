@@ -11,16 +11,16 @@ import static org.junit.Assume.assumeTrue;
 public class PatchTest {
 
     @Test
-    public void testParseOkWin() throws Exception {
-        assumeTrue(System.getProperty("os.name").startsWith("Win"));
+    public void testParseOkWin() {
+        assumeTrue("Runs only on Windows", System.getProperty("os.name").startsWith("Win"));
         Launcher.Patch patch = Launcher.Patch.parse("C:\\Users\\Norman\\Projects\\my-snap-module\\$\\target\\classes");
         assertEquals(Paths.get("C:\\Users\\Norman\\Projects\\my-snap-module"), patch.getDir());
         assertEquals("target\\classes", patch.getSubPath());
     }
 
     @Test
-    public void testParseOkNoneWin() throws Exception {
-        assumeTrue(!System.getProperty("os.name").startsWith("Win"));
+    public void testParseOkNoneWin() {
+        assumeTrue("Runs not Windows", !System.getProperty("os.name").startsWith("Win"));
         Launcher.Patch patch = Launcher.Patch.parse("/home/norman/projects/my-snap-module/$/target/classes");
         assertEquals(Paths.get("/home/norman/projects/my-snap-module"), patch.getDir());
         assertEquals("target/classes", patch.getSubPath());
@@ -28,7 +28,7 @@ public class PatchTest {
 
     @Test
     public void testParseErrorsWin() {
-        assumeTrue(System.getProperty("os.name").startsWith("Win"));
+        assumeTrue("Runs only on Windows", System.getProperty("os.name").startsWith("Win"));
         try {
             Launcher.Patch.parse("C:\\Users\\Norman\\Projects\\my-snap-module\\target\\classes");
             fail();
@@ -45,7 +45,7 @@ public class PatchTest {
 
     @Test
     public void testParseErrorsNoneWin() {
-        assumeTrue(!System.getProperty("os.name").startsWith("Win"));
+        assumeTrue("Runs not Windows", !System.getProperty("os.name").startsWith("Win"));
         try {
             Launcher.Patch.parse("/home/norman/projects/snap-module/target/classes");
             fail();

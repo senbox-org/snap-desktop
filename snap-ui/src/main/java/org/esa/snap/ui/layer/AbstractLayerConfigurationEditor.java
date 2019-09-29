@@ -33,7 +33,6 @@ import java.beans.PropertyChangeListener;
  * Base class for editors allowing to modify a layer's configuration.
  *
  * @author Marco Zühlke
- * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
 // SEP2018 - Daniel Knowles - Modified to call a new method propertyPane.createJScrollPanel(), which returns

@@ -35,10 +35,10 @@
 <h3>Introduction</h3>
 
 <p>
-    The <em>Collocation Tool</em> allows to collocate two spatially
-    overlapping products. Collocating two products implies that the pixel
-    values of one product (the <em>slave</em>) are resampled into the geographical
-    raster of the other (the <em>master</em>).
+    The <em>Collocation Tool</em> allows to collocate spatially
+    overlapping products. Collocating products implies that the pixel
+    values of slave products are resampled into the geographical
+    raster of the master product.
 </p>
 
 <p>
@@ -50,14 +50,14 @@
 <h3>Algorithm</h3>
 
 <p>
-    When two products are collocated, a new product is created which contains a
+    When products are collocated, a new product is created which contains a
     copy of all components of the master product, i.e. band data, tie-point grids,
     flag codings, bitmask definitions, and metadata. The components of the slave
-    product are transfered in a different manner:
+    products are transfered in a different manner:
 </p>
 
 <p>
-    The band data of the slave product are resampled into the geographical
+    The band data of the slave products are resampled into the geographical
     raster of the master product. The user may choose between three different
     resampling methods: <a href="../general/ResamplingMethods.html">Nearest
     Neighbour</a>, <a href="../general/ResamplingMethods.html">Bilinear
@@ -76,7 +76,7 @@
 
 <p>
     As for the master product, the tie-point grids, flag codings and bitmask
-    definitions of the slave product are copied. Slave product metadata are not
+    definitions of the slave products are copied. Slave product metadata are not
     transfered.
 </p>
 
@@ -87,7 +87,7 @@
     by selecting <b>Processing->Geometric Operations->Collocation...</b>,
     or in batch mode by using the command line
     tool <i><code>gpt</code></i> (Graph Processing Tool) which is located
-    in the SeSentinel Toolboxcode>bin</code> directory. For the latter type
+    in the <code>bin</code> directory. For the latter type
     <code>gpt Collocate -h</code> for further information.
 </p>
 
@@ -112,10 +112,8 @@
 
 <p class="i1">
     <b>Slave:</b>
-    Here the user specifies the slave product. The combo box presents
-    a list of all products opened in the Sentinel Toolbox. The user may select one of these
-    or, by clicking on the button next to the combo box, choose a product
-    from the file system.
+    Here the user specifies the slave products. The user may select products
+    opened in SNAP or products from the file system.
 </p>
 
 <h5>Target Product Group</h5>
@@ -159,10 +157,11 @@
     <b>Rename slave components:</b>
     By checking or unchecking this option the automatic renaming of slave product
     components can be activated or deactivated, respectively. If activated, all
-    components of the slave product are renamed according to the
+    components of the slave products are renamed according to the
     pattern given in the text field next to the check box. The expression
-    <code>${ORIGINAL_NAME}</code> can be used to refer to the original name of the
-    component.
+    <code>${ORIGINAL_NAME}</code> or <code>${SLAVE_NUMBER_ID}</code> can be used
+    to refer to the original name of the component or the id of the slave (0,1,2...)
+    respectively.
 </p>
 
 <h5>Resampling Group</h5>

@@ -22,28 +22,26 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.vfs.NioFile;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
+import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
+import org.esa.snap.vfs.remote.VFSPath;
+import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
 import sun.swing.FilePane;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.Rectangle;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -80,6 +78,7 @@ public class SnapFileChooser extends JFileChooser {
 
     public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
+
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
         windowCloseHandler = new CloseHandler();
@@ -87,12 +86,45 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     @Override
+    public void setFileSystemView(FileSystemView fileSystemView) {
+        if (fileSystemView == null) {
+            throw new NullPointerException("fileSystemView is null");
+        }
+        Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
+        List<VFSRemoteFileRepository> vfsRepositories = null;
+        try {
+            vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        if (vfsRepositories != null && !vfsRepositories.isEmpty()) {
+            VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories) {
+                @Override
+                protected void notifyUser(String title, String message) {
+                    showMessageDialog(title, message);
+                }
+            };
+            super.setFileSystemView(fileSystemViewWrapper);
+        } else {
+            super.setFileSystemView(fileSystemView);
+        }
+    }
+
+    private void showMessageDialog(String title, String message) {
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.WARNING_MESSAGE);
+    }
+
+    @Override
     public Icon getIcon(File f) {
         Icon icon = null;
         if (f != null) {
-            icon = super.getIcon(f);
-            if (f.isDirectory() && isCompoundDocument(f)) {
-                return new CompoundDocumentIcon(icon);
+            if (f instanceof NioFile && f.toPath() instanceof VFSPath) {
+                icon = getFileSystemView().getSystemIcon(f);
+            } else {
+                icon = super.getIcon(f);
+                if (f.isDirectory() && isCompoundDocument(f)) {
+                    return new CompoundDocumentIcon(icon);
+                }
             }
         }
         return icon;
@@ -108,7 +140,6 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param parent the parent
      * @return the dialog
-     *
      * @throws HeadlessException if GraphicsEnvironment.isHeadless() returns true.
      */
     @Override
@@ -231,7 +262,6 @@ public class SnapFileChooser extends JFileChooser {
      *
      * @param filename the filename to be checked
      * @return {@code true}, if the given file has a "known" extension
-     *
      * @see SnapFileFilter
      */
     public boolean checkExtension(String filename) {
@@ -263,6 +293,19 @@ public class SnapFileChooser extends JFileChooser {
         synchronized (syncFileFiltersObject) {
             super.addChoosableFileFilter(filter);
         }
+    }
+
+    @Override
+    public String getName(File f) {
+        String filename = null;
+        if (f != null) {
+            if (f instanceof NioFile && f.toPath() instanceof VFSPath) {
+                filename = getFileSystemView().getSystemDisplayName(f);
+            } else {
+                filename = super.getName(f);
+            }
+        }
+        return filename;
     }
 
     /**
@@ -328,8 +371,8 @@ public class SnapFileChooser extends JFileChooser {
         if (selectedFile != null) {
             SnapFileFilter mff = getSnapFileFilter();
             if (mff != null
-                && mff.getDefaultExtension() != null
-                && !mff.checkExtension(selectedFile)) {
+                    && mff.getDefaultExtension() != null
+                    && !mff.checkExtension(selectedFile)) {
                 selectedFile = FileUtils.exchangeExtension(selectedFile, mff.getDefaultExtension());
                 Debug.trace("mod. selected file: " + selectedFile.getPath());
                 setSelectedFile(selectedFile);
@@ -389,7 +432,7 @@ public class SnapFileChooser extends JFileChooser {
 
     private void initViewType() {
         FilePane filePane = findFilePane(this);
-        if(filePane != null) {
+        if (filePane != null) {
             int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
             filePane.setViewType(viewType);
         }
@@ -401,7 +444,7 @@ public class SnapFileChooser extends JFileChooser {
             if (component instanceof FilePane) {
                 return (FilePane) component;
             }
-            if(component instanceof Container) {
+            if (component instanceof Container) {
                 FilePane filePane = findFilePane((Container) component);
                 if (filePane != null) {
                     return filePane;
@@ -411,23 +454,10 @@ public class SnapFileChooser extends JFileChooser {
         return null;
     }
 
-    private class ResizeHandler extends ComponentAdapter {
-
-        @Override
-        public void componentMoved(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-
-        @Override
-        public void componentResized(ComponentEvent e) {
-            setDialogBounds(e.getComponent().getBounds());
-        }
-    }
-
     private static class CompoundDocumentIcon implements Icon {
 
-        private final Icon baseIcon;
         private static final Icon compoundDocumentIcon = new ImageIcon(CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
+        private final Icon baseIcon;
 
         public CompoundDocumentIcon(Icon baseIcon) {
             this.baseIcon = baseIcon;
@@ -449,6 +479,19 @@ public class SnapFileChooser extends JFileChooser {
         @Override
         public int getIconHeight() {
             return baseIcon.getIconHeight();
+        }
+    }
+
+    private class ResizeHandler extends ComponentAdapter {
+
+        @Override
+        public void componentMoved(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
+        }
+
+        @Override
+        public void componentResized(ComponentEvent e) {
+            setDialogBounds(e.getComponent().getBounds());
         }
     }
 

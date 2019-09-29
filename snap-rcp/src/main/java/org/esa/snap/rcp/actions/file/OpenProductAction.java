@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +56,7 @@ public final class OpenProductAction extends AbstractAction {
     static List<File> getOpenedProductFiles() {
         return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
                 .map(Product::getFileLocation)
-                .filter(file -> file != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

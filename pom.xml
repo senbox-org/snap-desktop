@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-engine</artifactId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-desktop</artifactId>
@@ -27,6 +27,7 @@
         <module>snap-rcp</module>
         <module>snap-tango</module>
         <module>snap-main</module>
+        <module>snap-virtual-file-system-ui</module>
         <module>nbexec</module>
         <module>tiled-editors</module>
         <module>doc-windows</module>
@@ -48,7 +49,8 @@
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
         <module>snap-smart-configurator-ui</module>
-        <module>snap-cloud-exploitation-platform-ui</module>
+        <module>snap-virtual-file-system-preferences-ui</module>
+        <module>snap-remote-execution-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->

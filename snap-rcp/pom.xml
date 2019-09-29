@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-rcp</artifactId>
@@ -253,7 +253,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-statistics</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
         <!-- Testing-->
 
         <dependency>
