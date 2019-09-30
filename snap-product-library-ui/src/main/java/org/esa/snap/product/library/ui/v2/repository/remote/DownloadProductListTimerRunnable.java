@@ -104,7 +104,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected boolean onHideProgressPanelLater() {
         boolean hidden = super.onHideProgressPanelLater();
         if (hidden) {
-            this.repositoryProductListPanel.finishDownloadingProductList();
+            this.repositoryProductListPanel.updateProductListCount();
         }
         return hidden;
     }

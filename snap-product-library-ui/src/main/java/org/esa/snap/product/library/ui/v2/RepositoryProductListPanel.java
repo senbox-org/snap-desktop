@@ -57,7 +57,13 @@ public class RepositoryProductListPanel extends JPanel {
             }
         });
 
-        this.productListPanel = new ProductListPanel(repositorySelectionPanel, componentDimension);
+        this.productListPanel = new ProductListPanel(repositorySelectionPanel, componentDimension) {
+            @Override
+            protected void fireProductsRemoved(boolean fireListSelectionChanged) {
+                RepositoryProductListPanel.this.updateProductListCount();
+                super.fireProductsRemoved(fireListSelectionChanged);
+            }
+        };
 
         this.progressBarHelper = new ProgressBarHelperImpl(100, size.height) {
             @Override
@@ -113,7 +119,7 @@ public class RepositoryProductListPanel extends JPanel {
 
     public void setProducts(List<RepositoryProduct> products) {
         this.productListPanel.setProducts(products, this.currentComparator);
-        finishDownloadingProductList();
+        updateProductListCount();
     }
 
     public void clearProducts() {
@@ -132,7 +138,7 @@ public class RepositoryProductListPanel extends JPanel {
         this.titleLabel.setText(getTitle() + ": " + "retrieving " + totalProductCount + " products from "+ dataSourceName+"...");
     }
 
-    public void finishDownloadingProductList() {
+    public void updateProductListCount() {
         String text = getTitle() + ": " + this.productListPanel.getProductCount();
         if (this.productListPanel.getProductCount() == 1) {
             text += " product";
@@ -144,10 +150,6 @@ public class RepositoryProductListPanel extends JPanel {
 
     private String getTitle() {
         return "Product results";
-    }
-
-    private String getSortBy() {
-        return "Sort By " ;
     }
 
     private Comparator<RepositoryProduct> buildProductNameComparator() {

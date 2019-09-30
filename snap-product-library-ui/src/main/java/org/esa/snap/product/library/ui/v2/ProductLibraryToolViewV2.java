@@ -17,16 +17,15 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.local.DeleteProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
-import org.esa.snap.product.library.ui.v2.repository.local.OpenProductRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.OpenProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
@@ -69,7 +68,6 @@ import java.awt.geom.Path2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -325,6 +323,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ActionListener deleteLocalProductListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                deleteSelectedProducts();
             }
         };
         ActionListener batchProcessingListener = new ActionListener() {
@@ -349,7 +348,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
         List<RepositoryProduct> productsToOpen = productListModel.addPendingOpenProducts(selectedProducts);
         if (productsToOpen.size() > 0) {
-            OpenProductRunnable runnable = new OpenProductRunnable(this.appContext, this.repositoryProductListPanel, productsToOpen);
+            OpenProductsRunnable runnable = new OpenProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToOpen);
+            runnable.executeAsync(); // start the thread
+        }
+    }
+
+    private void deleteSelectedProducts() {
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+        List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(selectedProducts);
+        if (productsToDelete.size() > 0) {
+            DeleteProductsRunnable runnable = new DeleteProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToDelete);
             runnable.executeAsync(); // start the thread
         }
     }
@@ -360,10 +369,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         for (int i = 0; i < selectedProducts.length; i++) {
             selectedProductsFiles[i] = ((LocalRepositoryProduct) selectedProducts[i]).getPath().toFile();
         }
-        final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
-                "Batch Processing", "batchProcessing", false);
-        batchDlg.setInputFiles(selectedProductsFiles);
-        batchDlg.show();
+        BatchGraphDialog batchDialog = new BatchGraphDialog(this.appContext, "Batch Processing", "batchProcessing", true);
+        batchDialog.setInputFiles(selectedProductsFiles);
+        batchDialog.show();
     }
 
     private void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {

@@ -151,6 +151,10 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         }
         revalidate();
         repaint();
+        fireProductsRemoved(fireListSelectionChanged);
+    }
+
+    protected void fireProductsRemoved(boolean fireListSelectionChanged) {
         firePropertyChange(LIST_DATA_CHANGED, null, null);
         if (fireListSelectionChanged) {
             firePropertyChange(LIST_SELECTION_CHANGED, null, null);

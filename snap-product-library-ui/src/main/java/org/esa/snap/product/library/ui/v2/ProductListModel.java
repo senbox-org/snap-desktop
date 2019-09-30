@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.product.library.ui.v2.repository.local.OpenProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -30,7 +30,7 @@ public class ProductListModel {
 
     private final Map<String, Map<String, String>> visibleAttributesPerMission;
 
-    private Map<RepositoryProduct, OpenProgressStatus> openingProductsMap;
+    private Map<RepositoryProduct, LocalProgressStatus> localProductsMap;
     private Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
     private Map<RepositoryProduct, ImageIcon> scaledQuickLookImages;
     private List<RepositoryProduct> products;
@@ -40,7 +40,7 @@ public class ProductListModel {
 
         this.visibleAttributesPerMission = new HashMap<>();
         this.downloadingProductsProgressValue = new HashMap<>();
-        this.openingProductsMap = new HashMap<>();
+        this.localProductsMap = new HashMap<>();
         this.scaledQuickLookImages = new HashMap<>();
         this.products = new ArrayList<>();
     }
@@ -152,42 +152,55 @@ public class ProductListModel {
         return productsToDownload;
     }
 
-    public OpenProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
-        return this.openingProductsMap.get(repositoryProduct);
+    public LocalProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
+        return this.localProductsMap.get(repositoryProduct);
     }
 
     public List<RepositoryProduct> addPendingOpenProducts(RepositoryProduct[] pendingOpenProducts) {
-        List<RepositoryProduct> productsToOpen = new ArrayList<>(pendingOpenProducts.length);
-        if (pendingOpenProducts.length > 0) {
-            int startIndex = pendingOpenProducts.length - 1;
+        return addPendingLocalProgressProducts(pendingOpenProducts, LocalProgressStatus.PENDING_OPEN);
+    }
+
+    public List<RepositoryProduct> addPendingDeleteProducts(RepositoryProduct[] pendingDeleteProducts) {
+        return addPendingLocalProgressProducts(pendingDeleteProducts, LocalProgressStatus.PENDING_DELETE);
+    }
+
+    private List<RepositoryProduct> addPendingLocalProgressProducts(RepositoryProduct[] pendingLocalProducts, byte status) {
+        List<RepositoryProduct> productsToProcess = new ArrayList<>(pendingLocalProducts.length);
+        if (pendingLocalProducts.length > 0) {
+            int startIndex = pendingLocalProducts.length - 1;
             int endIndex = 0;
-            for (int i=0; i<pendingOpenProducts.length; i++) {
-                OpenProgressStatus openProgressStatus = this.openingProductsMap.get(pendingOpenProducts[i]);
-                if (openProgressStatus == null || openProgressStatus.isFailed()) {
-                    productsToOpen.add(pendingOpenProducts[i]);
-                    int index = findProductIndex(pendingOpenProducts[i]);
+            for (int i=0; i<pendingLocalProducts.length; i++) {
+                LocalProgressStatus openProgressStatus = this.localProductsMap.get(pendingLocalProducts[i]);
+                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailDeleted()) {
+                    productsToProcess.add(pendingLocalProducts[i]);
+                    int index = findProductIndex(pendingLocalProducts[i]);
                     if (startIndex > index) {
                         startIndex = index;
                     }
                     if (endIndex < index) {
                         endIndex = index;
                     }
-                this.openingProductsMap.put(pendingOpenProducts[i], new OpenProgressStatus());
+                    this.localProductsMap.put(pendingLocalProducts[i], new LocalProgressStatus(status));
                 }
             }
-            if (productsToOpen.size() > 0) {
+            if (productsToProcess.size() > 0) {
                 fireIntervalChanged(startIndex, endIndex);
             }
         }
-        return productsToOpen;
+        return productsToProcess;
     }
 
     public void setOpenProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
-        OpenProgressStatus openProgressStatus = this.openingProductsMap.get(repositoryProduct);
+        LocalProgressStatus openProgressStatus = this.localProductsMap.get(repositoryProduct);
         if (openProgressStatus != null) {
             openProgressStatus.setStatus(openStatus);
             int index = findProductIndex(repositoryProduct);
-            fireIntervalChanged(index, index);
+            if (openStatus == LocalProgressStatus.DELETED) {
+                this.products.remove(index);
+                fireIntervalRemoved(index, index);
+            } else {
+                fireIntervalChanged(index, index);
+            }
         }
     }
 
@@ -249,7 +262,7 @@ public class ProductListModel {
         int endIndex = this.products.size() - 1;
         this.downloadingProductsProgressValue = new HashMap<>();
         this.scaledQuickLookImages = new HashMap<>();
-        this.openingProductsMap = new HashMap<>();
+        this.localProductsMap = new HashMap<>();
         this.products = new ArrayList<>();
         if (endIndex >= 0) {
             fireIntervalRemoved(0, endIndex);
