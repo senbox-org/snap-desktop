@@ -25,25 +25,36 @@ public class LocalRepositoryProductPanel extends RepositoryProductPanel {
         super.refresh(index, productListModel);
 
         RepositoryProduct repositoryProduct = productListModel.getProductAt(index);
-        OpenProgressStatus openProgressStatus = productListModel.getOpeningProductStatus(repositoryProduct);
-        updateOpeningStatus(openProgressStatus);
+        LocalProgressStatus localProgressStatus = productListModel.getOpeningProductStatus(repositoryProduct);
+        updateProgressStatus(localProgressStatus);
     }
 
-    private void updateOpeningStatus(OpenProgressStatus openProgressStatus) {
+    private void updateProgressStatus(LocalProgressStatus localProgressStatus) {
         Color foregroundColor = getDefaultForegroundColor();
         String openText = "";
-        if (openProgressStatus != null) {
-            // the product is opening or opened
-            if (openProgressStatus.isPending()) {
+        if (localProgressStatus != null) {
+            if (localProgressStatus.isPendingOpen()) {
                 openText = "Pending open...";
-            } else if (openProgressStatus.isOpening()) {
+            } else if (localProgressStatus.isOpening()) {
                 openText = "Opening...";
-            } else if (openProgressStatus.isFailed()) {
-                openText = "Failed";
+            } else if (localProgressStatus.isFailOpened()) {
+                openText = "Failed open";
                 foregroundColor = Color.RED;
-            } else if (openProgressStatus.isOpened()) {
+            } else if (localProgressStatus.isOpened()) {
                 openText = "Opened";
                 foregroundColor = Color.GREEN;
+            } else if (localProgressStatus.isPendingDelete()) {
+                openText = "Pending delete...";
+            } else if (localProgressStatus.isFailDeleted()) {
+                openText = "Failed deleted";
+                foregroundColor = Color.RED;
+            } else if (localProgressStatus.isDeleting()) {
+                openText = "Deleting...";
+            } else if (localProgressStatus.isDeleted()) {
+                openText = "Deleted";
+                foregroundColor = Color.GREEN;
+            } else {
+                throw new IllegalStateException("Unknown status.");
             }
         }
         this.statusLabel.setForeground(foregroundColor);
