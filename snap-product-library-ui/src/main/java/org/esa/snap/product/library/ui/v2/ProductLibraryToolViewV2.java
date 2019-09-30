@@ -17,8 +17,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
@@ -57,10 +56,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -69,7 +65,7 @@ import java.awt.geom.Path2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -333,7 +329,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 openBatchProcessingDialog();
             }
         };
-        this.repositorySelectionPanel.setOpenAndDeleteLocalProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener);
+        ActionListener showInExplorerListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                showInExplorer();
+            }
+        };
+        this.repositorySelectionPanel.setOpenAndDeleteLocalProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -364,6 +366,20 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 "Batch Processing", "batchProcessing", false);
         batchDlg.setInputFiles(selectedProductsFiles);
         batchDlg.show();
+    }
+
+    private void showInExplorer(){
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        Path selectedProductFilePath = ((LocalRepositoryProduct) selectedProducts[0]).getPath();
+        File selectedProductDirectory = selectedProductFilePath.toFile();
+        if (Files.isRegularFile(selectedProductFilePath)) {
+            selectedProductDirectory = selectedProductFilePath.getParent().toFile();
+        }
+        try {
+            Desktop.getDesktop().open(selectedProductDirectory);
+        } catch (Exception ex) {
+            SystemUtils.LOG.severe(ex.getMessage());
+        }
     }
 
     private void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {

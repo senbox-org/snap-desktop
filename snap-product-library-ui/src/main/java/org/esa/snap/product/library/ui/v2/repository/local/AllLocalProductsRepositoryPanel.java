@@ -20,16 +20,8 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
@@ -50,6 +42,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     private ActionListener openProductListener;
     private ActionListener deleteProductListener;
     private ActionListener batchProcessingListener;
+    private ActionListener showInExplorerListener;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
@@ -97,14 +90,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?> attributesClass = Attribute.class;
-        Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass, attributesClass};
+        Class<?>[] classesToIgnore = new Class<?>[]{areaOfInterestClass, attributesClass};
         List<QueryFilter> parameters = this.allLocalFolderProductsRepository.getParameters();
         int startRowIndex = 1;
         this.parameterComponents = panel.addParameterComponents(parameters, startRowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
         QueryFilter areaOfInterestParameter = null;
         QueryFilter attributesParameter = null;
-        for (int i=0; i<parameters.size(); i++) {
+        for (int i = 0; i < parameters.size(); i++) {
             QueryFilter param = parameters.get(i);
             if (param.getType() == areaOfInterestClass) {
                 areaOfInterestParameter = param;
@@ -120,7 +113,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
             int difference = this.componentDimension.getTextFieldPreferredHeight() - parameterComponent.getLabel().getPreferredSize().height;
 
-            c = SwingUtils.buildConstraints(0, nextRowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows + (difference/2) , 0);
+            c = SwingUtils.buildConstraints(0, nextRowIndex, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows + (difference / 2), 0);
             panel.add(parameterComponent.getLabel(), c);
             c = SwingUtils.buildConstraints(1, nextRowIndex, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
             panel.add(parameterComponent.getComponent(), c);
@@ -141,14 +134,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {
-            RemoteMission selectedMission = (RemoteMission)this.missionsComboBox.getSelectedItem();
+            RemoteMission selectedMission = (RemoteMission) this.missionsComboBox.getSelectedItem();
             return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, selectedMission, parameterValues, repositoryProductListPanel);
         }
         return null;
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu() {
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts) {
         JMenuItem openMenuItem = new JMenuItem("Open");
         openMenuItem.addActionListener(this.openProductListener);
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
@@ -159,6 +152,11 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         popupMenu.add(openMenuItem);
         popupMenu.add(deleteMenuItem);
         popupMenu.add(batchProcessingMenuItem);
+        if (selectedProducts.length < 2) {
+            JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer");
+            showInExplorerMenuItem.addActionListener(this.showInExplorerListener);
+            popupMenu.add(showInExplorerMenuItem);
+        }
         return popupMenu;
     }
 
@@ -172,7 +170,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     public void addMissionIfMissing(RemoteMission mission) {
         ComboBoxModel<RemoteMission> model = this.missionsComboBox.getModel();
         boolean found = false;
-        for (int i=0; i<model.getSize() && !found; i++) {
+        for (int i = 0; i < model.getSize() && !found; i++) {
             RemoteMission existingMission = model.getElementAt(i);
             if (existingMission != null && existingMission.getId() == mission.getId()) {
                 found = true;
@@ -186,10 +184,11 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    public void setOpenAndDeleteProductListeners(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener) {
+    public void setOpenAndDeleteProductListeners(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
         this.openProductListener = openProductListener;
         this.deleteProductListener = deleteProductListener;
         this.batchProcessingListener = batchProcessingListener;
+        this.showInExplorerListener = showInExplorerListener;
     }
 
     public void setLocalParameterValues(List<RemoteMission> missions, Map<Short, Set<String>> attributeNamesPerMission) {

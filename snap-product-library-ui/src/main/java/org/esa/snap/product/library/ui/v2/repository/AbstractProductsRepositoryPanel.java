@@ -10,6 +10,7 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -45,7 +46,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     protected abstract void addParameterComponents();
 
-    public abstract JPopupMenu buildProductListPopupMenu();
+    public abstract JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts);
 
     public abstract RepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                                                     ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);

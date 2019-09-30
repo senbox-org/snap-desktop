@@ -14,6 +14,7 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -134,7 +135,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu() {
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts) {
         JMenuItem downloadMenuItem = new JMenuItem("Download");
         downloadMenuItem.addActionListener(this.downloadProductListener);
         JPopupMenu popupMenu = new JPopupMenu();

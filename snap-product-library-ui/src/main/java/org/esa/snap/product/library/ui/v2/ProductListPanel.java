@@ -278,7 +278,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     }
 
     private void showProductsPopupMenu(RepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {
-        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu();
+        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu(getSelectedProducts());
         popup.show(repositoryProductPanel, mouseX, mouseY);
     }
 }
