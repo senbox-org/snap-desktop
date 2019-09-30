@@ -6,10 +6,11 @@ import com.bc.ceres.core.ServiceRegistryManager;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.util.ServiceLoader;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
-import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -48,9 +49,8 @@ import java.util.logging.Logger;
 })
 public class RepositoriesCredentialsControllerUI extends DefaultConfigController {
 
-    private static final String SAVE_ERROR_MESSAGE = "Unable to save Remote Repositories Credentials to SNAP configuration file.";
     public static final String REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS = "remoteProductsRepositoryCredentials";
-
+    private static final String SAVE_ERROR_MESSAGE = "Unable to save Remote Repositories Credentials to SNAP configuration file.";
     private static Logger logger = Logger.getLogger(RepositoriesCredentialsControllerUI.class.getName());
     private static ImageIcon addButtonIcon;
     private static ImageIcon removeButtonIcon;
@@ -103,6 +103,60 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             repositoriesCredentialsCopy.add(new RemoteRepositoryCredentials(repositoryCredentialsSource.getRepositoryId(), credentialsCopy));
         }
         return repositoriesCredentialsCopy;
+    }
+
+    private static boolean isValidData(List<RemoteRepositoryCredentials> repositoriesCredentials) {
+        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+            for (Credentials credentials : repositoryCredentials.getCredentialsList()) {
+                String username = credentials.getUserPrincipal().getName();
+                String password = credentials.getPassword();
+                if (StringUtils.isNullOrEmpty(username) || StringUtils.isNullOrEmpty(password)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean isRepositoriesChanged(List<RemoteRepositoryCredentials> savedRepositoriesCredentials, List<RemoteRepositoryCredentials> repositoriesCredentials) {
+        if (savedRepositoriesCredentials.size() != repositoriesCredentials.size()) {
+            return true;
+        }
+        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+            for (RemoteRepositoryCredentials savedRepositoryCredentials : savedRepositoriesCredentials) {
+                if (repositoryCredentials.getRepositoryId().contentEquals(savedRepositoryCredentials.getRepositoryId()) && isRepositoryChanged(savedRepositoryCredentials, repositoryCredentials)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isRepositoryChanged(RemoteRepositoryCredentials savedRepositoryCredentials, RemoteRepositoryCredentials repositoryCredentials) {
+        List<Credentials> savedCredentials = savedRepositoryCredentials.getCredentialsList();
+        List<Credentials> credentials = repositoryCredentials.getCredentialsList();
+        if (savedCredentials.size() != credentials.size()) {
+            return true;
+        }
+        for (Credentials credential : credentials) {
+            if (isCredentialsChanged(savedCredentials, credential)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isCredentialsChanged(List<Credentials> savedCredentials, Credentials credential) {
+        for (Credentials savedCredential : savedCredentials) {
+            String savedUsername = savedCredential.getUserPrincipal().getName();
+            String username = credential.getUserPrincipal().getName();
+            String savedPassword = savedCredential.getPassword();
+            String password = credential.getPassword();
+            if (savedUsername.equals(username) && savedPassword.equals(password)) {
+                return false; // the credential was found = unchanged
+            }
+        }
+        return true;
     }
 
     private void loadRemoteRepositories() {
@@ -186,7 +240,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
             } catch (Exception ex) {
                 logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
-                JOptionPane.showMessageDialog(credentialsListPanel, SAVE_ERROR_MESSAGE, "Error saving remote repositories credentials", JOptionPane.ERROR_MESSAGE);
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(credentialsListPanel, SAVE_ERROR_MESSAGE, "Error saving remote repositories credentials", JOptionPane.ERROR_MESSAGE));
             }
         }
     }
@@ -210,36 +264,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         if (repositoriesListTable.getSelectedRow() >= 0) {
             RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
             List<RemoteRepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
-            if (savedRepositoriesCredentials.size() != repositoriesCredentials.size()) {
-                return true;
-            }
-            for (RemoteRepositoryCredentials savedRepositoryCredentials : savedRepositoriesCredentials) {
-                boolean repositoryChanged = true;
-                for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
-                    if (savedRepositoryCredentials.getRepositoryId().equals(repositoryCredentials.getRepositoryId()) && savedRepositoryCredentials.getCredentialsList().size() == repositoryCredentials.getCredentialsList().size()) {
-                        for (Credentials savedCredentials : savedRepositoryCredentials.getCredentialsList()) {
-                            boolean credentialChanged = true;
-                            for (Credentials credentials : repositoryCredentials.getCredentialsList()) {
-                                String savedUsername = savedCredentials.getUserPrincipal().getName();
-                                String username = credentials.getUserPrincipal().getName();
-                                String savedPassword = savedCredentials.getPassword();
-                                String password = credentials.getPassword();
-                                if (savedUsername.contentEquals(username) && savedPassword.contentEquals(password)) {
-                                    credentialChanged = false;
-                                    break;
-                                }
-                            }
-                            if (credentialChanged) {
-                                return true;
-                            }
-                        }
-                        repositoryChanged = false;
-                        break;
-                    }
-                }
-                if (repositoryChanged) {
-                    return true;
-                }
+            if (isValidData(repositoriesCredentials)) {
+                return isRepositoriesChanged(savedRepositoriesCredentials, repositoriesCredentials);
             }
         }
         return false;

@@ -75,7 +75,7 @@ public final class RepositoriesCredentialsPersistence {
         return credentialsKey;
     }
 
-    public static void save(Path destFile, List<RemoteRepositoryCredentials> repositoriesCredentials) throws IOException {
+    static void save(Path destFile, List<RemoteRepositoryCredentials> repositoriesCredentials) throws IOException {
         if (!repositoriesCredentials.isEmpty() && destFile != null) {
             Properties properties = new Properties();
             String repositoriesIds = "";
@@ -84,13 +84,12 @@ public final class RepositoriesCredentialsPersistence {
                 int id = 1;
                 for (Credentials credential : repositoryCredentials.getCredentialsList()) {
                     String credentialId = "" + id++;
-                    boolean validCredential = true;
                     String username = credential.getUserPrincipal().getName();
                     if (StringUtils.isNotNullAndNotEmpty(username)) {
                         String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryId(), credentialId);
                         properties.setProperty(usernameKey, username);
                     } else {
-                        validCredential = false;
+                        throw new IllegalArgumentException("empty username");
                     }
                     String password = credential.getPassword();
                     if (StringUtils.isNotNullAndNotEmpty(password)) {
@@ -98,11 +97,9 @@ public final class RepositoriesCredentialsPersistence {
                         String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryId(), credentialId);
                         properties.setProperty(passwordKey, encryptedPassword);
                     } else {
-                        validCredential = false;
+                        throw new IllegalArgumentException("empty password");
                     }
-                    if (validCredential) {
-                        repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
-                    }
+                    repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
                 }
                 if (StringUtils.isNotNullAndNotEmpty(repositoryCredentialsIds)) {
                     String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryId());
@@ -140,7 +137,7 @@ public final class RepositoriesCredentialsPersistence {
     /**
      * Reads the Remote Repositories Credentials from SNAP configuration file.
      */
-    public static List<RemoteRepositoryCredentials> load(Path destFile) throws IOException {
+    static List<RemoteRepositoryCredentials> load(Path destFile) throws IOException {
         List<RemoteRepositoryCredentials> repositoriesCredentials = new ArrayList<>();
         if (destFile == null) {
             return repositoriesCredentials;
