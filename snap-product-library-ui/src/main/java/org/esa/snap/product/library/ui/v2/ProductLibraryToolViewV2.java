@@ -17,6 +17,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
@@ -70,6 +71,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -344,7 +346,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void openSelectedProducts() {
-        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        RepositoryProduct[] selectedProducts = processLocalSelectedProducts();
         ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
         List<RepositoryProduct> productsToOpen = productListModel.addPendingOpenProducts(selectedProducts);
         if (productsToOpen.size() > 0) {
@@ -354,13 +356,28 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void deleteSelectedProducts() {
-        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        RepositoryProduct[] selectedProducts = processLocalSelectedProducts();
         ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
         List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(selectedProducts);
         if (productsToDelete.size() > 0) {
             DeleteProductsRunnable runnable = new DeleteProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToDelete);
             runnable.executeAsync(); // start the thread
         }
+    }
+
+    private RepositoryProduct[] processLocalSelectedProducts() {
+        RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
+        List<RepositoryProduct> availableLocalProducts = new ArrayList<>(selectedProducts.length);
+        for (int i=0; i<selectedProducts.length; i++) {
+            Product product = this.appContext.getProductManager().getProduct(selectedProducts[i].getName());
+            if (product == null) {
+                // the local product to delete is not opened in the application
+                availableLocalProducts.add(selectedProducts[i]);
+            }
+        }
+        selectedProducts = new RepositoryProduct[availableLocalProducts.size()];
+        availableLocalProducts.toArray(selectedProducts);
+        return selectedProducts;
     }
 
     private void openBatchProcessingDialog(){
