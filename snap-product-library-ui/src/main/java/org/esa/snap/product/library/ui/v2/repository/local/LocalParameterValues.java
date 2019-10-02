@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 
@@ -14,12 +15,16 @@ public class LocalParameterValues {
 
     private final List<RemoteRepositoryCredentials> repositoriesCredentials;
     private final List<RemoteMission> missions;
-    private final Map<Short, Set<String>> attributes;
+    private final Map<Short, Set<String>> attributeNamesPerMission;
+    private final List<LocalRepositoryFolder> localRepositoryFolders;
 
-    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, List<RemoteMission> missions, Map<Short, Set<String>> attributes) {
+    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, List<RemoteMission> missions,
+                                Map<Short, Set<String>> attributeNamesPerMission, List<LocalRepositoryFolder> localRepositoryFolders) {
+
         this.repositoriesCredentials = repositoriesCredentials;
         this.missions = missions;
-        this.attributes = attributes;
+        this.attributeNamesPerMission = attributeNamesPerMission;
+        this.localRepositoryFolders = localRepositoryFolders;
     }
 
     public List<RemoteMission> getMissions() {
@@ -27,10 +32,14 @@ public class LocalParameterValues {
     }
 
     public Map<Short, Set<String>> getAttributes() {
-        return attributes;
+        return attributeNamesPerMission;
     }
 
     public List<RemoteRepositoryCredentials> getRepositoriesCredentials() {
         return repositoriesCredentials;
+    }
+
+    public List<LocalRepositoryFolder> getLocalRepositoryFolders() {
+        return localRepositoryFolders;
     }
 }
