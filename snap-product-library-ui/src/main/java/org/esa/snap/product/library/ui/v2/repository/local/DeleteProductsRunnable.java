@@ -43,6 +43,6 @@ public class DeleteProductsRunnable extends ProcessLocalProductsRunnable {
 
     @Override
     protected String getExceptionLoggingMessage() {
-        return "Failed to open the product.";
+        return "Failed to delete the product from the local repository folder and the database.";
     }
 }

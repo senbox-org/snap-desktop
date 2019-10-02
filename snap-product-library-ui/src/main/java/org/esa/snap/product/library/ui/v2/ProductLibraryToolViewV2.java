@@ -23,20 +23,23 @@ import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsCon
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.local.DeleteAllLocalProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.DeleteProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
-import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsData;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.local.OpenProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
@@ -52,13 +55,19 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -343,7 +352,26 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 showSelectedLocalProductInExplorer();
             }
         };
-        this.repositorySelectionPanel.setLocalRepositoriesProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+        LocalProductsPopupListeners localProductsPopupListeners = new LocalProductsPopupListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+
+        ActionListener scanLocalRepositoryFolderListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+            }
+        };
+        ActionListener addLocalRepositoryFolderListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+            }
+        };
+        ActionListener deleteLocalRepositoryFolderListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                deleteAllLocalFolderRepositories();
+            }
+        };
+        this.repositorySelectionPanel.setLocalRepositoriesListeners(localProductsPopupListeners, scanLocalRepositoryFolderListener,
+                                                                           addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -352,6 +380,22 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
         this.repositorySelectionPanel.setDownloadRemoteProductListener(downloadRemoteProductListener);
+    }
+
+    private void deleteAllLocalFolderRepositories() {
+        StringBuilder message = new StringBuilder();
+        message.append("All local repository folders from the disk and all products from the database will be deleted.")
+                .append("\n\n")
+                .append("Are you sure you want to continue?");
+        int answer = JOptionPane.showConfirmDialog(this, message.toString(), "Delete local products", JOptionPane.YES_NO_OPTION);
+        if (answer == JOptionPane.YES_OPTION) {
+            AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel();
+            List<LocalRepositoryFolder> localRepositoryFolders = allLocalProductsRepositoryPanel.getLocalRepositoryFolders();
+            ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+            int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+            DeleteAllLocalProductsTimerRunnable thread = new DeleteAllLocalProductsTimerRunnable(progressBarHelper, threadId, localRepositoryFolders);
+            thread.executeAsync();
+        }
     }
 
     private void openSelectedProducts() {
@@ -366,11 +410,20 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void deleteSelectedProducts() {
         RepositoryProduct[] selectedProducts = processLocalSelectedProducts();
-        ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-        List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(selectedProducts);
-        if (productsToDelete.size() > 0) {
-            DeleteProductsRunnable runnable = new DeleteProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToDelete);
-            runnable.executeAsync(); // start the thread
+        if (selectedProducts.length > 0) {
+            StringBuilder message = new StringBuilder();
+            message.append("The selected products will be deleted.")
+                    .append("\n\n")
+                    .append("Are you sure you want to continue?");
+            int answer = JOptionPane.showConfirmDialog(this, message.toString(), "Delete local products", JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+                List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(selectedProducts);
+                if (productsToDelete.size() > 0) {
+                    DeleteProductsRunnable runnable = new DeleteProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToDelete);
+                    runnable.executeAsync(); // start the thread
+                }
+            }
         }
     }
 
