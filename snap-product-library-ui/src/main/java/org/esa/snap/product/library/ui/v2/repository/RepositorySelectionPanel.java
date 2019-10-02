@@ -2,12 +2,18 @@ package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.repository.local.AbstractLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalFolderProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsData;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
+import org.esa.snap.product.library.v2.database.RemoteMission;
+import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -26,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -35,6 +42,8 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -48,19 +57,25 @@ public class RepositorySelectionPanel extends JPanel {
     private final JButton helpButton;
     private final JLabel repositoryLabel;
     private final ProgressBarHelperImpl progressBarHelper;
-    private final int gapBetweenColumns;
 
-    private JButton repositoryTopBarButton;
+    private final ComponentDimension componentDimension;
+    private final WorldWindowPanelWrapper worldWindowPanel;
+
+    private JPanel topBarButtonsPanel;
     private ItemListener repositoriesItemListener;
+    private List<RemoteMission> missions;
+    private Map<Short, Set<String>> attributeNamesPerMission;
+    private LocalProductsData localProductsData;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
 
         super(new GridBagLayout());
 
-        this.gapBetweenColumns = componentDimension.getGapBetweenColumns();
+        this.componentDimension = componentDimension;
+        this.worldWindowPanel = worldWindowPanel;
 
-        createRepositoriesComboBox(productsRepositoryProviders, componentDimension, missionParameterListener, worldWindowPanel);
+        createRepositoriesComboBox(productsRepositoryProviders, missionParameterListener);
 
         Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
 
@@ -106,10 +121,18 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     public void setInputData(LocalParameterValues parameterValues) {
+        this.missions = parameterValues.getMissions();
+        this.attributeNamesPerMission = parameterValues.getAttributes();
         if (parameterValues.getRepositoriesCredentials() != null) {
             refreshUserAccounts(parameterValues.getRepositoriesCredentials());
         }
-        getAllLocalProductsRepositoryPanel().setLocalParameterValues(parameterValues.getMissions(), parameterValues.getAttributes());
+        getAllLocalProductsRepositoryPanel().setLocalParameterValues(this.missions, this.attributeNamesPerMission);
+        List<LocalRepositoryFolder> localRepositoryFolders = parameterValues.getLocalRepositoryFolders();
+        if (localRepositoryFolders != null) {
+            for (int i=0; i<localRepositoryFolders.size(); i++) {
+                addLocalFolderProductsRepository(localRepositoryFolders.get(i));
+            }
+        }
     }
 
     public ProgressBarHelperImpl getProgressBarHelper() {
@@ -141,7 +164,28 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
+    public void finishSavingProduct(SaveProductData saveProductData) {
+        int count = this.repositoriesComboBox.getModel().getSize();
+        boolean foundLocalRepositoryFolder = false;
+        for (int i=0; i<count; i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
+            if (repositoryPanel instanceof AbstractLocalProductsRepositoryPanel) {
+                AbstractLocalProductsRepositoryPanel localProductsRepositoryPanel = (AbstractLocalProductsRepositoryPanel)repositoryPanel;
+                localProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
+                if (localProductsRepositoryPanel instanceof LocalFolderProductsRepositoryPanel) {
+                    LocalRepositoryFolder localRepositoryFolder = ((LocalFolderProductsRepositoryPanel)localProductsRepositoryPanel).getLocalRepositoryFolder();
+                    if (localRepositoryFolder.getId() == saveProductData.getLocalRepositoryFolder().getId()) {
+                        foundLocalRepositoryFolder = true;
+                    }
+                }
+            }
+        }
+        if (!foundLocalRepositoryFolder) {
+            addLocalFolderProductsRepository(saveProductData.getLocalRepositoryFolder());
+        }
+    }
+
+    private AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
         int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
             AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
@@ -156,8 +200,10 @@ public class RepositorySelectionPanel extends JPanel {
         this.searchButton.setEnabled(enabled);
         this.repositoryLabel.setEnabled(enabled);
         this.repositoriesComboBox.setEnabled(enabled);
-        if (this.repositoryTopBarButton != null) {
-            this.repositoryTopBarButton.setEnabled(enabled);
+        if (this.topBarButtonsPanel != null) {
+            for (int i=0; i<this.topBarButtonsPanel.getComponentCount(); i++) {
+                this.topBarButtonsPanel.getComponent(i).setEnabled(enabled);
+            }
         }
         AbstractProductsRepositoryPanel selectedDataSource = getSelectedRepository();
         Stack<JComponent> stack = new Stack<JComponent>();
@@ -191,9 +237,7 @@ public class RepositorySelectionPanel extends JPanel {
         this.repositoriesItemListener = repositoriesItemListener;
     }
 
-    private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                            MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
-
+    private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, MissionParameterListener missionParameterListener) {
         AbstractProductsRepositoryPanel[] availableDataSources = new AbstractProductsRepositoryPanel[productsRepositoryProviders.length + 1];
         for (int i=0; i<productsRepositoryProviders.length; i++) {
             availableDataSources[i] = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], componentDimension, missionParameterListener, worldWindowPanel);
@@ -212,7 +256,7 @@ public class RepositorySelectionPanel extends JPanel {
             }
         };
         this.repositoriesComboBox.setRenderer(renderer);
-        this.repositoriesComboBox.setMaximumRowCount(5);
+        this.repositoriesComboBox.setMaximumRowCount(7);
         this.repositoriesComboBox.setSelectedIndex(0);
         this.repositoriesComboBox.addItemListener(new ItemListener() {
             @Override
@@ -227,12 +271,23 @@ public class RepositorySelectionPanel extends JPanel {
         });
     }
 
-    public void setOpenAndDeleteLocalProductListeners(ActionListener openLocalProductListener, ActionListener deleteLocalProductListener, ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
+    private void addLocalFolderProductsRepository(LocalRepositoryFolder localRepositoryFolder) {
+        LocalFolderProductsRepositoryPanel productsRepositoryPanel = new LocalFolderProductsRepositoryPanel(this.componentDimension, this.worldWindowPanel, localRepositoryFolder);
+        productsRepositoryPanel.setLocalParameterValues(this.missions, this.attributeNamesPerMission);
+        productsRepositoryPanel.setLocalProductsData(this.localProductsData);
+        this.repositoriesComboBox.addItem(productsRepositoryPanel);
+    }
+
+    public void setLocalRepositoriesProductListeners(ActionListener openLocalProductListener, ActionListener deleteLocalProductListener,
+                                                     ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
+
+        this.localProductsData = new LocalProductsData(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
         for (int i=0; i<model.getSize(); i++) {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
-            if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
-                ((AllLocalProductsRepositoryPanel)repositoryPanel).setOpenAndDeleteProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+            if (repositoryPanel instanceof AbstractLocalProductsRepositoryPanel) {
+                ((AbstractLocalProductsRepositoryPanel)repositoryPanel).setLocalProductsData(this.localProductsData);
             }
         }
     }
@@ -248,38 +303,51 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     private void newSelectedRepository() {
-        if (this.repositoryTopBarButton != null) {
-            remove(this.repositoryTopBarButton);
+        if (this.topBarButtonsPanel != null) {
+            remove(this.topBarButtonsPanel);
             revalidate();
             repaint();
         }
-        this.repositoryTopBarButton = getSelectedRepository().getTopBarButton();
-        if (this.repositoryTopBarButton != null) {
-            GridBagConstraints c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
-            add(this.repositoryTopBarButton, c);
+        createTopBarButtonsPanel();
+        if (this.topBarButtonsPanel != null) {
+            GridBagConstraints c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.componentDimension.getGapBetweenColumns());
+            add(this.topBarButtonsPanel, c);
             revalidate();
             repaint();
         }
     }
 
+    private void createTopBarButtonsPanel() {
+        JButton[] topBarButtons = getSelectedRepository().getTopBarButton();
+        if (topBarButtons != null && topBarButtons.length > 0) {
+            this.topBarButtonsPanel = new JPanel(new GridLayout(1, topBarButtons.length, this.componentDimension.getGapBetweenColumns(), 0));
+            for (int i=0; i<topBarButtons.length; i++) {
+                this.topBarButtonsPanel.add(topBarButtons[i]);
+            }
+        } else {
+            this.topBarButtonsPanel = null;
+        }
+    }
+
     private void addComponents() {
-        this.repositoryTopBarButton = getSelectedRepository().getTopBarButton();
+        createTopBarButtonsPanel();
+        int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
         add(this.repositoryLabel, c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.repositoriesComboBox, c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.searchButton, c);
-        if (this.repositoryTopBarButton != null) {
-            c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
-            add(this.repositoryTopBarButton, c);
+        if (this.topBarButtonsPanel != null) {
+            c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+            add(this.topBarButtonsPanel, c);
         }
-        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.helpButton, c);
-        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+        c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(6, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, this.gapBetweenColumns);
+        c = SwingUtils.buildConstraints(6, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.progressBarHelper.getStopButton(), c);
     }
 

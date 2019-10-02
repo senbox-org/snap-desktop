@@ -54,7 +54,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                               RepositoryProductListPanel repositoryProductListPanel);
 
-    public JButton getTopBarButton() {
+    public JButton[] getTopBarButton() {
         return null;
     }
 

@@ -5,6 +5,7 @@ import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCred
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.v2.database.H2DatabaseAccessor;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.ui.loading.GenericRunnable;
@@ -41,8 +42,10 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
 
         Map<Short, Set<String>> attributeNamesPerMission = null;
         List<RemoteMission> missions = null;
+        List<LocalRepositoryFolder> localRepositoryFolders = null;
         try (Connection connection = H2DatabaseAccessor.getConnection()) {
             try (Statement statement = connection.createStatement()) {
+                localRepositoryFolders = ProductLibraryDAL.loadLocalRepositoryFolders(statement);
                 attributeNamesPerMission = ProductLibraryDAL.loadAttributesNamesPerMission(statement);
                 missions = ProductLibraryDAL.loadMissions(statement);
                 if (missions.size() > 1) {
@@ -58,7 +61,7 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load input data from the database.", exception);
         }
-        return new LocalParameterValues(repositoriesCredentials, missions, attributeNamesPerMission);
+        return new LocalParameterValues(repositoriesCredentials, missions, attributeNamesPerMission, localRepositoryFolders);
     }
 
     @Override

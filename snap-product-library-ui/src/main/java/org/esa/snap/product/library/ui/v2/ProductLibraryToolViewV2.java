@@ -17,7 +17,6 @@ package org.esa.snap.product.library.ui.v2;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
@@ -27,6 +26,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryP
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.DeleteProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsData;
 import org.esa.snap.product.library.ui.v2.repository.local.OpenProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
@@ -67,7 +67,7 @@ import java.awt.geom.Path2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -75,6 +75,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
@@ -100,6 +102,8 @@ import java.util.Set;
         "CTL_ProductLibraryTopComponentV2Description=Product Library v2",
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension {
+
+    private static final Logger logger = Logger.getLogger(ProductLibraryToolViewV2.class.getName());
 
     public static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
 
@@ -336,10 +340,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ActionListener showInExplorerListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                showInExplorer();
+                showSelectedLocalProductInExplorer();
             }
         };
-        this.repositorySelectionPanel.setOpenAndDeleteLocalProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+        this.repositorySelectionPanel.setLocalRepositoriesProductListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -396,17 +400,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         batchDialog.show();
     }
 
-    private void showInExplorer(){
+    private void showSelectedLocalProductInExplorer(){
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
-        Path selectedProductFilePath = ((LocalRepositoryProduct) selectedProducts[0]).getPath();
-        File selectedProductDirectory = selectedProductFilePath.toFile();
-        if (Files.isRegularFile(selectedProductFilePath)) {
-            selectedProductDirectory = selectedProductFilePath.getParent().toFile();
-        }
+        Path selectedProductPath = ((LocalRepositoryProduct) selectedProducts[0]).getPath();
         try {
-            Desktop.getDesktop().open(selectedProductDirectory);
-        } catch (Exception ex) {
-            SystemUtils.LOG.severe(ex.getMessage());
+            Desktop.getDesktop().open(selectedProductPath.toFile());
+        } catch (IOException exception) {
+            logger.log(Level.SEVERE, "Failed to open the product in the explorer.", exception);
         }
     }
 
@@ -513,7 +513,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
                             @Override
                             protected void onFinishSavingProduct(SaveProductData saveProductData) {
-                                finishSavingProduct(saveProductData);
+                                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingProduct(saveProductData);
                             }
                         };
                         this.downloadProductsThread.executeAsync();
@@ -525,11 +525,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 throw new IllegalStateException("The selected repository is not a remote repository.");
             }
         }
-    }
-
-    private void finishSavingProduct(SaveProductData saveProductData) {
-        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel();
-        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
     }
 
     private void searchButtonPressed() {

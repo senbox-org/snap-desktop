@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -17,16 +18,18 @@ import java.util.Map;
 public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<RepositoryProduct>> {
 
     private final ThreadListener threadListener;
+    private final LocalRepositoryFolder localRepositoryFolder;
     private final RepositoryProductListPanel repositoryProductListPanel;
     private final RemoteMission mission;
     private final Map<String, Object> parameterValues;
 
-    public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
+    public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener, LocalRepositoryFolder localRepositoryFolder,
                                         RemoteMission mission, Map<String, Object> parameterValues, RepositoryProductListPanel repositoryProductListPanel) {
 
         super(progressPanel, threadId, 500);
 
         this.threadListener = threadListener;
+        this.localRepositoryFolder = localRepositoryFolder;
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.mission = mission;
         this.parameterValues = parameterValues;
@@ -34,7 +37,7 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
 
     @Override
     protected List<RepositoryProduct> execute() throws Exception {
-        return ProductLibraryDAL.loadProductList(this.mission, this.parameterValues);
+        return ProductLibraryDAL.loadProductList(this.localRepositoryFolder, this.mission, this.parameterValues);
     }
 
     @Override
@@ -50,9 +53,6 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
     @Override
     protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
         this.repositoryProductListPanel.setProducts(results);
-//        if (results.size() == 0) {
-//            onShowInformationMessageDialog(this.repositoryProductListPanel, "No product available according to the filter values.", "Information");
-//        }
     }
 
     @Override
