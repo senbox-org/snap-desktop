@@ -222,7 +222,11 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     @Override
     public void update() {
         if (isInitialized) {
-            SwingUtilities.invokeLater(() -> repositoriesListTable.changeSelection(0, RepositoriesTableModel.REPO_NAME_COLUMN, false, false));
+            if (repositoriesListTable.getSelectedRow() < 0) {
+                SwingUtilities.invokeLater(() -> repositoriesListTable.changeSelection(0, RepositoriesTableModel.REPO_NAME_COLUMN, false, false));
+            } else {
+                loadCredentialsOnTable();
+            }
         }
     }
 
