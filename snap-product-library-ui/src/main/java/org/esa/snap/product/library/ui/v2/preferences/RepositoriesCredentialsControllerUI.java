@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 public class RepositoriesCredentialsControllerUI extends DefaultConfigController {
 
     public static final String REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS = "remoteProductsRepositoryCredentials";
-    private static final String SAVE_ERROR_MESSAGE = "Unable to save Remote Repositories Credentials to SNAP configuration file.";
     private static Logger logger = Logger.getLogger(RepositoriesCredentialsControllerUI.class.getName());
     private static ImageIcon addButtonIcon;
     private static ImageIcon removeButtonIcon;
@@ -243,8 +242,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 AppContext appContext = SnapApp.getDefault().getAppContext();
                 appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(credentialsListPanel, SAVE_ERROR_MESSAGE, "Error saving remote repositories credentials", JOptionPane.ERROR_MESSAGE));
+                String title = "Error saving remote repositories credentials";
+                String msg = "Unable to save Remote Repositories Credentials to SNAP configuration file." + " Details: " + ex.getMessage();
+                logger.log(Level.SEVERE, msg, ex);
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(credentialsListPanel, msg, title, JOptionPane.ERROR_MESSAGE));
             }
         }
     }
@@ -348,6 +349,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      * Runs the event associated with button for removing remote repository credential.
      */
     private void runRemoveCredentialEvent() {
+        credentialsListTable.getDefaultEditor(JTextField.class).stopCellEditing();
+        credentialsListTable.getDefaultEditor(JPasswordField.class).stopCellEditing();
         try {
             if (credentialsListTable.getSelectedRow() >= 0) {
                 JTextField textField = (JTextField) credentialsListTable.getValueAt(credentialsListTable.getSelectedRow(), RepositoriesCredentialsTableModel.REPO_CRED_USER_COLUMN);
