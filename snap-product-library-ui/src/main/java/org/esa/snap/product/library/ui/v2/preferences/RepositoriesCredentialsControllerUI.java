@@ -297,6 +297,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         newRepositoriesListTable.setModel(repositoriesTableModel);
         newRepositoriesListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         newRepositoriesListTable.getSelectionModel().addListSelectionListener(event -> loadCredentialsOnTable());
+        newRepositoriesListTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         return newRepositoriesListTable;
     }
 
@@ -468,6 +469,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         newCredentialsListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         newCredentialsListTable.getColumnModel().getColumn(RepositoriesCredentialsTableModel.REPO_CRED_PASS_SEE_COLUMN).setMaxWidth(20);
         newCredentialsListTable.setRowHeight(new JTextField().getPreferredSize().height);
+        newCredentialsListTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         return newCredentialsListTable;
     }
 
