@@ -354,18 +354,14 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         credentialsListTable.getDefaultEditor(JPasswordField.class).stopCellEditing();
         try {
             if (credentialsListTable.getSelectedRow() >= 0) {
-                JTextField textField = (JTextField) credentialsListTable.getValueAt(credentialsListTable.getSelectedRow(), RepositoriesCredentialsTableModel.REPO_CRED_USER_COLUMN);
-                String credentialUsername = textField.getText();
-                if (JOptionPane.showConfirmDialog(credentialsListTable, "Are you sure to delete the following repository credential?\n" + credentialUsername, "Delete repository credential confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                    RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
-                    RepositoriesTableModel repositoriesTableModel = (RepositoriesTableModel) repositoriesListTable.getModel();
-                    String remoteRepositoryId = repositoriesTableModel.get(repositoriesListTable.getSelectedRow()).getRepositoryId();
-                    List<Credentials> repositoryCredentials = getRemoteRepositoryCredentials(remoteRepositoryId);
-                    if (repositoryCredentials != null) {
-                        repositoryCredentials.remove(repositoriesCredentialsTableModel.get(credentialsListTable.getSelectedRow()));
-                        repositoriesCredentialsTableModel.remove(credentialsListTable.getSelectedRow());
-                        cleanupRemoteRepositories();
-                    }
+                RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
+                RepositoriesTableModel repositoriesTableModel = (RepositoriesTableModel) repositoriesListTable.getModel();
+                String remoteRepositoryId = repositoriesTableModel.get(repositoriesListTable.getSelectedRow()).getRepositoryId();
+                List<Credentials> repositoryCredentials = getRemoteRepositoryCredentials(remoteRepositoryId);
+                if (repositoryCredentials != null) {
+                    repositoryCredentials.remove(repositoriesCredentialsTableModel.get(credentialsListTable.getSelectedRow()));
+                    repositoriesCredentialsTableModel.remove(credentialsListTable.getSelectedRow());
+                    cleanupRemoteRepositories();
                 }
             } else {
                 JOptionPane.showMessageDialog(credentialsListTable, "Please select a repository credential from list.", "Delete repository credential", JOptionPane.WARNING_MESSAGE);
