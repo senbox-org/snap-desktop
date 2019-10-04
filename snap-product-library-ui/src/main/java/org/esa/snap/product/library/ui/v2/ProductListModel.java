@@ -89,7 +89,6 @@ public class ProductListModel {
                 return;
             }
         }
-        throw new IllegalArgumentException("The repository product '"+repositoryProduct.getName()+"' does not exist into the list.");
     }
 
     public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {

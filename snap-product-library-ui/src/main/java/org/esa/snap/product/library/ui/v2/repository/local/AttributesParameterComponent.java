@@ -162,6 +162,15 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
     }
 
     @Override
+    public void clearParameterValue() {
+        this.attributeNamesComboBox.setSelectedItem(null);
+        this.filtersComboBox.setSelectedItem(null);
+        this.attributeValueTextField.setText("");
+        DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
+        model.clear();
+    }
+
+    @Override
     public List<AttributeFilter> getParameterValue() {
         DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
         if (model.getSize() > 0) {

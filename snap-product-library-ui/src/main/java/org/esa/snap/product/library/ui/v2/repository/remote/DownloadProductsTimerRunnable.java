@@ -83,22 +83,24 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
                 updateDownloadedProgressPercentLater(getProductToDownload(), progressPercent);
             }
         };
-        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)0);
+
+        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)0); // 0%
 
         // download the product from the remote repository
         synchronized (this) {
             this.currentRemoteProductDownloader = remoteProductDownloader;
         }
-        Path productFolderPath = remoteProductDownloader.download(progressListener);
+        Path productPath = remoteProductDownloader.download(progressListener);
         synchronized (this) {
             this.currentRemoteProductDownloader = null; // reset
         }
 
-        SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productFolderPath,
+        SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productPath,
                                                      remoteProductDownloader.getRepositoryId(), remoteProductDownloader.getLocalRepositoryFolderPath());
 
         // successfully downloaded and saved the product
-        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)100);
+        updateDownloadedProgressPercentLater(progressListener.getProductToDownload(), (short)100); // 100%
+
         updateFinishSavingProductDataLater(saveProductData);
     }
 
@@ -124,7 +126,6 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
     }
 
     protected void onFinishSavingProduct(SaveProductData saveProductData) {
-
     }
 
     public void updateProgressBarDownloadedProductsLater() {

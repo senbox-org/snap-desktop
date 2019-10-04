@@ -5,14 +5,14 @@ import java.awt.event.ActionListener;
 /**
  * Created by jcoravu on 2/10/2019.
  */
-public class LocalProductsData {
+public class LocalProductsPopupListeners {
 
     private final ActionListener openProductListener;
     private final ActionListener deleteProductListener;
     private final ActionListener batchProcessingListener;
     private final ActionListener showInExplorerListener;
 
-    public LocalProductsData(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
+    public LocalProductsPopupListeners(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
         this.openProductListener = openProductListener;
         this.deleteProductListener = deleteProductListener;
         this.batchProcessingListener = batchProcessingListener;

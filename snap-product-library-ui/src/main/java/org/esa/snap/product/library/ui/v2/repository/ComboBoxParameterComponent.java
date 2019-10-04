@@ -50,7 +50,7 @@ public class ComboBoxParameterComponent extends AbstractParameterComponent<Objec
             this.component.addItem(values[i]);
         }
         if (parameter.getDefaultValue() != null) {
-            for (int i=0; i<values.length; i++) {
+            for (int i = 0; i < values.length; i++) {
                 if (parameter.getDefaultValue().equals(values[i])) {
                     this.component.setSelectedIndex(i);
                     break;
@@ -67,5 +67,10 @@ public class ComboBoxParameterComponent extends AbstractParameterComponent<Objec
     @Override
     public Object getParameterValue() {
         return this.component.getModel().getSelectedItem();
+    }
+
+    @Override
+    public void clearParameterValue() {
+        this.component.setSelectedItem(null);
     }
 }

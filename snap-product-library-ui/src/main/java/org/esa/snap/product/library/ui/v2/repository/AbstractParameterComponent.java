@@ -22,6 +22,8 @@ public abstract class AbstractParameterComponent<ValueType> {
 
     public abstract ValueType getParameterValue();
 
+    public abstract void clearParameterValue();
+
     public String getParameterName() {
         return parameterName;
     }

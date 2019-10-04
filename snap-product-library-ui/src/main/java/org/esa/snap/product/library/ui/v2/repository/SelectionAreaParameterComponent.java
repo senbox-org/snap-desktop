@@ -26,4 +26,9 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
     public Rectangle2D getParameterValue() {
         return this.worlWindPanel.getSelectedArea();
     }
+
+    @Override
+    public void clearParameterValue() {
+        this.worlWindPanel.clearSelectedArea();
+    }
 }

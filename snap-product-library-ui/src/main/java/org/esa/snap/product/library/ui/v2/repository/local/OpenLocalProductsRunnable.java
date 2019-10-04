@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public class OpenProductsRunnable extends ProcessLocalProductsRunnable {
+public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunnable {
 
-    private static final Logger logger = Logger.getLogger(OpenProductsRunnable.class.getName());
+    private static final Logger logger = Logger.getLogger(OpenLocalProductsRunnable.class.getName());
 
-    public OpenProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToOpen) {
+    public OpenLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToOpen) {
         super(appContext, repositoryProductListPanel, productsToOpen);
     }
 

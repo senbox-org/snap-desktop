@@ -77,6 +77,13 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         return maximumLabelWidth;
     }
 
+    public void clearParameterValues() {
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            parameterComponent.clearParameterValue();
+        }
+    }
+
     protected final Map<String, Object> getParameterValues() {
         Map<String, Object> result = new HashMap<>();
         for (int i=0; i<this.parameterComponents.size(); i++) {

@@ -35,4 +35,9 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
         String value = this.component.getText().trim();
         return (value.trim().equals("") ? null : value);
     }
+
+    @Override
+    public void clearParameterValue() {
+        this.component.setText("");
+    }
 }
