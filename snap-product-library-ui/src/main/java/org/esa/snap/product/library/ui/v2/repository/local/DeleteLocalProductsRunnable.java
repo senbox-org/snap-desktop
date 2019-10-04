@@ -14,11 +14,11 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public class DeleteProductsRunnable extends ProcessLocalProductsRunnable {
+public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRunnable {
 
-    private static final Logger logger = Logger.getLogger(DeleteProductsRunnable.class.getName());
+    private static final Logger logger = Logger.getLogger(DeleteLocalProductsRunnable.class.getName());
 
-    public DeleteProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete) {
+    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete) {
         super(appContext, repositoryProductListPanel, productsToDelete);
     }
 

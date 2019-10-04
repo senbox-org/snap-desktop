@@ -29,4 +29,9 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
     public String getParameterValue() {
         return (String)this.component.getModel().getSelectedItem();
     }
+
+    @Override
+    public void clearParameterValue() {
+        this.component.setSelectedItem(null);
+    }
 }

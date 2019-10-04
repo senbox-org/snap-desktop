@@ -197,6 +197,20 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return new JButton[]{this.scanFoldersButton, this.addFolderButton, this.removeFoldersButton};
     }
 
+    public void deleteLocalRepositoryFolder(LocalRepositoryFolder localRepositoryFolderToRemove) {
+        ComboBoxModel<LocalRepositoryFolder> foldersModel = this.foldersComboBox.getModel();
+        for (int i = 0; i < foldersModel.getSize(); i++) {
+            LocalRepositoryFolder existingFolder = foldersModel.getElementAt(i);
+            if (existingFolder != null && existingFolder.getId() == localRepositoryFolderToRemove.getId()) {
+                this.foldersComboBox.removeItemAt(i);
+                break;
+            }
+        }
+        if (foldersModel.getSize() == 1 && foldersModel.getElementAt(0) == null) {
+            this.foldersComboBox.removeItemAt(0);
+        }
+    }
+
     public void setTopBarButtonListeners(ActionListener scanRepositoryFoldersListener, ActionListener addRepositoryFoldersListener, ActionListener deleteRepositoryFoldersListener) {
         this.scanFoldersButton.addActionListener(scanRepositoryFoldersListener);
         this.addFolderButton.addActionListener(addRepositoryFoldersListener);
@@ -235,6 +249,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
             this.foldersComboBox.addItem(localRepositoryFolder);
         }
+    }
+
+    @Override
+    public void clearParameterValues() {
+        this.foldersComboBox.setSelectedItem(null);
+        this.missionsComboBox.setSelectedItem(null);
+
+        super.clearParameterValues();
     }
 
     public List<LocalRepositoryFolder> getLocalRepositoryFolders() {

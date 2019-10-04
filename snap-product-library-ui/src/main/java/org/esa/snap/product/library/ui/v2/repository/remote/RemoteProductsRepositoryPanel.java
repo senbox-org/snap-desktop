@@ -209,7 +209,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             for (int i = 0; i < repositoryCredentials.size(); i++) {
                 this.userAccountsComboBox.addItem(repositoryCredentials.get(i));
             }
-            this.userAccountsComboBox.setSelectedItem(null);
+            //this.userAccountsComboBox.setSelectedItem(null);
         }
     }
 

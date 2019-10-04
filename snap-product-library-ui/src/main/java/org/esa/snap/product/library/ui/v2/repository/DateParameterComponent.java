@@ -33,4 +33,10 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
     public Date getParameterValue() {
         return this.component.getDate();
     }
+
+    @Override
+    public void clearParameterValue() {
+        this.component.setDate(null);
+    }
+
 }

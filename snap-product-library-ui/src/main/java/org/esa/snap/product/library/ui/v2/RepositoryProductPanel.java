@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.apache.commons.lang.StringUtils;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -159,8 +160,10 @@ public class RepositoryProductPanel extends JPanel {
         repositoryProduct = productListModel.getProductAt(index);
 
         this.nameLabel.setText(repositoryProduct.getName());
-        this.urlLabel.setText("URL: " + repositoryProduct.getDownloadURL());
-        this.missionLabel.setText("Mission: " + repositoryProduct.getMission());
+        this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getDownloadURL()));
+
+        String mission = (StringUtils.isBlank(repositoryProduct.getMission()) ? "N/A" : repositoryProduct.getMission());
+        this.missionLabel.setText(buildAttributeLabelText("Mission", mission));
 
         Map<String, String> visibleAttributes = productListModel.getMissionVisibleAttributes(repositoryProduct.getMission());
         updateVisibleAttributes(repositoryProduct, visibleAttributes);
@@ -168,8 +171,11 @@ public class RepositoryProductPanel extends JPanel {
         ImageIcon imageIcon = productListModel.getProductQuickLookImage(repositoryProduct);
         this.quickLookImageLabel.setIcon(imageIcon);
 
-        String dateAsString = DATE_FORMAT.format(repositoryProduct.getAcquisitionDate());
-        this.acquisitionDateLabel.setText("Acquisition date: " + dateAsString);
+        String dateAsString = "N/A";
+        if (repositoryProduct.getAcquisitionDate() != null) {
+            dateAsString = DATE_FORMAT.format(repositoryProduct.getAcquisitionDate());
+        }
+        this.acquisitionDateLabel.setText(buildAttributeLabelText("Acquisition date", dateAsString));
 
         updateSize(repositoryProduct);
     }

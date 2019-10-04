@@ -162,7 +162,9 @@ public class RepositorySelectionPanel extends JPanel {
     public void finishSavingProduct(SaveProductData saveProductData) {
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
         allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
-        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
+        if (saveProductData.getRemoteMission() != null) {
+            allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
+        }
     }
 
     public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {

@@ -12,14 +12,14 @@ import java.util.List;
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public abstract class ProcessLocalProductsRunnable extends AbstractRunnable<Void> {
+public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunnable<Void> {
 
     protected final AppContext appContext;
     protected final List<RepositoryProduct> productsToProcess;
 
     private final RepositoryProductListPanel repositoryProductListPanel;
 
-    protected ProcessLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToProcess) {
+    protected AbstractProcessLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToProcess) {
         this.appContext = appContext;
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.productsToProcess = productsToProcess;
