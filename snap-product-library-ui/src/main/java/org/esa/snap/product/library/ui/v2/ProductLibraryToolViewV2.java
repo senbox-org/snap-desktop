@@ -31,6 +31,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.DeleteLocalProductsRu
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.local.OpenLocalProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ScanAllLocalRepositoriesTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
@@ -122,7 +123,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private AbstractProgressTimerRunnable<?> searchProductListThread;
     private DownloadProductsTimerRunnable downloadProductsThread;
-    private AddLocalRepositoryTimerRunnable addLocalProductsThread;
+    private AbstractProgressTimerRunnable<?> localRepositoryProductsThread;
     private int textFieldPreferredHeight;
     private WorldWindowPanelWrapper worldWindowPanel;
     private DownloadRemoteProductsQueue downloadRemoteProductsQueue;
@@ -354,9 +355,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         };
         LocalProductsPopupListeners localProductsPopupListeners = new LocalProductsPopupListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
 
-        ActionListener scanLocalRepositoryFolderListener = new ActionListener() {
+        ActionListener scanLocalRepositoryFoldersListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                scanAllLocalRepositoriesButtonPressed();
             }
         };
         ActionListener addLocalRepositoryFolderListener = new ActionListener() {
@@ -368,10 +370,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ActionListener deleteLocalRepositoryFolderListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                deleteAllLocalRepositoryFolders();
+                deleteAllLocalRepositories();
             }
         };
-        this.repositorySelectionPanel.setLocalRepositoriesListeners(localProductsPopupListeners, scanLocalRepositoryFolderListener,
+        this.repositorySelectionPanel.setLocalRepositoriesListeners(localProductsPopupListeners, scanLocalRepositoryFoldersListener,
                                                                            addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
@@ -383,8 +385,36 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.repositorySelectionPanel.setDownloadRemoteProductListener(downloadRemoteProductListener);
     }
 
+    private void scanAllLocalRepositoriesButtonPressed() {
+        if (this.downloadProductsThread == null && this.localRepositoryProductsThread == null) {
+            scanAllLocalRepositoriesAsync();
+        } else {
+            StringBuilder message = new StringBuilder();
+            message.append("The local repository folders cannot be refreshed.")
+                    .append("\n\n")
+                    .append("There is a running action to download products.");
+            JOptionPane.showMessageDialog(ProductLibraryToolViewV2.this, message.toString(), "Add local repository folder", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void scanAllLocalRepositoriesAsync() {
+        ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
+        int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+        this.localRepositoryProductsThread = new ScanAllLocalRepositoriesTimerRunnable(progressBarHelper, threadId) {
+            @Override
+            protected void onStopExecuting() {
+                ProductLibraryToolViewV2.this.localRepositoryProductsThread = null; // reset
+            }
+
+            @Override
+            protected void onLocalRepositoryFolderDeleted(LocalRepositoryFolder localRepositoryFolder) {
+                ProductLibraryToolViewV2.this.deleteLocalRepositoryFolder(localRepositoryFolder);
+            }
+        };
+        this.localRepositoryProductsThread.executeAsync(); // start the thread
+    }
+
     private void addLocalRepositoryButtonPressed() {
-        if (this.downloadProductsThread == null) {
+        if (this.downloadProductsThread == null && this.localRepositoryProductsThread == null) {
             addLocalRepositoryFolderAsync();
         } else {
             StringBuilder message = new StringBuilder();
@@ -400,10 +430,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         if (selectedLocalRepositoryFolder != null) {
             ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
             int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-            this.addLocalProductsThread = new AddLocalRepositoryTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder) {
+            this.localRepositoryProductsThread = new AddLocalRepositoryTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder) {
                 @Override
                 protected void onStopExecuting() {
-                    ProductLibraryToolViewV2.this.addLocalProductsThread = null; // reset
+                    ProductLibraryToolViewV2.this.localRepositoryProductsThread = null; // reset
                 }
 
                 @Override
@@ -411,15 +441,15 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingProduct(saveProductData);
                 }
             };
-            this.addLocalProductsThread.executeAsync();
+            this.localRepositoryProductsThread.executeAsync(); // start the thread
         }
     }
 
-    private void deleteAllLocalRepositoryFolders() {
+    private void deleteAllLocalRepositories() {
         String title = "Delete local products";
-        if (this.addLocalProductsThread == null && this.downloadProductsThread == null && this.searchProductListThread == null) {
+        if (this.localRepositoryProductsThread == null && this.downloadProductsThread == null && this.searchProductListThread == null) {
             StringBuilder message = new StringBuilder();
-            message.append("All the local repository folders will be deleted.")
+            message.append("All the local repositories will be deleted.")
                     .append("\n\n")
                     .append("Are you sure you want to continue?");
             int answer = JOptionPane.showConfirmDialog(this, message.toString(), title, JOptionPane.YES_NO_OPTION);
@@ -447,7 +477,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         } else {
             StringBuilder message = new StringBuilder();
-            message.append("The local repository folders cannot be deleted.")
+            message.append("The local repositories cannot be deleted.")
                     .append("\n\n")
                     .append("There is a running action.");
             JOptionPane.showMessageDialog(this, message.toString(), title, JOptionPane.ERROR_MESSAGE);
@@ -597,7 +627,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void downloadSelectedRemoteProductsButtonPressed() {
-        if (this.addLocalProductsThread == null) {
+        if (this.localRepositoryProductsThread == null) {
             downloadSelectedRemoteProductsAsync();
         } else {
             StringBuilder message = new StringBuilder();

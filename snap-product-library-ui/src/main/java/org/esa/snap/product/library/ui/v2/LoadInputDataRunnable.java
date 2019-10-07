@@ -61,6 +61,7 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load input data from the database.", exception);
         }
+
         return new LocalParameterValues(repositoriesCredentials, missions, attributeNamesPerMission, localRepositoryFolders);
     }
 

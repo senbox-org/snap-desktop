@@ -64,7 +64,7 @@ public class RepositorySelectionPanel extends JPanel {
     private List<RemoteMission> missions;
     private Map<Short, Set<String>> attributeNamesPerMission;
     private LocalProductsPopupListeners localProductsPopupListeners;
-    private ActionListener scanLocalRepositoryFolderListener;
+    private ActionListener scanLocalRepositoryFoldersListener;
     private ActionListener deleteLocalRepositoryFolderListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
@@ -250,11 +250,11 @@ public class RepositorySelectionPanel extends JPanel {
         });
     }
 
-    public void setLocalRepositoriesListeners(LocalProductsPopupListeners localProductsPopupListeners, ActionListener scanLocalRepositoryFolderListener,
+    public void setLocalRepositoriesListeners(LocalProductsPopupListeners localProductsPopupListeners, ActionListener scanLocalRepositoryFoldersListener,
                                                      ActionListener addLocalRepositoryFolderListener, ActionListener deleteLocalRepositoryFolderListener) {
 
         this.localProductsPopupListeners = localProductsPopupListeners;
-        this.scanLocalRepositoryFolderListener = scanLocalRepositoryFolderListener;
+        this.scanLocalRepositoryFoldersListener = scanLocalRepositoryFoldersListener;
         this.deleteLocalRepositoryFolderListener = deleteLocalRepositoryFolderListener;
 
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
@@ -262,7 +262,7 @@ public class RepositorySelectionPanel extends JPanel {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
                 AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)repositoryPanel;
-                allLocalProductsRepositoryPanel.setTopBarButtonListeners(scanLocalRepositoryFolderListener, addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
+                allLocalProductsRepositoryPanel.setTopBarButtonListeners(scanLocalRepositoryFoldersListener, addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
                 allLocalProductsRepositoryPanel.setLocalProductsData(this.localProductsPopupListeners);
             }
         }
