@@ -22,18 +22,17 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
-    private static final int REPO_CRED_PASS_COLUMN = 1;
+    public static final int REPO_CRED_PASS_SEE_COLUMN = 2;
     /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
-    public static final int REPO_CRED_PASS_SEE_COLUMN = 2;
-
+    private static final int REPO_CRED_PASS_COLUMN = 1;
     private final List<CredentialsTableRow> credentialsTableData;
-
     private final String[] columnsNames;
     private final Class[] columnsClass;
+    private List<Credentials> credentialsData;
 
-    public RepositoriesCredentialsTableModel(List<Credentials> credentialsList) {
+    public RepositoriesCredentialsTableModel() {
         credentialsTableData = new ArrayList<>();
         columnsNames = new String[]{
                 "Username", "Password", ""
@@ -41,7 +40,6 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         columnsClass = new Class[]{
                 JTextField.class, JPasswordField.class, JButton.class
         };
-        setData(credentialsList);
     }
 
     /**
@@ -136,13 +134,13 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     }
 
     public Credentials get(int row) {
-        return credentialsTableData.get(row).getCredentials();
+        return credentialsData.get(row);
     }
 
     public boolean add(Credentials credential) {
         boolean exists = false;
-        for (CredentialsTableRow credentialsTableRow : credentialsTableData) {
-            Credentials savedCredential = credentialsTableRow.getCredentials();
+        for (Credentials credentialData : credentialsData) {
+            UserCredential savedCredential = (UserCredential) credentialData;
             String savedUsername = savedCredential.getUserPrincipal().getName();
             String username = credential.getUserPrincipal().getName();
             String savedPassword = savedCredential.getPassword();
@@ -153,6 +151,7 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
             }
         }
         if (!exists) {
+            credentialsData.add(credential);
             CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential);
             credentialsTableData.add(credentialsTableRow);
             int row = credentialsTableData.indexOf(credentialsTableRow);
@@ -164,10 +163,12 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
 
     public void remove(int row) {
         credentialsTableData.remove(row);
+        credentialsData.remove(row);
         fireTableRowsDeleted(row, row);
     }
 
     public void setData(List<Credentials> credentialsList) {
+        this.credentialsData = credentialsList;
         int rowsDeleted = this.credentialsTableData.size();
         if (rowsDeleted > 0) {
             this.credentialsTableData.clear();

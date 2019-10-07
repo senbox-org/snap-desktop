@@ -2,8 +2,8 @@ package org.esa.snap.product.library.ui.v2.preferences;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
 import ro.cs.tao.utils.Crypto;
 
 import java.io.IOException;
@@ -75,61 +75,76 @@ public final class RepositoriesCredentialsPersistence {
         return credentialsKey;
     }
 
+    static boolean validCredentials(List<RemoteRepositoryCredentials> repositoriesCredentials) {
+        for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+            for (Credentials credentials : repositoryCredentials.getCredentialsList()) {
+                if (repositoryCredentials.credentialInvalid(credentials)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     static void save(Path destFile, List<RemoteRepositoryCredentials> repositoriesCredentials) throws IOException {
-        if (!repositoriesCredentials.isEmpty() && destFile != null) {
-            Properties properties = new Properties();
-            String repositoriesIds = "";
-            for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
-                String repositoryCredentialsIds = "";
-                int id = 1;
-                for (Credentials credential : repositoryCredentials.getCredentialsList()) {
-                    String credentialId = "" + id++;
-                    String username = credential.getUserPrincipal().getName();
-                    if (StringUtils.isNotNullAndNotEmpty(username)) {
-                        String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryId(), credentialId);
-                        properties.setProperty(usernameKey, username);
-                    } else {
-                        throw new IllegalArgumentException("empty username");
+        if (destFile != null) {
+            if (validCredentials(repositoriesCredentials)) {
+                Properties properties = new Properties();
+                String repositoriesIds = "";
+                for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
+                    String repositoryCredentialsIds = "";
+                    int id = 1;
+                    for (Credentials credential : repositoryCredentials.getCredentialsList()) {
+                        String credentialId = "" + id++;
+                        String username = credential.getUserPrincipal().getName();
+                        if (StringUtils.isNotNullAndNotEmpty(username)) {
+                            String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryId(), credentialId);
+                            properties.setProperty(usernameKey, username);
+                        } else {
+                            throw new IllegalArgumentException("empty username");
+                        }
+                        String password = credential.getPassword();
+                        if (StringUtils.isNotNullAndNotEmpty(password)) {
+                            String encryptedPassword = Crypto.encrypt(password, repositoryCredentials.getRepositoryId());
+                            String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryId(), credentialId);
+                            properties.setProperty(passwordKey, encryptedPassword);
+                        } else {
+                            throw new IllegalArgumentException("empty password");
+                        }
+                        repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
                     }
-                    String password = credential.getPassword();
-                    if (StringUtils.isNotNullAndNotEmpty(password)) {
-                        String encryptedPassword = Crypto.encrypt(password, repositoryCredentials.getRepositoryId());
-                        String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryId(), credentialId);
-                        properties.setProperty(passwordKey, encryptedPassword);
-                    } else {
-                        throw new IllegalArgumentException("empty password");
-                    }
-                    repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
-                }
-                if (StringUtils.isNotNullAndNotEmpty(repositoryCredentialsIds)) {
-                    String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryId());
-                    properties.setProperty(credentialsKey, repositoryCredentialsIds);
-                    if (repositoriesIds.isEmpty()) {
-                        repositoriesIds = repositoryCredentials.getRepositoryId();
-                    } else {
-                        repositoriesIds = repositoriesIds.concat(LIST_ITEM_SEPARATOR + repositoryCredentials.getRepositoryId());
-                    }
-                }
-            }
-            if (StringUtils.isNotNullAndNotEmpty(repositoriesIds)) {
-                properties.setProperty(PREFERENCE_KEY_REPOSITORIES, repositoriesIds);
-            }
-            OutputStream outputStream = null;
-            try {
-                if (!Files.exists(destFile)) {
-                    Files.createDirectories(destFile.getParent());
-                    Files.createFile(destFile);
-                }
-                outputStream = Files.newOutputStream(destFile);
-                properties.store(outputStream, "");
-            } finally {
-                if (outputStream != null) {
-                    try {
-                        outputStream.close();
-                    } catch (IOException ignored) {
-                        //do nothing
+                    if (StringUtils.isNotNullAndNotEmpty(repositoryCredentialsIds)) {
+                        String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryId());
+                        properties.setProperty(credentialsKey, repositoryCredentialsIds);
+                        if (repositoriesIds.isEmpty()) {
+                            repositoriesIds = repositoryCredentials.getRepositoryId();
+                        } else {
+                            repositoriesIds = repositoriesIds.concat(LIST_ITEM_SEPARATOR + repositoryCredentials.getRepositoryId());
+                        }
                     }
                 }
+                if (StringUtils.isNotNullAndNotEmpty(repositoriesIds)) {
+                    properties.setProperty(PREFERENCE_KEY_REPOSITORIES, repositoriesIds);
+                }
+                OutputStream outputStream = null;
+                try {
+                    if (!Files.exists(destFile)) {
+                        Files.createDirectories(destFile.getParent());
+                        Files.createFile(destFile);
+                    }
+                    outputStream = Files.newOutputStream(destFile);
+                    properties.store(outputStream, "");
+                } finally {
+                    if (outputStream != null) {
+                        try {
+                            outputStream.close();
+                        } catch (IOException ignored) {
+                            //do nothing
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("invalid credentials (empty or duplicates)");
             }
         }
     }
