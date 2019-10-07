@@ -6,7 +6,6 @@ import com.bc.ceres.core.ServiceRegistryManager;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.util.ServiceLoader;
-import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
@@ -122,7 +121,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 return true; // the credential was not found = changed
             }
         }
-        return false;
+        // some credentials deleted = changed
+        return credentials.size() < savedRepositoryCredentials.getCredentialsList().size();
     }
 
     private void loadRemoteRepositories() {
