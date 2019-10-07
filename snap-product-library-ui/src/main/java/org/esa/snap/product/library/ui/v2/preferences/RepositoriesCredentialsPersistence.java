@@ -1,9 +1,9 @@
 package org.esa.snap.product.library.ui.v2.preferences;
 
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
-import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
 import ro.cs.tao.utils.Crypto;
 
 import java.io.IOException;
@@ -184,7 +184,7 @@ public final class RepositoriesCredentialsPersistence {
                     String password = properties.getProperty(passwordKey);
                     password = Crypto.decrypt(password, repositoryId);
                     if (StringUtils.isNotNullAndNotEmpty(username) && StringUtils.isNotNullAndNotEmpty(password)) {
-                        repositoryCredentials.add(new UserCredential(username, password));
+                        repositoryCredentials.add(new UsernamePasswordCredentials(username, password));
                     }
                 }
                 if (!repositoryCredentials.isEmpty()) {
@@ -205,13 +205,13 @@ public final class RepositoriesCredentialsPersistence {
 
     public static void main(String[] args) throws IOException {
         List<Credentials> repositoryCredentialsList = new ArrayList<>();
-        repositoryCredentialsList.add(new UserCredential("u1", "p1"));
-        repositoryCredentialsList.add(new UserCredential("u2", "p2"));
+        repositoryCredentialsList.add(new UsernamePasswordCredentials("u1", "p1"));
+        repositoryCredentialsList.add(new UsernamePasswordCredentials("u2", "p2"));
         RemoteRepositoryCredentials repositoryCredentials = new RemoteRepositoryCredentials("b1", repositoryCredentialsList);
 
         List<Credentials> repositoryCredentialsList2 = new ArrayList<>();
-        repositoryCredentialsList2.add(new UserCredential("as1", "pw1"));
-        repositoryCredentialsList2.add(new UserCredential("us2", "pw2"));
+        repositoryCredentialsList2.add(new UsernamePasswordCredentials("as1", "pw1"));
+        repositoryCredentialsList2.add(new UsernamePasswordCredentials("us2", "pw2"));
         RemoteRepositoryCredentials repositoryCredentials2 = new RemoteRepositoryCredentials("b2", repositoryCredentialsList2);
         List<RemoteRepositoryCredentials> itemsToSave = new ArrayList<>();
         itemsToSave.add(repositoryCredentials);

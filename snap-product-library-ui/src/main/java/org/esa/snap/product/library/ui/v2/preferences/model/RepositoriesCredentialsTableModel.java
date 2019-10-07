@@ -1,13 +1,11 @@
 package org.esa.snap.product.library.ui.v2.preferences.model;
 
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -16,13 +14,13 @@ import java.util.List;
 public class RepositoriesCredentialsTableModel extends AbstractTableModel {
 
     /**
-     * The column index for remote repository credential username in remote file repository properties table.
-     */
-    public static final int REPO_CRED_USER_COLUMN = 0;
-    /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
     public static final int REPO_CRED_PASS_SEE_COLUMN = 2;
+    /**
+     * The column index for remote repository credential username in remote file repository properties table.
+     */
+    private static final int REPO_CRED_USER_COLUMN = 0;
     /**
      * The column index for remote repository credential password in remote file repository properties table.
      */
@@ -30,7 +28,6 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     private final List<CredentialsTableRow> credentialsTableData;
     private final String[] columnsNames;
     private final Class[] columnsClass;
-    private List<Credentials> credentialsData;
 
     public RepositoriesCredentialsTableModel() {
         credentialsTableData = new ArrayList<>();
@@ -134,13 +131,13 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     }
 
     public Credentials get(int row) {
-        return credentialsData.get(row);
+        return credentialsTableData.get(row).getCredentials();
     }
 
     public boolean add(Credentials credential) {
         boolean exists = false;
-        for (Credentials credentialData : credentialsData) {
-            UserCredential savedCredential = (UserCredential) credentialData;
+        for (CredentialsTableRow credentialData : credentialsTableData) {
+            UsernamePasswordCredentials savedCredential = (UsernamePasswordCredentials) credentialData.getCredentials();
             String savedUsername = savedCredential.getUserPrincipal().getName();
             String username = credential.getUserPrincipal().getName();
             String savedPassword = savedCredential.getPassword();
@@ -151,7 +148,6 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
             }
         }
         if (!exists) {
-            credentialsData.add(credential);
             CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential);
             credentialsTableData.add(credentialsTableRow);
             int row = credentialsTableData.indexOf(credentialsTableRow);
@@ -163,12 +159,10 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
 
     public void remove(int row) {
         credentialsTableData.remove(row);
-        credentialsData.remove(row);
         fireTableRowsDeleted(row, row);
     }
 
     public void setData(List<Credentials> credentialsList) {
-        this.credentialsData = credentialsList;
         int rowsDeleted = this.credentialsTableData.size();
         if (rowsDeleted > 0) {
             this.credentialsTableData.clear();
@@ -183,49 +177,23 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public List<Credentials> fetchData() {
+        List<Credentials> credentialsList = new ArrayList<>();
+        for (CredentialsTableRow credentialsTableRow : this.credentialsTableData) {
+            credentialsList.add(credentialsTableRow.getCredentials());
+        }
+        return credentialsList;
+    }
+
     private class CredentialsTableRow {
-        private UserCredential repositoryCredential;
         private JTextField textField;
         private JPasswordField passwordField;
         private JButton button;
 
         CredentialsTableRow(Credentials credential) {
-            this.repositoryCredential = (UserCredential) credential;
             this.textField = new JTextField();
-            PlainDocument usernameDocument = new PlainDocument() {
-                @Override
-                public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-                    super.insertString(offs, str, a);
-
-                    repositoryCredential.setUsername(textField.getText());
-                }
-
-                @Override
-                public void remove(int offs, int len) throws BadLocationException {
-                    super.remove(offs, len);
-
-                    repositoryCredential.setUsername(textField.getText());
-                }
-            };
-            this.textField.setDocument(usernameDocument);
             this.textField.setText(credential.getUserPrincipal().getName());
             this.passwordField = new JPasswordField();
-            PlainDocument passwordDocument = new PlainDocument() {
-                @Override
-                public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-                    super.insertString(offs, str, a);
-
-                    repositoryCredential.setPassword(new String(passwordField.getPassword()));
-                }
-
-                @Override
-                public void remove(int offs, int len) throws BadLocationException {
-                    super.remove(offs, len);
-
-                    repositoryCredential.setPassword(new String(passwordField.getPassword()));
-                }
-            };
-            this.passwordField.setDocument(passwordDocument);
             this.passwordField.setText(credential.getPassword());
             this.button = new JButton(RepositoriesCredentialsControllerUI.getPasswordSeeIcon());
             this.button.addMouseListener(new MouseAdapter() {
@@ -255,7 +223,9 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         }
 
         Credentials getCredentials() {
-            return repositoryCredential;
+            String username = this.textField.getText();
+            String password = new String(this.passwordField.getPassword());
+            return new UsernamePasswordCredentials(username, password);
         }
     }
 

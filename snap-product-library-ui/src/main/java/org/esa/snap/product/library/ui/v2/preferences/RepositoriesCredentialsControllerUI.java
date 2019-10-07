@@ -5,11 +5,11 @@ import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
-import org.esa.snap.product.library.ui.v2.preferences.model.UserCredential;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -71,6 +71,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     private RepositoriesCredentialsBean repositoriesCredentialsBean = new RepositoriesCredentialsBean();
     private List<RemoteRepositoryCredentials> repositoriesCredentials;
     private boolean isInitialized = false;
+    private int currentSelectedRow = -1;
 
     public RepositoriesCredentialsControllerUI() {
         RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
@@ -95,7 +96,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         for (RemoteRepositoryCredentials repositoryCredentialsSource : repositoriesCredentialsSource) {
             List<Credentials> credentialsCopy = new ArrayList<>();
             for (Credentials credentialsSource : repositoryCredentialsSource.getCredentialsList()) {
-                UserCredential repositoryCredential = new UserCredential(credentialsSource.getUserPrincipal().getName(), credentialsSource.getPassword());
+                UsernamePasswordCredentials repositoryCredential = new UsernamePasswordCredentials(credentialsSource.getUserPrincipal().getName(), credentialsSource.getPassword());
                 credentialsCopy.add(repositoryCredential);
             }
             repositoriesCredentialsCopy.add(new RemoteRepositoryCredentials(repositoryCredentialsSource.getRepositoryId(), credentialsCopy));
@@ -123,6 +124,16 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         }
         // some credentials deleted = changed
         return credentials.size() < savedRepositoryCredentials.getCredentialsList().size();
+    }
+
+    private static List<RemoteRepositoryCredentials> getUnselectedRemoteRepositories(List<RemoteRepositoryCredentials> allRepositoriesCredentials, String selectedRemoteRepositoryId) {
+        List<RemoteRepositoryCredentials> unselectedRepositoriesCredentials = new ArrayList<>();
+        for (RemoteRepositoryCredentials repositoryCredentials : allRepositoriesCredentials) {
+            if (!repositoryCredentials.getRepositoryId().contentEquals(selectedRemoteRepositoryId)) {
+                unselectedRepositoriesCredentials.add(repositoryCredentials);
+            }
+        }
+        return unselectedRepositoriesCredentials;
     }
 
     private void loadRemoteRepositories() {
@@ -182,7 +193,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             if (repositoriesListTable.getSelectedRow() < 0) {
                 SwingUtilities.invokeLater(() -> repositoriesListTable.changeSelection(0, RepositoriesTableModel.REPO_NAME_COLUMN, false, false));
             } else {
-                loadCredentialsOnTable();
+                refreshCredentialsTable();
             }
         }
     }
@@ -227,8 +238,19 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         if (repositoriesListTable.getSelectedRow() >= 0) {
             RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
             List<RemoteRepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
-            if (RepositoriesCredentialsPersistence.validCredentials(repositoriesCredentials)) {
-                return isRepositoriesChanged(savedRepositoriesCredentials, repositoriesCredentials);
+
+            RepositoriesTableModel repositoriesTableModel = (RepositoriesTableModel) repositoriesListTable.getModel();
+            RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
+            String selectedRemoteRepositoryId = repositoriesTableModel.get(this.currentSelectedRow).getRepositoryId();
+            List<Credentials> selectedRepositoryCredentials = repositoriesCredentialsTableModel.fetchData();
+            RemoteRepositoryCredentials repositoryCredentialsFromTable = new RemoteRepositoryCredentials(selectedRemoteRepositoryId, selectedRepositoryCredentials);
+            List<RemoteRepositoryCredentials> repositoriesCredentialsFromTable = new ArrayList<>();
+            repositoriesCredentialsFromTable.add(repositoryCredentialsFromTable);
+
+            List<RemoteRepositoryCredentials> unselectedRepositoriesCredentials = getUnselectedRemoteRepositories(repositoriesCredentials, selectedRemoteRepositoryId);
+
+            if (RepositoriesCredentialsPersistence.validCredentials(unselectedRepositoriesCredentials) && RepositoriesCredentialsPersistence.validCredentials(repositoriesCredentialsFromTable)) {
+                return isRepositoriesChanged(savedRepositoriesCredentials, unselectedRepositoriesCredentials) || isRepositoriesChanged(savedRepositoriesCredentials, repositoriesCredentialsFromTable);
             }
         }
         return false;
@@ -254,7 +276,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         RepositoriesTableModel repositoriesTableModel = new RepositoriesTableModel(this.remoteRepositories);
         newRepositoriesListTable.setModel(repositoriesTableModel);
         newRepositoriesListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        newRepositoriesListTable.getSelectionModel().addListSelectionListener(event -> loadCredentialsOnTable());
+        newRepositoriesListTable.getSelectionModel().addListSelectionListener(event -> refreshCredentialsTable());
         newRepositoriesListTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         return newRepositoriesListTable;
     }
@@ -278,7 +300,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     private void runAddCredentialEvent() {
         RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
-        Credentials newCredential = new UserCredential("", "");
+        Credentials newCredential = new UsernamePasswordCredentials("", "");
         repositoriesCredentialsTableModel.add(newCredential);
     }
 
@@ -494,19 +516,28 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     /**
-     * Loads the remote repository credentials usernames and passwords on remote repository credentials table
+     * Loads the remote repository credentials usernames and passwords from/on remote repository credentials table
      */
-    private void loadCredentialsOnTable() {
+    private void refreshCredentialsTable() {
+        RepositoriesTableModel repositoriesTableModel = (RepositoriesTableModel) repositoriesListTable.getModel();
+        RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
+        if (credentialsListTable.getSelectedColumn() >= 0) {
+            credentialsListTable.getDefaultEditor(credentialsListTable.getColumnClass(credentialsListTable.getSelectedColumn())).stopCellEditing();
+        }
+        String remoteRepositoryId;
+        List<Credentials> repositoryCredentials;
+        if (this.currentSelectedRow >= 0) {
+            remoteRepositoryId = repositoriesTableModel.get(this.currentSelectedRow).getRepositoryId();
+            repositoryCredentials = getRemoteRepositoryCredentials(remoteRepositoryId);
+            repositoryCredentials.clear();
+            repositoryCredentials.addAll(repositoriesCredentialsTableModel.fetchData());
+        }
         int selectedRow = repositoriesListTable.getSelectedRow();
         if (selectedRow >= 0) {
-            RepositoriesTableModel repositoriesTableModel = (RepositoriesTableModel) repositoriesListTable.getModel();
-            String remoteRepositoryId = repositoriesTableModel.get(selectedRow).getRepositoryId();
-            List<Credentials> repositoryCredentials = getRemoteRepositoryCredentials(remoteRepositoryId);
-            RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
-            if (credentialsListTable.getSelectedColumn() >= 0) {
-                credentialsListTable.getDefaultEditor(credentialsListTable.getColumnClass(credentialsListTable.getSelectedColumn())).stopCellEditing();
-            }
+            remoteRepositoryId = repositoriesTableModel.get(selectedRow).getRepositoryId();
+            repositoryCredentials = getRemoteRepositoryCredentials(remoteRepositoryId);
             repositoriesCredentialsTableModel.setData(repositoryCredentials);
+            this.currentSelectedRow = selectedRow;
         }
     }
 
