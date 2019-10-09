@@ -24,14 +24,14 @@ import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsCon
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.product.library.ui.v2.repository.local.AddLocalRepositoryTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.AddLocalRepositoryFolderTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.DeleteAllLocalRepositoriesTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.DeleteLocalProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.local.OpenLocalProductsRunnable;
-import org.esa.snap.product.library.ui.v2.repository.local.ScanAllLocalRepositoriesTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ScanAllLocalRepositoryFoldersTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductsTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsQueue;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
@@ -42,6 +42,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
+import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -399,10 +400,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void scanAllLocalRepositoriesAsync() {
         ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
         int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-        this.localRepositoryProductsThread = new ScanAllLocalRepositoriesTimerRunnable(progressBarHelper, threadId) {
+        this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId) {
             @Override
             protected void onStopExecuting() {
                 ProductLibraryToolViewV2.this.localRepositoryProductsThread = null; // reset
+                searchProductListLater();
             }
 
             @Override
@@ -413,9 +415,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.localRepositoryProductsThread.executeAsync(); // start the thread
     }
 
+    private void searchProductListLater() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                searchButtonPressed();
+            }
+        });
+    }
+
     private void addLocalRepositoryButtonPressed() {
         if (this.downloadProductsThread == null && this.localRepositoryProductsThread == null) {
-            addLocalRepositoryFolderAsync();
+            addLocalRepositoryAsync();
         } else {
             StringBuilder message = new StringBuilder();
             message.append("A local repository folder cannot be added.")
@@ -425,15 +436,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private void addLocalRepositoryFolderAsync() {
+    private void addLocalRepositoryAsync() {
         Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to add the products");
         if (selectedLocalRepositoryFolder != null) {
             ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
             int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-            this.localRepositoryProductsThread = new AddLocalRepositoryTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder) {
+            this.localRepositoryProductsThread = new AddLocalRepositoryFolderTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder) {
                 @Override
                 protected void onStopExecuting() {
                     ProductLibraryToolViewV2.this.localRepositoryProductsThread = null; // reset
+                    searchProductListLater();
                 }
 
                 @Override
@@ -466,6 +478,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     @Override
                     protected void onStopExecuting() {
                         ProductLibraryToolViewV2.this.searchProductListThread = null; // reset
+                        searchProductListLater();
                     }
 
                     @Override
@@ -675,8 +688,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                             }
 
                             @Override
-                            protected void onFinishSavingProduct(SaveProductData saveProductData) {
-                                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingProduct(saveProductData);
+                            protected void onFinishSavingProduct(SaveDownloadedProductData saveProductData) {
+                                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishDownloadingProduct(saveProductData);
                             }
                         };
                         this.downloadProductsThread.executeAsync(); // start the thread
@@ -702,7 +715,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedRepository();
         AbstractProgressTimerRunnable<?> thread = selectedRepository.buildThreadToSearchProducts(progressBarHelper, threadId, threadListener, this.repositoryProductListPanel);
         if (thread != null) {
-            this.repositoryProductListPanel.getProductListPanel().getProductListModel().clear();
+            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.clear();
             this.searchProductListThread = thread;
             this.searchProductListThread.executeAsync(); // start the thread
         }

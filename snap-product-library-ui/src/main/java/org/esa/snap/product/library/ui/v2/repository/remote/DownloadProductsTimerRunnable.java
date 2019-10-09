@@ -5,6 +5,7 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
+import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
@@ -95,7 +96,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
             this.currentRemoteProductDownloader = null; // reset
         }
 
-        SaveProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productPath,
+        SaveDownloadedProductData saveProductData = ProductLibraryDAL.saveProduct(remoteProductDownloader.getProductToDownload(), productPath,
                                                      remoteProductDownloader.getRepositoryId(), remoteProductDownloader.getLocalRepositoryFolderPath());
 
         // successfully downloaded and saved the product
@@ -125,7 +126,7 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
         onShowErrorMessageDialog(this.parentComponent, "Failed to download the products.", "Error");
     }
 
-    protected void onFinishSavingProduct(SaveProductData saveProductData) {
+    protected void onFinishSavingProduct(SaveDownloadedProductData saveProductData) {
     }
 
     public void updateProgressBarDownloadedProductsLater() {
@@ -139,10 +140,10 @@ public class DownloadProductsTimerRunnable extends AbstractProgressTimerRunnable
         updateProgressBarTextLater(text);
     }
 
-    private void updateFinishSavingProductDataLater(SaveProductData saveProductData) {
-        GenericRunnable<SaveProductData> runnable = new GenericRunnable<SaveProductData>(saveProductData) {
+    private void updateFinishSavingProductDataLater(SaveDownloadedProductData saveProductData) {
+        GenericRunnable<SaveDownloadedProductData> runnable = new GenericRunnable<SaveDownloadedProductData>(saveProductData) {
             @Override
-            protected void execute(SaveProductData item) {
+            protected void execute(SaveDownloadedProductData item) {
                 onFinishSavingProduct(item);
             }
         };

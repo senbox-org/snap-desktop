@@ -9,8 +9,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupLis
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
-import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.RemoteMission;
+import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
@@ -40,8 +39,6 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -61,11 +58,6 @@ public class RepositorySelectionPanel extends JPanel {
 
     private JPanel topBarButtonsPanel;
     private ItemListener repositoriesItemListener;
-    private List<RemoteMission> missions;
-    private Map<Short, Set<String>> attributeNamesPerMission;
-    private LocalProductsPopupListeners localProductsPopupListeners;
-    private ActionListener scanLocalRepositoryFoldersListener;
-    private ActionListener deleteLocalRepositoryFolderListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
@@ -121,13 +113,11 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     public void setInputData(LocalParameterValues parameterValues) {
-        this.missions = parameterValues.getMissions();
-        this.attributeNamesPerMission = parameterValues.getAttributes();
         if (parameterValues.getRepositoriesCredentials() != null) {
             refreshUserAccounts(parameterValues.getRepositoriesCredentials());
         }
-        List<LocalRepositoryFolder> localRepositoryFolders = parameterValues.getLocalRepositoryFolders();
-        getAllLocalProductsRepositoryPanel().setLocalParameterValues(localRepositoryFolders, this.missions, this.attributeNamesPerMission);
+        AllLocalProductsRepositoryPanel localProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
+        localProductsRepositoryPanel.setLocalParameterValues(parameterValues.getLocalRepositoryFolders(), parameterValues.getMissions(), parameterValues.getAttributes());
     }
 
     public ProgressBarHelperImpl getProgressBarHelper() {
@@ -151,6 +141,7 @@ public class RepositorySelectionPanel extends JPanel {
         refreshRepositoryLabelWidth();
     }
 
+    //TODO Jean rename method
     public void setDataSourcesBorder(Border border) {
         int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
@@ -165,6 +156,13 @@ public class RepositorySelectionPanel extends JPanel {
         if (saveProductData.getRemoteMission() != null) {
             allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
         }
+    }
+
+    public void finishDownloadingProduct(SaveDownloadedProductData saveProductData) {
+        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
+        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission());
+        allLocalProductsRepositoryPanel.addAttributesIfMissing(saveProductData.getProductAttributeNames());
     }
 
     public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
@@ -253,19 +251,9 @@ public class RepositorySelectionPanel extends JPanel {
     public void setLocalRepositoriesListeners(LocalProductsPopupListeners localProductsPopupListeners, ActionListener scanLocalRepositoryFoldersListener,
                                                      ActionListener addLocalRepositoryFolderListener, ActionListener deleteLocalRepositoryFolderListener) {
 
-        this.localProductsPopupListeners = localProductsPopupListeners;
-        this.scanLocalRepositoryFoldersListener = scanLocalRepositoryFoldersListener;
-        this.deleteLocalRepositoryFolderListener = deleteLocalRepositoryFolderListener;
-
-        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
-        for (int i=0; i<model.getSize(); i++) {
-            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
-            if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
-                AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)repositoryPanel;
-                allLocalProductsRepositoryPanel.setTopBarButtonListeners(scanLocalRepositoryFoldersListener, addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
-                allLocalProductsRepositoryPanel.setLocalProductsData(this.localProductsPopupListeners);
-            }
-        }
+        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
+        allLocalProductsRepositoryPanel.setTopBarButtonListeners(scanLocalRepositoryFoldersListener, addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
+        allLocalProductsRepositoryPanel.setLocalProductsPopupListeners(localProductsPopupListeners);
     }
 
     public void setDownloadRemoteProductListener(ActionListener downloadRemoteProductListener) {

@@ -7,6 +7,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.ServiceLoader;
+import org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
@@ -137,10 +138,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private void loadRemoteRepositories() {
-        ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
-        ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
-        ServiceLoader.loadServices(serviceRegistry);
-        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = serviceRegistry.getServices();
+        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = ProductLibraryToolViewV2.getRemoteProductsRepositoryProviders();
 
         for (RemoteProductsRepositoryProvider repositoryProductsProvider : repositoryProductsProviders) {
             if (repositoryProductsProvider.requiresAuthentication()) {

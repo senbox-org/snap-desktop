@@ -34,10 +34,13 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -52,7 +55,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     private final JButton addFolderButton;
     private final JButton removeFoldersButton;
 
-    private LocalProductsPopupListeners localProductsData;
+    private LocalProductsPopupListeners localProductsPopupListeners;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldWindowPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
@@ -168,18 +171,18 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts) {
         JMenuItem openMenuItem = new JMenuItem("Open");
-        openMenuItem.addActionListener(this.localProductsData.getOpenProductListener());
+        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        deleteMenuItem.addActionListener(this.localProductsData.getDeleteProductListener());
+        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteProductListener());
         JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing");
-        batchProcessingMenuItem.addActionListener(this.localProductsData.getBatchProcessingListener());
+        batchProcessingMenuItem.addActionListener(this.localProductsPopupListeners.getBatchProcessingListener());
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(openMenuItem);
         popupMenu.add(deleteMenuItem);
         popupMenu.add(batchProcessingMenuItem);
         if (selectedProducts.length == 1) {
             JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer");
-            showInExplorerMenuItem.addActionListener(this.localProductsData.getShowInExplorerListener());
+            showInExplorerMenuItem.addActionListener(this.localProductsPopupListeners.getShowInExplorerListener());
             popupMenu.add(showInExplorerMenuItem);
         }
         return popupMenu;
@@ -195,6 +198,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public JButton[] getTopBarButton() {
         return new JButton[]{this.scanFoldersButton, this.addFolderButton, this.removeFoldersButton};
+    }
+
+    @Override
+    public void clearParameterValues() {
+        this.foldersComboBox.setSelectedItem(null);
+        this.missionsComboBox.setSelectedItem(null);
+
+        super.clearParameterValues();
     }
 
     public void deleteLocalRepositoryFolder(LocalRepositoryFolder localRepositoryFolderToRemove) {
@@ -251,14 +262,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    @Override
-    public void clearParameterValues() {
-        this.foldersComboBox.setSelectedItem(null);
-        this.missionsComboBox.setSelectedItem(null);
-
-        super.clearParameterValues();
-    }
-
     public List<LocalRepositoryFolder> getLocalRepositoryFolders() {
         ComboBoxModel<LocalRepositoryFolder> foldersModel = this.foldersComboBox.getModel();
         List<LocalRepositoryFolder> result = new ArrayList<>(foldersModel.getSize());
@@ -271,25 +274,33 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return result;
     }
 
-    public void setLocalProductsData(LocalProductsPopupListeners localProductsData) {
-        this.localProductsData = localProductsData;
+    public void setLocalProductsPopupListeners(LocalProductsPopupListeners localProductsPopupListeners) {
+        this.localProductsPopupListeners = localProductsPopupListeners;
     }
 
     public void setLocalParameterValues(List<LocalRepositoryFolder> localRepositoryFolders, List<RemoteMission> missions, Map<Short, Set<String>> attributeNamesPerMission) {
+        this.foldersComboBox.removeAllItems();
         if (localRepositoryFolders != null && localRepositoryFolders.size() > 0) {
             this.foldersComboBox.addItem(null);
             for (int i = 0; i < localRepositoryFolders.size(); i++) {
                 this.foldersComboBox.addItem(localRepositoryFolders.get(i));
             }
+            this.foldersComboBox.setSelectedItem(null);
         }
+
+        this.missionsComboBox.removeAllItems();
         if (missions != null && missions.size() > 0) {
             this.missionsComboBox.addItem(null);
             for (int i = 0; i < missions.size(); i++) {
                 this.missionsComboBox.addItem(missions.get(i));
             }
+            this.missionsComboBox.setSelectedItem(null);
         }
+
+        this.attributesComboBox.removeAllItems();
         if (attributeNamesPerMission != null && attributeNamesPerMission.size() > 0) {
-            Set<String> uniqueAttributes = new HashSet<>();
+            Comparator<String> comparator = buildAttributeNamesComparator();
+            SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
             for (Map.Entry<Short, Set<String>> entry : attributeNamesPerMission.entrySet()) {
                 uniqueAttributes.addAll(entry.getValue());
             }
@@ -298,5 +309,40 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
             this.attributesComboBox.setSelectedItem(null);
         }
+    }
+
+    public void addAttributesIfMissing(Set<String> productAttributeNames) {
+        Comparator<String> comparator = buildAttributeNamesComparator();
+        SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
+        ComboBoxModel<String> attributesModel = this.attributesComboBox.getModel();
+        for (int i = 0; i < attributesModel.getSize(); i++) {
+            uniqueAttributes.add(attributesModel.getElementAt(i));
+        }
+        boolean newAttribute = false;
+        for (String attributeName : productAttributeNames) {
+            if (uniqueAttributes.add(attributeName)) {
+                newAttribute = true;
+            }
+        }
+        if (newAttribute) {
+            int oldSize = attributesModel.getSize();
+            this.attributesComboBox.removeAllItems();
+            for (String attributeName : uniqueAttributes) {
+                this.attributesComboBox.addItem(attributeName);
+            }
+            if (oldSize == 0) {
+                // reset the first selected attribute name
+                this.attributesComboBox.setSelectedItem(null);
+            }
+        }
+    }
+
+    private static Comparator<String> buildAttributeNamesComparator() {
+        return new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2);
+            }
+        };
     }
 }
