@@ -41,7 +41,7 @@ public class RepositoriesCredentialsController {
     }
 
     private static Path getDefaultConfigFilePath() {
-        return Paths.get(EngineConfig.instance().userDir().toString() + "/config/Preferences/pl.properties");
+        return Paths.get(EngineConfig.instance().userDir().toString() + "/config/Preferences/product-library.properties");
     }
 
     public static RepositoriesCredentialsController getInstance() {
@@ -55,7 +55,7 @@ public class RepositoriesCredentialsController {
     /**
      * Writes the provided Remote Repositories Credentials on SNAP configuration file.
      */
-    public void saveCredentials(List<RemoteRepositoryCredentials> repositoriesCredentialsForSave) throws IOException {
+    void saveCredentials(List<RemoteRepositoryCredentials> repositoriesCredentialsForSave) throws IOException {
         this.repositoriesCredentials = repositoriesCredentialsForSave;
         RepositoriesCredentialsPersistence.save(this.plConfigFile, this.repositoriesCredentials);
     }
