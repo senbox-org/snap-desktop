@@ -107,6 +107,10 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         JOptionPane.showMessageDialog(getParent(), message, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    protected final void showInformationMessageDialog(String message, String title) {
+        JOptionPane.showMessageDialog(getParent(), message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
     protected final void refreshLabelWidths() {
         int maximumLabelWidth = computeLeftPanelMaximumLabelWidth();
         for (int i=0; i<this.parameterComponents.size(); i++) {

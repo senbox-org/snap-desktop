@@ -117,9 +117,18 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             // the repository provider requires authentication
             selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
             if (selectedCredentials == null) {
-                String message = "Select the account used to download the data.";
-                showErrorMessageDialog(message, "Required credentials");
-                this.userAccountsComboBox.requestFocus();
+                // no credential account is selected
+                if (this.userAccountsComboBox.getModel().getSize() > 0) {
+                    String message = "Select the account used to search the product list on the remote repository.";
+                    showErrorMessageDialog(message, "Required credentials");
+                    this.userAccountsComboBox.requestFocus();
+                } else {
+                    StringBuilder message = new StringBuilder();
+                    message.append("There is no account defined in the application.")
+                            .append("\n\n")
+                            .append("To add an account for the remote repository go to the 'Tools -> Options' menu and select the 'Product Library' tab.");
+                    showInformationMessageDialog(message.toString(), "Add credentials");
+                }
                 canContinue = false;
             }
         }
