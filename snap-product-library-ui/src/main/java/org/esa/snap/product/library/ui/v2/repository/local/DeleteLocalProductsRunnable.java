@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.engine_utilities.util.FileIOUtils;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
@@ -29,7 +28,7 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
             try {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.DELETING);
 
-                FileIOUtils.deleteFolder(repositoryProduct.getPath());
+                //FileIOUtils.deleteFolder(repositoryProduct.getPath());
 
                 ProductLibraryDAL.deleteProduct(repositoryProduct);
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.DELETED);

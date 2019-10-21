@@ -5,8 +5,8 @@ import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
+import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import java.util.List;

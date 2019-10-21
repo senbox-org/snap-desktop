@@ -101,6 +101,10 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         return this.progressPanel.showProgressPanel(this.threadId);
     }
 
+    protected final boolean onUpdateProgressBarText(String message) {
+        return this.progressPanel.updateProgressBarText(this.threadId, message);
+    }
+
     protected final boolean isCurrentProgressPanelThread() {
         if (EventQueue.isDispatchThread()) {
             return this.progressPanel.isCurrentThread(this.threadId);

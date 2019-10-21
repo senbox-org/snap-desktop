@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.engine_utilities.util.FileIOUtils;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
@@ -8,7 +7,6 @@ import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,9 +38,9 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
 
                 ProductLibraryDAL.deleteLocalRepositoryFolder(localRepositoryFolder);
                 folderDeletedFromDatabase = true;
-                if (Files.exists(localRepositoryFolder.getPath())) {
-                    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());
-                }
+                //if (Files.exists(localRepositoryFolder.getPath())) {
+                //    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());
+                //}
             } catch (Exception exception) {
                 logger.log(Level.SEVERE, "Failed to delete the local repository folder '" + localRepositoryFolder.getPath().toString() + "'.", exception);
             } finally {

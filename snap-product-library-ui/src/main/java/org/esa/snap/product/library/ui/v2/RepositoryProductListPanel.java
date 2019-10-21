@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -39,7 +41,7 @@ public class RepositoryProductListPanel extends JPanel {
 
     private Comparator<RepositoryProduct> currentComparator;
 
-    public RepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, ActionListener stopButtonListener) {
+    public RepositoryProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, ActionListener stopButtonListener, int progressBarWidth) {
         super(new BorderLayout(0, componentDimension.getGapBetweenRows()/2));
 
         this.titleLabel = new JLabel(getTitle());
@@ -57,17 +59,18 @@ public class RepositoryProductListPanel extends JPanel {
             }
         });
 
-        this.productListPanel = new ProductListPanel(repositorySelectionPanel, componentDimension) {
+        this.productListPanel = new ProductListPanel(repositorySelectionPanel, componentDimension);
+        this.productListPanel.addDataChangedListener(new PropertyChangeListener() {
             @Override
-            protected void fireProductsRemoved(boolean fireListSelectionChanged) {
-                RepositoryProductListPanel.this.updateProductListCount();
-                super.fireProductsRemoved(fireListSelectionChanged);
+            public void propertyChange(PropertyChangeEvent evt) {
+                updateProductListCount();
             }
-        };
+        });
 
-        this.progressBarHelper = new ProgressBarHelperImpl(100, size.height) {
+        this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, size.height) {
             @Override
             protected void setParametersEnabledWhileDownloading(boolean enabled) {
+                // do nothing
             }
         };
         this.progressBarHelper.getProgressBar().setStringPainted(true);
@@ -112,44 +115,24 @@ public class RepositoryProductListPanel extends JPanel {
         return productListPanel;
     }
 
-    public void addProducts(List<RepositoryProduct> products, long totalProductCount, int retrievedProductCount, String dataSourceName) {
-        this.productListPanel.addProducts(products, this.currentComparator);
-        this.titleLabel.setText(getTitle() + ": " + "retrieved " + retrievedProductCount + " out of " + totalProductCount + " products from "+ dataSourceName+"...");
+    public void addProducts(List<RepositoryProduct> products) {
+        this.productListPanel.getProductListModel().addProducts(products, this.currentComparator);
     }
 
     public void setProducts(List<RepositoryProduct> products) {
-        this.productListPanel.setProducts(products, this.currentComparator);
-        updateProductListCount();
+        this.productListPanel.getProductListModel().setProducts(products, this.currentComparator);
     }
 
-    public void clearProducts() {
-        this.productListPanel.clearProducts();
-        this.titleLabel.setText(getTitle());
-    }
-
-    public void startSearchingProductList(String repositoryName) {
-        this.titleLabel.setText(getTitle() + ": " + "retrieving product list from " + repositoryName+"...");
+    private void updateProductListCount() {
+        String text = getTitle();
         if (this.productListPanel.getProductCount() > 0) {
-            throw new IllegalStateException("The product list must be empty before start retrieving the list.");
-        }
-    }
-
-    public void startDownloadingProductList(long totalProductCount, String dataSourceName) {
-        this.titleLabel.setText(getTitle() + ": " + "retrieving " + totalProductCount + " products from "+ dataSourceName+"...");
-    }
-
-    public void updateProductListCount() {
-        String text = getTitle() + ": " + this.productListPanel.getProductCount();
-        if (this.productListPanel.getProductCount() == 1) {
-            text += " product";
-        } else {
-            text += " products";
+            text += ": " + this.productListPanel.getProductCount();
         }
         this.titleLabel.setText(text);
     }
 
     private String getTitle() {
-        return "Product results";
+        return "Products";
     }
 
     private Comparator<RepositoryProduct> buildProductNameComparator() {

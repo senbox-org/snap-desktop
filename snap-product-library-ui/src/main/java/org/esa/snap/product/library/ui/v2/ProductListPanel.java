@@ -8,13 +8,9 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -22,7 +18,6 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -100,10 +95,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         return this.backgroundColor;
     }
 
-    public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
-        this.productListModel.addProducts(products, comparator);
-    }
-
     public ProductListModel getProductListModel() {
         return productListModel;
     }
@@ -118,10 +109,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
             }
         }
         repaint();
-        firePropertyChange(LIST_DATA_CHANGED, null, null);
-        if (fireListSelectionChanged) {
-            firePropertyChange(LIST_SELECTION_CHANGED, null, null);
-        }
+        fireBothListeners(fireListSelectionChanged);
     }
 
     private void productsAdded(int startIndex, int endIndex) {
@@ -151,10 +139,10 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         }
         revalidate();
         repaint();
-        fireProductsRemoved(fireListSelectionChanged);
+        fireBothListeners(fireListSelectionChanged);
     }
 
-    protected void fireProductsRemoved(boolean fireListSelectionChanged) {
+    private void fireBothListeners(boolean fireListSelectionChanged) {
         firePropertyChange(LIST_DATA_CHANGED, null, null);
         if (fireListSelectionChanged) {
             firePropertyChange(LIST_SELECTION_CHANGED, null, null);
@@ -163,10 +151,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
 
     public int getProductCount() {
         return this.productListModel.getProductCount();
-    }
-
-    public void clearProducts() {
-        this.productListModel.clear();
     }
 
     public RepositoryProduct[] getSelectedProducts() {
@@ -178,10 +162,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
             }
         }
         return selectedProducts;
-    }
-
-    public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
-        this.productListModel.setProductQuickLookImage(repositoryProduct, quickLookImage);
     }
 
     public void removePendingDownloadProducts() {
@@ -202,11 +182,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
 
     public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
         this.productListModel.setProductDownloadPercent(repositoryProduct, progressPercent);
-    }
-
-    public void setProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
-        clearProducts();
-        addProducts(products, comparator);
     }
 
     public void sortProducts(Comparator<RepositoryProduct> comparator) {
@@ -273,11 +248,11 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         firePropertyChange(LIST_SELECTION_CHANGED, null, null);
     }
 
-    public void setDataChangedListener(PropertyChangeListener listDataChangedListener) {
+    public void addDataChangedListener(PropertyChangeListener listDataChangedListener) {
         addPropertyChangeListener(LIST_DATA_CHANGED, listDataChangedListener);
     }
 
-    public void setSelectionChangedListener(PropertyChangeListener listSelectionChangedListener) {
+    public void addSelectionChangedListener(PropertyChangeListener listSelectionChangedListener) {
         addPropertyChangeListener(LIST_SELECTION_CHANGED, listSelectionChangedListener);
     }
 

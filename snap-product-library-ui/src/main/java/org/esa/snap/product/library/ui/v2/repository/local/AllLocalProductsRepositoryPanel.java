@@ -9,6 +9,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryP
 import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
@@ -157,7 +158,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RepositoryProductListPanel repositoryProductListPanel) {
+                                                                                              RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel repositoryProductListPanel) {
 
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {

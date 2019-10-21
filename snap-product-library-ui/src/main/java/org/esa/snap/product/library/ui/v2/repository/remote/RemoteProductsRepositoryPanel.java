@@ -12,6 +12,7 @@ import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -32,6 +33,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +111,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     @Override
     public AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                        RepositoryProductListPanel productResultsPanel) {
+                                                                        RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel productResultsPanel) {
 
         Credentials selectedCredentials = null;
         boolean canContinue = true;
@@ -136,8 +138,11 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             Map<String, Object> parameterValues = getParameterValues();
             if (parameterValues != null) {
                 String selectedMission = getSelectedMission();
+                if (selectedMission == null) {
+                    throw new NullPointerException("The remote mission is null");
+                }
                 return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
-                                                              productResultsPanel, getName(), selectedMission, parameterValues);
+                                                             remoteRepositoriesSemaphore, productResultsPanel, getName(), selectedMission, parameterValues);
             }
         }
         return null;
@@ -204,6 +209,21 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         refreshLabelWidths();
     }
 
+    public RemoteProductDownloader buildProductDownloader(RepositoryProduct repositoryProduct, Path localRepositoryFolderPath) {
+        Credentials selectedCredentials = null;
+        if (this.userAccountsComboBox != null) {
+            // the repository provider requires authentication
+            selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();
+            if (selectedCredentials == null) {
+                // no credential account is selected
+                throw new NullPointerException("No credential account is selected.");
+            }
+        }
+        ProductRepositoryDownloader productRepositoryDownloader = this.productsRepositoryProvider.buidProductDownloader(repositoryProduct.getMission());
+        RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(repositoryProduct, productRepositoryDownloader, localRepositoryFolderPath, selectedCredentials);
+        return remoteProductDownloader;
+    }
+
     public void setDownloadProductListener(ActionListener downloadProductListener) {
         this.downloadProductListener = downloadProductListener;
     }
@@ -237,6 +257,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         label.setMinimumSize(labelSize);
     }
 
+    //TODO Jean move methods
     public static <ItemType> JComboBox<ItemType> buildComboBox(ComponentDimension componentDimension) {
         JComboBox<ItemType> comboBox = new JComboBox<ItemType>() {
             @Override

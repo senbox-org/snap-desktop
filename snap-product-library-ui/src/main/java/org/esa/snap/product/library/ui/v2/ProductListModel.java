@@ -91,6 +91,11 @@ public class ProductListModel {
         }
     }
 
+    public void setProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
+        clear();
+        addProducts(products, comparator);
+    }
+
     public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
         if (products.size() > 0) {
             int startIndex = this.products.size();

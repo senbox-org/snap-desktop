@@ -60,7 +60,7 @@ public class RepositorySelectionPanel extends JPanel {
     private ItemListener repositoriesItemListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel) {
+                                    MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel, int progressBarWidth) {
 
         super(new GridBagLayout());
 
@@ -84,12 +84,13 @@ public class RepositorySelectionPanel extends JPanel {
         this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize, 1);
         this.helpButton.setToolTipText("Help");
 
-        this.progressBarHelper = new ProgressBarHelperImpl(100, buttonSize.height) {
+        this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, buttonSize.height) {
             @Override
             protected void setParametersEnabledWhileDownloading(boolean enabled) {
                 RepositorySelectionPanel.this.setParametersEnabledWhileDownloading(enabled);
             }
         };
+        this.progressBarHelper.getProgressBar().setStringPainted(true);
 
         this.repositoryLabel = new JLabel("Repository");
 

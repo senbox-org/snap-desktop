@@ -6,6 +6,7 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
@@ -52,7 +53,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
                                                                     ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);
 
     public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RepositoryProductListPanel repositoryProductListPanel);
+                                                                                 RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel repositoryProductListPanel);
 
     public JButton[] getTopBarButton() {
         return null;
