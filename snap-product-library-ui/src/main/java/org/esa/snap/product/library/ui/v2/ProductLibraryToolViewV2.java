@@ -40,7 +40,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
@@ -127,7 +127,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private AbstractProgressTimerRunnable<?> localRepositoryProductsThread;
     private DownloadRemoteProductsHelper downloadRemoteProductsHelper;
     private int textFieldPreferredHeight;
-    private WorldWindowPanelWrapper worldWindowPanel;
+    private WorldMapPanelWrapper worldWindowPanel;
     private RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private boolean inputDataLoaded;
     private AppContext appContext;
@@ -341,9 +341,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 ProductLibraryToolViewV2.this.leftMouseButtonClicked(polygonPaths);
             }
         };
-        this.worldWindowPanel = new WorldWindowPanelWrapper();
+        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener);
         this.worldWindowPanel.setPreferredSize(new Dimension(400, 250));
-        this.worldWindowPanel.addWorldWindowPanelAsync(false, true, worldWindowMouseListener);
+        this.worldWindowPanel.addWorldMapPanelAsync(false, true);
     }
 
     private void addListeners() {

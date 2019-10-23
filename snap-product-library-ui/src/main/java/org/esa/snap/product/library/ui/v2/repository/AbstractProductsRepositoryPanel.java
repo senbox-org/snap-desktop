@@ -9,7 +9,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsReposi
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -31,12 +31,12 @@ import java.util.Map;
  */
 public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
-    private final WorldWindowPanelWrapper worlWindPanel;
+    private final WorldMapPanelWrapper worlWindPanel;
 
     protected final ComponentDimension componentDimension;
     protected List<AbstractParameterComponent<?>> parameterComponents;
 
-    protected AbstractProductsRepositoryPanel(WorldWindowPanelWrapper worlWindPanel, ComponentDimension componentDimension, LayoutManager layoutManager) {
+    protected AbstractProductsRepositoryPanel(WorldMapPanelWrapper worlWindPanel, ComponentDimension componentDimension, LayoutManager layoutManager) {
         super(layoutManager);
 
         this.worlWindPanel = worlWindPanel;

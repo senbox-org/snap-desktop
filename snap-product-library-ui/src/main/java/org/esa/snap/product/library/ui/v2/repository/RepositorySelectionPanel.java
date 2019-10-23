@@ -8,7 +8,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -54,13 +54,13 @@ public class RepositorySelectionPanel extends JPanel {
     private final ProgressBarHelperImpl progressBarHelper;
 
     private final ComponentDimension componentDimension;
-    private final WorldWindowPanelWrapper worldWindowPanel;
+    private final WorldMapPanelWrapper worldWindowPanel;
 
     private JPanel topBarButtonsPanel;
     private ItemListener repositoriesItemListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worldWindowPanel, int progressBarWidth) {
+                                    MissionParameterListener missionParameterListener, WorldMapPanelWrapper worldWindowPanel, int progressBarWidth) {
 
         super(new GridBagLayout());
 

@@ -11,7 +11,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryP
 import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -50,7 +50,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final JComboBox<Credentials> userAccountsComboBox;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
-                                         MissionParameterListener missionParameterListener, WorldWindowPanelWrapper worlWindPanel) {
+                                         MissionParameterListener missionParameterListener, WorldMapPanelWrapper worlWindPanel) {
 
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 

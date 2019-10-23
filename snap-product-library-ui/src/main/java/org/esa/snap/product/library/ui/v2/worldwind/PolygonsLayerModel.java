@@ -1,27 +1,28 @@
 package org.esa.snap.product.library.ui.v2.worldwind;
 
-import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Renderable;
-
 import java.awt.Color;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by jcoravu on 10/9/2019.
  */
-public class PolygonLayer extends RenderableLayer {
+public class PolygonsLayerModel {
 
-    public PolygonLayer() {
+    private final Collection<CustomPolyline> renderables;
+
+    public PolygonsLayerModel() {
+        this.renderables = new ArrayList<>();
     }
 
     public List<Path2D.Double> findPolygonsContainsPoint(double longitude, double latitude) {
         List<Path2D.Double> polygonPaths = new ArrayList<>();
-        Iterator<Renderable> it1 = this.renderables.iterator();
+        Iterator<CustomPolyline> it1 = this.renderables.iterator();
         while (it1.hasNext()) {
-            CustomPolyline polyline = (CustomPolyline)it1.next();
+            CustomPolyline polyline = it1.next();
             if (polyline.getPath().contains(longitude, latitude)) {
                 polygonPaths.add(polyline.getPath());
             }
@@ -29,11 +30,15 @@ public class PolygonLayer extends RenderableLayer {
         return polygonPaths;
     }
 
+    public Collection<CustomPolyline> getRenderables() {
+        return renderables;
+    }
+
     public void setPolygons(Path2D.Double[] polygonPaths) {
         List<CustomPolyline> polygonsToRemove = new ArrayList<>();
-        Iterator<Renderable> it1 = this.renderables.iterator();
+        Iterator<CustomPolyline> it1 = this.renderables.iterator();
         while (it1.hasNext()) {
-            CustomPolyline polyline = (CustomPolyline)it1.next();
+            CustomPolyline polyline = it1.next();
             boolean found = false;
             for (int i=0; i<polygonPaths.length && !found; i++) {
                 if (polyline.getPath() == polygonPaths[i]) {
@@ -45,14 +50,14 @@ public class PolygonLayer extends RenderableLayer {
             }
         }
         for (int i=0; i<polygonsToRemove.size(); i++) {
-            removeRenderable(polygonsToRemove.get(i));
+            this.renderables.remove(polygonsToRemove.get(i));
         }
 
         for (int i=0; i<polygonPaths.length; i++) {
-            Iterator<Renderable> it2 = this.renderables.iterator();
+            Iterator<CustomPolyline> it2 = this.renderables.iterator();
             boolean found = false;
             while (it2.hasNext() && !found) {
-                CustomPolyline polyline = (CustomPolyline)it2.next();
+                CustomPolyline polyline = it2.next();
                 if (polyline.getPath() == polygonPaths[i]) {
                     found = true;
                 }
@@ -60,18 +65,18 @@ public class PolygonLayer extends RenderableLayer {
             if (!found) {
                 CustomPolyline polyline = new CustomPolyline(polygonPaths[i]);
                 polyline.setFollowTerrain(true);
-                polyline.setColor(new Color(1f, 1f, 1f, 0.99f));
-                polyline.setHighlightColor(Color.RED);
-                polyline.setLineWidth(1);
-                addRenderable(polyline);
+                polyline.setColor(WorldMapPanelWrapper.POLYGON_BORDER_COLOR);
+                polyline.setHighlightColor(WorldMapPanelWrapper.POLYGON_HIGHLIGHT_BORDER_COLOR);
+                polyline.setLineWidth(WorldMapPanelWrapper.POLYGON_LINE_WIDTH);
+                this.renderables.add(polyline);
             }
         }
     }
 
     public void highlightPolygons(Path2D.Double[] polygonPaths) {
-        Iterator<Renderable> it1 = this.renderables.iterator();
+        Iterator<CustomPolyline> it1 = this.renderables.iterator();
         while (it1.hasNext()) {
-            CustomPolyline polyline = (CustomPolyline)it1.next();
+            CustomPolyline polyline = it1.next();
             boolean found = false;
             for (int i=0; i<polygonPaths.length && !found; i++) {
                 if (polyline.getPath() == polygonPaths[i]) {
@@ -84,22 +89,14 @@ public class PolygonLayer extends RenderableLayer {
         }
 
         for (int i=0; i<polygonPaths.length; i++) {
-            Iterator<Renderable> it2 = this.renderables.iterator();
-            boolean found = false;
-            while (it2.hasNext() && !found) {
-                CustomPolyline polyline = (CustomPolyline)it2.next();
-                if (polyline.getPath() == polygonPaths[i]) {
-                    polyline.setHighlighted(true);
-                    found = true;
-                }
-            }
+            highlightPolygon(polygonPaths[i]);
         }
     }
 
-    public boolean highlightPolygon(Path2D.Double polygonPath) {
-        Iterator<Renderable> it = this.renderables.iterator();
+    private boolean highlightPolygon(Path2D.Double polygonPath) {
+        Iterator<CustomPolyline> it = this.renderables.iterator();
         while (it.hasNext()) {
-            CustomPolyline polyline = (CustomPolyline)it.next();
+            CustomPolyline polyline = it.next();
             if (polyline.getPath() == polygonPath) {
                 polyline.setHighlighted(true);
                 return true; // the polygon exists

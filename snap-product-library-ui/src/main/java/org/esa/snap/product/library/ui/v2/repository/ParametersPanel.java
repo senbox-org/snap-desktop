@@ -37,9 +37,11 @@ public class ParametersPanel extends JPanel {
                 if (param.getValueSet() == null) {
                     parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
                 } else {
-                    String[] defaultValues = (String[])param.getValueSet();
+                    Object[] defaultValues = param.getValueSet();
                     String[] values = new String[defaultValues.length + 1];
-                    System.arraycopy(defaultValues, 0, values, 1, defaultValues.length);
+                    for (int k=0; k<defaultValue.length(); k++) {
+                        values[k+1] = defaultValues.toString();
+                    }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
             } else if (param.getType() == Double.class || param.getType() == Integer.class) {

@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
-import org.esa.snap.product.library.ui.v2.worldwind.WorldWindowPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 
 import java.awt.geom.Rectangle2D;
 
@@ -9,26 +9,26 @@ import java.awt.geom.Rectangle2D;
  */
 public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle2D> {
 
-    private final WorldWindowPanelWrapper worlWindPanel;
+    private final WorldMapPanelWrapper worldMapPanelWrapper;
 
-    public SelectionAreaParameterComponent(WorldWindowPanelWrapper worlWindPanel, String parameterName, String parameterLabelText, boolean required) {
+    public SelectionAreaParameterComponent(WorldMapPanelWrapper worlWindPanel, String parameterName, String parameterLabelText, boolean required) {
         super(parameterName, parameterLabelText, required);
 
-        this.worlWindPanel = worlWindPanel;
+        this.worldMapPanelWrapper = worlWindPanel;
     }
 
     @Override
-    public WorldWindowPanelWrapper getComponent() {
-        return this.worlWindPanel;
+    public WorldMapPanelWrapper getComponent() {
+        return this.worldMapPanelWrapper;
     }
 
     @Override
     public Rectangle2D getParameterValue() {
-        return this.worlWindPanel.getSelectedArea();
+        return this.worldMapPanelWrapper.getSelectedArea();
     }
 
     @Override
     public void clearParameterValue() {
-        this.worlWindPanel.clearSelectedArea();
+        this.worldMapPanelWrapper.clearSelectedArea();
     }
 }
