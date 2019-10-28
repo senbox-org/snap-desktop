@@ -172,14 +172,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         return this.productListModel.addPendingDownloadProducts(pendingProducts);
     }
 
-    public void setStopDownloadingProduct(RepositoryProduct repositoryProduct) {
-        this.productListModel.setStopDownloadingProduct(repositoryProduct);
-    }
-
-    public void setFailedDownloadingProduct(RepositoryProduct repositoryProduct) {
-        this.productListModel.setFailedDownloadingProduct(repositoryProduct);
-    }
-
     public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
         this.productListModel.setProductDownloadPercent(repositoryProduct, progressPercent);
     }

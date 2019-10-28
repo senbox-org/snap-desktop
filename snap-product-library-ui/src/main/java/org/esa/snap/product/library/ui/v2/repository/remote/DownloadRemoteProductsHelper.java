@@ -1,11 +1,11 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.engine_utilities.util.ThreadNamePoolExecutor;
+import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
 import java.util.HashSet;
@@ -52,13 +52,8 @@ public class DownloadRemoteProductsHelper {
                 }
 
                 @Override
-                protected void stopDownloadingProduct(RepositoryProduct repositoryProduct) {
-                    updateStopDownloadingProductLater(repositoryProduct);
-                }
-
-                @Override
-                protected void failedDownloadingProduct(RepositoryProduct repositoryProduct) {
-                    updateFailedDownloadingProductLater(repositoryProduct);
+                protected void updateDownloadingProductStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
+                    updateDownloadingProductStatusLater(repositoryProduct, downloadStatus);
                 }
 
                 @Override
@@ -67,8 +62,8 @@ public class DownloadRemoteProductsHelper {
                 }
 
                 @Override
-                protected void updateDownloadedProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
-                    updateDownloadedProgressPercentLater(repositoryProduct, progressPercent);
+                protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
+                    updateDownloadingProgressPercentLater(repositoryProduct, progressPercent);
                 }
             };
             this.runningTasks.add(runnable);
@@ -147,7 +142,7 @@ public class DownloadRemoteProductsHelper {
         }
     }
 
-    private void updateDownloadedProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent) {
+    private void updateDownloadingProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent) {
         Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, this.repositoryProductListPanel) {
             @Override
             public void run() {
@@ -159,24 +154,12 @@ public class DownloadRemoteProductsHelper {
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void updateStopDownloadingProductLater(RepositoryProduct repositoryProduct) {
-        Runnable runnable = new GenericRunnable<RepositoryProduct>(repositoryProduct) {
+    private void updateDownloadingProductStatusLater(RepositoryProduct repositoryProduct, byte downloadStatus) {
+        Runnable runnable = new UpdateDownloadingProductStatusRunnable(repositoryProduct, downloadStatus, this.repositoryProductListPanel) {
             @Override
-            protected void execute(RepositoryProduct item) {
+            public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
-                    repositoryProductListPanel.getProductListPanel().setStopDownloadingProduct(item);
-                }
-            }
-        };
-        SwingUtilities.invokeLater(runnable);
-    }
-
-    private void updateFailedDownloadingProductLater(RepositoryProduct repositoryProduct) {
-        Runnable runnable = new GenericRunnable<RepositoryProduct>(repositoryProduct) {
-            @Override
-            protected void execute(RepositoryProduct item) {
-                if (progressPanel.isCurrentThread(threadId)) {
-                    repositoryProductListPanel.getProductListPanel().setFailedDownloadingProduct(item);
+                    super.run();
                 }
             }
         };
@@ -194,6 +177,25 @@ public class DownloadRemoteProductsHelper {
         }
     }
 
+    private static class UpdateDownloadingProductStatusRunnable implements Runnable {
+
+        private final RepositoryProduct repositoryProduct;
+        private final byte downloadStatus;
+        private final RepositoryProductListPanel repositoryProductListPanel;
+
+        private UpdateDownloadingProductStatusRunnable(RepositoryProduct repositoryProduct, byte downloadStatus, RepositoryProductListPanel repositoryProductListPanel) {
+            this.repositoryProduct = repositoryProduct;
+            this.downloadStatus = downloadStatus;
+            this.repositoryProductListPanel = repositoryProductListPanel;
+        }
+
+        @Override
+        public void run() {
+            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.setProductDownloadStatus(this.repositoryProduct, this.downloadStatus);
+        }
+    }
+
     private static class UpdateDownloadedProgressPercentRunnable implements Runnable {
 
         private final RepositoryProduct productToDownload;
@@ -208,7 +210,8 @@ public class DownloadRemoteProductsHelper {
 
         @Override
         public void run() {
-            this.repositoryProductListPanel.getProductListPanel().setProductDownloadPercent(this.productToDownload, this.progressPercent);
+            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.setProductDownloadPercent(this.productToDownload, this.progressPercent);
         }
     }
 

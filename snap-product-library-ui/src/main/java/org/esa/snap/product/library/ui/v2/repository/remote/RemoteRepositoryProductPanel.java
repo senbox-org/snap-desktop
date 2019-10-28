@@ -43,6 +43,9 @@ public class RemoteRepositoryProductPanel extends RepositoryProductPanel {
             } else if (progressPercent.isDownloaded()) {
                 percentText = "Downloaded";
                 foregroundColor = Color.GREEN;
+            } else if (progressPercent.isNotAvailable()) {
+                percentText = "Not available to download";
+                foregroundColor = Color.RED;
             } else if (progressPercent.isFailedDownload()) {
                 percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (failed)";
                 foregroundColor = Color.RED;

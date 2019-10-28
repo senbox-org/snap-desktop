@@ -39,8 +39,8 @@ public class ParametersPanel extends JPanel {
                 } else {
                     Object[] defaultValues = param.getValueSet();
                     String[] values = new String[defaultValues.length + 1];
-                    for (int k=0; k<defaultValue.length(); k++) {
-                        values[k+1] = defaultValues.toString();
+                    for (int k=0; k<defaultValues.length; k++) {
+                        values[k+1] = defaultValues[k].toString();
                     }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }

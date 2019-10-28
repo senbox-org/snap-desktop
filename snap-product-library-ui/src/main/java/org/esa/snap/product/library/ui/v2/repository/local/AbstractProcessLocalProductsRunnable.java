@@ -44,8 +44,8 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
 
         @Override
         public void run() {
-            ProductListModel productListModel = repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setOpenProductStatus(this.productToOpen, this.openStatus);
+            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.setLocalProductStatus(this.productToOpen, this.openStatus);
         }
     }
 }

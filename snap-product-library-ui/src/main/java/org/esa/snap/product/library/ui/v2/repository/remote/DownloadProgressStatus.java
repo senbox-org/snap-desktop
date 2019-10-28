@@ -10,6 +10,7 @@ public class DownloadProgressStatus {
     public static final byte STOP_DOWNLOADING = 3;
     public static final byte DOWNLOADED = 4;
     public static final byte FAILED_DOWNLOADING = 5;
+    public static final byte NOT_AVAILABLE = 6;
 
     private short value;
     private byte status;
@@ -32,12 +33,8 @@ public class DownloadProgressStatus {
         }
     }
 
-    public void setStopDownloading() {
-        this.status = STOP_DOWNLOADING;
-    }
-
-    public void setFailedDownloading() {
-        this.status = FAILED_DOWNLOADING;
+    public void setStatus(byte status) {
+        this.status = status;
     }
 
     public boolean isPendingDownload() {
@@ -58,5 +55,9 @@ public class DownloadProgressStatus {
 
     public boolean isFailedDownload() {
         return (this.status == FAILED_DOWNLOADING);
+    }
+
+    public boolean isNotAvailable() {
+        return (this.status == NOT_AVAILABLE);
     }
 }

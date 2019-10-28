@@ -37,19 +37,23 @@ public class DownloadProductRunnable implements Runnable {
                 saveProductData = downloadAndSaveProduct();
             }
         } catch (java.lang.InterruptedException exception) {
-            stopDownloadingProduct(remoteProductDownloader.getProductToDownload());
+            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.STOP_DOWNLOADING);
+        } catch (IOException exception) {
+            byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
+            if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
+                downloadStatus = DownloadProgressStatus.NOT_AVAILABLE; // the product to download is not online
+            }
+            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), downloadStatus);
+            logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } catch (Exception exception) {
-            failedDownloadingProduct(remoteProductDownloader.getProductToDownload());
-            logger.log(Level.SEVERE, "Failed to download the remote product '" + remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
+            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.FAILED_DOWNLOADING);
+            logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } finally {
             finishRunningThread(saveProductData);
         }
     }
 
-    protected void stopDownloadingProduct(RepositoryProduct repositoryProduct) {
-    }
-
-    protected void failedDownloadingProduct(RepositoryProduct repositoryProduct) {
+    protected void updateDownloadingProductStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
     }
 
     protected void startRunningThread() {
@@ -58,7 +62,7 @@ public class DownloadProductRunnable implements Runnable {
     protected void finishRunningThread(SaveDownloadedProductData saveProductData) {
     }
 
-    protected void updateDownloadedProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
+    protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
     }
 
     private boolean isRunning() {
@@ -78,7 +82,7 @@ public class DownloadProductRunnable implements Runnable {
         RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
             @Override
             public void notifyProgress(short progressPercent) {
-                updateDownloadedProgressPercent(getProductToDownload(), progressPercent);
+                updateDownloadingProgressPercent(getProductToDownload(), progressPercent);
             }
         };
 
@@ -89,7 +93,7 @@ public class DownloadProductRunnable implements Runnable {
                 return null;
             }
 
-            updateDownloadedProgressPercent(progressListener.getProductToDownload(), (short) 0); // 0%
+            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0); // 0%
 
             productPath = this.remoteProductDownloader.download(progressListener);
 
@@ -102,7 +106,7 @@ public class DownloadProductRunnable implements Runnable {
                                                                                   this.remoteProductDownloader.getLocalRepositoryFolderPath());
 
         // successfully downloaded and saved the product
-        updateDownloadedProgressPercent(progressListener.getProductToDownload(), (short)100); // 100%
+        updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100); // 100%
 
         return saveProductData;
     }

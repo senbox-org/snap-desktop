@@ -118,7 +118,7 @@ public class ProductListModel {
                 keysToRemove.add(entry.getKey());
             } else if (progressPercent.isDownloading()) {
                 if (progressPercent.getValue() < 100) {
-                    progressPercent.setStopDownloading();
+                    progressPercent.setStatus(DownloadProgressStatus.STOP_DOWNLOADING);
                 }
             }
         }
@@ -194,7 +194,7 @@ public class ProductListModel {
         return productsToProcess;
     }
 
-    public void setOpenProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
+    public void setLocalProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
         LocalProgressStatus openProgressStatus = this.localProductsMap.get(repositoryProduct);
         if (openProgressStatus != null) {
             openProgressStatus.setStatus(openStatus);
@@ -217,19 +217,10 @@ public class ProductListModel {
         throw new IllegalArgumentException("The repository product '"+repositoryProductToFind.getName()+"' does not exist into the list.");
     }
 
-    public void setStopDownloadingProduct(RepositoryProduct repositoryProduct) {
+    public void setProductDownloadStatus(RepositoryProduct repositoryProduct, byte status) {
         DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
         if (progressPercent != null) {
-            progressPercent.setStopDownloading();
-            int index = findProductIndex(repositoryProduct);
-            fireIntervalChanged(index, index);
-        }
-    }
-
-    public void setFailedDownloadingProduct(RepositoryProduct repositoryProduct) {
-        DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
-        if (progressPercent != null) {
-            progressPercent.setFailedDownloading();
+            progressPercent.setStatus(status);
             int index = findProductIndex(repositoryProduct);
             fireIntervalChanged(index, index);
         }
