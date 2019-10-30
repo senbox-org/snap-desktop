@@ -212,4 +212,16 @@ class ImageInfoEditor2 extends ImageInfoEditor {
             UIUtils.setRootFrameDefaultCursor(ImageInfoEditor2.this);
         }
     }
+
+
+    @Override
+    protected boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled) {
+        return ColorUtils.checkLogCompatibility(value, componentName, isLogScaled);
+    }
+
+    @Override
+    protected boolean checkSliderRangeCompatibility(double value, double min, double max) {
+        return ColorUtils.checkSliderRangeCompatibility (value, min, max);
+    }
+
 }

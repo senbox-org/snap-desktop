@@ -1,9 +1,12 @@
 package org.esa.snap.rcp.colormanip;
 
+import org.esa.snap.rcp.SnapApp;
+
 /**
- * Utility class containing methods to process the colors.
+ * Utility class containing methods to the Color Manipulation Tool.
  *
  * @author Jean Coravu
+ * @author Daniel Knowles
  */
 public class ColorUtils {
 
@@ -67,5 +70,109 @@ public class ColorUtils {
      */
     public static int blue(int color) {
         return color & 0x0FF;
+    }
+
+    public static boolean isNumber(String string) {
+        try {
+            double d = Double.parseDouble(string);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isNumber(String string, String componentName, boolean showMessage) {
+        try {
+            double d = Double.parseDouble(string);
+        } catch (NumberFormatException nfe) {
+            if (showMessage) {
+                SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + "=" + string + " is not a number");
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public static boolean checkRangeCompatibility(String minStr, String maxStr) {
+
+        if (!isNumber(minStr, "Min Textfield", true)) {
+            return false;
+        }
+
+        if (!isNumber(maxStr, "Min Textfield", true)) {
+            return false;
+        }
+
+        double min = Double.parseDouble(minStr);
+        double max = Double.parseDouble(maxStr);
+        if (!checkRangeCompatibility(min, max)) {
+            return false;
+        }
+
+        SnapApp.getDefault().setStatusBarMessage("");
+        return true;
+    }
+
+
+
+    public static boolean checkRangeCompatibility(double min, double max) {
+
+        if (min >= max) {
+            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Max must be greater than Min");
+            return false;
+        }
+
+        SnapApp.getDefault().setStatusBarMessage("");
+        return true;
+    }
+
+
+
+    public static boolean checkRangeCompatibility(double min, double max, boolean isLogScaled) {
+
+        if (!checkRangeCompatibility(min, max)) {
+            return false;
+        }
+
+        if (!checkLogCompatibility(min, "Min Textfield", isLogScaled)) {
+            return false;
+        }
+
+        SnapApp.getDefault().setStatusBarMessage("");
+        return true;
+    }
+
+
+    public static boolean checkSliderRangeCompatibility(double value, double min, double max) {
+        if (value <= min || value >= max) {
+            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Slider outside range of adjacent sliders");
+            return false;
+        }
+        return true;
+    }
+
+
+
+    public static boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled) {
+
+        if ((isLogScaled) && value <= 0) {
+            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + " must be greater than zero in log scaling mode");
+            return false;
+        }
+
+        SnapApp.getDefault().setStatusBarMessage("");
+
+        return true;
+    }
+
+    public static boolean checkTableRangeCompatibility(double value, double min, double max) {
+        if (value <= min || value >= max) {
+            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Value outside range of adjacent Table Values");
+            return false;
+        }
+        return true;
     }
 }

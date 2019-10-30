@@ -16,10 +16,12 @@
 
 package org.esa.snap.rcp.colormanip;
 
+import com.bc.ceres.binding.ValueRange;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -34,7 +36,7 @@ import java.awt.Component;
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
     private static final String[] COLUMN_NAMES = new String[]{"Colour", "Value"};
-    private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, Double.class};
+    private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, String.class};
 
     private final ColorManipulationForm parentForm;
     private ImageInfoTableModel tableModel;
@@ -166,13 +168,29 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             final ColorPaletteDef.Point point = getImageInfo().getColorPaletteDef().getPointAt(rowIndex);
+            final ValueRange valueRange;
+            if (rowIndex == 0) {
+                valueRange = new ValueRange(Double.NEGATIVE_INFINITY, getImageInfo().getColorPaletteDef().getPointAt(1).getSample());
+            } else if (rowIndex == getImageInfo().getColorPaletteDef().getNumPoints() - 1) {
+                valueRange = new ValueRange(getImageInfo().getColorPaletteDef().getPointAt(rowIndex - 1).getSample(), Double.POSITIVE_INFINITY);
+            } else {
+                valueRange = new ValueRange(getImageInfo().getColorPaletteDef().getPointAt(rowIndex - 1).getSample(),
+                        getImageInfo().getColorPaletteDef().getPointAt(rowIndex + 1).getSample());
+            }
             if (columnIndex == 0) {
                 final Color color = (Color) aValue;
                 point.setColor(color == null ? ImageInfo.NO_COLOR : color);
                 fireTableCellUpdated(rowIndex, columnIndex);
             } else if (columnIndex == 1) {
-                point.setSample((Double) aValue);
-                fireTableCellUpdated(rowIndex, columnIndex);
+
+                if (ColorUtils.isNumber((String) aValue, "Table value", true)) {
+                    double aValueDouble = Double.parseDouble((String) aValue);
+                    if (ColorUtils.checkTableRangeCompatibility(aValueDouble, valueRange.getMin(), valueRange.getMax()) && ColorUtils.checkLogCompatibility(aValueDouble, "Value",
+                            parentForm.getFormModel().getModifiedImageInfo().isLogScaled())) {
+                        point.setSample(aValueDouble);
+                        fireTableCellUpdated(rowIndex, columnIndex);
+                    }
+                }
             }
         }
 

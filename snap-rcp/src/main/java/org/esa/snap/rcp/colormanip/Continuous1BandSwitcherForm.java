@@ -41,6 +41,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     private Continuous1BandTabularForm tabularPaletteEditorForm;
     private JRadioButton basicButton;
     private Continuous1BandBasicForm basicPaletteEditorForm;
+    public Boolean[] basicSwitcherIsActive = {false};
 
     public Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
@@ -52,7 +53,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
         editorGroup.add(basicButton);
         editorGroup.add(graphicalButton);
         editorGroup.add(tabularButton);
-        graphicalButton.setSelected(true);
+        basicButton.setSelected(true);
         final SwitcherActionListener switcherActionListener = new SwitcherActionListener();
         basicButton.addActionListener(switcherActionListener);
         graphicalButton.addActionListener(switcherActionListener);
@@ -121,7 +122,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
             newForm = tabularPaletteEditorForm;
         } else if (basicButton.isSelected()) {
             if (basicPaletteEditorForm == null) {
-                basicPaletteEditorForm = new Continuous1BandBasicForm(parentForm);
+                basicPaletteEditorForm = new Continuous1BandBasicForm(parentForm, basicSwitcherIsActive);
             }
             newForm = basicPaletteEditorForm;
         } else {
@@ -161,7 +162,9 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            basicSwitcherIsActive[0] = true;
             switchForm();
+            basicSwitcherIsActive[0] = false;
         }
     }
 }

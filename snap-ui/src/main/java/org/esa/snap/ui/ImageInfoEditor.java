@@ -28,6 +28,7 @@ import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.color.ColorChooserPanel;
 
+
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JMenuItem;
@@ -107,6 +108,8 @@ public abstract class ImageInfoEditor extends JPanel {
     private ModelCL modelCL;
     private JidePopup popup;
     private BufferedImage paletteBackgound;
+
+    private boolean logScaled = false;
 
     public ImageInfoEditor() {
         labelFont = createLabelFont();
@@ -815,11 +818,19 @@ public abstract class ImageInfoEditor extends JPanel {
 
         ctx.addPropertyChangeListener("sample", pce -> {
             hidePopup();
-            setSliderSample(sliderIndex, (Double) ctx.getBinding("sample").getPropertyValue());
-            computeZoomInToSliderLimits();
-            applyChanges();
+            Double value = (Double) ctx.getBinding("sample").getPropertyValue();
+            if (
+                    checkSliderRangeCompatibility(value, valueRange.getMin(), valueRange.getMax())
+                    && checkLogCompatibility(value, "slider", isLogScaled())
+                    ) {
+                setSliderSample(sliderIndex, value);
+                computeZoomInToSliderLimits();
+                applyChanges();
+            }
+
         });
     }
+
 
     private void showPopup(MouseEvent evt, JComponent component) {
         hidePopup();
@@ -838,6 +849,7 @@ public abstract class ImageInfoEditor extends JPanel {
             popup = null;
         }
     }
+
 
     private class InternalMouseListener implements MouseListener, MouseMotionListener {
 
@@ -1179,5 +1191,34 @@ public abstract class ImageInfoEditor extends JPanel {
         public void stateChanged(ChangeEvent e) {
             fireStateChanged();
         }
+    }
+
+
+    /**
+     * Determine whether value is illegal value (zero or less) if in log mode
+     * @param value
+     * @param componentName identify theGUI component
+     * @param isLogScaled
+     * @return
+     */
+    protected abstract boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled);
+
+
+    /**
+     * Determine whether a value is in between a min and a max value
+     * @param value
+     * @param min
+     * @param max
+     * @return
+     */
+    protected abstract boolean checkSliderRangeCompatibility(double value, double min, double max);
+
+
+    public boolean isLogScaled() {
+        return logScaled;
+    }
+
+    public void setLogScaled(boolean logScaled) {
+        this.logScaled = logScaled;
     }
 }

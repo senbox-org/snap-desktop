@@ -43,6 +43,9 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     private final AbstractButton evenDistButton;
     private final MoreOptionsForm moreOptionsForm;
     private final DiscreteCheckBox discreteCheckBox;
+    final Boolean[] listenToLogDisplayButtonEnabled = {true};
+    private boolean zoomToHistLimitsDefault = true; // this parameter could be used in future if desired in a preferences setting
+
 
     Continuous1BandGraphicalForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
@@ -58,20 +61,12 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
 
         logDisplayButton = LogDisplay.createButton();
         logDisplayButton.addActionListener(e -> {
-            final boolean shouldLog10Display = logDisplayButton.isSelected();
-            if (shouldLog10Display) {
-                final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
-                final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
-                if (LogDisplay.checkApplicability(cpd)) {
-                    setLogarithmicDisplay(parentForm.getFormModel().getRaster(), true);
-                    parentForm.applyChanges();
-                } else {
-                    LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
-                    logDisplayButton.setSelected(false);
-                }
-            } else {
-                setLogarithmicDisplay(parentForm.getFormModel().getRaster(), false);
-                parentForm.applyChanges();
+
+            if (listenToLogDisplayButtonEnabled[0]) {
+                listenToLogDisplayButtonEnabled[0] = false;
+                logDisplayButton.setSelected(!logDisplayButton.isSelected());
+                applyChangesLogToggle();
+                listenToLogDisplayButtonEnabled[0] = true;
             }
         });
 
@@ -118,13 +113,16 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             newModel.setMinHistogramViewSample(oldModel.getMinHistogramViewSample());
             newModel.setMaxHistogramViewSample(oldModel.getMaxHistogramViewSample());
         }
-        if (newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
+
+        if (zoomToHistLimitsDefault ||
+                newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
             newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
             imageInfoEditor.computeZoomInToSliderLimits();
         }
 
         discreteCheckBox.setDiscreteColorsMode(imageInfo.getColorPaletteDef().isDiscrete());
         logDisplayButton.setSelected(newModel.getImageInfo().isLogScaled());
+        imageInfoEditor.setLogScaled(newModel.getImageInfo().isLogScaled());
         parentForm.revalidateToolViewPaneControl();
     }
 
@@ -225,4 +223,33 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             return log10Scaling.scale(value);
         }
     }
+    private void applyChangesLogToggle() {
+
+
+        final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+        final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+
+        final double min;
+        final double max;
+        final boolean isSourceLogScaled;
+        final boolean isTargetLogScaled;
+        final ColorPaletteDef cpd;
+        final boolean autoDistribute;
+
+        isSourceLogScaled = currentInfo.isLogScaled();
+        isTargetLogScaled = !currentInfo.isLogScaled();
+        min = currentCPD.getMinDisplaySample();
+        max = currentCPD.getMaxDisplaySample();
+        cpd = currentCPD;
+        autoDistribute = true;
+
+        if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+            currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+            currentInfo.setLogScaled(isTargetLogScaled);
+            imageInfoEditor.setLogScaled(currentInfo.isLogScaled());
+            parentForm.applyChanges();
+        }
+    }
+
+
 }
