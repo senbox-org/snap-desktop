@@ -31,6 +31,20 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Fixes log scaling bug where the log scaling was not affecting the palette values.  This was achieved
+//            by tracking the source and target log scaling and passing this information to the method
+//            setColorPaletteDef() in the class ImageInfo.
+//          - Set computeZoomInToSliderLimits() to be the default display behavior of the histogram display
+
+
 public class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
 
     public static final Scaling POW10_SCALING = new Pow10Scaling();

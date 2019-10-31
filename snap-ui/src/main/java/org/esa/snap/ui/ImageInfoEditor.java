@@ -64,9 +64,18 @@ import java.text.DecimalFormat;
  * Unstable interface. Do not use.
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
  * @version $Revision$ $Date$
  * @since BEAM 4.5.1
  */
+// OCT 2019 - Knowles / Yang
+//          - Added a boolean field "logScaled" for determining if log scaled.
+//          - Added abstract method "checkSliderRangeCompatibility" to be used for slider value adjacency checks.
+//          - Added abstract method "checkLogCompatibility" to be used for log scaling illegal value checks.
+//          - Incorporated the above checks within the listener of the slider.
+
+
 public abstract class ImageInfoEditor extends JPanel {
 
     public static final String PROPERTY_NAME_MODEL = "model";
@@ -1205,7 +1214,7 @@ public abstract class ImageInfoEditor extends JPanel {
 
 
     /**
-     * Determine whether a value is in between a min and a max value
+     * Determine whether a value is in between a min and a max value (or adjacent values)
      * @param value
      * @param min
      * @param max

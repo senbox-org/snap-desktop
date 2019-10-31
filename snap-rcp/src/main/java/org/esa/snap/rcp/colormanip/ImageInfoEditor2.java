@@ -46,6 +46,17 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Added method to override abstract method "checkSliderRangeCompatibility".
+//          - Added method to override abstract method "checkLogCompatibility".
+
+
 class ImageInfoEditor2 extends ImageInfoEditor {
 
     private final ColorManipulationForm parentForm;

@@ -6,8 +6,16 @@ import org.esa.snap.rcp.SnapApp;
  * Utility class containing methods to the Color Manipulation Tool.
  *
  * @author Jean Coravu
- * @author Daniel Knowles
+ * @author Daniel Knowles (NASA)
  */
+// OCT 2019 - Knowles
+//          - Added methods to perform numerical checks which return a boolean with the additional option to display
+//            the error message in the GUI status bar.
+
+
+
+
+
 public class ColorUtils {
 
     /**

@@ -35,6 +35,23 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Added DocumentListener to minField and maxField to make sure that the values are being updated.
+//            Previously the values would only be updated if the user hit enter and a lose focus event would not
+//            trigger a value update.
+//          - Fixes log scaling bug where the log scaling was not affecting the palette values.  This was achieved
+//            by tracking the source and target log scaling and passing this information to the method
+//            setColorPaletteDef() in the class ImageInfo.
+//          - Added numerical checks on the minField and maxField.
+
+
+
 public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;

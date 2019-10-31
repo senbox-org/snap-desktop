@@ -30,6 +30,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ */
+// OCT 2019 - Knowles
+//          - Set basic mode to be the default
+
+
 public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;

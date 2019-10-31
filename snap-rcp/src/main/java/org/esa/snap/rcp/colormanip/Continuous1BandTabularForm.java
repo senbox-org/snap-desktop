@@ -33,6 +33,18 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
 import java.awt.Component;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Added checks to ensure that only positive values are allowed in log scaling mode.
+//          - Added checks to ensure that palette values are numeric.
+//          - Added checks to ensure that value entries are numerically between the adjacent values.
+
+
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
     private static final String[] COLUMN_NAMES = new String[]{"Colour", "Value"};
