@@ -269,6 +269,7 @@ public class ProductFileChooser extends SnapFileChooser {
                 return true;
             }else{//the advanced option dialog is not shown and the Open product File chooser will remain on the screen
                 advancedDialog.close();
+                clearCurrentAdvancedProductOptions();
             }
         } catch (Exception e) {
             Dialogs.showError("The file " + getSelectedFile() + " could not be opened with advanced options!");
