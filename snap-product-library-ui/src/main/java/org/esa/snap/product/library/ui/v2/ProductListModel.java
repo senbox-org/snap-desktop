@@ -3,11 +3,13 @@ package org.esa.snap.product.library.ui.v2;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,15 +22,13 @@ import java.util.Set;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class ProductListModel {
+public abstract class ProductListModel {
 
     public static final ImageIcon EMPTY_ICON;
     static {
         BufferedImage emptyImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_ARGB);
         EMPTY_ICON = new ImageIcon(emptyImage);
     }
-
-    private final Map<String, Map<String, String>> visibleAttributesPerMission;
 
     private Map<RepositoryProduct, LocalProgressStatus> localProductsMap;
     private Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
@@ -38,12 +38,13 @@ public class ProductListModel {
     public ProductListModel() {
         super();
 
-        this.visibleAttributesPerMission = new HashMap<>();
         this.downloadingProductsProgressValue = new HashMap<>();
         this.localProductsMap = new HashMap<>();
         this.scaledQuickLookImages = new HashMap<>();
         this.products = new ArrayList<>();
     }
+
+    public abstract Map<String, String> getRemoteMissionVisibleAttributes(String mission);
 
     protected void fireIntervalAdded(int startIndex, int endIndex) {
     }
@@ -60,24 +61,6 @@ public class ProductListModel {
 
     public RepositoryProduct getProductAt(int index) {
         return this.products.get(index);
-    }
-
-    public Map<String, String> getMissionVisibleAttributes(String mission) {
-        Map<String, String> visibleAttributes = this.visibleAttributesPerMission.get(mission);
-        if (visibleAttributes == null) {
-            Set<RemoteProductsRepositoryProvider> remoteProductsRepositoryProviders = ProductLibraryToolViewV2.getRemoteProductsRepositoryProviders();
-            for (RemoteProductsRepositoryProvider repositoryProvider : remoteProductsRepositoryProviders) {
-                String[] availableMissions = repositoryProvider.getAvailableMissions();
-                for (int i=0; i<availableMissions.length; i++) {
-                    if (availableMissions[i].equalsIgnoreCase(mission)) {
-                        visibleAttributes = repositoryProvider.getDisplayedAttributes();
-                        this.visibleAttributesPerMission.put(mission, visibleAttributes);
-                        break;
-                    }
-                }
-            }
-        }
-        return visibleAttributes;
     }
 
     public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
@@ -128,6 +111,32 @@ public class ProductListModel {
         if (this.products.size() > 0) {
             fireIntervalChanged(0, this.products.size()-1);
         }
+    }
+
+    public Map<RepositoryProduct, Path> addPendingOpenDownloadedProducts(RepositoryProduct[] pendingOpenDownloadedProducts) {
+        Map<RepositoryProduct, Path> productsToOpen = new HashMap<>();
+        if (pendingOpenDownloadedProducts.length > 0) {
+            int startIndex = pendingOpenDownloadedProducts.length - 1;
+            int endIndex = 0;
+            for (int i=0; i<pendingOpenDownloadedProducts.length; i++) {
+                DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(pendingOpenDownloadedProducts[i]);
+                if (progressPercent != null && progressPercent.canOpen()) {
+                    progressPercent.setStatus(DownloadProgressStatus.PENDING_OPEN);
+                    productsToOpen.put(pendingOpenDownloadedProducts[i], progressPercent.getDownloadedPath());
+                    int index = findProductIndex(pendingOpenDownloadedProducts[i]);
+                    if (startIndex > index) {
+                        startIndex = index;
+                    }
+                    if (endIndex < index) {
+                        endIndex = index;
+                    }
+                }
+            }
+            if (productsToOpen.size() > 0) {
+                fireIntervalChanged(startIndex, endIndex);
+            }
+        }
+        return productsToOpen;
     }
 
     public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingDownloadProducts) {
@@ -194,12 +203,21 @@ public class ProductListModel {
         return productsToProcess;
     }
 
-    public void setLocalProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
+    public void setOpenDownloadedProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
+        DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
+        if (progressPercent != null) {
+            progressPercent.setStatus(openStatus);
+            int index = findProductIndex(repositoryProduct);
+            fireIntervalChanged(index, index);
+        }
+    }
+
+    public void setLocalProductStatus(RepositoryProduct repositoryProduct, byte localStatus) {
         LocalProgressStatus openProgressStatus = this.localProductsMap.get(repositoryProduct);
         if (openProgressStatus != null) {
-            openProgressStatus.setStatus(openStatus);
+            openProgressStatus.setStatus(localStatus);
             int index = findProductIndex(repositoryProduct);
-            if (openStatus == LocalProgressStatus.DELETED) {
+            if (localStatus == LocalProgressStatus.DELETED) {
                 this.products.remove(index);
                 fireIntervalRemoved(index, index);
             } else {
@@ -226,10 +244,11 @@ public class ProductListModel {
         }
     }
 
-    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
+    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
         DownloadProgressStatus progressPercentItem = this.downloadingProductsProgressValue.get(repositoryProduct);
         if (progressPercentItem != null) {
             progressPercentItem.setValue(progressPercent);
+            progressPercentItem.setDownloadedPath(downloadedPath);
             int index = findProductIndex(repositoryProduct);
             fireIntervalChanged(index, index);
         }

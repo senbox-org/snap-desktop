@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -12,7 +12,7 @@ import java.awt.Color;
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public class LocalRepositoryProductPanel extends RepositoryProductPanel {
+public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel {
 
     public LocalRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                        ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {

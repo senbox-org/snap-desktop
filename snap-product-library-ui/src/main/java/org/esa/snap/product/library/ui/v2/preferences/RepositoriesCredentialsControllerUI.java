@@ -12,6 +12,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -131,11 +132,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private void loadRemoteRepositories() {
-        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = ProductLibraryToolViewV2.getRemoteProductsRepositoryProviders();
-
-        for (RemoteProductsRepositoryProvider repositoryProductsProvider : repositoryProductsProviders) {
-            if (repositoryProductsProvider.requiresAuthentication()) {
-                remoteRepositories.add(repositoryProductsProvider);
+        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteRepositoriesManager.getRemoteProductsRepositoryProviders();
+        for (int k=0; k<remoteRepositoryProductProviders.length; k++) {
+            if (remoteRepositoryProductProviders[k].requiresAuthentication()) {
+                this.remoteRepositories.add(remoteRepositoryProductProviders[k]);
             }
         }
     }

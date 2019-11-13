@@ -28,7 +28,7 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
             try {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.OPENING);
 
-                Product product = ProductIO.readProduct(repositoryProduct.getDownloadURL());
+                Product product = ProductIO.readProduct(repositoryProduct.getURL());
                 if (product == null) {
                     updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED);
                 } else {
@@ -37,7 +37,7 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
                 }
             } catch (Exception exception) {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED);
-                logger.log(Level.SEVERE, "Failed to open the local product '" + repositoryProduct.getDownloadURL() + "'.", exception);
+                logger.log(Level.SEVERE, "Failed to open the local product '" + repositoryProduct.getURL() + "'.", exception);
             }
         }
         return null;
@@ -45,6 +45,6 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
 
     @Override
     protected String getExceptionLoggingMessage() {
-        return "Failed to open the product.";
+        return "Failed to open the local products.";
     }
 }

@@ -39,6 +39,7 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -90,7 +91,6 @@ public class RepositorySelectionPanel extends JPanel {
                 RepositorySelectionPanel.this.setParametersEnabledWhileDownloading(enabled);
             }
         };
-        this.progressBarHelper.getProgressBar().setStringPainted(true);
 
         this.repositoryLabel = new JLabel("Repository");
 
@@ -177,6 +177,23 @@ public class RepositorySelectionPanel extends JPanel {
         throw new IllegalStateException("The all local products repository does not exist.");
     }
 
+    public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
+        int count = this.repositoriesComboBox.getModel().getSize();
+        for (int i=0; i<count; i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
+            if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)repositoryPanel;
+                String[] availableMissions = remoteProductsRepositoryPanel.getProductsRepositoryProvider().getAvailableMissions();
+                for (int k=0; k<availableMissions.length; k++) {
+                    if (availableMissions[k].equalsIgnoreCase(mission)) {
+                        return remoteProductsRepositoryPanel.getProductsRepositoryProvider().getDisplayedAttributes();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private void setParametersEnabledWhileDownloading(boolean enabled) {
         this.searchButton.setEnabled(enabled);
         this.repositoryLabel.setEnabled(enabled);
@@ -257,12 +274,12 @@ public class RepositorySelectionPanel extends JPanel {
         allLocalProductsRepositoryPanel.setLocalProductsPopupListeners(localProductsPopupListeners);
     }
 
-    public void setDownloadRemoteProductListener(ActionListener downloadRemoteProductListener) {
+    public void setDownloadRemoteProductListener(ActionListener downloadRemoteProductListener, ActionListener openDownloadedRemoteProductListener) {
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
         for (int i=0; i<model.getSize(); i++) {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListener(downloadRemoteProductListener);
+                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListeners(downloadRemoteProductListener, openDownloadedRemoteProductListener);
             }
         }
     }

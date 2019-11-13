@@ -38,5 +38,4 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
     public void clearParameterValue() {
         this.component.setDate(null);
     }
-
 }

@@ -4,11 +4,9 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.Box;
 import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,17 +42,16 @@ public class ParametersPanel extends JPanel {
                     }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
-            } else if (param.getType() == Double.class || param.getType() == Integer.class) {
+            } else if (param.getType() == Double.class || param.getType() == Integer.class || param.getType() == Short.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
                 parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
             } else if (param.getType() == Date.class) {
                 parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight);
             } else if (param.getType() == String[].class) {
-                //TODO Jean implement a specific parameter
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
                 parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
             } else if (param.getType() == Object[].class) {
-                parameterComponent = new ComboBoxParameterComponent(param, componentDimension);
+                parameterComponent = new ObjectComboBoxParameterComponent(param, componentDimension);
             } else {
                 boolean found = false;
                 for (int k=0; k<classesToIgnore.length; k++) {

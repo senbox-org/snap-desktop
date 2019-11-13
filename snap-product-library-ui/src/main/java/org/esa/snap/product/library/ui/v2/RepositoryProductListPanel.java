@@ -73,7 +73,6 @@ public class RepositoryProductListPanel extends JPanel {
                 // do nothing
             }
         };
-        this.progressBarHelper.getProgressBar().setStringPainted(true);
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
         String currentComparatorName = "Product Name";

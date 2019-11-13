@@ -62,7 +62,7 @@ public class DownloadProductRunnable implements Runnable {
     protected void finishRunningThread(SaveDownloadedProductData saveProductData) {
     }
 
-    protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
+    protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
     }
 
     private boolean isRunning() {
@@ -82,7 +82,7 @@ public class DownloadProductRunnable implements Runnable {
         RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
             @Override
             public void notifyProgress(short progressPercent) {
-                updateDownloadingProgressPercent(getProductToDownload(), progressPercent);
+                updateDownloadingProgressPercent(getProductToDownload(), progressPercent, null);
             }
         };
 
@@ -93,7 +93,7 @@ public class DownloadProductRunnable implements Runnable {
                 return null;
             }
 
-            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0); // 0%
+            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0, null); // 0%
 
             productPath = this.remoteProductDownloader.download(progressListener);
 
@@ -106,7 +106,7 @@ public class DownloadProductRunnable implements Runnable {
                                                                                   this.remoteProductDownloader.getLocalRepositoryFolderPath());
 
         // successfully downloaded and saved the product
-        updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100); // 100%
+        updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100, productPath); // 100%
 
         return saveProductData;
     }

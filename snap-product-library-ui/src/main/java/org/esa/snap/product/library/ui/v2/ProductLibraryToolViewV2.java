@@ -15,8 +15,6 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
-import com.bc.ceres.core.ServiceRegistry;
-import com.bc.ceres.core.ServiceRegistryManager;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
@@ -34,6 +32,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.OpenLocalProductsRunn
 import org.esa.snap.product.library.ui.v2.repository.local.ScanAllLocalRepositoryFoldersTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadRemoteProductsHelper;
+import org.esa.snap.product.library.ui.v2.repository.remote.OpenDownloadedProductsRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
@@ -48,6 +47,7 @@ import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
@@ -83,9 +83,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -293,15 +292,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
 
-        Set<RemoteProductsRepositoryProvider> repositoryProductsProviders = getRemoteProductsRepositoryProviders();
-        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = new RemoteProductsRepositoryProvider[repositoryProductsProviders.size()];
-        Iterator<RemoteProductsRepositoryProvider> it = repositoryProductsProviders.iterator();
-        int index = 0;
-        while (it.hasNext()) {
-            RemoteProductsRepositoryProvider productsProvider = it.next();
-            remoteRepositoryProductProviders[index++] = productsProvider;
-        }
-
+        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteRepositoriesManager.getRemoteProductsRepositoryProviders();
         if (remoteRepositoryProductProviders.length > 1) {
             // sort alphabetically by repository name
             Comparator<RemoteProductsRepositoryProvider> comparator = new Comparator<RemoteProductsRepositoryProvider>() {
@@ -400,7 +391,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 downloadSelectedRemoteProductsButtonPressed();
             }
         };
-        this.repositorySelectionPanel.setDownloadRemoteProductListener(downloadRemoteProductListener);
+        ActionListener openDownloadedRemoteProductListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openDownloadedRemoteProductsButtonPressed();
+            }
+        };
+        this.repositorySelectionPanel.setDownloadRemoteProductListener(downloadRemoteProductListener, openDownloadedRemoteProductListener);
     }
 
     private void scanAllLocalRepositoriesButtonPressed() {
@@ -515,9 +512,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void openLocalSelectedProducts() {
-        RepositoryProduct[] selectedProducts = processLocalSelectedProducts();
+        RepositoryProduct[] unopenedSelectedProducts = processUnopenedSelectedProducts();
         ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-        List<RepositoryProduct> productsToOpen = productListModel.addPendingOpenProducts(selectedProducts);
+        List<RepositoryProduct> productsToOpen = productListModel.addPendingOpenProducts(unopenedSelectedProducts);
         if (productsToOpen.size() > 0) {
             OpenLocalProductsRunnable runnable = new OpenLocalProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToOpen);
             runnable.executeAsync(); // start the thread
@@ -525,11 +522,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void deleteLocalSelectedProducts() {
-        RepositoryProduct[] selectedProducts = processLocalSelectedProducts();
-        if (selectedProducts.length > 0) {
+        RepositoryProduct[] unopenedSelectedProducts = processUnopenedSelectedProducts();
+        if (unopenedSelectedProducts.length > 0) {
             // there are selected products into the output table
             StringBuilder message = new StringBuilder();
-            if (selectedProducts.length > 1) {
+            if (unopenedSelectedProducts.length > 1) {
                 message.append("The selected products");
             } else {
                 message.append("The selected product");
@@ -540,7 +537,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             int answer = JOptionPane.showConfirmDialog(this, message.toString(), "Delete local products", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-                List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(selectedProducts);
+                List<RepositoryProduct> productsToDelete = productListModel.addPendingDeleteProducts(unopenedSelectedProducts);
                 if (productsToDelete.size() > 0) {
                     DeleteLocalProductsRunnable runnable = new DeleteLocalProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToDelete);
                     runnable.executeAsync(); // start the thread
@@ -549,13 +546,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private RepositoryProduct[] processLocalSelectedProducts() {
+    private RepositoryProduct[] processUnopenedSelectedProducts() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         List<RepositoryProduct> availableLocalProducts = new ArrayList<>(selectedProducts.length);
         for (int i=0; i<selectedProducts.length; i++) {
             Product product = this.appContext.getProductManager().getProduct(selectedProducts[i].getName());
             if (product == null) {
-                // the local product to delete is not opened in the application
+                // the local product is not opened in the application
                 availableLocalProducts.add(selectedProducts[i]);
             }
         }
@@ -564,7 +561,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return selectedProducts;
     }
 
-    private void openBatchProcessingDialog(){
+    private void openBatchProcessingDialog() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         File[] selectedProductsFiles = new File[selectedProducts.length];
         for (int i = 0; i < selectedProducts.length; i++) {
@@ -575,7 +572,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         batchDialog.show();
     }
 
-    private void showSelectedLocalProductInExplorer(){
+    private void showSelectedLocalProductInExplorer() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         Path selectedProductPath = ((LocalRepositoryProduct) selectedProducts[0]).getPath();
         try {
@@ -654,6 +651,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return null;
     }
 
+    private void openDownloadedRemoteProductsButtonPressed() {
+        RepositoryProduct[] unopenedSelectedProducts = processUnopenedSelectedProducts();
+        ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+        Map<RepositoryProduct, Path> productsToOpen = productListModel.addPendingOpenDownloadedProducts(unopenedSelectedProducts);
+        if (productsToOpen.size() > 0) {
+            OpenDownloadedProductsRunnable runnable = new OpenDownloadedProductsRunnable(this.appContext, this.repositoryProductListPanel, productsToOpen);
+            runnable.executeAsync(); // start the thread
+        }
+    }
+
     private void downloadSelectedRemoteProductsButtonPressed() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         if (selectedProducts.length > 0) {
@@ -663,9 +670,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 if (selectedLocalRepositoryFolder != null) {
                     AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedRepository();
                     if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
-                        RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)selectedRepository;
                         List<RepositoryProduct> productsToDownload = this.repositoryProductListPanel.getProductListPanel().addPendingDownloadProducts(selectedProducts);
                         if (productsToDownload.size() > 0) {
+                            RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)selectedRepository;
                             RemoteProductDownloader[] remoteProductDownloaders = new RemoteProductDownloader[productsToDownload.size()];
                             for (int i=0; i<productsToDownload.size(); i++) {
                                 remoteProductDownloaders[i] = remoteProductsRepositoryPanel.buildProductDownloader(productsToDownload.get(i), selectedLocalRepositoryFolder);
@@ -723,11 +730,5 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
         fileChooser.setFileSelectionMode(fileSelectionMode);
         return fileChooser;
-    }
-
-    public static Set<RemoteProductsRepositoryProvider> getRemoteProductsRepositoryProviders() {
-        ServiceRegistryManager serviceRegistryManager = ServiceRegistryManager.getInstance();
-        ServiceRegistry<RemoteProductsRepositoryProvider> serviceRegistry = serviceRegistryManager.getServiceRegistry(RemoteProductsRepositoryProvider.class);
-        return serviceRegistry.getServices();
     }
 }

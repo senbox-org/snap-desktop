@@ -34,7 +34,7 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.DELETED);
             } catch (Exception exception) {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_DELETED);
-                logger.log(Level.SEVERE, "Failed to delete the local product '" + repositoryProduct.getDownloadURL() + "'.", exception);
+                logger.log(Level.SEVERE, "Failed to delete the local product '" + repositoryProduct.getURL() + "'.", exception);
             }
         }
         return null;

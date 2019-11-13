@@ -49,8 +49,8 @@ public class RemoteRepositoriesSemaphore {
                 if (remoteRepositoryProvider == null) {
                     throw new NullPointerException("The remote repository provider with id '" + remoteRepositoryId+"' does not exist.");
                 }
-                if (remoteRepositoryProvider.getMaximumRunningConnectionsPerAccount() > 0) {
-                    semaphore = new Semaphore(remoteRepositoryProvider.getMaximumRunningConnectionsPerAccount());
+                if (remoteRepositoryProvider.getMaximumAllowedTransfersPerAccount() > 0) {
+                    semaphore = new Semaphore(remoteRepositoryProvider.getMaximumAllowedTransfersPerAccount());
                     this.map.put(key, semaphore);
                 }
             }

@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Created by jcoravu on 23/9/2019.
  */
-public class RepositoryProductPanel extends JPanel {
+public abstract class AbstractRepositoryProductPanel extends JPanel {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
@@ -55,8 +55,8 @@ public class RepositoryProductPanel extends JPanel {
     private JPanel attributesPanel;
     private RepositoryProduct repositoryProduct;
 
-    public RepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                  ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+    protected AbstractRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+                                             ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
 
@@ -160,12 +160,12 @@ public class RepositoryProductPanel extends JPanel {
         repositoryProduct = productListModel.getProductAt(index);
 
         this.nameLabel.setText(repositoryProduct.getName());
-        this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getDownloadURL()));
+        this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
 
         String mission = (StringUtils.isBlank(repositoryProduct.getMission()) ? "N/A" : repositoryProduct.getMission());
         this.missionLabel.setText(buildAttributeLabelText("Mission", mission));
 
-        Map<String, String> visibleAttributes = productListModel.getMissionVisibleAttributes(repositoryProduct.getMission());
+        Map<String, String> visibleAttributes = productListModel.getRemoteMissionVisibleAttributes(repositoryProduct.getMission());
         updateVisibleAttributes(repositoryProduct, visibleAttributes);
 
         ImageIcon imageIcon = productListModel.getProductQuickLookImage(repositoryProduct);

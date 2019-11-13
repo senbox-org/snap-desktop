@@ -15,11 +15,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Path2D;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,7 +35,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     private final Color selectionBackgroundColor;
     private final MouseListener mouseListener;
     private final RepositorySelectionPanel repositorySelectionPanel;
-    private final Set<RepositoryProductPanel> selectedProducts;
+    private final Set<AbstractRepositoryProductPanel> selectedProducts;
     private final ProductListModel productListModel;
     private final ImageIcon expandImageIcon;
     private final ImageIcon collapseImageIcon;
@@ -50,6 +50,11 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
 
         this.productListModel = new ProductListModel() {
+            @Override
+            public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
+                return ProductListPanel.this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
+            }
+
             @Override
             protected void fireIntervalAdded(int startIndex, int endIndex) {
                 productsAdded(startIndex, endIndex);
@@ -88,7 +93,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     }
 
     @Override
-    public Color getProductPanelBackground(RepositoryProductPanel productPanel) {
+    public Color getProductPanelBackground(AbstractRepositoryProductPanel productPanel) {
         if (this.selectedProducts.contains(productPanel)) {
             return this.selectionBackgroundColor;
         }
@@ -102,7 +107,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     private void productsChanged(int startIndex, int endIndex) {
         boolean fireListSelectionChanged = false;
         for (int i=startIndex; i<=endIndex; i++) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+            AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
             repositoryProductPanel.refresh(i, this.productListModel);
             if (this.selectedProducts.contains(repositoryProductPanel)) {
                 fireListSelectionChanged = true;
@@ -115,7 +120,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     private void productsAdded(int startIndex, int endIndex) {
         AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedRepository();
         for (int i=startIndex; i<=endIndex; i++) {
-            RepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension, this.expandImageIcon, this.collapseImageIcon);
+            AbstractRepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension, this.expandImageIcon, this.collapseImageIcon);
             repositoryProductPanel.setOpaque(true);
             repositoryProductPanel.setBackground(this.backgroundColor);
             repositoryProductPanel.addMouseListener(this.mouseListener);
@@ -131,7 +136,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     private void productsRemoved(int startIndex, int endIndex) {
         boolean fireListSelectionChanged = false;
         for (int i=endIndex; i>=startIndex; i--) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+            AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
             if (this.selectedProducts.remove(repositoryProductPanel)) {
                 fireListSelectionChanged = true;
             }
@@ -156,7 +161,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     public RepositoryProduct[] getSelectedProducts() {
         RepositoryProduct[] selectedProducts = new RepositoryProduct[this.selectedProducts.size()];
         for (int i=0, k=0; i<getComponentCount(); i++) {
-            RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+            AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
             if (this.selectedProducts.contains(repositoryProductPanel)) {
                 selectedProducts[k++] = this.productListModel.getProductAt(i);
             }
@@ -170,10 +175,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
 
     public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
         return this.productListModel.addPendingDownloadProducts(pendingProducts);
-    }
-
-    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent) {
-        this.productListModel.setProductDownloadPercent(repositoryProduct, progressPercent);
     }
 
     public void sortProducts(Comparator<RepositoryProduct> comparator) {
@@ -192,11 +193,11 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         int count = 0;
         int productListSize = this.productListModel.getProductCount();
         for (int k=0; k<polygonPaths.size(); k++) {
-            RepositoryProductPanel foundRepositoryProductPanel = null;
+            AbstractRepositoryProductPanel foundRepositoryProductPanel = null;
             for (int i=0; i<productListSize && foundRepositoryProductPanel == null; i++) {
                 Polygon2D polygon = this.productListModel.getProductAt(i).getPolygon();
                 if (polygon.getPath() == polygonPaths.get(k)) {
-                    foundRepositoryProductPanel = (RepositoryProductPanel) getComponent(i);
+                    foundRepositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
                 }
             }
             if (foundRepositoryProductPanel != null) {
@@ -215,7 +216,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     }
 
     private void rightMouseClicked(MouseEvent mouseEvent) {
-        RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) mouseEvent.getSource();
+        AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) mouseEvent.getSource();
         if (!this.selectedProducts.contains(repositoryProductPanel)) {
             this.selectedProducts.clear();
             this.selectedProducts.add(repositoryProductPanel);
@@ -226,7 +227,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     }
 
     private void leftMouseClicked(MouseEvent mouseEvent) {
-        RepositoryProductPanel repositoryProductPanel = (RepositoryProductPanel) mouseEvent.getSource();
+        AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) mouseEvent.getSource();
         if (mouseEvent.isControlDown()) {
             if (!this.selectedProducts.add(repositoryProductPanel)) {
                 // the panel is already selected
@@ -248,8 +249,8 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         addPropertyChangeListener(LIST_SELECTION_CHANGED, listSelectionChangedListener);
     }
 
-    private void showProductsPopupMenu(RepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {
-        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu(getSelectedProducts());
+    private void showProductsPopupMenu(AbstractRepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {
+        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu(getSelectedProducts(), this.productListModel);
         popup.show(repositoryProductPanel, mouseX, mouseY);
     }
 }

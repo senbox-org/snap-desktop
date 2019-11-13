@@ -1,8 +1,9 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
@@ -12,15 +13,19 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.QueryFilter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.LabelListCellRenderer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +52,10 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     protected abstract void addParameterComponents();
 
-    public abstract JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts);
+    public abstract JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, ProductListModel productListModel);
 
-    public abstract RepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                                    ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);
+    public abstract AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+                                                                            ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);
 
     public abstract AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                  RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel repositoryProductListPanel);
@@ -133,5 +138,53 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         centerPanel.add(label, BorderLayout.WEST);
         centerPanel.add(selectionAreaParameterComponent.getComponent(), BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
+    }
+
+    public static void setLabelSize(JLabel label, int maximumLabelWidth) {
+        Dimension labelSize = label.getPreferredSize();
+        labelSize.width = maximumLabelWidth;
+        label.setPreferredSize(labelSize);
+        label.setMinimumSize(labelSize);
+    }
+
+    public static <ItemType> JComboBox<ItemType> buildComboBox(ComponentDimension componentDimension) {
+        JComboBox<ItemType> comboBox = new JComboBox<ItemType>() {
+            @Override
+            public Color getBackground() {
+                return Color.WHITE;
+            }
+        };
+        Dimension comboBoxSize = comboBox.getPreferredSize();
+        comboBoxSize.height = componentDimension.getTextFieldPreferredHeight();
+        comboBox.setPreferredSize(comboBoxSize);
+        comboBox.setMinimumSize(comboBoxSize);
+        comboBox.setMaximumRowCount(5);
+        return comboBox;
+    }
+
+    public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, ComponentDimension componentDimension) {
+        JComboBox<String> comboBox = buildComboBox(componentDimension);
+        int cellItemHeight = comboBox.getPreferredSize().height;
+        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(cellItemHeight) {
+            @Override
+            protected String getItemDisplayText(String value) {
+                return (value == null) ? " " : value;
+            }
+        };
+        comboBox.setRenderer(renderer);
+        if (values != null) {
+            for (int i = 0; i < values.length; i++) {
+                comboBox.addItem(values[i]);
+            }
+        }
+        if (valueToSelect != null) {
+            for (int i=0; i<values.length; i++) {
+                if (valueToSelect.equals(values[i])) {
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        return comboBox;
     }
 }

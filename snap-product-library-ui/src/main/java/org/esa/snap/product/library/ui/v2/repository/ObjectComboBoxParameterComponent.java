@@ -13,12 +13,12 @@ import java.awt.Insets;
 /**
  * Created by jcoravu on 7/8/2019.
  */
-public class ComboBoxParameterComponent extends AbstractParameterComponent<Object> {
+public class ObjectComboBoxParameterComponent extends AbstractParameterComponent<Object> {
 
     private final JComboBox<Object> component;
     private final ItemRenderer<Object> itemRenderer;
 
-    public ComboBoxParameterComponent(QueryFilter parameter, ComponentDimension componentDimension) {
+    public ObjectComboBoxParameterComponent(QueryFilter parameter, ComponentDimension componentDimension) {
         super(parameter.getName(), parameter.getLabel(), parameter.isRequired());
 
         if (parameter.getValueRenderer() == null) {

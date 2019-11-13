@@ -3,8 +3,9 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
@@ -46,8 +47,10 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final MissionParameterListener missionParameterListener;
     private final JComboBox<String> missionsComboBox;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
-    private ActionListener downloadProductListener;
     private final JComboBox<Credentials> userAccountsComboBox;
+
+    private ActionListener downloadProductListener;
+    private ActionListener openDownloadedRemoteProductListener;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
                                          MissionParameterListener missionParameterListener, WorldMapPanelWrapper worlWindPanel) {
@@ -149,17 +152,30 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts) {
-        JMenuItem downloadMenuItem = new JMenuItem("Download");
-        downloadMenuItem.addActionListener(this.downloadProductListener);
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, ProductListModel productListModel) {
+        boolean canOpenSelectedProducts = true;
+        for (int i=0; i<selectedProducts.length && canOpenSelectedProducts; i++) {
+            DownloadProgressStatus downloadProgressStatus = productListModel.getProductDownloadPercent(selectedProducts[i]);
+            if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
+                canOpenSelectedProducts = false;
+            }
+        }
+        JMenuItem menuItem;
+        if (canOpenSelectedProducts) {
+            menuItem = new JMenuItem("Open");
+            menuItem.addActionListener(this.openDownloadedRemoteProductListener);
+        } else {
+            menuItem = new JMenuItem("Download");
+            menuItem.addActionListener(this.downloadProductListener);
+        }
         JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(downloadMenuItem);
+        popupMenu.add(menuItem);
         return popupMenu;
     }
 
     @Override
-    public RepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                           ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+    public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+                                                                   ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
 
         return new RemoteRepositoryProductPanel(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
     }
@@ -168,16 +184,16 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     protected void addParameterComponents() {
         ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
-        int gapBetweenRows = this.componentDimension.getGapBetweenRows();
 
         int rowIndex = 0;
+        int gapBetweenRows = 0;
         if (this.userAccountsComboBox != null) {
-            GridBagConstraints c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, 0);
+            GridBagConstraints c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
             panel.add(new JLabel("Account"), c);
-            c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+            c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
             panel.add(this.userAccountsComboBox, c);
             rowIndex++;
-            gapBetweenRows = this.componentDimension.getGapBetweenRows();
+            gapBetweenRows = this.componentDimension.getGapBetweenRows(); // the gap between rows for next lines
         }
 
         GridBagConstraints c = SwingUtils.buildConstraints(0, rowIndex, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
@@ -185,6 +201,8 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         c = SwingUtils.buildConstraints(1, rowIndex, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         panel.add(this.missionsComboBox, c);
         rowIndex++;
+
+        gapBetweenRows = this.componentDimension.getGapBetweenRows(); // the gap between rows for next lines
 
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
@@ -219,13 +237,14 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 throw new NullPointerException("No credential account is selected.");
             }
         }
-        ProductRepositoryDownloader productRepositoryDownloader = this.productsRepositoryProvider.buidProductDownloader(repositoryProduct.getMission());
+        ProductRepositoryDownloader productRepositoryDownloader = this.productsRepositoryProvider.buildProductDownloader(repositoryProduct.getMission());
         RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(repositoryProduct, productRepositoryDownloader, localRepositoryFolderPath, selectedCredentials);
         return remoteProductDownloader;
     }
 
-    public void setDownloadProductListener(ActionListener downloadProductListener) {
+    public void setDownloadProductListeners(ActionListener downloadProductListener, ActionListener openDownloadedRemoteProductListener) {
         this.downloadProductListener = downloadProductListener;
+        this.openDownloadedRemoteProductListener = openDownloadedRemoteProductListener;
     }
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
@@ -248,55 +267,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     private void newSelectedMission() {
         this.missionParameterListener.newSelectedMission(getSelectedMission(), RemoteProductsRepositoryPanel.this);
-    }
-
-    public static void setLabelSize(JLabel label, int maximumLabelWidth) {
-        Dimension labelSize = label.getPreferredSize();
-        labelSize.width = maximumLabelWidth;
-        label.setPreferredSize(labelSize);
-        label.setMinimumSize(labelSize);
-    }
-
-    //TODO Jean move methods
-    public static <ItemType> JComboBox<ItemType> buildComboBox(ComponentDimension componentDimension) {
-        JComboBox<ItemType> comboBox = new JComboBox<ItemType>() {
-            @Override
-            public Color getBackground() {
-                return Color.WHITE;
-            }
-        };
-        Dimension comboBoxSize = comboBox.getPreferredSize();
-        comboBoxSize.height = componentDimension.getTextFieldPreferredHeight();
-        comboBox.setPreferredSize(comboBoxSize);
-        comboBox.setMinimumSize(comboBoxSize);
-        comboBox.setMaximumRowCount(5);
-        return comboBox;
-    }
-
-    public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, ComponentDimension componentDimension) {
-        JComboBox<String> comboBox = buildComboBox(componentDimension);
-        int cellItemHeight = comboBox.getPreferredSize().height;
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(cellItemHeight) {
-            @Override
-            protected String getItemDisplayText(String value) {
-                return (value == null) ? " " : value;
-            }
-        };
-        comboBox.setRenderer(renderer);
-        if (values != null) {
-            for (int i = 0; i < values.length; i++) {
-                comboBox.addItem(values[i]);
-            }
-        }
-        if (valueToSelect != null) {
-            for (int i=0; i<values.length; i++) {
-                if (valueToSelect.equals(values[i])) {
-                    comboBox.setSelectedIndex(i);
-                    break;
-                }
-            }
-        }
-        return comboBox;
     }
 }
 

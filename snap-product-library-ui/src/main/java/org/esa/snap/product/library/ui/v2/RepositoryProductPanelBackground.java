@@ -7,5 +7,5 @@ import java.awt.Color;
  */
 public interface RepositoryProductPanelBackground {
 
-    Color getProductPanelBackground(RepositoryProductPanel productPanel);
+    Color getProductPanelBackground(AbstractRepositoryProductPanel productPanel);
 }

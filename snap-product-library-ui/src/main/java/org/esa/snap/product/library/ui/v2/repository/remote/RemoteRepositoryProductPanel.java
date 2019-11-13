@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -12,7 +12,7 @@ import java.awt.Color;
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public class RemoteRepositoryProductPanel extends RepositoryProductPanel {
+public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel {
 
     public RemoteRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                         ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
@@ -49,8 +49,20 @@ public class RemoteRepositoryProductPanel extends RepositoryProductPanel {
             } else if (progressPercent.isFailedDownload()) {
                 percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (failed)";
                 foregroundColor = Color.RED;
+            } else if (progressPercent.isFailedOpen()) {
+                percentText = "Downloaded (failed open)";
+                foregroundColor = Color.GREEN;
+            } else if (progressPercent.isPendingOpen()) {
+                percentText = "Downloaded (pending open)";
+                foregroundColor = Color.GREEN;
+            } else if (progressPercent.isOpening()) {
+                percentText = "Downloaded (opening)";
+                foregroundColor = Color.GREEN;
+            } else if (progressPercent.isOpened()) {
+                percentText = "Downloaded (opened)";
+                foregroundColor = Color.GREEN;
             } else {
-                throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue());
+                throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue()+".");
             }
         }
         this.statusLabel.setForeground(foregroundColor);

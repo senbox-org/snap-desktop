@@ -1,11 +1,17 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
+import javafx.scene.control.Label;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 
 /**
  * Created by jcoravu on 12/9/2019.
@@ -14,15 +20,21 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
 
     private final JButton stopButton;
     private final JProgressBar progressBar;
+    private final JLabel messageLabel;
 
     private int currentThreadId;
 
     public ProgressBarHelperImpl(int progressBarWidth, int progressBarHeight) {
+        this.messageLabel = new JLabel("", JLabel.CENTER);
+
+        Dimension progressBarSize = new Dimension(progressBarWidth, progressBarHeight);
         this.progressBar = new JProgressBar(JProgressBar.HORIZONTAL);
+        this.progressBar.setLayout(new BorderLayout());
+        this.progressBar.add(this.messageLabel, BorderLayout.CENTER);
         this.progressBar.setIndeterminate(true);
-        this.progressBar.setPreferredSize(new Dimension(progressBarWidth, progressBarHeight));
-        this.progressBar.setMinimumSize(new Dimension(progressBarWidth, progressBarHeight));
-        this.progressBar.setMaximumSize(new Dimension(progressBarWidth, progressBarHeight));
+        this.progressBar.setPreferredSize(progressBarSize);
+        this.progressBar.setMinimumSize(progressBarSize);
+        this.progressBar.setMaximumSize(progressBarSize);
 
         Dimension buttonSize = new Dimension(progressBarHeight, progressBarHeight);
         this.stopButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
@@ -77,7 +89,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
     public boolean updateProgressBarText(int threadId, String message) {
         if (EventQueue.isDispatchThread()) {
             if (this.currentThreadId == threadId) {
-                this.progressBar.setString(message);
+                this.messageLabel.setText(message);
                 return true;
             }
             return false;

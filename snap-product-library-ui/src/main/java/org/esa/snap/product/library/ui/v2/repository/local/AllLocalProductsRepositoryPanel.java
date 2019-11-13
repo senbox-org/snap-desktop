@@ -1,8 +1,9 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
@@ -169,7 +170,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts) {
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, ProductListModel productListModel) {
         JMenuItem openMenuItem = new JMenuItem("Open");
         openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
@@ -189,8 +190,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public RepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                           ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+    public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+                                                                   ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
 
         return new LocalRepositoryProductPanel(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
     }

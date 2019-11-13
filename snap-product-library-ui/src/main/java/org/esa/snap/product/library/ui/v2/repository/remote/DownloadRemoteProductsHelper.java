@@ -8,6 +8,7 @@ import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.SwingUtilities;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,8 +63,8 @@ public class DownloadRemoteProductsHelper {
                 }
 
                 @Override
-                protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent) {
-                    updateDownloadingProgressPercentLater(repositoryProduct, progressPercent);
+                protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+                    updateDownloadingProgressPercentLater(repositoryProduct, progressPercent, downloadedPath);
                 }
             };
             this.runningTasks.add(runnable);
@@ -142,8 +143,8 @@ public class DownloadRemoteProductsHelper {
         }
     }
 
-    private void updateDownloadingProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent) {
-        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, this.repositoryProductListPanel) {
+    private void updateDownloadingProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, this.repositoryProductListPanel, downloadedPath) {
             @Override
             public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
@@ -201,17 +202,21 @@ public class DownloadRemoteProductsHelper {
         private final RepositoryProduct productToDownload;
         private final short progressPercent;
         private final RepositoryProductListPanel repositoryProductListPanel;
+        private final Path downloadedPath;
 
-        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent, RepositoryProductListPanel repositoryProductListPanel) {
+        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent,
+                                                        RepositoryProductListPanel repositoryProductListPanel, Path downloadedPath) {
+
             this.productToDownload = productToDownload;
             this.progressPercent = progressPercent;
             this.repositoryProductListPanel = repositoryProductListPanel;
+            this.downloadedPath = downloadedPath;
         }
 
         @Override
         public void run() {
             ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setProductDownloadPercent(this.productToDownload, this.progressPercent);
+            productListModel.setProductDownloadPercent(this.productToDownload, this.progressPercent, this.downloadedPath);
         }
     }
 

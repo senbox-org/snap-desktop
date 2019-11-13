@@ -25,27 +25,27 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
         this.productsToProcess = productsToProcess;
     }
 
-    protected final void updateProductProgressStatusLater(RepositoryProduct repositoryProduct, byte openStatus) {
-        UpdateProgressStatusRunnable runnable = new UpdateProgressStatusRunnable(repositoryProduct, openStatus, this.repositoryProductListPanel);
+    protected final void updateProductProgressStatusLater(RepositoryProduct repositoryProduct, byte localStatus) {
+        UpdateLocalProgressStatusRunnable runnable = new UpdateLocalProgressStatusRunnable(repositoryProduct, localStatus, this.repositoryProductListPanel);
         SwingUtilities.invokeLater(runnable);
     }
 
-    private static class UpdateProgressStatusRunnable implements Runnable {
+    private static class UpdateLocalProgressStatusRunnable implements Runnable {
 
         private final RepositoryProduct productToOpen;
-        private final byte openStatus;
+        private final byte localStatus;
         private final RepositoryProductListPanel repositoryProductListPanel;
 
-        private UpdateProgressStatusRunnable(RepositoryProduct productToOpen, byte openStatus, RepositoryProductListPanel repositoryProductListPanel) {
+        private UpdateLocalProgressStatusRunnable(RepositoryProduct productToOpen, byte localStatus, RepositoryProductListPanel repositoryProductListPanel) {
             this.productToOpen = productToOpen;
-            this.openStatus = openStatus;
+            this.localStatus = localStatus;
             this.repositoryProductListPanel = repositoryProductListPanel;
         }
 
         @Override
         public void run() {
             ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setLocalProductStatus(this.productToOpen, this.openStatus);
+            productListModel.setLocalProductStatus(this.productToOpen, this.localStatus);
         }
     }
 }
