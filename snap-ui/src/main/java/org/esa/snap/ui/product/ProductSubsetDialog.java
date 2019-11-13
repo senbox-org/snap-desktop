@@ -497,6 +497,8 @@ public class ProductSubsetDialog extends ModalDialog {
         private JCheckBox fixSceneHeightCheck;
         private JLabel subsetWidthLabel;
         private JLabel subsetHeightLabel;
+        private JLabel sourceWidthLabel;
+        private JLabel sourceHeightLabel;
         private int thumbNailSubSampling;
         private JButton setToVisibleButton;
         private JScrollPane imageScrollPane;
@@ -587,6 +589,19 @@ public class ProductSubsetDialog extends ModalDialog {
             subsetWidthLabel = new JLabel("####", JLabel.RIGHT);
             subsetHeightLabel = new JLabel("####", JLabel.RIGHT);
 
+
+            int sceneWidth;
+            int sceneHeight;
+            if(product.isMultiSize()) {
+                sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                sceneWidth = product.getSceneRasterWidth();
+                sceneHeight = product.getSceneRasterHeight();
+            }
+            sourceWidthLabel = new JLabel(String.valueOf(sceneWidth), JLabel.RIGHT);
+            sourceHeightLabel = new JLabel(String.valueOf(sceneHeight), JLabel.RIGHT);
+
             setToVisibleButton = new JButton("Use Preview");/*I18N*/
             setToVisibleButton.setMnemonic('v');
             setToVisibleButton.setToolTipText("Use coordinates of visible thumbnail area"); /*I18N*/
@@ -635,25 +650,14 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.addToPanel(textInputPane, new JLabel("Subset scene height:"), gbc, "gridx=0,gridy=4");
             GridBagUtils.addToPanel(textInputPane, subsetHeightLabel, gbc, "gridx=1,gridy=4");
 
-            int sceneWidth;
-            int sceneHeight;
-            if(product.isMultiSize()) {
-                sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
-                sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
-            } else {
-                sceneWidth = product.getSceneRasterWidth();
-                sceneHeight = product.getSceneRasterHeight();
-            }
 
             GridBagUtils.setAttributes(gbc, "insets.top=4,gridwidth=1");
             GridBagUtils.addToPanel(textInputPane, new JLabel("Source scene width:"), gbc, "gridx=0,gridy=5");
-            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(sceneWidth),
-                                                              JLabel.RIGHT), gbc, "gridx=1,gridy=5");
+            GridBagUtils.addToPanel(textInputPane, sourceWidthLabel, gbc, "gridx=1,gridy=5");
 
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(textInputPane, new JLabel("Source scene height:"), gbc, "gridx=0,gridy=6");
-            GridBagUtils.addToPanel(textInputPane, new JLabel(String.valueOf(sceneHeight),
-                                                              JLabel.RIGHT), gbc, "gridx=1,gridy=6");
+            GridBagUtils.addToPanel(textInputPane, sourceHeightLabel, gbc, "gridx=1,gridy=6");
 
             GridBagUtils.setAttributes(gbc, "insets.top=7,gridwidth=1, gridheight=2");
             GridBagUtils.addToPanel(textInputPane, setToVisibleButton, gbc, "gridx=0,gridy=7");
@@ -1042,6 +1046,19 @@ public class ProductSubsetDialog extends ModalDialog {
 
                     subsetWidthLabel.setText(String.valueOf(s.getWidth()));
                     subsetHeightLabel.setText(String.valueOf(s.getHeight()));
+
+
+                    int sceneWidth;
+                    int sceneHeight;
+                    if(product.isMultiSize()) {
+                        sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                        sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+                    } else {
+                        sceneWidth = product.getSceneRasterWidth();
+                        sceneHeight = product.getSceneRasterHeight();
+                    }
+                    sourceHeightLabel.setText(String.valueOf(sceneHeight));
+                    sourceWidthLabel.setText(String.valueOf(sceneWidth));
 
 
                     setThumbnailSubsampling();

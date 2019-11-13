@@ -55,8 +55,17 @@ public abstract class AbstractLayerConfigurationEditor extends AbstractLayerEdit
         PropertySet propertySet = bindingContext.getPropertySet();
         propertySet.addPropertyChangeListener(new PropertyChangeHandler());
         addEditablePropertyDescriptors();
+
+
+
         PropertyPane propertyPane = new PropertyPane(bindingContext);
 
+        //
+        // Modification note: Daniel Knowles 2018
+        // Modified to return JScrollPane instead of JPanel due to the large number of properties being added to the Graticule layer
+        // If for some reason this option is only desired for a certain layer then the following type of if clause might be used
+        // if ("Graticule".equals(getCurrentLayer().getName())) {}
+        //
         return propertyPane.createJScrollPanel();
     }
 
