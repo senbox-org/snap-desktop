@@ -54,6 +54,7 @@ import org.esa.snap.ui.loading.CustomFileChooser;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -114,6 +115,8 @@ import java.util.logging.Logger;
 public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension {
 
     private static final Logger logger = Logger.getLogger(ProductLibraryToolViewV2.class.getName());
+
+    private static final String HELP_ID = "productLibraryTool";
 
     public static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
 
@@ -291,6 +294,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 stopSearchingProductList();
             }
         };
+        ActionListener helpButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HelpCtx helpCtx = new HelpCtx(HELP_ID);
+                helpCtx.display();
+            }
+        };
 
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteRepositoriesManager.getRemoteProductsRepositoryProviders();
         if (remoteRepositoryProductProviders.length > 1) {
@@ -319,6 +329,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.repositorySelectionPanel = new RepositorySelectionPanel(remoteRepositoryProductProviders, this, missionParameterListener, this.worldWindowPanel, progressBarWidth);
         this.repositorySelectionPanel.setRepositoriesItemListener(repositoriesItemListener);
         this.repositorySelectionPanel.setSearchButtonListener(searchButtonListener);
+        this.repositorySelectionPanel.setHelpButtonListener(helpButtonListener);
         this.repositorySelectionPanel.setStopButtonListener(stopDownloadingProductListButtonListener);
         this.repositorySelectionPanel.setDataSourcesBorder(new EmptyBorder(0, 0, 0, 1));
 

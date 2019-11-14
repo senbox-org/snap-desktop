@@ -1,0 +1,100 @@
+<!--
+  ~ Copyright (C) 2019 by CS ROMANIA
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+	<head>
+		<title>SNAP Product Library Tool</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	
+	<body>
+		<table class="header">
+			<tr class="header">
+				<td class="header">&nbsp;
+					Product Library Tool</td>
+				<td class="header" align="right"><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img src="images/snap_header.jpg" border=0></a></td>
+			</tr>
+		</table>
+		
+		<p><br/></p>
+		<p>
+			The Product Library Tool allows the user to search for products on a certain repository using specific filters to retrieve the product list. 
+			Each repository has its own filters and some of them are mandatory.
+		</p>
+
+		<p>
+			The products may be searched in terms of mission, satellite, product type, date and time of acquisition. They may also be searched by graphically drawing an area of interest on the world map.
+		</p>
+
+		<img src="images/product-library.png">
+
+		<p>
+			There are two repository types:
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(i) remote repository
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(ii) local repository
+		</p>		
+		
+		<h4>Remote repository</h4>
+
+		<p>
+			In order to access the products stored on a remote repository an authentication is required. In this case the user must define an account to that repository in the application.
+			The remote products may be downloaded on a local folder. To download products press the mouse right button on the selected products and select the Download option. Then select
+			the local folder used to save the products. After downloading a product on the local folder it can be opened in the application.
+		</p>
+
+		<h5>Remote repository accounts</h5>
+
+		<p>
+			To add an account to a remote repository access the 'Tools -> Options' menu and in the dialog window select the 'Product Library' tab.	
+		</p>
+		
+		<img src="images/remote-repository-accounts.png">
+		
+		<h4>Local repository</h4>
+
+		<p>
+			The selected local folder to download the remote product represent a local repository. The user may add/remove a local repository, refresh the product list from the local folders
+			according to the saved metadata from the database of the downloaded products.			
+			By means of the popup menu displayed using mouse right button clicked on a selected product(s) the user may:
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(i) open products in the application
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(ii) delete products from the database
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(iii) process the products in the Batch Processing dialog
+		</p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			(iiii) show the local folder containg that product
+		</p>
+	</body>
+	
+</html>

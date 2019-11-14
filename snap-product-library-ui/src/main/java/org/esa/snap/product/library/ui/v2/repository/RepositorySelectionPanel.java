@@ -77,12 +77,7 @@ public class RepositorySelectionPanel extends JPanel {
         this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
         this.searchButton.setToolTipText("Search");
 
-        ActionListener helpButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
-        };
-        this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", helpButtonListener, buttonSize, 1);
+        this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", null, buttonSize, 1);
         this.helpButton.setToolTipText("Help");
 
         this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, buttonSize.height) {
@@ -127,6 +122,10 @@ public class RepositorySelectionPanel extends JPanel {
 
     public void setSearchButtonListener(ActionListener searchButtonListener) {
         this.searchButton.addActionListener(searchButtonListener);
+    }
+
+    public void setHelpButtonListener(ActionListener helpButtonListener) {
+        this.helpButton.addActionListener(helpButtonListener);
     }
 
     public void setStopButtonListener(ActionListener stopButtonListener) {
