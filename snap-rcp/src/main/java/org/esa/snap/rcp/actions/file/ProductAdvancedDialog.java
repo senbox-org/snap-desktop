@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ProductAdvancedDialog extends ModalDialog implements ParamChangeListener {
 
     private static final int MIN_SCENE_VALUE = 0;
-    private static final int MIN_SUBSET_SIZE = 1;
 
     private final JList bandList = new JList();
     private final JList maskList = new JList();
@@ -167,11 +166,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 paramHeight.getProperties().setMinValue(MIN_SCENE_VALUE);
                 paramHeight.getProperties().setDescription("Product height");
                 paramHeight.getProperties().setMaxValue(Integer.MAX_VALUE);
-
-                paramNorthLat1 = new Parameter("geo_lat1", 90.0);
-                paramWestLon1 = new Parameter("geo_lon1", -180.0);
-                paramEastLon2 = new Parameter("geo_lon2", 180.0);
-                paramSouthLat2 = new Parameter("geo_lat2", -90.0);
             } else {
                 if (this.readerInspectorExposeParameters.getBandList() != null && !this.readerInspectorExposeParameters.getBandList().isEmpty()) {
                     // set the possible selectable values
@@ -206,7 +200,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                     paramHeight.getProperties().setDescription("Product height");
                     paramHeight.getProperties().setMaxValue(Integer.parseInt(this.readerInspectorExposeParameters.getProductHeight()));
                 }
-                if (this.readerInspectorExposeParameters.getProductWidth() != null && this.readerInspectorExposeParameters.getProductHeight() != null) {
+                if (this.readerInspectorExposeParameters.isHasGeoCoding()) {
                     // set GeoCoding coordinates
                     paramNorthLat1 = new Parameter("geo_lat1", Double.parseDouble(this.readerInspectorExposeParameters.getLatitudeNorth()));
                     paramWestLon1 = new Parameter("geo_lon1", Double.parseDouble(this.readerInspectorExposeParameters.getLongitudeWest()));
@@ -218,24 +212,27 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                     paramEastLon2.getProperties().setDescription("East bound longitude");
                 }
             }
-            paramWestLon1.getProperties().setDescription("West bound longitude");
-            paramNorthLat1.getProperties().setDescription("North bound latitude");
-            paramSouthLat2.getProperties().setDescription("South bound latitude");
-            paramEastLon2.getProperties().setDescription("East bound longitude");
-            paramWestLon1.getProperties().setPhysicalUnit("°");
-            paramWestLon1.getProperties().setMinValue(-180.0);
-            paramWestLon1.getProperties().setMaxValue(180.0);
-            paramSouthLat2.getProperties().setPhysicalUnit("°");
-            paramSouthLat2.getProperties().setMinValue(-90.0);
-            paramSouthLat2.getProperties().setMaxValue(90.0);
-            paramEastLon2.getProperties().setPhysicalUnit("°");
-            paramEastLon2.getProperties().setMinValue(-180.0);
-            paramEastLon2.getProperties().setMaxValue(180.0);
-            paramNorthLat1.getProperties().setPhysicalUnit("°");
-            paramNorthLat1.getProperties().setMinValue(-90.0);
-            paramNorthLat1.getProperties().setMaxValue(90.0);
+            if(this.readerInspectorExposeParameters.isHasGeoCoding()) {
+                paramWestLon1.getProperties().setDescription("West bound longitude");
+                paramNorthLat1.getProperties().setDescription("North bound latitude");
+                paramSouthLat2.getProperties().setDescription("South bound latitude");
+                paramEastLon2.getProperties().setDescription("East bound longitude");
+                paramWestLon1.getProperties().setPhysicalUnit("°");
+                paramWestLon1.getProperties().setMinValue(-180.0);
+                paramWestLon1.getProperties().setMaxValue(180.0);
+                paramSouthLat2.getProperties().setPhysicalUnit("°");
+                paramSouthLat2.getProperties().setMinValue(-90.0);
+                paramSouthLat2.getProperties().setMaxValue(90.0);
+                paramEastLon2.getProperties().setPhysicalUnit("°");
+                paramEastLon2.getProperties().setMinValue(-180.0);
+                paramEastLon2.getProperties().setMaxValue(180.0);
+                paramNorthLat1.getProperties().setPhysicalUnit("°");
+                paramNorthLat1.getProperties().setMinValue(-90.0);
+                paramNorthLat1.getProperties().setMaxValue(90.0);
+            }
             productHeight = Integer.parseInt(this.readerInspectorExposeParameters.getProductHeight());
             productWidth = Integer.parseInt(this.readerInspectorExposeParameters.getProductWidth());
+
             createUI();
         }
     }
@@ -243,12 +240,14 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
     public void createUI() throws Exception {
         setContent(createPanel());
         this.productSubsetDef = new ProductSubsetDef();
-        updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
+        if(geoCoordRadio.isEnabled()) {
+            updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
+        }
         if (show() == ID_OK) {
             if (pixelPanel.isVisible()) {
                 pixelPanelChanged();
             }
-            if (geoPanel.isVisible()) {
+            if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
                 geoCodingChange();
             }
             updateSubsetDefNodeNameList();
@@ -365,7 +364,11 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 contentPane.add(copyMasksTextField, gbc);
             }
         }
-
+        if (this.readerExposedParams != null ||
+                (this.readerInspectorExposeParameters != null && !this.readerInspectorExposeParameters.isHasGeoCoding()) ||
+                        this.readerInspectorExposeParameters == null) {
+            geoCoordRadio.setEnabled(false);
+        }
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy++;
@@ -399,14 +402,16 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         final GridBagConstraints geobc = createGridBagConstraints();
         geobc.gridwidth = 1;
         geobc.fill = GridBagConstraints.BOTH;
-        addComponent(geoPanel, geobc, "North latitude bound:", UIUtils.createSpinner(paramNorthLat1, 1.0, "#0.00#"), 0);
-        geobc.gridy++;
-        addComponent(geoPanel, geobc, "West longitude bound:", UIUtils.createSpinner(paramWestLon1, 1.0, "#0.00#"), 0);
-        geobc.gridy++;
-        addComponent(geoPanel, geobc, "South latitude bound:", UIUtils.createSpinner(paramSouthLat2, 1.0, "#0.00#"), 0);
-        geobc.gridy++;
-        addComponent(geoPanel, geobc, "East longitude bound:", UIUtils.createSpinner(paramEastLon2, 1.0, "#0.00#"), 0);
-        geoPanel.add(new JPanel(), geobc);
+        if(this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+            addComponent(geoPanel, geobc, "North latitude bound:", UIUtils.createSpinner(paramNorthLat1, 1.0, "#0.00#"), 0);
+            geobc.gridy++;
+            addComponent(geoPanel, geobc, "West longitude bound:", UIUtils.createSpinner(paramWestLon1, 1.0, "#0.00#"), 0);
+            geobc.gridy++;
+            addComponent(geoPanel, geobc, "South latitude bound:", UIUtils.createSpinner(paramSouthLat2, 1.0, "#0.00#"), 0);
+            geobc.gridy++;
+            addComponent(geoPanel, geobc, "East longitude bound:", UIUtils.createSpinner(paramEastLon2, 1.0, "#0.00#"), 0);
+            geoPanel.add(new JPanel(), geobc);
+        }
 
         gbc.gridx = 0;
         gbc.gridwidth = 2;
