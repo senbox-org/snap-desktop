@@ -87,6 +87,12 @@
             <type>test-jar</type>
         </dependency>
         <dependency>
+            <groupId>tec.uom</groupId>
+            <artifactId>uom-se</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-explorer</artifactId>
         </dependency>
@@ -123,6 +129,7 @@
                 <configuration>
                     <publicPackages>
                         <!-- should actually be deleted. jidesoft is already exported in ceres-ui -->
+                        <publicPackage>javax.measure.*</publicPackage>
                         <publicPackage>com.jidesoft.*</publicPackage>
                         <publicPackage>com.bc.ceres.swing</publicPackage>
                         <publicPackage>com.bc.ceres.swing.actions</publicPackage>

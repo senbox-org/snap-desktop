@@ -3,7 +3,7 @@ package org.esa.snap.ui.product;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.SceneTransformProvider;
 import org.esa.snap.core.datamodel.VectorDataNode;
@@ -111,7 +111,7 @@ public class TrackLayerType extends VectorDataLayerType {
             for (int i = 0; i < features.length; i++) {
                 SimpleFeature feature = features[i];
                 Geometry geometry = (Geometry) feature.getDefaultGeometry();
-                com.vividsolutions.jts.geom.Point centroid = geometry.getCentroid();
+                org.locationtech.jts.geom.Point centroid = geometry.getCentroid();
                 try {
                     final Point2D.Double sceneCoords = new Point2D.Double(centroid.getX(), centroid.getY());
                     final Point2D.Double modelCoords = new Point2D.Double();

@@ -4,7 +4,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import org.esa.snap.core.dataio.placemark.PlacemarkData;
 import org.esa.snap.core.dataio.placemark.PlacemarkIO;
 import org.esa.snap.core.datamodel.Band;
@@ -449,8 +449,8 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         final ProductSceneView view = getSceneView();
         //todo [Multisize_products] use scene raster transform here
         final Object placemarkGeometry = activePlacemark.getFeature().getDefaultGeometry();
-        if (placemarkGeometry != null && placemarkGeometry instanceof com.vividsolutions.jts.geom.Point) {
-            final Coordinate coordinate = ((com.vividsolutions.jts.geom.Point) placemarkGeometry).getCoordinate();
+        if (placemarkGeometry != null && placemarkGeometry instanceof org.locationtech.jts.geom.Point) {
+            final Coordinate coordinate = ((org.locationtech.jts.geom.Point) placemarkGeometry).getCoordinate();
             final Point2D modelPos = new Point2D.Double(coordinate.x, coordinate.y);
             view.zoom(modelPos.getX(), modelPos.getY(), view.getZoomFactor());
             updateUIState();

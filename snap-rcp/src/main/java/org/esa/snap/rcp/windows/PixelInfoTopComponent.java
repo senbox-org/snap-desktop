@@ -6,7 +6,7 @@
 package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;

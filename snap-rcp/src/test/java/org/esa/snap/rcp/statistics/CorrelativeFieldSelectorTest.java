@@ -2,8 +2,8 @@ package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;

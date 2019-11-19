@@ -2,8 +2,8 @@ package org.esa.snap.ui;
 
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.swing.binding.BindingContext;
+import tec.uom.se.unit.Units;
 
-import javax.measure.unit.NonSI;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -213,7 +213,7 @@ public class RegionBoundsInputUI {
     }
 
     private JLabel createDegreeLabel() {
-        return new JLabel(NonSI.DEGREE_ANGLE.toString());
+        return new JLabel(Units.DEGREE_ANGLE.toString());
     }
 
     private static class DoubleFormatter extends JFormattedTextField.AbstractFormatter {

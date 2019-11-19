@@ -1,9 +1,9 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.SceneTransformProvider;
 import org.esa.snap.core.transform.MathTransform2D;
 import org.geotools.feature.simple.SimpleFeatureBuilder;

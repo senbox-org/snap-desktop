@@ -18,12 +18,12 @@ package org.esa.snap.rcp.session;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Converter;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 
 import java.awt.geom.Point2D;
 
@@ -50,8 +50,8 @@ public class PointConverter implements Converter {
     public Object parse(String text) throws ConversionException {
         try {
             Geometry geometry = new WKTReader(geometryFactory).read(text);
-            if (geometry instanceof com.vividsolutions.jts.geom.Point) {
-                com.vividsolutions.jts.geom.Point point = (com.vividsolutions.jts.geom.Point) geometry;
+            if (geometry instanceof org.locationtech.jts.geom.Point) {
+                org.locationtech.jts.geom.Point point = (org.locationtech.jts.geom.Point) geometry;
                 return new Point2D.Double(point.getX(), point.getY());
             } else {
                 throw new ConversionException("Failed to parse point geometry WKT.");

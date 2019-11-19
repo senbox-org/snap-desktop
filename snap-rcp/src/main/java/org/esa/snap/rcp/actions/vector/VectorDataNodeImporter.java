@@ -18,7 +18,7 @@ package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import com.vividsolutions.jts.geom.Polygonal;
+import org.locationtech.jts.geom.Polygonal;
 import org.esa.snap.core.dataio.geometry.VectorDataNodeIO;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Product;
