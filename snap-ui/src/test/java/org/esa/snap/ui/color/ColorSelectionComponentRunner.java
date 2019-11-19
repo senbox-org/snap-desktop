@@ -1,7 +1,5 @@
 package org.esa.snap.ui.color;
 
-import org.junit.Ignore;
-
 import javax.swing.AbstractListModel;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -24,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Ignore
-public class ColorSelectionTest {
+public class ColorSelectionComponentRunner {
     public static void main(String[] args) {
 
         try {
