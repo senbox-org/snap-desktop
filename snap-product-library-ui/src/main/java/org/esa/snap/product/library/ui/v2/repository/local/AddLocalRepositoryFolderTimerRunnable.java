@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AddLocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.ui.loading.GenericRunnable;
@@ -14,11 +15,13 @@ import java.nio.file.Path;
  */
 public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Void> {
 
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
     private final Path localRepositoryFolderPath;
 
-    public AddLocalRepositoryFolderTimerRunnable(ProgressBarHelper progressPanel, int threadId, Path localRepositoryFolderPath) {
+    public AddLocalRepositoryFolderTimerRunnable(ProgressBarHelper progressPanel, int threadId, Path localRepositoryFolderPath, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
         super(progressPanel, threadId, 500);
 
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
         this.localRepositoryFolderPath = localRepositoryFolderPath;
     }
 
@@ -26,7 +29,7 @@ public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimer
     protected Void execute() throws Exception {
         updateProgressBarTextLater("");
 
-        AddLocalRepositoryFolderHelper saveLocalProductsHelper = new AddLocalRepositoryFolderHelper() {
+        AddLocalRepositoryFolderHelper saveLocalProductsHelper = new AddLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository) {
             @Override
             protected void finishSavingProduct(SaveProductData saveProductData) {
                 updateFinishSavingProductDataLater(saveProductData);

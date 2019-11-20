@@ -98,15 +98,15 @@ public final class RepositoriesCredentialsPersistence {
                         String credentialId = "" + id++;
                         String username = credential.getUserPrincipal().getName();
                         if (StringUtils.isNotNullAndNotEmpty(username)) {
-                            String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryId(), credentialId);
+                            String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryName(), credentialId);
                             properties.setProperty(usernameKey, username);
                         } else {
                             throw new IllegalArgumentException("empty username");
                         }
                         String password = credential.getPassword();
                         if (StringUtils.isNotNullAndNotEmpty(password)) {
-                            String encryptedPassword = Crypto.encrypt(password, repositoryCredentials.getRepositoryId());
-                            String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryId(), credentialId);
+                            String encryptedPassword = Crypto.encrypt(password, repositoryCredentials.getRepositoryName());
+                            String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryName(), credentialId);
                             properties.setProperty(passwordKey, encryptedPassword);
                         } else {
                             throw new IllegalArgumentException("empty password");
@@ -114,12 +114,12 @@ public final class RepositoriesCredentialsPersistence {
                         repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
                     }
                     if (StringUtils.isNotNullAndNotEmpty(repositoryCredentialsIds)) {
-                        String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryId());
+                        String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryName());
                         properties.setProperty(credentialsKey, repositoryCredentialsIds);
                         if (repositoriesIds.isEmpty()) {
-                            repositoriesIds = repositoryCredentials.getRepositoryId();
+                            repositoriesIds = repositoryCredentials.getRepositoryName();
                         } else {
-                            repositoriesIds = repositoriesIds.concat(LIST_ITEM_SEPARATOR + repositoryCredentials.getRepositoryId());
+                            repositoriesIds = repositoriesIds.concat(LIST_ITEM_SEPARATOR + repositoryCredentials.getRepositoryName());
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JPanel;
@@ -20,7 +20,7 @@ public class ParametersPanel extends JPanel {
         super(new GridBagLayout());
     }
 
-    public List<AbstractParameterComponent<?>> addParameterComponents(List<QueryFilter> parameters, int startRowIndex, int startGapBetweenRows, ComponentDimension componentDimension, Class<?>[] classesToIgnore) {
+    public List<AbstractParameterComponent<?>> addParameterComponents(List<RepositoryQueryParameter> parameters, int startRowIndex, int startGapBetweenRows, ComponentDimension componentDimension, Class<?>[] classesToIgnore) {
         int gapBetweenColumns = componentDimension.getGapBetweenColumns();
         int gapBetweenRows = componentDimension.getGapBetweenRows();
         int textFieldPreferredHeight = componentDimension.getTextFieldPreferredHeight();
@@ -28,7 +28,7 @@ public class ParametersPanel extends JPanel {
         List<AbstractParameterComponent<?>> parameterComponents = new ArrayList<AbstractParameterComponent<?>>();
 
         for (int i=0; i<parameters.size(); i++) {
-            QueryFilter param = parameters.get(i);
+            RepositoryQueryParameter param = parameters.get(i);
             AbstractParameterComponent parameterComponent = null;
             if (param.getType() == String.class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : (String)param.getDefaultValue();
@@ -50,8 +50,6 @@ public class ParametersPanel extends JPanel {
             } else if (param.getType() == String[].class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
                 parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight);
-            } else if (param.getType() == Object[].class) {
-                parameterComponent = new ObjectComboBoxParameterComponent(param, componentDimension);
             } else {
                 boolean found = false;
                 for (int k=0; k<classesToIgnore.length; k++) {

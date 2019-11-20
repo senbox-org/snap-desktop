@@ -2,16 +2,13 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
-import org.esa.snap.product.library.v2.database.H2DatabaseAccessor;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.ScanLocalRepositoryFolderHelper;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,22 +20,21 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
 
     private static final Logger logger = Logger.getLogger(ScanAllLocalRepositoryFoldersTimerRunnable.class.getName());
 
-    public ScanAllLocalRepositoryFoldersTimerRunnable(ProgressBarHelper progressPanel, int threadId) {
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
+
+    public ScanAllLocalRepositoryFoldersTimerRunnable(ProgressBarHelper progressPanel, int threadId, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
         super(progressPanel, threadId, 500);
+
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
     }
 
     @Override
     protected Void execute() throws Exception {
         updateProgressBarTextLater("");
 
-        List<LocalRepositoryFolder> localRepositoryFolders;
-        try (Connection connection = H2DatabaseAccessor.getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                localRepositoryFolders = ProductLibraryDAL.loadLocalRepositoryFolders(statement);
-            }
-        }
+        List<LocalRepositoryFolder> localRepositoryFolders = this.allLocalFolderProductsRepository.loadRepositoryFolders();
 
-        ScanLocalRepositoryFolderHelper scanLocalProductsHelper = new ScanLocalRepositoryFolderHelper();
+        ScanLocalRepositoryFolderHelper scanLocalProductsHelper = new ScanLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository);
 
         for (int i=0; i<localRepositoryFolders.size(); i++) {
             LocalRepositoryFolder localRepositoryFolder = localRepositoryFolders.get(i);

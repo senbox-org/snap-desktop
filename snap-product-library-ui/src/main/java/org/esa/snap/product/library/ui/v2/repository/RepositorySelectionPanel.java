@@ -32,7 +32,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -100,7 +99,7 @@ public class RepositorySelectionPanel extends JPanel {
                 AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(k);
                 if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
                     RemoteProductsRepositoryPanel remoteRepositoryPanel = (RemoteProductsRepositoryPanel)repositoryPanel;
-                    if (remoteRepositoryPanel.getProductsRepositoryProvider().getRepositoryId().equals(repositoryCredentials.getRepositoryId())) {
+                    if (remoteRepositoryPanel.getProductsRepositoryProvider().getRepositoryName().equals(repositoryCredentials.getRepositoryName())) {
                         remoteRepositoryPanel.setUserAccounts(repositoryCredentials.getCredentialsList());
                     }
                 }
@@ -113,7 +112,7 @@ public class RepositorySelectionPanel extends JPanel {
             refreshUserAccounts(parameterValues.getRepositoriesCredentials());
         }
         AllLocalProductsRepositoryPanel localProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
-        localProductsRepositoryPanel.setLocalParameterValues(parameterValues.getLocalRepositoryFolders(), parameterValues.getMissions(), parameterValues.getAttributes());
+        localProductsRepositoryPanel.setLocalParameterValues(parameterValues.getLocalRepositoryParameterValues());
     }
 
     public ProgressBarHelperImpl getProgressBarHelper() {

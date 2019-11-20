@@ -7,16 +7,16 @@ import java.util.List;
 
 public class RemoteRepositoryCredentials {
 
-    private final String repositoryId;
+    private final String remoteRepositoryName;
     private final List<Credentials> credentialsList;
 
-    public RemoteRepositoryCredentials(String repositoryId, List<Credentials> credentialsList) {
-        this.repositoryId = repositoryId;
+    public RemoteRepositoryCredentials(String remoteRepositoryName, List<Credentials> credentialsList) {
+        this.remoteRepositoryName = remoteRepositoryName;
         this.credentialsList = credentialsList;
     }
 
-    public String getRepositoryId() {
-        return repositoryId;
+    public String getRepositoryName() {
+        return remoteRepositoryName;
     }
 
     public List<Credentials> getCredentialsList() {

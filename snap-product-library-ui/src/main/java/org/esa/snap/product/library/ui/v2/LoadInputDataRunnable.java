@@ -4,15 +4,13 @@ import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsCon
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
-import org.esa.snap.product.library.v2.database.H2DatabaseAccessor;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
+import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +26,10 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
 
     private static final Logger logger = Logger.getLogger(LoadInputDataRunnable.class.getName());
 
-    public LoadInputDataRunnable() {
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
+
+    public LoadInputDataRunnable(AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
     }
 
     @Override
@@ -40,29 +41,23 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
             logger.log(Level.SEVERE, "Failed to load the remote repository credentials.", exception);
         }
 
-        Map<Short, Set<String>> attributeNamesPerMission = null;
-        List<RemoteMission> missions = null;
-        List<LocalRepositoryFolder> localRepositoryFolders = null;
-        try (Connection connection = H2DatabaseAccessor.getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                localRepositoryFolders = ProductLibraryDAL.loadLocalRepositoryFolders(statement);
-                attributeNamesPerMission = ProductLibraryDAL.loadAttributesNamesPerMission(statement);
-                missions = ProductLibraryDAL.loadMissions(statement);
-                if (missions.size() > 1) {
-                    Comparator<RemoteMission> comparator = new Comparator<RemoteMission>() {
-                        @Override
-                        public int compare(RemoteMission o1, RemoteMission o2) {
-                            return o1.getName().compareToIgnoreCase(o2.getName());
-                        }
-                    };
-                    Collections.sort(missions, comparator);
-                }
-            }
+        LocalRepositoryParameterValues localRepositoryParameterValues = null;
+        try {
+            localRepositoryParameterValues = this.allLocalFolderProductsRepository.loadParameterValues();
+//            if (missions.size() > 1) {
+//                Comparator<RemoteMission> comparator = new Comparator<RemoteMission>() {
+//                    @Override
+//                    public int compare(RemoteMission o1, RemoteMission o2) {
+//                        return o1.getName().compareToIgnoreCase(o2.getName());
+//                    }
+//                };
+//                Collections.sort(missions, comparator);
+//            }
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load input data from the database.", exception);
         }
 
-        return new LocalParameterValues(repositoriesCredentials, missions, attributeNamesPerMission, localRepositoryFolders);
+        return new LocalParameterValues(repositoriesCredentials, localRepositoryParameterValues);
     }
 
     @Override

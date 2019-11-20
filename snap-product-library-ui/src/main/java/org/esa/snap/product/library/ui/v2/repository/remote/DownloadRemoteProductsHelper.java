@@ -4,6 +4,7 @@ import org.esa.snap.engine_utilities.util.ThreadNamePoolExecutor;
 import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -34,7 +35,7 @@ public class DownloadRemoteProductsHelper {
         this.repositoryProductListPanel = repositoryProductListPanel;
     }
 
-    public void downloadProductsAsync(RemoteProductDownloader[] remoteProductDownloaders) {
+    public void downloadProductsAsync(RemoteProductDownloader[] remoteProductDownloaders, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
         if (this.threadPoolExecutor == null) {
             this.totalProducts = 0;
             this.totalDownloaded = 0;
@@ -46,7 +47,7 @@ public class DownloadRemoteProductsHelper {
         }
 
         for (int i=0; i<remoteProductDownloaders.length; i++) {
-            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloaders[i], this.remoteRepositoriesSemaphore) {
+            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloaders[i], this.remoteRepositoriesSemaphore, allLocalFolderProductsRepository) {
                 @Override
                 protected void startRunningThread() {
                     startRunningThreadLater();

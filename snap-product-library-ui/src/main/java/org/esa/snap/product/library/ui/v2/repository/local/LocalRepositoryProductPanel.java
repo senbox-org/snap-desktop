@@ -31,7 +31,7 @@ public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel 
 
     private void updateProgressStatus(LocalProgressStatus localProgressStatus) {
         Color foregroundColor = getDefaultForegroundColor();
-        String openText = "";
+        String openText = " "; // set an empty space for the default text
         if (localProgressStatus != null) {
             if (localProgressStatus.isPendingOpen()) {
                 openText = "Pending open...";

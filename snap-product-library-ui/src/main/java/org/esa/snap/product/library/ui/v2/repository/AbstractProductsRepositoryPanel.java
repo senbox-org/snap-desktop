@@ -11,7 +11,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 
@@ -125,7 +125,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         }
     }
 
-    protected final void addAreaParameterComponent(QueryFilter areaOfInterestParameter) {
+    protected final void addAreaParameterComponent(RepositoryQueryParameter areaOfInterestParameter) {
         this.worlWindPanel.clearSelectedArea();
         SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(this.worlWindPanel, areaOfInterestParameter.getName(), areaOfInterestParameter.getLabel(), areaOfInterestParameter.isRequired());
         this.parameterComponents.add(selectionAreaParameterComponent);

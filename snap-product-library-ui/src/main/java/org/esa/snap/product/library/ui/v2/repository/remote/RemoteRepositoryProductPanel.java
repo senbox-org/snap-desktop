@@ -31,7 +31,7 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
 
     private void updateDownloadingPercent(DownloadProgressStatus progressPercent) {
         Color foregroundColor = getDefaultForegroundColor();
-        String percentText = "";
+        String percentText = " "; // set an empty space for the default text
         if (progressPercent != null) {
             // the product is pending download or downloading
             if (progressPercent.isDownloading()) {

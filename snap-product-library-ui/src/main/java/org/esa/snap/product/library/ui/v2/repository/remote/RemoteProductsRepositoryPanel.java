@@ -13,8 +13,7 @@ import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
-import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
@@ -27,8 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -207,12 +204,12 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
         String selectedMission = (String) this.missionsComboBox.getSelectedItem();
-        List<QueryFilter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
+        List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
         this.parameterComponents = panel.addParameterComponents(parameters, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
-        QueryFilter areaOfInterestParameter = null;
+        RepositoryQueryParameter areaOfInterestParameter = null;
         for (int i=0; i<parameters.size(); i++) {
-            QueryFilter param = parameters.get(i);
+            RepositoryQueryParameter param = parameters.get(i);
             if (param.getType() == areaOfInterestClass) {
                 areaOfInterestParameter = param;
             }
@@ -237,8 +234,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 throw new NullPointerException("No credential account is selected.");
             }
         }
-        ProductRepositoryDownloader productRepositoryDownloader = this.productsRepositoryProvider.buildProductDownloader(repositoryProduct.getMission());
-        RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(repositoryProduct, productRepositoryDownloader, localRepositoryFolderPath, selectedCredentials);
+        RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(this.productsRepositoryProvider, repositoryProduct, localRepositoryFolderPath, selectedCredentials);
         return remoteProductDownloader;
     }
 

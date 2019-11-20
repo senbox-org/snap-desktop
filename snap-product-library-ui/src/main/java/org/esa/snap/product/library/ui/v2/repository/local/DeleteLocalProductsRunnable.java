@@ -1,8 +1,8 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
-import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 
@@ -17,8 +17,14 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
 
     private static final Logger logger = Logger.getLogger(DeleteLocalProductsRunnable.class.getName());
 
-    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete) {
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
+
+    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete,
+                                       AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+
         super(appContext, repositoryProductListPanel, productsToDelete);
+
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
     }
 
     @Override
@@ -30,7 +36,7 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
 
                 //FileIOUtils.deleteFolder(repositoryProduct.getPath());
 
-                ProductLibraryDAL.deleteProduct(repositoryProduct);
+                this.allLocalFolderProductsRepository.deleteProduct(repositoryProduct);
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.DELETED);
             } catch (Exception exception) {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_DELETED);

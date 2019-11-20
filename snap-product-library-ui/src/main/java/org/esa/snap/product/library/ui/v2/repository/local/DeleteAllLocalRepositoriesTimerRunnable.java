@@ -2,8 +2,8 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
@@ -19,11 +19,14 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
     private static final Logger logger = Logger.getLogger(DeleteAllLocalRepositoriesTimerRunnable.class.getName());
 
     private final List<LocalRepositoryFolder> localRepositoryFolders;
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
-    public DeleteAllLocalRepositoriesTimerRunnable(ProgressBarHelper progressPanel, int threadId, List<LocalRepositoryFolder> localRepositoryFolders) {
+    public DeleteAllLocalRepositoriesTimerRunnable(ProgressBarHelper progressPanel, int threadId, List<LocalRepositoryFolder> localRepositoryFolders,
+                                                   AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
         super(progressPanel, threadId, 500);
 
         this.localRepositoryFolders = localRepositoryFolders;
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
                     logger.log(Level.FINE, "Delete the local repository folder '" + localRepositoryFolder.getPath().toString()+"'.");
                 }
 
-                ProductLibraryDAL.deleteLocalRepositoryFolder(localRepositoryFolder);
+                this.allLocalFolderProductsRepository.deleteRepositoryFolder(localRepositoryFolder);
                 folderDeletedFromDatabase = true;
                 //if (Files.exists(localRepositoryFolder.getPath())) {
                 //    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());

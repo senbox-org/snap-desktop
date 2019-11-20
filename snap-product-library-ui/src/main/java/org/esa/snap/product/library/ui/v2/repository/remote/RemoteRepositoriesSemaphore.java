@@ -20,34 +20,34 @@ public class RemoteRepositoriesSemaphore {
         this.map = new HashMap<>();
     }
 
-    public void acquirePermission(String remoteRepositoryId, Credentials credentials) throws InterruptedException {
-        Semaphore semaphore = getSemaphore(remoteRepositoryId, credentials);
+    public void acquirePermission(String remoteRepositoryName, Credentials credentials) throws InterruptedException {
+        Semaphore semaphore = getSemaphore(remoteRepositoryName, credentials);
         if (semaphore != null) {
             semaphore.acquire(1);
         }
     }
 
-    public void releasePermission(String remoteRepositoryId, Credentials credentials) throws InterruptedException {
-        Semaphore semaphore = getSemaphore(remoteRepositoryId, credentials);
+    public void releasePermission(String remoteRepositoryName, Credentials credentials) throws InterruptedException {
+        Semaphore semaphore = getSemaphore(remoteRepositoryName, credentials);
         if (semaphore != null) {
             semaphore.release(1);
         }
     }
 
-    private Semaphore getSemaphore(String remoteRepositoryId, Credentials credentials) {
+    private Semaphore getSemaphore(String remoteRepositoryName, Credentials credentials) {
         Semaphore semaphore;
         synchronized (this.map) {
-            String key = buildLKey(remoteRepositoryId, credentials);
+            String key = buildLKey(remoteRepositoryName, credentials);
             semaphore = this.map.get(key);
             if (semaphore == null) {
                 RemoteProductsRepositoryProvider remoteRepositoryProvider = null;
                 for (int i=0; i<this.remoteRepositoryProductProviders.length && remoteRepositoryProvider == null; i++) {
-                    if (this.remoteRepositoryProductProviders[i].getRepositoryId().equals(remoteRepositoryId)) {
+                    if (this.remoteRepositoryProductProviders[i].getRepositoryName().equals(remoteRepositoryName)) {
                         remoteRepositoryProvider = this.remoteRepositoryProductProviders[i];
                     }
                 }
                 if (remoteRepositoryProvider == null) {
-                    throw new NullPointerException("The remote repository provider with id '" + remoteRepositoryId+"' does not exist.");
+                    throw new NullPointerException("The remote repository provider with id '" + remoteRepositoryName + "' does not exist.");
                 }
                 if (remoteRepositoryProvider.getMaximumAllowedTransfersPerAccount() > 0) {
                     semaphore = new Semaphore(remoteRepositoryProvider.getMaximumAllowedTransfersPerAccount());

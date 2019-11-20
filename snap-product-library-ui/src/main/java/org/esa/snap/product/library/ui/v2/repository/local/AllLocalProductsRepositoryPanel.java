@@ -14,11 +14,12 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.product.library.v2.AllLocalFolderProductsRepository;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
+import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.remote.products.repository.Attribute;
-import org.esa.snap.remote.products.repository.QueryFilter;
+import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -119,14 +120,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?> attributesClass = Attribute.class;
         Class<?>[] classesToIgnore = new Class<?>[]{areaOfInterestClass, attributesClass};
-        List<QueryFilter> parameters = this.allLocalFolderProductsRepository.getParameters();
+        List<RepositoryQueryParameter> parameters = this.allLocalFolderProductsRepository.getParameters();
         int startRowIndex = 2;
         this.parameterComponents = panel.addParameterComponents(parameters, startRowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
-        QueryFilter areaOfInterestParameter = null;
-        QueryFilter attributesParameter = null;
+        RepositoryQueryParameter areaOfInterestParameter = null;
+        RepositoryQueryParameter attributesParameter = null;
         for (int i = 0; i < parameters.size(); i++) {
-            QueryFilter param = parameters.get(i);
+            RepositoryQueryParameter param = parameters.get(i);
             if (param.getType() == areaOfInterestClass) {
                 areaOfInterestParameter = param;
             } else if (param.getType() == attributesClass) {
@@ -164,7 +165,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         if (parameterValues != null) {
             LocalRepositoryFolder localRepositoryFolder = (LocalRepositoryFolder)this.foldersComboBox.getSelectedItem();
             RemoteMission selectedMission = (RemoteMission) this.missionsComboBox.getSelectedItem();
-            return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, localRepositoryFolder, selectedMission, parameterValues, repositoryProductListPanel);
+            return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, localRepositoryFolder, selectedMission,
+                                                    parameterValues, repositoryProductListPanel, this.allLocalFolderProductsRepository);
         }
         return null;
     }
@@ -207,6 +209,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.missionsComboBox.setSelectedItem(null);
 
         super.clearParameterValues();
+    }
+
+    public AllLocalFolderProductsRepository getAllLocalFolderProductsRepository() {
+        return allLocalFolderProductsRepository;
     }
 
     public void deleteLocalRepositoryFolder(LocalRepositoryFolder localRepositoryFolderToRemove) {
@@ -279,7 +285,15 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.localProductsPopupListeners = localProductsPopupListeners;
     }
 
-    public void setLocalParameterValues(List<LocalRepositoryFolder> localRepositoryFolders, List<RemoteMission> missions, Map<Short, Set<String>> attributeNamesPerMission) {
+    public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {
+        List<LocalRepositoryFolder> localRepositoryFolders = null;
+        List<RemoteMission> missions = null;
+        Map<Short, Set<String>> attributeNamesPerMission = null;
+        if (localRepositoryParameterValues != null) {
+            localRepositoryFolders = localRepositoryParameterValues.getLocalRepositoryFolders();
+            missions = localRepositoryParameterValues.getMissions();
+            attributeNamesPerMission = localRepositoryParameterValues.getAttributes();
+        }
         this.foldersComboBox.removeAllItems();
         if (localRepositoryFolders != null && localRepositoryFolders.size() > 0) {
             this.foldersComboBox.addItem(null);

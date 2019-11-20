@@ -5,8 +5,8 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
-import org.esa.snap.product.library.v2.AttributeFilter;
-import org.esa.snap.product.library.v2.AttributeValueFilter;
+import org.esa.snap.product.library.v2.database.AttributeFilter;
+import org.esa.snap.product.library.v2.database.AttributeValueFilter;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 

@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
+import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
 import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 
@@ -14,32 +15,19 @@ import java.util.Set;
 public class LocalParameterValues {
 
     private final List<RemoteRepositoryCredentials> repositoriesCredentials;
-    private final List<RemoteMission> missions;
-    private final Map<Short, Set<String>> attributeNamesPerMission;
-    private final List<LocalRepositoryFolder> localRepositoryFolders;
+    private final LocalRepositoryParameterValues localRepositoryParameterValues;
 
-    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, List<RemoteMission> missions,
-                                Map<Short, Set<String>> attributeNamesPerMission, List<LocalRepositoryFolder> localRepositoryFolders) {
+    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, LocalRepositoryParameterValues localRepositoryParameterValues) {
 
         this.repositoriesCredentials = repositoriesCredentials;
-        this.missions = missions;
-        this.attributeNamesPerMission = attributeNamesPerMission;
-        this.localRepositoryFolders = localRepositoryFolders;
-    }
-
-    public List<RemoteMission> getMissions() {
-        return missions;
-    }
-
-    public Map<Short, Set<String>> getAttributes() {
-        return attributeNamesPerMission;
+        this.localRepositoryParameterValues = localRepositoryParameterValues;
     }
 
     public List<RemoteRepositoryCredentials> getRepositoriesCredentials() {
         return repositoriesCredentials;
     }
 
-    public List<LocalRepositoryFolder> getLocalRepositoryFolders() {
-        return localRepositoryFolders;
+    public LocalRepositoryParameterValues getLocalRepositoryParameterValues() {
+        return localRepositoryParameterValues;
     }
 }

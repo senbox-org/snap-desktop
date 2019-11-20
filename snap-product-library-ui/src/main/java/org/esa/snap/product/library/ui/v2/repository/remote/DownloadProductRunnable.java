@@ -1,13 +1,12 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
-import org.esa.snap.product.library.v2.database.ProductLibraryDAL;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,11 +19,13 @@ public class DownloadProductRunnable implements Runnable {
 
     private final RemoteProductDownloader remoteProductDownloader;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
+    private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
     private Boolean isRunning;
 
-    public DownloadProductRunnable(RemoteProductDownloader remoteProductDownloader, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore) {
+    public DownloadProductRunnable(RemoteProductDownloader remoteProductDownloader, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
         this.remoteProductDownloader = remoteProductDownloader;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
+        this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
         this.isRunning = true;
     }
 
@@ -78,7 +79,7 @@ public class DownloadProductRunnable implements Runnable {
         this.remoteProductDownloader.cancel();
     }
 
-    private SaveDownloadedProductData downloadAndSaveProduct() throws IOException, SQLException, InterruptedException {
+    private SaveDownloadedProductData downloadAndSaveProduct() throws Exception {
         RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
             @Override
             public void notifyProgress(short progressPercent) {
@@ -87,7 +88,7 @@ public class DownloadProductRunnable implements Runnable {
         };
 
         Path productPath = null;
-        this.remoteRepositoriesSemaphore.acquirePermission(this.remoteProductDownloader.getRepositoryId(), this.remoteProductDownloader.getCredentials());
+        this.remoteRepositoriesSemaphore.acquirePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         try {
             if (!isRunning()) {
                 return null;
@@ -98,11 +99,11 @@ public class DownloadProductRunnable implements Runnable {
             productPath = this.remoteProductDownloader.download(progressListener);
 
         } finally {
-            this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryId(), this.remoteProductDownloader.getCredentials());
+            this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         }
 
-        SaveDownloadedProductData saveProductData = ProductLibraryDAL.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
-                                                                                  this.remoteProductDownloader.getRepositoryId(),
+        SaveDownloadedProductData saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
+                                                                                  this.remoteProductDownloader.getRepositoryName(),
                                                                                   this.remoteProductDownloader.getLocalRepositoryFolderPath());
 
         // successfully downloaded and saved the product

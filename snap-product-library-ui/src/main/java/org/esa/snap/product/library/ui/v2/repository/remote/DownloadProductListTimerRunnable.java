@@ -54,7 +54,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected Void execute() throws Exception {
-        this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryId(), this.credentials);
+        this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
         try {
             List<RepositoryProduct> productList = downloadProductList();
             if (isRunning()) {
@@ -64,7 +64,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 }
             }
         } finally {
-            this.remoteRepositoriesSemaphore.releasePermission(this.productsRepositoryProvider.getRepositoryId(), this.credentials);
+            this.remoteRepositoriesSemaphore.releasePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
         }
         return null; // nothing to return
     }

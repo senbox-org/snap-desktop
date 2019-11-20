@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.remote.products.repository.ProductRepositoryDownloader;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
@@ -13,26 +14,26 @@ import java.nio.file.Path;
  */
 public class RemoteProductDownloader {
 
-    private final ProductRepositoryDownloader productRepositoryDownloader;
+    private final RemoteProductsRepositoryProvider remoteProductsRepositoryProvider;
     private final Path localRepositoryFolderPath;
     private final RepositoryProduct productToDownload;
     private final Credentials credentials;
 
-    public RemoteProductDownloader(RepositoryProduct productToDownload, ProductRepositoryDownloader productRepositoryDownloader,
+    public RemoteProductDownloader(RemoteProductsRepositoryProvider remoteProductsRepositoryProvider, RepositoryProduct productToDownload,
                                    Path localRepositoryFolderPath, Credentials credentials) {
 
+        this.remoteProductsRepositoryProvider = remoteProductsRepositoryProvider;
         this.productToDownload = productToDownload;
-        this.productRepositoryDownloader = productRepositoryDownloader;
         this.localRepositoryFolderPath = localRepositoryFolderPath;
         this.credentials = credentials;
     }
 
-    public Path download(ProgressListener progressListener) throws IOException, InterruptedException {
-        return this.productRepositoryDownloader.download(this.productToDownload, this.credentials, this.localRepositoryFolderPath, progressListener);
+    public Path download(ProgressListener progressListener) throws Exception {
+        return this.remoteProductsRepositoryProvider.downloadProduct(this.productToDownload, this.credentials, this.localRepositoryFolderPath, progressListener);
     }
 
     public void cancel() {
-        this.productRepositoryDownloader.cancel();
+        this.remoteProductsRepositoryProvider.cancelDownloadProduct(this.productToDownload);
     }
 
     public Path getLocalRepositoryFolderPath() {
@@ -43,11 +44,11 @@ public class RemoteProductDownloader {
         return productToDownload;
     }
 
-    public String getRepositoryId() {
-        return this.productRepositoryDownloader.getRepositoryId();
+    public String getRepositoryName() {
+        return this.remoteProductsRepositoryProvider.getRepositoryName();
     }
 
     public Credentials getCredentials() {
-        return credentials;
+        return this.credentials;
     }
 }

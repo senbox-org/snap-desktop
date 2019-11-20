@@ -5,6 +5,8 @@ import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -95,46 +97,23 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         int gapBetweenRows = componentDimension.getGapBetweenRows();
         int gapBetweenColumns = componentDimension.getGapBetweenColumns();
-        int number = 7;
 
         Border outsideBorder = new MatteBorder(0, 0, 1, 0, UIManager.getColor("controlShadow"));
         Border insideBorder = new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns);
         setBorder(new CompoundBorder(outsideBorder, insideBorder));
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setOpaque(false);
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 1, 0, 0);
-        panel.add(this.urlLabel, c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 4, gapBetweenRows, 0);
-        panel.add(new JLabel(""), c);
-
-        c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
-        panel.add(this.missionLabel, c);
-        c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, number * gapBetweenColumns);
-        panel.add(this.firstAttributeLabel, c);
-        c = SwingUtils.buildConstraints(2, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, gapBetweenRows, number * gapBetweenColumns);
-        panel.add(this.secondAttributeLabel, c);
-
-        c = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
-        panel.add(this.acquisitionDateLabel, c);
-        c = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 3, 1, gapBetweenRows, gapBetweenColumns);
-        panel.add(new JLabel(), c);
-
-        c = SwingUtils.buildConstraints(0, 3, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
-        panel.add(this.sizeLabel, c);
-        c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.NONE, GridBagConstraints.WEST, 3, 1, gapBetweenRows, number * gapBetweenColumns);
-        panel.add(this.statusLabel, c);
+        JPanel labelsPanel = buildLabelsPanel();
 
         JPanel expandCollapsePanel = new JPanel(new GridBagLayout());
         expandCollapsePanel.setOpaque(false);
-        c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.VERTICAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.VERTICAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
         expandCollapsePanel.add(new JLabel(), c);
         c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.SOUTH, 1, 1, 0, 0);
         expandCollapsePanel.add(this.expandOrCollapseButton, c);
 
         add(this.nameLabel, BorderLayout.NORTH);
         add(this.quickLookImageLabel, BorderLayout.WEST);
-        add(panel, BorderLayout.CENTER);
+        add(labelsPanel, BorderLayout.CENTER);
         add(expandCollapsePanel, BorderLayout.EAST);
     }
 
@@ -180,6 +159,43 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         updateSize(repositoryProduct);
     }
 
+    private JPanel buildColumnPanel(JLabel firstLabel, JLabel secondLabel, JLabel thirdLabel) {
+        int gapBetweenRows = this.componentDimension.getGapBetweenRows();
+
+        JPanel columnPanel = new JPanel();
+        columnPanel.setLayout(new BoxLayout(columnPanel, BoxLayout.Y_AXIS));
+        columnPanel.setOpaque(false);
+        columnPanel.add(firstLabel);
+        columnPanel.add(Box.createVerticalStrut(gapBetweenRows));
+        columnPanel.add(secondLabel);
+        columnPanel.add(Box.createVerticalStrut(gapBetweenRows));
+        columnPanel.add(thirdLabel);
+
+        return columnPanel;
+    }
+
+    private JPanel buildLabelsPanel() {
+        JPanel firstColumnPanel = buildColumnPanel(this.missionLabel, this.acquisitionDateLabel, this.sizeLabel);
+        JPanel secondColumnPanel = buildColumnPanel(this.firstAttributeLabel, new JLabel("  "), this.statusLabel);
+        JPanel thirdColumnPanel = buildColumnPanel(this.secondAttributeLabel, new JLabel("  "), new JLabel("  "));
+
+        int gapBetweenColumns = 7 * this.componentDimension.getGapBetweenColumns();
+        JPanel columnsPanel = new JPanel();
+        columnsPanel.setLayout(new BoxLayout(columnsPanel, BoxLayout.X_AXIS));
+        columnsPanel.setOpaque(false);
+        columnsPanel.add(firstColumnPanel);
+        columnsPanel.add(Box.createHorizontalStrut(gapBetweenColumns));
+        columnsPanel.add(secondColumnPanel);
+        columnsPanel.add(Box.createHorizontalStrut(gapBetweenColumns));
+        columnsPanel.add(thirdColumnPanel);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.add(this.urlLabel, BorderLayout.NORTH);
+        panel.add(columnsPanel, BorderLayout.WEST);
+        return panel;
+    }
+
     private void updateSize(RepositoryProduct repositoryProduct) {
         String sizeText = "Size: ";
         if (repositoryProduct.getApproximateSize() > 0) {
@@ -198,8 +214,8 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     }
 
     private void addAttributesPanel(RepositoryProduct repositoryProduct) {
-        int gapBetweenRows = 5;
-        int gapBetweenColumns = 5;
+        int gapBetweenRows = this.componentDimension.getGapBetweenRows();
+        int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
         attributesPanel = new JPanel(new BorderLayout(gapBetweenColumns, gapBetweenRows));
         attributesPanel.setOpaque(false);
@@ -236,8 +252,8 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     }
 
     private void updateVisibleAttributes(RepositoryProduct repositoryProduct, Map<String, String> visibleAttributes) {
-        String firstLabelText = "";
-        String secondLabelText = "";
+        String firstLabelText = " ";
+        String secondLabelText = " ";
         List<Attribute> attributes = repositoryProduct.getAttributes();
         if (visibleAttributes != null && visibleAttributes.size() > 0 && attributes != null && attributes.size() > 0) {
             for (Map.Entry<String, String> entry : visibleAttributes.entrySet()) {
