@@ -2,8 +2,6 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
-import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
-import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.ImageIcon;
@@ -17,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by jcoravu on 21/8/2019.

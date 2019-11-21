@@ -11,14 +11,30 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
-import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneLayout;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.net.URL;
@@ -130,7 +146,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     }
 
     private void loadRemoteRepositories() {
-        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteRepositoriesManager.getRemoteProductsRepositoryProviders();
+        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
         for (int k=0; k<remoteRepositoryProductProviders.length; k++) {
             if (remoteRepositoryProductProviders[k].requiresAuthentication()) {
                 this.remoteRepositories.add(remoteRepositoryProductProviders[k]);

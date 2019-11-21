@@ -48,7 +48,6 @@ import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
-import org.esa.snap.remote.products.repository.RemoteRepositoriesManager;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
@@ -304,7 +303,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
 
-        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteRepositoriesManager.getRemoteProductsRepositoryProviders();
+        RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
         if (remoteRepositoryProductProviders.length > 1) {
             // sort alphabetically by repository name
             Comparator<RemoteProductsRepositoryProvider> comparator = new Comparator<RemoteProductsRepositoryProvider>() {
