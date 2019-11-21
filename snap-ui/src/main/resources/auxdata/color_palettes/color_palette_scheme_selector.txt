@@ -1,0 +1,49 @@
+ SELECTOR_TITLE         :SCHEME_ID          :COLORBAR_TITLE(OVERRIDE)    :COLORBAR_LABELS(OVERRIDE)      :DESCRIPTION(OVERRIDE)
+ AOT                    :aot                :                            :                               :USE_SCHEME_VALUE
+ Angstrom               :angstrom           :                            :                               :USE_SCHEME_VALUE
+ Chl (Rainbow)          :chlor_a_oc         :                            :                               :USE_SCHEME_VALUE
+ Chl (UniBR-Palette)    :chlor_a_uni        :USE_SCHEME_VALUE            :USE_SCHEME_VALUE               :USE_SCHEME_VALUE
+ Chl (UniBG-Palette)    :chlor_a_uni_bg     :Chl (UniBG-Palette)         :                               :USE_SCHEME_VALUE
+ Chl (BG-Palette)       :chlor_a_bluegreen  :Chlorophyll                 :USE_SCHEME_VALUE               :USE_SCHEME_VALUE
+ PAR                    :par                :                            :                               :
+ PIC                    :pic                :Particulate Inorganic Carbon:                               :
+ POC                    :poc                :Particulate Organic Carbon  :                               :
+ Rrs < 430 nm           :Rrs_lt_430         :                            :                               :
+ Rrs 430-459 nm         :Rrs_430_459        :                            :                               :
+ Rrs 460-499 nm         :Rrs_460_499        :                            :                               :
+ Rrs >= 500 nm          :Rrs_ge_500         :                            :                               :
+ SST                    :sst                :Sea Surface Temperature     :                               :
+ ---------- other ----------  :
+ a                      :absorption         :                            :                               :Total absorption
+ adg                    :absorption         :                            :                               :Absorption due to gelbstof and detritus
+ aph                    :absorption         :                            :                               :Absorption due to phytoplankton
+ aw                     :absorption         :                            :                               :Absorption coefficient of seawater
+ Bathymetry             :bathymetry         :                            :                               :
+ bb                     :bb                 :                            :                               :
+ bbp                    :bbp                :                            :                               :
+ bbw                    :bbw                :                            :                               :
+ CI                     :CI                 :                            :                               :
+ elevation              :elev               :                            :                               :
+ epsilon                :epsilon            :                            :                               :
+ Fluorescence           :flh                :                            :                               :
+ Kd                     :Kd_490             :                            :                               :
+ NDVI                   :NDVI               :                            :                               :
+ Quantum Yield          :fqy                :                            :                               :
+ rhos (gray)            :rhos               :                            :                               :
+ rhos (red)             :rhos_red           :                            :                               :
+ rhos (blue)            :rhos_blue          :                            :                               :
+ rhos (green)           :rhos_green         :                            :                               :
+ nLw < 430 nm           :nLw_lt_430         :                            :                               :
+ nLw 430-479 nm         :nLw_430_479        :                            :                               :
+ nLw 480-529 nm         :nLw_480_529        :                            :                               :
+ nLw 530-599 nm         :nLw_530_599        :                            :                               :
+ nLw >= 600 nm          :nLw_ge_600         :                            :                               :
+ SSS                    :SSS                :                            :                               :
+ Topography             :topography         :                            :                               :
+ Topography_ETOP        :topography_ETOP    :                            :                               :
+ Zeu                    :Zeu                :                            :                               :
+ Zhl                    :Zhl                :                            :                               :
+ Zsd                    :Zsd                :                            :                               :
+ 256PtLinear            :256PtLinear        :                            :                               :
+
+

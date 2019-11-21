@@ -17,11 +17,8 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.Range;
 
 import javax.swing.*;
@@ -32,7 +29,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.DecimalFormat;
 
 /**
@@ -64,6 +63,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private String currentMinFieldValue = "";
     private String currentMaxFieldValue = "";
     private final DiscreteCheckBox discreteCheckBox;
+    private final ColorPaletteSchemes standardColorPaletteSchemes;
+
 
 
     final Boolean[] minFieldActivated = {new Boolean(false)};
@@ -81,6 +82,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         this.parentForm = parentForm;
         this.basicSwitcherIsActive = basicSwitcherIsActive;
+
+
+        PropertyMap configuration = null;
+//        if (parentForm.getProductSceneView() != null && parentForm.getProductSceneView().getSceneImage() != null) {
+//            configuration = parentForm.getProductSceneView().getSceneImage().getConfiguration();
+//        }
+
+
+        standardColorPaletteSchemes = new ColorPaletteSchemes(parentForm.getIODir().toFile(), ColorPaletteSchemes.Id.SELECTOR, true, configuration);
+
 
         final TableLayout layout = new TableLayout();
         layout.setTableWeightX(1.0);
@@ -177,6 +188,23 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
                 applyChanges(RangeKey.ToggleLog);
                 listenToLogDisplayButtonEnabled[0] = true;
+            }
+        });
+
+
+        standardColorPaletteSchemes.getjComboBox().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (standardColorPaletteSchemes.getjComboBox().getSelectedIndex() != 0) {
+                    if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
+                        standardColorPaletteSchemes.setjComboBoxShouldFire(false);
+
+                        // todo DANNY commented out temporarily
+//                        handleColorPaletteInfoComboBoxSelection(standardColorPaletteSchemes.getjComboBox(), false);
+                        standardColorPaletteSchemes.reset();
+                        standardColorPaletteSchemes.setjComboBoxShouldFire(true);
+                    }
+                }
             }
         });
     }
