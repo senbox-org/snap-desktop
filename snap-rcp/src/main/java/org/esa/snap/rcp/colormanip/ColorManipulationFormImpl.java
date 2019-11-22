@@ -25,17 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.ResourceInstaller;
 import org.esa.snap.core.util.SystemUtils;
@@ -174,6 +165,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (getFormModel().isValid()) {
             getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
         }
+
+        // todo This is where the scheme look up goes
 
         installChildForm();
 
@@ -409,11 +402,26 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
     private void resetToDefaults() {
+//        if (getFormModel().isValid()) {
+//            getFormModel().setModifiedImageInfo(createDefaultImageInfo());
+//            childForm.resetFormModel(getFormModel());
+//        }
+
         if (getFormModel().isValid()) {
-            getFormModel().setModifiedImageInfo(createDefaultImageInfo());
+            getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), createDefaultImageInfo());
+            getFormModel().getProductSceneView().getImageInfo().createDeepCopy();
+//            setImageInfoCopy(this.productSceneView.getImageInfo());
             childForm.resetFormModel(getFormModel());
         }
+
+//        if (this.productSceneView != null) {
+//            this.productSceneView.setToDefaultColorScheme(getSystemAuxdataDir(), createDefaultImageInfo());
+//            setImageInfoCopy(this.productSceneView.getImageInfo());
+//            childForm.resetFormModel(getProductSceneView());
+//        }
     }
+
+
 
     private void applyMultipleColorPaletteDef() {
         if (!getFormModel().isValid()) {
@@ -628,7 +636,13 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes");
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*.cpd", ProgressMonitor.NULL);
+                resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
+
+                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_DEFAULTS_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_SELECTOR_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
+
                 defaultColorPalettesInstalled = true;
             } catch (IOException e) {
                 SnapApp.getDefault().handleError("Unable to install colour palettes", e);

@@ -49,20 +49,7 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.PlacemarkGroup;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
@@ -79,6 +66,7 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
+
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -108,6 +96,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -1685,6 +1674,129 @@ public class ProductSceneView extends BasicView
                 }
             }
         }
+    }
+
+    public void setToDefaultColorScheme(File auxDir, ImageInfo defaultImageInfo) {
+        PropertyMap configuration = null;
+        if (sceneImage != null) {
+            configuration = sceneImage.getConfiguration();
+        }
+
+        ColorPaletteSchemes colorPaletteSchemes = new ColorPaletteSchemes(auxDir, ColorPaletteSchemes.Id.DEFAULTS, false, configuration);
+        boolean defaultSet = false;
+
+        if (colorPaletteSchemes != null) {
+
+            String bandName = getBaseImageLayer().getName().trim();
+            bandName = bandName.substring(bandName.indexOf(" ")).trim();
+
+            ArrayList<ColorPaletteInfo> defaultSchemes = colorPaletteSchemes.getColorPaletteInfos();
+            ColorPaletteInfo matchingColorPaletteInfo = null;
+
+            final String WILDCARD = new String("*");
+
+            for (ColorPaletteInfo colorPaletteInfo : defaultSchemes) {
+                String cpdName = colorPaletteInfo.getName().trim();
+
+                if (matchingColorPaletteInfo == null || (matchingColorPaletteInfo != null && colorPaletteInfo.isOverRide())) {
+                    if (bandName.equals(cpdName)) {
+                        matchingColorPaletteInfo = colorPaletteInfo;
+                    } else if (cpdName.contains(WILDCARD)) {
+                        if (!cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
+                            String basename = new String(cpdName.substring(0, cpdName.length() - 1));
+                            if (bandName.startsWith(basename)) {
+                                matchingColorPaletteInfo = colorPaletteInfo;
+                            }
+                        } else if (cpdName.startsWith(WILDCARD) && !cpdName.endsWith(WILDCARD)) {
+                            String basename = new String(cpdName.substring(1, cpdName.length()));
+                            if (bandName.endsWith(basename)) {
+                                matchingColorPaletteInfo = colorPaletteInfo;
+                            }
+                        } else if (cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
+                            String basename = new String(cpdName.substring(1, cpdName.length() - 1));
+                            if (bandName.contains(basename)) {
+                                matchingColorPaletteInfo = colorPaletteInfo;
+                            }
+                        } else {
+                            String basename = new String(cpdName);
+                            String basenameSplit[] = basename.split("\\" + WILDCARD);
+                            if (basenameSplit.length == 2 && basenameSplit[0].length() > 0 && basenameSplit[1].length() > 0) {
+                                if (bandName.startsWith(basenameSplit[0]) && bandName.endsWith(basenameSplit[1])) {
+                                    matchingColorPaletteInfo = colorPaletteInfo;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            if (matchingColorPaletteInfo != null) {
+                //if (this.productSceneView.getBaseImageLayer().getName().trim().equals(cpdInfo.getName().trim())) {
+                ColorPaletteDef colorPaletteDef = matchingColorPaletteInfo.getColorPaletteDef(ColorPaletteSchemes.getUseColorBlind(configuration));
+                getImageInfo().setColorPaletteDef(colorPaletteDef,
+                        matchingColorPaletteInfo.getMinValue(),
+                        matchingColorPaletteInfo.getMaxValue(),
+                        true, //colorPaletteDef.isAutoDistribute(),
+                        colorPaletteDef.isLogScaled(),
+                        matchingColorPaletteInfo.isLogScaled());
+                getImageInfo().setLogScaled(matchingColorPaletteInfo.isLogScaled());
+                //      this.productSceneView.setColorPaletteInfo(cpdInfo);
+
+//                getImageInfo().getColorPaletteSourcesInfo().setSchemeName(matchingColorPaletteInfo.getRootName());
+//                getImageInfo().getColorPaletteSourcesInfo().setColorBarLabels(matchingColorPaletteInfo.getColorBarLabels());
+//                getImageInfo().getColorPaletteSourcesInfo().setColorBarTitle(matchingColorPaletteInfo.getColorBarTitle());
+//                getImageInfo().getColorPaletteSourcesInfo().setColorBarMin(matchingColorPaletteInfo.getMinValue());
+//                getImageInfo().getColorPaletteSourcesInfo().setColorBarMax(matchingColorPaletteInfo.getMaxValue());
+//                getImageInfo().getColorPaletteSourcesInfo().setLogScaled(matchingColorPaletteInfo.isLogScaled());
+//
+//
+//                if (ImageLegend.allowColorbarAutoReset(configuration)) {
+//                    getImageInfo().getColorPaletteSourcesInfo().setColorBarInitialized(false);
+//                    getColorBarParamInfo().setParamsInitialized(false);
+//                }
+//
+//                getImageInfo().getColorPaletteSourcesInfo().setSchemeDefault(true);
+//                getImageInfo().getColorPaletteSourcesInfo().setCpdFileName(matchingColorPaletteInfo.getCpdFilename(ColorPaletteSchemes.getUseColorBlind(configuration)));
+
+                defaultSet = true;
+            }
+        }
+
+        if (!defaultSet) {
+            setImageInfo(defaultImageInfo);
+//            getImageInfo().getColorPaletteSourcesInfo().setCpdFileName("default gray-scale");
+//            getImageInfo().getColorPaletteSourcesInfo().setSchemeDefault(true);
+//            getImageInfo().getColorPaletteSourcesInfo().setSchemeName("none");
+        }
+
+        // todo Danny added this can be used later in setting min/max from RGB profile
+//            RasterDataNode[] rasters = getRasters();
+//
+//            Assert.notNull(rasters, "rasters");
+//            Assert.argument(rasters.length == 1 || rasters.length == 3, "rasters.length == 1 || rasters.length == 3");
+//            if (rasters.length == 1) {
+//
+//            } else {
+//                try {
+//                    final RGBChannelDef rgbChannelDef = new RGBChannelDef();
+//                    for (int i = 0; i < rasters.length; i++) {
+//                        RasterDataNode raster = rasters[i];
+//                        String name = raster.getName();
+//
+//                        rgbChannelDef.setSourceName(i, raster.getName());
+//
+//                        rgbChannelDef.setMinDisplaySample(i, 0);
+////                    rgbChannelDef.setMinDisplaySample(i, imageInfo.getColorPaletteDef().getMinDisplaySample());
+//                        rgbChannelDef.setMaxDisplaySample(i, 100);
+////                    rgbChannelDef.setMaxDisplaySample(i, imageInfo.getColorPaletteDef().getMaxDisplaySample());
+//                    }
+//
+//                } finally {
+//                }
+//            }
+
     }
 
 }
