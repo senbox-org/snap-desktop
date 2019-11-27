@@ -154,11 +154,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         editorPanel.add(new JLabel(" "));
         editorPanel.add(buttonPanel);
 
-        shouldFireChooserEvent = true;
+        shouldFireChooserEvent = false;
 
         colorPaletteChooser.addActionListener(createListener(RangeKey.FromCurrentPalette));
-//        minField.addActionListener(createListener(RangeKey.FromMinMaxFields));
-//        maxField.addActionListener(createListener(RangeKey.FromMinMaxFields));
+
         maxField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
 
@@ -204,23 +203,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         logDisplayButton = LogDisplay.createButton();
         logDisplayButton.addActionListener(e -> {
-//            final boolean shouldLog10Display = logDisplayButton.isSelected();
-//            final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
-//            if (shouldLog10Display) {
-//                final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
-//                if (LogDisplay.checkApplicability(cpd)) {
-//                    colorPaletteChooser.setLog10Display(true);
-//                    imageInfo.setLogScaled(true);
-//                    parentForm.applyChanges();
-//                } else {
-//                    LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
-//                    logDisplayButton.setSelected(false);
-//                }
-//            } else {
-//                colorPaletteChooser.setLog10Display(false);
-//                imageInfo.setLogScaled(false);
-//                parentForm.applyChanges();
-//            }
             if (listenToLogDisplayButtonEnabled[0]) {
                 listenToLogDisplayButtonEnabled[0] = false;
                 logDisplayButton.setSelected(!logDisplayButton.isSelected());
@@ -246,6 +228,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 }
             }
         });
+
+        shouldFireChooserEvent = true;
     }
 
     private void handleMaxTextfield() {
@@ -309,8 +293,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         shouldFireChooserEvent = false;
         colorPaletteChooser.setSelectedColorPaletteDefinition(cpd);
-        shouldFireChooserEvent = true;
-
 
         discreteCheckBox.setDiscreteColorsMode(discrete);
         logDisplayButton.setSelected(logScaled);
@@ -326,9 +308,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             maxField.setValue(cpd.getMaxDisplaySample());
             currentMaxFieldValue = maxField.getText().toString();
         }
-//        minField.setValue(cpd.getMinDisplaySample());
-//        maxField.setValue(cpd.getMaxDisplaySample());
-
 
         boolean originalStandardShouldFire = standardColorPaletteSchemes.isjComboBoxShouldFire();
 
