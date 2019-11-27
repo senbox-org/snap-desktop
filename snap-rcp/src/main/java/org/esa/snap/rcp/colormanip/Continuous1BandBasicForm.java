@@ -91,9 +91,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         PropertyMap configuration = null;
-//        if (parentForm.getProductSceneView() != null && parentForm.getProductSceneView().getSceneImage() != null) {
-//            configuration = parentForm.getProductSceneView().getSceneImage().getConfiguration();
-//        }
+        if (parentForm.getFormModel().getProductSceneView() != null && parentForm.getFormModel().getProductSceneView().getSceneImage() != null) {
+            configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        }
 
 
         colorSchemeJLabel = new JLabel("");
@@ -301,7 +301,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         final ImageInfo imageInfo = formModel.getOriginalImageInfo();
         final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
 
-        final boolean logScaled = cpd.isLogScaled();
+        final boolean logScaled = imageInfo.isLogScaled();
         final boolean discrete = cpd.isDiscrete();
 
         colorPaletteChooser.setLog10Display(logScaled);
@@ -309,6 +309,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         shouldFireChooserEvent = false;
         colorPaletteChooser.setSelectedColorPaletteDefinition(cpd);
+        shouldFireChooserEvent = true;
 
 
         discreteCheckBox.setDiscreteColorsMode(discrete);
