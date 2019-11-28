@@ -209,7 +209,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 if (this.readerInspectorExposeParameters.isHasGeoCoding()) {
                     // set GeoCoding coordinates
                     GeoPos geoPos1 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-                    GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductWidth()), null);
+                    GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductHeight()), null);
                     paramNorthLat1 = new Parameter("geo_lat1", MathUtils.crop(geoPos1.getLat(), -90.0, 90.0));
                     paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -90.0, 90.0));
                     paramSouthLat2 = new Parameter("geo_lat2", MathUtils.crop(geoPos2.getLat(), -90.0, 90.0));
@@ -248,9 +248,9 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
     public void createUI() {
         setContent(createPanel());
         this.productSubsetDef = new ProductSubsetDef();
-        if(geoCoordRadio.isEnabled()) {
-            updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
-        }
+//        if(geoCoordRadio.isEnabled()) {
+//            updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
+//        }
         if (show() == ID_OK) {
             if (pixelPanel.isVisible()) {
                 pixelPanelChanged();
@@ -307,17 +307,17 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         if (!copyMetadata.isSelected()) {
             productSubsetDef.setIgnoreMetadata(true);
         }
-        if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null &&
+        if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null /*&&
                 !paramX1.getValueAsText().equals("0") && !paramY1.getValueAsText().equals("0") &&
                 !paramWidth.getValueAsText().equals(String.valueOf(productWidth)) &&
-                !paramHeight.getValueAsText().equals(String.valueOf(productHeight))) {
+                !paramHeight.getValueAsText().equals(String.valueOf(productHeight))*/) {
 
             productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
                                                      Integer.parseInt(paramY1.getValueAsText()),
                                                      Integer.parseInt(paramWidth.getValueAsText()),
                                                      Integer.parseInt(paramHeight.getValueAsText())));
-        }else{
-            productSubsetDef.setRegion(null);
+//        }else{
+//            productSubsetDef.setRegion(null);
         }
     }
 
