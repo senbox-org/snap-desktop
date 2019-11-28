@@ -249,7 +249,7 @@ public class WorldMapPane extends JPanel {
     }
 
     protected Action[] getOverlayActions() {
-        return new Action[]{new ZoomAllAction(), new ZoomToSelectedAction()};
+        return new Action[]{new ZoomAllAction(), new ZoomToSelectedAction(), new ZoomInAction(), new ZoomOutAction()};
     }
 
     protected void fireScrolled() {
@@ -403,10 +403,45 @@ public class WorldMapPane extends JPanel {
         }
     }
 
+    private class ZoomInAction extends AbstractAction {
+
+        private ZoomInAction() {
+            putValue(LARGE_ICON_KEY, UIUtils.loadImageIcon("icons/ZoomIn24.gif"));
+            putValue(TOOL_TIP_TEXT_KEY,"Zoom in");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (isEnabled()) {
+                double zoomFactor = layerCanvas.getViewport().getZoomFactor();
+                layerCanvas.getViewport().setZoomFactor(zoomFactor*1.2);
+                fireScrolled();
+            }
+        }
+    }
+
+    private class ZoomOutAction extends AbstractAction {
+
+        private ZoomOutAction() {
+            putValue(LARGE_ICON_KEY,  UIUtils.loadImageIcon("icons/ZoomOut24.gif"));
+            putValue(TOOL_TIP_TEXT_KEY,"Zoom out");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (isEnabled()) {
+                double zoomFactor = layerCanvas.getViewport().getZoomFactor();
+                layerCanvas.getViewport().setZoomFactor(zoomFactor*0.8);
+                fireScrolled();
+            }
+        }
+    }
+
     private class ZoomAllAction extends AbstractAction {
 
         private ZoomAllAction() {
             putValue(LARGE_ICON_KEY, TangoIcons.actions_view_fullscreen(TangoIcons.Res.R22));
+            putValue(TOOL_TIP_TEXT_KEY,"Show all world map");
         }
 
         @Override
@@ -421,6 +456,7 @@ public class WorldMapPane extends JPanel {
 
         private ZoomToSelectedAction() {
             putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ZoomTo24.gif", false));
+            putValue(TOOL_TIP_TEXT_KEY,"Zoom to selected product");
         }
 
         @Override
