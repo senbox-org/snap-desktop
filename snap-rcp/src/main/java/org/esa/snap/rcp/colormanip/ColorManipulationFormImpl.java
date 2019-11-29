@@ -163,6 +163,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), getFormModel().getOriginalImageInfo());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
+//            getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
+
         }
 
         installChildForm();

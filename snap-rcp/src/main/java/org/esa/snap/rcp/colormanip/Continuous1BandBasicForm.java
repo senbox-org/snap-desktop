@@ -69,6 +69,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JCheckBox loadWithCPDFileValuesCheckBox;
     private final ColorPaletteSchemes standardColorPaletteSchemes;
     private JLabel colorSchemeJLabel;
+    private JButton paletteInversionButton;
+
 
 
 
@@ -113,6 +115,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load cpd file exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
 
+        paletteInversionButton = new JButton("Reverse");
+        paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
+        paletteInversionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                applyChanges(RangeKey.InvertPalette);
+            }
+        });
+        paletteInversionButton.setEnabled(true);
+
 
         final JPanel editorPanel = new JPanel(layout);
 
@@ -123,10 +135,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         editorPanel.add(new JLabel("Colour ramp:"));
         colorPaletteChooser = new ColorPaletteChooser();
         editorPanel.add(colorPaletteChooser);
+        editorPanel.add(paletteInversionButton);
         editorPanel.add(loadWithCPDFileValuesCheckBox);
         editorPanel.add(new JLabel("Display range"));
-
-
 
 
         minField = getNumberTextField(0.00001);
@@ -434,6 +445,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
                 autoDistribute = true;
                 break;
+                case InvertPalette:
+                    isSourceLogScaled = currentInfo.isLogScaled();
+                    isTargetLogScaled = currentInfo.isLogScaled();
+//                    parentForm.getImageInfo().getColorPaletteSourcesInfo().toggleInvertedCpd();
+
+                    min = currentCPD.getMinDisplaySample();
+                    max = currentCPD.getMaxDisplaySample();
+                    cpd = currentCPD;
+
+                    autoDistribute = true;
+                    break;
             default:
 //                isSourceLogScaled = selectedCPD.isLogScaled();
 //                isTargetLogScaled = currentInfo.isLogScaled();
@@ -474,11 +496,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             }
 
             if (checksOut && ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
-//                if (key == RangeKey.InvertPalette) {
-//                    currentInfo.setColorPaletteDefInvert(cpd);
-//                } else {
-//                    currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
-//                }
+                if (key == RangeKey.InvertPalette) {
+                    currentInfo.setColorPaletteDefInvert(cpd);
+                } else {
+                    currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+                }
                 currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
 
                 if (key == RangeKey.FromLogButton) {
