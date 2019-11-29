@@ -25,7 +25,6 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.Range;
-import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -79,7 +78,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     final Boolean[] basicSwitcherIsActive;
 
 
-    private enum RangeKey {FromPaletteSource, FromData, FromMinMaxFields, FromCurrentPalette, ToggleLog, InvertPalette, Dummy}
+    private enum RangeKey {FromCpdFile, FromData, FromMinMaxFields, FromPaletteChooser, FromLogButton, InvertPalette, Dummy}
     private boolean shouldFireChooserEvent;
     private boolean hidden = false;
 
@@ -156,7 +155,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         shouldFireChooserEvent = false;
 
-        colorPaletteChooser.addActionListener(createListener(RangeKey.FromCurrentPalette));
+        colorPaletteChooser.addActionListener(createListener(RangeKey.FromPaletteChooser));
 
         maxField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -191,7 +190,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
 
-        fromFile.addActionListener(createListener(RangeKey.FromPaletteSource));
+        fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
         fromData.addActionListener(createListener(RangeKey.FromData));
 
         contentPanel = new JPanel(new BorderLayout());
@@ -207,7 +206,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 listenToLogDisplayButtonEnabled[0] = false;
                 logDisplayButton.setSelected(!logDisplayButton.isSelected());
 
-                applyChanges(RangeKey.ToggleLog);
+                applyChanges(RangeKey.FromLogButton);
                 listenToLogDisplayButtonEnabled[0] = true;
             }
         });
@@ -385,7 +384,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             final boolean autoDistribute;
 
             switch (key) {
-            case FromPaletteSource:
+            case FromCpdFile:
                 Range rangeFromFile = colorPaletteChooser.getRangeFromFile();
                 isSourceLogScaled = currentInfo.isLogScaled();
                 isTargetLogScaled = currentInfo.isLogScaled();
@@ -424,7 +423,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 cpd = currentCPD;
                 autoDistribute = true;
                 break;
-            case ToggleLog:
+            case FromLogButton:
                 isSourceLogScaled = currentInfo.isLogScaled();
                 isTargetLogScaled = !currentInfo.isLogScaled();
 //                parentForm.getImageInfo().getColorPaletteSourcesInfo().setAlteredScheme(true);
@@ -482,7 +481,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 //                }
                 currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
 
-                if (key == RangeKey.ToggleLog) {
+                if (key == RangeKey.FromLogButton) {
                     currentInfo.setLogScaled(isTargetLogScaled);
                     colorPaletteChooser.setLog10Display(isTargetLogScaled);
                 }
@@ -525,6 +524,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
 //        ColorPaletteInfo colorPaletteInfo = (ColorPaletteInfo) jComboBox.getSelectedItem();
+//        System.out.println("Scheme Selector Debug");
+//        System.out.println(colorPaletteInfo.getName());
 //
 //        PropertyMap configuration = null;
 ////        if (parentForm.getProductSceneView() != null && parentForm.getProductSceneView().getSceneImage() != null) {
@@ -543,6 +544,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 //
 //                File cpdFile = new File(parentForm.getIODir().toFile(), colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
 //                ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+//                System.out.println("DEBUG" + cpdFile.getName());
 //
 //
 //                boolean origShouldFireChooserEvent = shouldFireChooserEvent;
@@ -568,11 +570,21 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 ////                }
 //
 //
-//                applyChanges(colorPaletteInfo.getMinValue(),
-//                        colorPaletteInfo.getMaxValue(),
-//                        colorPaletteDef,
-//                        colorPaletteDef.isLogScaled(),
-//                        colorPaletteInfo.isLogScaled(), colorPaletteInfo.getRootName(), isDefaultList);
+////                applyChanges(colorPaletteInfo.getMinValue(),
+////                        colorPaletteInfo.getMaxValue(),
+////                        colorPaletteDef,
+////                        colorPaletteDef.isLogScaled(),
+////                        colorPaletteInfo.isLogScaled(), colorPaletteInfo.getRootName(), isDefaultList);
+//
+//
+//                if (parentForm.getFormModel().isValid()) {
+//                   parentForm.getFormModel().getProductSceneView().setToDefaultColorScheme(cpdFile, parentForm.getFormModel().getProductSceneView().getImageInfo());
+//                   parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
+//
+//                    parentForm.getChildForm().resetFormModel(parentForm.getFormModel());
+//
+//                    parentForm.applyChanges();
+//                }
 //
 //
 //                shouldFireChooserEvent = origShouldFireChooserEvent;

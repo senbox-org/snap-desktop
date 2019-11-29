@@ -160,13 +160,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (getFormModel().isValid()) {
             getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
-        }
 
-        if (getFormModel().isValid()) {
-            getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
+            getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), getFormModel().getOriginalImageInfo());
+            getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
-
-        // todo This is where the scheme look up goes
 
         installChildForm();
 
@@ -174,10 +171,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         updateToolButtons();
 
         updateMultiApplyState();
+
+        if (getFormModel().isValid()) {
+            applyChanges();
+        }
     }
 
     private void installChildForm() {
-        final ColorManipulationChildForm oldForm = childForm;
+        final ColorManipulationChildForm oldForm = getChildForm();
         ColorManipulationChildForm newForm = emptyForm;
         if (getFormModel().isValid()) {
             if (getFormModel().isContinuous3BandImage()) {
@@ -208,14 +209,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
 
         if (newForm != oldForm) {
-            childForm = newForm;
+            setChildForm(newForm);
 
             installToolButtons();
             installMoreOptions();
 
             editorPanel.removeAll();
-            editorPanel.add(childForm.getContentPanel(), BorderLayout.CENTER);
-            if (!(childForm instanceof EmptyImageInfoForm)) {
+            editorPanel.add(getChildForm().getContentPanel(), BorderLayout.CENTER);
+            if (!(getChildForm() instanceof EmptyImageInfoForm)) {
                 editorPanel.add(moreOptionsPane.getContentPanel(), BorderLayout.SOUTH);
             }
             revalidateToolViewPaneControl();
@@ -223,9 +224,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             if (oldForm != null) {
                 oldForm.handleFormHidden(getFormModel());
             }
-            childForm.handleFormShown(getFormModel());
+            getChildForm().handleFormShown(getFormModel());
         } else {
-            childForm.updateFormModel(getFormModel());
+            getChildForm().updateFormModel(getFormModel());
         }
     }
 
@@ -300,7 +301,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         exportButton.setToolTipText("Save colour palette to text file."); /*I18N*/
         exportButton.addActionListener(e -> {
             exportColorPaletteDef();
-            childForm.updateFormModel(getFormModel());
+            getChildForm().updateFormModel(getFormModel());
         });
         exportButton.setEnabled(true);
 
@@ -344,7 +345,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         toolButtonsPanel.add(importButton, gbc);
         toolButtonsPanel.add(exportButton, gbc);
         gbc.gridy++;
-        AbstractButton[] additionalButtons = childForm.getToolButtons();
+        AbstractButton[] additionalButtons = getChildForm().getToolButtons();
         for (int i = 0; i < additionalButtons.length; i++) {
             AbstractButton button = additionalButtons[i];
             toolButtonsPanel.add(button, gbc);
@@ -368,7 +369,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     @Override
     public void installMoreOptions() {
-        final MoreOptionsForm moreOptionsForm = childForm.getMoreOptionsForm();
+        final MoreOptionsForm moreOptionsForm = getChildForm().getMoreOptionsForm();
         if (moreOptionsForm != null) {
             moreOptionsForm.updateForm();
 
@@ -389,7 +390,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             try {
                 getToolViewPaneControl().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 if (getFormModel().isContinuous3BandImage()) {
-                    getFormModel().setRasters(childForm.getRasters());
+                    getFormModel().setRasters(getChildForm().getRasters());
                 } else {
                     getFormModel().getRaster().setImageInfo(getFormModel().getModifiedImageInfo());
                 }
@@ -406,7 +407,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), createDefaultImageInfo());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
-            childForm.resetFormModel(getFormModel());
+            getChildForm().resetFormModel(getFormModel());
         }
     }
 
@@ -523,7 +524,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                     colorPaletteDef.getFirstPoint().setLabel(file.getName());
                     applyColorPaletteDef(colorPaletteDef, getFormModel().getRaster(), targetImageInfo);
                     getFormModel().setModifiedImageInfo(targetImageInfo);
-                    childForm.updateFormModel(getFormModel());
+                    getChildForm().updateFormModel(getFormModel());
                     updateMultiApplyState();
                 } catch (IOException e) {
                     showErrorDialog("Failed to import colour palette:\n" + e.getMessage());
@@ -614,6 +615,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
     }
 
+    public ColorManipulationChildForm getChildForm() {
+        return childForm;
+    }
+
+    public void setChildForm(ColorManipulationChildForm childForm) {
+        this.childForm = childForm;
+    }
+
     private class InstallDefaultColorPalettes implements Runnable {
 
         private InstallDefaultColorPalettes() {
@@ -667,7 +676,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         @Override
         public void nodeChanged(final ProductNodeEvent event) {
 
-            final RasterDataNode[] rasters = childForm.getRasters();
+            final RasterDataNode[] rasters = getChildForm().getRasters();
             RasterDataNode raster = null;
             for (RasterDataNode dataNode : rasters) {
                 if (event.getSourceNode() == dataNode) {
@@ -678,14 +687,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 final String propertyName = event.getPropertyName();
                 if (ProductNode.PROPERTY_NAME_NAME.equalsIgnoreCase(propertyName)) {
                     updateTitle();
-                    childForm.handleRasterPropertyChange(event, raster);
+                    getChildForm().handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_ANCILLARY_VARIABLES.equalsIgnoreCase(propertyName)) {
                     updateTitle();
-                    childForm.handleRasterPropertyChange(event, raster);
+                    getChildForm().handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_UNIT.equalsIgnoreCase(propertyName)) {
-                    childForm.handleRasterPropertyChange(event, raster);
+                    getChildForm().handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.PROPERTY_NAME_STX.equalsIgnoreCase(propertyName)) {
-                    childForm.handleRasterPropertyChange(event, raster);
+                    getChildForm().handleRasterPropertyChange(event, raster);
                 } else if (RasterDataNode.isValidMaskProperty(propertyName)) {
                     getStx(raster);
                 }
@@ -721,7 +730,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 if (correctFormForRaster) {
                     ImageInfo modifiedImageInfo = (ImageInfo) evt.getNewValue();
                     getFormModel().setModifiedImageInfo(modifiedImageInfo);
-                    childForm.updateFormModel(getFormModel());
+                    getChildForm().updateFormModel(getFormModel());
                 }
             }
         }
