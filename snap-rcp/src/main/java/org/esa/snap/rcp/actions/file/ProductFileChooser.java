@@ -18,11 +18,15 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Marco Peters
  */
 public class ProductFileChooser extends SnapFileChooser {
+
+    private static final Logger logger = Logger.getLogger(ProductFileChooser.class.getName());
 
     private static int numSubsetProducts = 0;
 
@@ -272,6 +276,8 @@ public class ProductFileChooser extends SnapFileChooser {
                 clearCurrentAdvancedProductOptions();
             }
         } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to open the advanced option dialog.", e);
+
             Dialogs.showError("The file " + getSelectedFile() + " could not be opened with advanced options!");
         }
         return false;
