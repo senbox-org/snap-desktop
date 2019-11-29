@@ -523,82 +523,65 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
-//        ColorPaletteInfo colorPaletteInfo = (ColorPaletteInfo) jComboBox.getSelectedItem();
-//        System.out.println("Scheme Selector Debug");
-//        System.out.println(colorPaletteInfo.getName());
+        ColorPaletteInfo colorPaletteInfo = (ColorPaletteInfo) jComboBox.getSelectedItem();
+
+        PropertyMap configuration = null;
+        if (parentForm.getFormModel().getProductSceneView() != null && parentForm.getFormModel().getProductSceneView().getSceneImage() != null) {
+            configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        }
+
+        boolean useColorBlindPalettes = ColorPaletteSchemes.getUseColorBlind(configuration);
+
+        if (colorPaletteInfo.getCpdFilename(useColorBlindPalettes) != null && colorPaletteInfo.isEnabled()) {
+
+
+            try {
+
+                File cpdFile = new File(parentForm.getIODir().toFile(), colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
+                ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+
+                boolean origShouldFireChooserEvent = shouldFireChooserEvent;
+                shouldFireChooserEvent = false;
+
+                colorPaletteChooser.setSelectedColorPaletteDefinition(colorPaletteDef);
+
+
+
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setCpdFileName(colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
+
+
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarLabels(colorPaletteInfo.getColorBarLabels());
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarTitle(colorPaletteInfo.getColorBarTitle());
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarMin(colorPaletteInfo.getMinValue());
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarMax(colorPaletteInfo.getMaxValue());
+//                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setLogScaled(colorPaletteInfo.isLogScaled());
 //
-//        PropertyMap configuration = null;
-////        if (parentForm.getProductSceneView() != null && parentForm.getProductSceneView().getSceneImage() != null) {
-////            configuration = parentForm.getProductSceneView().getSceneImage().getConfiguration();
-////        }
-//        if (parentForm.getFormModel().getProductSceneView() != null && parentForm.getFormModel().getProductSceneView().getSceneImage() != null) {
-//            configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-//        }
-//
-//        boolean useColorBlindPalettes = ColorPaletteSchemes.getUseColorBlind(configuration);
-//
-//        if (colorPaletteInfo.getCpdFilename(useColorBlindPalettes) != null && colorPaletteInfo.isEnabled()) {
-//
-//
-//            try {
-//
-//                File cpdFile = new File(parentForm.getIODir().toFile(), colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
-//                ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
-//                System.out.println("DEBUG" + cpdFile.getName());
-//
-//
-//                boolean origShouldFireChooserEvent = shouldFireChooserEvent;
-//                shouldFireChooserEvent = false;
-//
-//                colorPaletteChooser.setSelectedColorPaletteDefinition(colorPaletteDef);
-//
-//
-//
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setCpdFileName(colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
-//
-//
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarLabels(colorPaletteInfo.getColorBarLabels());
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarTitle(colorPaletteInfo.getColorBarTitle());
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarMin(colorPaletteInfo.getMinValue());
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarMax(colorPaletteInfo.getMaxValue());
-////                parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setLogScaled(colorPaletteInfo.isLogScaled());
-////
-//
-////                if (ImageLegend.allowColorbarAutoReset(configuration)) {
-////                    parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarInitialized(false);
-////                    parentForm.getFormModel().getProductSceneView().getColorBarParamInfo().setParamsInitialized(false);
-////                }
-//
-//
-////                applyChanges(colorPaletteInfo.getMinValue(),
-////                        colorPaletteInfo.getMaxValue(),
-////                        colorPaletteDef,
-////                        colorPaletteDef.isLogScaled(),
-////                        colorPaletteInfo.isLogScaled(), colorPaletteInfo.getRootName(), isDefaultList);
-//
-//
-//                if (parentForm.getFormModel().isValid()) {
-//                   parentForm.getFormModel().getProductSceneView().setToDefaultColorScheme(cpdFile, parentForm.getFormModel().getProductSceneView().getImageInfo());
-//                   parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
-//
-//                    parentForm.getChildForm().resetFormModel(parentForm.getFormModel());
-//
-//                    parentForm.applyChanges();
+
+//                if (ImageLegend.allowColorbarAutoReset(configuration)) {
+//                    parentForm.getFormModel().getProductSceneView().getImageInfo().getColorPaletteSourcesInfo().setColorBarInitialized(false);
+//                    parentForm.getFormModel().getProductSceneView().getColorBarParamInfo().setParamsInitialized(false);
 //                }
-//
-//
-//                shouldFireChooserEvent = origShouldFireChooserEvent;
-//
-//                String id = parentForm.getFormModel().getProductSceneView().getRaster().getDisplayName();
-//                //   VisatApp.getApp().setStatusBarMessage("Loaded '" + colorPaletteInfo.getName() + "' color schema settings into '" + id);
-//                String colorPaletteName = (colorPaletteInfo.getName() != null) ? colorPaletteInfo.getName() : "";
-//                //     VisatApp.getApp().setStatusBarMessage("'" + colorPaletteName + "' color scheme loaded");
-//
-//
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        }
+
+
+                applyChanges(colorPaletteInfo.getMinValue(),
+                        colorPaletteInfo.getMaxValue(),
+                        colorPaletteDef,
+                        colorPaletteDef.isLogScaled(),
+                        colorPaletteInfo.isLogScaled(), colorPaletteInfo.getRootName(), isDefaultList);
+
+
+                shouldFireChooserEvent = origShouldFireChooserEvent;
+
+                String id = parentForm.getFormModel().getProductSceneView().getRaster().getDisplayName();
+                //   VisatApp.getApp().setStatusBarMessage("Loaded '" + colorPaletteInfo.getName() + "' color schema settings into '" + id);
+                String colorPaletteName = (colorPaletteInfo.getName() != null) ? colorPaletteInfo.getName() : "";
+                //     VisatApp.getApp().setStatusBarMessage("'" + colorPaletteName + "' color scheme loaded");
+
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
 
 
     }
@@ -628,6 +611,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         currentMinFieldValue = Double.toString(min);
         currentMaxFieldValue = Double.toString(max);
 
+        parentForm.getFormModel().setModifiedImageInfo(currentInfo);
         parentForm.applyChanges();
     }
 
