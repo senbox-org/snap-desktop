@@ -63,6 +63,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final ColorPaletteChooser colorPaletteChooser;
     private final JFormattedTextField minField;
     private final JFormattedTextField maxField;
+    private final JButton fromFile;
+    private final JButton fromData;
     private String currentMinFieldValue = "";
     private String currentMaxFieldValue = "";
     private final DiscreteCheckBox discreteCheckBox;
@@ -102,17 +104,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         standardColorPaletteSchemes = new ColorPaletteSchemes(parentForm.getIODir().toFile(), ColorPaletteSchemes.Id.SELECTOR, true, configuration);
 
-
-        final TableLayout layout = new TableLayout();
-        layout.setTableWeightX(1.0);
-        layout.setTableWeightY(1.0);
-        layout.setTablePadding(2, 2);
-        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
-        layout.setTableAnchor(TableLayout.Anchor.NORTH);
-        layout.setCellPadding(0, 0, new Insets(8, 2, 2, 2));
-        layout.setCellPadding(2, 0, new Insets(13, 2, 5, 2));
-
-        loadWithCPDFileValuesCheckBox = new JCheckBox("Load cpd file exact values", false);
+        loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
 
         paletteInversionButton = new JButton("Reverse");
@@ -125,44 +117,37 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
         paletteInversionButton.setEnabled(true);
 
-
-        final JPanel editorPanel = new JPanel(layout);
-
-        JPanel colorPaletteInfoComboBoxJPanel = getSchemaPanel("Scheme");
-        editorPanel.add(colorPaletteInfoComboBoxJPanel);
-
-
-        editorPanel.add(new JLabel("Colour ramp:"));
         colorPaletteChooser = new ColorPaletteChooser();
-        editorPanel.add(colorPaletteChooser);
-        editorPanel.add(paletteInversionButton);
-        editorPanel.add(loadWithCPDFileValuesCheckBox);
-        editorPanel.add(new JLabel("Display range"));
-
 
         minField = getNumberTextField(0.00001);
         maxField = getNumberTextField(1);
 
-        final JPanel minPanel = new JPanel(new BorderLayout(5, 2));
-        minPanel.add(new JLabel("Min:"), BorderLayout.WEST);
-        minPanel.add(minField, BorderLayout.SOUTH);
-        final JPanel maxPanel = new JPanel(new BorderLayout(5, 2));
-        maxPanel.add(new JLabel("Max:"), BorderLayout.EAST);
-        maxPanel.add(maxField, BorderLayout.SOUTH);
+        fromFile = new JButton("Range from File");
+        fromData = new JButton("Range from Data");
 
-        final JPanel minMaxPanel = new JPanel(new BorderLayout(5, 5));
-        minMaxPanel.add(minPanel, BorderLayout.WEST);
-        minMaxPanel.add(maxPanel, BorderLayout.EAST);
-        editorPanel.add(minMaxPanel);
 
-        final JButton fromFile = new JButton("Range from File");
-        final JButton fromData = new JButton("Range from Data");
 
-        final JPanel buttonPanel = new JPanel(new BorderLayout(5, 10));
-        buttonPanel.add(fromFile, BorderLayout.WEST);
-        buttonPanel.add(fromData, BorderLayout.EAST);
-        editorPanel.add(new JLabel(" "));
-        editorPanel.add(buttonPanel);
+        final TableLayout layout = new TableLayout();
+        layout.setTableWeightX(1.0);
+        layout.setTableWeightY(1.0);
+        layout.setTablePadding(2, 2);
+        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        layout.setTableAnchor(TableLayout.Anchor.NORTH);
+        layout.setCellPadding(0, 0, new Insets(8, 2, 2, 2));
+        layout.setCellPadding(1, 0, new Insets(8, 2, 2, 2));
+        layout.setCellPadding(2, 0, new Insets(8, 2, 2, 2));
+        layout.setCellPadding(3, 0, new Insets(13, 2, 5, 2));
+
+        final JPanel editorPanel = new JPanel(layout);
+
+        JPanel schemePanel = getSchemePanel("Scheme");
+        editorPanel.add(schemePanel);
+
+        JPanel palettePanel = getPalettePanel("Palette");
+        editorPanel.add(palettePanel);
+
+        JPanel rangePanel = getRangePanel("Range");
+        editorPanel.add(rangePanel);
 
         shouldFireChooserEvent = false;
 
@@ -232,7 +217,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
                         // todo DANNY commented out temporarily
                         handleColorPaletteInfoComboBoxSelection(standardColorPaletteSchemes.getjComboBox(), false);
-                        standardColorPaletteSchemes.reset();
+//                        standardColorPaletteSchemes.reset();
                         standardColorPaletteSchemes.setjComboBoxShouldFire(true);
                     }
                 }
@@ -323,7 +308,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         standardColorPaletteSchemes.setjComboBoxShouldFire(false);
 
-        standardColorPaletteSchemes.reset();
+//        standardColorPaletteSchemes.reset();
 
         // todo some palette sources code goes here
 
@@ -501,7 +486,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 } else {
                     currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
                 }
-                currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
 
                 if (key == RangeKey.FromLogButton) {
                     currentInfo.setLogScaled(isTargetLogScaled);
@@ -511,22 +495,22 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 currentMaxFieldValue = Double.toString(max);
                 parentForm.applyChanges();
 
+                // Some other field has been changed so reset the scheme selector to no scheme
+                standardColorPaletteSchemes.reset();
 
             }
         }
     }
 
-    private JPanel getSchemaPanel(String title) {
-
-
+    private JPanel getSchemePanel(String title) {
         JPanel jPanel = new JPanel(new GridBagLayout());
         jPanel.setBorder(BorderFactory.createTitledBorder(title));
-        //   jPanel.setToolTipText("Load a preset color scheme (sets the color-palette, min, max, and log fields)");
+        jPanel.setToolTipText("Load a preset color scheme (sets the color-palette, min, max, and log fields)");
         GridBagConstraints gbc = new GridBagConstraints();
 
 
         gbc.weightx = 1.0;
-        gbc.insets = new Insets(0, 5, 0, 0);
+        gbc.insets = new Insets(0, 4, 4, 4);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -535,13 +519,98 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 0, 0);
 
         jPanel.add(standardColorPaletteSchemes.getjComboBox(), gbc);
 
         return jPanel;
     }
 
+
+    private JPanel getPalettePanel(String title) {
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createTitledBorder(title));
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        jPanel.add(colorPaletteChooser, gbc);
+
+//        gbc.gridy++;
+//        gbc.fill = GridBagConstraints.HORIZONTAL;
+//
+//        jPanel.add(paletteInversionButton, gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+//        jPanel.add(loadWithCPDFileValuesCheckBox, gbc);
+
+
+        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
+        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
+        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+
+        jPanel.add(row2Panel, gbc);
+
+
+        return jPanel;
+    }
+
+
+
+    private JPanel getRangePanel(String title) {
+
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createTitledBorder(title));
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+
+        final JPanel minPanel = new JPanel(new BorderLayout(0, 0));
+        minPanel.add(new JLabel("Min:"), BorderLayout.WEST);
+        minPanel.add(minField, BorderLayout.EAST);
+
+        final JPanel maxPanel = new JPanel(new BorderLayout(0, 0));
+        maxPanel.add(new JLabel("Max:"), BorderLayout.WEST);
+        maxPanel.add(maxField, BorderLayout.EAST);
+
+        final JPanel minMaxPanel = new JPanel(new BorderLayout(0, 0));
+        minMaxPanel.add(minPanel, BorderLayout.WEST);
+        minMaxPanel.add(maxPanel, BorderLayout.EAST);
+
+
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 5, 5, 5);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        jPanel.add(minMaxPanel, gbc);
+
+
+        final JPanel buttonPanel = new JPanel(new BorderLayout(5, 10));
+        buttonPanel.add(fromFile, BorderLayout.WEST);
+        buttonPanel.add(fromData, BorderLayout.EAST);
+
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+
+        jPanel.add(buttonPanel, gbc);
+
+        return jPanel;
+    }
 
 
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
