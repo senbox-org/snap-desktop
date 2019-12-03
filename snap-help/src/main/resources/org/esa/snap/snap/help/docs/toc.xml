@@ -117,7 +117,7 @@
                 <tocitem text="MERMAID Extraction File" target="importMermaid"/>
                 <tocitem text="SeaDAS 6.x Track" target="importSeaDASTrack"/>
             </tocitem>
-            <tocitem text="Export Menu">
+            <tocitem text="Export">
                 <tocitem text="Geometry as Shapefile" target="exportShapefile"/>
             </tocitem>
         </tocitem>
