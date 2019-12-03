@@ -14,7 +14,7 @@
     </tocitem>
 
     <tocitem text="Sentinel Toolbox Application">
-        <tocitem text="General concepts">
+        <tocitem text="General Concepts">
             <tocitem text="Introduction" target="desktop"/>
             <tocitem text="Main Menu Bar" target="menuBar"/>
             <tocitem text="Main Toolbar" target="mainToolbar"/>
