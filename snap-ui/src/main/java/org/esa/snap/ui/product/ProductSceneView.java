@@ -112,7 +112,17 @@ import java.util.Vector;
  * dataset.
  *
  * @author Norman Fomferra
- */
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ * @version $Revision$ $Date$
+*/
+// NOV 2019 - Knowles / Yang
+//          - Added method setToDefaultColorScheme used in color scheme logic which enables setting of the parameters
+//          - based on the band name or desired color scheme.
+
+
+
+
 public class ProductSceneView extends BasicView
         implements FigureEditorAware, ProductNodeView, PropertyChangeListener, ProductLayerContext, ViewportAware {
 
@@ -1733,7 +1743,6 @@ public class ProductSceneView extends BasicView
 
 
             if (matchingColorPaletteInfo != null) {
-                //if (this.productSceneView.getBaseImageLayer().getName().trim().equals(cpdInfo.getName().trim())) {
                 ColorPaletteDef colorPaletteDef = matchingColorPaletteInfo.getColorPaletteDef(ColorPaletteSchemes.getUseColorBlind(configuration));
                 getImageInfo().setColorPaletteDef(colorPaletteDef,
                         matchingColorPaletteInfo.getMinValue(),
@@ -1742,23 +1751,6 @@ public class ProductSceneView extends BasicView
                         colorPaletteDef.isLogScaled(),
                         matchingColorPaletteInfo.isLogScaled());
                 getImageInfo().setLogScaled(matchingColorPaletteInfo.isLogScaled());
-                //      this.productSceneView.setColorPaletteInfo(cpdInfo);
-
-//                getImageInfo().getColorPaletteSourcesInfo().setSchemeName(matchingColorPaletteInfo.getRootName());
-//                getImageInfo().getColorPaletteSourcesInfo().setColorBarLabels(matchingColorPaletteInfo.getColorBarLabels());
-//                getImageInfo().getColorPaletteSourcesInfo().setColorBarTitle(matchingColorPaletteInfo.getColorBarTitle());
-//                getImageInfo().getColorPaletteSourcesInfo().setColorBarMin(matchingColorPaletteInfo.getMinValue());
-//                getImageInfo().getColorPaletteSourcesInfo().setColorBarMax(matchingColorPaletteInfo.getMaxValue());
-//                getImageInfo().getColorPaletteSourcesInfo().setLogScaled(matchingColorPaletteInfo.isLogScaled());
-//
-//
-//                if (ImageLegend.allowColorbarAutoReset(configuration)) {
-//                    getImageInfo().getColorPaletteSourcesInfo().setColorBarInitialized(false);
-//                    getColorBarParamInfo().setParamsInitialized(false);
-//                }
-//
-//                getImageInfo().getColorPaletteSourcesInfo().setSchemeDefault(true);
-//                getImageInfo().getColorPaletteSourcesInfo().setCpdFileName(matchingColorPaletteInfo.getCpdFilename(ColorPaletteSchemes.getUseColorBlind(configuration)));
 
                 defaultSet = true;
             }
@@ -1766,36 +1758,7 @@ public class ProductSceneView extends BasicView
 
         if (!defaultSet) {
             setImageInfo(defaultImageInfo);
-//            getImageInfo().getColorPaletteSourcesInfo().setCpdFileName("default gray-scale");
-//            getImageInfo().getColorPaletteSourcesInfo().setSchemeDefault(true);
-//            getImageInfo().getColorPaletteSourcesInfo().setSchemeName("none");
         }
-
-        // todo Danny added this can be used later in setting min/max from RGB profile
-//            RasterDataNode[] rasters = getRasters();
-//
-//            Assert.notNull(rasters, "rasters");
-//            Assert.argument(rasters.length == 1 || rasters.length == 3, "rasters.length == 1 || rasters.length == 3");
-//            if (rasters.length == 1) {
-//
-//            } else {
-//                try {
-//                    final RGBChannelDef rgbChannelDef = new RGBChannelDef();
-//                    for (int i = 0; i < rasters.length; i++) {
-//                        RasterDataNode raster = rasters[i];
-//                        String name = raster.getName();
-//
-//                        rgbChannelDef.setSourceName(i, raster.getName());
-//
-//                        rgbChannelDef.setMinDisplaySample(i, 0);
-////                    rgbChannelDef.setMinDisplaySample(i, imageInfo.getColorPaletteDef().getMinDisplaySample());
-//                        rgbChannelDef.setMaxDisplaySample(i, 100);
-////                    rgbChannelDef.setMaxDisplaySample(i, imageInfo.getColorPaletteDef().getMaxDisplaySample());
-//                    }
-//
-//                } finally {
-//                }
-//            }
 
     }
 

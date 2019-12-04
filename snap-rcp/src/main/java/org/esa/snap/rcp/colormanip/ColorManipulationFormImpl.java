@@ -64,10 +64,18 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 /**
  * The GUI for the colour manipulation tool window.
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ * @version $Revision$ $Date$
  */
+// NOV 2019 - Knowles / Yang
+//          - Added color scheme logic which enables setting of the parameters based on the band name or desired color scheme.
+
+
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })
@@ -163,8 +171,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), getFormModel().getOriginalImageInfo());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
-//            getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
-
         }
 
         installChildForm();

@@ -26,7 +26,7 @@ import java.util.Vector;
  * @author Daniel Knowles (NASA)
  * @version $Revision$ $Date$
  */
-// OCT 2019 - Knowles
+// DEC 2019 - Knowles
 //          - Fixed bug where log scaled color palette would appear crunched in the selector
 //          - Added tooltips to show which color palette is being hovered over and selected
 //          - Added blue highlights within the renderer to show which color palette is being hovered over selected
