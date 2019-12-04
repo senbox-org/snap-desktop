@@ -127,8 +127,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         minField = getNumberTextField(0.00001);
         maxField = getNumberTextField(1);
 
-        fromFile = new JButton("Range from File");
-        fromData = new JButton("Range from Data");
+        fromFile = new JButton("Cpd Range");
+        fromData = new JButton("Data Range");
 
 
 
@@ -193,6 +193,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
         fromData.addActionListener(createListener(RangeKey.FromData));
+        fromData.setToolTipText("Set range from data");
+        fromFile.setToolTipText("Set range from cpd file");
 
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(editorPanel, BorderLayout.NORTH);
