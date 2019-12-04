@@ -64,6 +64,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 /**
  * The GUI for the colour manipulation tool window.
  *
@@ -74,7 +75,8 @@ import java.util.concurrent.Executors;
  */
 // NOV 2019 - Knowles / Yang
 //          - Added color scheme logic which enables setting of the parameters based on the band name or desired color scheme.
-
+// DEC 2019 - Knowles / Yang
+//          - Added capability to export color palette in cpt and pal formats.
 
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
@@ -83,7 +85,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
 
-    private final static String FILE_EXTENSION = ".cpd";
+    private final static String FILE_EXTENSION_CPD = ".cpd";
+    private final static String FILE_EXTENSION_PAL = "pal";
+    private final static String FILE_EXTENSION_CPT = "cpt";
+
     private AbstractButton resetButton;
     private AbstractButton multiApplyButton;
     private AbstractButton importButton;
@@ -93,6 +98,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private final ColorFormModel formModel;
     private Band[] bandsToBeModified;
     private SnapFileFilter snapFileFilter;
+    private SnapFileFilter palFileFilter;
+    private SnapFileFilter cptFileFilter;
     private final ProductNodeListener productNodeListener;
     private boolean defaultColorPalettesInstalled;
     private JPanel contentPanel;
@@ -503,11 +510,30 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
         if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
-            final String description = "Colour palette files (*" + FILE_EXTENSION + ")";  /*I18N*/
-            snapFileFilter = new SnapFileFilter(formatName, FILE_EXTENSION, description);
+            final String description = "Colour palette files (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
+            snapFileFilter = new SnapFileFilter(formatName, FILE_EXTENSION_CPD, description);
         }
         return snapFileFilter;
     }
+
+    private SnapFileFilter getOrCreatePalFileFilter() {
+        if (palFileFilter == null) {
+            final String formatName = "GENERIC_COLOR_PALETTE_FILE";
+            final String description = FILE_EXTENSION_PAL.toUpperCase() + " - Generic 256 point color palette format (*."+FILE_EXTENSION_PAL + ")";  /*I18N*/
+            palFileFilter = new SnapFileFilter(formatName, "."+FILE_EXTENSION_PAL, description);
+        }
+        return palFileFilter;
+    }
+
+    private SnapFileFilter getOrCreateCptFileFilter() {
+        if (cptFileFilter == null) {
+            final String formatName = "CPT_COLOR_PALETTE_FILE";
+            final String description = FILE_EXTENSION_CPT.toUpperCase() + " - Generic mapping tools color palette format (*."+FILE_EXTENSION_CPT + ")";  /*I18N*/
+            cptFileFilter = new SnapFileFilter(formatName, "."+FILE_EXTENSION_CPT, description);
+        }
+        return cptFileFilter;
+    }
+
 
     private void importColorPaletteDef() {
         final ImageInfo targetImageInfo = getFormModel().getModifiedImageInfo();
@@ -592,6 +618,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Export Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
+        fileChooser.addChoosableFileFilter(getOrCreatePalFileFilter());
+        fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
         final int result = fileChooser.showSaveDialog(getToolViewPaneControl());
         File file = fileChooser.getSelectedFile();
@@ -601,10 +629,19 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null) {
                 if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(titlePrefix, file))) {
-                    file = FileUtils.ensureExtension(file, FILE_EXTENSION);
+//                    file = FileUtils.ensureExtension(file, FILE_EXTENSION);
                     try {
                         final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
-                        ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
+                        String path = file.getPath();
+
+                        if (path.endsWith("."+FILE_EXTENSION_PAL)) {
+                            ColorPaletteDef.storePal(colorPaletteDef, file);
+                        } else if (path.endsWith("."+FILE_EXTENSION_CPT)) {
+                            ColorPaletteDef.storeCpt(colorPaletteDef, file);
+                        } else {
+                            file = FileUtils.ensureExtension(file, "."+FILE_EXTENSION_CPD);
+                            ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
+                        }
                     } catch (IOException e) {
                         showErrorDialog("Failed to export colour palette:\n" + e.getMessage());  /*I18N*/
                     }
