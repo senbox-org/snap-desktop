@@ -85,7 +85,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
 
-    private final static String FILE_EXTENSION_CPD = ".cpd";
+    private final static String FILE_EXTENSION_CPD = "cpd";
     private final static String FILE_EXTENSION_PAL = "pal";
     private final static String FILE_EXTENSION_CPT = "cpt";
 
@@ -507,11 +507,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         return ioDir;
     }
 
-    private SnapFileFilter getOrCreateColorPaletteDefinitionFileFilter() {
+    private SnapFileFilter getOrCreateCpdFileFilter() {
         if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
-            final String description = "Colour palette files (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
-            snapFileFilter = new SnapFileFilter(formatName, FILE_EXTENSION_CPD, description);
+            final String description =  FILE_EXTENSION_CPD.toUpperCase() + " - Default color palette format (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
+            snapFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_CPD, description);
         }
         return snapFileFilter;
     }
@@ -544,7 +544,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Import Colour Palette"); /*I18N*/
-        fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
+        fileChooser.setFileFilter(getOrCreateCpdFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
         final int result = fileChooser.showOpenDialog(getToolViewPaneControl());
         final File file = fileChooser.getSelectedFile();
@@ -617,7 +617,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Export Colour Palette"); /*I18N*/
-        fileChooser.setFileFilter(getOrCreateColorPaletteDefinitionFileFilter());
+        fileChooser.setFileFilter(getOrCreateCpdFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreatePalFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
