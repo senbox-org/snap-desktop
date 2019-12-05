@@ -1,6 +1,9 @@
 package org.esa.snap.rcp.actions.file;
 
+import org.esa.snap.core.dataio.DecodeQualification;
+import org.esa.snap.core.dataio.MetadataInspector;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductReaderExposedParams;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
@@ -18,11 +21,17 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author Marco Peters
+ *  modified 20191009 to support the advanced dialog for readers by Denisa Stefanescu
  */
 public class ProductFileChooser extends SnapFileChooser {
 
@@ -256,28 +265,56 @@ public class ProductFileChooser extends SnapFileChooser {
 
     private void openAdvancedDialog() {
         clearCurrentAdvancedProductOptions();
-        boolean approve = openAdvancedProduct();
-        if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
-            approveSelection();
+        File inputFile = getSelectedFile();
+        plugin = findPlugin(inputFile);
+        boolean addUIComponents = true;
+        ProductReaderExposedParams readerExposedParams = null;
+        MetadataInspector.Metadata readerInspectorExposeParameters = null;
+        if (plugin != null) {
+            readerExposedParams = plugin.createReaderInstance().getExposedParams();
+            MetadataInspector metadatainsp = plugin.createReaderInstance().getMetadataInspector();
+            if (metadatainsp != null) {
+                Path input = convertInputToPath(inputFile);
+                try {
+                    readerInspectorExposeParameters = metadatainsp.getMetadata(input);
+                } catch (Exception ex) {
+                    addUIComponents = false;
+                    logger.log(Level.SEVERE, "Failed to read the metadata file! ", ex);
+                }
+            }
+        }else{
+            addUIComponents = false;
+        }
+        //if the product does not support Advanced option action
+        if (addUIComponents && readerExposedParams == null && readerInspectorExposeParameters == null) {
+            int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support Open with advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
+            //if the user want to open the product normally the Advanced Options window will not be displayed
+            if (confirm == JOptionPane.YES_OPTION) {
+                addUIComponents = false;
+                approveSelection();
+            } else {//if the user choose not to open the product normally the Advanced Option window components are removed
+                addUIComponents = false;
+            }
+        }
+        if (addUIComponents) {
+            boolean approve = openAdvancedProduct(readerExposedParams, readerInspectorExposeParameters);
+            if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
+                approveSelection();
+            }
         }
         updateState();
     }
 
-    private boolean openAdvancedProduct() {
+    private boolean openAdvancedProduct(ProductReaderExposedParams readerExposedParams, MetadataInspector.Metadata readerInspectorExposeParameters) {
         try {
-            ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", getSelectedFile());
-            productSubsetDef = advancedDialog.getProductSubsetDef();
-            plugin = advancedDialog.getPlugin();
-            //if the Reader does nor support Advanced option action
-            if (advancedDialog.getJDialog().getComponentCount()>0) {//the user agree to open the product normally
+            ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", readerExposedParams,readerInspectorExposeParameters);
+            if(advancedDialog.show() == advancedDialog.ID_OK) {
+                advancedDialog.createSubsetDef();
+                productSubsetDef = advancedDialog.getProductSubsetDef();
                 return true;
-            }else{//the advanced option dialog is not shown and the Open product File chooser will remain on the screen
-                advancedDialog.close();
-                clearCurrentAdvancedProductOptions();
-            }
-        } catch (Exception e) {
+                }
+        }catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to open the advanced option dialog.", e);
-
             Dialogs.showError("The file " + getSelectedFile() + " could not be opened with advanced options!");
         }
         return false;
@@ -296,6 +333,62 @@ public class ProductFileChooser extends SnapFileChooser {
             newProductName = newNamePrefix + "_" + productIndex;
         }
         return newProductName;
+    }
+
+    public static Path convertInputToPath(Object input) {
+        if (input == null) {
+            throw new NullPointerException();
+        } else if (input instanceof File) {
+            return ((File) input).toPath();
+        } else if (input instanceof Path) {
+            return (Path) input;
+        } else if (input instanceof String) {
+            return Paths.get((String) input);
+        } else {
+            throw new IllegalArgumentException("Unknown input '" + input + "'.");
+        }
+    }
+
+    private ProductReaderPlugIn findPlugin(File file){
+        final java.util.List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
+        List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
+        if (intendedPlugIns.isEmpty()) { // check for suitable readers only if no intended reader was found
+            suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
+        }
+
+        String fileFormatName;
+        if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
+            return null;
+        } else if (intendedPlugIns.size() == 1) {
+            ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
+            return entry.plugin;
+        } else if (intendedPlugIns.isEmpty() && suitablePlugIns.size() == 1) {
+            ProductOpener.PluginEntry entry = suitablePlugIns.get(0);
+            return entry.plugin;
+        } else {
+            Collections.sort(intendedPlugIns);
+            Collections.sort(suitablePlugIns);
+            // ask user to select a desired reader plugin
+            fileFormatName = ProductOpener.getUserSelection(intendedPlugIns, suitablePlugIns);
+            if (fileFormatName == null) { // User clicked cancel
+                return  null;
+            } else {
+                if (!suitablePlugIns.isEmpty() && suitablePlugIns.stream()
+                        .anyMatch(entry -> entry.plugin.getFormatNames()[0].equals(fileFormatName))) {
+                    ProductOpener.PluginEntry entry = suitablePlugIns.stream()
+                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
+                            .findAny()
+                            .orElse(null);
+                    return entry.plugin;
+                } else {
+                    ProductOpener.PluginEntry entry = intendedPlugIns.stream()
+                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
+                            .findAny()
+                            .orElse(null);
+                    return entry.plugin;
+                }
+            }
+        }
     }
 
 }

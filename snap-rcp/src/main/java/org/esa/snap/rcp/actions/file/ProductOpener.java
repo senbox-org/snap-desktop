@@ -38,6 +38,7 @@ import java.util.prefs.Preferences;
 
 /**
  * @author Marco Peters
+ * modified 20191009 to support the advanced dialog for readers by Denisa Stefanescu
  */
 public class ProductOpener {
 
@@ -176,7 +177,7 @@ public class ProductOpener {
         }
 
         String formatName;
-        if (fc.getProductSubsetDef() != null) {
+        if (fc.getProductSubsetDef() != null || fc.getProductReaderPlugin() != null) {
             productSubsetDef = fc.getProductSubsetDef();
             plugin = fc.getProductReaderPlugin();
         }

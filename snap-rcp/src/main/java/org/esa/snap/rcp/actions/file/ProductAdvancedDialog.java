@@ -1,6 +1,5 @@
 package org.esa.snap.rcp.actions.file;
 
-import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.MetadataInspector;
 import org.esa.snap.core.dataio.ProductReaderExposedParams;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
@@ -24,13 +23,12 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Denisa Stefanescu
+ */
 public class ProductAdvancedDialog extends ModalDialog implements ParamChangeListener {
 
     private static final int MIN_SCENE_VALUE = 0;
@@ -74,197 +72,120 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
-    public ProductAdvancedDialog(Window window, String title, File file) throws Exception {
+//    public ProductAdvancedDialog(Window window, String title, File file) throws Exception {
+    public ProductAdvancedDialog(Window window, String title, ProductReaderExposedParams readerExposedParams, MetadataInspector.Metadata readerInspectorExposeParameters){
         super(window, title, ID_OK | ID_CANCEL | ID_HELP, "advancedDialog");
+        this.readerExposedParams = readerExposedParams;
+        this.readerInspectorExposeParameters = readerInspectorExposeParameters;
         updatingUI = new AtomicBoolean(false);
-        final List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
-        List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
-        if (intendedPlugIns.isEmpty()) { // check for suitable readers only if no intended reader was found
-            suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
+        this.productSubsetDef = new ProductSubsetDef();
+        createUI();
+    }
+
+    private void setPixelCoord(){
+        if (this.readerInspectorExposeParameters == null) {
+            paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
+            paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
+            paramX1.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramX1.getProperties().setMaxValue(Integer.MAX_VALUE);
+            paramWidth = new Parameter("sorce_width", Integer.MAX_VALUE);
+            paramWidth.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramWidth.getProperties().setDescription("Product width");
+            paramWidth.getProperties().setMaxValue(Integer.MAX_VALUE);
+            paramY1 = new Parameter("source_y1", MIN_SCENE_VALUE);
+            paramY1.getProperties().setDescription("Start Y co-ordinate given in pixels");
+            paramY1.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramY1.getProperties().setMaxValue(Integer.MAX_VALUE);
+            paramHeight = new Parameter("source_height", Integer.MAX_VALUE);
+            paramHeight.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramHeight.getProperties().setDescription("Product height");
+            paramHeight.getProperties().setMaxValue(Integer.MAX_VALUE);
+        }else{
+            // set scene width and scene X for Pixel Coordinates
+            paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
+            paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
+            paramX1.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramX1.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductWidth() - 1 > 0 ? this.readerInspectorExposeParameters.getProductWidth() - 1 : 0);
+            paramWidth = new Parameter("source_width", this.readerInspectorExposeParameters.getProductWidth());
+            paramWidth.getProperties().setMinValue((Integer) paramX1.getValue());
+            paramWidth.getProperties().setDescription("Product width");
+            paramWidth.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductWidth());
+
+
+            // set scene height and scene Y for Pixel Coordinates
+            paramY1 = new Parameter("source_y1", MIN_SCENE_VALUE);
+            paramY1.getProperties().setDescription("Start Y co-ordinate given in pixels");
+            paramY1.getProperties().setMinValue(MIN_SCENE_VALUE);
+            paramY1.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductHeight() - 1 > 0 ? this.readerInspectorExposeParameters.getProductHeight() - 1 : 0);
+            paramHeight = new Parameter("source_height", this.readerInspectorExposeParameters.getProductHeight());
+            paramHeight.getProperties().setMinValue((Integer) paramY1.getValue());
+            paramHeight.getProperties().setDescription("Product height");
+            paramHeight.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductHeight());
         }
+    }
 
-        String fileFormatName;
-        boolean showUI = true;
-        if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
-            showUI = false;
-        } else if (intendedPlugIns.size() == 1) {
-            ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
-            plugin = entry.plugin;
-        } else if (intendedPlugIns.isEmpty() && suitablePlugIns.size() == 1) {
-            ProductOpener.PluginEntry entry = suitablePlugIns.get(0);
-            plugin = entry.plugin;
-        } else {
-            Collections.sort(intendedPlugIns);
-            Collections.sort(suitablePlugIns);
-            // ask user to select a desired reader plugin
-            fileFormatName = ProductOpener.getUserSelection(intendedPlugIns, suitablePlugIns);
-            if (fileFormatName == null) { // User clicked cancel
-                showUI = false;
-            } else {
-                if (!suitablePlugIns.isEmpty() && suitablePlugIns.stream()
-                        .anyMatch(entry -> entry.plugin.getFormatNames()[0].equals(fileFormatName))) {
-                    ProductOpener.PluginEntry entry = suitablePlugIns.stream()
-                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
-                            .findAny()
-                            .orElse(null);
-                    plugin = entry.plugin;
-                } else {
-                    ProductOpener.PluginEntry entry = intendedPlugIns.stream()
-                            .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
-                            .findAny()
-                            .orElse(null);
-                    plugin = entry.plugin;
-                }
-            }
-        }
-        if (plugin != null) {
-            this.readerExposedParams = plugin.createReaderInstance().getExposedParams();
-            MetadataInspector metadatainsp = plugin.createReaderInstance().getMetadataInspector();
-            if (metadatainsp != null) {
-                Path input = convertInputToPath(file);
-                try {
-                    readerInspectorExposeParameters = metadatainsp.getMetadata(input);
-                } catch (Exception ex) {
-                    showUI = false;
-                    getJDialog().removeAll();
-                    logger.log(Level.SEVERE, "Failed to read the metadata file! ", ex);
-                }
-            }
-        }
-        //if the user does not support Advanced option action
-        if (showUI && this.readerExposedParams == null && this.readerInspectorExposeParameters == null) {
-            int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support Open with advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
-            //if the user want to open the product normally the Advanced Options window will not be displayed
-            if (confirm == JOptionPane.YES_OPTION) {
-                showUI = false;
-            } else {//if the user choose not to open the product normally the Advanced Option window components are removed
-                getJDialog().removeAll();
-                showUI = false;
-            }
-
-        }
-        if (showUI) {
-            if (this.readerInspectorExposeParameters == null) {
-                if (this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null && this.readerExposedParams.getBandNames().isEmpty()) {
-                    // set the possible selectable values
-                    this.bandList.setListData(this.readerExposedParams.getBandNames().toArray());
-                }
-                if (this.readerExposedParams != null && this.readerExposedParams.getMaskNames() != null && this.readerExposedParams.getMaskNames().isEmpty()) {
-                    // set the possible selectable values
-                    this.maskList.setListData(this.readerExposedParams.getMaskNames().toArray());
-                }
-                if (this.readerExposedParams != null && !this.readerExposedParams.isHasMasks()) {
-                    copyMasks.setSelected(false);
-                }
-                paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
-                paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
-                paramX1.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramX1.getProperties().setMaxValue(Integer.MAX_VALUE);
-                paramWidth = new Parameter("sorce_width", Integer.MAX_VALUE);
-                paramWidth.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramWidth.getProperties().setDescription("Product width");
-                paramWidth.getProperties().setMaxValue(Integer.MAX_VALUE);
-                paramY1 = new Parameter("source_y1", MIN_SCENE_VALUE);
-                paramY1.getProperties().setDescription("Start Y co-ordinate given in pixels");
-                paramY1.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramY1.getProperties().setMaxValue(Integer.MAX_VALUE);
-                paramHeight = new Parameter("source_height", Integer.MAX_VALUE);
-                paramHeight.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramHeight.getProperties().setDescription("Product height");
-                paramHeight.getProperties().setMaxValue(Integer.MAX_VALUE);
-            } else {
-                if (this.readerInspectorExposeParameters.getBandList() != null && !this.readerInspectorExposeParameters.getBandList().isEmpty()) {
-                    // set the possible selectable values
-                    this.bandList.setListData(this.readerInspectorExposeParameters.getBandList().toArray());
-                }
-                if (this.readerInspectorExposeParameters.isHasMasks() && this.readerInspectorExposeParameters.getMaskList() != null && !this.readerInspectorExposeParameters.getMaskList().isEmpty()) {
-                    // set the possible selectable values
-                    this.maskList.setListData(this.readerInspectorExposeParameters.getMaskList().toArray());
-                }
-                if (!this.readerInspectorExposeParameters.isHasMasks()) {
-                    copyMasks.setSelected(false);
-                }
-
-                // set scene width and scene X for Pixel Coordinates
-                paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
-                paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
-                paramX1.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramX1.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductWidth() - 1 > 0 ? this.readerInspectorExposeParameters.getProductWidth() - 1 : 0);
-                paramWidth = new Parameter("source_width", this.readerInspectorExposeParameters.getProductWidth());
-                paramWidth.getProperties().setMinValue((Integer) paramX1.getValue());
-                paramWidth.getProperties().setDescription("Product width");
-                paramWidth.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductWidth());
-
-
-                // set scene height and scene Y for Pixel Coordinates
-                paramY1 = new Parameter("source_y1", MIN_SCENE_VALUE);
-                paramY1.getProperties().setDescription("Start Y co-ordinate given in pixels");
-                paramY1.getProperties().setMinValue(MIN_SCENE_VALUE);
-                paramY1.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductHeight() - 1 > 0 ? this.readerInspectorExposeParameters.getProductHeight() - 1 : 0);
-                paramHeight = new Parameter("source_height", this.readerInspectorExposeParameters.getProductHeight());
-                paramHeight.getProperties().setMinValue((Integer) paramY1.getValue());
-                paramHeight.getProperties().setDescription("Product height");
-                paramHeight.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductHeight());
-
-                if (this.readerInspectorExposeParameters.isHasGeoCoding()) {
-                    // set GeoCoding coordinates
-                    GeoPos geoPos1 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-                    GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductHeight()), null);
-                    paramNorthLat1 = new Parameter("geo_lat1", MathUtils.crop(geoPos1.getLat(), -90.0, 90.0));
-                    paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -90.0, 90.0));
-                    paramSouthLat2 = new Parameter("geo_lat2", MathUtils.crop(geoPos2.getLat(), -90.0, 90.0));
-                    paramEastLon2 = new Parameter("geo_lon2", MathUtils.crop(geoPos2.getLon(), -90.0, 90.0));
-                    paramWestLon1.getProperties().setDescription("West bound longitude");
-                    paramNorthLat1.getProperties().setDescription("North bound latitude");
-                    paramSouthLat2.getProperties().setDescription("South bound latitude");
-                    paramEastLon2.getProperties().setDescription("East bound longitude");
-                }
-            }
-            if(this.readerInspectorExposeParameters.isHasGeoCoding()) {
-                paramWestLon1.getProperties().setDescription("West bound longitude");
-                paramNorthLat1.getProperties().setDescription("North bound latitude");
-                paramSouthLat2.getProperties().setDescription("South bound latitude");
-                paramEastLon2.getProperties().setDescription("East bound longitude");
-                paramWestLon1.getProperties().setPhysicalUnit("°");
-                paramWestLon1.getProperties().setMinValue(-180.0);
-                paramWestLon1.getProperties().setMaxValue(180.0);
-                paramSouthLat2.getProperties().setPhysicalUnit("°");
-                paramSouthLat2.getProperties().setMinValue(-90.0);
-                paramSouthLat2.getProperties().setMaxValue(90.0);
-                paramEastLon2.getProperties().setPhysicalUnit("°");
-                paramEastLon2.getProperties().setMinValue(-180.0);
-                paramEastLon2.getProperties().setMaxValue(180.0);
-                paramNorthLat1.getProperties().setPhysicalUnit("°");
-                paramNorthLat1.getProperties().setMinValue(-90.0);
-                paramNorthLat1.getProperties().setMaxValue(90.0);
-            }
-            productHeight = this.readerInspectorExposeParameters.getProductHeight();
-            productWidth = this.readerInspectorExposeParameters.getProductWidth();
-
-            createUI();
+    private void setGeoCoord(){
+        if (this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+            // set GeoCoding coordinates
+            GeoPos geoPos1 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
+            GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductHeight()), null);
+            paramNorthLat1 = new Parameter("geo_lat1", MathUtils.crop(geoPos1.getLat(), -90.0, 90.0));
+            paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -90.0, 90.0));
+            paramSouthLat2 = new Parameter("geo_lat2", MathUtils.crop(geoPos2.getLat(), -90.0, 90.0));
+            paramEastLon2 = new Parameter("geo_lon2", MathUtils.crop(geoPos2.getLon(), -90.0, 90.0));
+            paramWestLon1.getProperties().setDescription("West bound longitude");
+            paramNorthLat1.getProperties().setDescription("North bound latitude");
+            paramSouthLat2.getProperties().setDescription("South bound latitude");
+            paramEastLon2.getProperties().setDescription("East bound longitude");
         }
     }
 
     public void createUI() {
-        setContent(createPanel());
-        this.productSubsetDef = new ProductSubsetDef();
-//        if(geoCoordRadio.isEnabled()) {
-//            updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
-//        }
-        if (show() == ID_OK) {
-            if (pixelPanel.isVisible()) {
-                pixelPanelChanged();
+        if (this.readerInspectorExposeParameters == null) {
+            if (this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null && this.readerExposedParams.getBandNames().isEmpty()) {
+                // set the possible selectable values
+                this.bandList.setListData(this.readerExposedParams.getBandNames().toArray());
             }
-            if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
-                geoCodingChange();
+            if (this.readerExposedParams != null && this.readerExposedParams.getMaskNames() != null && this.readerExposedParams.getMaskNames().isEmpty()) {
+                // set the possible selectable values
+                this.maskList.setListData(this.readerExposedParams.getMaskNames().toArray());
             }
-            updateSubsetDefNodeNameList();
+            if (this.readerExposedParams != null && !this.readerExposedParams.isHasMasks()) {
+                copyMasks.setSelected(false);
+            }
+        } else {
+            if (this.readerInspectorExposeParameters.getBandList() != null && !this.readerInspectorExposeParameters.getBandList().isEmpty()) {
+                // set the possible selectable values
+                this.bandList.setListData(this.readerInspectorExposeParameters.getBandList().toArray());
+            }
+            if (this.readerInspectorExposeParameters.isHasMasks() && this.readerInspectorExposeParameters.getMaskList() != null && !this.readerInspectorExposeParameters.getMaskList().isEmpty()) {
+                // set the possible selectable values
+                this.maskList.setListData(this.readerInspectorExposeParameters.getMaskList().toArray());
+            }
+            if (!this.readerInspectorExposeParameters.isHasMasks()) {
+                copyMasks.setSelected(false);
+            }
         }
+        setPixelCoord();
+        setGeoCoord();
+        productHeight = (int) paramHeight.getValue();
+        productWidth = (int) paramWidth.getValue();
+
+        setContent(createPanel());
+    }
+
+    public void createSubsetDef (){
+        if (pixelPanel.isVisible()) {
+            pixelPanelChanged();
+        }
+        if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
+            geoCodingChange();
+        }
+        updateSubsetDefNodeNameList();
     }
 
     @Override
     protected void onCancel() {
-        getJDialog().removeAll();
         super.onCancel();
     }
 
@@ -284,7 +205,11 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 productSubsetDef.addNodeNames(bandAddedValues);
             }
         } else {
-            productSubsetDef.addNodeName("allBands");
+            if(this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getBandList() != null){
+                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getBandList().stream().toArray(String[]::new));
+            }else if(this.readerExposedParams != null && this.readerExposedParams.getBandNames() != null){
+                productSubsetDef.addNodeNames(this.readerExposedParams.getBandNames().stream().toArray(String[]::new));
+            }
         }
 
         //if the user specify the masks that want to be added in the product add only them, else mark the fact that the product must have all the masks
@@ -302,22 +227,21 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 productSubsetDef.addNodeNames(maskAddedValues);
             }
         } else if (copyMasks.isSelected()) {
-            productSubsetDef.addNodeName("allMasks");
+            if(this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getMaskList() != null){
+                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getMaskList().stream().toArray(String[]::new));
+            }else if(this.readerExposedParams != null && this.readerExposedParams.getMaskNames() != null){
+                productSubsetDef.addNodeNames(this.readerExposedParams.getMaskNames().stream().toArray(String[]::new));
+            }
         }
         if (!copyMetadata.isSelected()) {
             productSubsetDef.setIgnoreMetadata(true);
         }
-        if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null /*&&
-                !paramX1.getValueAsText().equals("0") && !paramY1.getValueAsText().equals("0") &&
-                !paramWidth.getValueAsText().equals(String.valueOf(productWidth)) &&
-                !paramHeight.getValueAsText().equals(String.valueOf(productHeight))*/) {
+        if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
 
             productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
                                                      Integer.parseInt(paramY1.getValueAsText()),
                                                      Integer.parseInt(paramWidth.getValueAsText()),
                                                      Integer.parseInt(paramHeight.getValueAsText())));
-//        }else{
-//            productSubsetDef.setRegion(null);
         }
     }
 
