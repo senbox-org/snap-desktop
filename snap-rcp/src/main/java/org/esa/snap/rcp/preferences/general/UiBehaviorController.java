@@ -87,6 +87,9 @@ public final class UiBehaviorController extends DefaultConfigController {
                         if (childrenName.endsWith(Dialogs.PREF_KEY_SUFFIX_DONTSHOW)) {
                             preferences.putBoolean(childrenName, false);
                         }
+                        if (childrenName.endsWith(Dialogs.PREF_KEY_SUFFIX_DECISION)) {
+                            preferences.remove(childrenName);
+                        }
                     }
                     showSuppressedProperty.setValue(Boolean.FALSE);
                 } catch (BackingStoreException | ValidationException e) {
