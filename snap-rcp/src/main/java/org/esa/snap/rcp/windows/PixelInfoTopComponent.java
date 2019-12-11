@@ -15,6 +15,7 @@ import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.api.annotations.common.NonNull;
@@ -40,9 +41,9 @@ import java.beans.PropertyChangeListener;
         iconBase = "org/esa/snap/rcp/icons/PixelInfo.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer",
-                           openAtStartup = true,
-                           position = 20
+@TopComponent.Registration(mode = PackageDefaults.PIXEL_INFO_MODE,
+                           openAtStartup = PackageDefaults.PIXEL_INFO_OPEN,
+                           position = PackageDefaults.PIXEL_INFO_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.PixelInfoTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
@@ -51,7 +52,7 @@ import java.beans.PropertyChangeListener;
         preferredID = "PixelInfoTopComponent"
 )
 @NbBundle.Messages({
-                           "CTL_PixelInfoTopComponentName=Pixel Info",
+                           "CTL_PixelInfoTopComponentName=" + PackageDefaults.PIXEL_INFO_NAME,
                            "CTL_PixelInfoTopComponentDescription=Displays information about current pixel",
                    })
 public final class PixelInfoTopComponent extends ToolTopComponent {

@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.colormanip;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -30,9 +31,9 @@ import java.awt.BorderLayout;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = true,
-        position = 20
+        mode = PackageDefaults.COLOR_MANIPULATION_MODE,
+        openAtStartup = PackageDefaults.COLOR_MANIPULATION_OPEN,
+        position = PackageDefaults.COLOR_MANIPULATION_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.ColorManipulationTopComponent")
 @ActionReferences({
@@ -44,7 +45,7 @@ import java.awt.BorderLayout;
         preferredID = "ColorManipulationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ColorManipulationTopComponent_Name=Colour Manipulation",
+        "CTL_ColorManipulationTopComponent_Name=" + PackageDefaults.COLOR_MANIPULATION_NAME,
         "CTL_ColorManipulationTopComponent_ComponentName=Colour_Manipulation"
 })
 /**
