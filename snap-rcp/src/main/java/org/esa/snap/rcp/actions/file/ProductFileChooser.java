@@ -271,8 +271,8 @@ public class ProductFileChooser extends SnapFileChooser {
         ProductReaderExposedParams readerExposedParams = null;
         MetadataInspector.Metadata readerInspectorExposeParameters = null;
         if (plugin != null) {
-            readerExposedParams = plugin.createReaderInstance().getExposedParams();
-            MetadataInspector metadatainsp = plugin.createReaderInstance().getMetadataInspector();
+            readerExposedParams = plugin.getExposedParams();
+            MetadataInspector metadatainsp = plugin.getMetadataInspector();
             if (metadatainsp != null) {
                 Path input = convertInputToPath(inputFile);
                 try {
