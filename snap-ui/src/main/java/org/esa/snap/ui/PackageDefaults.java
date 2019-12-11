@@ -1,5 +1,7 @@
 package org.esa.snap.ui;
 
+import java.awt.*;
+
 /**
  * Defaults constants which may vary between packages: SeaDAS and SNAP.
  *
@@ -12,6 +14,10 @@ package org.esa.snap.ui;
 public class PackageDefaults extends PackageDefaultsSnap {
 
     public static final String COLOR_SPELLING = "Color";
+
+    public static final Color IMAGE_BACKGROUND_COLOR = Color.WHITE;
+    public static final Color NO_DATA_LAYER_COLOR = Color.LIGHT_GRAY;
+
 
     public static final String COLOR_MANIPULATION_NAME = "Color Manager";
     public static final String COLOR_MANIPULATION_MODE = "properties";
@@ -41,7 +47,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String WORLD_MAP_NAME = "World Map";
     public static final String WORLD_MAP_MODE = "navigator";
     public static final int WORLD_MAP_POSITION = 40;
-    public static final boolean WORLD_MAP_OPEN = false;
+    public static final boolean WORLD_MAP_OPEN = true;
 
     public static final String WORLD_VIEW_NAME = "World View";
     public static final String WORLD_VIEW_MODE = "navigator";
@@ -57,4 +63,14 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String NAVIGATION_MODE = "navigator";
     public static final int NAVIGATION_POSITION = 10;
     public static final boolean NAVIGATION_OPEN = true;
+
+    public static final String PRODUCT_LIBRARY_NAME = "Product Library";
+    public static final String PRODUCT_LIBRARY_MODE = "rightSlidingSide";
+    public static final int PRODUCT_LIBRARY_POSITION = 0;
+    public static final boolean PRODUCT_LIBRARY_OPEN = false;
+
+    public static final String LAYER_EDITOR_NAME = "Layer Editor";
+    public static final String LAYER_EDITOR_MODE = "explorer";
+    public static final int LAYER_EDITOR_POSITION = 30;
+    public static final boolean LAYER_EDITOR_OPEN = true;
 }

@@ -1,8 +1,14 @@
 package org.esa.snap.ui;
 
+import java.awt.*;
+
 public class PackageDefaultsSnap {
 
     public static final String COLOR_SPELLING = "Colour";
+
+    public static final Color IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    public static final Color NO_DATA_LAYER_COLOR = Color.ORANGE;
+
 
     // Top Components
     public static final String COLOR_MANIPULATION_NAME = "Colour Manipulation";
@@ -49,6 +55,16 @@ public class PackageDefaultsSnap {
     public static final String NAVIGATION_MODE = "navigator";
     public static final int NAVIGATION_POSITION = 10;
     public static final boolean NAVIGATION_OPEN = true;
+
+    public static final String PRODUCT_LIBRARY_NAME = "Product Library";
+    public static final String PRODUCT_LIBRARY_MODE = "rightSlidingSide";
+    public static final int PRODUCT_LIBRARY_POSITION = 0;
+    public static final boolean PRODUCT_LIBRARY_OPEN = true;
+
+    public static final String LAYER_EDITOR_NAME = "Layer Editor";
+    public static final String LAYER_EDITOR_MODE = "navigator";
+    public static final int LAYER_EDITOR_POSITION = 1;
+    public static final boolean LAYER_EDITOR_OPEN = false;
 
 
 }
