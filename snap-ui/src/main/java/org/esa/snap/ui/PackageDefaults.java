@@ -16,7 +16,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String COLOR_SPELLING = "Color";
 
     public static final Color IMAGE_BACKGROUND_COLOR = Color.WHITE;
-    public static final Color NO_DATA_LAYER_COLOR = Color.LIGHT_GRAY;
+    public static final Color NO_DATA_LAYER_COLOR = new Color(128,128,128);
 
 
     public static final String COLOR_MANIPULATION_NAME = "Color Manager";
