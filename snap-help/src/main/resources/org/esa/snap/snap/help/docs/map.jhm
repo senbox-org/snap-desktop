@@ -94,6 +94,7 @@
     <mapID target="showPinManagerWnd" url="desktop/PinManagement.html"/>
     <mapID target="showMaskManagerWnd" url="desktop/MaskManagement.html"/>
     <mapID target="noDataOverlay" url="desktop/NoDataOverlay.html"/>
+    <mapID target="graticuleOverlay" url="desktop/ShowGraticuleOverlay.html"/>
     <mapID target="noDataValue" url="desktop/NoDataValue.html"/>
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>
     <mapID target="geoCodingInfoDialog" url="desktop/GeoCodingInfo.html"/>
