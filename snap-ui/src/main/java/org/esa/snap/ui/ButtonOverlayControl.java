@@ -68,7 +68,7 @@ public class ButtonOverlayControl extends JComponent {
     public ButtonOverlayControl(int numCols, Action... actions) {
         this.numCols = numCols;
         buttonDimension = new Dimension(24, 24);
-        buttonDefList = new ArrayList<ButtonDef>();
+        buttonDefList = new ArrayList<>();
         for (Action action : actions) {
             String toolTipText = (String) action.getValue(TOOL_TIP_TEXT_KEY);
             buttonDefList.add(new ButtonDef(action, buttonDimension, numCols, toolTipText));
