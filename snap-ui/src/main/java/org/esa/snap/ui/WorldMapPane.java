@@ -441,7 +441,7 @@ public class WorldMapPane extends JPanel {
 
         private ZoomAllAction() {
             putValue(LARGE_ICON_KEY, TangoIcons.actions_view_fullscreen(TangoIcons.Res.R22));
-            putValue(TOOL_TIP_TEXT_KEY,"Show all world map");
+            putValue(TOOL_TIP_TEXT_KEY,"Show entire world map");
         }
 
         @Override
