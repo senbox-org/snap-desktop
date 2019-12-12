@@ -22,7 +22,7 @@ import org.openide.util.NbBundle;
 @ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 30),
-        @ActionReference(path = "Toolbars/Overlay", position = 30)
+        @ActionReference(path = "Toolbars/Miscellaneous", position = 30)
 })
 @NbBundle.Messages({
         "CTL_OverlayPinLayerActionName=Pin Overlay",

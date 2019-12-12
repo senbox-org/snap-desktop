@@ -35,8 +35,8 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 190
+        path = "Toolbars/Geometry",
+        position = 20
 )
 @Messages({
                   "CTL_DrawEllipseToolActionText=Draw Ellipse",
@@ -53,7 +53,7 @@ public class DrawEllipseToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawEllipseToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawEllipseToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawEllipseTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/DrawEllipseTool24.png", false));
         Interactor interactor = new InsertEllipseFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

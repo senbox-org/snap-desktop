@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/DensityPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/seadas/ScatterPlot24.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -36,7 +36,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 20),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 20)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DensityPlotTopComponent_Name",

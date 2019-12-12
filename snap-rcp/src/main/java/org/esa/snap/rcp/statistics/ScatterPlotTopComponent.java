@@ -28,7 +28,7 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ScatterPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/seadas/CorrelativePlot24.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -39,7 +39,7 @@ import javax.swing.Icon;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 10),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 30)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ScatterPlotTopComponent_Name",
@@ -59,7 +59,7 @@ public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        final Icon largeIcon = UIUtils.loadImageIcon("icons/ScatterPlot24.gif");
+        final Icon largeIcon = UIUtils.loadImageIcon("icons/seadas/CorrelativePlot24.png");
         final String chartTitle = ScatterPlotPanel.CHART_TITLE;
         final ScatterPlotPanel scatterPlotPanel = new ScatterPlotPanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId());
         final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId(), chartTitle, largeIcon);

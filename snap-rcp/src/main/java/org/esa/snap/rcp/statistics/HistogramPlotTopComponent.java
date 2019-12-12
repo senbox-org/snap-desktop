@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "HistogramPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Histogram.gif",
+        iconBase = "org/esa/snap/rcp/icons/seadas/Histogram24.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -36,7 +36,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.HistogramPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 50),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 10)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_HistogramPlotTopComponent_Name",

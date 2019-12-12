@@ -65,7 +65,7 @@ import java.text.MessageFormat;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
-        @ActionReference(path = "Toolbars/Tools", position = 191)
+        @ActionReference(path = "Toolbars/Geometry", position = 0)
 })
 @Messages({
         "CTL_CreateVectorDataNodeActionText=New Vector Data Container",
@@ -86,8 +86,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
         this.lkp = lkp;
         result = this.lkp.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode16.gif", false));
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
+        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/NewVectorContainer.png", false));
+        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/NewVectorContainer.png", false));
         setEnabled(false);
     }
 

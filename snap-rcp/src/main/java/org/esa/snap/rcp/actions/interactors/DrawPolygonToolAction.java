@@ -35,8 +35,8 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 180
+        path = "Toolbars/Geometry",
+        position = 30
 )
 @Messages({
                   "CTL_DrawPolygonToolActionText=Draw Polygon",
@@ -52,7 +52,7 @@ public class DrawPolygonToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawPolygonToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolygonToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawPolygonTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/DrawPolygonTool24.png", false));
         Interactor interactor = new InsertPolygonFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

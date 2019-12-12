@@ -11,7 +11,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "PinManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PinManager.gif",
+        iconBase = "org/esa/snap/rcp/icons/seadas/PinManager.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -22,7 +22,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.pin.PinManagerTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/View/Tool Windows"),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Toolbars/Pins", position = 0)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_PinManagerTopComponent_Name",

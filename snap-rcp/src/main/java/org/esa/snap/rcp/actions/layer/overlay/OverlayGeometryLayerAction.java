@@ -28,7 +28,7 @@ import java.util.List;
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 10),
-        @ActionReference(path = "Toolbars/Overlay", position = 10),
+        @ActionReference(path = "Toolbars/Miscellaneous", position = 10),
 })
 @NbBundle.Messages({
         "CTL_OverlayGeometryLayerActionName=Geometry Overlay",
