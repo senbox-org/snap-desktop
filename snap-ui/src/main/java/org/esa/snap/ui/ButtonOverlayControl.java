@@ -68,9 +68,10 @@ public class ButtonOverlayControl extends JComponent {
     public ButtonOverlayControl(int numCols, Action... actions) {
         this.numCols = numCols;
         buttonDimension = new Dimension(24, 24);
-        buttonDefList = new ArrayList<ButtonDef>();
+        buttonDefList = new ArrayList<>();
         for (Action action : actions) {
-            buttonDefList.add(new ButtonDef(action, buttonDimension, numCols));
+            String toolTipText = (String) action.getValue(TOOL_TIP_TEXT_KEY);
+            buttonDefList.add(new ButtonDef(action, buttonDimension, numCols, toolTipText));
         }
 
         Dimension preferredSize = computePreferredSize();
@@ -250,6 +251,8 @@ public class ButtonOverlayControl extends JComponent {
             for (ButtonDef buttonDef : buttonDefList) {
                 if (buttonDef.getShape().contains(e.getX(), e.getY())) {
                     buttonDef.setHighlighted(true);
+                    String toolTipText = buttonDef.getToolTipText();
+                    setToolTipText(toolTipText);
                 } else {
                     buttonDef.setHighlighted(false);
                 }
@@ -265,10 +268,12 @@ public class ButtonOverlayControl extends JComponent {
         private final Image image;
         private RoundRectangle2D.Double shape;
         private boolean highlighted;
+        private String toolTipText;
 
-        private ButtonDef(Action action, Dimension buttonDimension, int numCols) {
+        private ButtonDef(Action action, Dimension buttonDimension, int numCols, String toolTipText) {
             this.action = action;
             this.numCols = numCols;
+            this.toolTipText = toolTipText;
             Image rawImage = iconToImage((Icon) this.action.getValue(Action.LARGE_ICON_KEY));
             image = rawImage.getScaledInstance(buttonDimension.width,
                                                buttonDimension.height,
@@ -323,6 +328,8 @@ public class ButtonOverlayControl extends JComponent {
                 return image;
             }
         }
+
+        private String getToolTipText(){ return this.toolTipText; }
 
         public void setHighlighted(boolean highlighted) {
             this.highlighted = highlighted;
