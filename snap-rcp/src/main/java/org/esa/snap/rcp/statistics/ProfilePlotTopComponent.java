@@ -39,7 +39,7 @@ import javax.swing.Icon;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ProfilePlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 30),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 40)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProfilePlotTopComponent_Name",

@@ -35,8 +35,8 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 150
+        path = "Toolbars/Geometry",
+        position = 40
 )
 @Messages({
                   "CTL_DrawLineToolActionText=Draw Line",
@@ -52,7 +52,7 @@ public class DrawLineToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawLineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawLineToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawLineTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/DrawLineTool24.png", false));
         Interactor interactor = new InsertLineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

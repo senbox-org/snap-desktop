@@ -34,7 +34,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGraticuleLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/GraticuleOverlay24.png", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayGraticuleLayerActionToolTip());
     }
 

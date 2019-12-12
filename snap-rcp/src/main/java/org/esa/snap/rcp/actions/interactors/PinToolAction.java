@@ -34,8 +34,8 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 130
+        path = "Toolbars/Pins",
+        position = 10
 )
 @Messages({
                   "CTL_PinToolActionText=Pin Tool",
@@ -52,7 +52,7 @@ public class PinToolAction extends ToolAction {
         super(lookup, new InsertPinInteractor());
         putValue(NAME, Bundle.CTL_PinToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PinToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PinTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/PinPlacer24.png", false));
     }
 
     @Override

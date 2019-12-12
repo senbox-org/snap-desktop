@@ -43,7 +43,7 @@ import java.awt.BorderLayout;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.MetadataPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 70),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Miscellaneous")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MetadataPlotTopComponent_Name",

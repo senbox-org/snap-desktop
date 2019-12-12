@@ -26,7 +26,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.RangeFinderAction" )
 @ActionRegistration(displayName = "#CTL_RangeFinderActionText", lazy = false )
-@ActionReference(path = "Toolbars/Tools", position = 200 )
+@ActionReference(path = "Toolbars/Miscellaneous", position = 200 )
 @Messages({
         "CTL_RangeFinderActionText=Range Finder",
         "CTL_RangeFinderActionDescription=Determines the distance between two points"

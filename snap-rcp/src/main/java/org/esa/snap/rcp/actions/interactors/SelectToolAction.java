@@ -35,7 +35,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/Interactors",
         position = 100
 )
 @Messages({

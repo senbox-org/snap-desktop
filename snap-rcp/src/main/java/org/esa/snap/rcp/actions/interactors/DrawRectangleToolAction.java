@@ -35,8 +35,8 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 170
+        path = "Toolbars/Geometry",
+        position = 10
 )
 @Messages({
                   "CTL_DrawRectangleToolActionText=Draw Rectangle",
@@ -52,7 +52,7 @@ public class DrawRectangleToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawRectangleToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawRectangleToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawRectangleTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/DrawRectangleTool24.png", false));
         Interactor interactor = new InsertRectangleFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @ActionRegistration(
         displayName = "#CTL_OpenProductActionName",
         menuText = "#CTL_OpenProductActionMenuText",
-        iconBase = "org/esa/snap/rcp/icons/Open.gif"
+        iconBase = "org/esa/snap/rcp/icons/seadas/Open24.png"
 )
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 5),

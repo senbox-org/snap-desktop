@@ -36,7 +36,7 @@ import javax.swing.*;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/Ground Control Points",
         position = 140
 )
 @Messages({

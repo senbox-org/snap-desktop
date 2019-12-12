@@ -32,7 +32,7 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayNoDataLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/NoDataOverlay24.png", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayNoDataLayerActionToolTip());
     }
 
