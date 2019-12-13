@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,7 +26,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/seadas/ScatterPlot24.png",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.DENSITY_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -36,14 +37,16 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 20),
-        @ActionReference(path = "Toolbars/Analysis", position = 20)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.DENSITY_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.DENSITY_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DensityPlotTopComponent_Name",
         preferredID = "DensityPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_DensityPlotTopComponent_Name=Scatter Plot",
+        "CTL_DensityPlotTopComponent_Name=" + PackageDefaults.DENSITY_PLOT_NAME,
         "CTL_DensityPlotTopComponent_HelpId=densityPlotDialog"
 })
 /**

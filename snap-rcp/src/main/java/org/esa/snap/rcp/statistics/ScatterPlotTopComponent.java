@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -28,7 +29,7 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/seadas/CorrelativePlot24.png",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SCATTER_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -39,14 +40,16 @@ import javax.swing.Icon;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 10),
-        @ActionReference(path = "Toolbars/Analysis", position = 30)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.SCATTER_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.SCATTER_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ScatterPlotTopComponent_Name",
         preferredID = "ScatterPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ScatterPlotTopComponent_Name=Correlative Plot",
+        "CTL_ScatterPlotTopComponent_Name=" + PackageDefaults.SCATTER_PLOT_NAME,
         "CTL_ScatterPlotTopComponent_HelpId=correlativePlotDialog"
 })
 /**

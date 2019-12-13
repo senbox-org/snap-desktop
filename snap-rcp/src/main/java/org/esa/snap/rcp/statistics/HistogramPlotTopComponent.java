@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,7 +26,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "HistogramPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/seadas/Histogram24.png",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.HISTOGRAM_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -36,14 +37,16 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.HistogramPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 50),
-        @ActionReference(path = "Toolbars/Analysis", position = 10)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.HISTOGRAM_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.HISTOGRAM_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_HistogramPlotTopComponent_Name",
         preferredID = "HistogramPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_HistogramPlotTopComponent_Name=Histogram",
+        "CTL_HistogramPlotTopComponent_Name=" + PackageDefaults.HISTOGRAM_PLOT_NAME,
         "CTL_HistogramPlotTopComponent_HelpId=histogramDialog"
 })
 /**

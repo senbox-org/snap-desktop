@@ -32,6 +32,7 @@ import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
 import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -65,10 +66,12 @@ import java.text.MessageFormat;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
-        @ActionReference(path = "Toolbars/Geometry", position = 0)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.VECTOR_DATA_NODE_TOOLBAR_NAME,
+                position = PackageDefaults.VECTOR_DATA_NODE_TOOLBAR_POSITION)
 })
 @Messages({
-        "CTL_CreateVectorDataNodeActionText=New Vector Data Container",
+        "CTL_CreateVectorDataNodeActionText=" + PackageDefaults.VECTOR_DATA_NODE_NAME,
         "CTL_CreateVectorDataNodeActionPopupText=New Vector Data Container"
 })
 public class CreateVectorDataNodeAction extends AbstractAction implements ContextAwareAction, LookupListener {
@@ -86,8 +89,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
         this.lkp = lkp;
         result = this.lkp.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/NewVectorContainer.png", false));
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/NewVectorContainer.png", false));
+        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.VECTOR_DATA_NODE_ICON, false));
+        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.VECTOR_DATA_NODE_ICON, false));
         setEnabled(false);
     }
 

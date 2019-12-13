@@ -26,6 +26,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.interactors.InsertFigureInteractorInterceptor;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayer;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -76,7 +77,7 @@ import java.awt.event.ActionEvent;
 })
 
 @NbBundle.Messages({
-        "CTL_InsertWktGeometryAction_DialogTitle=Geometry from WKT",
+        "CTL_InsertWktGeometryAction_DialogTitle=" + PackageDefaults.INSERT_WKT_GEOMETRY_NAME,
         "CTL_InsertWktGeometryAction_MenuText=Geometry from WKT",
         "CTL_InsertWktGeometryAction_ShortDescription=Creates a geomtry from well-known-text (WKT) representation."
 })

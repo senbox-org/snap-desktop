@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -9,7 +10,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "StatisticsTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Statistics.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.STATISTICS_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -20,14 +21,16 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.StatisticsTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 60),
-        @ActionReference(path = "Toolbars/Analysis", position = 0)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.STATISTICS_TOOLBAR_NAME,
+                position = PackageDefaults.STATISTICS_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_StatisticsTopComponent_Name",
         preferredID = "StatisticsTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_StatisticsTopComponent_Name=Statistics",
+        "CTL_StatisticsTopComponent_Name=" + PackageDefaults.STATISTICS_NAME,
         "CTL_StatisticsTopComponent_HelpId=statisticsDialog"
 })
 /**

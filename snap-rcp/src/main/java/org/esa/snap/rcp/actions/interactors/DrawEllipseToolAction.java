@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertEllipseFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,11 +36,11 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Geometry",
-        position = 20
+        path = "Toolbars/" + PackageDefaults.DRAW_ELLIPSE_TOOLBAR_NAME,
+        position = PackageDefaults.DRAW_ELLIPSE_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_DrawEllipseToolActionText=Draw Ellipse",
+                  "CTL_DrawEllipseToolActionText=" + PackageDefaults.DRAW_ELLIPSE_NAME,
                   "CTL_DrawEllipseToolActionDescription=Ellipse drawing tool"
           })
 public class DrawEllipseToolAction extends ToolAction {
@@ -53,7 +54,7 @@ public class DrawEllipseToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawEllipseToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawEllipseToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/DrawEllipseTool24.png", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_ELLIPSE_ICON, false));
         Interactor interactor = new InsertEllipseFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
