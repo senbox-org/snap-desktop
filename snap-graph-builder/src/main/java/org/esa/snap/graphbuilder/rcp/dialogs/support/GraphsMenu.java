@@ -89,7 +89,6 @@ public class GraphsMenu {
             } else if (name.toLowerCase().endsWith(".xml")) {
                 final JMenuItem item = new JMenuItem(name.substring(0, name.indexOf(".xml")));
                 item.addActionListener(new ActionListener() {
-
                     public void actionPerformed(final ActionEvent e) {
                         graphDialog.loadGraph(file);
                     }

@@ -85,6 +85,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         menuThread.execute();
     }
 
+    /**
+     * Class charged of the creation of the Add Operator Menu in the graph builder.
+     *
+     * TODO: Ensure coerence between main window and graph builder.
+     */
     private static class MenuThread extends SwingWorker<Boolean, Object> {
         private final JMenu addMenu;
         private final AddMenuListener addListener;
