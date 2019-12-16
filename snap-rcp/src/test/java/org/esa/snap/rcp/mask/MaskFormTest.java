@@ -16,25 +16,28 @@
 
 package org.esa.snap.rcp.mask;
 
-import junit.framework.TestCase;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
-import org.junit.Ignore;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.swing.table.TableModel;
 import java.awt.Color;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 
-@Ignore
-public class MaskFormTest extends TestCase {
+public class MaskFormTest {
     private Product product;
     private MaskManagerForm maskManagerForm;
     private MaskViewerForm maskViewerForm;
 
-    @Override
+    @Before
     public void setUp() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
         product = createTestProduct();
 
         maskManagerForm = new MaskManagerForm(null, null);
@@ -44,36 +47,38 @@ public class MaskFormTest extends TestCase {
         maskViewerForm.reconfigureMaskTable(product, null);
     }
 
+    @Test
     public void testMaskManagerForm() {
-        assertEquals(10, product.getMaskGroup().getNodeCount());
+        Assert.assertEquals(10, product.getMaskGroup().getNodeCount());
 
-        assertSame(product, maskManagerForm.getProduct());
-        assertNotNull(maskManagerForm.getHelpButton());
-        assertEquals("helpButton", maskManagerForm.getHelpButton().getName());
-        assertNotNull(maskManagerForm.createContentPanel());
-        assertEquals(10, maskManagerForm.getRowCount());
+        Assert.assertSame(product, maskManagerForm.getProduct());
+        Assert.assertNotNull(maskManagerForm.getHelpButton());
+        Assert.assertEquals("helpButton", maskManagerForm.getHelpButton().getName());
+        Assert.assertNotNull(maskManagerForm.createContentPanel());
+        Assert.assertEquals(10, maskManagerForm.getRowCount());
 
         final TableModel tableModel = maskManagerForm.getMaskTable().getModel();
 
-        assertEquals(10, maskManagerForm.getRowCount());
+        Assert.assertEquals(10, maskManagerForm.getRowCount());
 
-        assertEquals("M_1", tableModel.getValueAt(0, 0));
-        assertEquals("M_2", tableModel.getValueAt(1, 0));
-        assertEquals("M_3", tableModel.getValueAt(2, 0));
-        assertEquals("M_4", tableModel.getValueAt(3, 0));
-        assertEquals("M_5", tableModel.getValueAt(4, 0));
-        assertEquals("M_6", tableModel.getValueAt(5, 0));
-        assertEquals("M_7", tableModel.getValueAt(6, 0));
-        assertEquals("M_8", tableModel.getValueAt(7, 0));
-        assertEquals("M_9", tableModel.getValueAt(8, 0));
-        assertEquals("M_10", tableModel.getValueAt(9, 0));
+        Assert.assertEquals("M_1", tableModel.getValueAt(0, 0));
+        Assert.assertEquals("M_2", tableModel.getValueAt(1, 0));
+        Assert.assertEquals("M_3", tableModel.getValueAt(2, 0));
+        Assert.assertEquals("M_4", tableModel.getValueAt(3, 0));
+        Assert.assertEquals("M_5", tableModel.getValueAt(4, 0));
+        Assert.assertEquals("M_6", tableModel.getValueAt(5, 0));
+        Assert.assertEquals("M_7", tableModel.getValueAt(6, 0));
+        Assert.assertEquals("M_8", tableModel.getValueAt(7, 0));
+        Assert.assertEquals("M_9", tableModel.getValueAt(8, 0));
+        Assert.assertEquals("M_10", tableModel.getValueAt(9, 0));
     }
 
+    @Test
     public void testMaskViewerForm() {
-        assertSame(product, maskViewerForm.getProduct());
-        assertNull(maskViewerForm.getHelpButton());
-        assertNotNull(maskViewerForm.createContentPanel());
-        assertEquals(10, maskViewerForm.getRowCount());
+        Assert.assertSame(product, maskViewerForm.getProduct());
+        Assert.assertNull(maskViewerForm.getHelpButton());
+        Assert.assertNotNull(maskViewerForm.createContentPanel());
+        Assert.assertEquals(10, maskViewerForm.getRowCount());
     }
 
     static Product createTestProduct() {

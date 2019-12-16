@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.preferences;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.util.SystemUtils;
@@ -31,12 +32,19 @@ import javax.swing.event.ListDataListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 
 /**
  * Contains some static helper functions.
  *
  * @author thomas
+ * @author Daniel Knowles
  */
+// SEP2018 - Daniel Knowles - Fixes bug where colorComboBox was not listening to properties change event when
+// DefaultConfigController was loading the user saved preferences
+
 public class PreferenceUtils {
 
     /**
@@ -113,6 +121,19 @@ public class PreferenceUtils {
             }
         });
         colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
+
+        // Modification by Daniel Knowles SEP2018
+        // Add PropertyChangeListener to the passed in property which when triggered sets the colorComboBox selected color.
+        // This fixes bug where colorComboBox was not listening to properties change event when DefaultConfigController was
+        // loading the user saved preferences
+
+        property.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                colorComboBox.setSelectedColor(property.getValue());
+            }
+        });
+
         return colorComboBox;
     }
 }

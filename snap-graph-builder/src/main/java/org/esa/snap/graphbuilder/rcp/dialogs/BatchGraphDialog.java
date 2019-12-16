@@ -33,6 +33,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.remote.execution.operator.RemoteExecutionDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
@@ -51,6 +52,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -93,7 +95,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
-        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, helpID);
+        super(theAppContext.getApplicationWindow(), title, ID_YES | ID_APPLY_CLOSE_HELP, getRunRemoteIfWindows(), helpID);
         this.appContext = theAppContext;
         this.baseTitle = title;
         this.closeOnDone = closeOnDone;
@@ -107,6 +109,41 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
 
         super.getJDialog().setMinimumSize(new Dimension(400, 300));
+    }
+
+    @Override
+    protected void onOther() {
+        final List<File> sourceProductFiles = getSourceProductsFilePath();
+        if (sourceProductFiles.size() == 0) {
+            showErrorDialog("Please add at least one source product.");
+        } else if (this.graphFile == null) {
+            showErrorDialog("Please add the graph file.");
+        } else {
+            Window parentWindow = getJDialog().getOwner();
+            close();
+            RemoteExecutionDialog dialog = new RemoteExecutionDialog(this.appContext, parentWindow) {
+                @Override
+                protected void onAboutToShow() {
+                    super.onAboutToShow();
+
+                    setData(sourceProductFiles, graphFile, productSetPanel.getTargetFormat());
+                }
+            };
+            dialog.show();
+        }
+    }
+
+    private List<File> getSourceProductsFilePath() {
+        File[] sourceFiles = this.productSetPanel.getFileList();
+        List<File> sourceProductFiles = new ArrayList<File>();
+        if (sourceFiles != null && sourceFiles.length > 0) {
+            for (int i=0; i<sourceFiles.length; i++) {
+                if (!sourceFiles[i].getPath().equals("")) {
+                    sourceProductFiles.add(sourceFiles[i]);
+                }
+            }
+        }
+        return sourceProductFiles;
     }
 
     private JPanel createUI() {
@@ -181,6 +218,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         productSetPanel.onApply();
 
         skipExistingTargetFiles = productSetPanel.isSkippingExistingTargetFiles();
+        replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
 
         try {
             doProcessing();
@@ -300,8 +338,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     private void initGraphs() {
         try {
-            replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
-
             deleteGraphs();
             createGraphs();
         } catch (Exception e) {
@@ -530,6 +566,13 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             }
             graphEx.setOperatorParam(productSetNode.getID(), "fileList", str.toString());
         }
+    }
+
+    private static String[] getRunRemoteIfWindows() {
+        if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang.SystemUtils.IS_OS_LINUX) {
+            return new String[] {"Run remote"};
+        }
+        return null;
     }
 
     protected void cloneGraphs() throws Exception {

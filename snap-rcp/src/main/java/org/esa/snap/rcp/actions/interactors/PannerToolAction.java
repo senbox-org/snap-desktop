@@ -50,6 +50,7 @@ public class PannerToolAction extends ToolAction {
     public PannerToolAction(Lookup lookup) {
         super(lookup, new PanInteractor());
         putValue(NAME, Bundle.CTL_PannerToolActionText());
+        putValue(SELECTED_KEY, true);   //Set Image Panning Tool as default
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PannerToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PannerTool24.gif", false));
     }

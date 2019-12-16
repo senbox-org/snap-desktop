@@ -5,14 +5,14 @@ import org.junit.Test;
 import java.awt.Color;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Norman on 26.03.2015.
  */
 public class ColorCodesTest {
     @Test
-    public void testNameListOrder() throws Exception {
+    public void testNameListOrder() {
 
         List<String> names = ColorCodes.getNames();
         assertEquals(340, names.size());
@@ -27,7 +27,7 @@ public class ColorCodesTest {
     }
 
     @Test
-    public void testColorMap() throws Exception {
+    public void testColorMap() {
 
         assertEquals(new Color(0, 0, 0), ColorCodes.getColor("Black"));
         assertEquals(new Color(12, 9, 10), ColorCodes.getColor("Night"));

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-application</artifactId>
@@ -159,6 +159,16 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-virtual-file-system-preferences-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>snap-worldwind</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -175,7 +185,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>snap-cloud-exploitation-platform-ui</artifactId>
+            <artifactId>snap-remote-execution-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -224,7 +234,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.2.5,3.6.0]</version>
+                                    <version>[3.2.5,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>1.8</version>

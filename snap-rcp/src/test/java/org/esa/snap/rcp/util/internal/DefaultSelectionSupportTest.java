@@ -10,13 +10,13 @@ import org.openide.util.Utilities;
 
 import java.awt.GraphicsEnvironment;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DefaultSelectionSupportTest {
 
     @Test
-    public void testSingleSelection() throws Exception {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+    public void testSingleSelection() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
         ContextGlobalExtender globalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         DefaultSelectionSupport<ProductSceneView> selectionChangeSupport = new DefaultSelectionSupport<>(ProductSceneView.class);
         MySelectionChangeHandler changeListener = new MySelectionChangeHandler();
@@ -30,8 +30,8 @@ public class DefaultSelectionSupportTest {
     }
 
     @Test
-    public void testMultiSelection() throws Exception {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+    public void testMultiSelection() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
         ContextGlobalExtender globalExtender = Utilities.actionsGlobalContext().lookup(ContextGlobalExtender.class);
         DefaultSelectionSupport<ProductSceneView> selectionChangeSupport = new DefaultSelectionSupport<>(ProductSceneView.class);
         MySelectionChangeHandler changeListener = new MySelectionChangeHandler();

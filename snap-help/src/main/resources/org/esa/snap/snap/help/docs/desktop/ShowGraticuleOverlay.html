@@ -1,23 +1,11 @@
-<!--
-  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option)
-  ~ any later version.
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  ~ more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License along
-  ~ with this program; if not, see http://www.gnu.org/licenses/
-  -->
+
+<!--Help page for the graticule overlay tool.-->
+<!--@author Daniel Knowles-->
+
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Graticule Overlay</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Sentinel Toolbox Help - Graticule Overlay (Map Gridlines)</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -25,25 +13,183 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Graticule Overlay</td>
-        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
+            Graticule Overlay (Map Gridlines)</td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
     </tr>
 </table>
 
-<p>
-    If you select 'Show Graticule Overlay' from the <a href="ViewMenu.html#showgraticule">
-    View Menu</a>, graticule lines will be drawn over the band
-    <a href="ProductSceneView.html">image view</a>, similar to
-    the following figure:
-</p>
+<h4><img src="images/icons/GraticuleOverlay24.gif"> &nbsp;&nbsp;
+    Graticule Overlay (Map Gridlines)</h4>
 
-<p align="center"><img src="images/GraticuleOverlay.png"></p>
 
 <p>
-    The steps for both latitude and longitude (in &deg;) can be defined in the
-    <a href="PreferencesDialog.html">Preferences</a> dialog.
+    The Graticule Overlay tool creates a map gridlines layer over the selected band's <a href="ProductSceneView.html">Image View</a>.
+    This layer can include gridlines, coordinate labels, a border.
 </p>
 
+<p align="center">
+    <img src="images/GraticuleOverlay.png"><br><br>
+    <i>Image 1: Map gridlines (graticules) placed over a mapped (reprojected) image<br>
+        derived from a MODIS Aqua level-2 scene</i>
+</p>
+
+<h3>Location</h3>
+<p>
+    <b>Layer Toggle</b> - The graticule layer is toggled on and off via the graticule icon in the <i>Overlay</i> toolbar or
+    <i>Layer-&gt;Graticule Overlay</i> within the menu system.  Initially the graticule layer does not exist, but is created during the first
+    instance of the graticule layer being toggled on.  Default settings are applied when the graticule layer is created.<br><br>
+
+    <b>Layer Editor</b> - Subsequent to the creation of the graticule layer, any of the properties such as font size, line spacing, etc., may
+    be edited by using the <i>Layer Editor</i>.  This editor is accessed by opening the <i>Layer Manager</i>, clicking on the word
+    <i>Graticule</i> (this selects the layer as the active layer), and then either clicking of the pencil icon within the
+    <i>Layer Manager</i> or selecting <i>Layer-&gt;Layer Editor</i> from within the menu system.<br><br>
+
+    <b>Preferences Editor</b> - To edit the default values of the graticule layer properties go to
+    <i>Tools-&gt;Options-&gt;Layer-&gt;Graticule Layer</i>. (see <a href="PreferencesDialog.html">Preferences Dialog</a>)
+</p>
+<br>
+
+
+
+<h3>Properties</h3>
+
+
+<p>
+    <b>Grid Spacing</b> - The latitude and longitude step sizes may be set directly where the value represents
+    degrees between the gridlines.
+    Setting this field to zero results in Auto-Sizing. The Auto-Sizing algorithm will set the gridline spacing to a reasonable
+    value such that there are about 3-5 lines. Also note that lines are placed at the nearest most sensible degree
+    value.
+</p>
+<ul>
+    <li><b>Latitude</b> - sets latitude step size</li>
+    <li><b>Longitude</b> - sets longitude step size</li>
+</ul>
+
+
+<p>
+    <b>Labels</b> - Formatting and placement of the text labels associated with the map gridlines indicating geographic position.
+</p>
+<ul>
+    <li><b>North</b> - Display north labels</li>
+    <li><b>South</b> - Display south labels</li>
+    <li><b>West</b> - Display west labels</li>
+    <li><b>East</b> - Display east labels</li>
+    <li><b>Suffix (N,S,W,E)</b> - Format label text with suffix (N,S,W,E) instead of (+/-)</li>
+    <li><b>Decimal Value</b> - Format label text with decimal value instead of degrees/minutes/seconds</li>
+    <li><b>Put on Inside</b> - Put labels inside of the data image.  In this case a backdrop is added to the labels.</li>
+    <li><b>Italic</b> - Format label text font in italic</li>
+    <li><b>Bold</b> - Format label text font in bold</li>
+    <li><b>Rotation (Latitude)</b> - Rotate latitude labels (0 degrees = perpendicular)</li>
+    <li><b>Rotation (Longitude)</b> - Rotate longitude labels (0 degrees = perpendicular)</li>
+    <li><b>Font</b> - Set the font of the labels</li>
+    <li><b>Size</b> - Set the size of the labels</li>
+    <li><b>Color</b> - Set the color of the labels</li>
+</ul>
+
+
+
+<p>
+    <b>Gridlines</b> - Formatting of the map gridlines.
+</p>
+<ul>
+    <li><b>Show</b> - Display the gridlines</li>
+    <li><b>Width</b> - Set the width of the gridlines</li>
+    <li><b>Dash Length</b> - Set dash length of gridlines or set to solid gridlines (0=SOLID)</li>
+    <li><b>Transparency</b> - Set the transparency of the gridlines</li>
+    <li><b>Color</b> - Set the color of the gridlines</li>
+</ul>
+
+
+
+<p>
+    <b>Border</b> - Formatting of the image border.
+</p>
+<ul>
+    <li><b>Show</b> - Display the border</li>
+    <li><b>Width</b> - Set the width of the border</li>
+    <li><b>Color</b> - Set the color of the border</li>
+</ul>
+
+
+<p>
+    <b>Tickmarks</b> - Formatting of the tickmarks.
+</p>
+<ul>
+    <li><b>Show</b> - Display the tickmarks</li>
+    <li><b>Put Inside</b> - Placement of the tickmarks towards the inside of the image</li>
+    <li><b>Width</b> - Set the width of the tickmarks</li>
+    <li><b>Color</b> - Set the color of the tickmarks</li>
+</ul>
+
+
+
+<p>
+    <b>Corner Labels</b> - Display the labels for the corner pixels of the image.
+</p>
+<ul>
+    <li><b>North</b> - Display the north corner label</li>
+    <li><b>South</b> - Display the south corner label</li>
+    <li><b>West</b> - Display the west corner label</li>
+    <li><b>East</b> - Display the east corner label</li>
+</ul>
+
+
+<p>
+    <b>Inside Labels Backdrop</b> - Formatting of the backdrop used when displaying labels inside of the image.
+</p>
+<ul>
+    <li><b>Transparency</b> - Set the transparency of the inside label backdrop</li>
+    <li><b>Color</b> - Set the color of the inside label backdrop</li>
+</ul>
+<br>
+
+<h3>Notes, Pitfalls and Issues</h3>
+
+<p>
+    <b>Note: Font Sizing</b> - The user font size property is in term of "approximated" points rather than pixels. This enables a
+    sensible default font size setting which will work well with files of any resolution. Internally the font sizes
+    are actually tied to the pixel sizes and there is a conversion of points to pixels being made.
+</p>
+
+<p>
+    <b>Note: Small Images</b> - For extremely small files (less than about 100 pixels in one dimension)
+    you may likely see problems with the map gridlines, such as missing labels.  This is because there is not enough
+    pixels on the image to generate the font.  A workaround to this would be to reproject the low resolution image to
+    a much higher resolution image using nearest neighbor sampling.  This will effectively give the appearance and shape
+    of the original low resolution pixels while using a high resolution raster grid.
+</p>
+
+
+<p>
+    <b>Pitfall: Blurry Text Labels</b> - Scene images are exported using a raster file format (png, gif, etc.).  This
+    means that any text overlayed on the image such as the map gridlines labels and other text annotations will also be
+    rasterized.  In order to maintain the appearance of sharp text labels you may need to increase the image dimension
+    of the file to be exported.  This can be done within the <i>Export Image</i> tool.
+</p>
+
+<p>
+    <b>Pitfall: No Labels because they are Outside of View Window</b> -
+    When labels are placed outside of the image border this will also likely
+    place them outside of the view window, in which case so you will need to zoom out to see them.  When you export the
+    image using the <i>Export Image</i> tool, you will need to specify "View region" and not "Full scene" as the Image Region.
+</p>
+
+
+
+<p>
+    <b>Issue: Image Orientation</b> - The logic of the current map gridlines tool assumes that north is at the top of the image,
+    and west is to the left of the image.  For any images which do not conform to this orientation, the map gridlines
+    labels may fail to display.
+</p>
+
+<p>
+    <b>Issue: Projection</b> - Certain projections such as polar projections may fail to display map gridlines.
+</p>
+
+
+<br>
 <hr>
 </body>
 </html>

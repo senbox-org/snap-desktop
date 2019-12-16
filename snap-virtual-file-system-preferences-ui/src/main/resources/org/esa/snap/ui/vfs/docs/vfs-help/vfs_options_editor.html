@@ -1,0 +1,584 @@
+<!--
+ ~ Copyright (C) 2015 CS SI
+ ~
+ ~ This program is free software; you can redistribute it and/or modify it
+ ~ under the terms of the GNU General Public License as published by the Free
+ ~ Software Foundation; either version 3 of the License, or (at your option)
+ ~ any later version.
+ ~ This program is distributed in the hope that it will be useful, but WITHOUT
+ ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ ~ more details.
+ ~
+ ~ You should have received a copy of the GNU General Public License along
+ ~ with this program; if not, see http://www.gnu.org/licenses/
+ ~
+-->
+<html>
+<head>
+    <title>Virtual File System</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Virtual File System
+        </td>
+        <td class="header" align="right">
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border=0>
+            </a>
+        </td>
+    </tr>
+</table>
+<h1>Virtual File System (VFS)</h1>
+
+<h2>I. Introduction</h2>
+
+<p>
+    VFS (acronym for Virtual File System) is an IO component that offers a simple mechanism to access files from remote
+    site or a particular file structure in a same way as native file system from OS.
+</p>
+<p>
+    <br/>
+</p>
+<h3>1. VFS components</h3>
+<ol>
+    <li>
+        <b>Schema</b>
+        <p>
+            The component that uniquely identifies VFS from others.
+            <br/>
+            <i>Example: <b><i>s3:</i></b> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+    <li>
+        <b>Address</b>
+        <p>
+            The component that indicates the location of VFS.
+            <br/>
+            <i>Example: <a href="https://s3.amazonaws.com"><b><i>https://s3.amazonaws.com</i></b></a> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+    <li>
+        <b>Particular properties</b>
+        <p>
+            The specific components that indicate required data necessary for access VFS. Each of them is a pair of
+            <b><i>Name</i></b> and <b><i>Value</i></b>, where <b><i>Name</i></b> is the unique identifier for the property
+            and <b><i>Value</i></b> is the data.
+            <br/>
+            <i>Example: <b><i>AccessKeyId</i></b>, <b><i>SecretAccessKey</i></b> for Amazon Web Services S3 VFS.</i>
+        </p>
+    </li>
+</ol>
+
+<h3>2. Supported Virtual File Systems</h3>
+
+<p>
+    <br/>
+</p>
+
+<ol>
+    <li>
+        <b>S3</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <b><i>s3</i></b>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <b><i>bucket</i></b>: The AWS bucket name used for connecting to S3 service (optional if self-contained in the URL address)
+                    </li>
+                    <li>
+                        <b><i>region</i></b>: The AWS region string used for connecting to S3 service
+                    </li>
+                    <li>
+                        <b><i>accessKeyId</i></b>: The username used for connecting to S3 service
+                    </li>
+                    <li>
+                        <b><i>secretAccessKey</i></b>: The password used for connecting to S3 service
+                    </li>
+                    <li>
+                        <b><i>x-amz-*</i></b>: Other custom parameter(s) used for connecting to S3 service, if needed (e.g. 'x-amz-request-payer')
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+    <li>
+        <b>HTTP</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <b><i>http</i></b>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <b><i>username</i></b>: The username used for connecting to HTTP service
+                    </li>
+                    <li>
+                        <b><i>password</i></b>: The password used for connecting to HTTP service
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p class="inote">
+            <b>Note</b>: Because on HTTP there is not a clearly defined API, such as on Swift or Amazon AWS, the HTTP VFS works only with "Index of" pages from Apache HTTP Server.
+        </p>
+    </li>
+    <li>
+        <b>Open Stack Swift S3</b>
+        <ul>
+            <li>
+                <b>Schema</b>: <b><i>oss</i></b>
+            </li>
+            <li>
+                <b>Particular properties</b>:
+                <ul>
+                    <li>
+                        <b><i>authAddress</i></b>: The address of authentication service used for connecting to Open Stack
+                        Swift S3 service
+                    </li>
+                    <li>
+                        <b><i>container</i></b>: The Open Stack Swift S3 container name used for connecting to Open Stack
+                        Swift S3 service
+                    </li>
+                    <li>
+                        <b><i>domain</i></b>: The Open Stack Swift S3 domain name used for connecting to Open Stack Swift S3
+                        service
+                    </li>
+                    <li>
+                        <b><i>projectId</i></b>: The Open Stack Swift S3 project Id used for connecting to Open Stack Swift
+                        S3 service
+                    </li>
+                    <li>
+                        <b><i>user</i></b>: The username used for connecting to Open Stack Swift S3 service
+                    </li>
+                    <li>
+                        <b><i>password</i></b>: The password used for connecting to Open Stack Swift S3 service
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+
+<h2>II. The VFS Remote File Repositories</h2>
+<p>
+    The VFS Remote File Repositories represents a set of configurations which designate a VFS.
+</p>
+<p class="inote">
+    <b>Note</b>: The current VFS implementations (http, swift, s3) allow multiple Remote File Repositories for each type of VFS (schema), with the condition that the configured name is unique.
+</p>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/repos.png" alt="VFS Remote File Repositories"/>
+        </td>
+    </tr>
+</table>
+<h3>
+    <b>1. Add a new VFS Remote File Repository</b>
+</h3>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP "Tools" menu select "Options".<br/>From "Options" window select "General", then select "Remote File Repositories".
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_tab_empty.png" alt="Remote File Repositories tab"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Create New Remote File Repository" &nbsp; <img style="width: 19px; height: 15px;" alt="Create New Remote File Repository button" src="images/list-add.png"> &nbsp; from the left of "Remote File Repositories List" table.
+                    <br/>The new VFS Remote File Repository is created and "Remote File Repository Configurations" area will appear.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_created.png" alt="Remote File Repository Created"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Enter the "VFS Remote File Repository Name" in the corresponding field (only alpha-numeric characters and "_" (underline) are allowed, the name must be unique).
+                    <br/>The name of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+                    <br/>If name is correct it will be saved, otherwise a warning message will notify what was wrong.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_name.png" alt="Remote File Repository Name"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Enter the "VFS Remote File Repository Scheme" in the corresponding field (only lowercase alpha-numeric characters are allowed).
+                    <br/>The scheme of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+                    <br/>If schema is correct it will be saved, otherwise a warning message will notify what was wrong.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_scheme.png" alt="Remote File Repository Scheme"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Enter the "VFS Remote File Repository Address" in the corresponding field (only URL specific characters are allowed).
+                    <br/>The address of VFS Remote File Repository can be changed anytime by entering new one in the corresponding field.
+                    <br/>If address is correct it will be saved, otherwise a warning message will notify what was wrong.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_address.png" alt="Remote File Repository Address"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    If VFS Remote File Repository requires specific properties such as "username" and "password", these can be created using next guideline.
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Apply" &nbsp; <img style="width: 56px; height: 20px;" alt="Apply button" src="images/apply.png"> &nbsp; from the bottom of window, for save the changes in SNAP configuration files.
+                    <p class="inote">
+                        <b>Note</b>: Please restart the SNAP application to take effect.
+                    </p>
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/apply_changes_add.png" alt="Apply changes"/>
+        </td>
+    </tr>
+</table>
+<br/>
+<h3>
+    <b>2. Add a new VFS Remote File Repository Property</b>
+</h3>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP "Tools" menu select "Options".<br/>From "Options" window select "General", then select "Remote File Repositories".
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_tab.png" alt="Remote File Repositories tab"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_selection_no_rfrp.png" alt="Remote File Repository Selection"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Create New Remote File Repository Property" &nbsp; <img style="width: 19px; height: 15px;" alt="Create New Remote File Repository Property button" src="images/list-add.png"> &nbsp; from the left of "Properties" table.
+                    <br/>The new VFS Remote File Repository Property is created and an empty row will appear at the end of Properties table.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfrp_created.png" alt="Remote File Repository Property Created"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    In the new row of "Properties" table, column "Name", enter the name of new VFS Remote File Repository Property (only alpha-numeric characters and "_" (underline) are allowed, the name must be unique) and hit Enter key.
+                    <br/>The name of VFS Remote File Repository Property can be changed anytime by double-clicking on the corresponding cell.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfrp_name.png" alt="Remote File Repository Property Name"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    In the new row of "Properties" table, column "Value", enter the value of new VFS Remote File Repository Property (must not be empty) and hit Enter key. The value of VFS Remote File Repository Property can be changed anytime by double-clicking on the corresponding cell.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfrp_value.png" alt="Remote File Repository Property Value"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Apply" &nbsp; <img style="width: 56px; height: 20px;" alt="Apply button" src="images/apply.png"> &nbsp; from the bottom of window, for save the changes in SNAP configuration files.
+                    <p class="inote">
+                        <b>Note</b>: Please restart the SNAP application to take effect.
+                    </p>
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/apply_changes_add.png" alt="Apply changes"/>
+        </td>
+    </tr>
+</table>
+<p></p>
+<h3>
+    <b>3. Remove VFS Remote File Repository</b>
+</h3>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP "Tools" menu select "Options".<br/>From "Options" window select "General", then select "Remote File Repositories".
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_tab.png" alt="Remote File Repositories tab"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_selection.png" alt="Remote File Repository Selection"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Remove Remote File Repository" &nbsp; <img style="width: 19px; height: 15px;" alt="Remove Remote File Repository button" src="images/list-remove.png"> &nbsp; from the left of "Remote File Repositories List" table.
+                    <br/>A confirmation prompt will be shown. Answer with YES to confirm the deletion of Remote File Repository with all Properties.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_deletion.png" alt="Remote File Repository Deletion"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Apply" &nbsp; <img style="width: 56px; height: 20px;" alt="Apply button" src="images/apply.png"> &nbsp; from the bottom of window, for save the changes in SNAP configuration files.
+                    <p class="inote">
+                        <b>Note</b>: Please restart the SNAP application to take effect.
+                    </p>
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/apply_changes_delete.png" alt="Apply changes"/>
+        </td>
+    </tr>
+</table>
+<p></p>
+<h3>
+    <b>4. Remove VFS Remote File Repository Property</b>
+</h3>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP "Tools" menu select "Options".<br/>From "Options" window select "General", then select "Remote File Repositories".
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_tab.png" alt="Remote File Repositories tab"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Select VFS Remote File Repository from "Remote File Repositories List" table, and Remote "File Repository Configurations" area will appear.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfr_selection.png" alt="Remote File Repository Selection"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Select VFS Remote File Repository Property from "Properties" table.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfrp_selection.png" alt="Remote File Repository Property Selection"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Remove Remote File Repository Property" &nbsp; <img style="width: 19px; height: 15px;" alt="Remove Remote File Repository Property button" src="images/list-remove.png"> &nbsp; from the left of "Properties" table.
+                    <br/>A confirmation prompt will be shown. Answer with YES to confirm the deletion of Remote File Repository Property.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/rfrp_deletion.png" alt="Remote File Repository Property Deletion"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Click on button "Apply" &nbsp; <img style="width: 56px; height: 20px;" alt="Apply button" src="images/apply.png"> &nbsp; from the bottom of window, for save the changes in SNAP configuration files.
+                    <p class="inote">
+                        <b>Note</b>: Please restart the SNAP application to take effect.
+                    </p>
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/apply_changes_add.png" alt="Apply changes"/>
+        </td>
+    </tr>
+</table>
+<h2>III. Using the VFS</h2>
+<p>
+    The VFS provides the possibility to open products from remote locations (e.g. CREODIAS, AWS).
+</p>
+
+<h3>
+    <b>1. Opening a product from VFS</b>
+</h3>
+<p class="inote">
+    <b>Note</b>: In order to use the VFS for opening a product, the Remote File Repositories must be correctly configured and SNAP Application restarted after saving the VFS configuration.
+</p>
+<p class="inote">
+    <b>Note</b>: The following example explains the opening of a Sentinel-2 (S2) product from Swift VFS (CREODIAS).
+</p>
+<table style="border-width:0">
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP "File" menu select "Open Product" or simple click on button "Open Product" &nbsp; <img style="width: 19px; height: 15px;" alt="Open Product button" src="images/open-product.gif"> &nbsp; from the File Toolbar.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/open-product.png" alt="Open Product"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    From SNAP File Chooser select the VFS (e.g. Swift) on "Look in" combo box. The VFS roots have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_root.png"> &nbsp;
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/select_vfs.png" alt="Select VFS"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Browse through VFS by double-clicking on VFS directories. The VFS directories have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_folder.png"> &nbsp;
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/browse_vfs.png" alt="Browse through VFS"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Select the product file by double-clicking on VFS file or single-click on it and click on "Open" button . The VFS files have the icon: &nbsp; <img style="width: 46px; height: 32px;" alt="VFS icon" src="images/vfs_file.png"> &nbsp;
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/select_product_file.png" alt="Select product file"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    Wait until product is opened in SNAP.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/opening_product.png" alt="Select product file"/>
+        </td>
+    </tr>
+    <tr>
+        <td style="border-style:none;padding: 5px;" width="300px" valign="top">
+            <ul>
+                <li>
+                    See the product in SNAP.
+                </li>
+            </ul>
+        </td>
+        <td style="border-style:none;padding: 5px;">
+            <img src="images/product_opened.png" alt="Select product file"/>
+        </td>
+    </tr>
+</table>
+<hr/>
+</body>
+</html>

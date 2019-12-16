@@ -257,7 +257,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                                                           determineWidth(expression, products, elementIndex),
                                                           determineHeight(expression, products, elementIndex),
                                                           RGBImageProfile.RGB_BAND_NAMES[i],
-                                                          expression);
+                                                          expression, products);
             }
             rgbBands[i] = rgbBand;
         }

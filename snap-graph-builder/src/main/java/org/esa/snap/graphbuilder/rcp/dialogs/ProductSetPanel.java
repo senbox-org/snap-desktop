@@ -82,6 +82,9 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
     private static final ImageIcon clearIcon = TangoIcons.actions_edit_clear(TangoIcons.Res.R22);
 
+    // Number of products to populate the table details with. More than this may slow down the user's experience
+    private static final int AUTO_POPULATE_DETAILS_LIMIT = 100;
+
     public ProductSetPanel(final AppContext theAppContext, final String title) {
         this(theAppContext, title, new FileTable(), false, false);
     }
@@ -292,6 +295,9 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                 }
                 pm.worked(1);
             }
+            if(files.length < AUTO_POPULATE_DETAILS_LIMIT) {
+                tableModel.refresh();
+            }
             pm.done();
         };
 
@@ -310,6 +316,10 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                 }
                 pm.worked(1);
             }
+            if(products.length < AUTO_POPULATE_DETAILS_LIMIT) {
+                tableModel.refresh();
+            }
+
             pm.done();
         };
 

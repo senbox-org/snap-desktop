@@ -93,14 +93,22 @@ public class SubsetUI extends BaseOperatorUI {
     public void initParameters() {
 
         OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
+
         String _oldSelected = (String) referenceCombo.getSelectedItem();
         referenceCombo.removeAllItems();
-        for( int i = 0 ; i < bandList.getModel().getSize() ; i++) {
+        for (int i = 0 ; i < bandList.getModel().getSize() ; i++) {
             String string = (String) bandList.getModel().getElementAt(i);
             referenceCombo.addItem(string);
-            if(string.equals(_oldSelected)) {
+            if (string.equals(_oldSelected)) {
                 referenceCombo.setSelectedItem(string);
             }
+        }
+
+        //enable or disable referenceCombo depending on sourceProduct
+        if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {
+            referenceCombo.setEnabled(false);
+        } else {
+            referenceCombo.setEnabled(true);
         }
 
         final Rectangle region = (Rectangle)paramMap.get("region");
@@ -156,7 +164,23 @@ public class SubsetUI extends BaseOperatorUI {
 
         OperatorUIUtils.updateParamList(bandList, paramMap, "bandNames");
 
-        paramMap.put("referenceBand",(String) referenceCombo.getSelectedItem());
+        paramMap.remove("referenceBand");
+        if(sourceProducts != null ) {
+            for (Product prod : sourceProducts) {
+                if (prod.isMultiSize()) {
+                    paramMap.put("referenceBand", (String) referenceCombo.getSelectedItem());
+                    break;
+                }
+            }
+        }
+
+
+        final String subSamplingXStr = subSamplingX.getText();
+        if (subSamplingXStr != null && !subSamplingXStr.isEmpty())
+            paramMap.put("subSamplingX", Integer.parseInt(subSamplingXStr));
+        final String subSamplingYStr = subSamplingY.getText();
+        if (subSamplingYStr != null && !subSamplingYStr.isEmpty())
+            paramMap.put("subSamplingY", Integer.parseInt(subSamplingYStr));
 
         int x=0, y=0, w=0, h=0;
         final String regionXStr = regionX.getText();
@@ -172,18 +196,13 @@ public class SubsetUI extends BaseOperatorUI {
         if (heightStr != null && !heightStr.isEmpty())
             h = Integer.parseInt(heightStr);
 
-        paramMap.put("region", new Rectangle(x,y,w,h));
-
-        final String subSamplingXStr = subSamplingX.getText();
-        if (subSamplingXStr != null && !subSamplingXStr.isEmpty())
-            paramMap.put("subSamplingX", Integer.parseInt(subSamplingXStr));
-        final String subSamplingYStr = subSamplingY.getText();
-        if (subSamplingYStr != null && !subSamplingYStr.isEmpty())
-            paramMap.put("subSamplingY", Integer.parseInt(subSamplingYStr));
-
+        paramMap.remove("geoRegion");
+        paramMap.remove("region");
         getGeoRegion();
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
+        } else {
+            paramMap.put("region", new Rectangle(x,y,w,h));
         }
 
         paramMap.put("copyMetadata", copyMetadata.isSelected());

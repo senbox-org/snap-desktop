@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.BoundsInputPanel;
 import org.esa.snap.ui.RegionSelectableWorldMapPane;
@@ -31,6 +32,7 @@ import org.esa.snap.ui.crs.CrsForm;
 import org.esa.snap.ui.crs.CrsSelectionPanel;
 import org.esa.snap.ui.crs.CustomCrsForm;
 import org.esa.snap.ui.crs.PredefinedCrsForm;
+import org.geotools.referencing.wkt.UnformattableObjectException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -45,6 +47,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author Marco Peters
@@ -70,7 +73,9 @@ class MosaicMapProjectionPanel extends JPanel {
         bindingCtx.adjustComponents();
     }
 
-    public BindingContext getBindingContext(){ return bindingCtx;}
+    public BindingContext getBindingContext() {
+        return bindingCtx;
+    }
 
     private void init() {
         final ElevationModelDescriptor[] descriptors = ElevationModelRegistry.getInstance().getAllDescriptors();
@@ -81,13 +86,10 @@ class MosaicMapProjectionPanel extends JPanel {
         if (demValueSet.length > 0) {
             mosaicModel.getPropertySet().setValue(MosaicFormModel.PROPERTY_ELEVATION_MODEL_NAME, demValueSet[0]);
         }
-        bindingCtx.addPropertyChangeListener(MosaicFormModel.PROPERTY_UPDATE_MODE, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                final Boolean updateMode = (Boolean) evt.getNewValue();
-                Boolean enabled1 = !updateMode;
-                crsSelectionPanel.setEnabled(enabled1);
-            }
+        bindingCtx.addPropertyChangeListener(MosaicFormModel.PROPERTY_UPDATE_MODE, evt -> {
+            final Boolean updateMode = (Boolean) evt.getNewValue();
+            boolean enabled1 = !updateMode;
+            crsSelectionPanel.setEnabled(enabled1);
         });
     }
 
@@ -103,12 +105,7 @@ class MosaicMapProjectionPanel extends JPanel {
         CrsForm customCrsUI = new CustomCrsForm(appContext);
         CrsForm predefinedCrsUI = new PredefinedCrsForm(appContext);
         crsSelectionPanel = new CrsSelectionPanel(customCrsUI, predefinedCrsUI);
-        crsSelectionPanel.addPropertyChangeListener(MosaicFormModel.PROPERTY_CRS, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateForCrsChanged();
-            }
-        });
+        crsSelectionPanel.addPropertyChangeListener(MosaicFormModel.PROPERTY_CRS, evt -> updateForCrsChanged());
         add(crsSelectionPanel);
         add(createOrthorectifyPanel());
         add(createMosaicBoundsPanel());
@@ -121,12 +118,25 @@ class MosaicMapProjectionPanel extends JPanel {
             final CoordinateReferenceSystem crs = crsSelectionPanel.getCrs(new GeoPos(lat, lon));
             if (crs != null) {
                 updatePixelUnit(crs);
-                mosaicModel.setTargetCRS(crs.toWKT());
+                mosaicModel.setTargetCRS(convertToWkt(crs));
             } else {
                 mosaicModel.setTargetCRS(null);
             }
         } catch (FactoryException ignored) {
             mosaicModel.setTargetCRS(null);
+        }
+    }
+
+    private String convertToWkt(CoordinateReferenceSystem crs) {
+        // according to GeoTools it is better to use to String or the Formattable directly
+        // https://osgeo-org.atlassian.net/browse/GEOS-4746
+        // But first try toWKT(), there must be a reason for being strict in this method.
+        try {
+            return crs.toWKT();
+        } catch (UnformattableObjectException e) {
+            SystemUtils.LOG.log(Level.WARNING, "Could not strictly convert CRS to WKT. " +
+                    "Used lenient method instead.", e);
+            return crs.toString();
         }
     }
 
@@ -181,16 +191,13 @@ class MosaicMapProjectionPanel extends JPanel {
         bindingCtx.bindEnabledState(MosaicFormModel.PROPERTY_ORTHORECTIFY, false, MosaicFormModel.PROPERTY_UPDATE_MODE, true);
         final JComboBox<String> demComboBox = new JComboBox<>(new DefaultComboBoxModel<>(demValueSet));
         bindingCtx.bind(MosaicFormModel.PROPERTY_ELEVATION_MODEL_NAME, demComboBox);
-        bindingCtx.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (MosaicFormModel.PROPERTY_ORTHORECTIFY.equals(evt.getPropertyName()) ||
-                        MosaicFormModel.PROPERTY_UPDATE_MODE.equals(evt.getPropertyName())) {
-                    final PropertySet propertySet = bindingCtx.getPropertySet();
-                    boolean updateMode = Boolean.TRUE.equals(propertySet.getValue(MosaicFormModel.PROPERTY_UPDATE_MODE));
-                    boolean orthorectify = Boolean.TRUE.equals(propertySet.getValue(MosaicFormModel.PROPERTY_ORTHORECTIFY));
-                    demComboBox.setEnabled(orthorectify && !updateMode);
-                }
+        bindingCtx.addPropertyChangeListener(evt -> {
+            if (MosaicFormModel.PROPERTY_ORTHORECTIFY.equals(evt.getPropertyName()) ||
+                    MosaicFormModel.PROPERTY_UPDATE_MODE.equals(evt.getPropertyName())) {
+                final PropertySet propertySet = bindingCtx.getPropertySet();
+                boolean updateMode = Boolean.TRUE.equals(propertySet.getValue(MosaicFormModel.PROPERTY_UPDATE_MODE));
+                boolean orthorectify = Boolean.TRUE.equals(propertySet.getValue(MosaicFormModel.PROPERTY_ORTHORECTIFY));
+                demComboBox.setEnabled(orthorectify && !updateMode);
             }
         });
         layout.setCellColspan(0, 0, 2);

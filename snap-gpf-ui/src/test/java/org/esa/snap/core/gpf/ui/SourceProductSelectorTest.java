@@ -16,32 +16,36 @@
 
 package org.esa.snap.core.gpf.ui;
 
-import org.esa.snap.HeadlessTestRunner;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.test.LongTestRunner;
 import org.esa.snap.ui.DefaultAppContext;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.swing.JComboBox;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Ralf Quast
- * @version $Revision$ $Date$
  */
-@RunWith(HeadlessTestRunner.class)
+@RunWith(LongTestRunner.class)
 public class SourceProductSelectorTest {
 
     private Product[] defaultProducts;
     private DefaultAppContext appContext;
 
     @Before
-    public void setUp() throws Exception {
-        appContext = new DefaultAppContext("Fart, fart!");
+    public void setUp() {
+        Assume.assumeFalse("Cannot run in headless", GraphicsEnvironment.isHeadless());
+        appContext = new DefaultAppContext("CrazyApp!");
         defaultProducts = new Product[4];
         for (int i = 0; i < defaultProducts.length; i++) {
             defaultProducts[i] = new Product("P" + i, "T" + i, 10, 10);
@@ -91,7 +95,7 @@ public class SourceProductSelectorTest {
 
         final JComboBox<Object> comboBox = selector.getProductNameComboBox();
         assertEquals(5, comboBox.getItemCount());
-        assertEquals(comboBox.getItemAt(0), null);
+        assertNull(comboBox.getItemAt(0));
         assertEquals(comboBox.getItemAt(1), defaultProducts[0]);
         assertEquals(comboBox.getItemAt(2), defaultProducts[1]);
         assertEquals(comboBox.getItemAt(3), defaultProducts[2]);
@@ -100,7 +104,7 @@ public class SourceProductSelectorTest {
     }
 
     @Test
-    public void testSetSelectedProduct() throws Exception {
+    public void testSetSelectedProduct() {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         Product selectedProduct = selector.getSelectedProduct();
@@ -140,7 +144,7 @@ public class SourceProductSelectorTest {
     }
 
     @Test
-    public void testNewProductIsDisposed() throws Exception {
+    public void testNewProductIsDisposed() {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         Product newProduct = new Product("new", "T1", 0, 0);
@@ -156,7 +160,7 @@ public class SourceProductSelectorTest {
     }
 
     @Test
-    public void testNewProductIsNotDisposed() throws Exception {
+    public void testNewProductIsNotDisposed() {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         selector.setSelectedProduct(defaultProducts[0]);
@@ -172,7 +176,7 @@ public class SourceProductSelectorTest {
     }
 
     @Test
-    public void testSetSelectedIndex() throws Exception {
+    public void testSetSelectedIndex() {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
 
         selector.initProducts();

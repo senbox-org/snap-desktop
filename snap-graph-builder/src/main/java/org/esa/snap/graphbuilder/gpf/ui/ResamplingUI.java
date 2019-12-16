@@ -849,7 +849,7 @@ public class ResamplingUI extends BaseOperatorUI {
 
 
     private JPanel createAdvancedCheckBoxPanel() {
-        advancedMethodCheckBox = new JCheckBox("Advanced Method Definition", false);
+        advancedMethodCheckBox = new JCheckBox("Advanced Method Definition by Band", false);
 
         advancedMethodCheckBox.addItemListener(new ItemListener() {
 
