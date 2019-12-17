@@ -119,7 +119,8 @@ import java.util.Vector;
 // NOV 2019 - Knowles / Yang
 //          - Added method setToDefaultColorScheme used in color scheme logic which enables setting of the parameters
 //          - based on the band name or desired color scheme.
-
+// DEC 2019 - Knowles / Yang
+//          - An empty min or empty max field within the schemes text will result in use of statistical min/max
 
 
 
@@ -365,7 +366,7 @@ public class ProductSceneView extends BasicView
 
     /**
      * The coordinate reference system (CRS) used by all the layers in this context.
-     * May be used by a {@link com.bc.ceres.glayer.LayerType} in order to decide whether
+     * May be used by a {@link LayerType} in order to decide whether
      * the source can provide a new layer instance for this context.
      *
      * @return The CRS. May be {@code null}.
@@ -1470,7 +1471,7 @@ public class ProductSceneView extends BasicView
 
         @Override
         public Rank getRank() {
-            return Figure.Rank.NOT_SPECIFIED;
+            return Rank.NOT_SPECIFIED;
         }
 
         @Override
@@ -1744,9 +1745,18 @@ public class ProductSceneView extends BasicView
 
             if (matchingColorPaletteInfo != null) {
                 ColorPaletteDef colorPaletteDef = matchingColorPaletteInfo.getColorPaletteDef(ColorPaletteSchemes.getUseColorBlind(configuration));
+                double getMin = matchingColorPaletteInfo.getMinValue();
+                double getMax = matchingColorPaletteInfo.getMaxValue();
+                Stx stx = getRaster().getStx();
+                if (getMin == ColorPaletteSchemes.DOUBLE_NULL) {
+                    getMin = stx.getMinimum();
+                }
+                if (getMax == ColorPaletteSchemes.DOUBLE_NULL) {
+                    getMax = stx.getMaximum();
+                }
                 getImageInfo().setColorPaletteDef(colorPaletteDef,
-                        matchingColorPaletteInfo.getMinValue(),
-                        matchingColorPaletteInfo.getMaxValue(),
+                        getMin,
+                        getMax,
                         true, //colorPaletteDef.isAutoDistribute(),
                         colorPaletteDef.isLogScaled(),
                         matchingColorPaletteInfo.isLogScaled());

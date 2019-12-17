@@ -25,6 +25,7 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.Range;
+import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -56,7 +57,9 @@ import java.text.DecimalFormat;
 //          - Added color scheme logic
 //          - Added capability to reverse the color palette
 //          - Added capabiltiy to load exact values of the cpd file within any mathematical interpolation applied.
-
+// DEC 2019 - Knowles / Yang
+//          - Added capability to load scheme with data range values
+//          - An empty min or empty max field within the schemes text will result in use of statistical min/max
 
 
 public class Continuous1BandBasicForm implements ColorManipulationChildForm {
@@ -74,6 +77,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private String currentMaxFieldValue = "";
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
+    private final JCheckBox loadPaletteOnlyCheckBox;
     private final ColorPaletteSchemes standardColorPaletteSchemes;
     private JLabel colorSchemeJLabel;
     private JButton paletteInversionButton;
@@ -112,6 +116,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
 
+        loadPaletteOnlyCheckBox = new JCheckBox("Load with data range", false);
+        loadPaletteOnlyCheckBox.setToolTipText("Load scheme with data range");
+
         paletteInversionButton = new JButton("Reverse");
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
         paletteInversionButton.addActionListener(new ActionListener() {
@@ -124,8 +131,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         colorPaletteChooser = new ColorPaletteChooser();
 
-        minField = getNumberTextField(0.00001);
-        maxField = getNumberTextField(1);
+        minField = getNumberTextField(0.0000001);
+        maxField = getNumberTextField(1.0000001);
 
         fromFile = new JButton("Cpd Range");
         fromData = new JButton("Data Range");
@@ -355,9 +362,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         formatter.setValueClass(Double.class); // to ensure that double values are returned
         final JFormattedTextField numberField = new JFormattedTextField(formatter);
         numberField.setValue(value);
-        final Dimension preferredSize = numberField.getPreferredSize();
-        preferredSize.width = 70;
-        numberField.setPreferredSize(preferredSize);
+        numberField.setPreferredSize(numberField.getPreferredSize());
         return numberField;
     }
 
@@ -504,6 +509,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         jPanel.add(standardColorPaletteSchemes.getjComboBox(), gbc);
 
+        gbc.gridy++;
+        jPanel.add(loadPaletteOnlyCheckBox, gbc);
+
         return jPanel;
     }
 
@@ -608,17 +616,33 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 boolean origShouldFireChooserEvent = shouldFireChooserEvent;
                 shouldFireChooserEvent = false;
 
-                colorPaletteChooser.setSelectedColorPaletteDefinition(colorPaletteDef);
+                // todo Add min and max from data
+                double min = colorPaletteInfo.getMinValue();
+                double max = colorPaletteInfo.getMaxValue();
+                boolean isTargetLogScaled = colorPaletteInfo.isLogScaled();
 
-                applyChanges(colorPaletteInfo.getMinValue(),
-                        colorPaletteInfo.getMaxValue(),
-                        colorPaletteDef,
-                        colorPaletteDef.isLogScaled(),
-                        colorPaletteInfo.isLogScaled(), colorPaletteInfo.getRootName(), isDefaultList);
+                Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
+                if (min == ColorPaletteSchemes.DOUBLE_NULL || loadPaletteOnlyCheckBox.isSelected()) {
+                    min = stx.getMinimum();
+                }
+                if (max == ColorPaletteSchemes.DOUBLE_NULL || loadPaletteOnlyCheckBox.isSelected()) {
+                    max = stx.getMaximum();
+                }
 
-
+                if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+                    colorPaletteChooser.setSelectedColorPaletteDefinition(colorPaletteDef);
+                    applyChanges(min,
+                            max,
+                            colorPaletteDef,
+                            colorPaletteDef.isLogScaled(),
+                            isTargetLogScaled,
+                            colorPaletteInfo.getRootName(),
+                            isDefaultList);
+                }else {
+                    SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + "Min from data" + " must be greater than zero in log scaling mode");
+                    standardColorPaletteSchemes.reset();
+                }
                 shouldFireChooserEvent = origShouldFireChooserEvent;
-
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -644,6 +668,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         final boolean autoDistribute = true;
         currentInfo.setLogScaled(isTargetLogScaled);
+
         currentInfo.setColorPaletteDef(selectedCPD, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
 
         currentMinFieldValue = Double.toString(min);
