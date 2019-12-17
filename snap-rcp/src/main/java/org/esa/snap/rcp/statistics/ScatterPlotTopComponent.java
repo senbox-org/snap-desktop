@@ -33,13 +33,15 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "CorrelativePlot",
-        openAtStartup = false,
-        position = 5
+        mode = PackageDefaults.SCATTER_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.SCATTER_PLOT_WS_OPEN,
+        position = PackageDefaults.SCATTER_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 10),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SCATTER_PLOT_MENU_PATH,
+                position = PackageDefaults.SCATTER_PLOT_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.SCATTER_PLOT_TOOLBAR_NAME,
                 position = PackageDefaults.SCATTER_PLOT_TOOLBAR_POSITION)

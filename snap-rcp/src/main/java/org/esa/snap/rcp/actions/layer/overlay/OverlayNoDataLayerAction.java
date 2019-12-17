@@ -21,14 +21,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayNoDataLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayNoDataLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 0),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_NO_DATA_MENU_PATH,
+                position = PackageDefaults.OVERLAY_NO_DATA_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OVERLAY_NO_DATA_TOOLBAR_NAME,
                 position = PackageDefaults.OVERLAY_NO_DATA_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
         "CTL_OverlayNoDataLayerActionName=" + PackageDefaults.OVERLAY_NO_DATA_NAME,
-        "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
+        "CTL_OverlayNoDataLayerActionToolTip=" + PackageDefaults.OVERLAY_NO_DATA_DESCRIPTION
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
     @Override

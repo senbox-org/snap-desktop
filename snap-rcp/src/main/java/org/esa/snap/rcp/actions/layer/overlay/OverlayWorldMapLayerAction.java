@@ -36,14 +36,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayWorldMapLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayWorldMapLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 50),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_WORLD_MAP_MENU_PATH,
+                position = PackageDefaults.OVERLAY_WORLD_MAP_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OVERLAY_WORLD_MAP_TOOLBAR_NAME,
                 position = PackageDefaults.OVERLAY_WORLD_MAP_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
         "CTL_OverlayWorldMapLayerActionName=" + PackageDefaults.OVERLAY_WORLD_MAP_NAME,
-        "CTL_OverlayWorldMapLayerActionToolTip=Show/hide world map overlay for the selected image"
+        "CTL_OverlayWorldMapLayerActionToolTip=" + PackageDefaults.OVERLAY_WORLD_MAP_DESCRIPTION
 })
 public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
 

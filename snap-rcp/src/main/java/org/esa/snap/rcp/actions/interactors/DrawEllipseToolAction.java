@@ -41,7 +41,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @Messages({
                   "CTL_DrawEllipseToolActionText=" + PackageDefaults.DRAW_ELLIPSE_NAME,
-                  "CTL_DrawEllipseToolActionDescription=Ellipse drawing tool"
+                  "CTL_DrawEllipseToolActionDescription=" + PackageDefaults.DRAW_ELLIPSE_DESCRIPTION
           })
 public class DrawEllipseToolAction extends ToolAction {
 

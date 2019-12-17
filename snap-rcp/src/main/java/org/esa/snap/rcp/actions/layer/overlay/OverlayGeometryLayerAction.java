@@ -28,14 +28,16 @@ import java.util.List;
 @ActionID(category = "View", id = "OverlayGeometryLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 10),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_GEOMETRY_MENU_PATH,
+                position = PackageDefaults.OVERLAY_GEOMETRY_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OVERLAY_GEOMETRY_TOOLBAR_NAME,
                 position = PackageDefaults.OVERLAY_GEOMETRY_TOOLBAR_POSITION),
 })
 @NbBundle.Messages({
         "CTL_OverlayGeometryLayerActionName=" + PackageDefaults.OVERLAY_GEOMETRY_NAME,
-        "CTL_OverlayGeometryLayerActionToolTip=Show/hide geometry overlay for the selected image"
+        "CTL_OverlayGeometryLayerActionToolTip=" + PackageDefaults.OVERLAY_GEOMETRY_DESCRIPTION
 })
 public final class OverlayGeometryLayerAction extends AbstractOverlayAction {
 

@@ -30,13 +30,15 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "HistogramPlotMode",
-        openAtStartup = false,
-        position = 40
+        mode = PackageDefaults.HISTOGRAM_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.HISTOGRAM_PLOT_WS_OPEN,
+        position = PackageDefaults.HISTOGRAM_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.HistogramPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 50),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.HISTOGRAM_PLOT_MENU_PATH,
+                position = PackageDefaults.HISTOGRAM_PLOT_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.HISTOGRAM_PLOT_TOOLBAR_NAME,
                 position = PackageDefaults.HISTOGRAM_PLOT_TOOLBAR_POSITION)

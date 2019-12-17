@@ -30,13 +30,15 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ScatterPlot",
-        openAtStartup = false,
-        position = 10
+        mode = PackageDefaults.DENSITY_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.DENSITY_PLOT_WS_OPEN,
+        position = PackageDefaults.DENSITY_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 20),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.DENSITY_PLOT_MENU_PATH,
+                position = PackageDefaults.DENSITY_PLOT_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.DENSITY_PLOT_TOOLBAR_NAME,
                 position = PackageDefaults.DENSITY_PLOT_TOOLBAR_POSITION)

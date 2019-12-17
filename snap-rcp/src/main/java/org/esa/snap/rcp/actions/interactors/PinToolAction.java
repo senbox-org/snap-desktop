@@ -40,7 +40,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @Messages({
                   "CTL_PinToolActionText=" + PackageDefaults.PIN_TOOL_NAME,
-                  "CTL_PinToolActionDescription=Pin placing tool"
+                  "CTL_PinToolActionDescription=" + PackageDefaults.PIN_TOOL_DESCRIPTION
           })
 public class PinToolAction extends ToolAction {
 

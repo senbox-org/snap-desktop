@@ -35,7 +35,9 @@ import java.util.stream.Collectors;
         iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.OPEN_PRODUCT_ACTION_ICON
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File", position = 5),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OPEN_PRODUCT_ACTION_MENU_PATH,
+                position = PackageDefaults.OPEN_PRODUCT_ACTION_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OPEN_PRODUCT_ACTION_TOOLBAR_NAME,
                 position = PackageDefaults.OPEN_PRODUCT_ACTION_TOOLBAR_POSITION)

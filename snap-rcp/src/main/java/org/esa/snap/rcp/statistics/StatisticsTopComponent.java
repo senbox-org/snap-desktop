@@ -14,15 +14,17 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "Statistics",
-        openAtStartup = false,
-        position = 40
+        mode = PackageDefaults.STATISTICS_WS_MODE,
+        openAtStartup = PackageDefaults.STATISTICS_WS_OPEN,
+        position = PackageDefaults.STATISTICS_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.StatisticsTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 60),
         @ActionReference(
-                path = "Toolbars/" + PackageDefaults.STATISTICS_TOOLBAR_NAME,
+                path = "Menu/" + PackageDefaults.STATISTICS_MENU_PATH,
+                position = PackageDefaults.STATISTICS_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.STATISTICS_TOOLBAR_PATH,
                 position = PackageDefaults.STATISTICS_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(

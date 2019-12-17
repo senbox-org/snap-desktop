@@ -105,12 +105,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
+@TopComponent.Description(
+        preferredID = "SpectrumTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
+@TopComponent.Registration(
+        mode = PackageDefaults.SPECTRUM_WS_MODE,
+        openAtStartup = PackageDefaults.SPECTRUM_WS_OPEN,
+        position = PackageDefaults.SPECTRUM_WS_POSITION)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Optical", position = 0),
-        @ActionReference(path = "Menu/View/Tool Windows/Optical"),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SPECTRUM_MENU_PATH_1,
+                position = PackageDefaults.SPECTRUM_MENU_POSITION_1),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SPECTRUM_MENU_PATH_2,
+                position = PackageDefaults.SPECTRUM_MENU_POSITION_2),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.SPECTRUM_TOOLBAR_NAME,
                 position = PackageDefaults.SPECTRUM_TOOLBAR_POSITION)

@@ -41,7 +41,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @Messages({
                   "CTL_DrawRectangleToolActionText=" + PackageDefaults.DRAW_RECTANGLE_NAME,
-                  "CTL_DrawRectangleToolActionDescription=Rectangle drawing tool"
+                  "CTL_DrawRectangleToolActionDescription=" + PackageDefaults.DRAW_RECTANGLE_DESCRIPTION
           })
 public class DrawRectangleToolAction extends ToolAction {
     @SuppressWarnings("UnusedDeclaration")

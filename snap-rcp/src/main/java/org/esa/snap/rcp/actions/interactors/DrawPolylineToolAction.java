@@ -41,7 +41,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @Messages({
                   "CTL_DrawPolylineToolActionText=" + PackageDefaults.DRAW_POLYLINE_NAME,
-                  "CTL_DrawPolylineToolActionDescription=Polyline drawing tool"
+                  "CTL_DrawPolylineToolActionDescription=" + PackageDefaults.DRAW_POLYLINE_DESCRIPTION
           })
 public class DrawPolylineToolAction extends ToolAction {
     @SuppressWarnings("UnusedDeclaration")

@@ -33,13 +33,15 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ProfilePlot",
-        openAtStartup = false,
-        position = 30
+        mode = PackageDefaults.PROFILE_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.PROFILE_PLOT_WS_OPEN,
+        position = PackageDefaults.PROFILE_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ProfilePlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 30),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.PROFILE_PLOT_MENU_PATH,
+                position = PackageDefaults.PROFILE_PLOT_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.PROFILE_PLOT_TOOLBAR_NAME,
                 position = PackageDefaults.PROFILE_PLOT_TOOLBAR_POSITION)

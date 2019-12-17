@@ -21,14 +21,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayGcpLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 40),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_GCP_MENU_PATH,
+                position = PackageDefaults.OVERLAY_GCP_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OVERLAY_GCP_TOOLBAR_NAME,
                 position = PackageDefaults.OVERLAY_GCP_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
         "CTL_OverlayGcpLayerActionName=" + PackageDefaults.OVERLAY_GCP_NAME,
-        "CTL_OverlayGcpLayerActionToolTip=Show/hide GCP overlay for the selected image"
+        "CTL_OverlayGcpLayerActionToolTip=" + PackageDefaults.OVERLAY_GCP_DESCRIPTION
 })
 public final class OverlayGcpLayerAction extends AbstractOverlayAction {
     @Override

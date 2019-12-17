@@ -22,14 +22,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayGraticuleLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGraticuleLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 20),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_GRATICULE_MENU_PATH,
+                position = PackageDefaults.OVERLAY_GRATICULE_MENU_POSITION),
         @ActionReference(
                 path = "Toolbars/" + PackageDefaults.OVERLAY_GRATICULE_TOOLBAR_NAME,
                 position = PackageDefaults.OVERLAY_GRATICULE_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
         "CTL_OverlayGraticuleLayerActionName=" + PackageDefaults.OVERLAY_GRATICULE_NAME,
-        "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
+        "CTL_OverlayGraticuleLayerActionToolTip=" + PackageDefaults.OVERLAY_GRATICULE_DESCRIPTION
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
