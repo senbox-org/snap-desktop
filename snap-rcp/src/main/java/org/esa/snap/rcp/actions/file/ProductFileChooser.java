@@ -301,8 +301,10 @@ public class ProductFileChooser extends SnapFileChooser {
             if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
                 approveSelection();
             }
+            updateState();
+        }else{
+            Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", inputFile));
         }
-        updateState();
     }
 
     private boolean openAdvancedProduct(ProductReaderExposedParams readerExposedParams, MetadataInspector.Metadata readerInspectorExposeParameters) {
