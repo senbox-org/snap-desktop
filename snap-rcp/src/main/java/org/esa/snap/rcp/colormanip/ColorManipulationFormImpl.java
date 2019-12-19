@@ -83,6 +83,7 @@ import java.util.concurrent.Executors;
 })
 class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductSceneView>, ColorManipulationForm {
 
+
     private final static String PREFERENCES_KEY_IO_DIR = "snap.color_palettes.dir";
 
     private final static String FILE_EXTENSION_CPD = "cpd";
@@ -176,7 +177,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
 
-            getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), getFormModel().getOriginalImageInfo());
+            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -419,7 +420,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private void resetToDefaults() {
         if (getFormModel().isValid()) {
-            getFormModel().getProductSceneView().setToDefaultColorScheme(getColorPalettesDir().toFile(), createDefaultImageInfo());
+            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());

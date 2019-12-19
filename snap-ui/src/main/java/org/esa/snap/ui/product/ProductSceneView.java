@@ -97,12 +97,15 @@ import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
 
 /**
  * The class {@code ProductSceneView} is a high-level image display component for color index/RGB images created
@@ -1687,13 +1690,176 @@ public class ProductSceneView extends BasicView
         }
     }
 
+
+
+    public boolean isApplyScheme() {
+        PropertyMap configuration = sceneImage.getConfiguration();
+        return configuration.getPropertyBool(PROPERTY_AUTO_APPLY_SCHEMES_KEY, true);
+    }
+
+
+    public boolean isGeneralRangeFromData() {
+        PropertyMap configuration = sceneImage.getConfiguration();
+
+        String generalRange = configuration.getPropertyString(PROPERTY_GENERAL_RANGE_KEY, PROPERTY_GENERAL_RANGE_DEFAULT);
+
+        if (generalRange != null && generalRange.equals(RANGE_FROM_DATA)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public boolean isGeneralLogScaled(ColorPaletteDef colorPaletteDef) {
+
+        boolean logScaled = false;
+        PropertyMap configuration = sceneImage.getConfiguration();
+
+        String generalLogScaled = configuration.getPropertyString(PROPERTY_GENERAL_LOG_KEY, PROPERTY_GENERAL_LOG_DEFAULT);
+
+        if (generalLogScaled != null) {
+            switch (generalLogScaled) {
+                case LOG_TRUE:
+                    logScaled = true;
+                    break;
+                case LOG_FALSE:
+                    logScaled = false;
+                    break;
+                case LOG_FROM_CPD:
+                    if (colorPaletteDef != null) {
+                        logScaled = colorPaletteDef.isLogScaled();
+                    }
+                    break;
+                default:
+                    logScaled = false;
+            }
+
+        }
+
+        return logScaled;
+    }
+
+
+
+
+
+    public File getDefaultCpd(File auxDir) {
+        PropertyMap configuration = sceneImage.getConfiguration();
+        String fileName = configuration.getPropertyString(PROPERTY_GENERAL_CPD_KEY, null);
+
+        if (fileName != null) {
+            switch (fileName) {
+                case GRAY_SCALE:
+                     fileName = configuration.getPropertyString(PROPERTY_GRAY_SCALE_CPD_KEY, null);
+                     break;
+                case STANDARD_COLOR:
+                    fileName = configuration.getPropertyString(PROPERTY_STANDARD_COLOR_CPD_KEY, null);
+                    break;
+                case UNIVERSAL_COLOR:
+                    fileName = configuration.getPropertyString(PROPERTY_COLOR_BLIND_CPD_KEY, null);
+                    break;
+                case OTHER_COLOR:
+                    fileName = configuration.getPropertyString(PROPERTY_OTHER_CPD_KEY, null);
+                    break;
+                default:
+                    fileName = DEFAULT_CPD_FILENAME;
+            }
+        }
+
+        if (fileName != null) {
+            File defaultCpd = new File(auxDir, fileName);
+
+            if (defaultCpd.exists()) {
+                return defaultCpd;
+            }
+        }
+
+        return null;
+    }
+
+
+
+
+
+
+    public void setToDefaultColor(File auxDir, ImageInfo defaultImageInfo) {
+
+        if (isApplyScheme()) {
+            setToDefaultColorScheme(auxDir, defaultImageInfo);
+        } else {
+            setToDefaultColorNoScheme(auxDir, defaultImageInfo);
+        }
+
+    }
+
+
+    public void setToDefaultColorNoScheme(File auxDir, ImageInfo defaultImageInfo) {
+
+        boolean imageInfoSet = false;
+
+        File defaultCpdFile = getDefaultCpd(auxDir);
+
+
+        ColorPaletteDef colorPaletteDef = null;
+
+        if (defaultCpdFile.exists()) {
+            try {
+                colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(defaultCpdFile);
+
+            } catch (IOException e) {
+            }
+        }
+
+        if (colorPaletteDef != null) {
+            Stx stx = getRaster().getStx();
+
+            double min;
+            double max;
+
+            if (isGeneralRangeFromData()) {
+                min = stx.getMinimum();
+                max = stx.getMaximum();
+            } else {
+                min = colorPaletteDef.getMinDisplaySample();
+                max = colorPaletteDef.getMaxDisplaySample();
+            }
+
+
+            boolean logScaledSource = colorPaletteDef.isLogScaled();
+            boolean logScaledTarget = isGeneralLogScaled(colorPaletteDef);
+
+            getImageInfo().setColorPaletteDef(colorPaletteDef,
+                    min,
+                    max,
+                    true, //colorPaletteDef.isAutoDistribute(),
+                    logScaledSource,
+                    logScaledTarget);
+            getImageInfo().setLogScaled(logScaledTarget);
+
+            imageInfoSet = true;
+        }
+
+
+        if (!imageInfoSet) {
+            setImageInfo(defaultImageInfo);
+        }
+
+        return;
+
+    }
+
+
+
     public void setToDefaultColorScheme(File auxDir, ImageInfo defaultImageInfo) {
         PropertyMap configuration = null;
         if (sceneImage != null) {
             configuration = sceneImage.getConfiguration();
         }
 
-        ColorPaletteSchemes colorPaletteSchemes = new ColorPaletteSchemes(auxDir, ColorPaletteSchemes.Id.DEFAULTS, false, configuration);
+
+
+        ColorPaletteSchemes colorPaletteSchemes = new ColorPaletteSchemes(auxDir, Id.DEFAULTS, false, configuration);
         boolean defaultSet = false;
 
         if (colorPaletteSchemes != null) {
@@ -1744,30 +1910,123 @@ public class ProductSceneView extends BasicView
 
 
             if (matchingColorPaletteInfo != null) {
-                ColorPaletteDef colorPaletteDef = matchingColorPaletteInfo.getColorPaletteDef(ColorPaletteSchemes.getUseColorBlind(configuration));
-                double getMin = matchingColorPaletteInfo.getMinValue();
-                double getMax = matchingColorPaletteInfo.getMaxValue();
-                Stx stx = getRaster().getStx();
-                if (getMin == ColorPaletteSchemes.DOUBLE_NULL) {
-                    getMin = stx.getMinimum();
-                }
-                if (getMax == ColorPaletteSchemes.DOUBLE_NULL) {
-                    getMax = stx.getMaximum();
-                }
-                getImageInfo().setColorPaletteDef(colorPaletteDef,
-                        getMin,
-                        getMax,
-                        true, //colorPaletteDef.isAutoDistribute(),
-                        colorPaletteDef.isLogScaled(),
-                        matchingColorPaletteInfo.isLogScaled());
-                getImageInfo().setLogScaled(matchingColorPaletteInfo.isLogScaled());
 
-                defaultSet = true;
+                String cpdFileName = null;
+
+                String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);
+                switch (schemeCpd) {
+                    case STANDARD_SCHEME:
+                        cpdFileName = matchingColorPaletteInfo.getCpdFilename(false);
+                        break;
+                    case UNIVERSAL_SCHEME:
+                        cpdFileName = matchingColorPaletteInfo.getCpdFilename(true);
+                        break;
+                    case GRAY_SCALE:
+                        cpdFileName = configuration.getPropertyString(PROPERTY_GRAY_SCALE_CPD_KEY, null);
+                        break;
+                    case STANDARD_COLOR:
+                        cpdFileName = configuration.getPropertyString(PROPERTY_STANDARD_COLOR_CPD_KEY, null);
+                        break;
+                    case UNIVERSAL_COLOR:
+                        cpdFileName = configuration.getPropertyString(PROPERTY_COLOR_BLIND_CPD_KEY, null);
+                        break;
+                    case OTHER_COLOR:
+                        cpdFileName = configuration.getPropertyString(PROPERTY_OTHER_CPD_KEY, null);
+                        break;
+                    default:
+                        break;
+                }
+
+                ColorPaletteDef colorPaletteDef = null;
+
+                if (cpdFileName != null) {
+                    File cpdFile = new File(auxDir, cpdFileName);
+                    try {
+                        colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+
+                    } catch (IOException e) {
+                    }
+                }
+
+
+                // Determine range: min and max
+
+                double min;
+                double max;
+
+                Stx stx = getRaster().getStx();
+
+                String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
+                switch (schemeRange) {
+                    case RANGE_FROM_SCHEME:
+                        min = matchingColorPaletteInfo.getMinValue();
+                        if (min == DOUBLE_NULL) {
+                            min = stx.getMinimum();
+                        }
+                        max = matchingColorPaletteInfo.getMaxValue();
+                        if (max == DOUBLE_NULL) {
+                            max = stx.getMaximum();
+                        }
+                        break;
+                    case RANGE_FROM_DATA:
+                        min = stx.getMinimum();
+                        max = stx.getMaximum();
+                        break;
+                    case RANGE_FROM_CPD:
+                        min = colorPaletteDef.getMinDisplaySample();
+                        max = colorPaletteDef.getMaxDisplaySample();
+                        break;
+                    default:
+                        min = stx.getMinimum();
+                        max = stx.getMaximum();
+                        break;
+                }
+
+
+                boolean logScaled = false;
+
+                String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
+                if (schemeLogScaling != null) {
+                    switch (schemeLogScaling) {
+                        case LOG_TRUE:
+                            logScaled = true;
+                            break;
+                        case LOG_FALSE:
+                            logScaled = false;
+                            break;
+                        case LOG_FROM_CPD:
+                            if (colorPaletteDef != null) {
+                                logScaled = colorPaletteDef.isLogScaled();
+                            }
+                            break;
+                        case LOG_FROM_SCHEME:
+                            logScaled = matchingColorPaletteInfo.isLogScaled();
+                            break;
+                        default:
+                            logScaled = false;
+                    }
+
+                }
+
+
+
+                if (colorPaletteDef != null) {
+                    getImageInfo().setColorPaletteDef(colorPaletteDef,
+                            min,
+                            max,
+                            true, //colorPaletteDef.isAutoDistribute(),
+                            colorPaletteDef.isLogScaled(),
+                            logScaled);
+                    getImageInfo().setLogScaled(logScaled);
+
+                    defaultSet = true;
+                }
             }
         }
 
         if (!defaultSet) {
-            setImageInfo(defaultImageInfo);
+            setToDefaultColorNoScheme(auxDir, defaultImageInfo);
+//            setImageInfo(defaultImageInfo);
         }
 
     }
