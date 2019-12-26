@@ -660,7 +660,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorPaletteInfo);
 
         parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
-        resetFormModel(parentForm.getFormModel());
+        parentForm.applyChanges();
+
+//        resetFormModel(parentForm.getFormModel());
     }
 
 
