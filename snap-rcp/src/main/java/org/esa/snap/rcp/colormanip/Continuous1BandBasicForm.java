@@ -24,8 +24,8 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Range;
-import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -35,8 +35,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
+
+import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
+import static org.esa.snap.core.datamodel.ColorPaletteSchemes.PROPERTY_SCHEME_RANGE_DEFAULT;
 
 /**
  *
@@ -67,6 +69,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final ColorManipulationForm parentForm;
     private final JPanel contentPanel;
     private final AbstractButton logDisplayButton;
+    private final JLabel schemeInfoLabel;
     private final MoreOptionsForm moreOptionsForm;
     private final ColorPaletteChooser colorPaletteChooser;
     private final JFormattedTextField minField;
@@ -77,7 +80,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private String currentMaxFieldValue = "";
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
-    private final JCheckBox loadPaletteOnlyCheckBox;
+//    private final JCheckBox loadPaletteOnlyCheckBox;
     private final ColorPaletteSchemes standardColorPaletteSchemes;
     private JLabel colorSchemeJLabel;
     private JButton paletteInversionButton;
@@ -89,6 +92,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     final Boolean[] maxFieldActivated = {new Boolean(false)};
     final Boolean[] listenToLogDisplayButtonEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
+
+    PropertyMap configuration = null;
 
 
     private enum RangeKey {FromCpdFile, FromData, FromMinMaxFields, FromPaletteChooser, FromLogButton, InvertPalette, Dummy}
@@ -102,7 +107,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         this.basicSwitcherIsActive = basicSwitcherIsActive;
 
 
-        PropertyMap configuration = null;
         if (parentForm.getFormModel().getProductSceneView() != null && parentForm.getFormModel().getProductSceneView().getSceneImage() != null) {
             configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
         }
@@ -111,13 +115,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         colorSchemeJLabel = new JLabel("");
         colorSchemeJLabel.setToolTipText("The color data is stored in the band.  Astericks suffix (*) denotes that some parameters have been altered");
 
+        schemeInfoLabel = new JLabel("TEST");
+
+
         standardColorPaletteSchemes = new ColorPaletteSchemes(parentForm.getIODir().toFile(), ColorPaletteSchemes.Id.SELECTOR, true, configuration);
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
 
-        loadPaletteOnlyCheckBox = new JCheckBox("Load with data range", false);
-        loadPaletteOnlyCheckBox.setToolTipText("Load scheme with data range");
+//        loadPaletteOnlyCheckBox = new JCheckBox("Load with data range", false);
+//        loadPaletteOnlyCheckBox.setToolTipText("Load scheme with data range");
 
         paletteInversionButton = new JButton("Reverse");
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
@@ -222,6 +229,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
 
 
+
         standardColorPaletteSchemes.getjComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -303,6 +311,51 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         discreteCheckBox.setDiscreteColorsMode(discrete);
         logDisplayButton.setSelected(logScaled);
+
+        PropertyMap  configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+
+        String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
+        String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
+        String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);
+//        if (!schemeLogScaling.equals(PROPERTY_SCHEME_LOG_DEFAULT) ||
+//                !schemeRange.equals(PROPERTY_SCHEME_RANGE_DEFAULT) ||
+//                !schemeCpd.equals(PROPERTY_SCHEME_CPD_DEFAULT)
+//        ) {
+//            schemeInfoLabel.setText("<html>Scheme behavior:<br> " +
+//                    "Log = " + schemeLogScaling + "<br>" +
+//                    "Range = " + schemeRange + "<br>" +
+//                    "Cpd = " + schemeCpd +
+//                    "</html>");
+//            schemeInfoLabel.setVisible(true);
+//        } else {
+//            schemeInfoLabel.setText("");
+//            schemeInfoLabel.setVisible(true);
+//        }
+
+        schemeInfoLabel.setText("<html>Scheme behavior:<br> " +
+                "Log = " + schemeLogScaling + "<br>" +
+                "Range = " + schemeRange + "<br>" +
+                "Cpd = " + schemeCpd +
+                "</html>");
+
+
+
+//        boolean origValue =  standardColorPaletteSchemes.isjComboBoxShouldFire();
+//        standardColorPaletteSchemes.setjComboBoxShouldFire(false);
+//
+//        if (parentForm.getFormModel().getProductSceneView().colorPaletteInfo != null) {
+//            System.out.println("Test");
+//            System.out.println(parentForm.getFormModel().getProductSceneView().colorPaletteInfo.getName());
+//            standardColorPaletteSchemes.getjComboBox().setSelectedItem(parentForm.getFormModel().getProductSceneView().colorPaletteInfo);
+//            int index = standardColorPaletteSchemes.getjComboBox().getSelectedIndex();
+//            System.out.println("index=" + index);
+//        } else {
+//            standardColorPaletteSchemes.reset();
+//        }
+//        standardColorPaletteSchemes.setjComboBoxShouldFire(origValue);
+
+
+
 
         parentForm.revalidateToolViewPaneControl();
 
@@ -508,9 +561,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         jPanel.add(standardColorPaletteSchemes.getjComboBox(), gbc);
+//
+//        gbc.gridy++;
+//        jPanel.add(loadPaletteOnlyCheckBox, gbc);
 
         gbc.gridy++;
-        jPanel.add(loadPaletteOnlyCheckBox, gbc);
+        jPanel.add(schemeInfoLabel, gbc);
 
         return jPanel;
     }
@@ -598,58 +654,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
         ColorPaletteInfo colorPaletteInfo = (ColorPaletteInfo) jComboBox.getSelectedItem();
 
-        PropertyMap configuration = null;
-        if (parentForm.getFormModel().getProductSceneView() != null && parentForm.getFormModel().getProductSceneView().getSceneImage() != null) {
-            configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-        }
-
-        boolean useColorBlindPalettes = ColorPaletteSchemes.getUseColorBlind(configuration);
-
-        if (colorPaletteInfo.getCpdFilename(useColorBlindPalettes) != null && colorPaletteInfo.isEnabled()) {
+        File auxDir = SystemUtils.getAuxDataPath().resolve("color_palettes").toFile();
 
 
-            try {
+        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorPaletteInfo);
 
-                File cpdFile = new File(parentForm.getIODir().toFile(), colorPaletteInfo.getCpdFilename(useColorBlindPalettes));
-                ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
-
-                boolean origShouldFireChooserEvent = shouldFireChooserEvent;
-                shouldFireChooserEvent = false;
-
-                // todo Add min and max from data
-                double min = colorPaletteInfo.getMinValue();
-                double max = colorPaletteInfo.getMaxValue();
-                boolean isTargetLogScaled = colorPaletteInfo.isLogScaled();
-
-                Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
-                if (min == ColorPaletteSchemes.DOUBLE_NULL || loadPaletteOnlyCheckBox.isSelected()) {
-                    min = stx.getMinimum();
-                }
-                if (max == ColorPaletteSchemes.DOUBLE_NULL || loadPaletteOnlyCheckBox.isSelected()) {
-                    max = stx.getMaximum();
-                }
-
-                if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
-                    colorPaletteChooser.setSelectedColorPaletteDefinition(colorPaletteDef);
-                    applyChanges(min,
-                            max,
-                            colorPaletteDef,
-                            colorPaletteDef.isLogScaled(),
-                            isTargetLogScaled,
-                            colorPaletteInfo.getRootName(),
-                            isDefaultList);
-                }else {
-                    SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + "Min from data" + " must be greater than zero in log scaling mode");
-                    standardColorPaletteSchemes.reset();
-                }
-                shouldFireChooserEvent = origShouldFireChooserEvent;
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-
-
+        parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
+        resetFormModel(parentForm.getFormModel());
     }
+
 
     private void applyChanges(double min,
                               double max,
