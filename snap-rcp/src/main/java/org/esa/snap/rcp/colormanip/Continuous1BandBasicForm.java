@@ -37,8 +37,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
-import static org.esa.snap.core.datamodel.ColorPaletteSchemes.PROPERTY_SCHEME_RANGE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorSchemeManager.*;
+import static org.esa.snap.core.datamodel.ColorSchemeManager.PROPERTY_SCHEME_RANGE_DEFAULT;
 
 /**
  *
@@ -81,7 +81,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
 //    private final JCheckBox loadPaletteOnlyCheckBox;
-    private final ColorPaletteSchemes standardColorPaletteSchemes;
+    private final ColorSchemeManager standardColorPaletteSchemes;
     private JLabel colorSchemeJLabel;
     private JButton paletteInversionButton;
 
@@ -118,7 +118,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel = new JLabel("TEST");
 
 
-        standardColorPaletteSchemes = new ColorPaletteSchemes(parentForm.getIODir().toFile(), ColorPaletteSchemes.Id.SELECTOR, true, configuration);
+        standardColorPaletteSchemes = new ColorSchemeManager(parentForm.getIODir().toFile());
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
