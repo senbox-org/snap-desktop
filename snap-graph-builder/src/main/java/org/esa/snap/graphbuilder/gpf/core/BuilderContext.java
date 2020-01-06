@@ -15,7 +15,6 @@ public class BuilderContext {
     }
 
     public Boolean verify(Node node) {
-         
+        return true;    
     }
-
 }
