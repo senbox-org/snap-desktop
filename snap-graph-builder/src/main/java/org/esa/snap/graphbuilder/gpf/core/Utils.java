@@ -5,15 +5,18 @@ import java.util.ArrayList;
 
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.NodeSource;
 
 public class Utils {
     public static List<Node> affectedNodes(Graph graph, Node node) {
-        ArrayList<Node> affected = new ArrayList<List>([node]);
+        ArrayList<Node> affected = new ArrayList<Node>();
+        affected.add(node);
         Boolean changed = true;
+        int n_nodes = graph.getNodeCount();
         while (changed) {
             changed = false;
-            for (int i = 0; i < graph->getNodeCount(); i++) {
-                Node tmp = graph->getNodeCount(i);
+            for (int i = 0; i < n_nodes; i++) {
+                Node tmp = graph.getNode(i);
                 if (!affected.contains(tmp)){
                     for (NodeSource source: tmp.getSources()) {
                         if (affected.contains(source.getSourceNode())) {
@@ -33,7 +36,7 @@ public class Utils {
         for (NodeSource source: node.getSources()) {
             Node m = source.getSourceNode();
             nodes.add(m);
-            nodes.addAll(dependencyNodes(m))
+            nodes.addAll(dependencyNodes(m));
         }
         return nodes;
     }
