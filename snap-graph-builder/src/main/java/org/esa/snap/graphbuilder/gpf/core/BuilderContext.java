@@ -4,9 +4,18 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeContext;
 import org.esa.snap.core.gpf.graph.Graph;
 
 public class BuilderContext {
-    private ArrayList<Graph> graphs;
-    public BuilderContext(){}
+    private ArrayList<NodeContext> nodes;
+
+    public BuilderContext(){
+
+    }
+
+    public Boolean verify(Node node) {
+         
+    }
+
 }
