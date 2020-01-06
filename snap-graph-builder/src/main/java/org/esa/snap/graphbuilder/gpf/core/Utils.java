@@ -33,24 +33,31 @@ public class Utils {
     */
     public static List<Node> affectedNodes(Graph graph, Node node) {
         ArrayList<Node> affected = new ArrayList<Node>();
-        affected.add(node);
+        Node current = node;
         Boolean changed = true;
         int n_nodes = graph.getNodeCount();
+        ArrayList<Node> nodes = new ArrayList<Node>();
+
+        for (int i = 0; i < n_nodes; i++) {
+            nodes.add(graph.getNode(i));
+        }
+
         while (changed) {
             changed = false;
-            for (int i = 0; i < n_nodes; i++) {
-                Node tmp = graph.getNode(i);
-                if (!affected.contains(tmp)){
+            for (Node tmp: nodes) {
+                if (!affected.contains(tmp) && tmp != current){
                     for (NodeSource source: tmp.getSources()) {
-                        if (affected.contains(source.getSourceNode())) {
+                        if (current == source.getSourceNode()) {
                             affected.add(tmp);
                             changed = true;
+                            current = tmp;
+                            nodes.remove(tmp);
+                            break;
                         }
                     }
                 }
             }
         }
-        affected.remove(node);
         return affected;
     }
 
