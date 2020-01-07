@@ -1,22 +1,18 @@
 package org.esa.snap.graphbuilder.gpf.core;
 
-import java.util.List;
 import java.util.ArrayList;
 
-import org.esa.snap.core.gpf.graph.Node;
-import org.esa.snap.core.gpf.graph.NodeContext;
-import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 
 public class BuilderContext {
-    private ArrayList<NodeContext> nodes;
+    private ArrayList<GraphNode> nodes;
 
     public BuilderContext(){
-        nodes = new ArrayList<NodeContext>();
+        nodes = new ArrayList<GraphNode>();
     }
 
-    public void addNode(NodeContext node){
+    public void addNode(GraphNode node){
         nodes.add(node);
     }
 
-    
 }
