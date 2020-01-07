@@ -133,7 +133,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel.addChangeListener(new ChangeListener() {
 
             public void stateChanged(final ChangeEvent e) {
-                validateAllNodes();
+                tabChanged();
+                //validateAllNodes();
             }
         });
 
@@ -547,6 +548,18 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         return initGraph();
     }
 
+    private void connect(GraphNode node){
+        // method to complete node connection and partially validate the graph 
+    }
+
+    private void tabChanged(){ 
+        // method to check if properties of the current tab have changed and if needed partially verify graph 
+    }
+
+    private void validate(GraphNode node){
+        // method to validate a single node of the graph.
+    }
+    
     public void addListener(final ProcessingListener listener) {
         if (!listenerList.contains(listener)) {
             listenerList.add(listener);
@@ -601,7 +614,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     }
                     break;
                 case CONNECT_EVENT:
-                    validateAllNodes();
+                    connect(node);
                     break;
                 case REFRESH_EVENT:
                     refreshGraph();
@@ -722,4 +735,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         void notifyMSG(final MSG msg, final String text);
     }
+
+
 }
