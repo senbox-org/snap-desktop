@@ -48,11 +48,22 @@ import java.util.Map;
  * Date: Jan 17, 2008
  */
 public class GraphNode {
+    private enum Status {
+        UNKNWON,
+        ERROR,
+        VALIDATED,
+    }
+    private static final Color errorColor = new Color(255, 150, 150, 150);
+    private static final Color validateColor = new Color(150, 255, 150, 150);
+    private static final Color unknownColor = new Color(0, 177, 255, 128);
+    private static final Color selectedColor = new Color(200, 255, 200, 150);
 
     private final Node node;
     private final Map<String, Object> parameterMap = new HashMap<>(10);
     private OperatorUI operatorUI = null;
 
+    private Status status = Status.UNKNWON;
+    private Boolean selected = false;
     private int nodeWidth = 60;
     private int nodeHeight = 25;
     private int halfNodeHeight = 0;
@@ -396,7 +407,24 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param col The color to draw
      */
-    void drawNode(final Graphics2D g, final Color col) {
+    void drawNode(final Graphics2D g) {
+        Color col;
+        if (selected) {
+            col = selectedColor;
+        } else {
+            switch (status) {
+                case ERROR:
+                    col = errorColor;
+                    break; 
+                case VALIDATED:
+                    col = validateColor;
+                    break;
+                case UNKNWON:
+                default:
+                    col = unknownColor;
+            }
+        }
+
         final int x = displayPosition.x;
         final int y = displayPosition.y;
 
@@ -559,4 +587,15 @@ public class GraphNode {
         g.setStroke(oldStroke);
     }
 
+    public void select() {
+        this.selected = true;
+    }
+
+    public void deselect() {
+        this.selected = false;
+    }
+    
+    public Boolean isSelected() {
+        return this.selected;
+    }
 }
