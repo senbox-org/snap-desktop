@@ -17,3 +17,9 @@ Thumbs.db
 
 Igno
 userdir/
+
+# VS Code
+.project
+.classpath
+.factorypath
+.settings
