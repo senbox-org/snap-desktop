@@ -14,5 +14,4 @@ public class BuilderContext {
     public void addNode(GraphNode node){
         nodes.add(node);
     }
-
 }
