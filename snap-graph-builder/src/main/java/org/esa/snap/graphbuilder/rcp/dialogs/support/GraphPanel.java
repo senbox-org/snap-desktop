@@ -53,8 +53,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             getResource("org/esa/snap/graphbuilder/icons/folder.png"));
 
     private static final Font font = new Font("Ariel", Font.BOLD, 10);
-    private static final Color opColor = new Color(0, 177, 255, 128);
-    private static final Color selColor = new Color(200, 255, 200, 150);
     private static final char[] folderDelim = new char[]{'/'};//'\\'};
 
     private GraphNode selectedNode = null;
@@ -265,11 +263,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
 
         for (GraphNode n : nodeList) {
-
-            if (n == selectedNode)
-                n.drawNode(g, selColor);
-            else
-                n.drawNode(g, opColor);
+            n.drawNode(g);
         }
 
         // first pass sets the Size in drawNode according to string length
@@ -424,7 +418,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         if (selectedNode != n) {
             showHeadHotSpot = false;
             showTailHotSpot = false;
+            if (selectedNode != null) {
+                selectedNode.deselect();
+            }
             selectedNode = n;
+            n.select();
 
             repaint();
         }
