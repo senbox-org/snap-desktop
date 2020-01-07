@@ -75,7 +75,7 @@ public class GraphNode {
     private Point displayPosition = new Point(0, 0);
 
     private XppDom displayParameters;
-    private static Color shadowColor = new Color(0, 0, 0, 64);
+    // private static Color shadowColor = new Color(0, 0, 0, 64); // <- not used    
 
     public GraphNode(final Node n) throws IllegalArgumentException {
         node = n;
