@@ -25,6 +25,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
+import org.esa.snap.graphbuilder.gpf.core.BuilderContext;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -83,6 +84,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private JLabel progressMsgLabel = null;
     private boolean initGraphEnabled = true;
 
+    private BuilderContext builderContext;
     private final GraphExecuter graphEx;
     private boolean isProcessing = false;
     private boolean allowGraphBuilding = true;
@@ -98,7 +100,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID, final boolean allowGraphBuilding) {
         super(theAppContext.getApplicationWindow(), title, 0, helpID);
-
+        this.builderContext = new BuilderContext();
         this.allowGraphBuilding = allowGraphBuilding;
         appContext = theAppContext;
         graphEx = new GraphExecuter();
@@ -600,6 +602,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final GraphExecuter.events eventType = event.getEventType();
             switch(eventType) {
                 case ADD_EVENT:
+                    builderContext.addNode(node);
                     tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
                     refreshGraph();
                     break;
