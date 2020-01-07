@@ -11,10 +11,12 @@ public class BuilderContext {
     private ArrayList<NodeContext> nodes;
 
     public BuilderContext(){
-
+        nodes = new ArrayList<NodeContext>();
     }
 
-    public Boolean verify(Node node) {
-        return true;    
+    public void addNode(NodeContext node){
+        nodes.add(node);
     }
+
+    
 }
