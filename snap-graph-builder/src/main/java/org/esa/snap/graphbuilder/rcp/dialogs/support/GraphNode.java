@@ -68,7 +68,7 @@ public class GraphNode {
     private static final Color connectionColor = new Color(66, 66, 66, 255);
 
     private static final Set<String> inputOperators = new HashSet<String>(
-       Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader"));
+       Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader", "Import-Vector"));
     private static final Set<String> outputOperators = new HashSet<String>(
         Arrays.asList("Write"));
 
