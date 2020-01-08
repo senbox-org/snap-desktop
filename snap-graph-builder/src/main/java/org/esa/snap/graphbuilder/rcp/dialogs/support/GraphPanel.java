@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -40,7 +41,15 @@ import java.util.Set;
  */
 public class GraphPanel extends JPanel implements ActionListener, PopupMenuListener, MouseListener, MouseMotionListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8846674332592525519L;
     private final GraphExecuter graphEx;
+    
+    private static final int gridSpacing = 15;
+    private BufferedImage gridBuffer = null;
+
     private JMenu addMenu;
     private Point lastMousePos = null;
     private final AddMenuListener addListener = new AddMenuListener(this);
@@ -242,9 +251,40 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
+        drawGrid(g2);
         drawGraph(g2, graphEx.getGraphNodes());
     }
+
+    /**
+     * Draw the background grid of the Graph
+     * 
+     * @param g the Graphics object
+     */
+    private void drawGrid(Graphics2D g) {
+        // g.setColor(Color.darkGray);
+        int width = getWidth();
+        int height = getHeight();
+        if (gridBuffer == null || gridBuffer.getWidth() != width || gridBuffer.getHeight() != height) {
+            gridBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics g_buff = gridBuffer.getGraphics();
+            // g.fillRect(0, 0, width, height);
+            int n_cols = Math.round(width / gridSpacing);
+            int n_rows = Math.round(height / gridSpacing);
+            g_buff.setColor(Color.lightGray);
+            for (int i = 0; i < n_cols; i++) {
+                int x = i * gridSpacing;
+                g_buff.drawLine(x, 0, x, height);
+                if (i < n_rows) {
+                    g_buff.drawLine(0, x, width, x);
+                }
+            }
+            for (int i = n_cols; i < n_rows; i++) {
+                int y = i * gridSpacing;
+                g_buff.drawLine(0, y, width, y);
+            }
+        }
+        g.drawImage(gridBuffer, 0, 0, null);
+    }   
 
     /**
      * Draw the graphical representation of the Graph
@@ -278,12 +318,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             }
         }
 
-        if (showHeadHotSpot && selectedNode != null) {
-            selectedNode.drawHeadHotspot(g, Color.red);
-        }
-        if (showTailHotSpot && selectedNode != null) {
-            selectedNode.drawTailHotspot(g, Color.red);
-        }
         if (connectingSourceFromHead && connectSourceTargetNode != null) {
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
