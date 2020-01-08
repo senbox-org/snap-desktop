@@ -422,8 +422,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
                 selectedNode.deselect();
             }
             selectedNode = n;
-            n.select();
-
+            if (n != null) {
+                n.select();
+            }
             repaint();
         }
         if (selectedNode != null) {
