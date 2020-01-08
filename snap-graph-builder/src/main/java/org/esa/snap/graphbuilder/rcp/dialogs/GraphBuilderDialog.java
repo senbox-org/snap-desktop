@@ -51,6 +51,7 @@ import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,6 +62,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import java.awt.event.WindowListener;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -744,5 +747,4 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         GraphBuilderDialog dialog = new GraphBuilderDialog(new DefaultAppContext("Standalone Graph Builder"), "Graph Builder", "NONE");
         dialog.show();
     }
-
 }
