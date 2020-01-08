@@ -462,15 +462,17 @@ public class GraphNode {
             g.drawLine(x + nodeWidth + i, y + i, x + nodeWidth + i, y + nodeHeight + i);
         }
 
-        Shape clipShape = new Rectangle(x, y, nodeWidth, nodeHeight);
+        //Shape clipShape = new Rectangle(x, y, nodeWidth, nodeHeight);
 
-        g.setComposite(AlphaComposite.SrcAtop);
-        g.setPaint(new GradientPaint(x, y, col, x + nodeWidth, y + nodeHeight, col.darker()));
-        g.fill(clipShape);
+        // g.setComposite(AlphaComposite.SrcAtop);
+        g.setColor(col);//(new GradientPaint(x, y, col, x + nodeWidth, y + nodeHeight, col.darker()));
+        //g.fill(clipShape);
 
-        g.setColor(Color.blue);
-        g.draw3DRect(x, y, nodeWidth - 1, nodeHeight - 1, true);
-
+        //g.setColor(Color.blue);
+        //g.draw3DRect(x, y, nodeWidth - 1, nodeHeight - 1, true);
+        g.fillRoundRect(x, y, nodeWidth, nodeHeight, 10, 10);
+        g.setColor(col.darker());
+        g.drawRoundRect(x, y, nodeWidth, nodeHeight, 10, 10);
         g.setColor(Color.BLACK);
         g.drawString(name, x + (nodeWidth - stringWidth) / 2, y + 15);
 
