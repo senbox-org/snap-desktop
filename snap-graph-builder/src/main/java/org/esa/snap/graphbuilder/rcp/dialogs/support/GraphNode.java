@@ -48,7 +48,7 @@ import java.util.Map;
  * Date: Jan 17, 2008
  */
 public class GraphNode {
-    private enum Status {
+    public enum Status {
         UNKNWON,
         ERROR,
         VALIDATED,
@@ -597,5 +597,13 @@ public class GraphNode {
     
     public Boolean isSelected() {
         return this.selected;
+    }
+
+    public Status getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
