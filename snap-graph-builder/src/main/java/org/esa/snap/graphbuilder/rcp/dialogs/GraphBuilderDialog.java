@@ -735,7 +735,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     public interface ProcessingListener {
-
         enum MSG {DONE, UPDATE}
 
         void notifyMSG(final MSG msg, final File[] fileList);
