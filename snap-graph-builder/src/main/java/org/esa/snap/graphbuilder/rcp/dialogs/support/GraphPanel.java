@@ -335,17 +335,17 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
             if (p1 != null && p2 != null) {
-                g.setColor(Color.red);
-                g.drawLine(p1.x, p1.y + connectSourceTargetNode.getAvailableInputYOffset(), p2.x, p2.y);
+                g.setColor(Color.blue);
+                GraphNode.drawArrow(g, p1.x, p1.y + connectSourceTargetNode.getAvailableInputYOffset(), p2.x, p2.y);
             }
         } else if (connectingSourceFromTail && connectSourceTargetNode != null) {
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
             if (p1 != null && p2 != null) {
-                g.setColor(Color.red);
-                g.drawLine(p1.x + connectSourceTargetNode.getWidth(),
-                        p1.y + connectSourceTargetNode.getHalfNodeHeight(),
-                        p2.x, p2.y);
+                g.setColor(Color.blue);
+                GraphNode.drawArrow(g, p2.x, p2.y,  
+                    p1.x + connectSourceTargetNode.getWidth(),
+                    p1.y + connectSourceTargetNode.getHalfNodeHeight());
             }
         }
     }
@@ -478,14 +478,12 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
         if (selectedNode != null) {
             final int hotspotSize = GraphNode.getHotSpotSize();
-            final Point headPoint = new Point(n.getPos().x, n.getPos().y + selectedNode.getHotSpotOffset());
-            final Point tailPoint = new Point(n.getPos().x + n.getWidth() - hotspotSize, n.getPos().y + selectedNode.getHotSpotOffset());
 
-            if (isWithinRect(headPoint, hotspotSize, hotspotSize, e.getPoint())) {
+            if (selectedNode.isMouseOverHead(e.getPoint())) {
                 showHeadHotSpot = true;
                 connectSourceTargetNode = selectedNode;
                 repaint();
-            } else if (isWithinRect(tailPoint, hotspotSize, hotspotSize, e.getPoint())) {
+            } else if (selectedNode.isMouseOverTail(e.getPoint())) {
                 showTailHotSpot = true;
                 connectSourceTargetNode = selectedNode;
                 repaint();
@@ -500,14 +498,10 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private GraphNode findNode(Point p) {
 
         for (GraphNode n : graphEx.getGraphNodes()) {
-            if (isWithinRect(n.getPos(), n.getWidth(), n.getHeight(), p))
+            if (n.isMouseOver(p))
                 return n;
         }
         return null;
-    }
-
-    private static boolean isWithinRect(Point o, int width, int height, Point p) {
-        return p.x > o.x && p.y > o.y && p.x < o.x + width && p.y < o.y + height;
     }
 
     static class AddMenuListener implements ActionListener {

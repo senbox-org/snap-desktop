@@ -588,4 +588,40 @@ public class GraphNode {
     public int getAvailableInputYOffset() {
         return hotSpotOffset + connectionNumber() * 15 + halfHotSpotSize;
     }
+
+    public Boolean isMouseOver(Point p) {
+        int x = p.x - getPos().x;
+        int y = p.y - getPos().y;
+        if (x >= 0 && x <= getWidth() && y >= 0 && y <= getHeight()) {
+            return true;
+        }
+        
+        if (hasInput() && FastMath.abs(x - getWidth()) <= halfHotSpotSize + 1 && FastMath.abs(y - halfNodeHeight) <= halfHotSpotSize + 1) return true;  
+        if (hasOutput() && FastMath.abs(x) <= halfHotSpotSize + 1) {
+            for (int i = 0; i < connectionNumber() + 1; i++){
+                if (FastMath.abs(y - (i*15 + hotSpotOffset)) <= halfHotSpotSize + 1) return true;
+            }
+        }
+        return false; 
+    }
+    
+    public Boolean isMouseOverTail(Point p) {
+        if (!hasInput()) return false;
+        int x = p.x - (getPos().x + getWidth());
+        int y = p.y - (getPos().y + halfNodeHeight);
+        return FastMath.abs(x) <= halfHotSpotSize + 1 && FastMath.abs(y) <= halfHotSpotSize + 1;
+    }
+
+    public Boolean isMouseOverHead(Point p) {
+        if (!hasOutput()) return false;
+        int x = p.x - getPos().x;
+        int y = p.y - getPos().y;
+        if (FastMath.abs(x) <= halfHotSpotSize + 1) {
+            for (int i = 0; i < connectionNumber() + 1; i++){
+                if (FastMath.abs(y - (i*15 + hotSpotOffset)) <= halfHotSpotSize + 1) return true;
+            }
+        }
+        return  false;
+    }
 }
+
