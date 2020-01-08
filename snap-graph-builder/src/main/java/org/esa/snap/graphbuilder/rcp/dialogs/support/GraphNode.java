@@ -614,4 +614,15 @@ public class GraphNode {
     public void setStatus(Status status) {
         this.status = status;
     }
+    /**
+     * Normalize the position of the widget to the current grid
+     * 
+     * @param gridSpacing size of the grid
+     */
+    public void normalizePosition(int gridSpacing) {
+        double x = Math.round(displayPosition.getX() / gridSpacing) * gridSpacing;
+        double y = Math.round(displayPosition.getY() / gridSpacing) * gridSpacing;
+
+        displayPosition.setLocation(x, y);
+    }
 }
