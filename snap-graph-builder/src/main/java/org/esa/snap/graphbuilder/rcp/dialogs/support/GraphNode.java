@@ -451,7 +451,7 @@ public class GraphNode {
         final String name = node.getId();
         final Rectangle2D rect = metrics.getStringBounds(name, g);
         final int stringWidth = (int) rect.getWidth();
-        int width = (int)Math.ceil((Math.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
+        int width = Math.round((Math.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
         setSize(width, 15 + (1 + connectionNumber()) * 15);
 
         int step = 4;
@@ -628,5 +628,9 @@ public class GraphNode {
 
     public boolean hasOutput() {
         return this.nodeType != Type.IN;
+    }
+
+    public int getAvailableInputYOffset() {
+        return 7 + (connectionNumber() + 1) * 15;
     }
 }

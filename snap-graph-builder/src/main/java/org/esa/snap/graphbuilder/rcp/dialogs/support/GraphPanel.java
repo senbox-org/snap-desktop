@@ -325,7 +325,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             final Point p2 = connectingSourcePos;
             if (p1 != null && p2 != null) {
                 g.setColor(Color.red);
-                g.drawLine(p1.x, p1.y + connectSourceTargetNode.getHalfNodeHeight(), p2.x, p2.y);
+                g.drawLine(p1.x, p1.y + connectSourceTargetNode.getAvailableInputYOffset(), p2.x, p2.y);
             }
         } else if (connectingSourceFromTail && connectSourceTargetNode != null) {
             final Point p1 = connectSourceTargetNode.getPos();
