@@ -18,6 +18,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.gpf.graph.GraphContext;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeContext;
 
 import java.util.ArrayList;
@@ -89,6 +90,11 @@ public class GraphNodeList {
         }
     }
 
+
+    void updateParameters(Node node)  throws GraphException {
+        findGraphNode(node.getId()).updateParameters();
+    }  
+
     void updateGraphNodes(final GraphContext graphContext) throws GraphException {
         if (graphContext != null) {
             for (GraphNode n : nodeList) {
@@ -109,7 +115,7 @@ public class GraphNodeList {
         return false;
     }
 
-    GraphNode[] findConnectedNodes(final GraphNode sourceNode) {
+    public GraphNode[] findConnectedNodes(final GraphNode sourceNode) {
         final List<GraphNode> connectedNodes = new ArrayList<>();
         for (GraphNode n : nodeList) {
             if (n.isNodeSource(sourceNode))
