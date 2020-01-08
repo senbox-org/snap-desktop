@@ -310,7 +310,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         // first pass sets the Size in drawNode according to string length
         for (GraphNode n : nodeList) {
             // connect source nodes
-            g.setColor(Color.red);
             final NodeSource[] nSources = n.getNode().getSources();
             for (int i = 0; i < nSources.length; i++){
                 NodeSource nSource = nSources[i];
