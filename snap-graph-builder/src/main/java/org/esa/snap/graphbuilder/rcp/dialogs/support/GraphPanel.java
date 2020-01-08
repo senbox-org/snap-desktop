@@ -71,6 +71,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private boolean connectingSourceFromTail = false;
     private Point connectingSourcePos = null;
     private GraphNode connectSourceTargetNode = null;
+    private GraphNode disconnectTargetNode = null;
     private boolean showRightClickHelp = false;
 
     public GraphPanel(GraphExecuter graphExec) {
@@ -451,6 +452,14 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             repaint();
         }
         if (connectingSourceFromHead || connectingSourceFromTail) {
+            if (disconnectTargetNode != null) {
+                connectSourceTargetNode = disconnectTargetNode;
+                selectedNode.disconnect(disconnectTargetNode.getID());
+                disconnectTargetNode = null;
+                selectedNode.deselect();
+                selectedNode = connectSourceTargetNode;
+                selectedNode.select();
+            }
             connectingSourcePos = e.getPoint();
             repaint();
         }
@@ -477,8 +486,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             repaint();
         }
         if (selectedNode != null) {
-            final int hotspotSize = GraphNode.getHotSpotSize();
-
             if (selectedNode.isMouseOverHead(e.getPoint())) {
                 showHeadHotSpot = true;
                 connectSourceTargetNode = selectedNode;
@@ -486,6 +493,10 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             } else if (selectedNode.isMouseOverTail(e.getPoint())) {
                 showTailHotSpot = true;
                 connectSourceTargetNode = selectedNode;
+                repaint();
+            } else if (selectedNode.isMouseOverConnectedHead(e.getPoint())) {
+                showTailHotSpot = true;
+                disconnectTargetNode = findNode(selectedNode.getConnectedHeadAt(e.getPoint()));
                 repaint();
             } else if (showHeadHotSpot || showTailHotSpot) {
                 showHeadHotSpot = false;
@@ -499,6 +510,15 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         for (GraphNode n : graphEx.getGraphNodes()) {
             if (n.isMouseOver(p))
+                return n;
+        }
+        return null;
+    }
+
+    private GraphNode findNode(String s) {
+        if (s == null) return null;
+        for (GraphNode n : graphEx.getGraphNodes()) {
+            if (n.getID().equals(s))
                 return n;
         }
         return null;
