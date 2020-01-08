@@ -40,6 +40,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.DefaultAppContext;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.util.HelpCtx;
 
@@ -737,6 +738,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         void notifyMSG(final MSG msg, final File[] fileList);
 
         void notifyMSG(final MSG msg, final String text);
+    }
+
+    public static void main(String args[]){
+        GraphBuilderDialog dialog = new GraphBuilderDialog(new DefaultAppContext("test"), "Dialong", "000");
+        dialog.show();
+        
     }
 
 
