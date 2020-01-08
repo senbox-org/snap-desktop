@@ -336,14 +336,14 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
             if (p1 != null && p2 != null) {
-                g.setColor(Color.blue);
+                g.setColor(Color.gray);
                 GraphNode.drawArrow(g, p1.x, p1.y + connectSourceTargetNode.getAvailableInputYOffset(), p2.x, p2.y);
             }
         } else if (connectingSourceFromTail && connectSourceTargetNode != null) {
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
             if (p1 != null && p2 != null) {
-                g.setColor(Color.blue);
+                g.setColor(Color.gray);
                 GraphNode.drawArrow(g, p2.x, p2.y,  
                     p1.x + connectSourceTargetNode.getWidth(),
                     p1.y + connectSourceTargetNode.getHalfNodeHeight());
