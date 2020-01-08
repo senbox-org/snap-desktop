@@ -312,10 +312,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             // connect source nodes
             g.setColor(Color.red);
             final NodeSource[] nSources = n.getNode().getSources();
-            for (NodeSource nSource : nSources) {
+            for (int i = 0; i < nSources.length; i++){
+                NodeSource nSource = nSources[i];
                 final GraphNode srcNode = graphEx.getGraphNodeList().findGraphNode(nSource.getSourceNodeId());
                 if (srcNode != null)
-                    n.drawConnectionLine(g, srcNode);
+                    n.drawConnectionLine(g, srcNode, i);
             }
         }
 

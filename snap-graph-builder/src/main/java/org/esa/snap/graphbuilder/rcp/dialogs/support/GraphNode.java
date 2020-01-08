@@ -299,7 +299,7 @@ public class GraphNode {
         nodeHeight = height;
         halfNodeHeight = nodeHeight / 2;
         halfNodeWidth = nodeWidth / 2;
-        hotSpotOffset = halfNodeHeight - halfHotSpotSize;
+        hotSpotOffset = 15;
     }
 
     int getHotSpotOffset() {
@@ -451,7 +451,7 @@ public class GraphNode {
         final String name = node.getId();
         final Rectangle2D rect = metrics.getStringBounds(name, g);
         final int stringWidth = (int) rect.getWidth();
-        int width = (int)Math.ceil((Math.max(stringWidth, 50) + 10) / 15) * 15 ;
+        int width = (int)Math.ceil((Math.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
         setSize(width, 15 + (1 + connectionNumber()) * 15);
 
         int step = 4;
@@ -492,8 +492,15 @@ public class GraphNode {
     void drawHeadHotspot(final Graphics g, final Color col) {
         if (!this.hasOutput()) return;
         final Point p = displayPosition;
-        g.setColor(col);
-        g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset, hotSpotSize, hotSpotSize);
+        Color secondary = new Color(col.getRed(), col.getGreen(), col.getBlue(), 150);
+        for (int i = 0; i < connectionNumber() + 1; i++) {
+            g.setColor(col);
+            g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
+            if (i < connectionNumber()) {
+                g.setColor(secondary);
+                g.fillOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
+            }
+        }
     }
 
     /**
@@ -520,55 +527,15 @@ public class GraphNode {
      * @param g   The Java2D Graphics
      * @param src the source GraphNode
      */
-    void drawConnectionLine(final Graphics2D g, final GraphNode src) {
+    void drawConnectionLine(final Graphics2D g, final GraphNode src, int index) {
 
         final Point nodePos = displayPosition;
         final Point srcPos = src.displayPosition;
 
-        final int nodeEndX = nodePos.x + nodeWidth;
-        final int nodeMidY = nodePos.y + halfNodeHeight;
         final int srcEndX = srcPos.x + src.getWidth();
         final int srcMidY = srcPos.y + src.getHalfNodeHeight();
-
-        if (srcEndX <= nodePos.x) {
-            if (srcPos.y > nodePos.y + nodeHeight) {
-                // to UR
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y + nodeHeight,
-                        srcEndX, srcMidY);
-            } else if (srcPos.y + src.getHeight() < nodePos.y) {
-                // to DR
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y,
-                        srcEndX, srcMidY);
-            } else {
-                // to R
-                drawArrow(g, nodePos.x, nodeMidY,
-                        srcEndX, srcMidY);
-            }
-        } else if (srcPos.x >= nodeEndX) {
-            if (srcPos.y > nodePos.y + nodeHeight) {
-                // to UL
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y + nodeHeight,
-                        srcPos.x, srcPos.y + halfNodeHeight);
-            } else if (srcPos.y + src.getHeight() < nodePos.y) {
-                // to DL
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y,
-                        srcPos.x, srcPos.y + halfNodeHeight);
-            } else {
-                // to L
-                drawArrow(g, nodeEndX, nodeMidY,
-                        srcPos.x, srcPos.y + halfNodeHeight);
-            }
-        } else {
-            if (srcPos.y > nodePos.y + nodeHeight) {
-                // U
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y + nodeHeight,
-                        srcPos.x + src.getHalfNodeWidth(), srcPos.y);
-            } else {
-                // D
-                drawArrow(g, nodePos.x + halfNodeWidth, nodePos.y,
-                        srcPos.x + src.getHalfNodeWidth(), srcPos.y + src.getHeight());
-            }
-        }
+        g.setColor(Color.darkGray);
+        drawArrow(g, nodePos.x, nodePos.y + hotSpotOffset + index * 15 + 7 , srcEndX, srcMidY);        
     }
 
     /**
@@ -617,7 +584,6 @@ public class GraphNode {
     }
 
     public void select() {
-        System.out.println(this.node.getOperatorName());
         this.selected = true;
     }
 
