@@ -454,6 +454,14 @@ public class GraphNode {
 
         g.setColor(Color.BLACK);
         g.drawString(name, x + (nodeWidth - stringWidth) / 2, y + 15);
+
+        if (this.isSelected()) {
+            this.drawHeadHotspot(g, Color.red);
+            this.drawTailHotspot(g, Color.red);
+        } else {
+            this.drawHeadHotspot(g, Color.blue);
+            this.drawTailHotspot(g, Color.blue);
+        }
     }
 
     /**
