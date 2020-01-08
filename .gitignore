@@ -19,6 +19,7 @@ Igno
 userdir/
 
 # VS Code
+.vscode
 .project
 .classpath
 .factorypath
