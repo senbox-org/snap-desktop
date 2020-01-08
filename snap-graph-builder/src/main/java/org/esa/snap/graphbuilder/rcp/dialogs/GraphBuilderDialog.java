@@ -745,5 +745,4 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         dialog.show();
     }
 
-
 }
