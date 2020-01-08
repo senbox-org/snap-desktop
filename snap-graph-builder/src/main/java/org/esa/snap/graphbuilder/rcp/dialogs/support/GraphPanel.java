@@ -156,6 +156,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private void addOperatorAction(String name) {
         final GraphNode newGraphNode = graphEx.addOperator(name);
         newGraphNode.setPos(lastMousePos);
+        newGraphNode.normalizePosition(gridSpacing);
         repaint();
     }
 
@@ -409,6 +410,8 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             if (n != null && selectedNode != n) {
                 n.connectOperatorSource(connectSourceTargetNode.getID());
             }
+        } else if (selectedNode != null) {
+            selectedNode.normalizePosition(gridSpacing);
         }
         connectingSourceFromHead = false;
         connectingSourceFromTail = false;
