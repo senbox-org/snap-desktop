@@ -79,7 +79,7 @@ public class GraphNode {
     private Type nodeType = Type.INOUT;
     private Boolean selected = false;
     private int nodeWidth = 60;
-    private int nodeHeight = 25;
+    private int nodeHeight = 15;
     private int halfNodeHeight = 0;
     private int halfNodeWidth = 0;
     private static final int hotSpotSize = 10;
@@ -451,7 +451,8 @@ public class GraphNode {
         final String name = node.getId();
         final Rectangle2D rect = metrics.getStringBounds(name, g);
         final int stringWidth = (int) rect.getWidth();
-        setSize(Math.max(stringWidth, 50) + 10, 25);
+        int width = (int)Math.ceil((Math.max(stringWidth, 50) + 10) / 15) * 15 ;
+        setSize(width, 15 + (1 + connectionNumber()) * 15);
 
         int step = 4;
         int alpha = 96;
