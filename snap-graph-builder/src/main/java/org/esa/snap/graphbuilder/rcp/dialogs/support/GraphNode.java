@@ -615,13 +615,45 @@ public class GraphNode {
     public Boolean isMouseOverHead(Point p) {
         if (!hasOutput()) return false;
         int x = p.x - getPos().x;
+        int y = p.y - getPos().y - (connectionNumber() * 15 + hotSpotOffset + halfHotSpotSize) ;
+        if (FastMath.abs(x) <= halfHotSpotSize + 1 && FastMath.abs(y) <= halfHotSpotSize + 1) return true;
+        return  false;
+    }
+
+    public  Boolean isMouseOverConnectedHead(Point p) {
+        if (!hasOutput()) return false;
+        int x = p.x - getPos().x;
         int y = p.y - getPos().y;
         if (FastMath.abs(x) <= halfHotSpotSize + 1) {
-            for (int i = 0; i < connectionNumber() + 1; i++){
-                if (FastMath.abs(y - (i*15 + hotSpotOffset)) <= halfHotSpotSize + 1) return true;
+            for (int i = 0; i < connectionNumber(); i++){
+                if (FastMath.abs(y - (i * 15 + hotSpotOffset + halfHotSpotSize)) <= halfHotSpotSize + 1) return true;
             }
         }
-        return  false;
+        return false;
+    }
+
+    public String getConnectedHeadAt(Point p){
+        int x = p.x - getPos().x;
+        int y = p.y - getPos().y;
+        if (FastMath.abs(x) <= halfHotSpotSize + 1) {
+            for (int i = 0; i < connectionNumber(); i++){
+                if (FastMath.abs(y - (i * 15 + hotSpotOffset + halfHotSpotSize)) <= halfHotSpotSize + 1) {
+                    NodeSource source = this.node.getSource(i);
+                    return source.getSourceNodeId();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void disconnect(String id) {
+        for (int i = 0; i < connectionNumber(); i++) {
+            NodeSource source = this.node.getSource(i);
+            if (source.getSourceNodeId().equals(id)) {
+                this.node.removeSource(source);
+                return;
+            }
+        }
     }
 }
 
