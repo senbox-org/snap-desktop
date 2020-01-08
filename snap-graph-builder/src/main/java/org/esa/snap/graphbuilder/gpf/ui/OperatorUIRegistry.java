@@ -107,6 +107,23 @@ public class OperatorUIRegistry {
         return new DefaultOperatorUIDescriptor(id, operatorName, operatorUIClass, disableFromGraphBuilder);
     }
 
+    private static OperatorUI convertToGraphBuilder(OperatorUI original) {
+        // TODO implement method to convert normal ui to graph builder one.
+        return original;
+    }
+    
+    /**
+     * Create Graph Builder Operator UI, for each parameter user could be able to specify a variable
+     * name to be used in the final graph.
+     * 
+     * @param operatorName the Operator name
+     * @return the Operator UI
+     */
+    public static OperatorUI CreateGraphBuilderOperatorUI(final String operatorName) {
+        OperatorUI ui = CreateOperatorUI(operatorName);
+        return convertToGraphBuilder(ui);
+    }
+
     public static OperatorUI CreateOperatorUI(final String operatorName) {
 
         final OperatorUIRegistry reg = OperatorUIRegistry.getInstance();
