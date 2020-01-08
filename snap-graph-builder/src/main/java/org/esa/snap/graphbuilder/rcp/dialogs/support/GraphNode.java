@@ -40,6 +40,9 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * Represents a node of the graph for the GraphBuilder
@@ -48,6 +51,11 @@ import java.util.Map;
  * Date: Jan 17, 2008
  */
 public class GraphNode {
+    public enum Type{
+        IN,
+        INOUT,
+        OUT,
+    }
     public enum Status {
         UNKNWON,
         ERROR,
@@ -58,11 +66,17 @@ public class GraphNode {
     private static final Color unknownColor = new Color(0, 177, 255, 128);
     private static final Color selectedColor = new Color(200, 255, 200, 150);
 
+    private static final Set<String> inputOperators = new HashSet<String>(
+       Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader"));
+    private static final Set<String> outputOperators = new HashSet<String>(
+        Arrays.asList("Write"));
+
     private final Node node;
     private final Map<String, Object> parameterMap = new HashMap<>(10);
     private OperatorUI operatorUI = null;
 
     private Status status = Status.UNKNWON;
+    private Type nodeType = Type.INOUT;
     private Boolean selected = false;
     private int nodeWidth = 60;
     private int nodeHeight = 25;
@@ -81,7 +95,11 @@ public class GraphNode {
         node = n;
         displayParameters = new XppDom("node");
         displayParameters.setAttribute("id", node.getId());
-
+        if (inputOperators.contains(getOperatorName())) {
+            this.nodeType = Type.IN;
+        } else if (outputOperators.contains(getOperatorName())) {
+            this.nodeType = Type.OUT;
+        }
         initParameters();
     }
 
@@ -471,6 +489,7 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawHeadHotspot(final Graphics g, final Color col) {
+        if (!this.hasOutput()) return;
         final Point p = displayPosition;
         g.setColor(col);
         g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset, hotSpotSize, hotSpotSize);
@@ -483,6 +502,7 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawTailHotspot(final Graphics g, final Color col) {
+        if (!this.hasInput()) return;
         final Point p = displayPosition;
         g.setColor(col);
 
@@ -596,6 +616,7 @@ public class GraphNode {
     }
 
     public void select() {
+        System.out.println(this.node.getOperatorName());
         this.selected = true;
     }
 
@@ -624,5 +645,21 @@ public class GraphNode {
         double y = Math.round(displayPosition.getY() / gridSpacing) * gridSpacing;
 
         displayPosition.setLocation(x, y);
+    }
+
+    public int connectionNumber() {
+        return this.node.getSources().length;
+    }
+
+    public Type getNodeType() {
+        return this.nodeType;
+    }
+
+    public boolean hasInput() {
+        return this.nodeType != Type.OUT;
+    }
+
+    public boolean hasOutput() {
+        return this.nodeType != Type.IN;
     }
 }
