@@ -741,9 +741,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     public static void main(String args[]){
-        GraphBuilderDialog dialog = new GraphBuilderDialog(new DefaultAppContext("test"), "Dialong", "000");
+        GraphBuilderDialog dialog = new GraphBuilderDialog(new DefaultAppContext("Standalone Graph Builder"), "Graph Builder", "NONE");
         dialog.show();
-        
     }
 
 
