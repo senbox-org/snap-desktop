@@ -501,6 +501,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             } else if (showHeadHotSpot || showTailHotSpot) {
                 showHeadHotSpot = false;
                 showTailHotSpot = false;
+                disconnectTargetNode = null;
                 repaint();
             }
         }
