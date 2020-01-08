@@ -271,8 +271,15 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             // g.fillRect(0, 0, width, height);
             int n_cols = Math.round(width / gridSpacing);
             int n_rows = Math.round(height / gridSpacing);
+            Color c1 = new Color(220, 220, 220);
+            Color c2 = new Color(230, 230, 230);
             g_buff.setColor(Color.lightGray);
             for (int i = 0; i < n_cols; i++) {
+                if (i % 5 == 0) {
+                    g_buff.setColor(c1);
+                } else {
+                    g_buff.setColor(c2);
+                }
                 int x = i * gridSpacing;
                 g_buff.drawLine(x, 0, x, height);
                 if (i < n_rows) {
@@ -281,6 +288,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             }
             for (int i = n_cols; i < n_rows; i++) {
                 int y = i * gridSpacing;
+                if (i % 5 == 0) {
+                    g_buff.setColor(c1);
+                } else {
+                    g_buff.setColor(c2);
+                }
                 g_buff.drawLine(0, y, width, y);
             }
         }
@@ -407,7 +419,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
             }
         } else if (connectingSourceFromTail) {
             final GraphNode n = findNode(e.getPoint());
-            if (n != null && selectedNode != n) {
+            if (n != null && selectedNode != n && connectSourceTargetNode != null) {
                 n.connectOperatorSource(connectSourceTargetNode.getID());
             }
         } else if (selectedNode != null) {

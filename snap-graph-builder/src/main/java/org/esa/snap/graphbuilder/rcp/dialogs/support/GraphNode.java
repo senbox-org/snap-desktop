@@ -64,7 +64,8 @@ public class GraphNode {
     private static final Color errorColor = new Color(255, 150, 150, 150);
     private static final Color validateColor = new Color(150, 255, 150, 150);
     private static final Color unknownColor = new Color(0, 177, 255, 128);
-    private static final Color selectedColor = new Color(200, 255, 200, 150);
+    private static final Color selectedColor = unknownColor.brighter();
+    private static final Color connectionColor = new Color(66, 66, 66, 255);
 
     private static final Set<String> inputOperators = new HashSet<String>(
        Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader"));
@@ -81,15 +82,13 @@ public class GraphNode {
     private int nodeWidth = 60;
     private int nodeHeight = 15;
     private int halfNodeHeight = 0;
-    private int halfNodeWidth = 0;
     private static final int hotSpotSize = 10;
     private static final int halfHotSpotSize = hotSpotSize / 2;
-    private int hotSpotOffset = 0;
+    private int hotSpotOffset = 10;
 
     private Point displayPosition = new Point(0, 0);
 
     private XppDom displayParameters;
-    // private static Color shadowColor = new Color(0, 0, 0, 64); // <- not used    
 
     public GraphNode(final Node n) throws IllegalArgumentException {
         node = n;
@@ -286,10 +285,6 @@ public class GraphNode {
         return hotSpotSize;
     }
 
-    private int getHalfNodeWidth() {
-        return halfNodeWidth;
-    }
-
     int getHalfNodeHeight() {
         return halfNodeHeight;
     }
@@ -298,8 +293,7 @@ public class GraphNode {
         nodeWidth = width;
         nodeHeight = height;
         halfNodeHeight = nodeHeight / 2;
-        halfNodeWidth = nodeWidth / 2;
-        hotSpotOffset = 15;
+        hotSpotOffset = 10;
     }
 
     int getHotSpotOffset() {
@@ -442,6 +436,9 @@ public class GraphNode {
                     col = unknownColor;
             }
         }
+        Color dark = col.darker().darker();
+        Stroke oldStroke = g.getStroke();
+        Stroke bigStroke = new BasicStroke(2); 
 
         final int x = displayPosition.x;
         final int y = displayPosition.y;
@@ -451,38 +448,25 @@ public class GraphNode {
         final String name = node.getId();
         final Rectangle2D rect = metrics.getStringBounds(name, g);
         final int stringWidth = (int) rect.getWidth();
-        int width = Math.round((Math.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
+        int width = FastMath.round((FastMath.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
         setSize(width, 15 + (1 + connectionNumber()) * 15);
 
-        int step = 4;
-        int alpha = 96;
-        for (int i = 0; i < step; ++i) {
-            g.setColor(new Color(0, 0, 0, alpha - (32 * i)));
-            g.drawLine(x + i + 1, y + nodeHeight + i, x + nodeWidth + i - 1, y + nodeHeight + i);
-            g.drawLine(x + nodeWidth + i, y + i, x + nodeWidth + i, y + nodeHeight + i);
-        }
+        g.setColor(col);
+        g.fillRoundRect(x, y, nodeWidth, nodeHeight, 8, 8);
+        g.setColor(dark);
+        
+        
+        g.setStroke(bigStroke);
+        g.drawRoundRect(x, y, nodeWidth, nodeHeight, 8, 8);
+        g.setStroke(oldStroke);
 
-        //Shape clipShape = new Rectangle(x, y, nodeWidth, nodeHeight);
-
-        // g.setComposite(AlphaComposite.SrcAtop);
-        g.setColor(col);//(new GradientPaint(x, y, col, x + nodeWidth, y + nodeHeight, col.darker()));
-        //g.fill(clipShape);
-
-        //g.setColor(Color.blue);
-        //g.draw3DRect(x, y, nodeWidth - 1, nodeHeight - 1, true);
-        g.fillRoundRect(x, y, nodeWidth, nodeHeight, 10, 10);
-        g.setColor(col.darker());
-        g.drawRoundRect(x, y, nodeWidth, nodeHeight, 10, 10);
-        g.setColor(Color.BLACK);
+        g.setColor(Color.darkGray);
         g.drawString(name, x + (nodeWidth - stringWidth) / 2, y + 15);
 
-        if (this.isSelected()) {
-            this.drawHeadHotspot(g, Color.red);
-            this.drawTailHotspot(g, Color.red);
-        } else {
-            this.drawHeadHotspot(g, Color.blue);
-            this.drawTailHotspot(g, Color.blue);
-        }
+        g.setStroke(bigStroke);
+        this.drawHeadHotspot(g, dark);
+        this.drawTailHotspot(g, dark);
+        
     }
 
     /**
@@ -494,14 +478,11 @@ public class GraphNode {
     void drawHeadHotspot(final Graphics g, final Color col) {
         if (!this.hasOutput()) return;
         final Point p = displayPosition;
-        Color secondary = new Color(col.getRed(), col.getGreen(), col.getBlue(), 150);
         for (int i = 0; i < connectionNumber() + 1; i++) {
+            g.setColor(Color.white);
+            g.fillOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
             g.setColor(col);
-            g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
-            if (i < connectionNumber()) {
-                g.setColor(secondary);
-                g.fillOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
-            }
+            g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);          
         }
     }
 
@@ -514,13 +495,13 @@ public class GraphNode {
     void drawTailHotspot(final Graphics g, final Color col) {
         if (!this.hasInput()) return;
         final Point p = displayPosition;
-        g.setColor(col);
 
         final int x = p.x + nodeWidth;
         final int y = p.y + halfNodeHeight;
-        final int[] xpoints = {x, x + hotSpotOffset, x, x};
-        final int[] ypoints = {y - halfHotSpotSize, y, y + halfHotSpotSize, y - halfHotSpotSize};
-        g.fillPolygon(xpoints, ypoints, xpoints.length);
+        g.setColor(Color.white);
+        g.fillRect(x - halfHotSpotSize, y - halfHotSpotSize, 2 * halfHotSpotSize, 2 * halfHotSpotSize);
+        g.setColor(col);
+        g.drawRect(x - halfHotSpotSize, y - halfHotSpotSize, 2 * halfHotSpotSize, 2 * halfHotSpotSize);
     }
 
     /**
@@ -530,14 +511,13 @@ public class GraphNode {
      * @param src the source GraphNode
      */
     void drawConnectionLine(final Graphics2D g, final GraphNode src, int index) {
-
         final Point nodePos = displayPosition;
         final Point srcPos = src.displayPosition;
 
         final int srcEndX = srcPos.x + src.getWidth();
         final int srcMidY = srcPos.y + src.getHalfNodeHeight();
-        g.setColor(Color.darkGray);
-        drawArrow(g, nodePos.x, nodePos.y + hotSpotOffset + index * 15 + 7 , srcEndX, srcMidY);        
+        g.setColor(connectionColor);
+        drawArrow(g, nodePos.x, nodePos.y + hotSpotOffset + index * 15 + halfHotSpotSize, srcEndX, srcMidY);        
     }
 
     /**
@@ -549,40 +529,13 @@ public class GraphNode {
      * @param headX position X on source node
      * @param headY position Y on source node
      */
-    private static void drawArrow(final Graphics2D g, final int tailX, final int tailY, final int headX, final int headY) {
-
-        final double t1 = Math.abs(headY - tailY);
-        final double t2 = Math.abs(headX - tailX);
-        double theta = Math.atan(t1 / t2);
-        if (headX >= tailX) {
-            if (headY > tailY)
-                theta = Math.PI + theta;
-            else
-                theta = -(Math.PI + theta);
-        } else if (headX < tailX && headY > tailY)
-            theta = 2 * Math.PI - theta;
-        final double cosTheta = FastMath.cos(theta);
-        final double sinTheta = FastMath.sin(theta);
-
-        final Point p2 = new Point(-8, -3);
-        final Point p3 = new Point(-8, +3);
-
-        int x = (int) Math.round((cosTheta * p2.x) - (sinTheta * p2.y));
-        p2.y = (int) Math.round((sinTheta * p2.x) + (cosTheta * p2.y));
-        p2.x = x;
-        x = (int) Math.round((cosTheta * p3.x) - (sinTheta * p3.y));
-        p3.y = (int) Math.round((sinTheta * p3.x) + (cosTheta * p3.y));
-        p3.x = x;
-
-        p2.translate(tailX, tailY);
-        p3.translate(tailX, tailY);
-
+    public static void drawArrow(final Graphics2D g, final int tailX, final int tailY, final int headX, final int headY) {
         Stroke oldStroke = g.getStroke();
         g.setStroke(new BasicStroke(2));
         g.drawLine(tailX, tailY, headX, headY);
-        g.drawLine(tailX, tailY, p2.x, p2.y);
-        g.drawLine(p3.x, p3.y, tailX, tailY);
-        g.setStroke(oldStroke);
+        g.fillOval(tailX - halfHotSpotSize + 2, tailY - halfHotSpotSize + 2, hotSpotSize - 3, hotSpotSize - 3);
+        g.fillRect(headX - halfHotSpotSize + 2, headY - halfHotSpotSize + 2, hotSpotSize - 3, hotSpotSize - 3);
+        g.setStroke(oldStroke); 
     }
 
     public void select() {
@@ -610,8 +563,8 @@ public class GraphNode {
      * @param gridSpacing size of the grid
      */
     public void normalizePosition(int gridSpacing) {
-        double x = Math.round(displayPosition.getX() / gridSpacing) * gridSpacing;
-        double y = Math.round(displayPosition.getY() / gridSpacing) * gridSpacing;
+        double x = FastMath.round(displayPosition.getX() / gridSpacing) * gridSpacing;
+        double y = FastMath.round(displayPosition.getY() / gridSpacing) * gridSpacing;
 
         displayPosition.setLocation(x, y);
     }
@@ -633,6 +586,6 @@ public class GraphNode {
     }
 
     public int getAvailableInputYOffset() {
-        return 7 + (connectionNumber() + 1) * 15;
+        return hotSpotOffset + connectionNumber() * 15 + halfHotSpotSize;
     }
 }
