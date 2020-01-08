@@ -31,6 +31,7 @@ import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeContext;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
@@ -87,6 +88,10 @@ public class GraphExecuter extends Observable {
         graph = new Graph("Graph");
         lastLoadedGraphFile = null;
         graphNodeList.clear();
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     public void setSelectedNode(GraphNode node) {
@@ -239,6 +244,17 @@ public class GraphExecuter extends Observable {
 
         graphNodeList.assignParameters(presentationXML);
         graph.setAppData("Presentation", presentationXML);
+    }
+
+    public boolean checkNode(GraphNode n) throws GraphException {
+        recreateGraphContext();
+        final NodeContext context = graphContext.getNodeContext(n.getNode());
+        if(context.getOperator() != null) {
+            n.setSourceProducts(context.getSourceProducts());
+        }
+        n.updateParameters();
+
+        return true;
     }
 
     public boolean initGraph() throws GraphException {

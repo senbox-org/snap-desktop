@@ -51,7 +51,6 @@ import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,8 +61,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import java.awt.event.WindowListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -93,6 +92,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private boolean isProcessing = false;
     private boolean allowGraphBuilding = true;
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
+    
+    private GraphNode currentNode = null;
+    private Map<String, Object> currentSettings = null;
 
     public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
@@ -140,7 +142,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
             public void stateChanged(final ChangeEvent e) {
                 tabChanged();
-                //validateAllNodes();
             }
         });
 
@@ -325,6 +326,29 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private void cancelProcessing() {
         if (progBarMonitor != null)
             progBarMonitor.setCanceled(true);
+    }
+
+    private boolean checkNode(GraphNode node) {
+        boolean result = true;
+        try {
+            result = graphEx.checkNode(node);
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+                statusLabel.setText("Error: " + e.getMessage());
+            } else {
+                statusLabel.setText("Error: " + e.toString());
+            }
+            result = false;
+        }
+        if (result) {
+            GraphNode[] connected = graphEx.getGraphNodeList().findConnectedNodes(node);
+            for (GraphNode n: connected) {
+                if (!checkNode(n)) {
+                    return false;
+                }
+            }
+        }
+        return result;
     }
 
     private boolean initGraph() {
@@ -558,12 +582,64 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         // method to complete node connection and partially validate the graph 
     }
 
+    /**
+     * Method called when the user change of tab.
+     */
     private void tabChanged(){ 
+        if (this.currentNode != null) {
+            // check if some settings have changed.
+            if (!this.currentNode.getParameterMap().equals(this.currentSettings)) {
+                // Something changed re evalue...
+                validate(this.currentNode);
+            }
+        }
+        
+        this.currentNode = this.graphPanel.getSelectedNode();
+        if (this.currentNode != null) {
+            this.currentSettings = new HashMap<String, Object>(this.currentNode.getParameterMap());
+        }
         // method to check if properties of the current tab have changed and if needed partially verify graph 
     }
 
-    private void validate(GraphNode node){
+    private boolean validate(GraphNode node){
         // method to validate a single node of the graph.
+        
+        if (isProcessing) return false;
+
+        boolean isValid = true;
+        final StringBuilder errorMsg = new StringBuilder(100);
+        final StringBuilder warningMsg = new StringBuilder(100);
+        try {
+            final UIValidation validation = node.validateParameterMap();
+            if (validation.getState() == UIValidation.State.ERROR) {
+                isValid = false;
+                errorMsg.append(validation.getMsg()).append('\n');
+            } else if (validation.getState() == UIValidation.State.WARNING) {
+                warningMsg.append(validation.getMsg()).append('\n');
+            }
+        } catch (Exception e) {
+            isValid = false;
+            errorMsg.append(e.getMessage()).append('\n');
+        }
+    
+
+        statusLabel.setForeground(new Color(255, 0, 0));
+        statusLabel.setText("");
+        final String warningStr = warningMsg.toString();
+        if (!isValid) {
+            statusLabel.setText(errorMsg.toString());
+            return false;
+        } else if (!warningStr.isEmpty()) {
+            if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
+                Dialogs.showWarning(warningStr);
+                lastWarningMsg = warningStr;
+            } else {
+                statusLabel.setForeground(new Color(0, 100, 255));
+                statusLabel.setText("Warning: " + warningStr);
+            }
+        }
+
+        return checkNode(node);
     }
     
     public void addListener(final ProcessingListener listener) {
@@ -576,11 +652,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         listenerList.remove(listener);
     }
 
+    /*
     private void notifyMSG(final ProcessingListener.MSG msg, final String text) {
         for (final ProcessingListener listener : listenerList) {
             listener.notifyMSG(msg, text);
         }
     }
+    */
 
     private void notifyMSG(final ProcessingListener.MSG msg, final File[] fileList) {
         for (final ProcessingListener listener : listenerList) {
@@ -608,10 +686,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 case ADD_EVENT:
                     builderContext.addNode(node);
                     tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
+                    tabChanged();
                     refreshGraph();
                     break;
                 case REMOVE_EVENT:
                     tabbedPanel.remove(tabbedPanel.indexOfTab(node.getID()));
+                    tabChanged();
                     refreshGraph();
                     break;
                 case SELECT_EVENT:

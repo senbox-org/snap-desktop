@@ -516,6 +516,10 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         return null;
     }
 
+    public GraphNode getSelectedNode(){
+        return this.selectedNode;
+    }
+
     private GraphNode findNode(String s) {
         if (s == null) return null;
         for (GraphNode n : graphEx.getGraphNodes()) {
