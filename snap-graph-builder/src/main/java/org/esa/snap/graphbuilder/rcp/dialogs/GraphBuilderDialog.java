@@ -34,6 +34,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.StatusLabel;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -61,8 +62,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -78,7 +77,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
-    private JLabel statusLabel = null;
+    private StatusLabel statusLabel = null;
     private String lastWarningMsg = "";
 
     private JPanel progressPanel = null;
@@ -94,7 +93,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
     
     private GraphNode currentNode = null;
-    private Map<String, Object> currentSettings = null;
+    private String currentSettings = null;
 
     public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
@@ -146,17 +145,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 if (node != currentNode) {
                     validateCurrentTab();
                     currentNode = node;
-                    if (currentNode != null) {
-                        currentSettings = new HashMap<String, Object>(currentNode.getParameterMap());
-                    }
+                    currentSettings = new String(node.getNode().getConfiguration().toXml());
                 }
                 graphPanel.setActiveNode(node);
                 refreshGraph();
             }
         });
 
-        statusLabel = new JLabel("");
-        statusLabel.setForeground(new Color(255, 0, 0));
+        statusLabel = new StatusLabel();
 
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
@@ -346,9 +342,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         } catch (Exception e) {
             System.err.println(e);
             if (e.getMessage() != null) {
-                statusLabel.setText("Error: " + e.getMessage());
+                statusLabel.error(node.getID(), e.getMessage());
             } else {
-                statusLabel.setText("Error: " + e.toString());
+                statusLabel.error(node.getID(), e.toString());
             }
             result = false;
         }
@@ -370,13 +366,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 result = graphEx.initGraph();
             }
             if (!result && allowGraphBuilding) {
-                statusLabel.setText("Graph is incomplete");
+                statusLabel.warning("Graph", "is incomplete");
             }
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                statusLabel.setText("Error: " + e.getMessage());
+                statusLabel.error("Graph", e.getMessage());
             } else {
-                statusLabel.setText("Error: " + e.toString());
+                statusLabel.error("Graph", e.toString());
             }
             result = false;
         }
@@ -484,7 +480,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         graphEx.clearGraph();
         refreshGraph();
         initGraphEnabled = true;
-        statusLabel.setText("");
+        statusLabel.clearMessages();
     }
 
     /**
@@ -554,38 +550,25 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         if (isProcessing) return false;
 
         boolean isValid = true;
-        final StringBuilder errorMsg = new StringBuilder(100);
-        final StringBuilder warningMsg = new StringBuilder(100);
         for (GraphNode n : graphEx.getGraphNodes()) {
             try {
                 final UIValidation validation = n.validateParameterMap();
                 if (validation.getState() == UIValidation.State.ERROR) {
                     isValid = false;
-                    errorMsg.append(validation.getMsg()).append('\n');
+                    statusLabel.error(n.getID(), validation.getMsg());
                 } else if (validation.getState() == UIValidation.State.WARNING) {
-                    warningMsg.append(validation.getMsg()).append('\n');
+                    statusLabel.warning(n.getID(), validation.getMsg());
                 }
             } catch (Exception e) {
                 isValid = false;
-                errorMsg.append(e.getMessage()).append('\n');
+                statusLabel.error(n.getID(), e.getMessage());
+
             }
         }
 
-        statusLabel.setForeground(new Color(255, 0, 0));
-        statusLabel.setText("");
-        final String warningStr = warningMsg.toString();
         if (!isValid) {
-            statusLabel.setText(errorMsg.toString());
             return false;
-        } else if (!warningStr.isEmpty()) {
-            if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
-                Dialogs.showWarning(warningStr);
-                lastWarningMsg = warningStr;
-            } else {
-                statusLabel.setForeground(new Color(0, 100, 255));
-                statusLabel.setText("Warning: " + warningStr);
-            }
-        }
+        } 
 
         return initGraph();
     }
@@ -593,11 +576,21 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private void connect(GraphNode node){
         // method to complete node connection and partially validate the graph 
     }
-
+  
     private void validateCurrentTab() {
         if (this.currentNode != null) {
             // check if some settings have changed.
-            boolean hasChanged = !this.currentNode.getParameterMap().equals(this.currentSettings);
+            System.out.println(this.currentNode.getID());
+            System.out.println(this.currentSettings);
+            try {
+                this.currentNode.updateParameters();
+            } catch (GraphException e) {
+                System.err.println("Warning: node `"+currentNode.getID()+"` parameters are not valids.");
+                statusLabel.warning(this.currentNode.getID() ,e.getMessage());
+                System.err.println(e);
+            }
+            String newSettings = this.currentNode.getNode().getConfiguration().toXml();
+            boolean hasChanged = !this.currentSettings.equals(newSettings);
             if (hasChanged) {
                 // Something changed re evalue...
                 validate(this.currentNode);
@@ -610,12 +603,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     private void tabChanged(){ 
         validateCurrentTab();
-
-        this.currentNode = this.graphPanel.getActiveNode();
-        if (this.currentNode != null) {
-            this.currentSettings = new HashMap<String, Object>(this.currentNode.getParameterMap());
-        }
-        // method to check if properties of the current tab have changed and if needed partially verify graph 
     }
 
     private boolean validate(GraphNode node){
@@ -624,36 +611,23 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         if (isProcessing) return false;
 
         boolean isValid = true;
-        final StringBuilder errorMsg = new StringBuilder(100);
-        final StringBuilder warningMsg = new StringBuilder(100);
         try {
             final UIValidation validation = node.validateParameterMap();
             if (validation.getState() == UIValidation.State.ERROR) {
                 isValid = false;
-                errorMsg.append(validation.getMsg()).append('\n');
+                statusLabel.error(node.getID(), validation.getMsg());
             } else if (validation.getState() == UIValidation.State.WARNING) {
-                warningMsg.append(validation.getMsg()).append('\n');
+                statusLabel.warning(node.getID(), validation.getMsg());
             }
         } catch (Exception e) {
             isValid = false;
-            errorMsg.append(e.getMessage()).append('\n');
+            statusLabel.error(node.getID(), e.getMessage());
         }
     
 
-        statusLabel.setForeground(new Color(255, 0, 0));
-        statusLabel.setText("");
-        final String warningStr = warningMsg.toString();
+        
         if (!isValid) {
-            statusLabel.setText(errorMsg.toString());
             return false;
-        } else if (!warningStr.isEmpty()) {
-            if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
-                Dialogs.showWarning(warningStr);
-                lastWarningMsg = warningStr;
-            } else {
-                statusLabel.setForeground(new Color(0, 100, 255));
-                statusLabel.setText("Warning: " + warningStr);
-            }
         }
 
         return checkNode(node);
@@ -731,7 +705,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             if (msg == null || msg.isEmpty()) {
                 msg = e.toString();
             }
-            statusLabel.setText(msg);
+            statusLabel.error("Graph", msg);
         }
     }
 
@@ -762,9 +736,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             } catch (Throwable e) {
                 System.out.print(e.getMessage());
                 if (e.getMessage() != null && !e.getMessage().isEmpty())
-                    statusLabel.setText(e.getMessage());
+                    statusLabel.error("Execution", e.getMessage());
                 else
-                    statusLabel.setText(e.getCause().toString());
+                    statusLabel.error("Execution", e.toString());
                 errorOccured = true;
             } finally {
                 isProcessing = false;
@@ -783,14 +757,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 final Date now = Calendar.getInstance().getTime();
                 final long totalSeconds = (now.getTime() - executeStartTime.getTime()) / 1000;
 
-                statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds));
+                statusLabel.info("Execution", ProductFunctions.getProcessingStatistics(totalSeconds));
 
                 final List<File> fileList = graphEx.getProductsToOpenInDAT();
                 final File[] files = fileList.toArray(new File[fileList.size()]);
                 notifyMSG(ProcessingListener.MSG.DONE, files);
 
                 ProcessingStats stats = openTargetProducts(files);
-                statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, stats.totalBytes, stats.totalPixels));
+                statusLabel.info("Execution", ProductFunctions.getProcessingStatistics(totalSeconds, stats.totalBytes, stats.totalPixels));
                 if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
