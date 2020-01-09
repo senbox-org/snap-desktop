@@ -141,7 +141,17 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel.addChangeListener(new ChangeListener() {
 
             public void stateChanged(final ChangeEvent e) {
-                tabChanged();
+                String id = tabbedPanel.getTitleAt(tabbedPanel.getSelectedIndex());
+                GraphNode node = graphEx.getGraphNode(id);
+                if (node != currentNode) {
+                    validateCurrentTab();
+                    currentNode = node;
+                    if (currentNode != null) {
+                        currentSettings = new HashMap<String, Object>(currentNode.getParameterMap());
+                    }
+                }
+                graphPanel.setActiveNode(node);
+                refreshGraph();
             }
         });
 
@@ -330,9 +340,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private boolean checkNode(GraphNode node) {
         boolean result = true;
+        System.out.println("Check node "+node.getID());
         try {
             result = graphEx.checkNode(node);
         } catch (Exception e) {
+            System.err.println(e);
             if (e.getMessage() != null) {
                 statusLabel.setText("Error: " + e.getMessage());
             } else {
@@ -582,19 +594,24 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         // method to complete node connection and partially validate the graph 
     }
 
-    /**
-     * Method called when the user change of tab.
-     */
-    private void tabChanged(){ 
+    private void validateCurrentTab() {
         if (this.currentNode != null) {
             // check if some settings have changed.
-            if (!this.currentNode.getParameterMap().equals(this.currentSettings)) {
+            boolean hasChanged = !this.currentNode.getParameterMap().equals(this.currentSettings);
+            if (hasChanged) {
                 // Something changed re evalue...
                 validate(this.currentNode);
             }
         }
-        
-        this.currentNode = this.graphPanel.getSelectedNode();
+    }
+
+    /**
+     * Method called when the user change of tab.
+     */
+    private void tabChanged(){ 
+        validateCurrentTab();
+
+        this.currentNode = this.graphPanel.getActiveNode();
         if (this.currentNode != null) {
             this.currentSettings = new HashMap<String, Object>(this.currentNode.getParameterMap());
         }
