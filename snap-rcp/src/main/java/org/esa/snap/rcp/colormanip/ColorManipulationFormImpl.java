@@ -561,9 +561,18 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             if (file != null && file.canRead()) {
                 try {
                     final ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(file);
-                    colorPaletteDef.getFirstPoint().setLabel(file.getName());
-                    applyColorPaletteDef(colorPaletteDef, getFormModel().getRaster(), targetImageInfo);
+                    final ColorPaletteDef currentCPD = targetImageInfo.getColorPaletteDef();
+                    final double min = currentCPD.getMinDisplaySample();
+                    final double max = currentCPD.getMaxDisplaySample();
+                    final boolean isSourceLogScaled = colorPaletteDef.isLogScaled();
+                    final boolean isTargetLogScaled = targetImageInfo.isLogScaled();
+                    final boolean autoDistribute = true;
+                    if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+                        targetImageInfo.setColorPaletteDef(colorPaletteDef, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+                    }
+                    currentCPD.getFirstPoint().setLabel(file.getName());
                     getFormModel().setModifiedImageInfo(targetImageInfo);
+                    getFormModel().applyModifiedImageInfo();
                     getChildForm().updateFormModel(getFormModel());
                     updateMultiApplyState();
                 } catch (IOException e) {
@@ -786,13 +795,4 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             }
         }
     }
-
-
-
-
-
-
-
-
-
 }
