@@ -65,6 +65,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private static final char[] folderDelim = new char[]{'/'};//'\\'};
 
     private GraphNode selectedNode = null;
+
+    private GraphNode activeNode = null;
+    private final static Color activeColor = new Color(100, 207, 255, 128);
+    private final static int activeNodePadding = 4;
+
     private boolean showHeadHotSpot = false;
     private boolean showTailHotSpot = false;
     private boolean connectingSourceFromHead = false;
@@ -158,6 +163,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         final GraphNode newGraphNode = graphEx.addOperator(name);
         newGraphNode.setPos(lastMousePos);
         newGraphNode.normalizePosition(gridSpacing);
+        if (this.activeNode == null) {
+            this.activeNode = newGraphNode;
+        }
         repaint();
     }
 
@@ -165,6 +173,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         if (selectedNode != null) {
             final GraphNode source = graphEx.getGraphNodeList().findGraphNode(id);
             selectedNode.disconnectOperatorSources(source.getID());
+            if (this.selectedNode == this.activeNode) {
+                this.activeNode = null;
+            }
             repaint();
         }
     }
@@ -185,8 +196,10 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         final String name = event.getActionCommand();
         if (name.equals("Delete")) {
-
             graphEx.removeOperator(selectedNode);
+            if (selectedNode == activeNode) {
+                activeNode = null;
+            }
             repaint();
         }
     }
@@ -254,6 +267,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         drawGrid(g2);
+        drawActiveNode(g2);
         drawGraph(g2, graphEx.getGraphNodes());
     }
 
@@ -299,6 +313,18 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
         g.drawImage(gridBuffer, 0, 0, null);
     }   
+
+    private void drawActiveNode(Graphics2D g){
+        if (this.activeNode != null) {
+            g.setColor(activeColor);
+            Point p = this.activeNode.getPos();
+            int x = p.x - activeNodePadding;
+            int y = p.y - activeNodePadding;
+            int width = this.activeNode.getWidth() + activeNodePadding * 2 + 1;
+            int height = this.activeNode.getHeight() + activeNodePadding * 2 + 1;
+            g.fillRoundRect(x, y, width, height, 10, 10);
+        }
+    }
 
     /**
      * Draw the graphical representation of the Graph
@@ -395,7 +421,8 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         showRightClickHelp = false;
 
         if (e.getButton() == 1 && selectedNode != null) {
-            graphEx.setSelectedNode(selectedNode);
+            this.activeNode = selectedNode;
+            graphEx.setSelectedNode(this.activeNode);
         }
     }
 
@@ -527,6 +554,14 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
                 return n;
         }
         return null;
+    }
+
+    public GraphNode getActiveNode() {
+        return this.activeNode;
+    }
+    
+    public void setActiveNode(GraphNode node) {
+        this.activeNode = node;
     }
 
     static class AddMenuListener implements ActionListener {
