@@ -214,7 +214,7 @@ public class GraphNode {
         }
     }
 
-    void updateParameters() throws GraphException {
+    public void updateParameters() throws GraphException {
         if (operatorUI != null) {
             final XppDomElement config = new XppDomElement("parameters");
             updateParameterMap(config);
