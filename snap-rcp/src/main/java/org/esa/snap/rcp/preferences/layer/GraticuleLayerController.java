@@ -234,7 +234,7 @@ public final class GraticuleLayerController extends DefaultConfigController {
         if (propertyValueChangeEventsEnabled) {
             propertyValueChangeEventsEnabled = false;
             try {
-                if (restoreDefaults.getValue()) {
+                if (restoreDefaults.getValue() != null) { // TODO is this the check intended here? 
 
                     PropertySet propertyContainer = context.getPropertySet();
                     Property[] properties = propertyContainer.getProperties();
