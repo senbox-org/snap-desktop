@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.ResourceInstaller;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -63,6 +64,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
 
 
 /**
@@ -177,7 +180,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
 
-            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
+//            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
+            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo(), productSceneView);
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -420,7 +424,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private void resetToDefaults() {
         if (getFormModel().isValid()) {
-            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
+//            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
+            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo(), getFormModel().getProductSceneView());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
@@ -781,4 +786,13 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             }
         }
     }
+
+
+
+
+
+
+
+
+
 }

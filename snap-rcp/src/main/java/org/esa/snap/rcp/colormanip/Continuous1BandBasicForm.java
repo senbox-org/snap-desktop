@@ -118,7 +118,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel = new JLabel("TEST");
 
 
-        standardColorPaletteSchemes = new ColorSchemeManager(parentForm.getIODir().toFile());
+        ColorSchemeManager.getDefault().init(parentForm.getIODir().toFile());
+        standardColorPaletteSchemes = ColorSchemeManager.getDefault();
+
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
@@ -560,7 +562,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        jPanel.add(standardColorPaletteSchemes.getjComboBox(), gbc);
+        jPanel.add(ColorSchemeManager.getDefault().getjComboBox(), gbc);
 //
 //        gbc.gridy++;
 //        jPanel.add(loadPaletteOnlyCheckBox, gbc);
@@ -657,7 +659,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         File auxDir = SystemUtils.getAuxDataPath().resolve("color_palettes").toFile();
 
 
-        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorPaletteInfo);
+//        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorPaletteInfo);
+
+        ColorSchemeUtils.setImageInfoToColorScheme(auxDir, colorPaletteInfo, parentForm.getFormModel().getProductSceneView());
 
         parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
         parentForm.applyChanges();
