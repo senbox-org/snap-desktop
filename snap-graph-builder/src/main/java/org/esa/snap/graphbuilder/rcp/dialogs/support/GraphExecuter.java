@@ -223,6 +223,15 @@ public class GraphExecuter extends Observable {
         clearChanged();
     }
 
+    public GraphNode getGraphNode(String id) {
+        for (GraphNode node: getGraphNodes()) {
+            if (node.getID().equals(id)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
     public void setOperatorParam(final String id, final String paramName, final String value) {
         final Node node = graph.getNode(id);
         DomElement xml = node.getConfiguration().getChild(paramName);
