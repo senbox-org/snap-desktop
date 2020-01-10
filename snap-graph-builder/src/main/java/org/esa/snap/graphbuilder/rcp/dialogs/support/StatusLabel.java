@@ -179,4 +179,12 @@ public class StatusLabel extends JPanel implements ActionListener{
             return;
         }
     }
+
+    public String getAllMessages() {
+        String text = "";
+        for (StatusMessage message: this.messages) {
+            text += message.text() + "\n";
+        }
+        return text;
+    }
 }
