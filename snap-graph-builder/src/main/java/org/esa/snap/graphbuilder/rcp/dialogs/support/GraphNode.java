@@ -61,7 +61,6 @@ public class GraphNode {
     private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(177, 177, 177, 128);
     private static final Color connectionColor = new Color(66, 66, 66, 255);
-    private static final Color multiInputColor = new Color(239, 255, 196, 255);
 
     private final Node node;
     private OperatorDescriptor descriptor = null;
@@ -83,7 +82,7 @@ public class GraphNode {
     private XppDom displayParameters;
 
     private Color currentFill = unknownColor;
-    private Color currentActive = unknownColor.brighter();
+    private Color currentActive = computeActive(unknownColor);
     private Color currentDraw = unknownColor.darker();
 
     private int minNInputs = 0;
@@ -686,6 +685,21 @@ public class GraphNode {
         this.status = Status.UNKNWON;
         updateColors();
     }
+    private Color computeActive(Color fill){
+        float k = 0.94f;
+        int r = Math.round(fill.getRed() * k);
+        int g = Math.round(fill.getGreen() * k);
+        int b = Math.round(fill.getBlue() * k);
+        int a = 128;
+
+        int max = Math.max(Math.max(r, g), b);
+        
+        r = (max - r) * (r / max) + r;
+        g = (max - g) * (g / max) + g;
+        b = (max - b) * (b / max) + b;
+
+        return new Color(Math.min(r, 255), Math.min(g, 255), Math.min(b, 255), a);
+    }
 
     private void updateColors() {
         switch (status) {
@@ -700,7 +714,7 @@ public class GraphNode {
                 currentFill = unknownColor;
         }
         currentDraw = currentFill.darker().darker();
-        currentActive = currentFill.brighter();
+        currentActive = computeActive(currentFill);
     }
 
 
