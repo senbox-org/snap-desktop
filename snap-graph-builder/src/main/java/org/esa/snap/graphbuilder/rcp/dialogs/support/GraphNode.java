@@ -29,6 +29,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
@@ -65,6 +66,7 @@ public class GraphNode {
     private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(177, 177, 177, 128);
     private static final Color connectionColor = new Color(66, 66, 66, 255);
+    private static final Color multiInputColor = new Color(239, 255, 196, 255);
 
     private static final Set<String> inputOperators = new HashSet<String>(
        Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader", "Import-Vector"));
@@ -72,6 +74,7 @@ public class GraphNode {
         Arrays.asList("Write"));
 
     private final Node node;
+    private OperatorDescriptor descriptor = null;
     private final Map<String, Object> parameterMap = new HashMap<>(10);
     private OperatorUI operatorUI = null;
 
@@ -92,6 +95,10 @@ public class GraphNode {
     private Color currentFill = unknownColor;
     private Color currentActive = unknownColor.brighter();
     private Color currentDraw = unknownColor.darker();
+
+    private int minNInputs = 0;
+    private int maxNInputs = 0;
+    private boolean hasTarget = true;
 
     public GraphNode(final Node n) throws IllegalArgumentException {
         node = n;
@@ -117,6 +124,16 @@ public class GraphNode {
 
         final OperatorSpi operatorSpi = GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi(node.getOperatorName());
         if (operatorSpi == null) return;
+
+        descriptor = operatorSpi.getOperatorDescriptor();
+        if (descriptor != null) {
+            minNInputs = descriptor.getSourceProductDescriptors().length;
+            maxNInputs = minNInputs;
+            if (descriptor.getSourceProductsDescriptor() != null) {
+                maxNInputs = -1;
+            }
+            hasTarget = descriptor.getTargetProductDescriptor() != null;
+        }
 
         final ParameterDescriptorFactory parameterDescriptorFactory = new ParameterDescriptorFactory();
         final PropertyContainer valueContainer = PropertyContainer.createMapBacked(parameterMap,
@@ -443,7 +460,13 @@ public class GraphNode {
         final Rectangle2D rect = metrics.getStringBounds(name, g);
         final int stringWidth = (int) rect.getWidth();
         int width = FastMath.round((FastMath.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
-        setSize(width, 15 + (1 + connectionNumber()) * 15);
+        int n = maxNInputs;
+        if (n < 0) {
+            n = minNInputs > connectionNumber() ? minNInputs + 1 : connectionNumber() + 1;
+        } else if (n == 0) {
+            n = 1;
+        }
+        setSize(width, 15 + n * 15);
 
         g.setColor(fill);
         g.fillRoundRect(x, y, nodeWidth, nodeHeight, 8, 8);
@@ -470,10 +493,18 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawHeadHotspot(final Graphics g, final Color col) {
-        if (!this.hasOutput()) return;
+        if (!this.hasInput()) return;
         final Point p = displayPosition;
-        for (int i = 0; i < connectionNumber() + 1; i++) {
-            g.setColor(Color.white);
+        int n = maxNInputs;
+        if (n < 0) {
+            n = minNInputs > connectionNumber() ? minNInputs + 1 : connectionNumber() + 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (i < minNInputs) {
+                g.setColor(Color.white);
+            } else {
+                g.setColor(multiInputColor);
+            }
             g.fillOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
             g.setColor(col);
             g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);          
@@ -487,7 +518,7 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawTailHotspot(final Graphics g, final Color col) {
-        if (!this.hasInput()) return;
+        if (!this.hasOutput()) return;
         final Point p = displayPosition;
 
         final int x = p.x + nodeWidth;
@@ -572,15 +603,19 @@ public class GraphNode {
     }
 
     public boolean hasInput() {
-        return this.nodeType != Type.OUT;
+        int n =  this.maxInputs();
+        return n < 0 || n > 0;
     }
 
     public boolean hasOutput() {
-        return this.nodeType != Type.IN;
+       return hasTarget;
     }
 
     public int getAvailableInputYOffset() {
-        return hotSpotOffset + connectionNumber() * 15 + halfHotSpotSize;
+        if (maxNInputs < 0 || connectionNumber() < maxNInputs) {
+            return hotSpotOffset + connectionNumber() * 15 + halfHotSpotSize;
+        } 
+        return 0;
     }
 
     public Boolean isMouseOver(Point p) {
@@ -590,8 +625,8 @@ public class GraphNode {
             return true;
         }
         
-        if (hasInput() && FastMath.abs(x - getWidth()) <= halfHotSpotSize + 1 && FastMath.abs(y - halfNodeHeight) <= halfHotSpotSize + 1) return true;  
-        if (hasOutput() && FastMath.abs(x) <= halfHotSpotSize + 1) {
+        if (hasOutput() && FastMath.abs(x - getWidth()) <= halfHotSpotSize + 1 && FastMath.abs(y - halfNodeHeight) <= halfHotSpotSize + 1) return true;  
+        if (hasInput() && FastMath.abs(x) <= halfHotSpotSize + 1) {
             for (int i = 0; i < connectionNumber() + 1; i++){
                 if (FastMath.abs(y - (i*15 + hotSpotOffset)) <= halfHotSpotSize + 1) return true;
             }
@@ -600,14 +635,14 @@ public class GraphNode {
     }
     
     public Boolean isMouseOverTail(Point p) {
-        if (!hasInput()) return false;
+        if (!hasOutput()) return false;
         int x = p.x - (getPos().x + getWidth());
         int y = p.y - (getPos().y + halfNodeHeight);
         return FastMath.abs(x) <= halfHotSpotSize + 1 && FastMath.abs(y) <= halfHotSpotSize + 1;
     }
 
     public Boolean isMouseOverHead(Point p) {
-        if (!hasOutput()) return false;
+        if (!hasInput()) return false;
         int x = p.x - getPos().x;
         int y = p.y - getPos().y - (connectionNumber() * 15 + hotSpotOffset + halfHotSpotSize) ;
         if (FastMath.abs(x) <= halfHotSpotSize + 1 && FastMath.abs(y) <= halfHotSpotSize + 1) return true;
@@ -615,7 +650,7 @@ public class GraphNode {
     }
 
     public  Boolean isMouseOverConnectedHead(Point p) {
-        if (!hasOutput()) return false;
+        if (!hasInput()) return false;
         int x = p.x - getPos().x;
         int y = p.y - getPos().y;
         if (FastMath.abs(x) <= halfHotSpotSize + 1) {
@@ -686,5 +721,15 @@ public class GraphNode {
     public Color activeColor() {
         return currentActive;
     }
+    
+    int minInputs() {
+        return minNInputs;
+    }
+
+    int maxInputs() {
+        return maxNInputs;
+    }
+
+   
 }
 
