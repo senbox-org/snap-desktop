@@ -52,11 +52,6 @@ import java.util.HashSet;
  * Date: Jan 17, 2008
  */
 public class GraphNode {
-    public enum Type{
-        IN,
-        INOUT,
-        OUT,
-    }
     public enum Status {
         UNKNWON,
         ERROR,
@@ -68,18 +63,13 @@ public class GraphNode {
     private static final Color connectionColor = new Color(66, 66, 66, 255);
     private static final Color multiInputColor = new Color(239, 255, 196, 255);
 
-    private static final Set<String> inputOperators = new HashSet<String>(
-       Arrays.asList("Read", "Find-Image-Pair", "ProductSet-Reader", "Import-Vector"));
-    private static final Set<String> outputOperators = new HashSet<String>(
-        Arrays.asList("Write"));
-
     private final Node node;
     private OperatorDescriptor descriptor = null;
     private final Map<String, Object> parameterMap = new HashMap<>(10);
     private OperatorUI operatorUI = null;
 
     private Status status = Status.UNKNWON;
-    private Type nodeType = Type.INOUT;
+
     private Boolean selected = false;
     private int nodeWidth = 60;
     private int nodeHeight = 15;
@@ -104,11 +94,6 @@ public class GraphNode {
         node = n;
         displayParameters = new XppDom("node");
         displayParameters.setAttribute("id", node.getId());
-        if (inputOperators.contains(getOperatorName())) {
-            this.nodeType = Type.IN;
-        } else if (outputOperators.contains(getOperatorName())) {
-            this.nodeType = Type.OUT;
-        }
         initParameters();
     }
 
@@ -495,19 +480,25 @@ public class GraphNode {
     void drawHeadHotspot(final Graphics g, final Color col) {
         if (!this.hasInput()) return;
         final Point p = displayPosition;
+        int cnnNum = connectionNumber();
         int n = maxNInputs;
         if (n < 0) {
-            n = minNInputs > connectionNumber() ? minNInputs + 1 : connectionNumber() + 1;
+            n = minNInputs > cnnNum ? minNInputs + 1 : cnnNum + 1;
         }
+
         for (int i = 0; i < n; i++) {
-            if (i < minNInputs) {
-                g.setColor(Color.white);
-            } else {
-                g.setColor(multiInputColor);
+            g.setColor(Color.white);
+            int x = p.x - halfHotSpotSize;
+            int y = p.y + hotSpotOffset + i * 15;
+
+            g.fillOval(x, y, hotSpotSize, hotSpotSize);
+            if (i > minNInputs && i == cnnNum) {
+                g.setColor(Color.gray);
+                g.fillOval(x + 3, y + 3, hotSpotSize - 6 , hotSpotSize - 6);
+                g.drawOval(x + 3, y + 3, hotSpotSize - 6 , hotSpotSize - 6);
             }
-            g.fillOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);
             g.setColor(col);
-            g.drawOval(p.x - halfHotSpotSize, p.y + hotSpotOffset + i * 15, hotSpotSize, hotSpotSize);          
+            g.drawOval(x, y, hotSpotSize, hotSpotSize);          
         }
     }
 
@@ -596,10 +587,6 @@ public class GraphNode {
 
     public int connectionNumber() {
         return this.node.getSources().length;
-    }
-
-    public Type getNodeType() {
-        return this.nodeType;
     }
 
     public boolean hasInput() {
