@@ -300,7 +300,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             processThread.execute();
 
         } else {
-            showErrorDialog(statusLabel.getText());
+            showErrorDialog(statusLabel.getAllMessages());
         }
     }
 
