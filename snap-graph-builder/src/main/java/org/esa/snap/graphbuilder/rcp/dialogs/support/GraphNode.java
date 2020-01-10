@@ -57,6 +57,7 @@ public class GraphNode {
         ERROR,
         VALIDATED,
     }
+
     private static final Color errorColor = new Color(255, 80, 80, 128);
     private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(177, 177, 177, 128);
@@ -71,8 +72,8 @@ public class GraphNode {
 
     private Boolean selected = false;
     private int nodeWidth = 60;
-    private int nodeHeight = 15;
-    private int halfNodeHeight = 0;
+    private int nodeHeight = 30;
+    private int halfNodeHeight = nodeHeight / 2;
     private static final int hotSpotSize = 10;
     private static final int halfHotSpotSize = hotSpotSize / 2;
     private int hotSpotOffset = 10;
@@ -693,7 +694,7 @@ public class GraphNode {
         int a = 128;
 
         int max = Math.max(Math.max(r, g), b);
-        
+
         r = (max - r) * (r / max) + r;
         g = (max - g) * (g / max) + g;
         b = (max - b) * (b / max) + b;

@@ -25,7 +25,6 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.gpf.core.BuilderContext;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -35,6 +34,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.StatusLabel;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode.Status;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -85,7 +85,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private JLabel progressMsgLabel = null;
     private boolean initGraphEnabled = true;
 
-    private BuilderContext builderContext;
     private final GraphExecuter graphEx;
     private boolean isProcessing = false;
     private boolean allowGraphBuilding = true;
@@ -104,7 +103,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID, final boolean allowGraphBuilding) {
         super(theAppContext.getApplicationWindow(), title, 0, helpID);
-        this.builderContext = new BuilderContext();
         this.allowGraphBuilding = allowGraphBuilding;
         appContext = theAppContext;
         graphEx = new GraphExecuter();
@@ -335,11 +333,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private boolean checkNode(GraphNode node) {
         boolean result = true;
-        System.out.println("Check node "+node.getID());
         try {
             result = graphEx.checkNode(node);
         } catch (Exception e) {
-            System.err.println(e);
             if (e.getMessage() != null) {
                 statusLabel.error(node.getID(), e.getMessage());
             } else {
@@ -507,7 +503,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             SourceUI ui = (SourceUI) readerNode.getOperatorUI();
             ui.setSourceProduct(product);
 
-            validateAllNodes();
+            // validateAllNodes();
+            validate(readerNode);
         }
     }
 
@@ -576,21 +573,35 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         // method to complete node connection and partially validate the graph 
     }
   
+    private void propagate(GraphNode node, GraphNode.Status status) {
+        node.setStatus(status);
+        GraphNode[] connected = graphEx.getGraphNodeList().findConnectedNodes(node);
+        for (GraphNode n: connected) {
+            propagate(n, status);
+        }
+    }
+
     private void validateCurrentTab() {
         if (this.currentNode != null) {
-            // check if some settings have changed.
-            System.out.println(this.currentNode.getID());
+            // update the parameters..
             try {
                 this.currentNode.updateParameters();
             } catch (GraphException e) {
-                System.err.println("Warning: node `"+currentNode.getID()+"` parameters are not valids.");
-                statusLabel.warning(this.currentNode.getID() ,e.getMessage());
-                System.err.println(e);
+                if (e.getMessage().contains("is not set")) {
+                    // the configuration is not complete.
+                    statusLabel.warning(this.currentNode.getID() ,e.getMessage());
+                    this.currentNode.unknown();
+                } else {
+                    // the configuration is wrong.
+                    statusLabel.error(this.currentNode.getID() ,e.getMessage());
+                    propagate(currentNode, Status.ERROR);
+                }
+                return;
             }
             String newSettings = this.currentNode.getNode().getConfiguration().toXml();
             boolean hasChanged = !this.currentSettings.equals(newSettings);
             if (hasChanged) {
-                // Something changed re evalue...
+                this.currentNode.setStatus(Status.VALIDATED);
                 validate(this.currentNode);
             }
         }
@@ -605,8 +616,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private boolean validate(GraphNode node){
         // method to validate a single node of the graph.
-        
+
         if (isProcessing) return false;
+
+        if (node.getStatus() == Status.UNKNWON) {
+            return false;
+        }
 
         boolean isValid = true;
         try {
@@ -680,7 +695,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final GraphExecuter.events eventType = event.getEventType();
             switch(eventType) {
                 case ADD_EVENT:
-                    builderContext.addNode(node);
                     tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
                     tabChanged();
                     refreshGraph();
