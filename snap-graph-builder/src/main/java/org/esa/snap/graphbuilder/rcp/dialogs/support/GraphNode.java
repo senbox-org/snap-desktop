@@ -61,10 +61,9 @@ public class GraphNode {
         ERROR,
         VALIDATED,
     }
-    private static final Color errorColor = new Color(255, 150, 150, 150);
-    private static final Color validateColor = new Color(150, 255, 150, 150);
-    private static final Color unknownColor = new Color(0, 177, 255, 128);
-    private static final Color selectedColor = unknownColor.brighter();
+    private static final Color errorColor = new Color(255, 80, 80, 128);
+    private static final Color validateColor =  new Color(0, 177, 255, 128);
+    private static final Color unknownColor =  new Color(177, 177, 177, 128);
     private static final Color connectionColor = new Color(66, 66, 66, 255);
 
     private static final Set<String> inputOperators = new HashSet<String>(
@@ -420,22 +419,13 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawNode(final Graphics2D g) {
-        Color col;
+        Color col = color();
+       
+       
         if (selected) {
-            col = selectedColor;
-        } else {
-            switch (status) {
-                case ERROR:
-                    col = errorColor;
-                    break; 
-                case VALIDATED:
-                    col = validateColor;
-                    break;
-                case UNKNWON:
-                default:
-                    col = unknownColor;
-            }
+            col = col.brighter();
         }
+
         Color dark = col.darker().darker();
         Stroke oldStroke = g.getStroke();
         Stroke bigStroke = new BasicStroke(2); 
@@ -654,6 +644,38 @@ public class GraphNode {
                 return;
             }
         }
+    }
+
+    public void valid() {
+        this.status = Status.VALIDATED;
+    }
+
+    public void error() {
+        this.status = Status.ERROR;
+    }
+
+    public void unknown() {
+        this.status = Status.UNKNWON;
+    }
+
+    private Color color() {
+        Color col;
+        switch (status) {
+            case ERROR:
+                col = errorColor;
+                break; 
+            case VALIDATED:
+                col = validateColor;
+                break;
+            case UNKNWON:
+            default:
+                col = unknownColor;
+        }
+        return col;
+    }
+
+    public Color activeColor() {
+        return color().brighter();
     }
 }
 

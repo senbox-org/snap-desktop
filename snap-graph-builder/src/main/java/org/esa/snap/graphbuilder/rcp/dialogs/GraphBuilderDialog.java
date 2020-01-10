@@ -625,10 +625,17 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         
         if (!isValid) {
+            node.error();
             return false;
         }
 
-        return checkNode(node);
+        isValid = checkNode(node);
+        if (isValid){
+            node.valid();
+        } else {
+            node.error();
+        }
+        return isValid;
     }
     
     public void addListener(final ProcessingListener listener) {
