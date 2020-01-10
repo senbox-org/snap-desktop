@@ -20,6 +20,7 @@ import com.bc.ceres.binding.dom.XppDomElement;
 import com.bc.ceres.core.ProgressMonitor;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.apache.commons.math3.util.FastMath;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
@@ -36,9 +37,11 @@ import org.esa.snap.core.gpf.graph.NodeContext;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
+import org.esa.snap.graphbuilder.gpf.core.BuilderGraphContext;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
+import org.geotools.graph.build.GraphBuilder;
 
 import javax.swing.*;
 import java.io.File;
@@ -60,6 +63,7 @@ public class GraphExecuter extends Observable {
     private final GPF gpf;
     private Graph graph;
     private GraphContext graphContext = null;
+    private BuilderGraphContext builderContext = null;
     private GraphProcessor processor;
     private String graphDescription = "";
     private File lastLoadedGraphFile = null;
@@ -257,14 +261,21 @@ public class GraphExecuter extends Observable {
     }
 
     public boolean checkNode(GraphNode n) throws GraphException {
-        recreateGraphContext();
-        final NodeContext context = graphContext.getNodeContext(n.getNode());
-        if(context.getOperator() != null) {
-            n.setSourceProducts(context.getSourceProducts());
+        if (builderContext == null) {
+            builderContext = new BuilderGraphContext(graph);
+        } else {
+            builderContext.update(graph);
         }
-        n.updateParameters();
-
-        return true;
+        if (n.getNode().getSources().length > 0) {
+            Product[] sources = builderContext.getSourceProducts(n.getNode());
+            if(sources != null) {
+                n.setSourceProducts(sources);
+            } else {
+                return false;
+            }
+        }
+        n.updateParameters();   
+        return builderContext.eval(n.getNode());
     }
 
     public boolean initGraph() throws GraphException {
