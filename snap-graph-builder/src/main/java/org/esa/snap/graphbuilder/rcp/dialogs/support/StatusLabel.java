@@ -2,15 +2,19 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import java.awt.Dimension;
 
-public class StatusLabel extends JPanel {
-
+public class StatusLabel extends JPanel implements ActionListener{
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
     /**
      *
      */
@@ -20,13 +24,20 @@ public class StatusLabel extends JPanel {
 
     private class StatusMessage {
         public Level level;
-        public String nodeID;
-        public String message;
-        
+        private String nodeID;
+        private String message;
+        private String timestamp;
+
         public StatusMessage(Level level, String id, String message) {
             this.level = level;
             this.nodeID = id;
+            Date date = new Date();
+            this.timestamp = sdf.format(date.getTime());
             this.message = message;
+        }
+
+        public String text() {
+            return "["+this.timestamp+"]"+this.nodeID+": "+this.message;
         }
     }
 
@@ -35,6 +46,8 @@ public class StatusLabel extends JPanel {
     private JButton prvBtn;
     private JButton clrBtn;
 
+    private int currentMessage = -1;
+
     private static final long serialVersionUID = 8208638351016455964L;
     private ArrayList<StatusMessage> messages = new ArrayList<>();
 
@@ -42,12 +55,12 @@ public class StatusLabel extends JPanel {
         super();
         this.initUI();
     }
-    
+
     private void initUI() {
         SpringLayout layout = new SpringLayout();
         this.setLayout(layout);
         this.label = new JLabel("");
-        this.add(label); 
+        this.add(label);
         nxtBtn = new JButton("↓");
         prvBtn = new JButton("↑");
         clrBtn = new JButton("x");
@@ -59,16 +72,19 @@ public class StatusLabel extends JPanel {
         layout.putConstraint(SpringLayout.SOUTH, clrBtn, 0, SpringLayout.SOUTH, this);
         layout.putConstraint(SpringLayout.EAST, clrBtn, -2, SpringLayout.EAST, this);
         clrBtn.setPreferredSize(new Dimension(45, 35));
+        clrBtn.addActionListener(this);
 
         layout.putConstraint(SpringLayout.NORTH, prvBtn, 0, SpringLayout.NORTH, this);
         layout.putConstraint(SpringLayout.SOUTH, prvBtn, 0, SpringLayout.SOUTH, this);
         layout.putConstraint(SpringLayout.EAST, prvBtn, -4, SpringLayout.WEST, clrBtn);
         prvBtn.setPreferredSize(new Dimension(45, 35));
+        prvBtn.addActionListener(this);
         
         layout.putConstraint(SpringLayout.NORTH, nxtBtn, 0, SpringLayout.NORTH, this);
         layout.putConstraint(SpringLayout.SOUTH, nxtBtn, 0, SpringLayout.SOUTH, this);
         layout.putConstraint(SpringLayout.EAST, nxtBtn, -4, SpringLayout.WEST, prvBtn);
         nxtBtn.setPreferredSize(new Dimension(45, 35));
+        nxtBtn.addActionListener(this);
 
         layout.putConstraint(SpringLayout.NORTH, label, 0, SpringLayout.NORTH, this);
         layout.putConstraint(SpringLayout.SOUTH, label, 0, SpringLayout.SOUTH, this);
@@ -85,45 +101,82 @@ public class StatusLabel extends JPanel {
 
     public void info(String id, String message) {
         messages.add(new StatusMessage(Level.INFO, id, message));
-        displayMessages();
+        displayMessages(messages.size() -1);
     }
 
     public void warning(String id, String message) {
         messages.add(new StatusMessage(Level.WARNING, id, message));
-        displayMessages();
+        displayMessages(messages.size() -1);
     }
 
     public void error(String id, String message) {
         messages.add(new StatusMessage(Level.ERROR, id, message));
-        displayMessages();
+        displayMessages(messages.size() -1);
     }
 
-    private void displayMessages() {
-       
-        StatusMessage msg = messages.get(messages.size() - 1);
+    private void displayMessages(int index) {
+        if (index < 0 || index >= messages.size()) {
+            return;
+        }
+        StatusMessage msg = messages.get(index);
 
+        this.currentMessage = index;
         this.setColorLevel(msg.level);
-        this.label.setText(msg.nodeID + ": " + msg.message);
+        this.label.setText(msg.text());
+        if (index == 0) {
+            prvBtn.setEnabled(false);
+        } else {
+            prvBtn.setEnabled(true);
+        }
+        if (index == messages.size() - 1) {
+            nxtBtn.setEnabled(false);
+        } else {
+            nxtBtn.setEnabled(true);
+        }
+        if (messages.size() > 0){
+            clrBtn.setEnabled(true);
+        }
+
         this.revalidate();
     }
 
     private void setColorLevel(Level level) {
         switch (level) {
             case INFO:
-                setForeground(Color.black);
+                label.setForeground(Color.black);
                 break;
             case ERROR:
-                setForeground(Color.red);
+                label.setForeground(Color.red);
                 break;
             case WARNING:
-                setForeground(Color.yellow);
+                label.setForeground(Color.yellow);
                 break;
         }
     }
 
     public void clearMessages() {
         this.label.setText("");
+        prvBtn.setEnabled(false);
+        nxtBtn.setEnabled(false);
+        clrBtn.setEnabled(false);
         messages.clear();
     }
 
+
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
+        if (source.equals(clrBtn)) {
+            clearMessages();
+            return;
+        } 
+        if (source.equals(prvBtn)) {
+            this.displayMessages(--currentMessage);
+            return;
+        }
+        if (source.equals(nxtBtn)) {
+            this.displayMessages(++currentMessage);
+            return;
+        }
+    }
 }
