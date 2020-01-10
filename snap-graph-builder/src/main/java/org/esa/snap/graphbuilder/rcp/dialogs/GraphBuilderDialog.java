@@ -78,7 +78,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
     private StatusLabel statusLabel = null;
-    private String lastWarningMsg = "";
 
     private JPanel progressPanel = null;
     private JProgressBar progressBar = null;
@@ -581,7 +580,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         if (this.currentNode != null) {
             // check if some settings have changed.
             System.out.println(this.currentNode.getID());
-            System.out.println(this.currentSettings);
             try {
                 this.currentNode.updateParameters();
             } catch (GraphException e) {

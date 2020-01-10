@@ -1,14 +1,15 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.Timer;
+import javax.swing.JPanel;
+import javax.swing.SpringLayout;
+import java.awt.Dimension;
 
-public class StatusLabel extends JLabel {
+public class StatusLabel extends JPanel {
 
     /**
      *
@@ -21,7 +22,7 @@ public class StatusLabel extends JLabel {
         public Level level;
         public String nodeID;
         public String message;
-
+        
         public StatusMessage(Level level, String id, String message) {
             this.level = level;
             this.nodeID = id;
@@ -29,13 +30,57 @@ public class StatusLabel extends JLabel {
         }
     }
 
-    private StatusMessage currentMsg = null;
+    private JLabel label;
+    private JButton nxtBtn;
+    private JButton prvBtn;
+    private JButton clrBtn;
 
     private static final long serialVersionUID = 8208638351016455964L;
     private ArrayList<StatusMessage> messages = new ArrayList<>();
 
     public StatusLabel() {
-        super("");
+        super();
+        this.initUI();
+    }
+    
+    private void initUI() {
+        SpringLayout layout = new SpringLayout();
+        this.setLayout(layout);
+        this.label = new JLabel("");
+        this.add(label); 
+        nxtBtn = new JButton("↓");
+        prvBtn = new JButton("↑");
+        clrBtn = new JButton("x");
+        this.add(nxtBtn);
+        this.add(prvBtn);
+        this.add(clrBtn);
+
+        layout.putConstraint(SpringLayout.NORTH, clrBtn, 0, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.SOUTH, clrBtn, 0, SpringLayout.SOUTH, this);
+        layout.putConstraint(SpringLayout.EAST, clrBtn, -2, SpringLayout.EAST, this);
+        clrBtn.setPreferredSize(new Dimension(45, 35));
+
+        layout.putConstraint(SpringLayout.NORTH, prvBtn, 0, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.SOUTH, prvBtn, 0, SpringLayout.SOUTH, this);
+        layout.putConstraint(SpringLayout.EAST, prvBtn, -4, SpringLayout.WEST, clrBtn);
+        prvBtn.setPreferredSize(new Dimension(45, 35));
+        
+        layout.putConstraint(SpringLayout.NORTH, nxtBtn, 0, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.SOUTH, nxtBtn, 0, SpringLayout.SOUTH, this);
+        layout.putConstraint(SpringLayout.EAST, nxtBtn, -4, SpringLayout.WEST, prvBtn);
+        nxtBtn.setPreferredSize(new Dimension(45, 35));
+
+        layout.putConstraint(SpringLayout.NORTH, label, 0, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.SOUTH, label, 0, SpringLayout.SOUTH, this);
+        layout.putConstraint(SpringLayout.EAST, label, -2, SpringLayout.WEST, nxtBtn);
+        layout.putConstraint(SpringLayout.WEST, label, 2, SpringLayout.WEST, this);
+
+        this.setPreferredSize(new Dimension(150, 36));
+        this.setMinimumSize(new Dimension(100, 40));
+
+        nxtBtn.setEnabled(false);
+        prvBtn.setEnabled(false);
+        clrBtn.setEnabled(false);
     }
 
     public void info(String id, String message) {
@@ -54,33 +99,12 @@ public class StatusLabel extends JLabel {
     }
 
     private void displayMessages() {
-        if (messages.size() == 0) {
-            setText("");
-            return;
-        }
+       
         StatusMessage msg = messages.get(messages.size() - 1);
-        messages.remove(messages.size() - 1);
-        if (currentMsg != null) {
-            messages.add(currentMsg);
-        }
 
         this.setColorLevel(msg.level);
-        this.setText(msg.nodeID + ": " + msg.message);
-        this.revalidate();      
-        
-        ActionListener reDisplay = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentMsg = null;
-                displayMessages();    
-            }
-
-        };
-        // wait 10s and remove the label
-        Timer timer = new Timer(10000, reDisplay);
-        timer.setRepeats(false);
-        timer.start();    
+        this.label.setText(msg.nodeID + ": " + msg.message);
+        this.revalidate();
     }
 
     private void setColorLevel(Level level) {
@@ -98,8 +122,7 @@ public class StatusLabel extends JLabel {
     }
 
     public void clearMessages() {
-        currentMsg = null;
-        setText("");
+        this.label.setText("");
         messages.clear();
     }
 
