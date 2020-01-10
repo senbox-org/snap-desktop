@@ -328,7 +328,7 @@ public class GraphNode {
     }
 
     private boolean canConnect() {
-        return !node.getOperatorName().equals("Read") && !node.getOperatorName().equals("ProductSet-Reader");
+        return maxNInputs < 0 || connectionNumber() < maxNInputs;
     }
 
     String getSourceName(final String sourceID) {
