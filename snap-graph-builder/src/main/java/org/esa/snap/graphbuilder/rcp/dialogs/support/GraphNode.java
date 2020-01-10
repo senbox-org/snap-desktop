@@ -89,6 +89,10 @@ public class GraphNode {
 
     private XppDom displayParameters;
 
+    private Color currentFill = unknownColor;
+    private Color currentActive = unknownColor.brighter();
+    private Color currentDraw = unknownColor.darker();
+
     public GraphNode(final Node n) throws IllegalArgumentException {
         node = n;
         displayParameters = new XppDom("node");
@@ -419,14 +423,14 @@ public class GraphNode {
      * @param col The color to draw
      */
     void drawNode(final Graphics2D g) {
-        Color col = color();
-       
-       
+        Color fill = currentFill;
+        Color draw = currentDraw;
+
         if (selected) {
-            col = col.brighter();
+            fill = fill.brighter();
+            draw = draw.brighter();
         }
 
-        Color dark = col.darker().darker();
         Stroke oldStroke = g.getStroke();
         Stroke bigStroke = new BasicStroke(2); 
 
@@ -441,9 +445,9 @@ public class GraphNode {
         int width = FastMath.round((FastMath.max(stringWidth + 15, 50) + 10) / 15) * 15 ;
         setSize(width, 15 + (1 + connectionNumber()) * 15);
 
-        g.setColor(col);
+        g.setColor(fill);
         g.fillRoundRect(x, y, nodeWidth, nodeHeight, 8, 8);
-        g.setColor(dark);
+        g.setColor(draw);
         
         
         g.setStroke(bigStroke);
@@ -454,8 +458,8 @@ public class GraphNode {
         g.drawString(name, x + (nodeWidth - stringWidth) / 2, y + 15);
 
         g.setStroke(bigStroke);
-        this.drawHeadHotspot(g, dark);
-        this.drawTailHotspot(g, dark);
+        this.drawHeadHotspot(g, draw);
+        this.drawTailHotspot(g, draw);
         
     }
 
@@ -648,34 +652,39 @@ public class GraphNode {
 
     public void valid() {
         this.status = Status.VALIDATED;
+        updateColors();
     }
 
     public void error() {
         this.status = Status.ERROR;
+        updateColors();
     }
 
     public void unknown() {
         this.status = Status.UNKNWON;
+        updateColors();
     }
 
-    private Color color() {
-        Color col;
+    private void updateColors() {
         switch (status) {
             case ERROR:
-                col = errorColor;
+                currentFill = errorColor;
                 break; 
             case VALIDATED:
-                col = validateColor;
+                currentFill = validateColor;
                 break;
             case UNKNWON:
             default:
-                col = unknownColor;
+                currentFill = unknownColor;
         }
-        return col;
+        currentDraw = currentFill.darker().darker();
+        currentActive = currentFill.brighter();
     }
 
+
+
     public Color activeColor() {
-        return color().brighter();
+        return currentActive;
     }
 }
 

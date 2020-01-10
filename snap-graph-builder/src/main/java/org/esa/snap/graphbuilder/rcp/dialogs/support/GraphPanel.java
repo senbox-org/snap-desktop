@@ -67,7 +67,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private GraphNode selectedNode = null;
 
     private GraphNode activeNode = null;
-    private final static Color activeColor = new Color(100, 207, 255, 128);
     private final static int activeNodePadding = 4;
 
     private boolean showHeadHotSpot = false;
@@ -316,7 +315,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
     private void drawActiveNode(Graphics2D g){
         if (this.activeNode != null) {
-            g.setColor(activeColor);
+            g.setColor(this.activeNode.activeColor());
             Point p = this.activeNode.getPos();
             int x = p.x - activeNodePadding;
             int y = p.y - activeNodePadding;
