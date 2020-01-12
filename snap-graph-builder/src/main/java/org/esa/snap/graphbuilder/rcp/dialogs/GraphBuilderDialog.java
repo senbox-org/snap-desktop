@@ -473,6 +473,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         initGraphEnabled = false;
         tabbedPanel.removeAll();
         graphEx.clearGraph();
+        graphPanel.clearGraph();
         refreshGraph();
         initGraphEnabled = true;
         statusLabel.clearMessages();
