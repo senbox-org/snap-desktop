@@ -203,6 +203,11 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
     }
 
+    public void clearGraph(){
+        activeNode = null;
+        selectedNode = null;
+    }
+
     private void checkPopup(MouseEvent e) {
         if (e.isPopupTrigger()) {
 
