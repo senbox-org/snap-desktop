@@ -10,10 +10,19 @@ import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.runtime.Config;
 
+/**
+ * Simplify NodeContext to be able to generate the target products of a given node 
+ * using the information given by the BuilderGraphContext.
+ */
 public class BuilderNodeContext {
     private Node node;
     private Operator operator;
 
+    /**
+     * Initializes the node contenxt and recover the operator from the Operator registry.
+     * 
+     * @param node source of the context 
+     */
     public BuilderNodeContext(Node node) throws GraphException{
         this.node = node;
         initOperator();   
@@ -37,10 +46,20 @@ public class BuilderNodeContext {
         }
     }
 
+    /**
+     * Adds source product to the context.
+     * @param id source product id
+     * @param product source product
+     */
     public void addSource(String id, Product product){
         this.operator.setSourceProduct(id, product);
     }
     
+    /**
+     * Creates and returns the target product of the node.
+     * @return the target prodcut
+     * @throws GraphException if any exection are thrown during the target product generation
+     */
     public Product getProduct() throws GraphException {
         try {
             return operator.getTargetProduct();

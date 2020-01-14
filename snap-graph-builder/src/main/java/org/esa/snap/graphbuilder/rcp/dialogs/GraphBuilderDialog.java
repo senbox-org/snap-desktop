@@ -25,6 +25,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
+import org.esa.snap.graphbuilder.gpf.core.NodeStatus;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -332,10 +333,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     private boolean checkNode(GraphNode node) {
-        boolean result = true;
+        NodeStatus status;
+        boolean result;
         try {
-            result = graphEx.checkNode(node);
+            status = graphEx.checkNode(node);
+            result = status == NodeStatus.VALIDATED;
         } catch (Exception e) {
+            status = NodeStatus.ERROR;
             if (e.getMessage() != null) {
                 statusLabel.error(node.getID(), e.getMessage());
             } else {
@@ -343,6 +347,17 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
             result = false;
         }
+        switch (status) {
+            case VALIDATED:
+                node.valid();
+                break;
+            case ERROR:
+                node.error();
+                break;
+            case INCOMPLETE:
+                node.unknown();
+        }
+
         if (result) {
             GraphNode[] connected = graphEx.getGraphNodeList().findConnectedNodes(node);
             for (GraphNode n: connected) {
@@ -448,7 +463,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             showErrorDialog(e.getMessage());
         }
     }
-
+    
     private void refreshGraph() {
         if(graphPanel != null) {
             graphPanel.repaint();
@@ -645,13 +660,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             return false;
         }
 
-        isValid = checkNode(node);
-        if (isValid){
-            node.valid();
-        } else {
-            node.error();
-        }
-        return isValid;
+        return checkNode(node);
     }
     
     public void addListener(final ProcessingListener listener) {

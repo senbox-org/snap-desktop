@@ -8,11 +8,20 @@ import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
 
+/**
+ * Simple class used to store the intermediate products of the graph to be able to quickly validate or 
+ * recompute the graph during editing.
+ */
 public class BuilderGraphContext {
     private Node[] nodes;
 
     private HashMap<Node, Product> products = new HashMap<>();
 
+    /**
+     * Initialize BuilderGraphContext with current graph.
+     * 
+     * @param graph current graph
+     */
     public BuilderGraphContext(Graph graph) {
         this.nodes = graph.getNodes();
         for (Node node : nodes) {
@@ -20,6 +29,10 @@ public class BuilderGraphContext {
         }
     }
 
+    /** 
+     * Updates the graph builder context.
+     * @param graph updated graph
+    */
     public void update(Graph graph) {
         for (Node node : graph.getNodes()) {
             if (!products.containsKey(node)) {
@@ -29,10 +42,10 @@ public class BuilderGraphContext {
     }
 
     /**
-     * Return soruce products
+     * Retrives list of source products of a node 
      * 
-     * @param node
-     * @return list of products
+     * @param node selected
+     * @return null if product list is incomplete else the list of products
      */
     public Product[] getSourceProducts(Node node) {
         Product[] sources = new Product[node.getSources().length];
@@ -45,18 +58,29 @@ public class BuilderGraphContext {
         return sources;
     }
 
+    /**
+     * Stores the current output product of a specific node.
+     * @param node source of the product
+     * @param product to store
+     */
     public void setProduct(Node node, Product product) {
         this.products.put(node, product);
     }
 
-    public boolean eval(Node n) throws GraphException {
-        BuilderNodeContext context = new BuilderNodeContext(n);
-        for (NodeSource src: n.getSources()) {
+    /**
+     * Evaluates a single node using the stored source products if available.
+     * @param node to be evaluated
+     * @return status of the node
+     * @throws GraphException if an evaluation error happens.
+     */
+    public NodeStatus eval(Node node) throws GraphException {
+        BuilderNodeContext context = new BuilderNodeContext(node);
+        for (NodeSource src: node.getSources()) {
             Product product = products.get(src.getSourceNode());
-            if (product == null) return false;
+            if (product == null) return NodeStatus.INCOMPLETE;
             context.addSource(src.getName(), product);
         }
-        this.products.put(n, context.getProduct());
-        return true;
+        this.products.put(node, context.getProduct());
+        return NodeStatus.VALIDATED;
     }
 }
