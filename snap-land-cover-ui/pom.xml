@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>snap-engine-utilities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>snap-ui</artifactId>
         </dependency>
         <dependency>
@@ -66,9 +70,14 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
+                    <!-- necessary because of issue described here:
+http://mail-archives.apache.org/mod_mbox/netbeans-dev/201906.mbox/%3cCAArD4mAMKOXQtxCwcMdB2tVEXCNirEfKT4+c=0-rUm6YDg8EHg@mail.gmail.com%3e
+-->
+                    <verifyRuntime>false</verifyRuntime>
+
                     <publicPackages>
                         <publicPackage>org.esa.snap.landcover.*</publicPackage>
                     </publicPackages>
