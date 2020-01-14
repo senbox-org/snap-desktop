@@ -463,7 +463,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             showErrorDialog(e.getMessage());
         }
     }
-    
+
     private void refreshGraph() {
         if(graphPanel != null) {
             graphPanel.repaint();
@@ -644,19 +644,17 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final UIValidation validation = node.validateParameterMap();
             if (validation.getState() == UIValidation.State.ERROR) {
                 isValid = false;
-                statusLabel.error(node.getID(), validation.getMsg());
+                statusLabel.warning(node.getID(), validation.getMsg());
             } else if (validation.getState() == UIValidation.State.WARNING) {
                 statusLabel.warning(node.getID(), validation.getMsg());
             }
         } catch (Exception e) {
             isValid = false;
-            statusLabel.error(node.getID(), e.getMessage());
+            statusLabel.warning(node.getID(), e.getMessage());
         }
-    
-
         
         if (!isValid) {
-            node.error();
+            node.unknown();
             return false;
         }
 

@@ -273,6 +273,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         drawGrid(g2);
         drawActiveNode(g2);
         drawGraph(g2, graphEx.getGraphNodes());
+        drawOnGoingConnection(g2);
     }
 
     /**
@@ -361,7 +362,9 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
                     n.drawConnectionLine(g, srcNode, i);
             }
         }
+    }
 
+    private void drawOnGoingConnection(Graphics2D g) {
         if (connectingSourceFromHead && connectSourceTargetNode != null) {
             final Point p1 = connectSourceTargetNode.getPos();
             final Point p2 = connectingSourcePos;
@@ -407,9 +410,12 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         checkPopup(e);
 
         if (showHeadHotSpot) {
+            connectingSourceFromTail = false;
             connectingSourceFromHead = true;
         } else if (showTailHotSpot) {
+            
             connectingSourceFromTail = true;
+            connectingSourceFromHead = false;
         }
 
         lastMousePos = e.getPoint();
