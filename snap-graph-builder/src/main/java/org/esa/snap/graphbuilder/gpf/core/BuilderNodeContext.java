@@ -1,5 +1,12 @@
 package org.esa.snap.graphbuilder.gpf.core;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import com.bc.ceres.binding.dom.DomElement;
+import com.bc.ceres.binding.dom.XppDomElement;
+
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
@@ -8,6 +15,7 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.internal.OperatorConfiguration;
 import org.esa.snap.runtime.Config;
 
 /**
@@ -54,6 +62,10 @@ public class BuilderNodeContext {
     public void addSource(String id, Product product){
         this.operator.setSourceProduct(id, product);
     }
+
+    private void initParameters() {
+        this.node.
+    }
     
     /**
      * Creates and returns the target product of the node.
@@ -68,5 +80,30 @@ public class BuilderNodeContext {
         }
     }
 
+    OperatorConfiguration createOperatorConfiguration(DomElement domElement,
+                                                      Map<String, Object> parameterContext) {
+        if (domElement == null) {
+            return null;
+        }
+        DomElement resolvedElement = new XppDomElement(domElement.getName());
+        Set<OperatorConfiguration.Reference> references = new HashSet<>(17);
+        DomElement[] children = domElement.getChildren();
 
+        for (DomElement child : children) {
+            String reference = child.getAttribute("refid");
+            if (reference != null) {
+                String parameterName = child.getName();
+                if (reference.contains(".")) {
+                    // TODO to be implemented
+                } else {
+                    OperatorConfiguration.ParameterReference parameterReference = new OperatorConfiguration.ParameterReference(parameterName, parameterContext.get(reference));
+                    references.add(parameterReference);
+                }
+            } else {
+                resolvedElement.addChild(child);
+            }
+        }
+
+        return new OperatorConfiguration(resolvedElement, references);
+    }
 }
