@@ -38,6 +38,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
 import org.esa.snap.graphbuilder.gpf.core.BuilderGraphContext;
+import org.esa.snap.graphbuilder.gpf.core.NodeStatus;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
@@ -260,7 +261,7 @@ public class GraphExecuter extends Observable {
         graph.setAppData("Presentation", presentationXML);
     }
 
-    public boolean checkNode(GraphNode n) throws GraphException {
+    public NodeStatus checkNode(GraphNode n) throws GraphException {
         if (builderContext == null) {
             builderContext = new BuilderGraphContext(graph);
         } else {
@@ -271,7 +272,7 @@ public class GraphExecuter extends Observable {
             if(sources != null) {
                 n.setSourceProducts(sources);
             } else {
-                return false;
+                return NodeStatus.INCOMPLETE;
             }
         }
         n.updateParameters();   
