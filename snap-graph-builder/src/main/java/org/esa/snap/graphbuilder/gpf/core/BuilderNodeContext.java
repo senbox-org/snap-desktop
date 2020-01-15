@@ -64,7 +64,7 @@ public class BuilderNodeContext {
     }
 
     private void initParameters() {
-        this.node.
+        //this.node.
     }
     
     /**
