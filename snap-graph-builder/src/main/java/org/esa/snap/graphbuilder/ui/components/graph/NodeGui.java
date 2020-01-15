@@ -10,6 +10,11 @@ import java.awt.Point;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
 
 public class NodeGui {
+    public static final int STATUS_MASK_OVER = 1 << 1;
+    public static final int STATUS_MASK_SELECTED = 1 << 2;
+    
+
+
     // private static final Color errorColor = new Color(255, 80, 80, 128);
     // private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(177, 177, 177, 128);
@@ -31,6 +36,8 @@ public class NodeGui {
     
     private String title;
     
+    private int status = 0;
+
     public NodeGui (int x, int y, String title){
         this.x = x;
         this.y = y;
@@ -49,6 +56,10 @@ public class NodeGui {
             width = Math.max(GridUtils.floor(textW + 20), minWidth);
         }
 
+        if ((this.status & STATUS_MASK_SELECTED) > 0) {
+            g.setColor(this.color().brighter().brighter());
+            g.fillRoundRect(x - 5, y - 5, width + 10,  height + 10, 10, 10);
+        }
 
         g.setColor(this.color());
         g.fillRoundRect(x, y, width, height, 8, 8);
@@ -62,6 +73,9 @@ public class NodeGui {
     }
 
     private Color color() {
+        if ((this.status & STATUS_MASK_OVER) > 0) {
+            return unknownColor.brighter();
+        }
         return unknownColor;
     }
     
@@ -96,4 +110,29 @@ public class NodeGui {
     }
 
 
+    public boolean contains(Point p) {
+        int dx = p.x - x;
+        int dy = p.y - y;
+        return (dx >= 0 && dy >= 0 && dx <= width && dy <= height);
+    }
+
+    public void over() {
+        if ((status & STATUS_MASK_OVER) == 0) 
+            status += STATUS_MASK_OVER;
+    }
+
+    public void none() {
+        if ((status & STATUS_MASK_OVER) > 0) 
+            status -= STATUS_MASK_OVER;
+    }
+
+    public void select() {
+        if ((status & STATUS_MASK_SELECTED) == 0) 
+            status += STATUS_MASK_SELECTED; 
+    } 
+
+    public void deselect() {
+        if ((status & STATUS_MASK_SELECTED) > 0) 
+            status -= STATUS_MASK_SELECTED; 
+    }
 }

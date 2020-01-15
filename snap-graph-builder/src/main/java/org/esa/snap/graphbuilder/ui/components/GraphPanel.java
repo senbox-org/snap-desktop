@@ -33,10 +33,17 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     private BufferedImage gridPattern = null;
 
     private AddNodeWidget addNodeWidget;
-
-    private ArrayList<NodeGui> nodes = new ArrayList<>();
+    
     private Point lastMousePosition = new Point(0, 0);
+    
+    private ArrayList<NodeGui> nodes = new ArrayList<>();
+    private NodeGui selectedNode = null;
+    private NodeGui activeNode = null;
+    private Point activeNodeRelPosition = new Point(0, 0);
+
     private OperatorManager operatorManager = new OperatorManager();
+
+
 
     public GraphPanel() {
         super();
@@ -128,6 +135,12 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
                            // getHeight()));
             return;
         }
+        
+        if (key == 127) {
+            // DELETE KEY
+            removeSelectedNode();
+            return;
+        }
 
         if (this.addNodeWidget.isVisible()) {
             switch (key) {
@@ -153,23 +166,45 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
         }
     }
 
+    private void removeSelectedNode() {
+        if (selectedNode != null) {
+            this.nodes.remove(selectedNode);
+            selectedNode = null;
+            repaint();
+        }
+    }
+
     @Override
     public void keyTyped(KeyEvent event) {
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        if (activeNode != null) {
+            int x = e.getX() - activeNodeRelPosition.x;
+            int y = e.getY() - activeNodeRelPosition.y;
+            activeNode.setPosition(x, y);
+            repaint();
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
         lastMousePosition = e.getPoint();
         if (addNodeWidget.isVisible()) {
-            if (addNodeWidget.mouseMoved(lastMousePosition))
+            if (addNodeWidget.mouseMoved(lastMousePosition)) {
                 repaint();
+                return;
+            }
         }
+        for (NodeGui node : nodes) {
+            if (node.contains(lastMousePosition)) {
+                node.over();
+            } else {
+                node.none();
+            }
+        }
+        this.repaint();
     }
 
     @Override
@@ -184,36 +219,57 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
                     repaint();
                     return;
                 }
-                repaint();
             }
         }
-
-        // TODO Auto-generated method stub
+    
+        for (NodeGui node : nodes) {
+            if (node.contains(lastMousePosition)) {
+                if (selectedNode != null && selectedNode != node) {
+                    selectedNode.deselect();
+                }
+                node.select();
+                selectedNode = node;
+            } else {
+                node.none();
+            }
+        }
+        repaint();
 
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            Point p = e.getPoint();
+            for (NodeGui node : nodes) {
+                if (node.contains(p)) {
+                    activeNode = node;
+                    activeNodeRelPosition = new Point(p.x - node.getX(), p.y - node.getY());
+                    return;
+                }
+            }
+        } else {
+            activeNode = null;
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        if (activeNode != null) {
+            activeNode.setPosition(GridUtils.normalize(activeNode.getPostion()));
+            activeNode = null;
+            repaint();
+        }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        // Nothing to do...
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        // Nothing to do...
     }
 
     @Override
