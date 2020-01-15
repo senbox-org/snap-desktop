@@ -269,7 +269,12 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // Nothing to do...
+        if (activeNode != null) {
+            activeNode.setPosition(GridUtils.normalize(activeNode.getPostion()));
+            activeNode.none();
+            activeNode = null;
+            repaint();
+        }
     }
 
     @Override

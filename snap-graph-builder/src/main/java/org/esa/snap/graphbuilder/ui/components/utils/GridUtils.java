@@ -51,8 +51,8 @@ public class GridUtils {
     }
 
     static public Point normalize(Point p) {
-        int x = Math.round(p.x / (float)gridSize) * gridSize;
-        int y = Math.round(p.y / (float)gridSize) * gridSize;
+        int x = Math.max(0 ,Math.round(p.x / (float)gridSize) * gridSize);
+        int y = Math.max(0, Math.round(p.y / (float)gridSize) * gridSize);
         return new Point(x, y);
     }
 
