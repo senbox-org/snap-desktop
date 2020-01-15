@@ -1,4 +1,4 @@
-package org.esa.snap.graphbuilder.ui.components.helpers;
+package org.esa.snap.graphbuilder.ui.components.utils;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;

@@ -1,25 +1,25 @@
 package org.esa.snap.graphbuilder.ui.components;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.KeyboardFocusManager;
-import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
-import org.esa.snap.graphbuilder.ui.components.helpers.AddNodeWidget;
-import org.esa.snap.graphbuilder.ui.components.helpers.GraphKeyEventDispatcher;
+import org.esa.snap.graphbuilder.ui.components.utils.AddNodeWidget;
+import org.esa.snap.graphbuilder.ui.components.utils.GraphKeyEventDispatcher;
+import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
+import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager;
 
 public class GraphPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
 
@@ -28,26 +28,27 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
      */
     private static final long serialVersionUID = -8787328074424783352L;
 
-    private static final int gridSize = 15;
-    private static final int gridMajor = 5;
-    private static final Color gridMajorColor = new Color(255, 255, 255, 30);
-    private static final Color gridMinorColor = new Color(255, 255, 255, 15);
     private BufferedImage gridPattern = null;
 
     private AddNodeWidget addNodeWidget;
 
     private ArrayList<NodeGui> nodes = new ArrayList<>();
+    private Point lastMousePosition = new Point(0, 0);
+    private OperatorManager operatorManager = new OperatorManager();
 
     public GraphPanel() {
         super();
         this.setBackground(Color.darkGray);
-        this.addNodeWidget = new AddNodeWidget();
+        this.addNodeWidget = new AddNodeWidget(operatorManager);
 
+        this.addMouseMotionListener(this);
+        this.addMouseListener(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new GraphKeyEventDispatcher(this));
     }
 
     private void addNode(NodeGui node) {
         if (node != null) {
+            node.setPosition(GridUtils.normalize(node.getPostion()));
             this.nodes.add(node);
         }
     }
@@ -75,40 +76,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
         int height = getHeight();
         if (gridPattern == null || gridPattern.getWidth() != width || gridPattern.getHeight() != height) {
             // initalize gridPattern image buffer
-            gridPattern = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-            Graphics2D gbuff = (Graphics2D) gridPattern.getGraphics();
-
-            int nCol = (int) Math.ceil(width / (float) gridSize);
-            int nRow = (int) Math.ceil(height / (float) gridSize);
-            int nMax = Math.max(nCol, nRow);
-
-            Stroke majorStroke = new BasicStroke(2);
-            Stroke minorStroke = new BasicStroke(1);
-
-            for (int i = 0; i <= nMax; i++) {
-                int pos = i * gridSize;
-
-                if (i % gridMajor == 0) {
-                    // set style for major lines
-                    gbuff.setStroke(majorStroke);
-                    gbuff.setColor(gridMajorColor);
-                } else {
-                    // set style for minor lines
-                    gbuff.setStroke(minorStroke);
-                    gbuff.setColor(gridMinorColor);
-                }
-
-                if (i <= nRow) {
-                    // draw row
-                    gbuff.drawLine(0, pos, width, pos);
-                }
-                if (i <= nCol) {
-                    // draw col
-                    gbuff.drawLine(pos, 0, pos, height);
-                }
-            }
-
+            gridPattern = GridUtils.gridPattern(width, height);
         }
         // render gridPattern buffer image
         g.drawImage(gridPattern, 0, 0, null);
@@ -139,7 +107,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
             case (KeyEvent.VK_BACK_SPACE):
                 // backspace
                 this.addNodeWidget.backspace();
-                this.repaint(this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
+                this.repaint(); //this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
                 break;
             }
 
@@ -151,8 +119,8 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
         int key = event.getKeyCode();
 
         if (key == KeyEvent.VK_TAB) {// 65) {
-            this.addNodeWidget.changeStatus();
-            this.repaint(this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); // this.addNodeWidget.getBoundingRect(getWidth(),
+            this.addNodeWidget.changeStatus(lastMousePosition);
+            this.repaint();//this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); // this.addNodeWidget.getBoundingRect(getWidth(),
                                                                                        // getHeight()));
             return;
         }
@@ -161,7 +129,6 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
             switch (key) {
             case (10):
                 // return
-                System.out.println(MouseInfo.getPointerInfo().getLocation());
                 this.addNode(this.addNodeWidget.enter());
                 break;
             case (27):
@@ -194,8 +161,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        // TODO Auto-generated method stub
-
+        lastMousePosition = e.getPoint();
     }
 
     @Override

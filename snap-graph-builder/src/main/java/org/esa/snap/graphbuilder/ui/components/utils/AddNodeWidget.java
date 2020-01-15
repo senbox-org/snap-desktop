@@ -1,4 +1,4 @@
-package org.esa.snap.graphbuilder.ui.components.helpers;
+package org.esa.snap.graphbuilder.ui.components.utils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -6,12 +6,11 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.HashSet;
-import java.util.Set;
 
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
+import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 public class AddNodeWidget {
@@ -22,25 +21,23 @@ public class AddNodeWidget {
     static final private Color strokeColor = new Color(0, 0, 0, 255);
 
     private static final int fsize = 12;
-    private static final Font font = new Font("Ariel", Font.BOLD, fsize);
+    private static final Font mainFont = new Font("Ariel", Font.BOLD, fsize);
+    private static final Font secondaryFont = new Font("Ariel", Font.ITALIC, fsize - 1);
+    private static final int hOffset = fsize * 2 + 8;
 
-    private Set<String> operatorList;
-    private final HashSet<String> results = new HashSet<String>();
+    private OperatorManager operatorManager;
+
+    private final HashSet<SimplifiedMetadata> results = new HashSet<>();
 
     private boolean visible = false;
     private String searchString = "";
 
-    private final GPF gpf;
-    private final OperatorSpiRegistry operatorSpiRegistry;
-
     private int pos_y = 0;
     
-    @SuppressWarnings("unchecked")
-    public AddNodeWidget() {
-        gpf = GPF.getDefaultInstance();
-        operatorSpiRegistry = gpf.getOperatorSpiRegistry();
-
-        operatorList = (Set<String>)operatorSpiRegistry.getAliases();
+    private Point mousePosition = new Point(0, 0);
+    
+    public AddNodeWidget(OperatorManager opManager) {
+       operatorManager = opManager;
     }
 
     public void paint(final int width, final int height, final Graphics2D g) {
@@ -58,7 +55,7 @@ public class AddNodeWidget {
             g.setStroke(oldStroke);
 
             g.setColor(Color.lightGray);
-            g.setFont(font);
+            g.setFont(mainFont);
 
             Graphics2D textG = (Graphics2D) g.create();
             int offset = 10;
@@ -77,7 +74,7 @@ public class AddNodeWidget {
                 resG.setStroke(new BasicStroke(6));
 
                 int yoff = 15;
-                int h = Math.min((fsize + 10) * nRes, height - (y + widgetHeight + 10));
+                int h = Math.min(hOffset * nRes, height - (y + widgetHeight + 10));
 
                 resG.fillRoundRect(x, y + widgetHeight - yoff, widgetWidth, h + yoff, 8, 8);
                 resG.drawRoundRect(x, y + widgetHeight - yoff, widgetWidth, h + yoff, 8, 8);
@@ -88,16 +85,22 @@ public class AddNodeWidget {
                 yoff = y + widgetHeight + 10; 
                 int ypos = 0;
                 int i = 0;
-                for (String res: results) {
+                for (SimplifiedMetadata res: results) {
+                    Color cMain = Color.gray;
+                    Color cSecond = Color.darkGray;
                     if (i == pos_y) {
                         resG.setColor(Color.lightGray);
-                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, fsize + 10);
-                        resG.setColor(Color.black);
-                    } else {
-                        resG.setColor(Color.gray);
-                    }
-                    resG.drawString(res, x + offset, yoff + ypos + fsize / 2);
-                    ypos += fsize + 10;
+                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, hOffset);
+                        cMain = Color.black;
+                    } 
+                    resG.setColor(cMain);
+                    resG.setFont(mainFont);
+                    resG.drawString(res.getName(), x + offset, yoff + ypos + 4);
+                    
+                    resG.setFont(secondaryFont);
+                    resG.setColor(cSecond);
+                    resG.drawString(res.getCategory(), x + offset, yoff + ypos + fsize + 6);
+                    ypos += hOffset;
                     i ++;
                 }
                 resG.dispose();
@@ -105,12 +108,14 @@ public class AddNodeWidget {
         }
     }
 
-    public void show() {
+    public void show(Point position) {
+        mousePosition = position;
         visible = true;
     }
 
     public void hide() {
         visible = false;
+        pos_y = 0;
         searchString = "";
         results.clear();
     }
@@ -118,18 +123,18 @@ public class AddNodeWidget {
     public NodeGui enter() {
         NodeGui n = null;
         if (results.size() > 0) {
-            String opName = results.toArray(new String[results.size()])[pos_y];
-            n = new NodeGui(10, 10, opName);
+            SimplifiedMetadata opName = results.toArray(new SimplifiedMetadata[results.size()])[pos_y];
+            n = new NodeGui(mousePosition.x, mousePosition.y, opName.getName());
         }
         hide();
         return n;
     }
 
-    public void changeStatus() {
+    public void changeStatus(Point position) {
         if (isVisible()) {
             hide();
         } else {
-            show();
+            show(position);
         }
     }
 
@@ -144,7 +149,7 @@ public class AddNodeWidget {
 
     public void type(final char key) {
         if ((key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z') || (key >= '0' && key <= '9') || (key == ' ')
-                || (key == '.') || (key == '-')) {
+                || (key == '.') || (key == '-') || (key == '/') || (key == '_')) {
             searchString += key;
             updateSearch();
         }
@@ -183,15 +188,21 @@ public class AddNodeWidget {
         results.clear();
         if (searchString.length() > 0) {
             final String normSearch[] = smartTokenizer(searchString);
-            for (final String alias : operatorList) {
-                final String lowcase = alias.toLowerCase();
+            for (SimplifiedMetadata metadata: operatorManager.getSimplifiedMetadata()) {
+                
                 for (final String tag : normSearch) {
-                    if (lowcase.contains(tag)) {
-                        results.add(alias);
+                    if (metadata.find(tag)) {
+                        results.add(metadata);
                         break;
                     }
                 }
             }
+        }
+        if (pos_y >= results.size()) {
+            pos_y = results.size() - 1;
+        }
+        if (pos_y < 0) {
+            pos_y = 0;
         }
     }
 
