@@ -316,6 +316,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         PropertyMap  configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
+        boolean schemeApply = configuration.getPropertyBool(PROPERTY_AUTO_APPLY_SCHEMES_KEY, PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT);
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
         String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);
@@ -333,12 +334,31 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 //            schemeInfoLabel.setText("");
 //            schemeInfoLabel.setVisible(true);
 //        }
+//
+//        schemeInfoLabel.setText("<html>*Modified scheme behavior:<br> " +
+//                "Log = " + schemeLogScaling + "<br>" +
+//                "Range = " + schemeRange + "<br>" +
+//                "Cpd = " + schemeCpd +
+//                "</html>");
 
-        schemeInfoLabel.setText("<html>Scheme behavior:<br> " +
-                "Log = " + schemeLogScaling + "<br>" +
-                "Range = " + schemeRange + "<br>" +
-                "Cpd = " + schemeCpd +
-                "</html>");
+        schemeInfoLabel.setText("<html>*Modified scheme");
+        schemeInfoLabel.setToolTipText("Not using exact scheme default: see preferences");
+
+        boolean visible = false;
+
+        ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
+        colorPaletteSchemes.isSchemeSet();
+
+        if (colorPaletteSchemes.isSchemeSet() &&
+                schemeApply &&
+                (!PROPERTY_SCHEME_CPD_DEFAULT.equals(schemeCpd) ||
+                        !PROPERTY_SCHEME_RANGE_DEFAULT.equals(schemeRange) ||
+                        !PROPERTY_SCHEME_LOG_DEFAULT.equals(schemeLogScaling))
+        ) {
+                visible = true;
+        }
+        schemeInfoLabel.setVisible(visible);
+
 
 
 
@@ -371,9 +391,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             currentMaxFieldValue = maxField.getText().toString();
         }
 
-        if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
-            standardColorPaletteSchemes.reset();
-        }
+//        if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
+//            standardColorPaletteSchemes.reset();
+//        }
 
         shouldFireChooserEvent = true;
     }

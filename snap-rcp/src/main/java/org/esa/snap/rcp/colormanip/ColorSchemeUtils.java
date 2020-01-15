@@ -12,12 +12,72 @@ import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
 
 public class ColorSchemeUtils {
 
+    /**
+     * Top level method which will set the desired color palette, range and log scaling within the imageInfo
+     * of the given productSceneView.
+     *
+     * This is called by either the reset button within the ColorManipulation GUI or when a new View
+     * Window is opened for a band.
+     *
+     * @param auxDir
+     * @param defaultImageInfo
+     * @param productSceneView
+     */
+
+    public static void setToDefaultColor(File auxDir, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+
+        ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
+        ColorSchemeManager.getDefault().init(auxDir);
+
+        if (isApplyScheme(productSceneView)) {
+            ColorPaletteInfo matchingColorPaletteInfo = setToDefaultColorScheme(auxDir, defaultImageInfo, productSceneView);
+
+            if (matchingColorPaletteInfo != null) {
+                colorPaletteSchemes.setSelected(matchingColorPaletteInfo);
+            } else {
+                colorPaletteSchemes.reset();
+                setToDefaultColorNoScheme(auxDir, defaultImageInfo, productSceneView);
+            }
+
+        } else {
+            colorPaletteSchemes.reset();
+
+            setToDefaultColorNoScheme(auxDir, defaultImageInfo, productSceneView);
+            productSceneView.setColorPaletteInfo(null);
+        }
+
+    }
 
 
+
+    public static ColorPaletteInfo setToDefaultColorScheme(File auxDir, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+
+        ColorPaletteInfo matchingColorPaletteInfo = getColorPaletteInfoByBandNameLookup(auxDir, productSceneView);
+
+        if (matchingColorPaletteInfo != null) {
+            boolean imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(auxDir, matchingColorPaletteInfo, productSceneView);
+
+            if (imageInfoSet) {
+                return matchingColorPaletteInfo;
+            }
+        }
+
+        return null;
+    }
+
+
+
+    /**
+     * Determines from preferences whether or not to use a color scheme based on a band name look up.
+     *
+     * @param productSceneView
+     * @return
+     */
     public static boolean isApplyScheme(ProductSceneView productSceneView) {
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
         return configuration.getPropertyBool(ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_KEY, true);
     }
+
 
 
     public static boolean isGeneralRangeFromData(ProductSceneView productSceneView) {
@@ -98,16 +158,6 @@ public class ColorSchemeUtils {
     }
 
 
-    public static void setToDefaultColor(File auxDir, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
-
-        if (isApplyScheme(productSceneView)) {
-            setToDefaultColorScheme(auxDir, defaultImageInfo, productSceneView);
-        } else {
-            setToDefaultColorNoScheme(auxDir, defaultImageInfo, productSceneView);
-            productSceneView.setColorPaletteInfo(null);
-        }
-
-    }
 
 
     public static void setToDefaultColorNoScheme(File auxDir, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
@@ -169,22 +219,6 @@ public class ColorSchemeUtils {
 
 
 
-    public static void setToDefaultColorScheme(File auxDir, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
-
-        ColorPaletteInfo matchingColorPaletteInfo = getColorPaletteInfoByBandNameLookup(auxDir, productSceneView);
-
-        boolean  defaultSet = ColorSchemeUtils.setImageInfoToColorScheme(auxDir,  matchingColorPaletteInfo, productSceneView);
-
-        if (!defaultSet) {
-            setToDefaultColorNoScheme(auxDir, defaultImageInfo, productSceneView);
-            productSceneView.setColorPaletteInfo(null);
-//            setImageInfo(defaultImageInfo);
-        }
-
-    }
-
-
-
     public static ColorPaletteInfo getColorPaletteInfoByBandNameLookup(File auxDir, ProductSceneView productSceneView) {
 
 //        PropertyMap configuration = sceneImage.getConfiguration();
@@ -241,19 +275,15 @@ public class ColorSchemeUtils {
         }
 
 
-
         return matchingColorPaletteInfo;
     }
-
-
-
 
 
     public static boolean setImageInfoToColorScheme(File auxDir, ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
 
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-        if (colorPaletteInfo == null){
+        if (colorPaletteInfo == null) {
             return false;
         }
 
