@@ -4,18 +4,24 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.KeyboardFocusManager;
+import java.awt.MouseInfo;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 import org.esa.snap.graphbuilder.ui.components.helpers.AddNodeWidget;
 import org.esa.snap.graphbuilder.ui.components.helpers.GraphKeyEventDispatcher;
 
-public class GraphPanel extends JPanel implements KeyListener {
+public class GraphPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
 
     /**
      * Genrated UID
@@ -24,11 +30,13 @@ public class GraphPanel extends JPanel implements KeyListener {
 
     private static final int gridSize = 15;
     private static final int gridMajor = 5;
-    private static final Color gridMajorColor = new Color(255, 255, 255, 80);
-    private static final Color gridMinorColor = new Color(255, 255, 255, 40);
+    private static final Color gridMajorColor = new Color(255, 255, 255, 30);
+    private static final Color gridMinorColor = new Color(255, 255, 255, 15);
     private BufferedImage gridPattern = null;
 
     private AddNodeWidget addNodeWidget;
+
+    private ArrayList<NodeGui> nodes = new ArrayList<>();
 
     public GraphPanel() {
         super();
@@ -36,6 +44,12 @@ public class GraphPanel extends JPanel implements KeyListener {
         this.addNodeWidget = new AddNodeWidget();
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new GraphKeyEventDispatcher(this));
+    }
+
+    private void addNode(NodeGui node) {
+        if (node != null) {
+            this.nodes.add(node);
+        }
     }
 
     /**
@@ -52,6 +66,7 @@ public class GraphPanel extends JPanel implements KeyListener {
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         drawGrid(g2);
+        drawNodes(g2);
         this.addNodeWidget.paint(getWidth(), getHeight(), g2);
     }
 
@@ -99,41 +114,119 @@ public class GraphPanel extends JPanel implements KeyListener {
         g.drawImage(gridPattern, 0, 0, null);
     }
 
+    private void drawNodes(Graphics2D g) {
+        Graphics2D gNode = (Graphics2D) g.create();
+        for (NodeGui node : nodes) {
+            node.paintNode(gNode);
+        }
+        gNode.dispose();
+    }
+
     @Override
     public void keyPressed(KeyEvent event) {
         int key = event.getKeyCode();
 
-        if (key == 8 && this.addNodeWidget.isVisible()) {
-            // backspace
-            this.addNodeWidget.backspace();
-            this.repaint(this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
+        if (this.addNodeWidget.isVisible()) {
+            switch (key) {
+            case (KeyEvent.VK_UP):
+                this.addNodeWidget.up();
+                this.repaint();
+                break;
+            case (KeyEvent.VK_DOWN):
+                this.addNodeWidget.down();
+                this.repaint();
+                break;
+            case (KeyEvent.VK_BACK_SPACE):
+                // backspace
+                this.addNodeWidget.backspace();
+                this.repaint(this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
+                break;
+            }
+
         }
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
         int key = event.getKeyCode();
-        
-        if (event.isControlDown() && key == KeyEvent.VK_TAB) {//65) {
+
+        if (key == KeyEvent.VK_TAB) {// 65) {
             this.addNodeWidget.changeStatus();
-            this.repaint(); //this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
+            this.repaint(this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); // this.addNodeWidget.getBoundingRect(getWidth(),
+                                                                                       // getHeight()));
             return;
         }
 
         if (this.addNodeWidget.isVisible()) {
-            if (key == 10) {
+            switch (key) {
+            case (10):
                 // return
-                this.addNodeWidget.hide();
-            } else if (key == 27) {
+                System.out.println(MouseInfo.getPointerInfo().getLocation());
+                this.addNode(this.addNodeWidget.enter());
+                break;
+            case (27):
                 // escape
                 this.addNodeWidget.hide();
-            } else {
+                break;
+            case (KeyEvent.VK_UP):
+                break;
+            case (KeyEvent.VK_DOWN):
+                break;
+            case (KeyEvent.VK_BACK_SPACE):
+                break;
+            default:
                 this.addNodeWidget.type(event.getKeyChar());
-            } 
+                break;
+            }
             this.repaint();
         }
     }
 
     @Override
-    public void keyTyped(KeyEvent event) {}
+    public void keyTyped(KeyEvent event) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+  
 }

@@ -10,17 +10,19 @@ import java.util.Set;
 
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
+import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 
 import java.awt.Rectangle;
 
 public class AddNodeWidget {
     static final private int widgetWidth = 400;
-    static final private int widgetHeight = 60;
+    static final private int widgetHeight = 30;
     
     static final private Color fillColor = new Color(0, 0, 0, 180); 
     static final private Color strokeColor = new Color(0, 0, 0, 255);
 
-    private static final Font font = new Font("Ariel", Font.BOLD, 25);
+    private static final int fsize = 12;
+    private static final Font font = new Font("Ariel", Font.BOLD, fsize);
 
     private Set<String> operatorList;
     private final HashSet<String> results = new HashSet<String>();
@@ -30,6 +32,8 @@ public class AddNodeWidget {
 
     private final GPF gpf;
     private final OperatorSpiRegistry operatorSpiRegistry;
+
+    private int pos_y = 0;
     
     @SuppressWarnings("unchecked")
     public AddNodeWidget() {
@@ -47,7 +51,7 @@ public class AddNodeWidget {
             final int y = 30;
 
             g.setColor(fillColor);
-            g.fillRoundRect(x, y, widgetWidth, widgetHeight, arc, arc);
+            g.fillRoundRect(x, y, widgetWidth, widgetHeight, arc, arc);  
             g.setStroke(new BasicStroke(6));
             g.setColor(strokeColor);
             g.drawRoundRect(x, y, widgetWidth, widgetHeight, arc, arc);
@@ -57,30 +61,44 @@ public class AddNodeWidget {
             g.setFont(font);
 
             Graphics2D textG = (Graphics2D) g.create();
+            int offset = 10;
 
-            textG.clipRect(x + 10, y + 10, widgetWidth - 20, widgetHeight - 20);
-            textG.drawString(searchString, x + 10, y + widgetHeight / 2 + 10);
+            textG.clipRect(x + 10, y + 5, widgetWidth - 20, widgetHeight - 10);
+            textG.drawString(searchString, x + offset, y + widgetHeight / 2 + fsize / 2);
             textG.dispose();
 
-            if (results.size() > 0) {  
+            
+            int nRes = results.size();
+            if (nRes > 0) {  
                 Graphics2D resG = (Graphics2D) g.create();   
-                resG.clipRect(x, y + widgetHeight, widgetWidth, height - y - widgetHeight);
+                resG.clipRect(x - 5, y + widgetHeight - 2, widgetWidth + 10, height - y - widgetHeight + 7);
 
-                resG.setColor(fillColor);
-                int h = Math.min(height - y - widgetHeight - 10, 30 * results.size());
-                resG.fillRect(x + 10, y + widgetHeight, widgetWidth - 20, h);
                 resG.setColor(strokeColor);
                 resG.setStroke(new BasicStroke(6));
-                resG.drawRect(x + 10, y + widgetHeight, widgetWidth - 20, h);
+
+                int yoff = 15;
+                int h = Math.min((fsize + 10) * nRes, height - (y + widgetHeight + 10));
+
+                resG.fillRoundRect(x, y + widgetHeight - yoff, widgetWidth, h + yoff, 8, 8);
+                resG.drawRoundRect(x, y + widgetHeight - yoff, widgetWidth, h + yoff, 8, 8);
+
                 resG.setStroke(oldStroke);
 
                 resG.setColor(Color.gray);
-                int ypos = y + widgetHeight + 10;
+                yoff = y + widgetHeight + 10; 
+                int ypos = 0;
+                int i = 0;
                 for (String res: results) {
-                    System.out.println(res);
-                    resG.drawString(res, x + 20, ypos + 20);
-                    ypos += 40;
-                    if (ypos > h) break;
+                    if (i == pos_y) {
+                        resG.setColor(Color.lightGray);
+                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, fsize + 10);
+                        resG.setColor(Color.black);
+                    } else {
+                        resG.setColor(Color.gray);
+                    }
+                    resG.drawString(res, x + offset, yoff + ypos + fsize / 2);
+                    ypos += fsize + 10;
+                    i ++;
                 }
                 resG.dispose();
             }
@@ -97,6 +115,16 @@ public class AddNodeWidget {
         results.clear();
     }
 
+    public NodeGui enter() {
+        NodeGui n = null;
+        if (results.size() > 0) {
+            String opName = results.toArray(new String[results.size()])[pos_y];
+            n = new NodeGui(10, 10, opName);
+        }
+        hide();
+        return n;
+    }
+
     public void changeStatus() {
         if (isVisible()) {
             hide();
@@ -107,7 +135,7 @@ public class AddNodeWidget {
 
     public Rectangle getBoundingRect(final int width, final int height) {
         return new Rectangle((width - widgetWidth) / 2 - 5, 30 - 5, widgetWidth + 10,
-                widgetHeight + 5 + 30 * results.size());
+                widgetHeight + 5 + (fsize + 10) * results.size());
     }
 
     public boolean isVisible() {
@@ -119,7 +147,6 @@ public class AddNodeWidget {
                 || (key == '.') || (key == '-')) {
             searchString += key;
             updateSearch();
-            System.out.println(results);
         }
     }
 
@@ -165,6 +192,18 @@ public class AddNodeWidget {
                     }
                 }
             }
+        }
+    }
+
+    public void up() {
+        if (pos_y > 0) {
+            pos_y --;
+        }   
+    }
+
+    public void down() {
+        if (pos_y < results.size() - 1) {
+            pos_y ++;
         }
     }
 }
