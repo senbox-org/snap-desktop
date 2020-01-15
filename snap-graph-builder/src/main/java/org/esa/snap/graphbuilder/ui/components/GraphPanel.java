@@ -240,6 +240,17 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
+            if (addNodeWidget.isVisible()) {
+                NodeGui node = addNodeWidget.click(e.getPoint());
+                if (node != null) {
+                    addNode(node);
+                    activeNode = node;
+                    activeNodeRelPosition = new Point(10, 10);
+                    node.setPosition(e.getX() - 10, e.getY() - 10);
+                    repaint();
+                    return;
+                }
+            }
             Point p = e.getPoint();
             for (NodeGui node : nodes) {
                 if (node.contains(p)) {
