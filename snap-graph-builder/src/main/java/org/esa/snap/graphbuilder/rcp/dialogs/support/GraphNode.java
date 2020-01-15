@@ -41,9 +41,6 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Represents a node of the graph for the GraphBuilder
