@@ -1,8 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ColorSchemeManager;
-import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.datamodel.ColorSchemeDefaults;
 import org.esa.snap.core.util.SystemUtils;
 
 import java.io.File;
@@ -19,7 +18,6 @@ class ColorPaletteManager {
 
     private List<ColorPaletteDef> cpdList;
     private List<String> cpdNames;
-    private ColorSchemeManager colorSchemeManager;
 
     public static ColorPaletteManager getDefault() {
         return manager;
@@ -52,14 +50,6 @@ class ColorPaletteManager {
         }
     }
 
-
-    public void initColorSchemeManager(File auxDir) {
-        colorSchemeManager = new ColorSchemeManager(auxDir);
-    }
-
-    public ColorSchemeManager getColorSchemeManager() {
-        return colorSchemeManager;
-    }
 
 
 

@@ -25,7 +25,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.PropertyPane;
-import org.esa.snap.core.datamodel.ColorSchemeManager;
+import org.esa.snap.core.datamodel.ColorSchemeDefaults;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
@@ -77,34 +77,34 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_GENERAL_CPD_KEY, ColorSchemeManager.PROPERTY_GENERAL_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeManager.PROPERTY_GENERAL_RANGE_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_GENERAL_LOG_KEY, ColorSchemeManager.PROPERTY_GENERAL_LOG_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
 
 
 
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY, true);
 
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_KEY, ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_KEY, ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT);
 
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_SCHEME_CPD_KEY, ColorSchemeManager.PROPERTY_SCHEME_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeManager.PROPERTY_SCHEME_RANGE_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_SCHEME_LOG_KEY, ColorSchemeManager.PROPERTY_SCHEME_LOG_DEFAULT);
-//        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_KEY, ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT);
-
-
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_DEFAULT_CPD_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_KEY, ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_KEY, ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_KEY, ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_OTHER_CPD_KEY, ColorSchemeManager.PROPERTY_OTHER_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
+//        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_KEY, ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY, ColorSchemeDefaults.PROPERTY_OTHER_CPD_DEFAULT);
 
-        initPropertyDefaults(context, ColorSchemeManager.PROPERTY_RESTORE_SECTION_KEY, true);
 
-        restoreDefaults =  initPropertyDefaults(context, ColorSchemeManager.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeManager.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
+
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
+
+        restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
 
 
 
@@ -263,7 +263,7 @@ Log
             }
             propertyValueChangeEventsEnabled = true;
 
-            context.setComponentsEnabled(ColorSchemeManager.PROPERTY_RESTORE_DEFAULTS_NAME, false);
+            context.setComponentsEnabled(ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, false);
         }
     }
 
@@ -278,7 +278,7 @@ Log
             propertyValueChangeEventsEnabled = false;
             try {
                 restoreDefaults.setValue(isDefaults(context));
-                context.setComponentsEnabled(ColorSchemeManager.PROPERTY_RESTORE_DEFAULTS_NAME, !isDefaults(context));
+                context.setComponentsEnabled(ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, !isDefaults(context));
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
@@ -318,17 +318,17 @@ Log
 
 
 
-        enablementDefaultColorBlindCpd = context.bindEnabledState(ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_KEY, true,
-                ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
+        enablementDefaultColorBlindCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, true,
+                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
 
-        enablementDefaultSchemeColorBlindCpd = context.bindEnabledState(ColorSchemeManager.PROPERTY_GENERAL_CPD_KEY, true,
-                ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
+        enablementDefaultSchemeColorBlindCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, true,
+                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
 
-        enablementDefaultSchemeStandardCpd = context.bindEnabledState(ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_KEY, false,
-                ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
+        enablementDefaultSchemeStandardCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, false,
+                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
 
-        enablementDefaultStandardCpd = context.bindEnabledState(ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_KEY, false,
-                ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
+        enablementDefaultStandardCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, false,
+                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
 
 
 
@@ -367,42 +367,38 @@ Log
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_GENERAL_BEHAVIOR_SECTION_LABEL,
-                key = ColorSchemeManager.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY,
-                description = ColorSchemeManager.PROPERTY_GENERAL_BEHAVIOR_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_TOOLTIP)
         boolean generalBehaviorSection = true;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_GENERAL_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_GENERAL_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_GENERAL_CPD_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_GENERAL_CPD_OPTION1,
-                        ColorSchemeManager.PROPERTY_GENERAL_CPD_OPTION2,
-                        ColorSchemeManager.PROPERTY_GENERAL_CPD_OPTION3,
-                        ColorSchemeManager.PROPERTY_GENERAL_CPD_OPTION4})
-        String generalCpd = ColorSchemeManager.PROPERTY_GENERAL_CPD_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GENERAL_CPD_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_GENERAL_CPD_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_CPD_OPTION2,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_CPD_OPTION3,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_CPD_OPTION4})
+        String generalCpd = ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT;
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_GENERAL_RANGE_LABEL,
-                key = ColorSchemeManager.PROPERTY_GENERAL_RANGE_KEY,
-                description = ColorSchemeManager.PROPERTY_GENERAL_RANGE_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_GENERAL_RANGE_OPTION1,
-                        ColorSchemeManager.PROPERTY_GENERAL_RANGE_OPTION2})
-        String generalRange = ColorSchemeManager.PROPERTY_GENERAL_RANGE_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_OPTION2})
+        String generalRange = ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT;
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_GENERAL_LOG_LABEL,
-                key = ColorSchemeManager.PROPERTY_GENERAL_LOG_KEY,
-                description = ColorSchemeManager.PROPERTY_GENERAL_LOG_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_GENERAL_LOG_OPTION1,
-                        ColorSchemeManager.PROPERTY_GENERAL_LOG_OPTION2,
-                        ColorSchemeManager.PROPERTY_GENERAL_LOG_OPTION3})
-        String generalLog = ColorSchemeManager.PROPERTY_GENERAL_LOG_DEFAULT;
-
-
-
-
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_LOG_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GENERAL_LOG_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_GENERAL_LOG_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_LOG_OPTION2,
+                        ColorSchemeDefaults.PROPERTY_GENERAL_LOG_OPTION3})
+        String generalLog = ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT;
 
 
 
@@ -411,52 +407,56 @@ Log
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_SCHEME_BEHAVIOR_SECTION_LABEL,
-                key = ColorSchemeManager.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY,
-                description = ColorSchemeManager.PROPERTY_SCHEME_BEHAVIOR_SECTION_TOOLTIP)
+
+
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_TOOLTIP)
         boolean schemeBehaviorSection = true;
 
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_LABEL,
-                key = ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_KEY,
-                description = ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_TOOLTIP)
-        boolean autoApplySchemes = ColorSchemeManager.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_KEY,
+                description = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_TOOLTIP)
+        boolean autoApplySchemes = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT;
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_SCHEME_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_SCHEME_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_SCHEME_CPD_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION1,
-                        ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION2,
-                        ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION3,
-                        ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION4,
-                        ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION5,
-                        ColorSchemeManager.PROPERTY_SCHEME_CPD_OPTION6})
-        String schemeCpd = ColorSchemeManager.PROPERTY_SCHEME_CPD_DEFAULT;
-
-
-
-        @Preference(label = ColorSchemeManager.PROPERTY_SCHEME_RANGE_LABEL,
-                key = ColorSchemeManager.PROPERTY_SCHEME_RANGE_KEY,
-                description = ColorSchemeManager.PROPERTY_SCHEME_RANGE_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_SCHEME_RANGE_OPTION1,
-                        ColorSchemeManager.PROPERTY_SCHEME_RANGE_OPTION2,
-                        ColorSchemeManager.PROPERTY_SCHEME_RANGE_OPTION3})
-        String schemeRange = ColorSchemeManager.PROPERTY_SCHEME_RANGE_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_CPD_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION2,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION3,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION4,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION5,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_CPD_OPTION6})
+        String schemeCpd = ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT;
 
 
 
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_OPTION2,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_OPTION3})
+        String schemeRange = ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_SCHEME_LOG_LABEL,
-                key = ColorSchemeManager.PROPERTY_SCHEME_LOG_KEY,
-                description = ColorSchemeManager.PROPERTY_SCHEME_LOG_TOOLTIP,
-                valueSet = {ColorSchemeManager.PROPERTY_SCHEME_LOG_OPTION1,
-                        ColorSchemeManager.PROPERTY_SCHEME_LOG_OPTION2,
-                        ColorSchemeManager.PROPERTY_SCHEME_LOG_OPTION3,
-                        ColorSchemeManager.PROPERTY_SCHEME_LOG_OPTION4})
-        String schemeLog = ColorSchemeManager.PROPERTY_SCHEME_LOG_DEFAULT;
+
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_TOOLTIP,
+                valueSet = {ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION1,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION2,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION3,
+                        ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION4})
+        String schemeLog = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
 
 
 
@@ -468,10 +468,10 @@ Log
 
 
 //
-//        @Preference(label = ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_LABEL,
-//                key = ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_KEY,
-//                description = ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_TOOLTIP)
-//        boolean useColorBlindCpd = ColorSchemeManager.PROPERTY_USE_COLOR_BLIND_CPD_DEFAULT;
+//        @Preference(label = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_LABEL,
+//                key = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY,
+//                description = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_TOOLTIP)
+//        boolean useColorBlindCpd = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_DEFAULT;
 
 
 
@@ -479,54 +479,54 @@ Log
 
 
 
-//        @Preference(label = ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_LABEL,
-//                key = ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_KEY,
-//                description = ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_TOOLTIP)
-//        boolean useSchemePaletteStx = ColorSchemeManager.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT;
+//        @Preference(label = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_LABEL,
+//                key = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_KEY,
+//                description = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_TOOLTIP)
+//        boolean useSchemePaletteStx = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT;
 
 
 
 
-        @Preference(label = ColorSchemeManager.PROPERTY_DEFAULT_CPD_SECTION_LABEL,
-                key = ColorSchemeManager.PROPERTY_DEFAULT_CPD_SECTION_KEY,
-                description = ColorSchemeManager.PROPERTY_DEFAULT_CPD_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_TOOLTIP)
         boolean defaultPaletteSection = true;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_TOOLTIP)
-        String grayScaleCpd = ColorSchemeManager.PROPERTY_GRAY_SCALE_CPD_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_TOOLTIP)
+        String grayScaleCpd = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_DEFAULT;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_TOOLTIP)
-        String standardColorCpd = ColorSchemeManager.PROPERTY_STANDARD_COLOR_CPD_DEFAULT;
-
-
-        @Preference(label = ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_TOOLTIP)
-        String colorBlindCpd = ColorSchemeManager.PROPERTY_COLOR_BLIND_CPD_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_TOOLTIP)
+        String standardColorCpd = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_DEFAULT;
 
 
+        @Preference(label = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_TOOLTIP)
+        String colorBlindCpd = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_DEFAULT;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_OTHER_CPD_LABEL,
-                key = ColorSchemeManager.PROPERTY_OTHER_CPD_KEY,
-                description = ColorSchemeManager.PROPERTY_OTHER_CPD_TOOLTIP)
-        String otherCpd = ColorSchemeManager.PROPERTY_OTHER_CPD_DEFAULT;
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_OTHER_CPD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_OTHER_CPD_TOOLTIP)
+        String otherCpd = ColorSchemeDefaults.PROPERTY_OTHER_CPD_DEFAULT;
 
 
         // Restore Defaults Section
 
-        @Preference(label = ColorSchemeManager.PROPERTY_RESTORE_SECTION_LABEL,
-                key = ColorSchemeManager.PROPERTY_RESTORE_SECTION_KEY,
-                description = ColorSchemeManager.PROPERTY_RESTORE_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_TOOLTIP)
         boolean restoreDefaultsSection = true;
 
-        @Preference(label = ColorSchemeManager.PROPERTY_RESTORE_TO_DEFAULTS_LABEL,
-                key = ColorSchemeManager.PROPERTY_RESTORE_DEFAULTS_NAME,
-                description = ColorSchemeManager.PROPERTY_RESTORE_TO_DEFAULTS_TOOLTIP)
-        boolean restoreDefaults = ColorSchemeManager.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME,
+                description = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_TOOLTIP)
+        boolean restoreDefaults = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT;
     }
 
 }

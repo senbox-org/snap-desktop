@@ -37,8 +37,8 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import static org.esa.snap.core.datamodel.ColorSchemeManager.*;
-import static org.esa.snap.core.datamodel.ColorSchemeManager.PROPERTY_SCHEME_RANGE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
+import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
 
 /**
  *

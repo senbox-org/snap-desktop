@@ -281,7 +281,7 @@ public class ProductSceneView extends BasicView
 
         addDefaultLayers(sceneImage);
 
-//        standardColorPaletteSchemes = new ColorSchemeManager(parentForm.getIODir().toFile(), getSceneImage().getConfiguration());
+//        standardColorPaletteSchemes = new ColorSchemeDefaults(parentForm.getIODir().toFile(), getSceneImage().getConfiguration());
     }
 
     private void addDefaultLayers(final ProductSceneImage sceneImage) {
