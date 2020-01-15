@@ -139,7 +139,6 @@ public class ColorSchemeManager {
 
         ArrayList<String> lines = readFileIntoArrayList(colorSchemesFile);
 
-        int i = 0;
         for (String line : lines) {
             line.trim();
             if (!line.startsWith("#")) {
@@ -238,7 +237,6 @@ public class ColorSchemeManager {
 
                             if (!standardCpdFile.exists()) {
                                 validEntry = false;
-                                //  standardCpdFile = new File(dirName, DEFAULT_CPD_FILENAME);
                             }
                         }
 
@@ -258,13 +256,11 @@ public class ColorSchemeManager {
                         if (validEntry) {
                             ColorPaletteInfo colorPaletteInfo = null;
 
-                            ColorPaletteDef colorPaletteDef;
                             try {
-                                colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+                                ColorPaletteDef.loadColorPaletteDef(cpdFile);
                                 colorPaletteInfo = new ColorPaletteInfo(id, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteDir);
 
                             } catch (IOException e) {
-                                //        colorPaletteInfo = new ColorPaletteInfo(name, description);
                             }
 
 
@@ -305,7 +301,6 @@ public class ColorSchemeManager {
                 String[] values = line.split(":");
 
                 if (values != null) {
-                    boolean validEntry = false;
                     boolean fieldsInitialized = false;
 
                     String name = null;
@@ -323,7 +318,6 @@ public class ColorSchemeManager {
                     String desiredScheme = null;
 
                     File standardCpdFile = null;
-                    File colorBlindCpdFile = null;
                     File cpdFile = null;
 
 
@@ -376,21 +370,18 @@ public class ColorSchemeManager {
 
                     if (fieldsInitialized) {
 
-                        colorBlindCpdFile = new File(colorPaletteDir, cpdFileNameColorBlind);
                         standardCpdFile = new File(colorPaletteDir, cpdFileNameStandard);
 
                         cpdFile = standardCpdFile;
 
                         ColorPaletteInfo colorPaletteInfo = null;
-                        ColorPaletteDef colorPaletteDef;
 
 
                         try {
-                            colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+                            ColorPaletteDef.loadColorPaletteDef(cpdFile);
                             colorPaletteInfo = new ColorPaletteInfo(name, rootSchemeName, description, cpdFileNameStandard, minVal, maxVal, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteDir);
 
                         } catch (IOException e) {
-                            //        colorPaletteInfo = new ColorPaletteInfo(name, description);
                         }
 
 
