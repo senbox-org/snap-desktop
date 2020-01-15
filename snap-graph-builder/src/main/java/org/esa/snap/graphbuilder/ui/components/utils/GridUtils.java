@@ -51,20 +51,20 @@ public class GridUtils {
     }
 
     static public Point normalize(Point p) {
-        int x = Math.round(p.x / gridSize) * gridSize;
-        int y = Math.round(p.y / gridSize) * gridSize;
+        int x = Math.round(p.x / (float)gridSize) * gridSize;
+        int y = Math.round(p.y / (float)gridSize) * gridSize;
         return new Point(x, y);
     }
 
     static public int round(int dim) {
-        return Math.round(dim / gridSize) * gridSize;
+        return Math.round(dim / (float)gridSize) * gridSize;
     }
 
     static public int ceil(int dim) {
-        return (int)Math.ceil(dim / gridSize) * gridSize;
+        return (int)Math.ceil(dim / (float)gridSize) * gridSize;
     }
 
     static public int floor(int dim) {
-        return (int)Math.floor(dim / gridSize) * gridSize;
+        return (int)Math.floor(dim / (float)gridSize) * gridSize;
     }
 }
