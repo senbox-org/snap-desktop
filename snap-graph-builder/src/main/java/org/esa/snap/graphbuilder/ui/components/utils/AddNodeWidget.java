@@ -24,6 +24,7 @@ public class AddNodeWidget {
     private static final Font mainFont = new Font("Ariel", Font.BOLD, fsize);
     private static final Font secondaryFont = new Font("Ariel", Font.ITALIC, fsize - 1);
     private static final int hOffset = fsize * 2 + 8;
+    private static final int yOffset = 30;
 
     private OperatorManager operatorManager;
 
@@ -33,6 +34,9 @@ public class AddNodeWidget {
     private String searchString = "";
 
     private int pos_y = 0;
+    private int over_y = -1;
+
+    private int parent_width = 0;
     
     private Point mousePosition = new Point(0, 0);
     
@@ -40,12 +44,13 @@ public class AddNodeWidget {
        operatorManager = opManager;
     }
 
-    public void paint(final int width, final int height, final Graphics2D g) {
+    public void paint( int width, int height, Graphics2D g) {
         if (visible) {
-            final Stroke oldStroke = g.getStroke();
-            final int arc = 8;
-            final int x = (width - widgetWidth) / 2;
-            final int y = 30;
+            parent_width = width;
+            Stroke oldStroke = g.getStroke();
+            int arc = 8;
+            int x = (width - widgetWidth) / 2;
+            int y = yOffset;
 
             g.setColor(fillColor);
             g.fillRoundRect(x, y, widgetWidth, widgetHeight, arc, arc);  
@@ -92,7 +97,12 @@ public class AddNodeWidget {
                         resG.setColor(Color.lightGray);
                         resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, hOffset);
                         cMain = Color.black;
-                    } 
+                    } else if (i == over_y) {
+                        resG.setColor(Color.darkGray);
+                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, hOffset);
+                        cSecond = Color.gray;
+                        cMain = Color.lightGray;
+                    }
                     resG.setColor(cMain);
                     resG.setFont(mainFont);
                     resG.drawString(res.getName(), x + offset, yoff + ypos + 4);
@@ -110,21 +120,28 @@ public class AddNodeWidget {
 
     public void show(Point position) {
         mousePosition = position;
+        mouseMoved(position);
         visible = true;
     }
 
     public void hide() {
         visible = false;
         pos_y = 0;
+        over_y = -1;
         searchString = "";
         results.clear();
+    }
+
+    private NodeGui createNode(int index) {
+        SimplifiedMetadata opName = results.toArray(new SimplifiedMetadata[results.size()])[index];
+        return new NodeGui(mousePosition.x, mousePosition.y, opName.getName());
+        
     }
 
     public NodeGui enter() {
         NodeGui n = null;
         if (results.size() > 0) {
-            SimplifiedMetadata opName = results.toArray(new SimplifiedMetadata[results.size()])[pos_y];
-            n = new NodeGui(mousePosition.x, mousePosition.y, opName.getName());
+           n = createNode(pos_y);
         }
         hide();
         return n;
@@ -216,5 +233,31 @@ public class AddNodeWidget {
         if (pos_y < results.size() - 1) {
             pos_y ++;
         }
+    }
+
+    public NodeGui click(Point p) {
+        NodeGui n = null;
+        if (isVisible()) {
+            mouseMoved(p);
+            if (over_y >= 0 && over_y < results.size()) {
+                n = createNode(over_y);
+            } 
+            hide();
+        }
+        return n;
+    }
+
+    public boolean mouseMoved(Point p) {
+        int x = p.x - (parent_width - widgetWidth) / 2;
+        int y = p.y - (yOffset + widgetHeight);
+        int old_y = over_y;
+        over_y = -1;
+        if (x >= 0 && p.x <= widgetWidth && y > 0) {
+            int y_ind = (int)Math.ceil(y / hOffset);
+            if (y_ind < results.size()) {
+                over_y = y_ind;
+            }
+        } 
+        return over_y != old_y;
     }
 }
