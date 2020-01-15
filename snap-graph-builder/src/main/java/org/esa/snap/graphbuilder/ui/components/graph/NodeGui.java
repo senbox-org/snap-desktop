@@ -46,7 +46,7 @@ public class NodeGui {
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(title);
 
-            width = Math.max(GridUtils.floor(textW + 15), minWidth);
+            width = Math.max(GridUtils.floor(textW + 20), minWidth);
         }
 
 

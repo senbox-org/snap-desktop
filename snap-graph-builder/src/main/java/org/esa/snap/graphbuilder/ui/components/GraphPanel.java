@@ -9,6 +9,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -21,7 +23,7 @@ import org.esa.snap.graphbuilder.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager;
 
-public class GraphPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener {
+public class GraphPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     /**
      * Genrated UID
@@ -43,6 +45,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
+        this.addMouseWheelListener(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new GraphKeyEventDispatcher(this));
     }
 
@@ -107,7 +110,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
             case (KeyEvent.VK_BACK_SPACE):
                 // backspace
                 this.addNodeWidget.backspace();
-                this.repaint(); //this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
+                this.repaint(); // this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
                 break;
             }
 
@@ -120,8 +123,9 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
         if (key == KeyEvent.VK_TAB) {// 65) {
             this.addNodeWidget.changeStatus(lastMousePosition);
-            this.repaint();//this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); // this.addNodeWidget.getBoundingRect(getWidth(),
-                                                                                       // getHeight()));
+            this.repaint();// this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); //
+                           // this.addNodeWidget.getBoundingRect(getWidth(),
+                           // getHeight()));
             return;
         }
 
@@ -162,10 +166,28 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     @Override
     public void mouseMoved(MouseEvent e) {
         lastMousePosition = e.getPoint();
+        if (addNodeWidget.isVisible()) {
+            if (addNodeWidget.mouseMoved(lastMousePosition))
+                repaint();
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (e.getButton() != MouseEvent.BUTTON1) {
+            addNodeWidget.hide();
+        } else {
+            if (addNodeWidget.isVisible()) {
+                NodeGui node = addNodeWidget.click(e.getPoint());
+                if (node != null) {
+                    addNode(node);
+                    repaint();
+                    return;
+                }
+                repaint();
+            }
+        }
+
         // TODO Auto-generated method stub
 
     }
@@ -192,6 +214,22 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     public void mouseExited(MouseEvent e) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (addNodeWidget.isVisible()){
+            int rotation = e.getWheelRotation();
+            boolean up = rotation < 0;
+            for (int i = 0; i < Math.abs(rotation); i ++ ) {
+                if (up) {
+                    addNodeWidget.up();
+                } else {
+                    addNodeWidget.down();
+                }
+            }
+            repaint();
+        }
     }
 
   
