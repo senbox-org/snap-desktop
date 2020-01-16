@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.actions;
 
-import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
+import org.esa.snap.graphbuilder.ui.GraphBuilderDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -55,10 +55,12 @@ public class OpenGraphBuilderAction extends AbstractAction {
         final GraphBuilderDialog dialog = new GraphBuilderDialog(SnapApp.getDefault().getAppContext(), "Graph Builder", "graph_builder");
         //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
-
+        
+        /*
         InputStream graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
 
         dialog.loadGraph(graphFileStream, null);
         dialog.enableInitialInstructions(true);
+        */
     }
 }
