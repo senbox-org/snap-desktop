@@ -7,9 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.HashSet;
 
-import org.esa.snap.core.gpf.graph.Node;
-import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
-import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
@@ -135,9 +132,7 @@ public class AddNodeWidget {
 
     private NodeGui createNode(int index) {
         SimplifiedMetadata opMetaData = results.toArray(new SimplifiedMetadata[results.size()])[index];
-        OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(opMetaData.getName());
-        Node node = operatorManager.newNode(opMetaData.getName());
-        return new NodeGui(node, operatorManager.getConfiguration(node), opMetaData, ui);
+        return operatorManager.newNode(opMetaData);
     }
 
     public NodeGui enter() {
@@ -207,7 +202,7 @@ public class AddNodeWidget {
         results.clear();
         if (searchString.length() > 0) {
             final String normSearch[] = smartTokenizer(searchString);
-            for (SimplifiedMetadata metadata: operatorManager.getSimplifiedMetadata()) {
+            for (SimplifiedMetadata metadata: operatorManager.getSimplifiedMetadatas()) {
                 
                 for (final String tag : normSearch) {
                     if (metadata.find(tag)) {
