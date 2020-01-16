@@ -10,6 +10,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.esa.snap.graphbuilder.ui.components.MainPanel;
 import org.esa.snap.graphbuilder.ui.components.StatusPanel;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.DefaultAppContext;
 
 /**
  * Main View for the new Graph Builder
@@ -26,7 +28,7 @@ public class GraphBuilder extends JPanel {
     private StatusPanel statusBar;
     private MainPanel mainPanel;
 
-    public GraphBuilder() {
+    public GraphBuilder(AppContext context) {
         super();
 
         this.setLayout(new BorderLayout(0, 0));
@@ -37,7 +39,7 @@ public class GraphBuilder extends JPanel {
         statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
 
-        mainPanel = new MainPanel();
+        mainPanel = new MainPanel(context);
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
@@ -49,7 +51,8 @@ public class GraphBuilder extends JPanel {
             e.printStackTrace();
         }
 
-        GraphBuilder builder = new GraphBuilder();
+        AppContext context = new DefaultAppContext("Standalone Graph Builder");
+        GraphBuilder builder = new GraphBuilder(context);
         JFrame mainFrame = new JFrame();
         
         mainFrame.setLayout(new BorderLayout());

@@ -7,6 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.HashSet;
 
+import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
@@ -38,7 +41,6 @@ public class AddNodeWidget {
 
     private int parent_width = 0;
     
-    private Point mousePosition = new Point(0, 0);
     
     public AddNodeWidget(OperatorManager opManager) {
        operatorManager = opManager;
@@ -119,7 +121,6 @@ public class AddNodeWidget {
     }
 
     public void show(Point position) {
-        mousePosition = position;
         mouseMoved(position);
         visible = true;
     }
@@ -133,9 +134,10 @@ public class AddNodeWidget {
     }
 
     private NodeGui createNode(int index) {
-        SimplifiedMetadata opName = results.toArray(new SimplifiedMetadata[results.size()])[index];
-        return new NodeGui(mousePosition.x, mousePosition.y, opName.getName());
-        
+        SimplifiedMetadata opMetaData = results.toArray(new SimplifiedMetadata[results.size()])[index];
+        OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(opMetaData.getName());
+        Node node = operatorManager.newNode(opMetaData.getName());
+        return new NodeGui(node, operatorManager.getConfiguration(node), opMetaData, ui);
     }
 
     public NodeGui enter() {
