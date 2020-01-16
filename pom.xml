@@ -33,7 +33,10 @@
         <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
+<!--
+TODO Jean uncomment 'snap-classification-ui' before transfer to the master branch
         <module>snap-classification-ui</module>
+-->
         <module>snap-collocation-ui</module>
         <module>snap-dem-ui</module>
         <module>snap-gpf-ui</module>
