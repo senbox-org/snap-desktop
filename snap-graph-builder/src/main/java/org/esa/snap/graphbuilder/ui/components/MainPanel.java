@@ -29,12 +29,11 @@ public class MainPanel extends JSplitPane {
         graphPanel = new GraphPanel();
         optionPanel = new OptionPanel(context);
         graphPanel.addGraphListener(optionPanel);
-
-        this.setRightComponent(graphPanel);
-        this.setLeftComponent(optionPanel);
+        this.setLeftComponent(graphPanel);
+        this.setRightComponent(optionPanel);
 
         this.setOneTouchExpandable(true);
-        this.setDividerLocation(300);
+        this.setDividerLocation(800);
     }
 
 }

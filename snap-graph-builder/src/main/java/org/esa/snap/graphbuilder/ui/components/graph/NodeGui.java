@@ -30,6 +30,8 @@ public class NodeGui {
 
     static final private BasicStroke borderStroke = new BasicStroke(3);
     static final private BasicStroke textStroke = new BasicStroke(1);
+    static final private BasicStroke activeStroke = new BasicStroke(6);
+
     static final private Font textFont = new Font("Ariel", Font.BOLD, 11);
 
     static final private int minWidth = 60;
@@ -76,8 +78,11 @@ public class NodeGui {
         }
 
         if ((this.status & STATUS_MASK_SELECTED) > 0) {
-            g.setColor(this.color().brighter().brighter());
-            g.fillRoundRect(x - 5, y - 5, width + 10,  height + 10, 10, 10);
+            Graphics2D gactive = (Graphics2D)g.create();
+            gactive.setColor(this.color().brighter().brighter());
+            gactive.setStroke(activeStroke);
+            gactive.drawRoundRect(x-2, y-2, width + 4,  height + 4, 8, 8);
+            gactive.dispose();
         }
 
         g.setColor(this.color());

@@ -30,7 +30,7 @@ public class OptionPanel extends JPanel implements GraphListener {
         this.add(optionTitle);
         layout.putConstraint(SpringLayout.NORTH, optionTitle, 0, SpringLayout.NORTH, this);
         layout.putConstraint(SpringLayout.WEST, optionTitle, 4, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.EAST, optionTitle, 4, SpringLayout.EAST, this);
+        layout.putConstraint(SpringLayout.EAST, optionTitle, -4, SpringLayout.EAST, this);
         layout.putConstraint(SpringLayout.SOUTH, optionTitle, 30, SpringLayout.NORTH, this);
     }
 
@@ -44,23 +44,22 @@ public class OptionPanel extends JPanel implements GraphListener {
             currentOptionWidget = source.getPreferencePanel(context);
             this.optionTitle.setText(source.getName());            
             if (currentOptionWidget != null) {
-                System.out.println("ADDED: "+source.getName());
                 this.add(currentOptionWidget);
                 layout.putConstraint(SpringLayout.NORTH, currentOptionWidget, 4, SpringLayout.SOUTH, optionTitle);
                 layout.putConstraint(SpringLayout.WEST, currentOptionWidget, 4, SpringLayout.WEST, this);
-                layout.putConstraint(SpringLayout.EAST, currentOptionWidget, 4, SpringLayout.EAST, this);
+                layout.putConstraint(SpringLayout.EAST, currentOptionWidget, -4, SpringLayout.EAST, this);
                 layout.putConstraint(SpringLayout.SOUTH, currentOptionWidget, 0, SpringLayout.SOUTH, this);   
             } 
         }
         
         this.revalidate();
+        this.repaint();
     }
 
     @Override
     public void deselected(NodeGui source) {
         selectedNode = null;    
         if (currentOptionWidget != null) {
-            System.out.println("Remove!");
             this.layout.removeLayoutComponent(currentOptionWidget);
             this.remove(currentOptionWidget);
             currentOptionWidget = null;
@@ -82,8 +81,6 @@ public class OptionPanel extends JPanel implements GraphListener {
 
     @Override
     public void deleted(NodeGui source) {
-        if (selectedNode == source) {
-            deselected(source);
-        }
+        deselected(source);
     }
 }

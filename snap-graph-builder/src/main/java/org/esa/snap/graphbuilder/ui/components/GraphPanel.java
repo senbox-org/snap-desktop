@@ -239,13 +239,18 @@ public class GraphPanel extends JPanel
                 }
             }
         }
-
+        boolean somethingSelected = false;
         for (NodeGui node : nodes) {
             if (node.contains(lastMousePosition)) {
                 selectNode(node);
+                somethingSelected = true;
             } else {
                 node.none();
             }
+        }
+        if (!somethingSelected) {
+            deselectNode(selectedNode);
+            selectedNode = null;
         }
         repaint();
 
@@ -332,6 +337,8 @@ public class GraphPanel extends JPanel
     }
 
     private void deselectNode(NodeGui node) {
+        if (node == null)
+            return;
         node.deselect();
         for (GraphListener listener : graphListeners) {
             listener.deselected(node);
