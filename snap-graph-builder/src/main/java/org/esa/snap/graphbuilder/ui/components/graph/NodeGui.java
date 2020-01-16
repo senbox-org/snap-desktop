@@ -165,6 +165,8 @@ public class NodeGui {
                 preferencePanel = operatorUI.CreateOpTab(this.metadata.getName(), configuration ,context);
             } catch (Exception e) {
                 SystemUtils.LOG.info(e.getMessage());
+                preferencePanel = null;
+                return null;
             }
         }
         return preferencePanel;

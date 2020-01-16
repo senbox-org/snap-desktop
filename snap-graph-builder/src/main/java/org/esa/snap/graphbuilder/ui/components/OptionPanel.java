@@ -44,17 +44,15 @@ public class OptionPanel extends JPanel implements GraphListener {
             currentOptionWidget = source.getPreferencePanel(context);
             this.optionTitle.setText(source.getName());            
             if (currentOptionWidget != null) {
-                System.out.println(source.getName());
-
+                System.out.println("ADDED: "+source.getName());
                 this.add(currentOptionWidget);
                 layout.putConstraint(SpringLayout.NORTH, currentOptionWidget, 4, SpringLayout.SOUTH, optionTitle);
                 layout.putConstraint(SpringLayout.WEST, currentOptionWidget, 4, SpringLayout.WEST, this);
                 layout.putConstraint(SpringLayout.EAST, currentOptionWidget, 4, SpringLayout.EAST, this);
                 layout.putConstraint(SpringLayout.SOUTH, currentOptionWidget, 0, SpringLayout.SOUTH, this);   
-            }
+            } 
         }
         
-        this.layout.invalidateLayout(this);
         this.revalidate();
     }
 
@@ -62,12 +60,13 @@ public class OptionPanel extends JPanel implements GraphListener {
     public void deselected(NodeGui source) {
         selectedNode = null;    
         if (currentOptionWidget != null) {
-            this.remove(currentOptionWidget);
+            System.out.println("Remove!");
             this.layout.removeLayoutComponent(currentOptionWidget);
+            this.remove(currentOptionWidget);
             currentOptionWidget = null;
         }
-        this.layout.invalidateLayout(this);
         this.revalidate();
+        this.repaint();
         this.optionTitle.setText("");
     }
 
