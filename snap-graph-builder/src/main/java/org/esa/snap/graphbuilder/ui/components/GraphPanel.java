@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 import org.esa.snap.graphbuilder.ui.components.utils.AddNodeWidget;
 import org.esa.snap.graphbuilder.ui.components.utils.GraphKeyEventDispatcher;
+import org.esa.snap.graphbuilder.ui.components.utils.GraphListener;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager;
 
@@ -43,7 +44,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     private OperatorManager operatorManager = new OperatorManager();
 
-
+    private ArrayList<GraphListener> graphListeners = new ArrayList<>();
 
     public GraphPanel() {
         super();
@@ -58,8 +59,11 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     private void addNode(NodeGui node) {
         if (node != null) {
-            node.setPosition(GridUtils.normalize(node.getPostion()));
+            node.setPosition(GridUtils.normalize(lastMousePosition));
             this.nodes.add(node);
+            for (GraphListener listener : graphListeners) {
+                listener.created(node);   
+            }
         }
     }
 
@@ -169,6 +173,9 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     private void removeSelectedNode() {
         if (selectedNode != null) {
             this.nodes.remove(selectedNode);
+            for (GraphListener listener : graphListeners) {
+                listener.deleted(selectedNode);
+            }
             selectedNode = null;
             repaint();
         }
@@ -183,7 +190,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
         if (activeNode != null) {
             int x = e.getX() - activeNodeRelPosition.x;
             int y = e.getY() - activeNodeRelPosition.y;
-            activeNode.setPosition(x, y);
+            moveNode(activeNode, x, y);
             repaint();
         }
     }
@@ -224,11 +231,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     
         for (NodeGui node : nodes) {
             if (node.contains(lastMousePosition)) {
-                if (selectedNode != null && selectedNode != node) {
-                    selectedNode.deselect();
-                }
-                node.select();
-                selectedNode = node;
+                selectNode(node);
             } else {
                 node.none();
             }
@@ -246,7 +249,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
                     addNode(node);
                     activeNode = node;
                     activeNodeRelPosition = new Point(10, 10);
-                    node.setPosition(e.getX() - 10, e.getY() - 10);
+                    moveNode(node, e.getX() - 10, e.getY() - 10);
                     repaint();
                     return;
                 }
@@ -267,7 +270,9 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     @Override
     public void mouseReleased(MouseEvent e) {
         if (activeNode != null) {
-            activeNode.setPosition(GridUtils.normalize(activeNode.getPostion()));
+            Point p = GridUtils.normalize(activeNode.getPostion());
+            moveNode(activeNode, p.x, p.y);
+
             activeNode = null;
             repaint();
         }
@@ -304,5 +309,36 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
         }
     }
 
-  
+    private void selectNode(NodeGui node) {
+        if (selectedNode != null && selectedNode != node) {
+            deselectNode(selectedNode);            
+        }
+        node.select();
+        selectedNode = node;
+        for (GraphListener listener: graphListeners) {
+            listener.selected(node);
+        }
+    }
+
+    private void deselectNode(NodeGui node) {
+        node.deselect();
+        for (GraphListener listener: graphListeners) {
+            listener.deselected(node);
+        }
+    }
+
+    private void moveNode(NodeGui node, int x, int y) {
+        node.setPosition(x, y);
+        for (GraphListener listener: graphListeners) {
+            listener.updated(node);
+        }
+    }
+
+    public void addGraphListener(GraphListener listener) {
+        graphListeners.add(listener);
+    }
+
+    public void removeGraphListener(GraphListener listener) {
+        graphListeners.remove(listener);
+    }
 }

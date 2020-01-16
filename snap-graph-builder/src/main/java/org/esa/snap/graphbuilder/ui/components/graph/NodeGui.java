@@ -6,8 +6,15 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.util.Map;
 
+import javax.swing.JComponent;
+
+import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
+import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager.SimplifiedMetadata;
+import org.esa.snap.ui.AppContext;
 
 public class NodeGui {
     public static final int STATUS_MASK_OVER = 1 << 1;
@@ -34,14 +41,23 @@ public class NodeGui {
     private int textW = -1;
     private int textH = -1;
     
-    private String title;
+    private String name;
     
     private int status = 0;
 
-    public NodeGui (int x, int y, String title){
-        this.x = x;
-        this.y = y;
-        this.title = title;
+    private final SimplifiedMetadata metadata;
+    private final OperatorUI operatorUI;
+    private final Node node;
+    private final Map<String, Object> configuration;
+
+    public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
+        this.x = 0;
+        this.y = 0;
+        this.metadata = metadata;
+        this.operatorUI = operatorUI;
+        this.node = node;
+        this.name = this.node.getId();
+        this.configuration = configuration;
     }
 
     public void paintNode(Graphics2D g) {
@@ -51,7 +67,7 @@ public class NodeGui {
             FontMetrics fontMetrics = g.getFontMetrics();
                     
             textH = fontMetrics.getHeight();
-            textW = fontMetrics.stringWidth(title);
+            textW = fontMetrics.stringWidth(name);
 
             width = Math.max(GridUtils.floor(textW + 20), minWidth);
         }
@@ -69,7 +85,7 @@ public class NodeGui {
         
         g.setStroke(textStroke);
        
-        g.drawString(title, x + (width - textW) / 2 , y + (5 + textH));
+        g.drawString(name, x + (width - textW) / 2 , y + (5 + textH));
     }
 
     private Color color() {
@@ -109,6 +125,9 @@ public class NodeGui {
         return height;
     }
 
+    public String getName() {
+        return name;
+    }
 
     public boolean contains(Point p) {
         int dx = p.x - x;
@@ -135,4 +154,12 @@ public class NodeGui {
         if ((status & STATUS_MASK_SELECTED) > 0) 
             status -= STATUS_MASK_SELECTED; 
     }
+
+
+    public JComponent getPreferencePanel(AppContext context){
+
+        return operatorUI.CreateOpTab(this.metadata.getName(), configuration ,context);
+    }
+
+
 }
