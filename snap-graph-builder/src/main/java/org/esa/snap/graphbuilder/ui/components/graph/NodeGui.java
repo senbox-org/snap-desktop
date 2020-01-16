@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager.SimplifiedMetadata;
@@ -49,6 +50,8 @@ public class NodeGui {
     private final OperatorUI operatorUI;
     private final Node node;
     private final Map<String, Object> configuration;
+    private JComponent preferencePanel = null;
+
 
     public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
@@ -157,8 +160,14 @@ public class NodeGui {
 
 
     public JComponent getPreferencePanel(AppContext context){
-
-        return operatorUI.CreateOpTab(this.metadata.getName(), configuration ,context);
+        if (preferencePanel == null) {
+            try {
+                preferencePanel = operatorUI.CreateOpTab(this.metadata.getName(), configuration ,context);
+            } catch (Exception e) {
+                SystemUtils.LOG.info(e.getMessage());
+            }
+        }
+        return preferencePanel;
     }
 
 

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,6 +18,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 import org.esa.snap.graphbuilder.ui.components.utils.AddNodeWidget;
@@ -24,7 +27,8 @@ import org.esa.snap.graphbuilder.ui.components.utils.GraphListener;
 import org.esa.snap.graphbuilder.ui.components.utils.GridUtils;
 import org.esa.snap.graphbuilder.ui.components.utils.OperatorManager;
 
-public class GraphPanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public class GraphPanel extends JPanel
+        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener {
 
     /**
      * Genrated UID
@@ -34,9 +38,9 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     private BufferedImage gridPattern = null;
 
     private AddNodeWidget addNodeWidget;
-    
+
     private Point lastMousePosition = new Point(0, 0);
-    
+
     private ArrayList<NodeGui> nodes = new ArrayList<>();
     private NodeGui selectedNode = null;
     private NodeGui activeNode = null;
@@ -46,10 +50,14 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     private ArrayList<GraphListener> graphListeners = new ArrayList<>();
 
+    private JPopupMenu addMenu;
+
     public GraphPanel() {
         super();
         this.setBackground(Color.darkGray);
         this.addNodeWidget = new AddNodeWidget(operatorManager);
+        this.addMenu = new JPopupMenu();
+        addMenu.add(operatorManager.createOperatorMenu(this));
 
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
@@ -62,7 +70,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
             node.setPosition(GridUtils.normalize(lastMousePosition));
             this.nodes.add(node);
             for (GraphListener listener : graphListeners) {
-                listener.created(node);   
+                listener.created(node);
             }
         }
     }
@@ -139,7 +147,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
                            // getHeight()));
             return;
         }
-        
+
         if (key == 127) {
             // DELETE KEY
             removeSelectedNode();
@@ -218,6 +226,9 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON1) {
             addNodeWidget.hide();
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                addMenu.show(this, e.getX(), e.getY());
+            }
         } else {
             if (addNodeWidget.isVisible()) {
                 NodeGui node = addNodeWidget.click(e.getPoint());
@@ -228,7 +239,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
                 }
             }
         }
-    
+
         for (NodeGui node : nodes) {
             if (node.contains(lastMousePosition)) {
                 selectNode(node);
@@ -295,10 +306,10 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (addNodeWidget.isVisible()){
+        if (addNodeWidget.isVisible()) {
             int rotation = e.getWheelRotation();
             boolean up = rotation < 0;
-            for (int i = 0; i < Math.abs(rotation); i ++ ) {
+            for (int i = 0; i < Math.abs(rotation); i++) {
                 if (up) {
                     addNodeWidget.up();
                 } else {
@@ -311,25 +322,25 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     private void selectNode(NodeGui node) {
         if (selectedNode != null && selectedNode != node) {
-            deselectNode(selectedNode);            
+            deselectNode(selectedNode);
         }
         node.select();
         selectedNode = node;
-        for (GraphListener listener: graphListeners) {
+        for (GraphListener listener : graphListeners) {
             listener.selected(node);
         }
     }
 
     private void deselectNode(NodeGui node) {
         node.deselect();
-        for (GraphListener listener: graphListeners) {
+        for (GraphListener listener : graphListeners) {
             listener.deselected(node);
         }
     }
 
     private void moveNode(NodeGui node, int x, int y) {
         node.setPosition(x, y);
-        for (GraphListener listener: graphListeners) {
+        for (GraphListener listener : graphListeners) {
             listener.updated(node);
         }
     }
@@ -340,5 +351,11 @@ public class GraphPanel extends JPanel implements KeyListener, MouseListener, Mo
 
     public void removeGraphListener(GraphListener listener) {
         graphListeners.remove(listener);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String opName = e.getActionCommand();
+        this.addNode(operatorManager.newNode(opName));
     }
 }

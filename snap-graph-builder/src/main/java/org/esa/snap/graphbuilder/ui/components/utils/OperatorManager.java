@@ -1,8 +1,14 @@
 package org.esa.snap.graphbuilder.ui.components.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.awt.event.ActionListener;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Converter;
@@ -20,6 +26,9 @@ import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
+import org.esa.snap.graphbuilder.ui.components.graph.NodeGui;
 
 public class OperatorManager {
     
@@ -70,7 +79,7 @@ public class OperatorManager {
     private final OperatorSpiRegistry opSpiRegistry;
 
     private final ArrayList<OperatorMetadata> metadatas = new ArrayList<>();
-    private final ArrayList<SimplifiedMetadata> simpleMetadatas = new ArrayList<>();
+    private final HashMap<String, SimplifiedMetadata> simpleMetadatas = new HashMap<>();
 
     private final ArrayList<Node> nodes = new ArrayList<>();
 
@@ -82,20 +91,20 @@ public class OperatorManager {
                 final OperatorMetadata operatorMetadata = opSpi.getOperatorClass()
                         .getAnnotation(OperatorMetadata.class);
                 metadatas.add(operatorMetadata);
-                simpleMetadatas.add(new SimplifiedMetadata(operatorMetadata));
+                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata));
             }
         }
     }
 
-    public ArrayList<SimplifiedMetadata> getSimplifiedMetadata() {
-        return simpleMetadatas;
+    public Collection<SimplifiedMetadata> getSimplifiedMetadatas() {
+        return simpleMetadatas.values();
     }
 
     public ArrayList<OperatorMetadata> getMetadata() {
         return metadatas;
     }
 
-    public Node newNode(final String operator) {
+    private Node createNode(final String operator) {
         final Node newNode = new Node(id(operator), operator);
 
         final XppDomElement parameters = new XppDomElement("parameters");
@@ -200,5 +209,56 @@ public class OperatorManager {
         }
         return null;
     }
+
+    static private JMenu getCategoryMenu(JMenu menu, String category) {
+        if (category == null || category.length() == 0) 
+            return menu;
+        String first = category.split("/")[0];
+        
+        String rest = "";
+        if (first.length() < category.length()) {
+            rest = category.substring(first.length()+1);
+        }
+        int menusCounter = 0;
+        for (int i = 0; i < menu.getItemCount(); i++) {
+            JMenuItem item = menu.getItem(i);
+            if (item instanceof JMenu) {
+                if (item.getText().equals(first)) {
+                    return getCategoryMenu((JMenu) item, rest);
+                }
+                menusCounter ++;
+            }
+        }
+        JMenu newMenu = new JMenu(first);
+        menu.insert(newMenu, menusCounter);
+        if (rest.length() > 0)
+            return getCategoryMenu(newMenu, rest);
+        return newMenu;
+    }
+
+
+    public JMenu createOperatorMenu(ActionListener listener) {
+        JMenu addMenu = new JMenu("Add");
+        for (SimplifiedMetadata metadata: getSimplifiedMetadatas()) {
+            JMenu menu = getCategoryMenu(addMenu, metadata.getCategory());
+            JMenuItem item = new JMenuItem(metadata.getName());
+            item.setHorizontalTextPosition(JMenuItem.RIGHT);
+            item.addActionListener(listener);
+            menu.add(item);
+        }
+        return addMenu;
+    }
+
+    public NodeGui newNode(String opName){
+        return newNode(simpleMetadatas.get(opName));
+    }
+
+    public NodeGui newNode(SimplifiedMetadata metadata) {
+        OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
+        Node node = createNode(metadata.getName());
+        return new NodeGui(node, getConfiguration(node), metadata, ui);
+    }
+
+
 
 }
