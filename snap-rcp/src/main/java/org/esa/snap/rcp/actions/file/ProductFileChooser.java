@@ -2,12 +2,12 @@ package org.esa.snap.rcp.actions.file;
 
 import org.apache.commons.math3.util.Pair;
 import org.esa.snap.core.dataio.DecodeQualification;
-import org.esa.snap.core.dataio.MetadataInspector;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.dataio.ProductReaderExposedParams;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
