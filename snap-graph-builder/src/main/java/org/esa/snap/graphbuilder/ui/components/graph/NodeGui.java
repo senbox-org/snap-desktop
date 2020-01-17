@@ -25,12 +25,18 @@ public class NodeGui {
 
     // private static final Color errorColor = new Color(255, 80, 80, 128);
     // private static final Color validateColor =  new Color(0, 177, 255, 128);
-    private static final Color unknownColor =  new Color(177, 177, 177, 128);
+    private static final Color unknownColor =  new Color(233, 229, 225, 230); //Color
     // private static final Color connectionColor = new Color(66, 66, 66, 255);
+    private static final Color activeColor = new Color(254, 223, 176, 180);
 
     static final private BasicStroke borderStroke = new BasicStroke(3);
     static final private BasicStroke textStroke = new BasicStroke(1);
     static final private BasicStroke activeStroke = new BasicStroke(6);
+
+    static final private int connectionSize = 10;
+    static final private int connectionHalfSize = connectionSize / 2;
+    static final private int connectionOffset = 15;
+     
 
     static final private Font textFont = new Font("Ariel", Font.BOLD, 11);
 
@@ -63,6 +69,7 @@ public class NodeGui {
         this.node = node;
         this.name = this.node.getId();
         this.configuration = configuration;
+        height = Math.max(height, connectionOffset * (metadata.getMinNumberOfInputs() + 1));
     }
 
     public void paintNode(Graphics2D g) {
@@ -74,12 +81,12 @@ public class NodeGui {
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(name);
 
-            width = Math.max(GridUtils.floor(textW + 20), minWidth);
+            width = Math.max(GridUtils.floor(textW + 30), minWidth);
         }
 
         if ((this.status & STATUS_MASK_SELECTED) > 0) {
             Graphics2D gactive = (Graphics2D)g.create();
-            gactive.setColor(this.color().brighter().brighter());
+            gactive.setColor(activeColor);
             gactive.setStroke(activeStroke);
             gactive.drawRoundRect(x-2, y-2, width + 4,  height + 4, 8, 8);
             gactive.dispose();
@@ -88,12 +95,47 @@ public class NodeGui {
         g.setColor(this.color());
         g.fillRoundRect(x, y, width, height, 8, 8);
         g.setStroke(borderStroke);
-        g.setColor(this.color().brighter());
+        g.setColor(this.borderColor());
         g.drawRoundRect(x, y, width, height, 8, 8);
         
         g.setStroke(textStroke);
-       
+        g.setColor(Color.darkGray);
+
         g.drawString(name, x + (width - textW) / 2 , y + (5 + textH));
+        
+        paintInputs(g);
+        paintOutput(g);
+    }
+
+    private void paintInputs(Graphics2D g) {
+        if (metadata.hasInputs()) {
+            int xc = x - connectionHalfSize;
+            int yc = y + connectionOffset - connectionHalfSize;
+            for (int i = 0; i < numInputs(); i++) {
+                g.setColor(Color.white);
+                g.fillOval(xc, yc, connectionSize, connectionSize);
+                g.setStroke(borderStroke);
+                g.setColor(borderColor());
+                g.drawOval(xc, yc, connectionSize, connectionSize);
+                yc += connectionOffset;
+            }
+        }
+    }
+
+    private int numInputs() { 
+        return metadata.getMinNumberOfInputs(); 
+    }  
+
+    private void paintOutput(Graphics2D g) {
+        if (metadata.hasOutput()) {
+            int xc = x + width - connectionHalfSize;
+            int yc = y + connectionOffset - connectionHalfSize;
+            g.setColor(Color.white);
+            g.fillOval(xc, yc, connectionSize, connectionSize);
+            g.setStroke(borderStroke);
+            g.setColor(borderColor());
+            g.drawOval(xc, yc, connectionSize, connectionSize);
+        }        
     }
 
     private Color color() {
@@ -103,6 +145,10 @@ public class NodeGui {
         return unknownColor;
     }
     
+    private Color borderColor() {
+        return color().darker().darker();
+    }
+
     public int getX() {
         return x;
     }

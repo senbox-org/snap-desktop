@@ -1,6 +1,5 @@
 package org.esa.snap.graphbuilder.ui.components;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ public class GraphPanel extends JPanel
 
     public GraphPanel() {
         super();
-        this.setBackground(Color.darkGray);
         this.addNodeWidget = new AddNodeWidget(operatorManager);
         this.addMenu = new JPopupMenu();
         addMenu.add(operatorManager.createOperatorMenu(this));

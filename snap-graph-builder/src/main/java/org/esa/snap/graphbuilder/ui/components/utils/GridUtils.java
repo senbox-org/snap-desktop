@@ -9,8 +9,8 @@ import java.awt.Point;
 public class GridUtils {
     public static final int gridSize = 15;
     private static final int gridMajor = 5;
-    private static final Color gridMajorColor = new Color(255, 255, 255, 30);
-    private static final Color gridMinorColor = new Color(255, 255, 255, 15);
+    private static final Color gridMajorColor = new Color(0, 0, 0, 30);
+    private static final Color gridMinorColor = new Color(0, 0, 0, 15);
 
     static public BufferedImage gridPattern(int width, int height) {
         // initalize gridPattern image buffer
