@@ -24,6 +24,7 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
@@ -38,8 +39,29 @@ public class OperatorManager {
         private final String description;
         private final String category;
         private final String category_lower;
+        private final OperatorDescriptor descriptor;
+        private final OperatorMetadata metadata;
 
-        public SimplifiedMetadata(final OperatorMetadata metadata) {
+        private final int minNInputs;
+        private final int maxNInputs;
+        private final boolean hasOutputProduct;
+
+
+        public SimplifiedMetadata(final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
+            this.descriptor = opDescriptor;
+
+
+            if (descriptor.getSourceProductsDescriptor() != null) {
+                minNInputs = descriptor.getSourceProductDescriptors().length + 1;
+                maxNInputs = -1;
+            } else {
+                minNInputs = descriptor.getSourceProductDescriptors().length;
+                maxNInputs = minNInputs;
+            }
+            hasOutputProduct = descriptor.getTargetProductDescriptor() != null;
+
+            metadata = opMetadatada;
+
             name = metadata.label();
             if (name == null || name.length() == 0) {
                 name = metadata.alias();
@@ -73,6 +95,24 @@ public class OperatorManager {
             }
             return false;
         }
+
+        public int getMinNumberOfInputs() {
+            return minNInputs;
+        }
+
+        public int getMaxNumberOfInputs() {
+            return maxNInputs;
+        }
+
+        public boolean hasInputs() {
+            return (minNInputs > 0);
+        }
+
+        public boolean hasOutput() {
+            return hasOutputProduct;
+        }
+
+    
     }
 
     private final GPF gpf;
@@ -87,11 +127,14 @@ public class OperatorManager {
         gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
-            if (!opSpi.getOperatorDescriptor().isInternal()) {
+            OperatorDescriptor descriptor = opSpi.getOperatorDescriptor();
+            if (descriptor != null && !descriptor.isInternal()) {
                 final OperatorMetadata operatorMetadata = opSpi.getOperatorClass()
                         .getAnnotation(OperatorMetadata.class);
+
                 metadatas.add(operatorMetadata);
-                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata));
+                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata, descriptor));
+                              
             }
         }
     }
