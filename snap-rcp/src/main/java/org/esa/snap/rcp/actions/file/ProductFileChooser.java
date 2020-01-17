@@ -302,7 +302,7 @@ public class ProductFileChooser extends SnapFileChooser {
                 approveSelection();
             }
             updateState();
-        }else{
+        }else if(plugin == null){
             Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", inputFile));
         }
     }
