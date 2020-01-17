@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.actions.file;
 
+import org.apache.commons.math3.util.Pair;
 import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.MetadataInspector;
 import org.esa.snap.core.dataio.ProductIO;
@@ -266,7 +267,16 @@ public class ProductFileChooser extends SnapFileChooser {
     private void openAdvancedDialog() {
         clearCurrentAdvancedProductOptions();
         File inputFile = getSelectedFile();
-        plugin = findPlugin(inputFile);
+        boolean canceled = false;
+        Pair<ProductReaderPlugIn, Boolean> foundPlugin = findPlugins(inputFile);
+        if(foundPlugin != null){
+            if(foundPlugin.getKey() == null) {
+                canceled = foundPlugin.getValue();
+            }else{
+                plugin = foundPlugin.getKey();
+            }
+
+        }
         boolean addUIComponents = true;
         ProductReaderExposedParams readerExposedParams = null;
         MetadataInspector.Metadata readerInspectorExposeParameters = null;
@@ -302,7 +312,7 @@ public class ProductFileChooser extends SnapFileChooser {
                 approveSelection();
             }
             updateState();
-        }else if(plugin == null){
+        }else if(plugin == null && !canceled){
             Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", inputFile));
         }
     }
@@ -351,29 +361,28 @@ public class ProductFileChooser extends SnapFileChooser {
         }
     }
 
-    private ProductReaderPlugIn findPlugin(File file){
-        final java.util.List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
+    private Pair<ProductReaderPlugIn, Boolean> findPlugins(File file){
+        Pair<ProductReaderPlugIn, Boolean> result = null;
+        final List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
         List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
         if (intendedPlugIns.isEmpty()) { // check for suitable readers only if no intended reader was found
             suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
         }
 
-        String fileFormatName;
-        if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
-            return null;
-        } else if (intendedPlugIns.size() == 1) {
+        final String fileFormatName;
+        if (intendedPlugIns.size() == 1) {
             ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
-            return entry.plugin;
-        } else if (intendedPlugIns.isEmpty() && suitablePlugIns.size() == 1) {
+            result = new Pair<>(entry.plugin, null);
+        }else if (intendedPlugIns.isEmpty() && suitablePlugIns.size() == 1) {
             ProductOpener.PluginEntry entry = suitablePlugIns.get(0);
-            return entry.plugin;
-        } else {
+            result = new Pair<>(entry.plugin, null);
+        }else if (!intendedPlugIns.isEmpty() || !suitablePlugIns.isEmpty()){
             Collections.sort(intendedPlugIns);
             Collections.sort(suitablePlugIns);
             // ask user to select a desired reader plugin
             fileFormatName = ProductOpener.getUserSelection(intendedPlugIns, suitablePlugIns);
             if (fileFormatName == null) { // User clicked cancel
-                return  null;
+                result = new Pair<>(null, true);
             } else {
                 if (!suitablePlugIns.isEmpty() && suitablePlugIns.stream()
                         .anyMatch(entry -> entry.plugin.getFormatNames()[0].equals(fileFormatName))) {
@@ -381,16 +390,17 @@ public class ProductFileChooser extends SnapFileChooser {
                             .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
                             .findAny()
                             .orElse(null);
-                    return entry.plugin;
+                    result = new Pair<>(entry.plugin, false);
                 } else {
                     ProductOpener.PluginEntry entry = intendedPlugIns.stream()
                             .filter(entry1 -> entry1.plugin.getFormatNames()[0].equals(fileFormatName))
                             .findAny()
                             .orElse(null);
-                    return entry.plugin;
+                    result = new Pair<>(entry.plugin, false);
                 }
             }
         }
+        return result;
     }
 
 }
