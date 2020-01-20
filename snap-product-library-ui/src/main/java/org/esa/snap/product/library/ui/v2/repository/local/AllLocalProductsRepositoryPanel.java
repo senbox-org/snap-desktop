@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
@@ -14,10 +15,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
-import org.esa.snap.product.library.v2.database.RemoteMission;
+import org.esa.snap.product.library.v2.database.*;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -36,13 +34,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -62,7 +55,9 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldMapPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
-        this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository();
+        Path databaseParentFolderPath = H2DatabaseAccessor.getDatabaseParentFolder();
+        H2DatabaseParameters databaseParameters = new H2DatabaseParameters(databaseParentFolderPath);
+        this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository(databaseParameters);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
 
