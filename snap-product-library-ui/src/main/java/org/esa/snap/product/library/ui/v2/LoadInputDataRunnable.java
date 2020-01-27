@@ -5,17 +5,11 @@ import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCred
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
-import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

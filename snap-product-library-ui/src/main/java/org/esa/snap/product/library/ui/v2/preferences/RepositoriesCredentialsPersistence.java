@@ -3,8 +3,8 @@ package org.esa.snap.product.library.ui.v2.preferences;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.engine_utilities.util.CryptoUtils;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
-import ro.cs.tao.utils.Crypto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,7 +105,12 @@ public final class RepositoriesCredentialsPersistence {
                         }
                         String password = credential.getPassword();
                         if (StringUtils.isNotNullAndNotEmpty(password)) {
-                            String encryptedPassword = Crypto.encrypt(password, repositoryCredentials.getRepositoryName());
+                            String encryptedPassword;
+                            try {
+                                encryptedPassword = CryptoUtils.encrypt(password, repositoryCredentials.getRepositoryName());
+                            } catch (Exception e) {
+                                throw new IllegalStateException("Failed to encrypt the password.", e);
+                            }
                             String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryName(), credentialId);
                             properties.setProperty(passwordKey, encryptedPassword);
                         } else {
@@ -182,7 +187,11 @@ public final class RepositoriesCredentialsPersistence {
                     String username = properties.getProperty(usernameKey);
                     String passwordKey = buildPasswordKey(repositoryId, credentialId);
                     String password = properties.getProperty(passwordKey);
-                    password = Crypto.decrypt(password, repositoryId);
+                    try {
+                        password = CryptoUtils.decrypt(password, repositoryId);
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Failed to decrypt the password.", e);
+                    }
                     if (StringUtils.isNotNullAndNotEmpty(username) && StringUtils.isNotNullAndNotEmpty(password)) {
                         repositoryCredentials.add(new UsernamePasswordCredentials(username, password));
                     }

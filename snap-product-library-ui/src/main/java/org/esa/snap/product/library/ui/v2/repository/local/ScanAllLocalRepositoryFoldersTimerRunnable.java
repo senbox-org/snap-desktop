@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
+import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.ScanLocalRepositoryFolderHelper;
 import org.esa.snap.ui.loading.GenericRunnable;

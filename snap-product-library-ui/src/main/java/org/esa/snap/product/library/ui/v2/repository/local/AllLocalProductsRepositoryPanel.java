@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.ProductListModel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
@@ -16,6 +15,8 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.*;
+import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
+import org.esa.snap.product.library.v2.database.model.RemoteMission;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -74,7 +75,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         LabelListCellRenderer<RemoteMission> missionsRenderer = new LabelListCellRenderer<RemoteMission>(this.missionsComboBox.getPreferredSize().height) {
             @Override
             protected String getItemDisplayText(RemoteMission value) {
-                return (value == null) ? " " : value.getName();
+                return (value == null) ? " " : (value.getName() + " (" + value.getRemoteRepository().getName() + ")");
             }
         };
         this.missionsComboBox.setRenderer(missionsRenderer);

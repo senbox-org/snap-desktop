@@ -33,10 +33,6 @@
 
     <packaging>nbm</packaging>
 
-    <properties>
-        <tao.version>1.0.1</tao.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -92,11 +88,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>ro.cs.tao</groupId>
-            <artifactId>tao-utils</artifactId>
-            <version>${tao.version}</version>
-        </dependency>
         <dependency>
             <groupId>gov.nasa</groupId>
             <artifactId>worldwind</artifactId>

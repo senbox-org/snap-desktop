@@ -7,6 +7,7 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.ui.v2.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.remote.products.repository.HTTPServerException;
 import org.esa.snap.remote.products.repository.listener.ProductListDownloaderListener;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -14,6 +15,7 @@ import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.SwingUtilities;
 import java.awt.image.BufferedImage;
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -85,7 +87,9 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     private void downloadQuickLookImages(List<RepositoryProduct> productList) throws Exception {
-        for (int i = 0; i < productList.size(); i++) {
+        int maximumInternalServerErrorCount = 3;
+        int internalServerErrorCount = 0;
+        for (int i = 0; i < productList.size() && internalServerErrorCount < maximumInternalServerErrorCount; i++) {
             if (!isRunning()) {
                 return; // nothing to return
             }
@@ -96,8 +100,13 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 try {
                     quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, repositoryProduct.getDownloadQuickLookImageURL(), this);
                 } catch (java.lang.InterruptedException exception) {
-                    logger.log(Level.SEVERE, "Stop downloading the product quick look image from url '" + repositoryProduct.getDownloadQuickLookImageURL() + "'.", exception);
+                    logger.log(Level.WARNING, "Stop downloading the product quick look image from url '" + repositoryProduct.getDownloadQuickLookImageURL() + "'.");
                     return; // nothing to return
+                } catch (HTTPServerException exception) {
+                    logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + repositoryProduct.getDownloadQuickLookImageURL() + "'.", exception);
+                    if (exception.getStatusCodeResponse() >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                        internalServerErrorCount++;
+                    }
                 } catch (java.lang.Exception exception) {
                     logger.log(Level.SEVERE, "Failed to download the product quick look image from url '" + repositoryProduct.getDownloadQuickLookImageURL() + "'.", exception);
                 }

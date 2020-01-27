@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.LocalRepositoryProduct;
+import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 

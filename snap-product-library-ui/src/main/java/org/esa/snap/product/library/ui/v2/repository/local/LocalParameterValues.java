@@ -1,13 +1,9 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.product.library.v2.database.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
-import org.esa.snap.product.library.v2.database.RemoteMission;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by jcoravu on 18/9/2019.
