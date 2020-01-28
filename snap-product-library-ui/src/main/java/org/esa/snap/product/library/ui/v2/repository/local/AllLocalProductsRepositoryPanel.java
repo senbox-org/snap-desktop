@@ -315,6 +315,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             for (Map.Entry<Short, Set<String>> entry : attributeNamesPerMission.entrySet()) {
                 uniqueAttributes.addAll(entry.getValue());
             }
+            this.attributesComboBox.addItem(null);
             for (String attributeName : uniqueAttributes) {
                 this.attributesComboBox.addItem(attributeName);
             }

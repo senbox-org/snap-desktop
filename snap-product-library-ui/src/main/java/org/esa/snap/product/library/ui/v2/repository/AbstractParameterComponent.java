@@ -1,7 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * Created by jcoravu on 7/8/2019.
@@ -32,7 +31,10 @@ public abstract class AbstractParameterComponent<ValueType> {
         return label;
     }
 
-    public boolean isRequired() {
-        return required;
+    public String getRequiredErrorDialogMessage() {
+        if (this.required) {
+            return "The '" + this.label.getText()+"' parameter value is required.";
+        }
+        return null;
     }
 }

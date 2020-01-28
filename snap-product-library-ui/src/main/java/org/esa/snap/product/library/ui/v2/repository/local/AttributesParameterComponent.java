@@ -10,21 +10,8 @@ import org.esa.snap.product.library.v2.database.AttributeValueFilter;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -37,15 +24,14 @@ import java.util.Map;
  */
 public class AttributesParameterComponent extends AbstractParameterComponent<List<AttributeFilter>> {
 
-    private JComboBox<String> attributeNamesComboBox;
-    private JComboBox<AttributeValueFilter> filtersComboBox;
-    private JTextField attributeValueTextField;
-    private JButton addAttributeButton;
-    private JButton removeAttributeButton;
-    private JList<AttributeFilter> attributesList;
+    private final JComboBox<String> attributeNamesComboBox;
+    private final JComboBox<AttributeValueFilter> filtersComboBox;
+    private final JTextField attributeValueTextField;
+    private final JButton addAttributeButton;
+    private final JButton removeAttributeButton;
+    private final JList<AttributeFilter> attributesList;
     private final JPanel component;
-
-    private Map<AttributeValueFilter, String> atributeFiltersMap;
+    private final Map<AttributeValueFilter, String> atributeFiltersMap;
 
     public AttributesParameterComponent(JComboBox<String> attributesComboBox, String parameterName, String parameterLabelText, boolean required, ComponentDimension componentDimension) {
         super(parameterName, parameterLabelText, required);
@@ -79,6 +65,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.filtersComboBox.setRenderer(renderer);
         JLabel label = new JLabel();
         int maximumWidth = 0;
+        this.filtersComboBox.addItem(null);
         for (Map.Entry<AttributeValueFilter, String> entry : this.atributeFiltersMap.entrySet()) {
             this.filtersComboBox.addItem(entry.getKey());
             label.setText(entry.getValue());
@@ -163,24 +150,39 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
 
     @Override
     public void clearParameterValue() {
-        this.attributeNamesComboBox.setSelectedItem(null);
-        this.filtersComboBox.setSelectedItem(null);
-        this.attributeValueTextField.setText("");
+        resetFilters();
         DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
         model.clear();
     }
 
     @Override
-    public List<AttributeFilter> getParameterValue() {
-        DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
-        if (model.getSize() > 0) {
-            List<AttributeFilter> result = new ArrayList<>(model.getSize());
-            for (int i = 0; i < model.getSize(); i++) {
-                result.add(model.getElementAt(i));
-            }
-            return result;
+    public String getRequiredErrorDialogMessage() {
+        if (isInvalidFilter()) {
+            StringBuilder message = new StringBuilder();
+            message.append("The '" + getLabel().getText()+"' parameter has missing values.")
+                   .append("\n\n")
+                   .append("Specify the missing values or remove the existing values.");
+            return message.toString();
         }
         return null;
+    }
+
+    @Override
+    public List<AttributeFilter> getParameterValue() {
+        DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
+        List<AttributeFilter> result = new ArrayList<>(model.getSize());
+        AttributeFilter attributeFilter = buildAttributeFilter();
+        if (attributeFilter == null) {
+            if (isInvalidFilter()) {
+                return null;
+            }
+        } else {
+            result.add(attributeFilter);
+        }
+        for (int i = 0; i < model.getSize(); i++) {
+            result.add(model.getElementAt(i));
+        }
+        return (result.size() > 0) ? result : null;
     }
 
     private void remoteAttributeButtonClicked() {
@@ -194,17 +196,43 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
     }
 
     private void addAttributeButtonClicked() {
-        String selectedAttributeName = (String)this.attributeNamesComboBox.getSelectedItem();
-        AttributeValueFilter selectedAttributeValueFilter = (AttributeValueFilter)this.filtersComboBox.getSelectedItem();
-        String attributeValue = this.attributeValueTextField.getText().trim();
-        if (selectedAttributeName != null && selectedAttributeValueFilter != null && attributeValue.length() > 0) {
-            AttributeFilter attribute = new AttributeFilter(selectedAttributeName, attributeValue, selectedAttributeValueFilter);
+        AttributeFilter attributeFilter = buildAttributeFilter();
+        if (attributeFilter != null) {
             DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
-            model.addElement(attribute);
-
-            this.attributeNamesComboBox.setSelectedItem(null);
-            this.filtersComboBox.setSelectedItem(null);
-            this.attributeValueTextField.setText("");
+            model.addElement(attributeFilter);
+            resetFilters();
         }
+    }
+
+    private void resetFilters() {
+        this.attributeNamesComboBox.setSelectedItem(null);
+        this.filtersComboBox.setSelectedItem(null);
+        this.attributeValueTextField.setText("");
+    }
+
+    private String getSelectedAttributeName() {
+        return (String)this.attributeNamesComboBox.getSelectedItem();
+    }
+
+    private AttributeValueFilter getSelectedAttributeValueFilter() {
+        return (AttributeValueFilter)this.filtersComboBox.getSelectedItem();
+    }
+
+    private String getEnteredAttributeValue() {
+        return this.attributeValueTextField.getText().trim();
+    }
+
+    private AttributeFilter buildAttributeFilter() {
+        String selectedAttributeName = getSelectedAttributeName();
+        AttributeValueFilter selectedAttributeValueFilter = getSelectedAttributeValueFilter();
+        String attributeValue = getEnteredAttributeValue();
+        if (selectedAttributeName != null && selectedAttributeValueFilter != null && attributeValue.length() > 0) {
+            return new AttributeFilter(selectedAttributeName, attributeValue, selectedAttributeValueFilter);
+        }
+        return null;
+    }
+
+    private boolean isInvalidFilter() {
+        return (getSelectedAttributeName() != null || getSelectedAttributeValueFilter() != null || getEnteredAttributeValue().length() > 0);
     }
 }

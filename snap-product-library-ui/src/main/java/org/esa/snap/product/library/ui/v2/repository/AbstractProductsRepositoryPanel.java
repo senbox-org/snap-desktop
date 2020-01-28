@@ -23,10 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,12 +90,12 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     protected final Map<String, Object> getParameterValues() {
         Map<String, Object> result = new HashMap<>();
         for (int i=0; i<this.parameterComponents.size(); i++) {
-            AbstractParameterComponent parameterComponent = this.parameterComponents.get(i);
+            AbstractParameterComponent<?> parameterComponent = this.parameterComponents.get(i);
             Object value = parameterComponent.getParameterValue();
             if (value == null) {
-                if (parameterComponent.isRequired()) {
-                    String message = "The value of the '" + parameterComponent.getLabel().getText()+"' parameter is required.";
-                    showErrorMessageDialog(message, "Required parameter");
+                String errorMessage = parameterComponent.getRequiredErrorDialogMessage();
+                if (errorMessage != null) {
+                    showErrorMessageDialog(errorMessage, "Required parameter");
                     parameterComponent.getComponent().requestFocus();
                     return null;
                 }
