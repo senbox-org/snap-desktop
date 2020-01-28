@@ -50,12 +50,13 @@ public class ColorSchemeManager {
 
 
     public ColorSchemeManager() {
+        init();
     }
 
 
-    public void init(File palettesDir) {
+    public void init() {
         if (!initialized) {
-            this.colorPaletteDir = palettesDir;
+            this.colorPaletteDir = ColorSchemeDefaults.getColorPalettesDir().toFile();
 
             colorSchemesFile = new File(this.colorPaletteDir, ColorSchemeDefaults.COLOR_SCHEMES_FILENAME);
             colorSchemeLutFile = new File(this.colorPaletteDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);

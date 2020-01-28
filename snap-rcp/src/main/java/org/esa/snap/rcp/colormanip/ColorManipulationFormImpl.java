@@ -181,7 +181,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 //            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), productSceneView);
+            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -428,7 +428,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
+            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
