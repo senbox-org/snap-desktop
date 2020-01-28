@@ -58,7 +58,22 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected Void execute() throws Exception {
         this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
         try {
-            List<RepositoryProduct> productList = downloadProductList();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Start downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "'.");
+            }
+
+            List<RepositoryProduct> productList;
+            try {
+                productList = downloadProductList();
+            } catch (java.lang.InterruptedException exception) {
+                logger.log(Level.WARNING, "Stop downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "'.");
+                return null; // nothing to return
+            }
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Finish downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "', size " + productList.size()+".");
+            }
+
             if (isRunning()) {
                 if (productList.size() > 0) {
                     hideProgressPanelLater();
@@ -83,7 +98,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected void onStopExecuting() {
-        this.threadListener.onStopExecuting();
+        this.threadListener.onStopExecuting(this);
     }
 
     private void downloadQuickLookImages(List<RepositoryProduct> productList) throws Exception {
@@ -97,6 +112,11 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             RepositoryProduct repositoryProduct = productList.get(i);
             BufferedImage quickLookImage = null;
             if (repositoryProduct.getDownloadQuickLookImageURL() != null) {
+
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "Download the quick look image: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "', url '"+repositoryProduct.getDownloadQuickLookImageURL()+"'.");
+                }
+
                 try {
                     quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, repositoryProduct.getDownloadQuickLookImageURL(), this);
                 } catch (java.lang.InterruptedException exception) {

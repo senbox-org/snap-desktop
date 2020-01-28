@@ -716,10 +716,13 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void searchButtonPressed() {
+        stopSearchingProductList();
         ThreadListener threadListener = new ThreadListener() {
             @Override
-            public void onStopExecuting() {
-                ProductLibraryToolViewV2.this.searchProductListThread = null; // reset
+            public void onStopExecuting(Runnable invokerThread) {
+                if (invokerThread == ProductLibraryToolViewV2.this.searchProductListThread) {
+                    ProductLibraryToolViewV2.this.searchProductListThread = null; // reset
+                }
             }
         };
         ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
