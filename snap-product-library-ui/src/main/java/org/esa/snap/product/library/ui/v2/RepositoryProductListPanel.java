@@ -123,10 +123,7 @@ public class RepositoryProductListPanel extends JPanel {
     }
 
     private void updateProductListCount() {
-        String text = getTitle();
-        if (this.productListPanel.getProductCount() > 0) {
-            text += ": " + this.productListPanel.getProductCount();
-        }
+        String text = getTitle() + ": " + this.productListPanel.getProductCount();
         this.titleLabel.setText(text);
     }
 
