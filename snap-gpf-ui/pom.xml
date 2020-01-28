@@ -128,16 +128,11 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>test-utils</artifactId>
+            <artifactId>snap-test-utils</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
 
-        <!--        <dependency>-->
-<!--            <groupId>org.esa.snap</groupId>-->
-<!--            <artifactId>snap-core</artifactId>-->
-<!--            <type>test-jar</type>-->
-<!--        </dependency>-->
 
     </dependencies>
 
@@ -167,7 +162,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>

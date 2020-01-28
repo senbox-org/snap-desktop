@@ -1,76 +1,93 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- ~ Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de) ~ ~ This program is free software; you can redistribute it and/or modify it ~ under the terms of the GNU General Public License as published by the Free ~ Software Foundation; either version 3 of the License, or (at your option) ~ any later version. ~ This program is distributed in the hope that it will be useful, but WITHOUT ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for ~ more details. ~ ~ You should have received a copy of the GNU General Public License along ~ with this program; if not, see http://www.gnu.org/licenses/ -->
+<html>
+<head>
+    <!-- ~ Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de) ~ ~ This program is free software; you can redistribute it and/or modify it ~ under the terms of the GNU General Public License as published by the Free ~ Software Foundation; either version 3 of the License, or (at your option) ~ any later version. ~ This program is distributed in the hope that it will be useful, but WITHOUT ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for ~ more details. ~ ~ You should have received a copy of the GNU General Public License along ~ with this program; if not, see http://www.gnu.org/licenses/ -->
 
 
-<title>Sentinel Toolbox Help</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../../style.css"></head>
+    <title>Sentinel Toolbox Help</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../../style.css">
+</head>
 <body>
 <table class="header" width="100%">
-<tbody>
-<tr class="header">
-<td class="header">&nbsp; Sentinel Toolbox
-Overview </td>
-<td class="header" align="right"><a href="./SnapOverview.html"><img src="../../images/snap_header.jpg" border="0"></a></td>
-</tr>
-</tbody>
+    <tbody>
+    <tr class="header">
+        <td class="header">&nbsp; Sentinel Toolbox
+            Overview
+        </td>
+        <td class="header" align="right"><a href="./SnapOverview.html"><img src="../../images/snap_header.jpg"
+                                                                            border="0"></a></td>
+    </tr>
+    </tbody>
 </table>
 <h3>SNAP</h3>
 <h4>Overview</h4>
 <p>The <b>Sentinel Application Platform</b> - or <b>SNAP</b>
-- in short is a collection of executable tools and Application
-Programming Interfaces (APIs) which have been developed to facilitate
-the utilisation, viewing and processing of a variety of remotely sensed
-data. The functionality of SNAP is accessed through the <b>Sentinel
-Toolbox</b>. The purpose of the Sentinel Toolbox is not to
-duplicate existing commercial packages, but to complement them with
-functions dedicated to the handling of data products of earth observing
-satellites.</p>
+    - in short is a collection of executable tools and Application
+    Programming Interfaces (APIs) which have been developed to facilitate
+    the utilisation, viewing and processing of a variety of remotely sensed
+    data. The functionality of SNAP is accessed through the <b>Sentinel
+        Toolbox</b>. The purpose of the Sentinel Toolbox is not to
+    duplicate existing commercial packages, but to complement them with
+    functions dedicated to the handling of data products of earth observing
+    satellites.</p>
 
 <p>The main components of the Sentinel Toolbox are:</p>
 <ul>
-<li>An intuitive desktop application used for EO data
-visualisation, analysing and processing.</li>
-<li>A set of scientific data processors running either from the
-command-line or invoked by the desktop application. </li>
-<li>The command-line tool <b>gpt</b> (graph
-processing tool) is used to execute processing graphs made up of <i>operators</i>
-nodes developed using the SNAP GPF (see Java API below). </li>
-<li>A data product converter tool <b>pconvert</b>
-allowing a user to convert raw data products to the <a href="BeamDimapFormat.html">BEAM-DIMAP</a> standard
-format, to <a href="../geotiff/ExportGeoTIFF.html">GeoTIFF</a>,
-to <a href="../../visat/ExportHDF.html">HDF-5</a>
-or to RGB images. </li>
-<li>A <b>Java&#8482; API</b> which provides ready-to-use
-components for remote sensing related application development and
-plug-in points for new SNAP extension modules. Besides a number of
-extension points such as product reader and writers, the SNAP API
-comprises the <b>Graph Processing Framework</b> (GPF)
-which is used to rapidly create raster data processors. The <b>Rich
-Client Platform</b> is used to develop rich GUI user interface
-applications based on SNAP.</li>
-</ul><h4>Standard Product Format</h4>
+    <li>An intuitive desktop application used for EO data
+        visualisation, analysing and processing.
+    </li>
+    <li>A set of scientific data processors running either from the
+        command-line or invoked by the desktop application.
+    </li>
+    <li>The command-line tool <b>gpt</b> (graph
+        processing tool) is used to execute processing graphs made up of <i>operators</i>
+        nodes developed using the SNAP GPF (see Java API below).
+    </li>
+    <li>A data product converter tool <b>pconvert</b>
+        allowing a user to convert raw data products to the <a href="BeamDimapFormat.html">BEAM-DIMAP</a> standard
+        format, to <a href="../geotiff/ExportGeoTIFF.html">GeoTIFF</a>,
+        to <a href="../../visat/ExportHDF.html">HDF-5</a>
+        or to RGB images.
+    </li>
+    <li>A <b>Java&#8482; API</b> which provides ready-to-use
+        components for remote sensing related application development and
+        plug-in points for new SNAP extension modules. Besides a number of
+        extension points such as product reader and writers, the SNAP API
+        comprises the <b>Graph Processing Framework</b> (GPF)
+        which is used to rapidly create raster data processors. The <b>Rich
+            Client Platform</b> is used to develop rich GUI user interface
+        applications based on SNAP.
+    </li>
+</ul>
+<h4>Standard Product Format</h4>
 <p>The Sentinel Toolbox application and the scientific data
-processors use a simple data input/output format, which makes it easy
-to import data in other imaging applications. The format is called
-DIMAP<sup>®</sup>
-and has been developed by SPOT-Image, France. The SNAP software uses a
-special DIMAP profile called <a href="BeamDimapFormat.html">BEAM-DIMAP</a>,
-which has the following characteristics:</p>
+    processors use a simple data input/output format, which makes it easy
+    to import data in other imaging applications. The format is called
+    DIMAP<sup>®</sup>
+    and has been developed by SPOT-Image, France. The SNAP software uses a
+    special DIMAP profile called <a href="BeamDimapFormat.html">BEAM-DIMAP</a>,
+    which has the following characteristics:</p>
 <ul>
-<li>A single product header (XML) containing the product
-meta-data</li>
-<li>An associated data directory containing ENVI<sup>®</sup>-compatible
-images for each band.</li>
-<li>Each image in the directory is composed of a header file
-(ASCII text) and an image data file (flat binary)</li>
+    <li>A single product header (XML) containing the product
+        meta-data
+    </li>
+    <li>An associated data directory containing ENVI<sup>®</sup>-compatible
+        images for each band.
+    </li>
+    <li>Each image in the directory is composed of a header file
+        (ASCII text) and an image data file (flat binary)
+    </li>
 </ul>
 <h4>Source Code</h4>
 <p>The complete SNAP software has been developed under the GNU
-public license and comes with full source code (Java<sup>TM</sup>). The source code is available on GitHub <a href="https://github.com/senbox-org">https://github.com/senbox-org</a></p>
+    public license and comes with full source code (Java<sup>TM</sup>). The source code is available on GitHub <a
+            href="https://github.com/senbox-org">https://github.com/senbox-org</a></p>
 <h4>Supported Platforms</h4>
 <p>SNAP is programmed in pure Java&#8482; to allow a maximum
-portability. The SNAP software has been successfully tested under MS
-Windows&#8482;&nbsp;XP<sup>®</sup>,&nbsp;Vista,&nbsp;7,8,10 and also Mac&nbsp;OS&nbsp;X and as well as
-under Linux and Solaris<sup>®</sup> operating systems.</p>
+    portability. The SNAP software has been successfully tested under MS
+    Windows&#8482;&nbsp;XP<sup>®</sup>,&nbsp;Vista,&nbsp;7,8,10 and also Mac&nbsp;OS&nbsp;X and as well as
+    under Linux and Solaris<sup>®</sup> operating systems.</p>
 <hr>
-</body></html>
+</body>
+</html>

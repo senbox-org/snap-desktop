@@ -9,5 +9,5 @@ This is the source code distribution of the SNAP Desktop GUI which is developed 
 the [SNAP Engine](https://github.com/senbox-org/snap-engine) (snap-engine) and is based on the NetBeans Platform.
 For further information read the [readme.md](https://github.com/senbox-org/snap-engine/blob/master/README.md) in the SNAP Engine project
 
-The project page of SNAP and the sentinel toolboxes can be found at http://step.esa.int. There you will find a tutorial about the usage of the application, a forum where you can ask questions and lots of other interesting things.
+The project page of SNAP and the sentinel toolboxes can be found at http://step.esa.int. There you will find tutorials about the usage of the application, a forum where you can ask questions and lots of other interesting things.
 

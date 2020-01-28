@@ -503,10 +503,7 @@ public class SnapApp {
                 SnapApp.getDefault().onStart();
             } finally {
                 initImageIO();
-                SystemUtils.initGeoTools();
-                SystemUtils.initJAI(Lookup.getDefault().lookup(ClassLoader.class));
-                // uncomment if we encounter problems with the stmt above
-                //SystemUtils.init3rdPartyLibs(null);
+                SystemUtils.init3rdPartyLibs(Lookup.getDefault().lookup(ClassLoader.class));
                 SnapApp.getDefault().initGPF();
             }
         }
