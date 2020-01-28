@@ -50,13 +50,12 @@ public class ColorSchemeManager {
 
 
     public ColorSchemeManager() {
-        init();
     }
 
 
-    public void init() {
+    public void init(File palettesDir) {
         if (!initialized) {
-            this.colorPaletteDir = ColorSchemeDefaults.getColorPalettesDir().toFile();
+            this.colorPaletteDir = palettesDir;
 
             colorSchemesFile = new File(this.colorPaletteDir, ColorSchemeDefaults.COLOR_SCHEMES_FILENAME);
             colorSchemeLutFile = new File(this.colorPaletteDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);
@@ -117,7 +116,7 @@ public class ColorSchemeManager {
             i++;
         }
 
-        final ColorSchemeManager.MyComboBoxRenderer myComboBoxRenderer = new ColorSchemeManager.MyComboBoxRenderer();
+        final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
         myComboBoxRenderer.setTooltipList(toolTipsArray);
         myComboBoxRenderer.setEnabledList(enabledArray);
 
@@ -197,34 +196,34 @@ public class ColorSchemeManager {
                         cpdFileNameColorBlind = values[5].trim();
 
 
-                        if (cpdFileNameStandard == null ||
-                                cpdFileNameStandard.length() == 0 ||
-                                ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(cpdFileNameStandard.toLowerCase())) {
-                            cpdFileNameStandard = ColorSchemeDefaults.DEFAULT_CPD_FILENAME;
-                        }
+                    if (cpdFileNameStandard == null ||
+                            cpdFileNameStandard.length() == 0 ||
+                            ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(cpdFileNameStandard.toLowerCase())) {
+                        cpdFileNameStandard = ColorSchemeDefaults.DEFAULT_CPD_FILENAME;
+                    }
 
 
-                        if (minStr.length() > 0 && !ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(minStr.toLowerCase())) {
-                            min = Double.valueOf(minStr);
-                        } else {
-                            min = ColorSchemeDefaults.DOUBLE_NULL;
-                        }
+                    if (minStr.length() > 0 && !ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(minStr.toLowerCase())) {
+                        min = Double.valueOf(minStr);
+                    } else {
+                        min = ColorSchemeDefaults.DOUBLE_NULL;
+                    }
 
-                        if (maxStr.length() > 0 && !ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(maxStr.toLowerCase())) {
-                            max = Double.valueOf(maxStr);
-                        } else {
-                            max = ColorSchemeDefaults.DOUBLE_NULL;
-                        }
+                    if (maxStr.length() > 0 && !ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(maxStr.toLowerCase())) {
+                        max = Double.valueOf(maxStr);
+                    } else {
+                        max = ColorSchemeDefaults.DOUBLE_NULL;
+                    }
 
-                        logScaled = false;
-                        if (logScaledStr != null && logScaledStr.length() > 0 && logScaledStr.toLowerCase().equals("true")) {
-                            logScaled = true;
-                        }
+                    logScaled = false;
+                    if (logScaledStr != null && logScaledStr.length() > 0 && logScaledStr.toLowerCase().equals("true")) {
+                        logScaled = true;
+                    }
 
 
-                        if (id != null && id.length() > 0) {
-                            fieldsInitialized = true;
-                        }
+                    if (id != null && id.length() > 0) {
+                        fieldsInitialized = true;
+                    }
                     }
 
                     if (fieldsInitialized) {
@@ -286,10 +285,8 @@ public class ColorSchemeManager {
                 }
             }
         }
-
         return true;
     }
-
 
     private void initColorSchemeLut() {
 
@@ -333,8 +330,8 @@ public class ColorSchemeManager {
                                 desiredScheme = name;
                             }
                         } else {
-                            desiredScheme = name;
-                        }
+                        desiredScheme = name;
+                    }
 
 
                         if (values.length >= 3) {
@@ -344,28 +341,28 @@ public class ColorSchemeManager {
                             }
                         }
 
-                        if (name != null && name.length() > 0 && desiredScheme != null && desiredScheme.length() > 0) {
+                    if (name != null && name.length() > 0 && desiredScheme != null && desiredScheme.length() > 0) {
 
-                            for (ColorPaletteInfo storedColorPaletteInfo : colorSchemeInfos) {
-                                if (storedColorPaletteInfo.getName().equals(desiredScheme)) {
-                                    if (!fieldsInitialized ||
+                        for (ColorPaletteInfo storedColorPaletteInfo : colorSchemeInfos) {
+                            if (storedColorPaletteInfo.getName().equals(desiredScheme)) {
+                                if (!fieldsInitialized ||
                                             (fieldsInitialized && overRide)) {
 
-                                        cpdFileNameStandard = storedColorPaletteInfo.getCpdFilenameStandard();
-                                        minVal = storedColorPaletteInfo.getMinValue();
-                                        maxVal = storedColorPaletteInfo.getMaxValue();
-                                        logScaled = storedColorPaletteInfo.isLogScaled();
-                                        rootSchemeName = desiredScheme;
-                                        cpdFileNameColorBlind = storedColorPaletteInfo.getCpdFilenameColorBlind();
-                                        colorBarTitle = storedColorPaletteInfo.getColorBarTitle();
-                                        colorBarLabels = storedColorPaletteInfo.getColorBarLabels();
-                                        description = storedColorPaletteInfo.getDescription();
+                                    cpdFileNameStandard = storedColorPaletteInfo.getCpdFilenameStandard();
+                                    minVal = storedColorPaletteInfo.getMinValue();
+                                    maxVal = storedColorPaletteInfo.getMaxValue();
+                                    logScaled = storedColorPaletteInfo.isLogScaled();
+                                    rootSchemeName = desiredScheme;
+                                    cpdFileNameColorBlind = storedColorPaletteInfo.getCpdFilenameColorBlind();
+                                    colorBarTitle = storedColorPaletteInfo.getColorBarTitle();
+                                    colorBarLabels = storedColorPaletteInfo.getColorBarLabels();
+                                    description = storedColorPaletteInfo.getDescription();
 
-                                        fieldsInitialized = true;
-                                    }
+                                    fieldsInitialized = true;
                                 }
                             }
                         }
+                    }
                     }
 
 
@@ -486,7 +483,6 @@ public class ColorSchemeManager {
         }
         return fileContents;
     }
-
 
     public JComboBox getjComboBox() {
         return jComboBox;

@@ -181,7 +181,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 //            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), productSceneView);
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -428,7 +428,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
+            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
@@ -701,8 +701,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
 
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
 
                 defaultColorPalettesInstalled = true;

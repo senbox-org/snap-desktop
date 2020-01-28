@@ -18,28 +18,30 @@ public class ColorSchemeUtils {
      * This is called by either the reset button within the ColorManipulation GUI or when a new View
      * Window is opened for a band.
      *
+     * @param auxDir
      * @param defaultImageInfo
      * @param productSceneView
      */
 
-    public static void setToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+    public static void setToDefaultColor(File auxDir, PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
+        ColorSchemeManager.getDefault().init(auxDir);
 
         if (ColorSchemeDefaults.isPreferencesAutoApplyScheme(configuration)) {
-            ColorPaletteInfo matchingColorPaletteInfo = setToDefaultColorScheme(productSceneView);
+            ColorPaletteInfo matchingColorPaletteInfo = setToDefaultColorScheme(auxDir, productSceneView);
 
             if (matchingColorPaletteInfo != null) {
                 colorPaletteSchemes.setSelected(matchingColorPaletteInfo);
             } else {
                 colorPaletteSchemes.reset();
-                setToDefaultColorNoScheme(configuration, defaultImageInfo, productSceneView);
+                setToDefaultColorNoScheme(auxDir, configuration, defaultImageInfo, productSceneView);
             }
 
         } else {
             colorPaletteSchemes.reset();
 
-            setToDefaultColorNoScheme(configuration, defaultImageInfo, productSceneView);
+            setToDefaultColorNoScheme(auxDir, configuration, defaultImageInfo, productSceneView);
             productSceneView.setColorPaletteInfo(null);
         }
 
@@ -47,12 +49,12 @@ public class ColorSchemeUtils {
 
 
 
-    public static ColorPaletteInfo setToDefaultColorScheme(ProductSceneView productSceneView) {
+    public static ColorPaletteInfo setToDefaultColorScheme(File auxDir, ProductSceneView productSceneView) {
 
-        ColorPaletteInfo matchingColorPaletteInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
+        ColorPaletteInfo matchingColorPaletteInfo = getColorPaletteInfoByBandNameLookup(auxDir, productSceneView);
 
         if (matchingColorPaletteInfo != null) {
-            boolean imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(matchingColorPaletteInfo, productSceneView);
+            boolean imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(auxDir, matchingColorPaletteInfo, productSceneView);
 
             if (imageInfoSet) {
                 return matchingColorPaletteInfo;
@@ -108,7 +110,7 @@ public class ColorSchemeUtils {
     }
 
 
-    public static File getDefaultCpd(PropertyMap configuration) {
+    public static File getDefaultCpd(File auxDir, PropertyMap configuration) {
         String fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, null);
 
         if (fileName != null) {
@@ -130,9 +132,8 @@ public class ColorSchemeUtils {
             }
         }
 
-        File colorPaletteDir = ColorSchemeDefaults.getColorPalettesDir().toFile();
         if (fileName != null) {
-            File defaultCpd = new File(colorPaletteDir, fileName);
+            File defaultCpd = new File(auxDir, fileName);
 
             if (defaultCpd.exists()) {
                 return defaultCpd;
@@ -145,11 +146,11 @@ public class ColorSchemeUtils {
 
 
 
-    public static void setToDefaultColorNoScheme(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+    public static void setToDefaultColorNoScheme(File auxDir, PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         boolean imageInfoSet = false;
 
-        File defaultCpdFile = getDefaultCpd(configuration);
+        File defaultCpdFile = getDefaultCpd(auxDir, configuration);
 
         ColorPaletteDef colorPaletteDef = null;
 
@@ -203,11 +204,12 @@ public class ColorSchemeUtils {
 
 
 
-    public static ColorPaletteInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
+    public static ColorPaletteInfo getColorPaletteInfoByBandNameLookup(File auxDir, ProductSceneView productSceneView) {
 
         ColorPaletteInfo matchingColorPaletteInfo = null;
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
+        ColorSchemeManager.getDefault().init(auxDir);
 
         if (colorPaletteSchemes != null) {
 
@@ -260,7 +262,7 @@ public class ColorSchemeUtils {
     }
 
 
-    public static boolean setImageInfoToColorScheme(ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
+    public static boolean setImageInfoToColorScheme(File auxDir, ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
 
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
@@ -296,10 +298,8 @@ public class ColorSchemeUtils {
 
         ColorPaletteDef colorPaletteDef = null;
 
-        File colorPalettesDir = ColorSchemeDefaults.getColorPalettesDir().toFile();
         if (cpdFileName != null) {
-
-            File cpdFile = new File(colorPalettesDir, cpdFileName);
+            File cpdFile = new File(auxDir, cpdFileName);
             try {
                 colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
 
