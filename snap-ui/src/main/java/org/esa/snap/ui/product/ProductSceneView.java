@@ -105,7 +105,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
 
 /**
  * The class {@code ProductSceneView} is a high-level image display component for color index/RGB images created

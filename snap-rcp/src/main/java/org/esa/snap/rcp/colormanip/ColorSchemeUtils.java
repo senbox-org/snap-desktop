@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
 
 public class ColorSchemeUtils {
 
@@ -90,13 +89,13 @@ public class ColorSchemeUtils {
 
         if (generalLogScaled != null) {
             switch (generalLogScaled) {
-                case LOG_TRUE:
+                case ColorSchemeDefaults.LOG_TRUE:
                     logScaled = true;
                     break;
-                case LOG_FALSE:
+                case ColorSchemeDefaults.LOG_FALSE:
                     logScaled = false;
                     break;
-                case LOG_FROM_CPD:
+                case ColorSchemeDefaults.LOG_FROM_CPD:
                     if (colorPaletteDef != null) {
                         logScaled = colorPaletteDef.isLogScaled();
                     }
@@ -116,16 +115,16 @@ public class ColorSchemeUtils {
 
         if (fileName != null) {
             switch (fileName) {
-                case GRAY_SCALE:
+                case ColorSchemeDefaults.GRAY_SCALE:
                     fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, null);
                     break;
-                case STANDARD_COLOR:
+                case ColorSchemeDefaults.STANDARD_COLOR:
                     fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, null);
                     break;
-                case UNIVERSAL_COLOR:
+                case ColorSchemeDefaults.UNIVERSAL_COLOR:
                     fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, null);
                     break;
-                case OTHER_COLOR:
+                case ColorSchemeDefaults.OTHER_COLOR:
                     fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY, null);
                     break;
                 default:

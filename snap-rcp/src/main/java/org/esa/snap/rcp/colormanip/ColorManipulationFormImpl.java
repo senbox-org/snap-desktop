@@ -65,8 +65,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.esa.snap.core.datamodel.ColorPaletteSchemes.*;
-
 
 /**
  * The GUI for the colour manipulation tool window.
@@ -703,9 +701,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
 
-                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_DEFAULTS_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorPaletteSchemes.NEW_CPD_SELECTOR_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
 
                 defaultColorPalettesInstalled = true;
