@@ -66,6 +66,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+
 /**
  * The GUI for the colour manipulation tool window.
  *
@@ -701,8 +702,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
 
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
 
                 defaultColorPalettesInstalled = true;

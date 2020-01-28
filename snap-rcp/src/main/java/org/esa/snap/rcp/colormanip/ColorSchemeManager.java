@@ -3,14 +3,18 @@ package org.esa.snap.rcp.colormanip;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorPaletteInfo;
 import org.esa.snap.core.datamodel.ColorSchemeDefaults;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class ColorSchemeManager {
@@ -137,14 +141,30 @@ public class ColorSchemeManager {
         jComboBoxFirstEntryColorSchemeInfo = new ColorPaletteInfo(getjComboBoxFirstEntryName(), null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteDir);
         colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
 
-        ArrayList<String> lines = readFileIntoArrayList(colorSchemesFile);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        Document dom = null;
 
-        for (String line : lines) {
-            line.trim();
-            if (!line.startsWith("#")) {
-                String[] values = line.split(":");
+        try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            dom = db.parse(new FileInputStream(colorSchemesFile));
+        } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } catch (SAXException se) {
+            se.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
 
-                if (values != null) {
+
+        Element rootElement = dom.getDocumentElement();
+        NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
+
+        if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
+            for (int i = 0; i < schemeNodeList.getLength(); i++) {
+
+                Element schemeElement = (Element) schemeNodeList.item(i);
+
+                if (schemeElement != null) {
                     boolean validEntry = true;
                     boolean fieldsInitialized = false;
 
@@ -167,33 +187,23 @@ public class ColorSchemeManager {
 
                     //        ID    MIN   MAX     LOG_SCALE  CPD_FILENAME   CPD_FILENAME(COLORBLIND)  COLORBAR_TITLE    COLORBAR_LABELS     DESCRIPTION
 
+                    id = schemeElement.getAttribute("name");
 
-                    if (values.length >= 8) {
+                    description = getTextValue(schemeElement, "DESCRIPTION");
 
-                        if (values.length >= 9) {
-                            description = values[8].trim();
-                        } else {
-                            description = "";
-                        }
+                    colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
 
-                        if (values.length >= 8) {
-                            colorBarLabels = values[7].trim();
-                        } else {
-                            colorBarLabels = "";
-                        }
+                    colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
 
-                        if (values.length >= 7) {
-                            colorBarTitle = values[6].trim();
-                        } else {
-                            colorBarTitle = "";
-                        }
+                    String minStr = getTextValue(schemeElement, "MIN");
 
-                        id = values[0].trim();
-                        String minStr = values[1].trim();
-                        String maxStr = values[2].trim();
-                        String logScaledStr = values[3].trim();
-                        cpdFileNameStandard = values[4].trim();
-                        cpdFileNameColorBlind = values[5].trim();
+                    String maxStr = getTextValue(schemeElement, "MAX");
+
+                    String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
+
+                    cpdFileNameStandard = getTextValue(schemeElement, "CPD_FILENAME");
+
+                    cpdFileNameColorBlind = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
 
 
                     if (cpdFileNameStandard == null ||
@@ -223,7 +233,6 @@ public class ColorSchemeManager {
 
                     if (id != null && id.length() > 0) {
                         fieldsInitialized = true;
-                    }
                     }
 
                     if (fieldsInitialized) {
@@ -290,15 +299,30 @@ public class ColorSchemeManager {
 
     private void initColorSchemeLut() {
 
-        ArrayList<String> lines = readFileIntoArrayList(colorSchemeLutFile);
+//        ArrayList<String> lines = readFileIntoArrayList(colorSchemeLutFile);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        Document dom = null;
 
-        int i = 0;
-        for (String line : lines) {
-            line.trim();
-            if (!line.startsWith("#")) {
-                String[] values = line.split(":");
+        try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            dom = db.parse(new FileInputStream(colorSchemeLutFile));
+        } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } catch (SAXException se) {
+            se.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
 
-                if (values != null) {
+        Element rootElement = dom.getDocumentElement();
+        NodeList keyNodeList = rootElement.getElementsByTagName("KEY");
+
+        if (keyNodeList != null && keyNodeList.getLength() > 0) {
+
+            for (int i = 0; i < keyNodeList.getLength(); i++) {
+
+                Element schemeElement = (Element) keyNodeList.item(i);
+                if (schemeElement != null) {
                     boolean fieldsInitialized = false;
 
                     String name = null;
@@ -319,27 +343,16 @@ public class ColorSchemeManager {
                     File cpdFile = null;
 
 
+                    name = schemeElement.getAttribute("REGEX");
 
-                    if (values.length >= 1) {
-                        name = values[0].trim();
+                    desiredScheme = getTextValue(schemeElement, "SCHEME_ID");
 
-
-                        if (values.length >= 2) {
-                            desiredScheme = values[1].trim();
-                            if (desiredScheme.length() == 0) {
-                                desiredScheme = name;
-                            }
-                        } else {
+                    if (desiredScheme == null) {
                         desiredScheme = name;
                     }
 
+                    description = getTextValue(schemeElement, "DESCRIPTION");
 
-                        if (values.length >= 3) {
-                            description = values[2].trim();
-                            if (description.length() == 0) {
-                                description = null;
-                            }
-                        }
 
                     if (name != null && name.length() > 0 && desiredScheme != null && desiredScheme.length() > 0) {
 
@@ -363,8 +376,6 @@ public class ColorSchemeManager {
                             }
                         }
                     }
-                    }
-
 
                     if (fieldsInitialized) {
 
@@ -461,6 +472,21 @@ public class ColorSchemeManager {
         return null;
     }
 
+
+    public static String getTextValue(Element ele, String tagName) {
+        String textVal = null;
+        NodeList nl = ele.getElementsByTagName(tagName);
+        if (nl != null && nl.getLength() > 0) {
+            Element el = (Element) nl.item(0);
+
+            if (el.hasChildNodes()) {
+                textVal = el.getFirstChild().getNodeValue();
+            }
+
+        }
+
+        return textVal;
+    }
 
     public ArrayList<String> readFileIntoArrayList(File file) {
         String lineData;
