@@ -45,7 +45,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
     private final JComboBox<LocalRepositoryFolder> foldersComboBox;
-    private final JComboBox<RemoteMission> missionsComboBox;
+    private final JComboBox<String> remoteMissionsComboBox;
     private final JComboBox<String> attributesComboBox;
     private final JButton scanFoldersButton;
     private final JButton addFolderButton;
@@ -71,14 +71,14 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         };
         this.foldersComboBox.setRenderer(foldersRenderer);
 
-        this.missionsComboBox = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
-        LabelListCellRenderer<RemoteMission> missionsRenderer = new LabelListCellRenderer<RemoteMission>(this.missionsComboBox.getPreferredSize().height) {
+        this.remoteMissionsComboBox = RemoteProductsRepositoryPanel.buildComboBox(componentDimension);
+        LabelListCellRenderer<String> missionsRenderer = new LabelListCellRenderer<String>(this.remoteMissionsComboBox.getPreferredSize().height) {
             @Override
-            protected String getItemDisplayText(RemoteMission value) {
-                return (value == null) ? " " : (value.getName() + " (" + value.getRemoteRepository().getName() + ")");
+            protected String getItemDisplayText(String value) {
+                return (value == null) ? " " : value;
             }
         };
-        this.missionsComboBox.setRenderer(missionsRenderer);
+        this.remoteMissionsComboBox.setRenderer(missionsRenderer);
 
         this.attributesComboBox = RemoteProductsRepositoryPanel.buildComboBox(null, null, componentDimension);
 
@@ -111,7 +111,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         panel.add(new JLabel("Mission"), c);
         c = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        panel.add(this.missionsComboBox, c);
+        panel.add(this.remoteMissionsComboBox, c);
 
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?> attributesClass = Attribute.class;
@@ -160,8 +160,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {
             LocalRepositoryFolder localRepositoryFolder = (LocalRepositoryFolder)this.foldersComboBox.getSelectedItem();
-            RemoteMission selectedMission = (RemoteMission) this.missionsComboBox.getSelectedItem();
-            return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, localRepositoryFolder, selectedMission,
+            String selectedMissionName = (String) this.remoteMissionsComboBox.getSelectedItem();
+            return new LoadProductListTimerRunnable(progressPanel, threadId, threadListener, localRepositoryFolder, selectedMissionName,
                                                     parameterValues, repositoryProductListPanel, this.allLocalFolderProductsRepository);
         }
         return null;
@@ -202,7 +202,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public void clearParameterValues() {
         this.foldersComboBox.setSelectedItem(null);
-        this.missionsComboBox.setSelectedItem(null);
+        this.remoteMissionsComboBox.setSelectedItem(null);
 
         super.clearParameterValues();
     }
@@ -231,20 +231,20 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.removeFoldersButton.addActionListener(deleteRepositoryFoldersListener);
     }
 
-    public void addMissionIfMissing(RemoteMission mission) {
-        ComboBoxModel<RemoteMission> missionsModel = this.missionsComboBox.getModel();
+    public void addMissionIfMissing(String mission) {
+        ComboBoxModel<String> missionsModel = this.remoteMissionsComboBox.getModel();
         boolean foundMission = false;
         for (int i = 0; i < missionsModel.getSize() && !foundMission; i++) {
-            RemoteMission existingMission = missionsModel.getElementAt(i);
-            if (existingMission != null && existingMission.getId() == mission.getId()) {
+            String existingMission = missionsModel.getElementAt(i);
+            if (existingMission != null && existingMission.equalsIgnoreCase(mission)) {
                 foundMission = true;
             }
         }
         if (!foundMission) {
             if (missionsModel.getSize() == 0) {
-                this.missionsComboBox.addItem(null);
+                this.remoteMissionsComboBox.addItem(null);
             }
-            this.missionsComboBox.addItem(mission);
+            this.remoteMissionsComboBox.addItem(mission);
         }
     }
 
@@ -283,11 +283,11 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {
         List<LocalRepositoryFolder> localRepositoryFolders = null;
-        List<RemoteMission> missions = null;
+        List<String> remoteMissionNames = null;
         Map<Short, Set<String>> attributeNamesPerMission = null;
         if (localRepositoryParameterValues != null) {
             localRepositoryFolders = localRepositoryParameterValues.getLocalRepositoryFolders();
-            missions = localRepositoryParameterValues.getMissions();
+            remoteMissionNames = localRepositoryParameterValues.getRemoteMissionNames();
             attributeNamesPerMission = localRepositoryParameterValues.getAttributes();
         }
         this.foldersComboBox.removeAllItems();
@@ -299,13 +299,13 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             this.foldersComboBox.setSelectedItem(null);
         }
 
-        this.missionsComboBox.removeAllItems();
-        if (missions != null && missions.size() > 0) {
-            this.missionsComboBox.addItem(null);
-            for (int i = 0; i < missions.size(); i++) {
-                this.missionsComboBox.addItem(missions.get(i));
+        this.remoteMissionsComboBox.removeAllItems();
+        if (remoteMissionNames != null && remoteMissionNames.size() > 0) {
+            this.remoteMissionsComboBox.addItem(null);
+            for (int i = 0; i < remoteMissionNames.size(); i++) {
+                this.remoteMissionsComboBox.addItem(remoteMissionNames.get(i));
             }
-            this.missionsComboBox.setSelectedItem(null);
+            this.remoteMissionsComboBox.setSelectedItem(null);
         }
 
         this.attributesComboBox.removeAllItems();

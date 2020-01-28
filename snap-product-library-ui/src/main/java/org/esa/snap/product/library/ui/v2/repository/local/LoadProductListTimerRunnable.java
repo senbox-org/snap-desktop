@@ -20,12 +20,12 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
     private final ThreadListener threadListener;
     private final LocalRepositoryFolder localRepositoryFolder;
     private final RepositoryProductListPanel repositoryProductListPanel;
-    private final RemoteMission mission;
+    private final String remoteMissionName;
     private final Map<String, Object> parameterValues;
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
     public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener, LocalRepositoryFolder localRepositoryFolder,
-                                        RemoteMission mission, Map<String, Object> parameterValues, RepositoryProductListPanel repositoryProductListPanel,
+                                        String remoteMissionName, Map<String, Object> parameterValues, RepositoryProductListPanel repositoryProductListPanel,
                                         AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
 
         super(progressPanel, threadId, 500);
@@ -33,14 +33,14 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
         this.threadListener = threadListener;
         this.localRepositoryFolder = localRepositoryFolder;
         this.repositoryProductListPanel = repositoryProductListPanel;
-        this.mission = mission;
+        this.remoteMissionName = remoteMissionName;
         this.parameterValues = parameterValues;
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
     }
 
     @Override
     protected List<RepositoryProduct> execute() throws Exception {
-        return this.allLocalFolderProductsRepository.loadProductList(this.localRepositoryFolder, this.mission, this.parameterValues);
+        return this.allLocalFolderProductsRepository.loadProductList(this.localRepositoryFolder, this.remoteMissionName, this.parameterValues);
     }
 
     @Override
