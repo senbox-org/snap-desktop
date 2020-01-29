@@ -38,6 +38,7 @@
         <module>snap-dem-ui</module>
         <module>snap-gpf-ui</module>
         <module>snap-graph-builder</module>
+        <module>snap-graph-editor</module>
         <module>snap-help</module>
         <module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>

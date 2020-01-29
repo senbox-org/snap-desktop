@@ -15,7 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.actions;
 
-import org.esa.snap.graphbuilder.ui.GraphBuilderDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -25,7 +25,6 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.InputStream;
 
 @ActionID(
         category = "Tools",

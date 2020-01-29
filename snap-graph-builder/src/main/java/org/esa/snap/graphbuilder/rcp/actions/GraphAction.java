@@ -15,10 +15,9 @@
  */
 package org.esa.snap.graphbuilder.rcp.actions;
 
-import org.esa.snap.graphbuilder.ui.GraphBuilderDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.ui.ModelessDialog;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 

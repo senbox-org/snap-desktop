@@ -1,0 +1,40 @@
+
+<filesystem>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.grapheditor.gpf.ui.DefaultUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.DefaultUI"/>
+            <attr name="operatorName" stringvalue="DefaultUI"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.SourceUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.SourceUI"/>
+            <attr name="operatorName" stringvalue="Read"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.TargetUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.TargetUI"/>
+            <attr name="operatorName" stringvalue="Write"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.ProductSetReaderOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.ProductSetReaderOpUI"/>
+            <attr name="operatorName" stringvalue="ProductSet-Reader"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.SubsetUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.SubsetUI"/>
+            <attr name="operatorName" stringvalue="Subset"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.BandMathsOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.BandMathsOpUI"/>
+            <attr name="operatorName" stringvalue="BandMaths"/>
+            <!--attr name="disableFromgrapheditor" stringvalue="true"/-->
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.ResamplingUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.ResamplingUI"/>
+            <attr name="operatorName" stringvalue="Resample"/>
+        </file>
+        <file name="org.esa.snap.grapheditor.gpf.ui.ReprojectionUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.grapheditor.gpf.ui.ReprojectionUI"/>
+            <attr name="operatorName" stringvalue="Reproject"/>
+        </file>
+    </folder>
+
+</filesystem>
