@@ -62,5 +62,4 @@ public class GraphBuilder extends JPanel {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
     }
-
 }

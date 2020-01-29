@@ -13,9 +13,9 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.graphbuilder.rcp.actions;
+package org.esa.snap.grapheditor.ui.actions;
 
-import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
+import org.esa.snap.grapheditor.ui.GraphBuilderDialog;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -25,11 +25,10 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.InputStream;
 
 @ActionID(
         category = "Tools",
-        id = "GraphBuilderAction"
+        id = "GraphEditorAction"
 )
 @ActionRegistration(
         displayName = "#CTL_GraphBuilderAction_MenuText",
@@ -42,25 +41,19 @@ import java.io.InputStream;
         @ActionReference(path = "Toolbars/Processing", position = 10)
 })
 @NbBundle.Messages({
-        "CTL_GraphBuilderAction_MenuText=GraphBuilder",
+        "CTL_GraphBuilderAction_MenuText=GraphEditor",
         "CTL_GraphBuilderAction_ShortDescription=Create a custom processing graph"
 })
-public class OpenGraphBuilderAction extends AbstractAction {
+public class OpenGraphEditorAction extends AbstractAction {
 
-    public OpenGraphBuilderAction() {
-        super("GraphBuilder");
+    public OpenGraphEditorAction() {
+        super("GraphEditor");
     }
 
     public void actionPerformed(ActionEvent event) {
         final GraphBuilderDialog dialog = new GraphBuilderDialog(SnapApp.getDefault().getAppContext(), "Graph Builder", "graph_builder");
         //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
-        
-
-        InputStream graphFileStream = getClass().getClassLoader().getResourceAsStream("graphs/ReadWriteGraph.xml");
-
-        dialog.loadGraph(graphFileStream, null);
-        dialog.enableInitialInstructions(true);
 
     }
 }

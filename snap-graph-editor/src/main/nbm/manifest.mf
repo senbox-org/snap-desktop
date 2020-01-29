@@ -6,5 +6,4 @@ AutoUpdate-Essential-Module: true
 OpenIDE-Module-Java-Dependencies: Java > 1.8
 OpenIDE-Module-Display-Category: SNAP
 OpenIDE-Module-Layer: org/esa/snap/grapheditor/layer.xml
-OpenIDE-Module-Long-Description: <p>SNAP Graph Editor</p><p><b>Fundin
- g:</b> European Space Agency</p>
+OpenIDE-Module-Long-Description: <p>SNAP Graph Editor</p><p><b>Funding:</b> European Space Agency</p>
