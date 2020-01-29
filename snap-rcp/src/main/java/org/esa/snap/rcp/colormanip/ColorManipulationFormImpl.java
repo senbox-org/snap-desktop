@@ -30,7 +30,6 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.ResourceInstaller;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
@@ -104,7 +103,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter palFileFilter;
     private SnapFileFilter cptFileFilter;
     private final ProductNodeListener productNodeListener;
-    private boolean defaultColorPalettesInstalled;
+    private boolean colorPalettesAuxFilesInstalled;
+    private boolean colorSchemesAuxFilesInstalled;
     private JPanel contentPanel;
     private ColorManipulationChildForm childForm;
     private ColorManipulationChildForm continuous1BandSwitcherForm;
@@ -142,10 +142,16 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (contentPanel == null) {
             initContentPanel();
         }
-        if (!defaultColorPalettesInstalled) {
+        if (!colorPalettesAuxFilesInstalled) {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(new InstallDefaultColorPalettes());
+            executorService.submit(new InstallColorPalettesAuxFiles());
         }
+
+        if (!colorSchemesAuxFilesInstalled) {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(new InstallColorSchemesAuxFiles());
+        }
+
         return contentPanel;
     }
 
@@ -687,35 +693,76 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         this.childForm = childForm;
     }
 
-    private class InstallDefaultColorPalettes implements Runnable {
+    private class InstallColorPalettesAuxFiles implements Runnable {
 
-        private InstallDefaultColorPalettes() {
+        private InstallColorPalettesAuxFiles() {
         }
 
         @Override
         public void run() {
             try {
-                Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
                 Path auxdataDir = getColorPalettesDir();
-                Path sourceDirPath = sourceBasePath.resolve("auxdata/color_palettes");
+                Path sourceDirPath = getColorPalettesSourceDir();
+
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
-
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
 
-                defaultColorPalettesInstalled = true;
+                colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
                 SnapApp.getDefault().handleError("Unable to install colour palettes", e);
             }
         }
     }
 
-    private Path getColorPalettesDir() {
-        return SystemUtils.getAuxDataPath().resolve("color_palettes");
+
+    private class InstallColorSchemesAuxFiles implements Runnable {
+
+        private InstallColorSchemesAuxFiles() {
+        }
+
+        @Override
+        public void run() {
+            try {
+                Path auxdataDir = getColorSchemesDir();
+                Path sourceDirPath = getColorSchemesSourceDir();
+
+                final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
+
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
+
+                colorSchemesAuxFilesInstalled = true;
+            } catch (IOException e) {
+                SnapApp.getDefault().handleError("Unable to install color schemes files", e);
+            }
+        }
     }
+
+
+    public Path getColorPalettesSourceDir() {
+        Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
+        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.AUX_DATA);
+        return auxdirSource.resolve(ColorSchemeDefaults.COLOR_PALETTES_AUX_DATA);
+    }
+
+    public Path getColorSchemesSourceDir() {
+        Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
+        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.AUX_DATA);
+        return auxdirSource.resolve(ColorSchemeDefaults.COLOR_SCHEMES_AUX_DATA);
+    }
+
+
+    private Path getColorPalettesDir() {
+        return ColorSchemeDefaults.getColorPalettesAuxData();
+    }
+
+    private Path getColorSchemesDir() {
+        return ColorSchemeDefaults.getColorSchemesAuxData();
+    }
+
+
 
     private ImageInfo createDefaultImageInfo() {
         try {

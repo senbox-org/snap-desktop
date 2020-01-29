@@ -26,7 +26,6 @@ public class ColorSchemeUtils {
     public static void setToDefaultColor(File auxDir, PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
-        ColorSchemeManager.getDefault().init(auxDir);
 
         if (ColorSchemeDefaults.isPreferencesAutoApplyScheme(configuration)) {
             ColorPaletteInfo matchingColorPaletteInfo = setToDefaultColorScheme(auxDir, productSceneView);
@@ -111,29 +110,31 @@ public class ColorSchemeUtils {
 
 
     public static File getDefaultCpd(File auxDir, PropertyMap configuration) {
-        String fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, null);
 
-        if (fileName != null) {
-            switch (fileName) {
+        String filename = null;
+
+        String fileCategory = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
+        if (fileCategory != null) {
+            switch (fileCategory) {
                 case ColorSchemeDefaults.GRAY_SCALE:
-                    fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, null);
+                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_DEFAULT);
                     break;
                 case ColorSchemeDefaults.STANDARD_COLOR:
-                    fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, null);
+                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_DEFAULT);
                     break;
                 case ColorSchemeDefaults.UNIVERSAL_COLOR:
-                    fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, null);
+                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_DEFAULT);
                     break;
                 case ColorSchemeDefaults.OTHER_COLOR:
-                    fileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY, null);
+                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY, ColorSchemeDefaults.PROPERTY_OTHER_CPD_DEFAULT);
                     break;
                 default:
-                    fileName = ColorSchemeDefaults.DEFAULT_CPD_FILENAME;
+                    filename = ColorSchemeDefaults.DEFAULT_CPD_FILENAME;
             }
         }
 
-        if (fileName != null) {
-            File defaultCpd = new File(auxDir, fileName);
+        if (filename != null) {
+            File defaultCpd = new File(auxDir, filename);
 
             if (defaultCpd.exists()) {
                 return defaultCpd;
@@ -209,7 +210,6 @@ public class ColorSchemeUtils {
         ColorPaletteInfo matchingColorPaletteInfo = null;
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
-        ColorSchemeManager.getDefault().init(auxDir);
 
         if (colorPaletteSchemes != null) {
 

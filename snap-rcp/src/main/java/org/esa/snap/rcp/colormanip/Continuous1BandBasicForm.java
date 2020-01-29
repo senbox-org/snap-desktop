@@ -118,7 +118,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel = new JLabel("TEST");
 
 
-        ColorSchemeManager.getDefault().init(parentForm.getIODir().toFile());
         standardColorPaletteSchemes = ColorSchemeManager.getDefault();
 
 

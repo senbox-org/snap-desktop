@@ -40,7 +40,7 @@ import java.awt.*;
  * @author Daniel Knowles
  */
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_ColorManipulation=Color Manipulation",
+        "Options_DisplayName_ColorManipulation=" + ColorSchemeDefaults.COLOR_MANIPULATION,
         "Options_Keywords_ColorManipulation=layer, general"
 })
 @OptionsPanelController.SubRegistration(location = "GeneralPreferences",
@@ -109,47 +109,6 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
-
-/*
-
-
-*Default Palettes:
-Gray Scale
-Standard Color
-Color Blind
-
-*General Behavior:
-Default Palette
-     Gray Scale Default
-     Standard Color Default
-     Color Blind Default
-
-*Scheme Behavior:
-Auto-Apply From Band Name
-
-Palette
-     Use Standard Scheme Palette
-     Use Color Blind Scheme Palette
-     Gray Scale Default
-     Standard Color Default
-     Color Blind Default
-     Maintain Current?
-Range
-     Use Scheme Range
-     Use Data Range
-     Maintain Current Range?
-Log
-     Use Scheme Log Scaling
-     Maintain Current Log Scaling?
-
-
- */
-
-
-
-
-
-
         //
         // Create UI
         //
@@ -186,8 +145,6 @@ Log
 
     @Override
     protected void configure(BindingContext context) {
-
-//        configureColorBlindEnablement(context);
 
 
         // Handle resetDefaults events - set all other components to defaults
@@ -308,35 +265,7 @@ Log
 
 
 
-    /**
-     * Configure enablement of the components
-     *
-     * @param context
-     * @author Daniel Knowles
-     */
-    private void configureColorBlindEnablement(BindingContext context) {
 
-
-
-        enablementDefaultColorBlindCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, true,
-                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
-
-        enablementDefaultSchemeColorBlindCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, true,
-                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
-
-        enablementDefaultSchemeStandardCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, false,
-                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
-
-        enablementDefaultStandardCpd = context.bindEnabledState(ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, false,
-                ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY, true);
-
-
-
-
-
-        // handle it the first time so bound properties get properly enabled
-        handleUseColorBlindEnablement();
-    }
 
     /**
      * Handles enablement of the components
@@ -356,16 +285,6 @@ Log
 
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
-
-
-
-
-
-
-
-
-
-
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY,
@@ -399,15 +318,6 @@ Log
                         ColorSchemeDefaults.PROPERTY_GENERAL_LOG_OPTION2,
                         ColorSchemeDefaults.PROPERTY_GENERAL_LOG_OPTION3})
         String generalLog = ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT;
-
-
-
-
-
-
-
-
-
 
 
 
@@ -447,8 +357,6 @@ Log
         String schemeRange = ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
 
 
-
-
         @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY,
                 description = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_TOOLTIP,
@@ -457,34 +365,6 @@ Log
                         ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION3,
                         ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION4})
         String schemeLog = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
-
-
-
-
-
-
-
-
-
-
-//
-//        @Preference(label = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_LABEL,
-//                key = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_KEY,
-//                description = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_TOOLTIP)
-//        boolean useColorBlindCpd = ColorSchemeDefaults.PROPERTY_USE_COLOR_BLIND_CPD_DEFAULT;
-
-
-
-
-
-
-
-//        @Preference(label = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_LABEL,
-//                key = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_KEY,
-//                description = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_TOOLTIP)
-//        boolean useSchemePaletteStx = ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT;
-
-
 
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_LABEL,
