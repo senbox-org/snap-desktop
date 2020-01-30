@@ -671,12 +671,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
-        ColorPaletteInfo colorPaletteInfo = (ColorPaletteInfo) jComboBox.getSelectedItem();
+        ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
 
 
-//        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorPaletteInfo);
+//        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorSchemeInfo);
 
-        ColorSchemeUtils.setImageInfoToColorScheme(colorPaletteInfo, parentForm.getFormModel().getProductSceneView());
+        ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, parentForm.getFormModel().getProductSceneView());
 
         parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
         parentForm.applyChanges();

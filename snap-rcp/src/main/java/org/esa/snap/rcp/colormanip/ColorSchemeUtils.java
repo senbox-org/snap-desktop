@@ -31,13 +31,13 @@ public class ColorSchemeUtils {
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
         if (ColorSchemeDefaults.isPropertySchemeAutoApply(configuration)) {
-            ColorPaletteInfo colorPaletteInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
+            ColorSchemeInfo colorSchemeInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
 
-            if (colorPaletteInfo != null) {
-                imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorPaletteInfo, productSceneView);
+            if (colorSchemeInfo != null) {
+                imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, productSceneView);
 
                 if (imageInfoSet) {
-                    colorPaletteSchemes.setSelected(colorPaletteInfo);
+                    colorPaletteSchemes.setSelected(colorSchemeInfo);
                 }
             }
         }
@@ -184,9 +184,9 @@ public class ColorSchemeUtils {
     }
 
 
-    public static ColorPaletteInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
+    public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
 
-        ColorPaletteInfo matchingColorPaletteInfo = null;
+        ColorSchemeInfo matchingColorSchemeInfo = null;
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
@@ -195,31 +195,31 @@ public class ColorSchemeUtils {
             String bandName = productSceneView.getBaseImageLayer().getName().trim();
             bandName = bandName.substring(bandName.indexOf(" ")).trim();
 
-            ArrayList<ColorPaletteInfo> defaultSchemes = colorPaletteSchemes.getColorSchemeLutInfos();
+            ArrayList<ColorSchemeInfo> defaultSchemes = colorPaletteSchemes.getColorSchemeLutInfos();
 
             final String WILDCARD = new String("*");
 
-            for (ColorPaletteInfo colorPaletteInfo : defaultSchemes) {
-                String cpdName = colorPaletteInfo.getName().trim();
+            for (ColorSchemeInfo colorSchemeInfo : defaultSchemes) {
+                String cpdName = colorSchemeInfo.getName().trim();
 
-                if (matchingColorPaletteInfo == null || (matchingColorPaletteInfo != null && colorPaletteInfo.isOverRide())) {
+                if (matchingColorSchemeInfo == null || (matchingColorSchemeInfo != null && colorSchemeInfo.isOverRide())) {
                     if (bandName.equals(cpdName)) {
-                        matchingColorPaletteInfo = colorPaletteInfo;
+                        matchingColorSchemeInfo = colorSchemeInfo;
                     } else if (cpdName.contains(WILDCARD)) {
                         if (!cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
                             String basename = cpdName.substring(0, cpdName.length() - 1);
                             if (bandName.startsWith(basename)) {
-                                matchingColorPaletteInfo = colorPaletteInfo;
+                                matchingColorSchemeInfo = colorSchemeInfo;
                             }
                         } else if (cpdName.startsWith(WILDCARD) && !cpdName.endsWith(WILDCARD)) {
                             String basename = cpdName.substring(1, cpdName.length());
                             if (bandName.endsWith(basename)) {
-                                matchingColorPaletteInfo = colorPaletteInfo;
+                                matchingColorSchemeInfo = colorSchemeInfo;
                             }
                         } else if (cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
                             String basename = cpdName.substring(1, cpdName.length() - 1);
                             if (bandName.contains(basename)) {
-                                matchingColorPaletteInfo = colorPaletteInfo;
+                                matchingColorSchemeInfo = colorSchemeInfo;
                             }
                         } else {
                             String basename = cpdName;
@@ -227,7 +227,7 @@ public class ColorSchemeUtils {
                             String basenameSplit[] = basename.split(wildcard);
                             if (basenameSplit.length == 2 && basenameSplit[0].length() > 0 && basenameSplit[1].length() > 0) {
                                 if (bandName.startsWith(basenameSplit[0]) && bandName.endsWith(basenameSplit[1])) {
-                                    matchingColorPaletteInfo = colorPaletteInfo;
+                                    matchingColorSchemeInfo = colorSchemeInfo;
                                 }
                             }
                         }
@@ -236,11 +236,11 @@ public class ColorSchemeUtils {
             }
         }
 
-        return matchingColorPaletteInfo;
+        return matchingColorSchemeInfo;
     }
 
 
-    public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorPaletteInfo colorPaletteInfo, ColorPaletteDef colorPaletteDef) {
+    public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo, ColorPaletteDef colorPaletteDef) {
         boolean logScaled = false;
 
         String schemeLogScaling = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
@@ -258,7 +258,7 @@ public class ColorSchemeUtils {
                     }
                     break;
                 case ColorSchemeDefaults.OPTION_LOG_FROM_SCHEME:
-                    logScaled = colorPaletteInfo.isLogScaled();
+                    logScaled = colorSchemeInfo.isLogScaled();
                     break;
                 default:
                     logScaled = false;
@@ -270,7 +270,7 @@ public class ColorSchemeUtils {
 
 
 
-    public static String getCdpFileNameFromSchemeSelection(PropertyMap configuration, ColorPaletteInfo colorPaletteInfo) {
+    public static String getCdpFileNameFromSchemeSelection(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo) {
         String cpdFileName = null;
 
         String schemeCpdOption = configuration.getPropertyString(
@@ -279,10 +279,10 @@ public class ColorSchemeUtils {
 
         switch (schemeCpdOption) {
             case ColorSchemeDefaults.OPTION_COLOR_STANDARD_SCHEME:
-                cpdFileName = colorPaletteInfo.getCpdFilename(false);
+                cpdFileName = colorSchemeInfo.getCpdFilename(false);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_UNIVERSAL_SCHEME:
-                cpdFileName = colorPaletteInfo.getCpdFilename(true);
+                cpdFileName = colorSchemeInfo.getCpdFilename(true);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_GRAY_SCALE:
                 cpdFileName = configuration.getPropertyString(
@@ -312,15 +312,15 @@ public class ColorSchemeUtils {
     }
 
 
-    public static boolean setImageInfoToColorScheme(ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
+    public static boolean setImageInfoToColorScheme(ColorSchemeInfo colorSchemeInfo, ProductSceneView productSceneView) {
 
-        if (colorPaletteInfo == null || productSceneView == null) {
+        if (colorSchemeInfo == null || productSceneView == null) {
             return false;
         }
 
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-        String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorPaletteInfo);
+        String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorSchemeInfo);
 
 
         ColorPaletteDef colorPaletteDef = null;
@@ -347,11 +347,11 @@ public class ColorSchemeUtils {
         String schemeRange = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         switch (schemeRange) {
             case ColorSchemeDefaults.OPTION_RANGE_FROM_SCHEME:
-                min = colorPaletteInfo.getMinValue();
+                min = colorSchemeInfo.getMinValue();
                 if (min == ColorSchemeDefaults.DOUBLE_NULL) {
                     min = stx.getMinimum();
                 }
-                max = colorPaletteInfo.getMaxValue();
+                max = colorSchemeInfo.getMaxValue();
                 if (max == ColorSchemeDefaults.DOUBLE_NULL) {
                     max = stx.getMaximum();
                 }
@@ -371,7 +371,7 @@ public class ColorSchemeUtils {
         }
 
 
-        boolean logScaled = getLogScaledFromScheme(configuration, colorPaletteInfo, colorPaletteDef);
+        boolean logScaled = getLogScaledFromScheme(configuration, colorSchemeInfo, colorPaletteDef);
 
 
         if (colorPaletteDef != null) {
