@@ -745,23 +745,23 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     public Path getColorPalettesSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
-        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.AUX_DATA);
-        return auxdirSource.resolve(ColorSchemeDefaults.COLOR_PALETTES_AUX_DATA);
+        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.DIR_NAME_AUX_DATA);
+        return auxdirSource.resolve(ColorSchemeDefaults.DIR_NAME_COLOR_PALETTES);
     }
 
     public Path getColorSchemesSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
-        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.AUX_DATA);
-        return auxdirSource.resolve(ColorSchemeDefaults.COLOR_SCHEMES_AUX_DATA);
+        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.DIR_NAME_AUX_DATA);
+        return auxdirSource.resolve(ColorSchemeDefaults.DIR_NAME_COLOR_SCHEMES);
     }
 
 
     private Path getColorPalettesDir() {
-        return ColorSchemeDefaults.getColorPalettesAuxData();
+        return ColorSchemeDefaults.getDirNameColorPalettes();
     }
 
     private Path getColorSchemesDir() {
-        return ColorSchemeDefaults.getColorSchemesAuxData();
+        return ColorSchemeDefaults.getDirNameColorSchemes();
     }
 
 

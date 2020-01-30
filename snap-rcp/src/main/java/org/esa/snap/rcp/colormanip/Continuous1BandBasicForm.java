@@ -24,7 +24,6 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Range;
 
 import javax.swing.*;
@@ -34,7 +33,6 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.text.DecimalFormat;
 
 import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
@@ -315,7 +313,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         PropertyMap  configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-        boolean schemeApply = configuration.getPropertyBool(PROPERTY_AUTO_APPLY_SCHEMES_KEY, PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT);
+        boolean schemeApply = configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
         String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);

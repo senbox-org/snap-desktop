@@ -64,7 +64,7 @@ public class ColorSchemeManager {
     public void init() {
 
         if (!initialized) {
-            Path getColorSchemesAuxDir = ColorSchemeDefaults.getColorSchemesAuxData();
+            Path getColorSchemesAuxDir = ColorSchemeDefaults.getDirNameColorSchemes();
             if (getColorSchemesAuxDir != null) {
                 this.colorSchemesAuxDir = getColorSchemesAuxDir.toFile();
                 if (!colorSchemesAuxDir.exists()) {
@@ -74,7 +74,7 @@ public class ColorSchemeManager {
                 return;
             }
 
-            Path getColorPalettesAuxDir = ColorSchemeDefaults.getColorPalettesAuxData();
+            Path getColorPalettesAuxDir = ColorSchemeDefaults.getDirNameColorPalettes();
             if (getColorPalettesAuxDir != null) {
                 this.colorPaletteAuxDir = getColorPalettesAuxDir.toFile();
                 if (!colorPaletteAuxDir.exists()) {
@@ -235,7 +235,7 @@ public class ColorSchemeManager {
                     if (cpdFileNameStandard == null ||
                             cpdFileNameStandard.length() == 0 ||
                             ColorSchemeDefaults.NULL_ENTRY.toLowerCase().equals(cpdFileNameStandard.toLowerCase())) {
-                        cpdFileNameStandard = ColorSchemeDefaults.DEFAULT_CPD_FILENAME;
+                        cpdFileNameStandard = ColorSchemeDefaults.CPD_DEFAULT;
                     }
 
 

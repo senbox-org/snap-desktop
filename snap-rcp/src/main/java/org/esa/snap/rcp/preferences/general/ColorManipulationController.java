@@ -40,7 +40,7 @@ import java.awt.*;
  * @author Daniel Knowles
  */
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_ColorManipulation=" + ColorSchemeDefaults.COLOR_MANIPULATION,
+        "Options_DisplayName_ColorManipulation=" + ColorSchemeDefaults.TOOLNAME_COLOR_MANIPULATION,
         "Options_Keywords_ColorManipulation=layer, general"
 })
 @OptionsPanelController.SubRegistration(location = "GeneralPreferences",
@@ -77,34 +77,33 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_KEY, true);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
 
 
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_KEY, true);
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_KEY, ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
-//        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_KEY, ColorSchemeDefaults.PROPERTY_USE_SCHEME_PALETTE_STX_DEFAULT);
 
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY, ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY, ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY, ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY, ColorSchemeDefaults.PROPERTY_OTHER_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
 
 
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
 
-        restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
+        restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
 
 
@@ -286,9 +285,9 @@ public final class ColorManipulationController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_KEY,
-                description = ColorSchemeDefaults.PROPERTY_GENERAL_BEHAVIOR_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_TOOLTIP)
         boolean generalBehaviorSection = true;
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_CPD_LABEL,
@@ -321,18 +320,18 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_KEY,
-                description = ColorSchemeDefaults.PROPERTY_SCHEME_BEHAVIOR_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_TOOLTIP)
         boolean schemeBehaviorSection = true;
 
 
 
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_KEY,
-                description = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_TOOLTIP)
-        boolean autoApplySchemes = ColorSchemeDefaults.PROPERTY_AUTO_APPLY_SCHEMES_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
+        boolean autoApplySchemes = ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_CPD_LABEL,
@@ -367,33 +366,33 @@ public final class ColorManipulationController extends DefaultConfigController {
         String schemeLog = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
 
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_KEY,
-                description = ColorSchemeDefaults.PROPERTY_DEFAULT_CPD_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_SECTION_TOOLTIP)
         boolean defaultPaletteSection = true;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_KEY,
-                description = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_TOOLTIP)
-        String grayScaleCpd = ColorSchemeDefaults.PROPERTY_GRAY_SCALE_CPD_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_TOOLTIP)
+        String grayScaleCpd = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_KEY,
-                description = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_TOOLTIP)
-        String standardColorCpd = ColorSchemeDefaults.PROPERTY_STANDARD_COLOR_CPD_DEFAULT;
-
-
-        @Preference(label = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_KEY,
-                description = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_TOOLTIP)
-        String colorBlindCpd = ColorSchemeDefaults.PROPERTY_COLOR_BLIND_CPD_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_TOOLTIP)
+        String standardColorCpd = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT;
 
 
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_TOOLTIP)
+        String colorBlindCpd = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_OTHER_CPD_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_OTHER_CPD_KEY,
-                description = ColorSchemeDefaults.PROPERTY_OTHER_CPD_TOOLTIP)
-        String otherCpd = ColorSchemeDefaults.PROPERTY_OTHER_CPD_DEFAULT;
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_TOOLTIP)
+        String otherCpd = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT;
 
 
         // Restore Defaults Section
@@ -403,10 +402,10 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_TOOLTIP)
         boolean restoreDefaultsSection = true;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_LABEL,
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME,
-                description = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_TOOLTIP)
-        boolean restoreDefaults = ColorSchemeDefaults.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT;
+                description = ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_TOOLTIP)
+        boolean restoreDefaults = ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT;
     }
 
 }
