@@ -1,13 +1,14 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
+import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
-import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
+import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
@@ -16,7 +17,6 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.*;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.model.RemoteMission;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -155,7 +155,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     public AbstractProgressTimerRunnable<List<RepositoryProduct>> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                                              RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel repositoryProductListPanel) {
+                                                                                              RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel) {
 
         Map<String, Object> parameterValues = getParameterValues();
         if (parameterValues != null) {
@@ -168,7 +168,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, ProductListModel productListModel) {
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
         JMenuItem openMenuItem = new JMenuItem("Open");
         openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
@@ -308,18 +308,25 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             this.remoteMissionsComboBox.setSelectedItem(null);
         }
 
-        this.attributesComboBox.removeAllItems();
         if (attributeNamesPerMission != null && attributeNamesPerMission.size() > 0) {
             Comparator<String> comparator = buildAttributeNamesComparator();
             SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
             for (Map.Entry<Short, Set<String>> entry : attributeNamesPerMission.entrySet()) {
                 uniqueAttributes.addAll(entry.getValue());
             }
-            this.attributesComboBox.addItem(null);
-            for (String attributeName : uniqueAttributes) {
-                this.attributesComboBox.addItem(attributeName);
-            }
+            setAttributes(uniqueAttributes);
             this.attributesComboBox.setSelectedItem(null);
+        } else {
+            this.attributesComboBox.removeAllItems();
+        }
+    }
+
+    private void setAttributes(SortedSet<String> uniqueAttributes) {
+        this.attributesComboBox.removeAllItems();
+        // add an empty attribute on the first position
+        this.attributesComboBox.addItem(null);
+        for (String attributeName : uniqueAttributes) {
+            this.attributesComboBox.addItem(attributeName);
         }
     }
 
@@ -328,7 +335,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
         ComboBoxModel<String> attributesModel = this.attributesComboBox.getModel();
         for (int i = 0; i < attributesModel.getSize(); i++) {
-            uniqueAttributes.add(attributesModel.getElementAt(i));
+            String existingAtributeName = attributesModel.getElementAt(i);
+            if (!StringUtils.isBlank(existingAtributeName)) {
+                uniqueAttributes.add(existingAtributeName);
+            }
         }
         boolean newAttribute = false;
         for (String attributeName : productAttributeNames) {
@@ -338,10 +348,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
         if (newAttribute) {
             int oldSize = attributesModel.getSize();
-            this.attributesComboBox.removeAllItems();
-            for (String attributeName : uniqueAttributes) {
-                this.attributesComboBox.addItem(attributeName);
-            }
+            setAttributes(uniqueAttributes);
             if (oldSize == 0) {
                 // reset the first selected attribute name
                 this.attributesComboBox.setSelectedItem(null);

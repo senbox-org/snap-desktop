@@ -75,15 +75,6 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         super.executeAsync();
     }
 
-    protected final void hideProgressPanelLater() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                onHideProgressPanelLater();
-            }
-        });
-    }
-
     protected boolean onHideProgressPanelLater() {
         return this.progressPanel.hideProgressPanel(this.threadId);
     }

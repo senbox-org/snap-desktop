@@ -1,31 +1,25 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository.output;
 
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.VerticalScrollablePanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JList;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.beans.PropertyChangeListener;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jcoravu on 23/9/2019.
  */
-public class ProductListPanel extends VerticalScrollablePanel implements RepositoryProductPanelBackground {
+public class OutputProductListPanel extends VerticalScrollablePanel implements RepositoryProductPanelBackground {
 
     private static final String LIST_SELECTION_CHANGED = "listSelectionChanged";
     private static final String LIST_DATA_CHANGED = "listDataChanged";
@@ -36,11 +30,14 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
     private final MouseListener mouseListener;
     private final RepositorySelectionPanel repositorySelectionPanel;
     private final Set<AbstractRepositoryProductPanel> selectedProducts;
-    private final ProductListModel productListModel;
+    private final OutputProductListModel productListModel;
     private final ImageIcon expandImageIcon;
     private final ImageIcon collapseImageIcon;
+    private final Map<String, Comparator<RepositoryProduct>> availableComparators;
 
-    public ProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension) {
+    private Comparator<RepositoryProduct> currentComparator;
+
+    public OutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension) {
         super(null);
 
         this.repositorySelectionPanel = repositorySelectionPanel;
@@ -49,10 +46,22 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         this.expandImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
         this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
 
-        this.productListModel = new ProductListModel() {
+        String currentComparatorName = "Product Name";
+        this.availableComparators = new LinkedHashMap<>();
+        this.availableComparators.put(currentComparatorName, buildProductNameComparator());
+        this.availableComparators.put("Mission", buildMissionComparator());
+        this.availableComparators.put("Acquisition Date", buildAcquisitionDateComparator());
+        this.availableComparators.put("File Size", buildFileSizeComparator());
+
+        this.productListModel = new OutputProductListModel() {
+            @Override
+            protected Comparator<RepositoryProduct> getProductsComparator() {
+                return OutputProductListPanel.this.currentComparator;
+            }
+
             @Override
             public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
-                return ProductListPanel.this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
+                return OutputProductListPanel.this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
             }
 
             @Override
@@ -90,6 +99,7 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(true);
         setBackground(this.backgroundColor);
+        setCurrentComparator(currentComparatorName);
     }
 
     @Override
@@ -100,8 +110,81 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         return this.backgroundColor;
     }
 
-    public ProductListModel getProductListModel() {
+    public OutputProductListModel getProductListModel() {
         return productListModel;
+    }
+
+    public Collection<String> getComparatorNames() {
+        return this.availableComparators.keySet();
+    }
+
+    public void setCurrentComparator(String displayName) {
+        this.currentComparator = this.availableComparators.get(displayName);
+        this.productListModel.sortProducts();
+    }
+
+    public String getCurrentComparatorName() {
+        for (Map.Entry<String, Comparator<RepositoryProduct>> entry : this.availableComparators.entrySet()) {
+            if (entry.getValue() == this.currentComparator) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private Comparator<RepositoryProduct> buildProductNameComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        };
+    }
+
+    private Comparator<RepositoryProduct> buildAcquisitionDateComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                Date acquisitionDate1 = o1.getAcquisitionDate();
+                Date acquisitionDate2 = o2.getAcquisitionDate();
+                if (acquisitionDate1 == null && acquisitionDate2 == null) {
+                    return 0; // both acquisition dates are null
+                }
+                if (acquisitionDate1 == null && acquisitionDate2 != null) {
+                    return -1; // the first acquisition date is null
+                }
+                if (acquisitionDate1 != null && acquisitionDate2 == null) {
+                    return 1; // the second acquisition date is null
+                }
+                return acquisitionDate1.compareTo(acquisitionDate2);
+            }
+        };
+    }
+
+    private Comparator<RepositoryProduct> buildMissionComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                return o1.getMission().compareToIgnoreCase(o2.getMission());
+            }
+        };
+    }
+
+    private Comparator<RepositoryProduct> buildFileSizeComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                long fileSize1 = o1.getApproximateSize();
+                long fileSize2 = o2.getApproximateSize();
+                if (fileSize1 == fileSize2) {
+                    return 0;
+                }
+                if (fileSize1 < fileSize2) {
+                    return -1;
+                }
+                return 1;
+            }
+        };
     }
 
     private void productsChanged(int startIndex, int endIndex) {
@@ -154,10 +237,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
         }
     }
 
-    public int getProductCount() {
-        return this.productListModel.getProductCount();
-    }
-
     public RepositoryProduct[] getSelectedProducts() {
         RepositoryProduct[] selectedProducts = new RepositoryProduct[this.selectedProducts.size()];
         for (int i=0, k=0; i<getComponentCount(); i++) {
@@ -175,10 +254,6 @@ public class ProductListPanel extends VerticalScrollablePanel implements Reposit
 
     public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
         return this.productListModel.addPendingDownloadProducts(pendingProducts);
-    }
-
-    public void sortProducts(Comparator<RepositoryProduct> comparator) {
-        this.productListModel.sortProducts(comparator);
     }
 
     public Path2D.Double[] getPolygonPaths() {

@@ -1,12 +1,11 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.model.RemoteMission;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import java.util.List;
@@ -19,13 +18,13 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
 
     private final ThreadListener threadListener;
     private final LocalRepositoryFolder localRepositoryFolder;
-    private final RepositoryProductListPanel repositoryProductListPanel;
+    private final RepositoryOutputProductListPanel repositoryProductListPanel;
     private final String remoteMissionName;
     private final Map<String, Object> parameterValues;
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
     public LoadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener, LocalRepositoryFolder localRepositoryFolder,
-                                        String remoteMissionName, Map<String, Object> parameterValues, RepositoryProductListPanel repositoryProductListPanel,
+                                        String remoteMissionName, Map<String, Object> parameterValues, RepositoryOutputProductListPanel repositoryProductListPanel,
                                         AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
 
         super(progressPanel, threadId, 500);

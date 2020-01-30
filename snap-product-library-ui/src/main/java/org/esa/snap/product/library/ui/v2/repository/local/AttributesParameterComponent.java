@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.repository.AbstractParameterComponent;
+import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.v2.database.AttributeFilter;

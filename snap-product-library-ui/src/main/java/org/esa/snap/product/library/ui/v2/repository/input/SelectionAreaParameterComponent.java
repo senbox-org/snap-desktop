@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.repository;
+package org.esa.snap.product.library.ui.v2.repository.input;
 
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 

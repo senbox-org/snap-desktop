@@ -1,8 +1,8 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -21,7 +21,7 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
     }
 
     @Override
-    public void refresh(int index, ProductListModel productListModel) {
+    public void refresh(int index, OutputProductListModel productListModel) {
         super.refresh(index, productListModel);
 
         RepositoryProduct repositoryProduct = productListModel.getProductAt(index);

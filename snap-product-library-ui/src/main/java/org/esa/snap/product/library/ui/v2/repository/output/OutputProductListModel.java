@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public abstract class ProductListModel {
+public abstract class OutputProductListModel {
 
     public static final ImageIcon EMPTY_ICON;
     static {
@@ -32,14 +32,13 @@ public abstract class ProductListModel {
     private Map<RepositoryProduct, ImageIcon> scaledQuickLookImages;
     private List<RepositoryProduct> products;
 
-    public ProductListModel() {
+    public OutputProductListModel() {
         super();
 
-        this.downloadingProductsProgressValue = new HashMap<>();
-        this.localProductsMap = new HashMap<>();
-        this.scaledQuickLookImages = new HashMap<>();
-        this.products = new ArrayList<>();
+        resetAttributes();
     }
+
+    protected abstract Comparator<RepositoryProduct> getProductsComparator();
 
     public abstract Map<String, String> getRemoteMissionVisibleAttributes(String mission);
 
@@ -71,20 +70,36 @@ public abstract class ProductListModel {
         }
     }
 
-    public void setProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
-        clear();
-        addProducts(products, comparator);
+    public List<RepositoryProduct> findProductsWithoutQuickLookImage() {
+        List<RepositoryProduct> result = new ArrayList<>();
+        for (int i=0; i<this.products.size(); i++) {
+            RepositoryProduct existingProduct = this.products.get(i);
+            if (existingProduct.getQuickLookImage() == null && existingProduct.getDownloadQuickLookImageURL() != null) {
+                result.add(existingProduct);
+            }
+        }
+        return result;
     }
 
-    public void addProducts(List<RepositoryProduct> products, Comparator<RepositoryProduct> comparator) {
+    public void setProducts(List<RepositoryProduct> products) {
+        clear();
         if (products.size() > 0) {
             int startIndex = this.products.size();
             this.products.addAll(products);
             if (this.products.size() > 1) {
-                Collections.sort(this.products, comparator);
+                Collections.sort(this.products, getProductsComparator());
             }
             int endIndex = this.products.size() - 1;
             fireIntervalAdded(startIndex, endIndex);
+        }
+    }
+
+    public void sortProducts() {
+        if (this.products.size() > 1) {
+            Collections.sort(this.products, getProductsComparator());
+            int startIndex = 0;
+            int endIndex = this.products.size() - 1;
+            fireIntervalChanged(startIndex, endIndex);
         }
     }
 
@@ -174,32 +189,6 @@ public abstract class ProductListModel {
         return addPendingLocalProgressProducts(pendingDeleteProducts, LocalProgressStatus.PENDING_DELETE);
     }
 
-    private List<RepositoryProduct> addPendingLocalProgressProducts(RepositoryProduct[] pendingLocalProducts, byte status) {
-        List<RepositoryProduct> productsToProcess = new ArrayList<>(pendingLocalProducts.length);
-        if (pendingLocalProducts.length > 0) {
-            int startIndex = pendingLocalProducts.length - 1;
-            int endIndex = 0;
-            for (int i=0; i<pendingLocalProducts.length; i++) {
-                LocalProgressStatus openProgressStatus = this.localProductsMap.get(pendingLocalProducts[i]);
-                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailDeleted()) {
-                    productsToProcess.add(pendingLocalProducts[i]);
-                    int index = findProductIndex(pendingLocalProducts[i]);
-                    if (startIndex > index) {
-                        startIndex = index;
-                    }
-                    if (endIndex < index) {
-                        endIndex = index;
-                    }
-                    this.localProductsMap.put(pendingLocalProducts[i], new LocalProgressStatus(status));
-                }
-            }
-            if (productsToProcess.size() > 0) {
-                fireIntervalChanged(startIndex, endIndex);
-            }
-        }
-        return productsToProcess;
-    }
-
     public void setOpenDownloadedProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
         DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
         if (progressPercent != null) {
@@ -221,15 +210,6 @@ public abstract class ProductListModel {
                 fireIntervalChanged(index, index);
             }
         }
-    }
-
-    private int findProductIndex(RepositoryProduct repositoryProductToFind) {
-        for (int i=0; i<this.products.size(); i++) {
-            if (this.products.get(i) == repositoryProductToFind) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("The repository product '"+repositoryProductToFind.getName()+"' does not exist into the list.");
     }
 
     public void setProductDownloadStatus(RepositoryProduct repositoryProduct, byte status) {
@@ -271,22 +251,52 @@ public abstract class ProductListModel {
 
     public void clear() {
         int endIndex = this.products.size() - 1;
-        this.downloadingProductsProgressValue = new HashMap<>();
-        this.scaledQuickLookImages = new HashMap<>();
-        this.localProductsMap = new HashMap<>();
-        this.products = new ArrayList<>();
+        resetAttributes();
         if (endIndex >= 0) {
             fireIntervalRemoved(0, endIndex);
         }
     }
 
-    public void sortProducts(Comparator<RepositoryProduct> comparator) {
-        if (this.products.size() > 1) {
-            Collections.sort(this.products, comparator);
-            int startIndex = 0;
-            int endIndex = this.products.size() - 1;
-            fireIntervalChanged(startIndex, endIndex);
+    private List<RepositoryProduct> addPendingLocalProgressProducts(RepositoryProduct[] pendingLocalProducts, byte status) {
+        List<RepositoryProduct> productsToProcess = new ArrayList<>(pendingLocalProducts.length);
+        if (pendingLocalProducts.length > 0) {
+            int startIndex = pendingLocalProducts.length - 1;
+            int endIndex = 0;
+            for (int i=0; i<pendingLocalProducts.length; i++) {
+                LocalProgressStatus openProgressStatus = this.localProductsMap.get(pendingLocalProducts[i]);
+                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailDeleted()) {
+                    productsToProcess.add(pendingLocalProducts[i]);
+                    int index = findProductIndex(pendingLocalProducts[i]);
+                    if (startIndex > index) {
+                        startIndex = index;
+                    }
+                    if (endIndex < index) {
+                        endIndex = index;
+                    }
+                    this.localProductsMap.put(pendingLocalProducts[i], new LocalProgressStatus(status));
+                }
+            }
+            if (productsToProcess.size() > 0) {
+                fireIntervalChanged(startIndex, endIndex);
+            }
         }
+        return productsToProcess;
+    }
+
+    private int findProductIndex(RepositoryProduct repositoryProductToFind) {
+        for (int i=0; i<this.products.size(); i++) {
+            if (this.products.get(i) == repositoryProductToFind) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("The repository product '"+repositoryProductToFind.getName()+"' does not exist into the list.");
+    }
+
+    private void resetAttributes() {
+        this.downloadingProductsProgressValue = new HashMap<>();
+        this.scaledQuickLookImages = new HashMap<>();
+        this.localProductsMap = new HashMap<>();
+        this.products = new ArrayList<>();
     }
 }
 

@@ -6,6 +6,7 @@ import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCred
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPaginationPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
@@ -46,8 +47,6 @@ import java.util.Stack;
  */
 public class RepositorySelectionPanel extends JPanel {
 
-    private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
-
     private final JButton searchButton;
     private final JButton helpButton;
     private final JLabel repositoryLabel;
@@ -56,11 +55,13 @@ public class RepositorySelectionPanel extends JPanel {
     private final ComponentDimension componentDimension;
     private final WorldMapPanelWrapper worldWindowPanel;
 
+    private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
     private JPanel topBarButtonsPanel;
     private ItemListener repositoriesItemListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
-                                    MissionParameterListener missionParameterListener, WorldMapPanelWrapper worldWindowPanel, int progressBarWidth) {
+                                    MissionParameterListener missionParameterListener, WorldMapPanelWrapper worldWindowPanel,
+                                    int progressBarWidth) {
 
         super(new GridBagLayout());
 
@@ -87,8 +88,6 @@ public class RepositorySelectionPanel extends JPanel {
         };
 
         this.repositoryLabel = new JLabel("Repository");
-
-        addComponents();
     }
 
     public void refreshUserAccounts(List<RemoteRepositoryCredentials> repositoriesCredentials) {
@@ -309,7 +308,7 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    private void addComponents() {
+    public void addComponents(OutputProductListPaginationPanel productListPaginationPanel) {
         createTopBarButtonsPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
@@ -323,11 +322,17 @@ public class RepositorySelectionPanel extends JPanel {
             c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
             add(this.topBarButtonsPanel, c);
         }
+
         c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.helpButton, c);
+        add(productListPaginationPanel, c);
+
         c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
-        add(this.progressBarHelper.getProgressBar(), c);
+        add(this.helpButton, c);
+
         c = SwingUtils.buildConstraints(6, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
+        add(this.progressBarHelper.getProgressBar(), c);
+
+        c = SwingUtils.buildConstraints(7, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.progressBarHelper.getStopButton(), c);
     }
 
@@ -348,7 +353,6 @@ public class RepositorySelectionPanel extends JPanel {
         }
         return icon;
     }
-
 
     public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
         ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);

@@ -1,5 +1,8 @@
-package org.esa.snap.product.library.ui.v2.repository.remote;
+package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -13,32 +16,34 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 16/10/2019.
  */
-public class DownloadProductRunnable implements Runnable {
+public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable {
 
     private static final Logger logger = Logger.getLogger(DownloadProductRunnable.class.getName());
 
     private final RemoteProductDownloader remoteProductDownloader;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
-    private Boolean isRunning;
 
     public DownloadProductRunnable(RemoteProductDownloader remoteProductDownloader, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+        super();
+
         this.remoteProductDownloader = remoteProductDownloader;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
-        this.isRunning = true;
     }
 
     @Override
     public void run() {
         SaveDownloadedProductData saveProductData = null;
         try {
-            startRunningThread();
+            startRunning();
             if (isRunning()) {
                 saveProductData = downloadAndSaveProduct();
             }
         } catch (java.lang.InterruptedException exception) {
-            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.STOP_DOWNLOADING);
+            RepositoryProduct repositoryProduct = this.remoteProductDownloader.getProductToDownload();
+            logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "'.");
+            updateDownloadingProductStatus(repositoryProduct, DownloadProgressStatus.STOP_DOWNLOADING);
         } catch (IOException exception) {
             byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
@@ -50,33 +55,24 @@ public class DownloadProductRunnable implements Runnable {
             updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.FAILED_DOWNLOADING);
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } finally {
-            finishRunningThread(saveProductData);
+            finishRunning(saveProductData);
         }
+    }
+
+    @Override
+    public final void stopRunning() {
+        super.stopRunning();
+
+        this.remoteProductDownloader.cancel();
     }
 
     protected void updateDownloadingProductStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
     }
 
-    protected void startRunningThread() {
-    }
-
-    protected void finishRunningThread(SaveDownloadedProductData saveProductData) {
+    protected void finishRunning(SaveDownloadedProductData saveProductData) {
     }
 
     protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
-    }
-
-    private boolean isRunning() {
-        synchronized (this) {
-            return this.isRunning;
-        }
-    }
-
-    public void stopRunning() {
-        synchronized (this) {
-            this.isRunning = false;
-        }
-        this.remoteProductDownloader.cancel();
     }
 
     private SaveDownloadedProductData downloadAndSaveProduct() throws Exception {

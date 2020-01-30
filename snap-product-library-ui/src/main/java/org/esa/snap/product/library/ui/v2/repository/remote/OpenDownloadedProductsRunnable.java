@@ -2,8 +2,8 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
@@ -23,9 +23,9 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
 
     private final AppContext appContext;
     private final Map<RepositoryProduct, Path> productsToOpen;
-    private final RepositoryProductListPanel repositoryProductListPanel;
+    private final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-    public OpenDownloadedProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, Map<RepositoryProduct, Path> productsToOpen) {
+    public OpenDownloadedProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, Map<RepositoryProduct, Path> productsToOpen) {
         this.appContext = appContext;
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.productsToOpen = productsToOpen;
@@ -67,9 +67,9 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
 
         private final RepositoryProduct productToOpen;
         private final byte openStatus;
-        private final RepositoryProductListPanel repositoryProductListPanel;
+        private final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-        private UpdateProgressStatusRunnable(RepositoryProduct productToOpen, byte openStatus, RepositoryProductListPanel repositoryProductListPanel) {
+        private UpdateProgressStatusRunnable(RepositoryProduct productToOpen, byte openStatus, RepositoryOutputProductListPanel repositoryProductListPanel) {
             this.productToOpen = productToOpen;
             this.openStatus = openStatus;
             this.repositoryProductListPanel = repositoryProductListPanel;
@@ -77,7 +77,7 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
 
         @Override
         public void run() {
-            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
             productListModel.setOpenDownloadedProductStatus(this.productToOpen, this.openStatus);
         }
     }

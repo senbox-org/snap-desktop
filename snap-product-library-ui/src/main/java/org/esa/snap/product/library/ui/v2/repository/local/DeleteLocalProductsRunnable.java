@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -19,7 +19,7 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
-    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete,
+    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete,
                                        AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
 
         super(appContext, repositoryProductListPanel, productsToDelete);

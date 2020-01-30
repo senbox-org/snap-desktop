@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
@@ -17,9 +17,9 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
     protected final AppContext appContext;
     protected final List<RepositoryProduct> productsToProcess;
 
-    private final RepositoryProductListPanel repositoryProductListPanel;
+    private final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-    protected AbstractProcessLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToProcess) {
+    protected AbstractProcessLocalProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToProcess) {
         this.appContext = appContext;
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.productsToProcess = productsToProcess;
@@ -34,9 +34,9 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
 
         private final RepositoryProduct productToOpen;
         private final byte localStatus;
-        private final RepositoryProductListPanel repositoryProductListPanel;
+        private final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-        private UpdateLocalProgressStatusRunnable(RepositoryProduct productToOpen, byte localStatus, RepositoryProductListPanel repositoryProductListPanel) {
+        private UpdateLocalProgressStatusRunnable(RepositoryProduct productToOpen, byte localStatus, RepositoryOutputProductListPanel repositoryProductListPanel) {
             this.productToOpen = productToOpen;
             this.localStatus = localStatus;
             this.repositoryProductListPanel = repositoryProductListPanel;
@@ -44,7 +44,7 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
 
         @Override
         public void run() {
-            ProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
             productListModel.setLocalProductStatus(this.productToOpen, this.localStatus);
         }
     }

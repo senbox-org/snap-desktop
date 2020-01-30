@@ -3,13 +3,14 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
-import org.esa.snap.product.library.ui.v2.ProductListModel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
-import org.esa.snap.product.library.ui.v2.AbstractRepositoryProductPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
-import org.esa.snap.product.library.ui.v2.ThreadListener;
+import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.ParametersPanel;
+import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
@@ -31,7 +32,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +111,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     @Override
     public AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                        RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryProductListPanel productResultsPanel) {
+                                                                        RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel productResultsPanel) {
 
         Credentials selectedCredentials = null;
         boolean canContinue = true;
@@ -149,7 +149,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, ProductListModel productListModel) {
+    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
         boolean canOpenSelectedProducts = true;
         for (int i=0; i<selectedProducts.length && canOpenSelectedProducts; i++) {
             DownloadProgressStatus downloadProgressStatus = productListModel.getProductDownloadPercent(selectedProducts[i]);
@@ -224,7 +224,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         refreshLabelWidths();
     }
 
-    public RemoteProductDownloader buildProductDownloader(RepositoryProduct repositoryProduct, Path localRepositoryFolderPath) {
+    public Credentials getSelectedAccount() {
         Credentials selectedCredentials = null;
         if (this.userAccountsComboBox != null) {
             // the repository provider requires authentication
@@ -234,8 +234,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 throw new NullPointerException("No credential account is selected.");
             }
         }
-        RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(this.productsRepositoryProvider, repositoryProduct, localRepositoryFolderPath, selectedCredentials);
-        return remoteProductDownloader;
+        return selectedCredentials;
     }
 
     public void setDownloadProductListeners(ActionListener downloadProductListener, ActionListener openDownloadedRemoteProductListener) {
@@ -244,7 +243,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
-        return productsRepositoryProvider;
+        return this.productsRepositoryProvider;
     }
 
     public void setUserAccounts(List<Credentials> repositoryCredentials) {
@@ -253,7 +252,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             for (int i = 0; i < repositoryCredentials.size(); i++) {
                 this.userAccountsComboBox.addItem(repositoryCredentials.get(i));
             }
-            //this.userAccountsComboBox.setSelectedItem(null);
         }
     }
 

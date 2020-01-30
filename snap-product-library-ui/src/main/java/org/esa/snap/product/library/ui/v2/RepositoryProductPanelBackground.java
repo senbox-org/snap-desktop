@@ -1,5 +1,7 @@
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
+
 import java.awt.Color;
 
 /**

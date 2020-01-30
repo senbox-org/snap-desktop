@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.product.library.ui.v2.RepositoryProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 
@@ -17,7 +17,7 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
 
     private static final Logger logger = Logger.getLogger(OpenLocalProductsRunnable.class.getName());
 
-    public OpenLocalProductsRunnable(AppContext appContext, RepositoryProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToOpen) {
+    public OpenLocalProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToOpen) {
         super(appContext, repositoryProductListPanel, productsToOpen);
     }
 

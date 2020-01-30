@@ -1,27 +1,19 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.product.library.ui.v2.repository;
 
 import org.apache.commons.lang.StringUtils;
+import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
@@ -37,6 +29,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
+    private static final Color TRANSPARENT_COLOR = new Color(255, 255, 255, 0);
 
     private final JLabel nameLabel;
     private final JLabel quickLookImageLabel;
@@ -68,7 +61,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.collapseImageIcon = collapseImageIcon;
 
         this.nameLabel = new JLabel("");
-        this.quickLookImageLabel = new JLabel(ProductListModel.EMPTY_ICON);
+        this.quickLookImageLabel = new JLabel(OutputProductListModel.EMPTY_ICON);
         this.firstAttributeLabel = new JLabel("");
         this.acquisitionDateLabel = new JLabel("");
         this.sizeLabel = new JLabel("");
@@ -80,6 +73,8 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         Dimension buttonSize = new Dimension(this.expandImageIcon.getIconWidth() + 2, this.expandImageIcon.getIconHeight() + 2);
 
         this.expandOrCollapseButton = new JButton(this.expandImageIcon);
+        this.expandOrCollapseButton.setBackground(TRANSPARENT_COLOR);
+        this.expandOrCollapseButton.setOpaque(false);
         this.expandOrCollapseButton.setPreferredSize(buttonSize);
         this.expandOrCollapseButton.setMinimumSize(buttonSize);
         this.expandOrCollapseButton.setMaximumSize(buttonSize);
@@ -129,7 +124,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         return this.sizeLabel.getForeground();
     }
 
-    public void refresh(int index, ProductListModel productListModel) {
+    public void refresh(int index, OutputProductListModel productListModel) {
         if (this.attributesPanel != null) {
             if (this.repositoryProduct == null || this.repositoryProduct != productListModel.getProductAt(index)) {
                 remoteAttributesPanel();
