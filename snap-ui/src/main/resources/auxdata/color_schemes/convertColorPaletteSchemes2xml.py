@@ -1,7 +1,7 @@
 with open("color_palette_schemes.txt") as lines_file:
     lines = lines_file.readlines()
 
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 root = ET.Element('schemeList')
 
@@ -38,4 +38,4 @@ for line in lines:
         subhead_branch9.text = description.strip()
 
 tree = ET.ElementTree(root)
-tree.write("color_palette_schemes.xml")
+tree.write("color_palette_schemes.xml",pretty_print=True)

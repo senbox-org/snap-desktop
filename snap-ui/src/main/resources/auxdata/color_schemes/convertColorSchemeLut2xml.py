@@ -1,7 +1,7 @@
 with open("color_palette_scheme_defaults.txt") as lines_file:
     lines = lines_file.readlines()
 
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 
 root = ET.Element('colorSchemeLut')
 
@@ -17,4 +17,4 @@ for line in lines:
         subhead_branch2 = ET.SubElement(head_branch, "DESCRIPTION")
 
 tree = ET.ElementTree(root)
-tree.write("color_palette_scheme_defaults.xml")
+tree.write("color_palette_scheme_defaults.xml",pretty_print=True)

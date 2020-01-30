@@ -188,7 +188,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 //            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), productSceneView);
+            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -435,7 +435,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(getColorPalettesDir().toFile(), configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
+            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
@@ -711,7 +711,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to install colour palettes", e);
+                SnapApp.getDefault().handleError("Unable to install color palettes", e);
             }
         }
     }
@@ -730,6 +730,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
+//                resourceInstaller.install(".*.xml", ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
 
