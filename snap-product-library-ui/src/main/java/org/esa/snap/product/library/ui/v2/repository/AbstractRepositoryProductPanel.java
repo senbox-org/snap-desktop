@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -61,7 +62,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.collapseImageIcon = collapseImageIcon;
 
         this.nameLabel = new JLabel("");
-        this.quickLookImageLabel = new JLabel(OutputProductListModel.EMPTY_ICON);
+        this.quickLookImageLabel = new JLabel(OutputProductResults.EMPTY_ICON);
         this.firstAttributeLabel = new JLabel("");
         this.acquisitionDateLabel = new JLabel("");
         this.sizeLabel = new JLabel("");

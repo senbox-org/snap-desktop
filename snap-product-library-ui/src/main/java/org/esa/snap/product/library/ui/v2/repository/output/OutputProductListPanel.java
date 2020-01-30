@@ -1,20 +1,25 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
-import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.VerticalScrollablePanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.Polygon2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Path2D;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jcoravu on 23/9/2019.
@@ -33,11 +38,8 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     private final OutputProductListModel productListModel;
     private final ImageIcon expandImageIcon;
     private final ImageIcon collapseImageIcon;
-    private final Map<String, Comparator<RepositoryProduct>> availableComparators;
 
-    private Comparator<RepositoryProduct> currentComparator;
-
-    public OutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension) {
+    public OutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension, OutputProductResultsCallback outputProductResultsCallback) {
         super(null);
 
         this.repositorySelectionPanel = repositorySelectionPanel;
@@ -46,19 +48,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         this.expandImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
         this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
 
-        String currentComparatorName = "Product Name";
-        this.availableComparators = new LinkedHashMap<>();
-        this.availableComparators.put(currentComparatorName, buildProductNameComparator());
-        this.availableComparators.put("Mission", buildMissionComparator());
-        this.availableComparators.put("Acquisition Date", buildAcquisitionDateComparator());
-        this.availableComparators.put("File Size", buildFileSizeComparator());
-
-        this.productListModel = new OutputProductListModel() {
-            @Override
-            protected Comparator<RepositoryProduct> getProductsComparator() {
-                return OutputProductListPanel.this.currentComparator;
-            }
-
+        this.productListModel = new OutputProductListModel(outputProductResultsCallback) {
             @Override
             public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
                 return OutputProductListPanel.this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
@@ -99,7 +89,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setOpaque(true);
         setBackground(this.backgroundColor);
-        setCurrentComparator(currentComparatorName);
     }
 
     @Override
@@ -114,79 +103,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         return productListModel;
     }
 
-    public Collection<String> getComparatorNames() {
-        return this.availableComparators.keySet();
-    }
-
-    public void setCurrentComparator(String displayName) {
-        this.currentComparator = this.availableComparators.get(displayName);
-        this.productListModel.sortProducts();
-    }
-
-    public String getCurrentComparatorName() {
-        for (Map.Entry<String, Comparator<RepositoryProduct>> entry : this.availableComparators.entrySet()) {
-            if (entry.getValue() == this.currentComparator) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
-    private Comparator<RepositoryProduct> buildProductNameComparator() {
-        return new Comparator<RepositoryProduct>() {
-            @Override
-            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-        };
-    }
-
-    private Comparator<RepositoryProduct> buildAcquisitionDateComparator() {
-        return new Comparator<RepositoryProduct>() {
-            @Override
-            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                Date acquisitionDate1 = o1.getAcquisitionDate();
-                Date acquisitionDate2 = o2.getAcquisitionDate();
-                if (acquisitionDate1 == null && acquisitionDate2 == null) {
-                    return 0; // both acquisition dates are null
-                }
-                if (acquisitionDate1 == null && acquisitionDate2 != null) {
-                    return -1; // the first acquisition date is null
-                }
-                if (acquisitionDate1 != null && acquisitionDate2 == null) {
-                    return 1; // the second acquisition date is null
-                }
-                return acquisitionDate1.compareTo(acquisitionDate2);
-            }
-        };
-    }
-
-    private Comparator<RepositoryProduct> buildMissionComparator() {
-        return new Comparator<RepositoryProduct>() {
-            @Override
-            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                return o1.getMission().compareToIgnoreCase(o2.getMission());
-            }
-        };
-    }
-
-    private Comparator<RepositoryProduct> buildFileSizeComparator() {
-        return new Comparator<RepositoryProduct>() {
-            @Override
-            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                long fileSize1 = o1.getApproximateSize();
-                long fileSize2 = o2.getApproximateSize();
-                if (fileSize1 == fileSize2) {
-                    return 0;
-                }
-                if (fileSize1 < fileSize2) {
-                    return -1;
-                }
-                return 1;
-            }
-        };
-    }
-
     private void productsChanged(int startIndex, int endIndex) {
         boolean fireListSelectionChanged = false;
         for (int i=startIndex; i<=endIndex; i++) {
@@ -196,6 +112,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
                 fireListSelectionChanged = true;
             }
         }
+        revalidate();
         repaint();
         fireBothListeners(fireListSelectionChanged);
     }

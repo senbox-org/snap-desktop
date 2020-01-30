@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.remote.products.repository.HTTPServerException;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
@@ -24,17 +25,18 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final Credentials credentials;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
-    private final OutputProductListModel productListModel;
+    private final RepositoryOutputProductListPanel repositoryProductListPanel;
     private final List<RepositoryProduct> productsWithoutQuickLookImage;
 
     public DownloadProductsQuickLookImageRunnable(List<RepositoryProduct> productsWithoutQuickLookImage, RemoteProductsRepositoryProvider productsRepositoryProvider,
-                                                  Credentials credentials, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, OutputProductListModel productListModel) {
+                                                  Credentials credentials, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore,
+                                                  RepositoryOutputProductListPanel repositoryProductListPanel) {
 
         this.productsWithoutQuickLookImage = productsWithoutQuickLookImage;
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.credentials = credentials;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
-        this.productListModel = productListModel;
+        this.repositoryProductListPanel = repositoryProductListPanel;
     }
 
     @Override
@@ -62,12 +64,6 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
                     RepositoryProduct repositoryProduct = this.productsWithoutQuickLookImage.get(i);
                     BufferedImage quickLookImage = null;
                     if (repositoryProduct.getDownloadQuickLookImageURL() != null) {
-
-                        if (logger.isLoggable(Level.FINE)) {
-                            String remoteRepositoryName = this.productsRepositoryProvider.getRepositoryName();
-                            logger.log(Level.FINE, "Download the quick look image: remote repository '" + remoteRepositoryName+"', mission '" + repositoryProduct.getMission() + "', url '"+repositoryProduct.getDownloadQuickLookImageURL()+"'.");
-                        }
-
                         try {
                             quickLookImage = this.productsRepositoryProvider.downloadProductQuickLookImage(this.credentials, repositoryProduct.getDownloadQuickLookImageURL(), this);
                         } catch (java.lang.InterruptedException exception) {
@@ -100,7 +96,7 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
         Runnable runnable = new DownloadRemoteProductsHelper.PairRunnable<RepositoryProduct, BufferedImage>(product, quickLookImage) {
             @Override
             public void run() {
-                productListModel.setProductQuickLookImage(this.first, this.second);
+                repositoryProductListPanel.setProductQuickLookImage(this.first, this.second);
             }
         };
         SwingUtilities.invokeLater(runnable);

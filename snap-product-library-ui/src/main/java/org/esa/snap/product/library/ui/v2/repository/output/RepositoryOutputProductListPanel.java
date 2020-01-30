@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
-import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
@@ -22,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -29,18 +29,22 @@ import java.util.*;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public class RepositoryOutputProductListPanel extends JPanel {
+public class RepositoryOutputProductListPanel extends JPanel implements OutputProductResultsCallback {
 
     private static final String PAGE_PRODUCTS_CHANGED = "pageProductsChanged";
 
-    private static final byte PRODUCT_COUNT_PER_PAGE = 100;
+    private static final byte PRODUCT_COUNT_PER_PAGE = 20;
 
     private final JLabel titleLabel;
     private final JLabel sortByLabel;
     private final ProgressBarHelperImpl progressBarHelper;
     private final OutputProductListPanel productListPanel;
     private final OutputProductListPaginationPanel productListPaginationPanel;
+    private final Map<String, Comparator<RepositoryProduct>> availableComparators;
 
+    private Comparator<RepositoryProduct> currentComparator;
+
+    private OutputProductResults outputProductResults;
     private List<RepositoryProduct> availableProducts;
     private int currentPageNumber;
 
@@ -64,7 +68,16 @@ public class RepositoryOutputProductListPanel extends JPanel {
             }
         });
 
-        this.productListPanel = new OutputProductListPanel(repositorySelectionPanel, componentDimension);
+        String currentComparatorName = "Product Name";
+        this.availableComparators = new LinkedHashMap<>();
+        this.availableComparators.put(currentComparatorName, buildProductNameComparator());
+        this.availableComparators.put("Mission", buildMissionComparator());
+        this.availableComparators.put("Acquisition Date", buildAcquisitionDateComparator());
+        this.availableComparators.put("File Size", buildFileSizeComparator());
+
+        resetOutputProducts();
+
+        this.productListPanel = new OutputProductListPanel(repositorySelectionPanel, componentDimension, this);
         this.productListPanel.addDataChangedListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -107,12 +120,19 @@ public class RepositoryOutputProductListPanel extends JPanel {
         };
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
-        this.availableProducts = new ArrayList<>();
-        this.currentPageNumber = 0;
-
-        setCurrentComparator(this.productListPanel.getCurrentComparatorName());
+        setCurrentComparator(currentComparatorName);
 
         addComponents(componentDimension);
+    }
+
+    @Override
+    public Comparator<RepositoryProduct> getProductsComparator() {
+        return this.currentComparator;
+    }
+
+    @Override
+    public OutputProductResults getOutputProductResults() {
+        return this.outputProductResults;
     }
 
     public OutputProductListPaginationPanel getProductListPaginationPanel() {
@@ -133,8 +153,8 @@ public class RepositoryOutputProductListPanel extends JPanel {
 
     public void setProducts(List<RepositoryProduct> products) {
         if (products.size() > 0) {
-            this.availableProducts = new ArrayList<>(products);
-            this.currentPageNumber = 0;
+            resetOutputProducts();
+            this.availableProducts.addAll(products);
             displayPageProducts(0, 1); // display the first page
         } else {
             clearOutputList();
@@ -142,10 +162,20 @@ public class RepositoryOutputProductListPanel extends JPanel {
     }
 
     public void clearOutputList() {
-        this.availableProducts = new ArrayList<>();
-        this.currentPageNumber = 0;
+        resetOutputProducts();
         this.productListPanel.getProductListModel().clear();
         refreshPaginationButtons();
+    }
+
+    public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
+        for (int i=0; i<this.availableProducts.size(); i++) {
+            RepositoryProduct existingProduct = this.availableProducts.get(i);
+            if (existingProduct == repositoryProduct) {
+                existingProduct.setQuickLookImage(quickLookImage);
+                this.productListPanel.getProductListModel().updateProductQuickLookImage(repositoryProduct);
+                return;
+            }
+        }
     }
 
     public void addProducts(List<RepositoryProduct> products) {
@@ -215,13 +245,8 @@ public class RepositoryOutputProductListPanel extends JPanel {
             endIndex = this.availableProducts.size() - 1;
         }
         List<RepositoryProduct> pageProducts = new ArrayList<>((endIndex - startIndex));
-        List<RepositoryProduct> productsWithoutQuickLookImage = new ArrayList<>((endIndex - startIndex));
         for (int i = startIndex; i <= endIndex; i++) {
-            RepositoryProduct repositoryProduct = this.availableProducts.get(i);
-            if (!StringUtils.isBlank(repositoryProduct.getDownloadQuickLookImageURL())) {
-                productsWithoutQuickLookImage.add(repositoryProduct);
-            }
-            pageProducts.add(repositoryProduct);
+            pageProducts.add(this.availableProducts.get(i));
         }
         this.currentPageNumber = newCurrentPageNumber;
         this.productListPanel.getProductListModel().setProducts(pageProducts);
@@ -277,7 +302,7 @@ public class RepositoryOutputProductListPanel extends JPanel {
 
     private void showProductsPopupMenu(int mouseX, int mouseY) {
         JPopupMenu popup = new JPopupMenu();
-        for (String displayName : this.productListPanel.getComparatorNames()) {
+        for (String displayName : this.availableComparators.keySet()) {
             JMenuItem menuItem = new JMenuItem(displayName);
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
@@ -290,9 +315,16 @@ public class RepositoryOutputProductListPanel extends JPanel {
         popup.show(this.sortByLabel, mouseX, mouseY);
     }
 
+    private void resetOutputProducts() {
+        this.outputProductResults = new OutputProductResults();
+        this.availableProducts = new ArrayList<>();
+        this.currentPageNumber = 0;
+    }
+
     private void setCurrentComparator(String displayName) {
+        this.currentComparator = this.availableComparators.get(displayName);
         this.sortByLabel.setText("Sort By: " + displayName);
-        this.productListPanel.setCurrentComparator(displayName);
+        this.productListPanel.getProductListModel().sortProducts();
     }
 
     private void addComponents(ComponentDimension componentDimension) {
@@ -316,5 +348,69 @@ public class RepositoryOutputProductListPanel extends JPanel {
 
         add(northPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private static Comparator<RepositoryProduct> buildProductNameComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        };
+    }
+
+    private static Comparator<RepositoryProduct> buildAcquisitionDateComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                Date acquisitionDate1 = o1.getAcquisitionDate();
+                Date acquisitionDate2 = o2.getAcquisitionDate();
+                if (acquisitionDate1 == null && acquisitionDate2 == null) {
+                    return 0; // both acquisition dates are null
+                }
+                if (acquisitionDate1 == null && acquisitionDate2 != null) {
+                    return -1; // the first acquisition date is null
+                }
+                if (acquisitionDate1 != null && acquisitionDate2 == null) {
+                    return 1; // the second acquisition date is null
+                }
+                return acquisitionDate1.compareTo(acquisitionDate2);
+            }
+        };
+    }
+
+    private static Comparator<RepositoryProduct> buildMissionComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                if (o1.getMission() == null && o2.getMission() == null) {
+                    return 0; // both missions are null
+                }
+                if (o1.getMission() == null && o2.getMission() != null) {
+                    return -1; // the fist mission is null
+                }
+                if (o1.getMission() != null && o2.getMission() == null) {
+                    return 1; // the second mission is null
+                }
+                return o1.getMission().compareToIgnoreCase(o2.getMission());
+            }
+        };
+    }
+
+    private static Comparator<RepositoryProduct> buildFileSizeComparator() {
+        return new Comparator<RepositoryProduct>() {
+            @Override
+            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
+                long fileSize1 = o1.getApproximateSize();
+                long fileSize2 = o2.getApproximateSize();
+                if (fileSize1 == fileSize2) {
+                    return 0;
+                }
+                if (fileSize1 < fileSize2) {
+                    return -1;
+                }
+                return 1;
+            }
+        };
     }
 }

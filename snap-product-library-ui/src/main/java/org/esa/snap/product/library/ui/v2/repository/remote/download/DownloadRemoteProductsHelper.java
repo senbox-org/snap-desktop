@@ -45,12 +45,12 @@ public class DownloadRemoteProductsHelper {
     }
 
     public void downloadProductsQuickLookImageAsync(List<RepositoryProduct> productsWithoutQuickLookImage, RemoteProductsRepositoryProvider productsRepositoryProvider,
-                                                    Credentials credentials, OutputProductListModel productListModel) {
+                                                    Credentials credentials, RepositoryOutputProductListPanel repositoryProductListPanel) {
 
         createThreadPoolExecutorIfNeeded();
 
         DownloadProductsQuickLookImageRunnable runnable = new DownloadProductsQuickLookImageRunnable(productsWithoutQuickLookImage, productsRepositoryProvider,
-                                                                                                     credentials, this.remoteRepositoriesSemaphore, productListModel) {
+                                                                                                     credentials, this.remoteRepositoriesSemaphore, repositoryProductListPanel) {
 
             @Override
             protected void finishRunning() {

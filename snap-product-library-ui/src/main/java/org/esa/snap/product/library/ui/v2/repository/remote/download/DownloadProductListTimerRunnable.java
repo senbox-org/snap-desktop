@@ -60,10 +60,6 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             }
 
             try {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Start downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "'.");
-                }
-
                 ProductListDownloaderListener downloaderListener = new ProductListDownloaderListener() {
                     @Override
                     public void notifyProductCount(long totalProductCount) {
@@ -79,11 +75,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                         }
                     }
                 };
-                List<RepositoryProduct> productList = this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
-
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Finish downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "', size " + productList.size()+".");
-                }
+                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
             } catch (java.lang.InterruptedException exception) {
                 logger.log(Level.WARNING, "Stop downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "'.");
                 return null; // nothing to return

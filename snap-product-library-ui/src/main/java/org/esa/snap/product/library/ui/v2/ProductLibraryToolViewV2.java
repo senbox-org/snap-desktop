@@ -676,7 +676,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     Credentials selectedCredentials = remoteProductsRepositoryPanel.getSelectedAccount();
                     RemoteProductsRepositoryProvider productsRepositoryProvider = remoteProductsRepositoryPanel.getProductsRepositoryProvider();
                     this.downloadRemoteProductsHelper.stopDownloadingProductsQuickLookImage();
-                    this.downloadRemoteProductsHelper.downloadProductsQuickLookImageAsync(productsWithoutQuickLookImage, productsRepositoryProvider, selectedCredentials, productListModel);
+                    this.downloadRemoteProductsHelper.downloadProductsQuickLookImageAsync(productsWithoutQuickLookImage, productsRepositoryProvider, selectedCredentials, this.repositoryProductListPanel);
                 }
             }
         }

@@ -21,24 +21,16 @@ import java.util.Map;
  */
 public abstract class OutputProductListModel {
 
-    public static final ImageIcon EMPTY_ICON;
-    static {
-        BufferedImage emptyImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_ARGB);
-        EMPTY_ICON = new ImageIcon(emptyImage);
-    }
+    private final OutputProductResultsCallback outputProductResultsCallback;
 
-    private Map<RepositoryProduct, LocalProgressStatus> localProductsMap;
-    private Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
-    private Map<RepositoryProduct, ImageIcon> scaledQuickLookImages;
     private List<RepositoryProduct> products;
 
-    public OutputProductListModel() {
+    public OutputProductListModel(OutputProductResultsCallback outputProductResultsCallback) {
         super();
 
-        resetAttributes();
+        this.outputProductResultsCallback = outputProductResultsCallback;
+        this.products = new ArrayList<>();
     }
-
-    protected abstract Comparator<RepositoryProduct> getProductsComparator();
 
     public abstract Map<String, String> getRemoteMissionVisibleAttributes(String mission);
 
@@ -59,14 +51,14 @@ public abstract class OutputProductListModel {
         return this.products.get(index);
     }
 
-    public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
-        for (int i=0; i<this.products.size(); i++) {
-            RepositoryProduct existingProduct = this.products.get(i);
-            if (existingProduct == repositoryProduct) {
-                existingProduct.setQuickLookImage(quickLookImage);
-                fireIntervalChanged(i, i);
-                return;
-            }
+    public ImageIcon getProductQuickLookImage(RepositoryProduct repositoryProduct) {
+        return this.outputProductResultsCallback.getOutputProductResults().getProductQuickLookImage(repositoryProduct);
+    }
+
+    public void updateProductQuickLookImage(RepositoryProduct repositoryProduct) {
+        int index = findProductIndex(repositoryProduct);
+        if (index >= 0) {
+            fireIntervalChanged(index, index);
         }
     }
 
@@ -87,7 +79,7 @@ public abstract class OutputProductListModel {
             int startIndex = this.products.size();
             this.products.addAll(products);
             if (this.products.size() > 1) {
-                Collections.sort(this.products, getProductsComparator());
+                Collections.sort(this.products, this.outputProductResultsCallback.getProductsComparator());
             }
             int endIndex = this.products.size() - 1;
             fireIntervalAdded(startIndex, endIndex);
@@ -96,7 +88,7 @@ public abstract class OutputProductListModel {
 
     public void sortProducts() {
         if (this.products.size() > 1) {
-            Collections.sort(this.products, getProductsComparator());
+            Collections.sort(this.products, this.outputProductResultsCallback.getProductsComparator());
             int startIndex = 0;
             int endIndex = this.products.size() - 1;
             fireIntervalChanged(startIndex, endIndex);
@@ -104,22 +96,7 @@ public abstract class OutputProductListModel {
     }
 
     public void removePendingDownloadProducts() {
-        List<RepositoryProduct> keysToRemove = new ArrayList<>(this.downloadingProductsProgressValue.size());
-        Iterator<Map.Entry<RepositoryProduct, DownloadProgressStatus>> it = this.downloadingProductsProgressValue.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<RepositoryProduct, DownloadProgressStatus> entry = it.next();
-            DownloadProgressStatus progressPercent = entry.getValue();
-            if (progressPercent.isPendingDownload()) {
-                keysToRemove.add(entry.getKey());
-            } else if (progressPercent.isDownloading()) {
-                if (progressPercent.getValue() < 100) {
-                    progressPercent.setStatus(DownloadProgressStatus.STOP_DOWNLOADING);
-                }
-            }
-        }
-        for (int i=0; i<keysToRemove.size(); i++) {
-            this.downloadingProductsProgressValue.remove(keysToRemove.get(i));
-        }
+        this.outputProductResultsCallback.getOutputProductResults().removePendingDownloadProducts();
         if (this.products.size() > 0) {
             fireIntervalChanged(0, this.products.size()-1);
         }
@@ -131,16 +108,18 @@ public abstract class OutputProductListModel {
             int startIndex = pendingOpenDownloadedProducts.length - 1;
             int endIndex = 0;
             for (int i=0; i<pendingOpenDownloadedProducts.length; i++) {
-                DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(pendingOpenDownloadedProducts[i]);
+                DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(pendingOpenDownloadedProducts[i]);
                 if (progressPercent != null && progressPercent.canOpen()) {
                     progressPercent.setStatus(DownloadProgressStatus.PENDING_OPEN);
                     productsToOpen.put(pendingOpenDownloadedProducts[i], progressPercent.getDownloadedPath());
                     int index = findProductIndex(pendingOpenDownloadedProducts[i]);
-                    if (startIndex > index) {
-                        startIndex = index;
-                    }
-                    if (endIndex < index) {
-                        endIndex = index;
+                    if (index >= 0) {
+                        if (startIndex > index) {
+                            startIndex = index;
+                        }
+                        if (endIndex < index) {
+                            endIndex = index;
+                        }
                     }
                 }
             }
@@ -157,17 +136,19 @@ public abstract class OutputProductListModel {
             int startIndex = pendingDownloadProducts.length - 1;
             int endIndex = 0;
             for (int i=0; i<pendingDownloadProducts.length; i++) {
-                DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(pendingDownloadProducts[i]);
+                DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(pendingDownloadProducts[i]);
                 if (progressPercent == null || progressPercent.isStoppedDownload()) {
                     productsToDownload.add(pendingDownloadProducts[i]);
                     int index = findProductIndex(pendingDownloadProducts[i]);
-                    if (startIndex > index) {
-                        startIndex = index;
+                    if (index >= 0) {
+                        if (startIndex > index) {
+                            startIndex = index;
+                        }
+                        if (endIndex < index) {
+                            endIndex = index;
+                        }
+                        getDownloadingProductsProgressValue().put(pendingDownloadProducts[i], new DownloadProgressStatus());
                     }
-                    if (endIndex < index) {
-                        endIndex = index;
-                    }
-                    this.downloadingProductsProgressValue.put(pendingDownloadProducts[i], new DownloadProgressStatus());
                 }
             }
             if (productsToDownload.size() > 0) {
@@ -177,8 +158,16 @@ public abstract class OutputProductListModel {
         return productsToDownload;
     }
 
+    private Map<RepositoryProduct, LocalProgressStatus> getLocalProductsMap() {
+        return this.outputProductResultsCallback.getOutputProductResults().getLocalProductsMap();
+    }
+
+    private Map<RepositoryProduct, DownloadProgressStatus> getDownloadingProductsProgressValue() {
+        return this.outputProductResultsCallback.getOutputProductResults().getDownloadingProductsProgressValue();
+    }
+
     public LocalProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
-        return this.localProductsMap.get(repositoryProduct);
+        return getLocalProductsMap().get(repositoryProduct);
     }
 
     public List<RepositoryProduct> addPendingOpenProducts(RepositoryProduct[] pendingOpenProducts) {
@@ -190,68 +179,62 @@ public abstract class OutputProductListModel {
     }
 
     public void setOpenDownloadedProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
-        DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
+        DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(repositoryProduct);
         if (progressPercent != null) {
             progressPercent.setStatus(openStatus);
             int index = findProductIndex(repositoryProduct);
-            fireIntervalChanged(index, index);
-        }
-    }
-
-    public void setLocalProductStatus(RepositoryProduct repositoryProduct, byte localStatus) {
-        LocalProgressStatus openProgressStatus = this.localProductsMap.get(repositoryProduct);
-        if (openProgressStatus != null) {
-            openProgressStatus.setStatus(localStatus);
-            int index = findProductIndex(repositoryProduct);
-            if (localStatus == LocalProgressStatus.DELETED) {
-                this.products.remove(index);
-                fireIntervalRemoved(index, index);
-            } else {
+            if (index >= 0) {
                 fireIntervalChanged(index, index);
             }
         }
     }
 
+    public void setLocalProductStatus(RepositoryProduct repositoryProduct, byte localStatus) {
+        LocalProgressStatus openProgressStatus = getLocalProductsMap().get(repositoryProduct);
+        if (openProgressStatus != null) {
+            openProgressStatus.setStatus(localStatus);
+            int index = findProductIndex(repositoryProduct);
+            if (index >= 0) {
+                if (localStatus == LocalProgressStatus.DELETED) {
+                    this.products.remove(index);
+                    fireIntervalRemoved(index, index);
+                } else {
+                    fireIntervalChanged(index, index);
+                }
+            }
+        }
+    }
+
     public void setProductDownloadStatus(RepositoryProduct repositoryProduct, byte status) {
-        DownloadProgressStatus progressPercent = this.downloadingProductsProgressValue.get(repositoryProduct);
+        DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(repositoryProduct);
         if (progressPercent != null) {
             progressPercent.setStatus(status);
             int index = findProductIndex(repositoryProduct);
-            fireIntervalChanged(index, index);
+            if (index >= 0) {
+                fireIntervalChanged(index, index);
+            }
         }
     }
 
     public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
-        DownloadProgressStatus progressPercentItem = this.downloadingProductsProgressValue.get(repositoryProduct);
+        DownloadProgressStatus progressPercentItem = getDownloadingProductsProgressValue().get(repositoryProduct);
         if (progressPercentItem != null) {
             progressPercentItem.setValue(progressPercent);
             progressPercentItem.setDownloadedPath(downloadedPath);
             int index = findProductIndex(repositoryProduct);
-            fireIntervalChanged(index, index);
+            if (index >= 0) {
+                fireIntervalChanged(index, index);
+            }
         }
     }
 
     public DownloadProgressStatus getProductDownloadPercent(RepositoryProduct repositoryProduct) {
-        return this.downloadingProductsProgressValue.get(repositoryProduct);
-    }
-
-    public ImageIcon getProductQuickLookImage(RepositoryProduct repositoryProduct) {
-        ImageIcon imageIcon = this.scaledQuickLookImages.get(repositoryProduct);
-        if (imageIcon == null) {
-            if (repositoryProduct.getQuickLookImage() == null) {
-                imageIcon = EMPTY_ICON;
-            } else {
-                Image scaledQuickLookImage = repositoryProduct.getQuickLookImage().getScaledInstance(EMPTY_ICON.getIconWidth(), EMPTY_ICON.getIconHeight(), BufferedImage.SCALE_FAST);
-                imageIcon = new ImageIcon(scaledQuickLookImage);
-                this.scaledQuickLookImages.put(repositoryProduct, imageIcon);
-            }
-        }
-        return imageIcon;
+        return getDownloadingProductsProgressValue().get(repositoryProduct);
     }
 
     public void clear() {
         int endIndex = this.products.size() - 1;
-        resetAttributes();
+        this.products = new ArrayList<>();
         if (endIndex >= 0) {
             fireIntervalRemoved(0, endIndex);
         }
@@ -263,17 +246,19 @@ public abstract class OutputProductListModel {
             int startIndex = pendingLocalProducts.length - 1;
             int endIndex = 0;
             for (int i=0; i<pendingLocalProducts.length; i++) {
-                LocalProgressStatus openProgressStatus = this.localProductsMap.get(pendingLocalProducts[i]);
+                LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
                 if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailDeleted()) {
                     productsToProcess.add(pendingLocalProducts[i]);
                     int index = findProductIndex(pendingLocalProducts[i]);
-                    if (startIndex > index) {
-                        startIndex = index;
+                    if (index >= 0) {
+                        if (startIndex > index) {
+                            startIndex = index;
+                        }
+                        if (endIndex < index) {
+                            endIndex = index;
+                        }
+                        getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
                     }
-                    if (endIndex < index) {
-                        endIndex = index;
-                    }
-                    this.localProductsMap.put(pendingLocalProducts[i], new LocalProgressStatus(status));
                 }
             }
             if (productsToProcess.size() > 0) {
@@ -289,14 +274,7 @@ public abstract class OutputProductListModel {
                 return i;
             }
         }
-        throw new IllegalArgumentException("The repository product '"+repositoryProductToFind.getName()+"' does not exist into the list.");
-    }
-
-    private void resetAttributes() {
-        this.downloadingProductsProgressValue = new HashMap<>();
-        this.scaledQuickLookImages = new HashMap<>();
-        this.localProductsMap = new HashMap<>();
-        this.products = new ArrayList<>();
+        return -1;
     }
 }
 

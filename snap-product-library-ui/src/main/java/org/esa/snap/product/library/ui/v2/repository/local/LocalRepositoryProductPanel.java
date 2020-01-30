@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.ImageIcon;
