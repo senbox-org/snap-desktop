@@ -185,10 +185,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
 
-//            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+            ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
         }
 
@@ -431,11 +430,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private void resetToDefaults() {
         if (getFormModel().isValid()) {
-//            getFormModel().getProductSceneView().setToDefaultColor(getColorPalettesDir().toFile(), createDefaultImageInfo());
-
             PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
+            ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
@@ -730,7 +727,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-//                resourceInstaller.install(".*.xml", ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
@@ -757,11 +753,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
 
     private Path getColorPalettesDir() {
-        return ColorSchemeDefaults.getDirNameColorPalettes();
+        return ColorSchemeUtils.getDirNameColorPalettes();
     }
 
     private Path getColorSchemesDir() {
-        return ColorSchemeDefaults.getDirNameColorSchemes();
+        return ColorSchemeUtils.getDirNameColorSchemes();
     }
 
 

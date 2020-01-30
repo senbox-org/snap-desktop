@@ -49,7 +49,20 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
@@ -96,8 +109,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -114,17 +125,7 @@ import java.util.Vector;
  * dataset.
  *
  * @author Norman Fomferra
- * @author Daniel Knowles (NASA)
- * @author Bing Yang (NASA)
- * @version $Revision$ $Date$
  */
-// NOV 2019 - Knowles / Yang
-//          - Added method setToDefaultColorScheme used in color scheme logic which enables setting of the parameters
-//          - based on the band name or desired color scheme.
-// DEC 2019 - Knowles / Yang
-//          - An empty min or empty max field within the schemes text will result in use of statistical min/max
-
-
 public class ProductSceneView extends BasicView
         implements FigureEditorAware, ProductNodeView, PropertyChangeListener, ProductLayerContext, ViewportAware {
 
@@ -200,8 +201,6 @@ public class ProductSceneView extends BasicView
     private LayerCanvasMouseHandler layerCanvasMouseHandler;
     private RasterChangeHandler rasterChangeHandler;
     private boolean scrollBarsShown;
-
-    public ColorPaletteInfo colorPaletteInfo = null;
 
     private AdjustableViewScrollPane scrollPane;
     private UndoContext undoContext;
@@ -279,8 +278,6 @@ public class ProductSceneView extends BasicView
         sceneImage.getConfiguration().addPropertyChangeListener(this);
 
         addDefaultLayers(sceneImage);
-
-//        standardColorPaletteSchemes = new ColorSchemeDefaults(parentForm.getIODir().toFile(), getSceneImage().getConfiguration());
     }
 
     private void addDefaultLayers(final ProductSceneImage sceneImage) {
@@ -371,7 +368,7 @@ public class ProductSceneView extends BasicView
 
     /**
      * The coordinate reference system (CRS) used by all the layers in this context.
-     * May be used by a {@link LayerType} in order to decide whether
+     * May be used by a {@link com.bc.ceres.glayer.LayerType} in order to decide whether
      * the source can provide a new layer instance for this context.
      *
      * @return The CRS. May be {@code null}.
@@ -538,6 +535,7 @@ public class ProductSceneView extends BasicView
      * Gets the product raster of a single banded view.
      *
      * @return the product raster, in case of a 3-banded RGB view it returns the first raster.
+     *
      * @see #isRGB()
      */
     public RasterDataNode getRaster() {
@@ -1475,7 +1473,7 @@ public class ProductSceneView extends BasicView
 
         @Override
         public Rank getRank() {
-            return Rank.NOT_SPECIFIED;
+            return Figure.Rank.NOT_SPECIFIED;
         }
 
         @Override
@@ -1692,12 +1690,4 @@ public class ProductSceneView extends BasicView
     }
 
 
-
-    public ColorPaletteInfo getColorPaletteInfo() {
-        return colorPaletteInfo;
-    }
-
-    public void setColorPaletteInfo(ColorPaletteInfo colorPaletteInfo) {
-        this.colorPaletteInfo = colorPaletteInfo;
-    }
 }

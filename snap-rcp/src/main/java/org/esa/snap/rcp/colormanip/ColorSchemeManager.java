@@ -64,7 +64,7 @@ public class ColorSchemeManager {
     public void init() {
 
         if (!initialized) {
-            Path getColorSchemesAuxDir = ColorSchemeDefaults.getDirNameColorSchemes();
+            Path getColorSchemesAuxDir = ColorSchemeUtils.getDirNameColorSchemes();
             if (getColorSchemesAuxDir != null) {
                 this.colorSchemesAuxDir = getColorSchemesAuxDir.toFile();
                 if (!colorSchemesAuxDir.exists()) {
@@ -74,7 +74,7 @@ public class ColorSchemeManager {
                 return;
             }
 
-            Path getColorPalettesAuxDir = ColorSchemeDefaults.getDirNameColorPalettes();
+            Path getColorPalettesAuxDir = ColorSchemeUtils.getDirNameColorPalettes();
             if (getColorPalettesAuxDir != null) {
                 this.colorPaletteAuxDir = getColorPalettesAuxDir.toFile();
                 if (!colorPaletteAuxDir.exists()) {
@@ -85,19 +85,19 @@ public class ColorSchemeManager {
             }
 
             colorSchemesFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEMES_FILENAME);
-                colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);
+            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);
 
-                if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
-                    initColorSchemeInfos();
+            if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
+                initColorSchemeInfos();
 
 
-                    initComboBox();
-                    initColorSchemeLut();
+                initComboBox();
+                initColorSchemeLut();
 
-                    reset();
-                }
+                reset();
+            }
 
-                initialized = true;
+            initialized = true;
 
         }
     }
@@ -209,26 +209,14 @@ public class ColorSchemeManager {
 
                     boolean overRide = false;
 
-                    //        ID    MIN   MAX     LOG_SCALE  CPD_FILENAME   CPD_FILENAME(COLORBLIND)  COLORBAR_TITLE    COLORBAR_LABELS     DESCRIPTION
-
                     id = schemeElement.getAttribute("name");
-
-
-
                     description = getTextValue(schemeElement, "DESCRIPTION");
-
                     colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
-
                     colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
-
                     String minStr = getTextValue(schemeElement, "MIN");
-
                     String maxStr = getTextValue(schemeElement, "MAX");
-
                     String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
-
                     cpdFileNameStandard = getTextValue(schemeElement, "CPD_FILENAME");
-
                     cpdFileNameColorBlind = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
 
 
@@ -325,7 +313,6 @@ public class ColorSchemeManager {
 
     private void initColorSchemeLut() {
 
-//        ArrayList<String> lines = readFileIntoArrayList(colorSchemeLutFile);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document dom = null;
 
@@ -385,7 +372,7 @@ public class ColorSchemeManager {
                         for (ColorPaletteInfo storedColorPaletteInfo : colorSchemeInfos) {
                             if (storedColorPaletteInfo.getName().equals(desiredScheme)) {
                                 if (!fieldsInitialized ||
-                                            (fieldsInitialized && overRide)) {
+                                        (fieldsInitialized && overRide)) {
 
                                     cpdFileNameStandard = storedColorPaletteInfo.getCpdFilenameStandard();
                                     minVal = storedColorPaletteInfo.getMinValue();

@@ -2,10 +2,12 @@ package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 
@@ -14,7 +16,7 @@ public class ColorSchemeUtils {
     /**
      * Top level method which will set the desired color palette, range and log scaling within the imageInfo
      * of the given productSceneView.
-     *
+     * <p>
      * This is called by either the reset button within the ColorManipulation GUI or when a new View
      * Window is opened for a band.
      *
@@ -22,41 +24,30 @@ public class ColorSchemeUtils {
      * @param productSceneView
      */
 
-    public static void setToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+    public static void setImageInfoToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         boolean imageInfoSet = false;
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
         if (ColorSchemeDefaults.isPropertySchemeAutoApply(configuration)) {
-            ColorPaletteInfo matchingColorPaletteInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
+            ColorPaletteInfo colorPaletteInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
 
-            if (matchingColorPaletteInfo != null) {
-                imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(matchingColorPaletteInfo, productSceneView);
+            if (colorPaletteInfo != null) {
+                imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorPaletteInfo, productSceneView);
+
+                if (imageInfoSet) {
+                    colorPaletteSchemes.setSelected(colorPaletteInfo);
+                }
             }
+        }
 
-            if (imageInfoSet) {
-                colorPaletteSchemes.setSelected(matchingColorPaletteInfo);
-            } else {
-                colorPaletteSchemes.reset();
-                setImageInfoToGeneralColor(configuration, defaultImageInfo, productSceneView);
-            }
-
-        } else {
+        if (!imageInfoSet) {
             colorPaletteSchemes.reset();
-
             setImageInfoToGeneralColor(configuration, defaultImageInfo, productSceneView);
-            productSceneView.setColorPaletteInfo(null);
         }
 
     }
-
-
-
-
-
-
-
 
 
     public static boolean isRangeFromDataNonScheme(PropertyMap configuration) {
@@ -124,7 +115,7 @@ public class ColorSchemeUtils {
             }
         }
 
-        File auxDir = ColorSchemeDefaults.getDirNameColorPalettes().toFile();
+        File auxDir = ColorSchemeUtils.getDirNameColorPalettes().toFile();
 
         if (filename != null) {
             File defaultCpd = new File(auxDir, filename);
@@ -136,8 +127,6 @@ public class ColorSchemeUtils {
 
         return null;
     }
-
-
 
 
     public static void setImageInfoToGeneralColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
@@ -193,9 +182,6 @@ public class ColorSchemeUtils {
         return;
 
     }
-
-
-
 
 
     public static ColorPaletteInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
@@ -254,18 +240,44 @@ public class ColorSchemeUtils {
     }
 
 
-    public static boolean setImageInfoToColorScheme(ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
+    public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorPaletteInfo colorPaletteInfo, ColorPaletteDef colorPaletteDef) {
+        boolean logScaled = false;
 
-        PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
-
-        if (colorPaletteInfo == null) {
-            return false;
+        String schemeLogScaling = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
+        if (schemeLogScaling != null) {
+            switch (schemeLogScaling) {
+                case ColorSchemeDefaults.OPTION_LOG_TRUE:
+                    logScaled = true;
+                    break;
+                case ColorSchemeDefaults.OPTION_LOG_FALSE:
+                    logScaled = false;
+                    break;
+                case ColorSchemeDefaults.OPTION_LOG_FROM_CPD:
+                    if (colorPaletteDef != null) {
+                        logScaled = colorPaletteDef.isLogScaled();
+                    }
+                    break;
+                case ColorSchemeDefaults.OPTION_LOG_FROM_SCHEME:
+                    logScaled = colorPaletteInfo.isLogScaled();
+                    break;
+                default:
+                    logScaled = false;
+            }
         }
 
+        return logScaled;
+    }
+
+
+
+    public static String getCdpFileNameFromSchemeSelection(PropertyMap configuration, ColorPaletteInfo colorPaletteInfo) {
         String cpdFileName = null;
 
-        String schemeCpd = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
-        switch (schemeCpd) {
+        String schemeCpdOption = configuration.getPropertyString(
+                ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY,
+                ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
+
+        switch (schemeCpdOption) {
             case ColorSchemeDefaults.OPTION_COLOR_STANDARD_SCHEME:
                 cpdFileName = colorPaletteInfo.getCpdFilename(false);
                 break;
@@ -273,24 +285,47 @@ public class ColorSchemeUtils {
                 cpdFileName = colorPaletteInfo.getCpdFilename(true);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_GRAY_SCALE:
-                cpdFileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, null);
+                cpdFileName = configuration.getPropertyString(
+                        ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
+                        ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_STANDARD:
-                cpdFileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, null);
+                cpdFileName = configuration.getPropertyString(
+                        ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY,
+                        ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_UNIVERSAL:
-                cpdFileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY, null);
+                cpdFileName = configuration.getPropertyString(
+                        ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
+                        ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
                 break;
             case ColorSchemeDefaults.OPTION_COLOR_ANOMALIES:
-                cpdFileName = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, null);
+                cpdFileName = configuration.getPropertyString(
+                        ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
+                        ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
                 break;
             default:
                 break;
         }
 
+        return cpdFileName;
+    }
+
+
+    public static boolean setImageInfoToColorScheme(ColorPaletteInfo colorPaletteInfo, ProductSceneView productSceneView) {
+
+        if (colorPaletteInfo == null || productSceneView == null) {
+            return false;
+        }
+
+        PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
+
+        String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorPaletteInfo);
+
+
         ColorPaletteDef colorPaletteDef = null;
 
-        File auxDir = ColorSchemeDefaults.getDirNameColorPalettes().toFile();
+        File auxDir = ColorSchemeUtils.getDirNameColorPalettes().toFile();
 
         if (cpdFileName != null) {
             File cpdFile = new File(auxDir, cpdFileName);
@@ -336,29 +371,7 @@ public class ColorSchemeUtils {
         }
 
 
-        boolean logScaled = false;
-
-        String schemeLogScaling = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
-        if (schemeLogScaling != null) {
-            switch (schemeLogScaling) {
-                case ColorSchemeDefaults.OPTION_LOG_TRUE:
-                    logScaled = true;
-                    break;
-                case ColorSchemeDefaults.OPTION_LOG_FALSE:
-                    logScaled = false;
-                    break;
-                case ColorSchemeDefaults.OPTION_LOG_FROM_CPD:
-                    if (colorPaletteDef != null) {
-                        logScaled = colorPaletteDef.isLogScaled();
-                    }
-                    break;
-                case ColorSchemeDefaults.OPTION_LOG_FROM_SCHEME:
-                    logScaled = colorPaletteInfo.isLogScaled();
-                    break;
-                default:
-                    logScaled = false;
-            }
-        }
+        boolean logScaled = getLogScaledFromScheme(configuration, colorPaletteInfo, colorPaletteDef);
 
 
         if (colorPaletteDef != null) {
@@ -370,7 +383,6 @@ public class ColorSchemeUtils {
                     logScaled);
             productSceneView.getImageInfo().setLogScaled(logScaled);
 
-            productSceneView.setColorPaletteInfo(colorPaletteInfo);
             return true;
 
         }
@@ -379,8 +391,13 @@ public class ColorSchemeUtils {
     }
 
 
+    public static Path getDirNameColorPalettes() {
+        return SystemUtils.getAuxDataPath().resolve(ColorSchemeDefaults.DIR_NAME_COLOR_PALETTES);
+    }
 
-
+    public static Path getDirNameColorSchemes() {
+        return SystemUtils.getAuxDataPath().resolve(ColorSchemeDefaults.DIR_NAME_COLOR_SCHEMES);
+    }
 
 
 }
