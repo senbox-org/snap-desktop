@@ -39,7 +39,7 @@ import java.io.InputStream;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Tools",position = 310, separatorBefore = 300),
-        @ActionReference(path = "Toolbars/Processing", position = 10)
+      //  @ActionReference(path = "Toolbars/Processing", position = 10)
 })
 @NbBundle.Messages({
         "CTL_GraphBuilderAction_MenuText=GraphBuilder",

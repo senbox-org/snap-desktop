@@ -31,18 +31,18 @@ import java.awt.event.ActionEvent;
         id = "GraphEditorAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_GraphBuilderAction_MenuText",
-        popupText = "#CTL_GraphBuilderAction_MenuText",
-        iconBase = "org/esa/snap/graphbuilder/icons/graph.png",
+        displayName = "#CTL_GraphEditorAction_MenuText",
+        popupText = "#CTL_GraphEditorAction_MenuText",
+        iconBase = "org/esa/snap/grapheditor/icons/graph.png",
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Tools",position = 310, separatorBefore = 300),
+        @ActionReference(path = "Menu/Tools",position = 311, separatorBefore = 300),
         @ActionReference(path = "Toolbars/Processing", position = 10)
 })
 @NbBundle.Messages({
-        "CTL_GraphBuilderAction_MenuText=GraphEditor",
-        "CTL_GraphBuilderAction_ShortDescription=Create a custom processing graph"
+        "CTL_GraphEditorAction_MenuText=GraphEditor",
+        "CTL_GraphEditorAction_ShortDescription=Create a custom processing graph"
 })
 public class OpenGraphEditorAction extends AbstractAction {
 
@@ -52,8 +52,6 @@ public class OpenGraphEditorAction extends AbstractAction {
 
     public void actionPerformed(ActionEvent event) {
         final GraphBuilderDialog dialog = new GraphBuilderDialog(SnapApp.getDefault().getAppContext(), "Graph Builder", "graph_builder");
-        //dialog.getJDialog().setIconImage(IconUtils.esaPlanetIcon.getImage());
         dialog.show();
-
     }
 }
