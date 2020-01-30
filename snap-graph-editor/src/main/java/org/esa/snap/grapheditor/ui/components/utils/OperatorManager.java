@@ -112,6 +112,22 @@ public class OperatorManager {
             return hasOutputProduct;
         }
 
+        public String getOutputDescription() {
+            if (hasOutput())
+                return descriptor.getDescription(); // TODO or get label??
+            return "";
+        }
+
+        public String getInputDescription(int index) {
+            if (hasInputs()) {
+                if (index <  descriptor.getSourceProductDescriptors().length) {
+                    return descriptor.getSourceProductDescriptors()[index].getDescription(); // TODO or label?
+                } else if (descriptor.getSourceProductsDescriptor() != null) {
+                    return descriptor.getSourceProductsDescriptor().getDescription();
+                }
+            }
+            return "";
+        }
     
     }
 

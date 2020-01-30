@@ -90,6 +90,7 @@ public class GraphPanel extends JPanel
 
         drawGrid(g2);
         drawNodes(g2);
+        drawTooltip(g2);
         this.addNodeWidget.paint(getWidth(), getHeight(), g2);
     }
 
@@ -108,6 +109,14 @@ public class GraphPanel extends JPanel
         Graphics2D gNode = (Graphics2D) g.create();
         for (NodeGui node : nodes) {
             node.paintNode(gNode);
+        }
+        gNode.dispose();
+    }
+
+    private void drawTooltip(Graphics2D g) {
+        Graphics2D gNode = (Graphics2D) g.create();
+        for (NodeGui node : nodes) {
+            node.tooltip(gNode);
         }
         gNode.dispose();
     }
@@ -214,7 +223,7 @@ public class GraphPanel extends JPanel
         }
         for (NodeGui node : nodes) {
             if (node.contains(lastMousePosition)) {
-                node.over();
+                node.over(lastMousePosition);
             } else {
                 node.none();
             }

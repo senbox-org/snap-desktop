@@ -51,7 +51,7 @@ public class GraphBuilder extends JPanel {
             e.printStackTrace();
         }
 
-        AppContext context = new DefaultAppContext("Standalone Graph Builder");
+        AppContext context = new DefaultAppContext("Standalone Graph Editor");
         GraphBuilder builder = new GraphBuilder(context);
         JFrame mainFrame = new JFrame();
         
