@@ -80,7 +80,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
 
-
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
@@ -115,7 +114,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
 
 /**
  * The class {@code ProductSceneView} is a high-level image display component for color index/RGB images created
@@ -284,8 +282,8 @@ public class ProductSceneView extends BasicView
         final Layer rootLayer = sceneImage.getRootLayer();
 
         final Set<LayerType> layerTypes = LayerTypeRegistry.getLayerTypes();
-        for (LayerType layerType : layerTypes) {
-            if (layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
+        for(LayerType layerType : layerTypes) {
+            if(layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
                 PropertyContainer config = new PropertyContainer();
                 config.addProperty(Property.create("raster", getRaster()));
                 Layer layer = layerType.createLayer(sceneImage, config);
@@ -1141,7 +1139,7 @@ public class ProductSceneView extends BasicView
                     width,
                     height,
                     expression);
-            if (products == null || products.length == 0) {
+            if(products == null || products.length == 0) {
                 deriveRasterPropertiesFromExpression(expression, product);
             } else {
                 deriveRasterPropertiesFromExpression(expression, products);
@@ -1688,6 +1686,5 @@ public class ProductSceneView extends BasicView
             }
         }
     }
-
 
 }
