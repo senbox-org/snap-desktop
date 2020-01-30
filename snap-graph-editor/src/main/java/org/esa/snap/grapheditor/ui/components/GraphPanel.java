@@ -20,6 +20,7 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import org.esa.snap.grapheditor.ui.components.graph.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
@@ -43,8 +44,7 @@ public class GraphPanel extends JPanel
 
     private ArrayList<NodeGui> nodes = new ArrayList<>();
     private NodeGui selectedNode = null;
-    private NodeGui activeNode = null;
-    private Point activeNodeRelPosition = new Point(0, 0);
+    private NodeDragAction dragAction = null;
 
     private OperatorManager operatorManager = new OperatorManager();
 
@@ -91,6 +91,7 @@ public class GraphPanel extends JPanel
         drawGrid(g2);
         drawNodes(g2);
         drawTooltip(g2);
+        drawDrag(g2);
         this.addNodeWidget.paint(getWidth(), getHeight(), g2);
     }
 
@@ -111,6 +112,12 @@ public class GraphPanel extends JPanel
             node.paintNode(gNode);
         }
         gNode.dispose();
+    }
+
+    private void drawDrag(Graphics2D g) {
+        if (dragAction != null) {
+            dragAction.draw(g);
+        }
     }
 
     private void drawTooltip(Graphics2D g) {
@@ -204,10 +211,20 @@ public class GraphPanel extends JPanel
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (activeNode != null) {
-            int x = e.getX() - activeNodeRelPosition.x;
-            int y = e.getY() - activeNodeRelPosition.y;
-            moveNode(activeNode, x, y);
+        if (dragAction != null) {
+            dragAction.move(e.getPoint());
+            if (dragAction.getType() == NodeDragAction.Type.DRAG) {
+                for (GraphListener listener : graphListeners) {
+                    listener.updated(dragAction.getSource());
+                }
+            }
+            for (NodeGui node : nodes) {
+                if (node != dragAction.getSource() && node.contains(e.getPoint())) {
+                    node.over(e.getPoint());
+                } else if (node != dragAction.getSource()) {
+                    node.none();
+                }
+            }
             repaint();
         }
     }
@@ -272,9 +289,9 @@ public class GraphPanel extends JPanel
                 NodeGui node = addNodeWidget.click(e.getPoint());
                 if (node != null) {
                     addNode(node);
-                    activeNode = node;
-                    activeNodeRelPosition = new Point(10, 10);
                     moveNode(node, e.getX() - 10, e.getY() - 10);
+
+                    dragAction = node.drag(e.getPoint());
                     repaint();
                     return;
                 }
@@ -282,25 +299,29 @@ public class GraphPanel extends JPanel
             Point p = e.getPoint();
             for (NodeGui node : nodes) {
                 if (node.contains(p)) {
-                    activeNode = node;
-                    activeNodeRelPosition = new Point(p.x - node.getX(), p.y - node.getY());
+                    dragAction = node.drag(e.getPoint());
                     return;
                 }
             }
         } else {
-            activeNode = null;
+            dragAction = null;
+        }
+    }
+
+    private void endDrag() {
+        if (dragAction != null) {
+            if (dragAction.getType() == NodeDragAction.Type.DRAG) {
+                Point p = GridUtils.normalize(dragAction.getSource().getPostion());
+                moveNode(dragAction.getSource(), p.x, p.y);
+            }
+            dragAction = null;
+            repaint();
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (activeNode != null) {
-            Point p = GridUtils.normalize(activeNode.getPostion());
-            moveNode(activeNode, p.x, p.y);
-
-            activeNode = null;
-            repaint();
-        }
+        endDrag();
     }
 
     @Override
@@ -310,12 +331,7 @@ public class GraphPanel extends JPanel
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (activeNode != null) {
-            activeNode.setPosition(GridUtils.normalize(activeNode.getPostion()));
-            activeNode.none();
-            activeNode = null;
-            repaint();
-        }
+        // Nothing to do...
     }
 
     @Override

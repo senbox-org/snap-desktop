@@ -35,10 +35,11 @@ public class NodeGui {
     private static final Color activeColor = new Color(254, 223, 176, 180);
 
     private static final Color tooltipBackground = new Color(0, 0, 0, 180);
-    private static final Color tooltipBorder = Color.black;
+    private static final Color tooltipBorder = Color.white;
     private static final Color tooltipColor = Color.lightGray;
 
     static final private BasicStroke borderStroke = new BasicStroke(3);
+    static final private BasicStroke tooltipStroke = new BasicStroke(1.5f);
     static final private BasicStroke textStroke = new BasicStroke(1);
     static final private BasicStroke activeStroke = new BasicStroke(6);
 
@@ -180,7 +181,7 @@ public class NodeGui {
             }
             g.setColor(tooltipBackground);
             g.fillRoundRect(tx, ty, tooltipW, tooltipH, 8, 8);
-            g.setStroke(borderStroke);
+            g.setStroke(tooltipStroke);
             g.setColor(tooltipBorder);
             g.drawRoundRect(tx, ty, tooltipW, tooltipH, 8, 8);
             g.setStroke(textStroke);
@@ -217,10 +218,10 @@ public class NodeGui {
             int xc = x + width - connectionHalfSize;
             int yc = y + connectionOffset - connectionHalfSize;
             g.setColor(Color.white);
-            g.fillOval(xc, yc, connectionSize, connectionSize);
+            g.fillRect(xc, yc, connectionSize, connectionSize);
             g.setStroke(borderStroke);
             g.setColor(borderColor());
-            g.drawOval(xc, yc, connectionSize, connectionSize);
+            g.drawRect(xc, yc, connectionSize, connectionSize);
         }        
     }
 
@@ -269,6 +270,29 @@ public class NodeGui {
         return name;
     }
 
+    private int getInputIndex(Point p) {
+        int dx = p.x - x;
+        int dy = p.y - y;
+        if (Math.abs(dx) <= connectionHalfSize && dy > 0) {
+            int iy = Math.round((float) dy / connectionOffset);
+            if (iy - 1 < numInputs()) {
+                int cy = iy * connectionOffset;
+                if (Math.abs(dy - cy) <= connectionHalfSize) {
+                    return iy - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private boolean isOverInput(Point p) {
+        int dx = p.x - x;
+        int dy = p.y - y;
+        return (metadata.hasOutput()
+                && Math.abs(dx - width) <= connectionHalfSize
+                && Math.abs(dy - connectionOffset) <= connectionHalfSize);
+    }
+
     public boolean contains(Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
@@ -276,32 +300,21 @@ public class NodeGui {
         if (inside)
             return true;
         // check if is over a connection input
-        if (Math.abs(dx) <= connectionHalfSize && dy > 0) {
-            for (int i = 0; i < numInputs(); i++) {
-                int cy = connectionOffset * (i+1);
-                if (Math.abs(dy - cy) <= connectionHalfSize) {
-                    return true;
-                }
-            }
-        }
+        if (getInputIndex(p) >= 0) return true;
         // check if is over a connection output
-        return (metadata.hasOutput() &&  Math.abs(dx - width) <= connectionHalfSize && Math.abs(dy - connectionOffset) <= connectionHalfSize);
+        return isOverInput(p);
     }
 
     public void over(Point p) {
         if ((status & STATUS_MASK_OVER) == 0) 
             status += STATUS_MASK_OVER;
-        int dx = p.x - x;
-        int dy = p.y - y;
-        if (Math.abs(dx) <= connectionHalfSize) {
-            for (int i = 0; i < numInputs(); i++) {
-                int cy = connectionOffset * (i+1);
-                if (Math.abs(dy - cy) <= connectionHalfSize) {
-                    show_tooltip(i);
-                    return;
-                }
-            }
-        } else if (metadata.hasOutput() && Math.abs(dx - width) <= connectionHalfSize && Math.abs(dy - connectionOffset) <= connectionHalfSize) {
+
+        int iy = getInputIndex(p);
+        if (iy >= 0) {
+            show_tooltip(iy);
+            return;
+        }
+        if (isOverInput(p)) {
             show_tooltip(TOOLTIP_OUTPUT);
             return;
         }
@@ -322,6 +335,17 @@ public class NodeGui {
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0) 
             status -= STATUS_MASK_SELECTED; 
+    }
+
+    public NodeDragAction drag(Point p) {
+        int iy = getInputIndex(p);
+        if (iy >= 0) {
+            return new NodeDragAction(new Connection(this, iy, p));
+        }
+        if (isOverInput(p)) {
+            return new NodeDragAction(new Connection(this, p));
+        }
+        return new NodeDragAction(this,  p);
     }
 
     private void hide_tooltip() {
@@ -360,5 +384,12 @@ public class NodeGui {
         return preferencePanel;
     }
 
+    public Point getInputPosition(int index) {
+        return new Point(x, y + connectionOffset * (index + 1));
+    }
+
+    public Point getOutputPosition() {
+        return new Point(x + width, y + connectionOffset);
+    }
 
 }
