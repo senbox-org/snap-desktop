@@ -37,7 +37,7 @@ import java.awt.*;
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
  *
- * @author Daniel Knowles
+ * @author Daniel Knowles (NASA)
  */
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_ColorManipulation=" + ColorSchemeDefaults.TOOLNAME_COLOR_MANIPULATION,
@@ -81,27 +81,19 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
-
-
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_KEY, true);
-
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
-
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
-
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY, true);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
-
-
-
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
 
         restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 

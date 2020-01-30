@@ -1,7 +1,6 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ColorSchemeDefaults;
 import org.esa.snap.core.util.SystemUtils;
 
 import java.io.File;
@@ -49,10 +48,6 @@ class ColorPaletteManager {
             }
         }
     }
-
-
-
-
 
     public List<ColorPaletteDef> getColorPaletteDefList() {
         return Collections.unmodifiableList(cpdList);

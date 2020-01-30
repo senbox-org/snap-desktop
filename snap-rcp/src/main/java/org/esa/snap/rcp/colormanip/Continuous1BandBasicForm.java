@@ -60,6 +60,9 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RA
 // DEC 2019 - Knowles / Yang
 //          - Added capability to load scheme with data range values
 //          - An empty min or empty max field within the schemes text will result in use of statistical min/max
+// JAN 2020 - Knowles
+//          - Added notification to user in the GUI when a scheme has been used in a non-nominal state (if the preferences altered)
+//          - Implemented ColorSchemeManager
 
 
 public class Continuous1BandBasicForm implements ColorManipulationChildForm {
@@ -121,9 +124,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
-
-//        loadPaletteOnlyCheckBox = new JCheckBox("Load with data range", false);
-//        loadPaletteOnlyCheckBox.setToolTipText("Load scheme with data range");
 
         paletteInversionButton = new JButton("Reverse");
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
@@ -317,26 +317,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
         String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);
-//        if (!schemeLogScaling.equals(PROPERTY_SCHEME_LOG_DEFAULT) ||
-//                !schemeRange.equals(PROPERTY_SCHEME_RANGE_DEFAULT) ||
-//                !schemeCpd.equals(PROPERTY_SCHEME_CPD_DEFAULT)
-//        ) {
-//            schemeInfoLabel.setText("<html>Scheme behavior:<br> " +
-//                    "Log = " + schemeLogScaling + "<br>" +
-//                    "Range = " + schemeRange + "<br>" +
-//                    "Cpd = " + schemeCpd +
-//                    "</html>");
-//            schemeInfoLabel.setVisible(true);
-//        } else {
-//            schemeInfoLabel.setText("");
-//            schemeInfoLabel.setVisible(true);
-//        }
-//
-//        schemeInfoLabel.setText("<html>*Modified scheme behavior:<br> " +
-//                "Log = " + schemeLogScaling + "<br>" +
-//                "Range = " + schemeRange + "<br>" +
-//                "Cpd = " + schemeCpd +
-//                "</html>");
+
 
         schemeInfoLabel.setText("<html>*Modified scheme");
         schemeInfoLabel.setToolTipText("Not using exact scheme default: see preferences");
@@ -357,25 +338,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel.setVisible(visible);
 
 
-
-
-//        boolean origValue =  standardColorPaletteSchemes.isjComboBoxShouldFire();
-//        standardColorPaletteSchemes.setjComboBoxShouldFire(false);
-//
-//        if (parentForm.getFormModel().getProductSceneView().colorPaletteInfo != null) {
-//            System.out.println("Test");
-//            System.out.println(parentForm.getFormModel().getProductSceneView().colorPaletteInfo.getName());
-//            standardColorPaletteSchemes.getjComboBox().setSelectedItem(parentForm.getFormModel().getProductSceneView().colorPaletteInfo);
-//            int index = standardColorPaletteSchemes.getjComboBox().getSelectedIndex();
-//            System.out.println("index=" + index);
-//        } else {
-//            standardColorPaletteSchemes.reset();
-//        }
-//        standardColorPaletteSchemes.setjComboBoxShouldFire(origValue);
-
-
-
-
         parentForm.revalidateToolViewPaneControl();
 
         if (!minFieldActivated[0]) {
@@ -387,10 +349,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             maxField.setValue(cpd.getMaxDisplaySample());
             currentMaxFieldValue = maxField.getText().toString();
         }
-
-//        if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
-//            standardColorPaletteSchemes.reset();
-//        }
 
         shouldFireChooserEvent = true;
     }
@@ -580,9 +538,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         jPanel.add(ColorSchemeManager.getDefault().getjComboBox(), gbc);
-//
-//        gbc.gridy++;
-//        jPanel.add(loadPaletteOnlyCheckBox, gbc);
 
         gbc.gridy++;
         jPanel.add(schemeInfoLabel, gbc);
@@ -672,7 +627,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
         ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
-
 
 //        parentForm.getFormModel().getProductSceneView().setImageInfoToColorScheme(auxDir, colorSchemeInfo);
 

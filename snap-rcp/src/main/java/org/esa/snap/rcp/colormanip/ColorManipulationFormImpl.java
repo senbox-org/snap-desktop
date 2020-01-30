@@ -65,7 +65,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-
 /**
  * The GUI for the colour manipulation tool window.
  *
@@ -78,7 +77,13 @@ import java.util.concurrent.Executors;
 //          - Added color scheme logic which enables setting of the parameters based on the band name or desired color scheme.
 // DEC 2019 - Knowles / Yang
 //          - Added capability to export color palette in cpt and pal formats.
+// JAN 2020 - Yang
+//          - Fixed cpd import button
+// JAN 2020 - Knowles
+//          - Added installers for the xml files in the color_schemes auxdata directory
+//          - Minor color scheme revisions
 
+    
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })

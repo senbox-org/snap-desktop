@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+/**
+ * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
+ *
+ * @author Daniel Knowles (NASA)
+ */
 
 public class ColorSchemeUtils {
 
