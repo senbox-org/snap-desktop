@@ -84,4 +84,9 @@ public class Connection {
 
         g.dispose();
     }
+
+    public boolean connect(NodeGui node) {
+
+        return false;
+    }
 }

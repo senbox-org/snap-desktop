@@ -313,6 +313,13 @@ public class GraphPanel extends JPanel
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
                 Point p = GridUtils.normalize(dragAction.getSource().getPostion());
                 moveNode(dragAction.getSource(), p.x, p.y);
+            } else {
+                for (NodeGui node: nodes) {
+                    if (node != dragAction.getSource() && node.hasTooltip()) {
+                        // means is over a connection point
+                        dragAction.getConnection().connect(node);
+                    }
+                }
             }
             dragAction = null;
             repaint();

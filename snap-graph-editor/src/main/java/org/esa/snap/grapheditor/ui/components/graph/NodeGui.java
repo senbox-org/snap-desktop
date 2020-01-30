@@ -392,4 +392,7 @@ public class NodeGui {
         return new Point(x + width, y + connectionOffset);
     }
 
+    public boolean hasTooltip() {
+        return tooltipVisible_;
+    }
 }
