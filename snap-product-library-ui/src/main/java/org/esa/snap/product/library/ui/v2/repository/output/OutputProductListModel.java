@@ -247,7 +247,7 @@ public abstract class OutputProductListModel {
             int endIndex = 0;
             for (int i=0; i<pendingLocalProducts.length; i++) {
                 LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
-                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailDeleted()) {
+                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailOpenedBecauseNoProductReader() || openProgressStatus.isFailDeleted()) {
                     productsToProcess.add(pendingLocalProducts[i]);
                     int index = findProductIndex(pendingLocalProducts[i]);
                     if (index >= 0) {

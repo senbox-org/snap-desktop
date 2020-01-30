@@ -41,6 +41,9 @@ public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel 
             } else if (localProgressStatus.isFailOpened()) {
                 openText = "Failed open";
                 foregroundColor = Color.RED;
+            } else if (localProgressStatus.isFailOpenedBecauseNoProductReader()) {
+                openText = "Failed open because no product reader found";
+                foregroundColor = Color.RED;
             } else if (localProgressStatus.isOpened()) {
                 openText = "Opened";
                 foregroundColor = Color.GREEN;

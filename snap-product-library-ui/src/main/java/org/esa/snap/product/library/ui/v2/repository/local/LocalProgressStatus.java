@@ -13,6 +13,7 @@ public class LocalProgressStatus {
     public static final byte DELETING = 6;
     public static final byte DELETED = 7;
     public static final byte FAIL_DELETED = 8;
+    public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 9;
 
     private byte status;
 
@@ -34,6 +35,10 @@ public class LocalProgressStatus {
 
     public boolean isFailOpened() {
         return (this.status == FAIL_OPENED);
+    }
+
+    public boolean isFailOpenedBecauseNoProductReader() {
+        return (this.status == FAIL_OPENED_MISSING_PRODUCT_READER);
     }
 
     public void setStatus(byte status) {

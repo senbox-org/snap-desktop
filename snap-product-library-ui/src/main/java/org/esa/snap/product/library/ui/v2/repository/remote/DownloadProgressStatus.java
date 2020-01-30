@@ -19,6 +19,7 @@ public class DownloadProgressStatus {
     public static final byte OPENING = 8;
     public static final byte OPENED = 9;
     public static final byte FAIL_OPENED = 10;
+    public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 11;
 
     private short value;
     private byte status;
@@ -88,6 +89,10 @@ public class DownloadProgressStatus {
 
     public boolean isFailedOpen() {
         return (this.status == FAIL_OPENED);
+    }
+
+    public boolean isFailOpenedBecauseNoProductReader() {
+        return (this.status == FAIL_OPENED_MISSING_PRODUCT_READER);
     }
 
     public boolean isNotAvailable() {

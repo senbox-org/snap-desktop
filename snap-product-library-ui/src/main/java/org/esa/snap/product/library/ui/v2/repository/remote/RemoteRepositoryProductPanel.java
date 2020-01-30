@@ -53,6 +53,9 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
             } else if (progressPercent.isFailedOpen()) {
                 percentText = "Downloaded (failed open)";
                 foregroundColor = Color.GREEN;
+            } else if (progressPercent.isFailOpenedBecauseNoProductReader()) {
+                percentText = "Downloaded (failed open because no product reader found)";
+                foregroundColor = Color.GREEN;
             } else if (progressPercent.isPendingOpen()) {
                 percentText = "Downloaded (pending open)";
                 foregroundColor = Color.GREEN;

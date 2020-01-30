@@ -1,11 +1,13 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,12 +30,22 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
             try {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.OPENING);
 
-                Product product = ProductIO.readProduct(repositoryProduct.getURL());
-                if (product == null) {
-                    updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED);
+                File productFile = new File(repositoryProduct.getURL());
+                ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
+                if (productReader == null) {
+                    // no product reader found in the application
+                    updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED_MISSING_PRODUCT_READER);
                 } else {
-                    this.appContext.getProductManager().addProduct(product);
-                    updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.OPENED);
+                    // there is a product reader in the application
+                    Product product = productReader.readProductNodes(productFile, null);
+                    if (product == null) {
+                        // the product has not been read
+                        //updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED);
+                        throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.getAbsolutePath()+"'.");
+                    } else {
+                        this.appContext.getProductManager().addProduct(product);
+                        updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.OPENED);
+                    }
                 }
             } catch (Exception exception) {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_OPENED);
