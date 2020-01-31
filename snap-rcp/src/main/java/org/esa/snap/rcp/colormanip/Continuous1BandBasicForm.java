@@ -63,6 +63,9 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RA
 // JAN 2020 - Knowles
 //          - Added notification to user in the GUI when a scheme has been used in a non-nominal state (if the preferences altered)
 //          - Implemented ColorSchemeManager
+//          - Added verbose options to the scheme selector
+
+
 
 
 public class Continuous1BandBasicForm implements ColorManipulationChildForm {
@@ -336,6 +339,13 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 visible = true;
         }
         schemeInfoLabel.setVisible(visible);
+
+
+        boolean useDisplayName = configuration.getPropertyBool(PROPERTY_SCHEME_VERBOSE_KEY, PROPERTY_SCHEME_VERBOSE_DEFAULT);
+        if (useDisplayName != colorPaletteSchemes.isUseDisplayName()) {
+            colorPaletteSchemes.setUseDisplayName(useDisplayName);
+        }
+
 
 
         parentForm.revalidateToolViewPaneControl();

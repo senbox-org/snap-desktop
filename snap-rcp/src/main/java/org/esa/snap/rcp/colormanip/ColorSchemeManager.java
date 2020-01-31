@@ -17,7 +17,14 @@ import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 
+/**
+ * Manages all the color schemes
+ * @author Daniel Knowles (NASA)
+ * @date Jan 2020
+ *
+ */
 public class ColorSchemeManager {
 
     public boolean isjComboBoxShouldFire() {
@@ -60,6 +67,7 @@ public class ColorSchemeManager {
         init();
     }
 
+    private boolean useDisplayName = true;
 
     public void init() {
 
@@ -124,6 +132,8 @@ public class ColorSchemeManager {
     }
 
 
+
+
     private void initComboBox() {
 
         Object[] colorSchemeInfosArray = colorSchemeInfos.toArray();
@@ -151,7 +161,7 @@ public class ColorSchemeManager {
         jComboBox = new JComboBox(colorSchemeInfosArray);
         jComboBox.setRenderer(myComboBoxRenderer);
         jComboBox.setEditable(false);
-        jComboBox.setMaximumRowCount(20);
+//        jComboBox.setMaximumRowCount(20);
         if (colorSchemeLutFile != null) {
             jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemeLutFile.getName());
         }
@@ -162,7 +172,7 @@ public class ColorSchemeManager {
     private boolean initColorSchemeInfos() {
 
         setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
+        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), null, null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
         colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -202,6 +212,7 @@ public class ColorSchemeManager {
                     String colorBarLabels = null;
                     String description = null;
                     String rootSchemeName = null;
+                    String displayName = null;
 
                     File standardCpdFile = null;
                     File colorBlindCpdFile = null;
@@ -211,6 +222,7 @@ public class ColorSchemeManager {
 
                     id = schemeElement.getAttribute("name");
                     description = getTextValue(schemeElement, "DESCRIPTION");
+                    displayName = getTextValue(schemeElement, "DISPLAY_NAME");
                     colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
                     colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
                     String minStr = getTextValue(schemeElement, "MIN");
@@ -281,7 +293,7 @@ public class ColorSchemeManager {
 
                             try {
                                 ColorPaletteDef.loadColorPaletteDef(cpdFile);
-                                colorSchemeInfo = new ColorSchemeInfo(id, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                                colorSchemeInfo = new ColorSchemeInfo(id, displayName, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
 
                             } catch (IOException e) {
                             }
@@ -401,7 +413,7 @@ public class ColorSchemeManager {
 
                         try {
                             ColorPaletteDef.loadColorPaletteDef(cpdFile);
-                            colorSchemeInfo = new ColorSchemeInfo(name, rootSchemeName, description, cpdFileNameStandard, minVal, maxVal, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                            colorSchemeInfo = new ColorSchemeInfo(name, null, rootSchemeName, description, cpdFileNameStandard, minVal, maxVal, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
 
                         } catch (IOException e) {
                         }
@@ -529,6 +541,18 @@ public class ColorSchemeManager {
 
     public ArrayList<ColorSchemeInfo> getColorSchemeLutInfos() {
         return colorSchemeLutInfos;
+    }
+
+    public boolean isUseDisplayName() {
+        return useDisplayName;
+    }
+
+    public void setUseDisplayName(boolean useDisplayName) {
+        this.useDisplayName = useDisplayName;
+
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+            colorSchemeInfo.setUseDisplayName(useDisplayName);
+        }
     }
 
 

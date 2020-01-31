@@ -88,6 +88,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY, true);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
@@ -356,6 +357,12 @@ public final class ColorManipulationController extends DefaultConfigController {
                         ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION3,
                         ColorSchemeDefaults.PROPERTY_SCHEME_LOG_OPTION4})
         String schemeLog = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_TOOLTIP)
+        boolean schemeVerbose = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT;
 
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_SECTION_LABEL,
