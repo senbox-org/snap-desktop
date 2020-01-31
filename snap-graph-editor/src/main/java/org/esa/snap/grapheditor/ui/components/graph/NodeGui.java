@@ -51,8 +51,8 @@ public class NodeGui {
 
     static final private int minWidth = 60;
 
-    static final private int TOOLTIP_NONE = -202;
-    static final private int TOOLTIP_OUTPUT = -1;
+    static final public int CONNECTION_NONE = -202;
+    static final public int CONNECTION_OUTPUT = -1;
 
     private int x;
     private int y;
@@ -73,7 +73,7 @@ public class NodeGui {
     private JComponent preferencePanel = null;
     private String[] tooltipText_ = null;
     private boolean tooltipVisible_ = false;
-    private int tooltipIndex_ = TOOLTIP_NONE;
+    private int tooltipIndex_ = CONNECTION_NONE;
 
 
     public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
@@ -172,7 +172,7 @@ public class NodeGui {
 
             int tx;
             int ty;
-            if (tooltipIndex_ == TOOLTIP_OUTPUT) {
+            if (tooltipIndex_ == CONNECTION_OUTPUT) {
                 tx = x + width + connectionSize;
                 ty = y + connectionOffset - (tooltipH / 2);
             } else {
@@ -285,7 +285,9 @@ public class NodeGui {
         return -1;
     }
 
-    private boolean isOverInput(Point p) {
+
+
+    private boolean isOverOutput(Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
         return (metadata.hasOutput()
@@ -302,20 +304,16 @@ public class NodeGui {
         // check if is over a connection input
         if (getInputIndex(p) >= 0) return true;
         // check if is over a connection output
-        return isOverInput(p);
+        return isOverOutput(p);
     }
 
     public void over(Point p) {
         if ((status & STATUS_MASK_OVER) == 0) 
             status += STATUS_MASK_OVER;
 
-        int iy = getInputIndex(p);
-        if (iy >= 0) {
+        int iy = getConnectionAt(p);
+        if (iy != CONNECTION_NONE) {
             show_tooltip(iy);
-            return;
-        }
-        if (isOverInput(p)) {
-            show_tooltip(TOOLTIP_OUTPUT);
             return;
         }
         hide_tooltip();
@@ -342,7 +340,7 @@ public class NodeGui {
         if (iy >= 0) {
             return new NodeDragAction(new Connection(this, iy, p));
         }
-        if (isOverInput(p)) {
+        if (isOverOutput(p)) {
             return new NodeDragAction(new Connection(this, p));
         }
         return new NodeDragAction(this,  p);
@@ -351,11 +349,11 @@ public class NodeGui {
     private void hide_tooltip() {
         tooltipVisible_ = false;
         tooltipText_ = null;
-        tooltipIndex_ = TOOLTIP_NONE;
+        tooltipIndex_ = CONNECTION_NONE;
     }
 
     private void show_tooltip(int connectionIndex) {
-        if (connectionIndex == TOOLTIP_OUTPUT && metadata.hasOutput()) {
+        if (connectionIndex == CONNECTION_OUTPUT && metadata.hasOutput()) {
             // OUTPUT
             tooltipVisible_ = true;
             tooltipText_ = split_text(metadata.getOutputDescription());
@@ -394,5 +392,16 @@ public class NodeGui {
 
     public boolean hasTooltip() {
         return tooltipVisible_;
+    }
+
+    public int getConnectionAt(Point p) {
+        int iy = getInputIndex(p);
+        if (iy >= 0) {
+            return iy;
+        }
+        if (isOverOutput(p)) {
+            return CONNECTION_OUTPUT;
+        }
+        return CONNECTION_NONE;
     }
 }

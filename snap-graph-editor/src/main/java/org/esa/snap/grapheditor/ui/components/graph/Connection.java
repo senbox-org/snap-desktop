@@ -86,7 +86,9 @@ public class Connection {
     }
 
     public boolean connect(NodeGui node) {
-
-        return false;
+        int connection = node.getConnectionAt(endPoint);
+        if (connection == NodeGui.CONNECTION_NONE)
+            return false;
+        return true;
     }
 }
