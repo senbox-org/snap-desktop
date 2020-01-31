@@ -81,7 +81,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         this.productListPanel.addDataChangedListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                updateProductListCount();
+                updateProductListCountTitle();
             }
         });
 
@@ -152,12 +152,13 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     public void setProducts(List<RepositoryProduct> products) {
+        resetOutputProducts();
         if (products.size() > 0) {
-            resetOutputProducts();
             this.availableProducts.addAll(products);
             displayPageProducts(0, 1); // display the first page
         } else {
-            clearOutputList();
+            this.productListPanel.getProductListModel().clear();
+            refreshPaginationButtons();
         }
     }
 
@@ -165,6 +166,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         resetOutputProducts();
         this.productListPanel.getProductListModel().clear();
         refreshPaginationButtons();
+        resetProductListCountTitle();
     }
 
     public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
@@ -286,7 +288,11 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         return count;
     }
 
-    private void updateProductListCount() {
+    private void resetProductListCountTitle() {
+        this.titleLabel.setText(getTitle());
+    }
+
+    public void updateProductListCountTitle() {
         int pageProductCount = this.productListPanel.getProductListModel().getProductCount();
         int totalProductCount = this.availableProducts.size();
         String text = getTitle() + ": " + Integer.toString(pageProductCount);

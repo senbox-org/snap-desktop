@@ -722,13 +722,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
+    private void onFinishSearchProducts() {
+        this.searchProductListThread = null; // reset
+        this.repositoryProductListPanel.updateProductListCountTitle();
+    }
+
     private void searchButtonPressed() {
         stopSearchingProductList();
         ThreadListener threadListener = new ThreadListener() {
             @Override
             public void onStopExecuting(Runnable invokerThread) {
                 if (invokerThread == ProductLibraryToolViewV2.this.searchProductListThread) {
-                    ProductLibraryToolViewV2.this.searchProductListThread = null; // reset
+                    onFinishSearchProducts();
                 }
             }
         };

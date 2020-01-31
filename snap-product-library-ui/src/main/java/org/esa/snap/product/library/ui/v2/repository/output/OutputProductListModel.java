@@ -74,15 +74,29 @@ public abstract class OutputProductListModel {
     }
 
     public void setProducts(List<RepositoryProduct> products) {
-        clear();
         if (products.size() > 0) {
-            int startIndex = this.products.size();
-            this.products.addAll(products);
+            int oldProductCount = this.products.size();
+            int newProductCount = products.size();
+
+            this.products = new ArrayList<>(products);
             if (this.products.size() > 1) {
                 Collections.sort(this.products, this.outputProductResultsCallback.getProductsComparator());
             }
-            int endIndex = this.products.size() - 1;
-            fireIntervalAdded(startIndex, endIndex);
+
+            if (oldProductCount < newProductCount) {
+                if (oldProductCount > 0) {
+                    fireIntervalChanged(0, oldProductCount - 1);
+                }
+                fireIntervalAdded(oldProductCount, newProductCount-1);
+            } else if (oldProductCount > newProductCount) {
+                fireIntervalRemoved(newProductCount, oldProductCount-1);
+                fireIntervalChanged(0, newProductCount - 1);
+            } else {
+                // the same count
+                fireIntervalChanged(0, newProductCount - 1);
+            }
+        } else {
+            clear();
         }
     }
 
