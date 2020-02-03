@@ -27,6 +27,7 @@ import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
+import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 public class GraphPanel extends JPanel
         implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener {
@@ -121,11 +122,13 @@ public class GraphPanel extends JPanel
     }
 
     private void drawTooltip(Graphics2D g) {
-        Graphics2D gNode = (Graphics2D) g.create();
-        for (NodeGui node : nodes) {
-            node.tooltip(gNode);
+        if (SettingManager.getInstance().isShowToolipEnabled()) {
+            Graphics2D gNode = (Graphics2D) g.create();
+            for (NodeGui node : nodes) {
+                node.tooltip(gNode);
+            }
+            gNode.dispose();
         }
-        gNode.dispose();
     }
 
     @Override
@@ -156,7 +159,7 @@ public class GraphPanel extends JPanel
     public void keyReleased(KeyEvent event) {
         int key = event.getKeyCode();
 
-        if (key == KeyEvent.VK_TAB) {// 65) {
+        if (key == SettingManager.getInstance().getCommandPanelKey()) {
             this.addNodeWidget.changeStatus(lastMousePosition);
             this.repaint();// this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); //
                            // this.addNodeWidget.getBoundingRect(getWidth(),
