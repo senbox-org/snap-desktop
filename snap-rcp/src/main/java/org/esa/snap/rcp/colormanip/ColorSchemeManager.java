@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Manages all the color schemes
@@ -68,6 +69,10 @@ public class ColorSchemeManager {
     }
 
     private boolean useDisplayName = true;
+
+
+    private boolean showDisabled = false;
+    private boolean sortComboBox = false;
 
     public void init() {
 
@@ -134,45 +139,105 @@ public class ColorSchemeManager {
 
 
 
-    private void initComboBox() {
+    public boolean isShowDisabled() {
+        return showDisabled;
+    }
 
-        Object[] colorSchemeInfosArray = colorSchemeInfos.toArray();
+    public void setShowDisabled(boolean showDisabled) {
+        if (this.showDisabled != showDisabled) {
+            this.showDisabled = showDisabled;
+            refreshComboBox();
+        }
+    }
+
+
+
+    public boolean isSortComboBox() {
+        return sortComboBox;
+    }
+
+
+    // todo Add sorting of colorSchemeInfos
+    public void setSortComboBox(boolean sortComboBox) {
+        if (this.sortComboBox != sortComboBox) {
+            this.sortComboBox = sortComboBox;
+            refreshComboBox();
+
+//
+//            Collections.sort(colorSchemeInfos, new Comparator<ColorSchemeInfo>(){
+//                public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
+//                    return s1.getName().compareToIgnoreCase(s2.getName());
+//                }
+//            });
+//
+//
+//            Collections.sort(colorSchemeInfos, new Comparator< ColorSchemeInfo >() {
+//                @Override public int compare(ColorSchemeInfo p1, ColorSchemeInfo p2) {
+//                    return p1.getEntryNumber()- p2.getEntryNumber(); // Ascending
+//                }
+//            });
+//
+//
+//
+//            if (isSortComboBox()) {
+//
+//            } else {
+//
+//            }
+        }
+    }
+
+
+    private void refreshComboBox() {
+        ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
+        jComboBox.removeAllItems();
+        populateComboBox();
+        jComboBox.setSelectedItem(selectedColorSchemeInfo);
+        jComboBox.repaint();
+    }
+
+
+
+
+    private void populateComboBox() {
 
         final String[] toolTipsArray = new String[colorSchemeInfos.size()];
+        final Boolean[] enabledArray = new Boolean[colorSchemeInfos.size()];
 
         int i = 0;
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
-            toolTipsArray[i] = colorSchemeInfo.getDescription();
-            i++;
-        }
-
-        final Boolean[] enabledArray = new Boolean[colorSchemeInfos.size()];
-
-        i = 0;
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
-            enabledArray[i] = colorSchemeInfo.isEnabled();
-            i++;
+            if (colorSchemeInfo.isEnabled() || (!colorSchemeInfo.isEnabled() && showDisabled)) {
+                toolTipsArray[i] = colorSchemeInfo.getDescription();
+                enabledArray[i] = colorSchemeInfo.isEnabled();
+                jComboBox.addItem(colorSchemeInfo);
+                i++;
+            }
         }
 
         final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
         myComboBoxRenderer.setTooltipList(toolTipsArray);
         myComboBoxRenderer.setEnabledList(enabledArray);
-
-        jComboBox = new JComboBox(colorSchemeInfosArray);
         jComboBox.setRenderer(myComboBoxRenderer);
+    }
+
+
+
+    private void initComboBox() {
+
+        jComboBox = new JComboBox();
         jComboBox.setEditable(false);
-//        jComboBox.setMaximumRowCount(20);
         if (colorSchemeLutFile != null) {
             jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemeLutFile.getName());
         }
 
+        populateComboBox();
     }
 
 
     private boolean initColorSchemeInfos() {
 
         setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), null, null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
+        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), 0,null, null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
         colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -192,6 +257,8 @@ public class ColorSchemeManager {
 
         Element rootElement = dom.getDocumentElement();
         NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
+
+        int entryNumber = 1; // for sorting by original order
 
         if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
             for (int i = 0; i < schemeNodeList.getLength(); i++) {
@@ -217,6 +284,8 @@ public class ColorSchemeManager {
                     File standardCpdFile = null;
                     File colorBlindCpdFile = null;
                     File cpdFile = null;
+
+                    boolean enabled = true;
 
                     boolean overRide = false;
 
@@ -288,12 +357,19 @@ public class ColorSchemeManager {
                         }
 
 
-                        if (validEntry) {
+//                        if (validEntry) {
                             ColorSchemeInfo colorSchemeInfo = null;
 
+                        enabled = validEntry;
+
                             try {
-                                ColorPaletteDef.loadColorPaletteDef(cpdFile);
-                                colorSchemeInfo = new ColorSchemeInfo(id, displayName, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                                // todo what does this do?
+                                if (validEntry) {
+                                    ColorPaletteDef.loadColorPaletteDef(cpdFile);
+                                }
+                                colorSchemeInfo = new ColorSchemeInfo(id, entryNumber, displayName, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, enabled, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+
+                                entryNumber++;
 
                             } catch (IOException e) {
                             }
@@ -315,7 +391,7 @@ public class ColorSchemeManager {
                                 }
                                 colorSchemeInfos.add(colorSchemeInfo);
                             }
-                        }
+//                        }
                     }
                 }
             }
@@ -413,7 +489,7 @@ public class ColorSchemeManager {
 
                         try {
                             ColorPaletteDef.loadColorPaletteDef(cpdFile);
-                            colorSchemeInfo = new ColorSchemeInfo(name, null, rootSchemeName, description, cpdFileNameStandard, minVal, maxVal, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                            colorSchemeInfo = new ColorSchemeInfo(name, 0, null, rootSchemeName, description, cpdFileNameStandard, minVal, maxVal, logScaled, overRide, true, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
 
                         } catch (IOException e) {
                         }

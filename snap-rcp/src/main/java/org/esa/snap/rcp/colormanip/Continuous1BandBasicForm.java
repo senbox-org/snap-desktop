@@ -346,6 +346,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             colorPaletteSchemes.setUseDisplayName(useDisplayName);
         }
 
+        boolean showDisabled = configuration.getPropertyBool(PROPERTY_SCHEME_SHOW_DISABLED_KEY, PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
+        if (showDisabled != colorPaletteSchemes.isShowDisabled()) {
+            ColorSchemeManager.getDefault().setShowDisabled(showDisabled);
+        }
+
 
 
         parentForm.revalidateToolViewPaneControl();
