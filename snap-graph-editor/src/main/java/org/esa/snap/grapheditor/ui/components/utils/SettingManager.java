@@ -107,35 +107,33 @@ public class SettingManager {
         public Pair<JComponent, Object> getComponent(String title) {
             Object comp = null;
             JComponent cont = null;
+
+            JPanel p = new JPanel();
+            p.add(new JLabel(title), BorderLayout.LINE_START);
             if (type == SettingType.BOOLEAN) {
-                cont = new JCheckBox(title, this.asBoolean());
-                comp = cont;
+                comp = new JCheckBox("", this.asBoolean());
+                p.add((JComponent)comp, BorderLayout.LINE_END);
+            } else if (type == SettingType.STRING) {
+                comp = new JTextField(this.asString());
+                p.add((JComponent)comp, BorderLayout.LINE_END);
             } else {
-                JPanel p = new JPanel();
-                p.add(new JLabel(title), BorderLayout.LINE_START);
+                SpinnerModel model;
 
-                if (type == SettingType.STRING) {
-                    comp = new JTextField(this.asString());
-                    p.add((JComponent)comp, BorderLayout.CENTER);
-                } else {
-                    SpinnerModel model;
+                if (type == SettingType.INT)
+                    model = new SpinnerNumberModel(this.asInt(),
+                                                   Integer.MIN_VALUE,
+                                                   Integer.MAX_VALUE,
+                                                   1);
+                else
+                    model = new SpinnerNumberModel(this.asDouble(),
+                                                   Double.MIN_VALUE,
+                                                   Double.MAX_VALUE,
+                                                   0.01);
 
-                    if (type == SettingType.INT)
-                        model = new SpinnerNumberModel(this.asInt(),
-                                                       Integer.MIN_VALUE,
-                                                       Integer.MAX_VALUE,
-                                                       1);
-                    else
-                        model = new SpinnerNumberModel(this.asDouble(),
-                                                       Double.MIN_VALUE,
-                                                       Double.MAX_VALUE,
-                                                       0.01);
-
-                    comp = model;
-                    p.add(new JSpinner(model));
-                }
-                cont = p;
+                comp = model;
+                p.add(new JSpinner(model), BorderLayout.LINE_END);
             }
+        cont = p;
 
             return new Pair<>(cont, comp);
         }
@@ -203,13 +201,16 @@ public class SettingManager {
             dialog.setVisible(false);
         });
 
+
         dialog.setContentPane(panel);
         dialog.setModal(true);
 
-        dialog.setVisible(true);
         dialog.validate();
-        dialog.setMinimumSize(new Dimension(600, 30 * (components.size() + 1)));
-        dialog.setSize(600, 30 * (components.size() + 1));
+        dialog.pack();
+        dialog.setPreferredSize(new Dimension(600, 30 * (components.size() + 1)));
+
+        dialog.setVisible(true);
+
         return dialog;
     }
 
