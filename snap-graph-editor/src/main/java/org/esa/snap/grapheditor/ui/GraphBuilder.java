@@ -1,15 +1,13 @@
 package org.esa.snap.grapheditor.ui;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
+import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
+import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DefaultAppContext;
 
@@ -28,19 +26,40 @@ public class GraphBuilder extends JPanel {
     private StatusPanel statusBar;
     private MainPanel mainPanel;
 
-    public GraphBuilder(AppContext context) {
-        super();
+    private Window parentWindow;
 
+    public GraphBuilder(Window frame, AppContext context) {
+        super();
+        parentWindow = frame;
         this.setLayout(new BorderLayout(0, 0));
 
         toolBar = new JToolBar();
         this.add(toolBar, BorderLayout.PAGE_START);
+        JButton settingsButton = new JButton();
+        ImageIcon icon = TangoIcons.categories_preferences_system(TangoIcons.Res.R22);
+        settingsButton.setIcon(icon);
+        settingsButton.addActionListener(e -> {
+            SettingManager.getInstance().showSettingsDialog(parentWindow);
+        });
+        toolBar.add(settingsButton);
 
         statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
 
         mainPanel = new MainPanel(context);
         this.add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private JFrame getFrame() {
+        Container comp = this.getParent();
+        while (comp != null && !(comp instanceof JFrame)) {
+            comp = comp.getParent();
+        }
+
+        if (comp == null){
+            return null;
+        }
+        return (JFrame) comp;
     }
 
     public static void main(String[] args) {
@@ -52,8 +71,10 @@ public class GraphBuilder extends JPanel {
         }
 
         AppContext context = new DefaultAppContext("Standalone Graph Editor");
-        GraphBuilder builder = new GraphBuilder(context);
+
         JFrame mainFrame = new JFrame();
+        GraphBuilder builder = new GraphBuilder(mainFrame, context);
+
         
         mainFrame.setLayout(new BorderLayout());
         mainFrame.setSize(1024, 800);
