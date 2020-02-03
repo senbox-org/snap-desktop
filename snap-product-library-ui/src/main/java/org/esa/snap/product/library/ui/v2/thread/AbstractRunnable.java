@@ -22,7 +22,7 @@ public abstract class AbstractRunnable<OutputType> implements Runnable, ThreadSt
     protected abstract String getExceptionLoggingMessage();
 
     @Override
-    public boolean isRunning() {
+    public final boolean isRunning() {
         synchronized (this) {
             return (this.isRunning != null && this.isRunning.booleanValue());
         }
@@ -35,17 +35,17 @@ public abstract class AbstractRunnable<OutputType> implements Runnable, ThreadSt
 
             OutputType result = execute();
 
-            if (!isStopped()) {
+            if (isRunning()) {
                 successfullyExecuting(result);
             }
         } catch (Exception exception) {
             logger.log(Level.SEVERE, getExceptionLoggingMessage(), exception);
 
-            if (!isStopped()) {
+            if (isRunning()) {
                 failedExecuting(exception);
             }
         } finally {
-            stopRunning();
+            finishRunning();
         }
     }
 
@@ -60,21 +60,17 @@ public abstract class AbstractRunnable<OutputType> implements Runnable, ThreadSt
         thread.start(); // start the thread
     }
 
-    public void stopRunning() {
-        synchronized (this) {
-            this.isRunning = false;
-        }
-    }
-
-    protected final boolean isStopped() {
-        synchronized (this) {
-            return (this.isRunning != null && !this.isRunning.booleanValue());
-        }
+    protected void finishRunning() {
+        setRunning(false);
     }
 
     private void startRunning() {
+        setRunning(true);
+    }
+
+    protected final void setRunning(boolean isRunning) {
         synchronized (this) {
-            this.isRunning = true;
+            this.isRunning = isRunning;
         }
     }
 }

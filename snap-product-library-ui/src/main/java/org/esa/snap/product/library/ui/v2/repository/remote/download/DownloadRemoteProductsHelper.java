@@ -17,11 +17,15 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jcoravu on 17/10/2019.
  */
 public class DownloadRemoteProductsHelper {
+
+    private static final Logger logger = Logger.getLogger(DownloadRemoteProductsHelper.class.getName());
 
     private final ProgressBarHelperImpl progressPanel;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
@@ -104,6 +108,11 @@ public class DownloadRemoteProductsHelper {
 
     public void stopDownloadingProducts() {
         if (this.runningTasks != null) {
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Stop downloading the products.");
+            }
+
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
                 if (runnable instanceof DownloadProductRunnable) {
                     runnable.stopRunning();
@@ -114,6 +123,11 @@ public class DownloadRemoteProductsHelper {
 
     public void stopDownloadingProductsQuickLookImage() {
         if (this.runningTasks != null) {
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Stop downloading the products quick look image.");
+            }
+
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
                 if (runnable instanceof DownloadProductsQuickLookImageRunnable) {
                     runnable.stopRunning();

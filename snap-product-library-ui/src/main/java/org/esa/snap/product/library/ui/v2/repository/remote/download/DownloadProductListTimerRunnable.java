@@ -77,13 +77,22 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 };
                 this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
             } catch (java.lang.InterruptedException exception) {
-                logger.log(Level.WARNING, "Stop downloading the product list: remote repository '" + this.remoteRepositoryName+"', mission '" + this.mission + "'.");
+                logger.log(Level.FINE, "Stop searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
                 return null; // nothing to return
             }
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
         }
         return null; // nothing to return
+    }
+
+    @Override
+    public void cancelRunning() {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Cancel searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
+        }
+
+        super.cancelRunning();
     }
 
     @Override

@@ -6,8 +6,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.awt.EventQueue;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by jcoravu on 23/8/2019.
@@ -15,7 +13,7 @@ import java.util.TimerTask;
 public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> {
 
     private final ProgressBarHelper progressPanel;
-    private final Timer timer;
+    private final java.util.Timer timer;
     private final int timerDelayInMilliseconds;
     private final int threadId;
 
@@ -25,7 +23,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         this.progressPanel = progressPanel;
         this.threadId = threadId;
         this.timerDelayInMilliseconds = timerDelayInMilliseconds;
-        this.timer = (this.timerDelayInMilliseconds > 0) ? new Timer() : null;
+        this.timer = (this.timerDelayInMilliseconds > 0) ? new java.util.Timer() : null;
     }
 
     @Override
@@ -55,8 +53,8 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
     }
 
     @Override
-    public void stopRunning() {
-        super.stopRunning();
+    protected final void finishRunning() {
+        super.finishRunning();
 
         stopTimer();
         Runnable runnable = new Runnable() {
@@ -66,6 +64,12 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
             }
         };
         SwingUtilities.invokeLater(runnable);
+    }
+
+    public void cancelRunning() {
+        setRunning(false);
+
+        stopTimer();
     }
 
     @Override
@@ -126,10 +130,10 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
 
     private void startTimerIfDefined() {
         if (this.timerDelayInMilliseconds > 0) {
-            TimerTask timerTask = new TimerTask() {
+            java.util.TimerTask timerTask = new java.util.TimerTask() {
                 @Override
                 public void run() {
-                    if (!isStopped()) {
+                    if (isRunning()) {
                         notifyTimerWakeUpLater();
                     }
                 }
@@ -148,7 +152,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (!isStopped()) {
+                if (isRunning()) {
                     onTimerWakeUp();
                 }
             }

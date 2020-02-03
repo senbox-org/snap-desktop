@@ -619,7 +619,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void stopSearchingProductList() {
         this.repositorySelectionPanel.getProgressBarHelper().hideProgressPanel();
         if (this.searchProductListThread != null) {
-            this.searchProductListThread.stopRunning(); // stop the thread
+            this.searchProductListThread.cancelRunning(); // stop the thread
         }
         this.downloadRemoteProductsHelper.stopDownloadingProductsQuickLookImage();
     }
