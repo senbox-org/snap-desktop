@@ -346,11 +346,18 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             colorPaletteSchemes.setUseDisplayName(useDisplayName);
         }
 
+        boolean sortSchemes = configuration.getPropertyBool(PROPERTY_SCHEME_SORT_KEY, PROPERTY_SCHEME_SORT_DEFAULT);
+        if (sortSchemes != colorPaletteSchemes.isSortComboBox()) {
+            ColorSchemeManager.getDefault().setSortComboBox(sortSchemes);
+        }
+
+
         boolean showDisabled = configuration.getPropertyBool(PROPERTY_SCHEME_SHOW_DISABLED_KEY, PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
         if (showDisabled != colorPaletteSchemes.isShowDisabled()) {
             ColorSchemeManager.getDefault().setShowDisabled(showDisabled);
         }
 
+        ColorSchemeManager.getDefault().validate();
 
 
         parentForm.revalidateToolViewPaneControl();

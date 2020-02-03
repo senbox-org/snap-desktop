@@ -22,9 +22,9 @@ import java.util.Comparator;
 
 /**
  * Manages all the color schemes
+ *
  * @author Daniel Knowles (NASA)
  * @date Jan 2020
- *
  */
 public class ColorSchemeManager {
 
@@ -37,9 +37,9 @@ public class ColorSchemeManager {
     }
 
 
-    private final String STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME = "-- none --";
 
     private ArrayList<ColorSchemeInfo> colorSchemeInfos = new ArrayList<ColorSchemeInfo>();
+    private ArrayList<ColorSchemeInfo> colorSchemeSortedInfos = new ArrayList<ColorSchemeInfo>();
     private ArrayList<ColorSchemeInfo> colorSchemeLutInfos = new ArrayList<ColorSchemeInfo>();
 
     private File colorSchemesFile = null;
@@ -48,15 +48,22 @@ public class ColorSchemeManager {
     private JComboBox jComboBox = null;
     private boolean jComboBoxShouldFire = true;
 
+    private final String STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME = "-- none --";
+    private String jComboBoxFirstEntryName = null;
     private ColorSchemeInfo jComboBoxFirstEntryColorSchemeInfo = null;
 
     private File colorPaletteAuxDir = null;
     private File colorSchemesAuxDir = null;
 
-    private String jComboBoxFirstEntryName = null;
-
+    private boolean useDisplayName = true;
+    private boolean showDisabled = false;
+    private boolean sortComboBox = false;
 
     private boolean initialized = false;
+
+    private ColorSchemeInfo currentSelection = null;
+
+
     static ColorSchemeManager manager = new ColorSchemeManager();
 
     public static ColorSchemeManager getDefault() {
@@ -68,11 +75,6 @@ public class ColorSchemeManager {
         init();
     }
 
-    private boolean useDisplayName = true;
-
-
-    private boolean showDisabled = false;
-    private boolean sortComboBox = false;
 
     public void init() {
 
@@ -102,7 +104,7 @@ public class ColorSchemeManager {
 
             if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
                 initColorSchemeInfos();
-
+                initColorSchemeSortedInfos();
 
                 initComboBox();
                 initColorSchemeLut();
@@ -111,29 +113,28 @@ public class ColorSchemeManager {
             }
 
             initialized = true;
-
         }
     }
 
 
-    public ColorSchemeManager(File colorPaletteDir) {
-        this.colorPaletteAuxDir = colorPaletteDir;
-
-        colorSchemesFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEMES_FILENAME);
-        colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);
-
-        if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
-
-            setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-
-            initColorSchemeInfos();
-
-
-            initComboBox();
-            initColorSchemeLut();
-
-            reset();
+    public void initColorSchemeSortedInfos() {
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+            colorSchemeSortedInfos.add(colorSchemeInfo);
         }
+
+        Collections.sort(colorSchemeSortedInfos, new Comparator<ColorSchemeInfo>() {
+            public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
+                return s1.toString().compareToIgnoreCase(s2.toString());
+            }
+        });
+
+//        Collections.sort(colorSchemeInfos, new Comparator<ColorSchemeInfo>() {
+//            @Override
+//            public int compare(ColorSchemeInfo p1, ColorSchemeInfo p2) {
+//                return p1.getEntryNumber() - p2.getEntryNumber(); // Ascending
+//            }
+//        });
+
     }
 
 
@@ -151,61 +152,63 @@ public class ColorSchemeManager {
     }
 
 
-
     public boolean isSortComboBox() {
         return sortComboBox;
     }
 
 
-    // todo Add sorting of colorSchemeInfos
     public void setSortComboBox(boolean sortComboBox) {
         if (this.sortComboBox != sortComboBox) {
             this.sortComboBox = sortComboBox;
             refreshComboBox();
-
-//
-//            Collections.sort(colorSchemeInfos, new Comparator<ColorSchemeInfo>(){
-//                public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
-//                    return s1.getName().compareToIgnoreCase(s2.getName());
-//                }
-//            });
-//
-//
-//            Collections.sort(colorSchemeInfos, new Comparator< ColorSchemeInfo >() {
-//                @Override public int compare(ColorSchemeInfo p1, ColorSchemeInfo p2) {
-//                    return p1.getEntryNumber()- p2.getEntryNumber(); // Ascending
-//                }
-//            });
-//
-//
-//
-//            if (isSortComboBox()) {
-//
-//            } else {
-//
-//            }
         }
     }
 
 
     private void refreshComboBox() {
         ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
+        if (selectedColorSchemeInfo.isEnabled()) {
+            currentSelection = selectedColorSchemeInfo;
+        }
         jComboBox.removeAllItems();
         populateComboBox();
-        jComboBox.setSelectedItem(selectedColorSchemeInfo);
+        jComboBox.setSelectedItem(currentSelection);
         jComboBox.repaint();
     }
 
 
+    public void validate() {
+        if (jComboBox != null) {
+            ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
+            if (selectedColorSchemeInfo != null) {
+                if (selectedColorSchemeInfo.isEnabled()) {
+                    currentSelection = selectedColorSchemeInfo;
+                } else {
+                    if (currentSelection != null) {
+                        jComboBox.setSelectedItem(currentSelection);
+                    }
+                }
+            }
+        }
 
+
+    }
 
     private void populateComboBox() {
 
-        final String[] toolTipsArray = new String[colorSchemeInfos.size()];
-        final Boolean[] enabledArray = new Boolean[colorSchemeInfos.size()];
+        ArrayList<ColorSchemeInfo> colorSchemeCurrentInfos = null;
+
+        if (isSortComboBox()) {
+            colorSchemeCurrentInfos = colorSchemeSortedInfos;
+        } else {
+            colorSchemeCurrentInfos = colorSchemeInfos;
+        }
+
+        final String[] toolTipsArray = new String[colorSchemeCurrentInfos.size()];
+        final Boolean[] enabledArray = new Boolean[colorSchemeCurrentInfos.size()];
 
         int i = 0;
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeCurrentInfos) {
             if (colorSchemeInfo.isEnabled() || (!colorSchemeInfo.isEnabled() && showDisabled)) {
                 toolTipsArray[i] = colorSchemeInfo.getDescription();
                 enabledArray[i] = colorSchemeInfo.isEnabled();
@@ -219,7 +222,6 @@ public class ColorSchemeManager {
         myComboBoxRenderer.setEnabledList(enabledArray);
         jComboBox.setRenderer(myComboBoxRenderer);
     }
-
 
 
     private void initComboBox() {
@@ -237,7 +239,7 @@ public class ColorSchemeManager {
     private boolean initColorSchemeInfos() {
 
         setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), 0,null, null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
+        jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), 0, null, null, null, null, 0, 0, false, true, true, null, null, null, colorPaletteAuxDir);
         colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -358,39 +360,39 @@ public class ColorSchemeManager {
 
 
 //                        if (validEntry) {
-                            ColorSchemeInfo colorSchemeInfo = null;
+                        ColorSchemeInfo colorSchemeInfo = null;
 
                         enabled = validEntry;
 
-                            try {
-                                // todo what does this do?
-                                if (validEntry) {
-                                    ColorPaletteDef.loadColorPaletteDef(cpdFile);
-                                }
-                                colorSchemeInfo = new ColorSchemeInfo(id, entryNumber, displayName, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, enabled, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
-
-                                entryNumber++;
-
-                            } catch (IOException e) {
+                        try {
+                            // todo what does this do?
+                            if (validEntry) {
+                                ColorPaletteDef.loadColorPaletteDef(cpdFile);
                             }
+                            colorSchemeInfo = new ColorSchemeInfo(id, entryNumber, displayName, rootSchemeName, description, cpdFileNameStandard, min, max, logScaled, overRide, enabled, cpdFileNameColorBlind, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+
+                            entryNumber++;
+
+                        } catch (IOException e) {
+                        }
 
 
-                            if (colorSchemeInfo != null) {
-                                if (overRide) {
-                                    // look for previous name which user may be overriding and delete it in the colorSchemeInfo object
-                                    ColorSchemeInfo colorSchemeInfoToDelete = null;
-                                    for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeInfos) {
-                                        if (storedColorSchemeInfo.getName().equals(id)) {
-                                            colorSchemeInfoToDelete = storedColorSchemeInfo;
-                                            break;
-                                        }
-                                    }
-                                    if (colorSchemeInfoToDelete != null) {
-                                        colorSchemeInfos.remove(colorSchemeInfoToDelete);
+                        if (colorSchemeInfo != null) {
+                            if (overRide) {
+                                // look for previous name which user may be overriding and delete it in the colorSchemeInfo object
+                                ColorSchemeInfo colorSchemeInfoToDelete = null;
+                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeInfos) {
+                                    if (storedColorSchemeInfo.getName().equals(id)) {
+                                        colorSchemeInfoToDelete = storedColorSchemeInfo;
+                                        break;
                                     }
                                 }
-                                colorSchemeInfos.add(colorSchemeInfo);
+                                if (colorSchemeInfoToDelete != null) {
+                                    colorSchemeInfos.remove(colorSchemeInfoToDelete);
+                                }
                             }
+                            colorSchemeInfos.add(colorSchemeInfo);
+                        }
 //                        }
                     }
                 }

@@ -90,6 +90,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
 
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY, true);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
@@ -369,6 +370,11 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY,
                 description = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_TOOLTIP)
         boolean schemeShowDisabled = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_TOOLTIP)
+        boolean schemeSort = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
 
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_SECTION_LABEL,
