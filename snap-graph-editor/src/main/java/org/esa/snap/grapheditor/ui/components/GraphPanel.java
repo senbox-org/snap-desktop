@@ -91,6 +91,7 @@ public class GraphPanel extends JPanel
 
         drawGrid(g2);
         drawNodes(g2);
+        drawConnections(g2);
         drawTooltip(g2);
         drawDrag(g2);
         this.addNodeWidget.paint(getWidth(), getHeight(), g2);
@@ -111,6 +112,14 @@ public class GraphPanel extends JPanel
         Graphics2D gNode = (Graphics2D) g.create();
         for (NodeGui node : nodes) {
             node.paintNode(gNode);
+        }
+        gNode.dispose();
+    }
+
+    private void drawConnections(Graphics2D g) {
+        Graphics2D gNode = (Graphics2D) g.create();
+        for (NodeGui node : nodes) {
+            node.paintConnections(gNode);
         }
         gNode.dispose();
     }

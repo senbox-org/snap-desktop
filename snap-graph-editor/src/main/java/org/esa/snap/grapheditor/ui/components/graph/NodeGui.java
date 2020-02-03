@@ -75,6 +75,8 @@ public class NodeGui {
     private boolean tooltipVisible_ = false;
     private int tooltipIndex_ = CONNECTION_NONE;
 
+    private ArrayList<Connection> connections = new ArrayList<>();
+
 
     public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
@@ -121,6 +123,12 @@ public class NodeGui {
         paintInputs(g);
         paintOutput(g);
 
+    }
+
+    public void paintConnections(Graphics2D g) {
+        for (Connection c: connections) {
+            c.draw(g);
+        }
     }
 
     @NotNull
@@ -338,6 +346,19 @@ public class NodeGui {
     public NodeDragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
+            if (this.connections.size() > iy) {
+                if (this.connections.get(iy) != null) {
+                    Connection c = this.connections.get(iy);
+                    if (this.connections.size() > iy + 1) {
+                        this.connections.set(iy, null);
+                    } else {
+                        this.connections.remove(c);
+                    }
+                    c.showSourceTooltip();
+                    return new NodeDragAction(new Connection(c.getSource(), p));
+                }
+            }
+
             return new NodeDragAction(new Connection(this, iy, p));
         }
         if (isOverOutput(p)) {
@@ -403,5 +424,22 @@ public class NodeGui {
             return CONNECTION_OUTPUT;
         }
         return CONNECTION_NONE;
+    }
+
+    public boolean isConnectionAvailable(int index) {
+        return (index == CONNECTION_OUTPUT || connections.size() <= index || connections.get(index) == null);
+    }
+
+    public void addConnection(Connection connection, int index) {
+        if (index == connections.size())  {
+            connections.add(connection);
+        } else if (index < connections.size()) {
+            connections.set(index, connection);
+        } else {
+            for (int i = connections.size(); i < index + 1; i++) {
+                connections.add(null);
+            }
+            connections.add(connection);
+        }
     }
 }

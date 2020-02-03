@@ -86,9 +86,34 @@ public class Connection {
     }
 
     public boolean connect(NodeGui node) {
+        if (this.source != null && this.target != null) {
+            return false;
+        }
+        boolean res = false;
+
         int connection = node.getConnectionAt(endPoint);
         if (connection == NodeGui.CONNECTION_NONE)
             return false;
-        return true;
+        if (connection == NodeGui.CONNECTION_OUTPUT) {
+            if (this.target != null) {
+                this.source = node;
+                res  = true;
+            }
+        } else if (this.source != null) {
+            res = node.isConnectionAvailable(connection);
+            this.target = node;
+            this.targetIndex = connection;
+
+        }
+        if (res) {
+            this.target.addConnection(this, targetIndex);
+        }
+        return res;
+    }
+
+    public void showSourceTooltip(){
+        if (this.source != null) {
+            this.source.over(source.getOutputPosition());
+        }
     }
 }
