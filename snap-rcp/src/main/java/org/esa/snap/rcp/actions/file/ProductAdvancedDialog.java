@@ -420,7 +420,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             try {
                 if (event != null) {
                     final String paramName = event.getParameter().getName();
-                    if (paramName.startsWith("geo_")) {
+                    if (paramName.startsWith("geo_") && geoCoordRadio.isEnabled()) {
                         geoCodingChange();
                     } else if (paramName.startsWith("pixel_") || paramName.startsWith("source_")) {
                         pixelPanelChanged();
@@ -445,11 +445,11 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().contains("pixelCoordRadio")) {
-                updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
+//                updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
                 pixelPanel.setVisible(true);
                 geoPanel.setVisible(false);
             } else {
-                updateUIState(new ParamChangeEvent(this, new Parameter("pixel_"), null));
+//                updateUIState(new ParamChangeEvent(this, new Parameter("pixel_"), null));
                 pixelPanel.setVisible(false);
                 geoPanel.setVisible(true);
             }
@@ -562,15 +562,19 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
             paramX1.setValue((int) finalRegion.getMinX(), null);
             paramY1.setValue((int) finalRegion.getMinY(), null);
-            paramWidth.setValue((int) finalRegion.getWidth(), null);
-            paramHeight.setValue((int) finalRegion.getHeight(), null);
+            int width = (int) finalRegion.getMaxX() - (int) finalRegion.getMinX();
+            int height = (int) finalRegion.getMaxY() - (int) finalRegion.getMinY();
+            paramWidth.setValue(width, null);
+            paramHeight.setValue(height, null);
         }
     }
 
     private void syncLatLonWithXYParams() {
         if (this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getGeoCoding() != null) {
             final PixelPos pixelPos1 = new PixelPos((Integer) paramX1.getValue(), (Integer) paramY1.getValue());
-            final PixelPos pixelPos2 = new PixelPos((Integer) paramWidth.getValue(), (Integer) paramHeight.getValue());
+            int paramX2 = (Integer)paramWidth.getValue() + (Integer)paramX1.getValue() - 1;
+            int paramY2 = (Integer)paramHeight.getValue() + (Integer)paramY1.getValue() - 1;
+            final PixelPos pixelPos2 = new PixelPos(paramX2, paramY2);
             GeoCoding geoCoding = this.readerInspectorExposeParameters.getGeoCoding();
 
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
