@@ -2,17 +2,11 @@ package org.esa.snap.product.library.ui.v2.worldwind;
 
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.grender.Rendering;
-import gov.nasa.worldwind.layers.AbstractLayer;
-import gov.nasa.worldwind.render.DrawContext;
-import gov.nasa.worldwind.render.Renderable;
-import org.esa.snap.remote.products.repository.Polygon2D;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 /**

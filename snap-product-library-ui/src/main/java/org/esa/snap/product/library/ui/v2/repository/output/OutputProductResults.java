@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.remote.products.repository.RepositoryProduct;

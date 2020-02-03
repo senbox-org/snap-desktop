@@ -48,8 +48,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
     protected final JLabel statusLabel;
 
-    private JPanel attributesPanel;
-    private RepositoryProduct repositoryProduct;
+    private RepositoryProductAttributesPanel attributesPanel;
 
     protected AbstractRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                              ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
@@ -83,6 +82,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.expandOrCollapseButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                RepositoryProduct repositoryProduct = getRepositoryProduct();
                 if (attributesPanel == null) {
                     addAttributesPanel(repositoryProduct);
                 } else {
@@ -125,14 +125,14 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         return this.sizeLabel.getForeground();
     }
 
-    public void refresh(int index, OutputProductListModel productListModel) {
+    public void refresh(OutputProductListModel productListModel) {
+        RepositoryProduct repositoryProduct = getRepositoryProduct();
+
         if (this.attributesPanel != null) {
-            if (this.repositoryProduct == null || this.repositoryProduct != productListModel.getProductAt(index)) {
+            if (this.attributesPanel.getRepositoryProduct() != repositoryProduct) {
                 remoteAttributesPanel();
             }
         }
-
-        repositoryProduct = productListModel.getProductAt(index);
 
         this.nameLabel.setText(repositoryProduct.getName());
         this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
@@ -153,6 +153,14 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.acquisitionDateLabel.setText(buildAttributeLabelText("Acquisition date", dateAsString));
 
         updateSize(repositoryProduct);
+    }
+
+    public final RepositoryProduct getRepositoryProduct() {
+        RepositoryProduct repositoryProduct = this.repositoryProductPanelBackground.getProductPanelItem(this);
+        if (repositoryProduct == null) {
+            throw new NullPointerException("The repository product is null.");
+        }
+        return repositoryProduct;
     }
 
     private JPanel buildColumnPanel(JLabel firstLabel, JLabel secondLabel, JLabel thirdLabel) {
@@ -210,30 +218,9 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     }
 
     private void addAttributesPanel(RepositoryProduct repositoryProduct) {
-        int gapBetweenRows = this.componentDimension.getGapBetweenRows();
-        int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
-
-        attributesPanel = new JPanel(new BorderLayout(gapBetweenColumns, gapBetweenRows));
-        attributesPanel.setOpaque(false);
-        attributesPanel.add(new JLabel("Attributes"), BorderLayout.NORTH);
-
-        int columnCount = 3;
-        int rowCount = repositoryProduct.getAttributes().size() / columnCount;
-        if (repositoryProduct.getAttributes().size() % columnCount != 0) {
-            rowCount++;
-        }
-        JPanel panel = new JPanel(new GridLayout(rowCount, columnCount, gapBetweenColumns, gapBetweenRows));
-        panel.setOpaque(false);
-        panel.setBorder(new EmptyBorder(0, 5 * gapBetweenColumns, 0, 0));
-        for (int i=0; i<repositoryProduct.getAttributes().size(); i++) {
-            Attribute attribute = repositoryProduct.getAttributes().get(i);
-            JLabel label = new JLabel(attribute.getName() + ": " + attribute.getValue());
-            panel.add(label);
-        }
-        attributesPanel.add(panel, BorderLayout.CENTER);
-
-        add(attributesPanel, BorderLayout.SOUTH);
-
+        this.attributesPanel = new RepositoryProductAttributesPanel(this.componentDimension, repositoryProduct);
+        this.attributesPanel.setOpaque(false);
+        add(this.attributesPanel, BorderLayout.SOUTH);
         this.expandOrCollapseButton.setIcon(this.collapseImageIcon);
         revalidate();
         repaint();

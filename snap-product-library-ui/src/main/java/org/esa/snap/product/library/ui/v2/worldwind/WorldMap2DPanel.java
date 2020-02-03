@@ -7,12 +7,11 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.grender.Rendering;
+import org.esa.snap.remote.products.repository.GeometryUtils;
 import org.esa.snap.remote.products.repository.Polygon2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -112,7 +111,7 @@ public class WorldMap2DPanel extends LayerCanvas implements WorldMap {
                 Graphics2D g2d = rendering.getGraphics();
                 AffineTransform transform = canvas.getViewport().getModelToViewTransform();
 
-                Path2D.Double path = Polygon2D.buildPath(selectionArea);
+                Path2D.Double path = GeometryUtils.buildPath(selectionArea);
                 path.transform(transform);
 
                 g2d.setColor(WorldMapPanelWrapper.SELECTION_FILL_COLOR);

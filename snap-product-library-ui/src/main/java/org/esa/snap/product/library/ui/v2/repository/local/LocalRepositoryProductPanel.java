@@ -22,10 +22,10 @@ public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel 
     }
 
     @Override
-    public void refresh(int index, OutputProductListModel productListModel) {
-        super.refresh(index, productListModel);
+    public void refresh(OutputProductListModel productListModel) {
+        super.refresh(productListModel);
 
-        RepositoryProduct repositoryProduct = productListModel.getProductAt(index);
+        RepositoryProduct repositoryProduct = getRepositoryProduct();
         LocalProgressStatus localProgressStatus = productListModel.getOpeningProductStatus(repositoryProduct);
         updateProgressStatus(localProgressStatus);
     }

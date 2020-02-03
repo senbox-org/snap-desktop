@@ -51,6 +51,7 @@ import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.remote.products.repository.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
@@ -598,9 +599,16 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void newSelectedRepositoryProducts() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
-        Path2D.Double[] polygonPaths = new Path2D.Double[selectedProducts.length];
+        int totalPathCount = 0;
         for (int i = 0; i < selectedProducts.length; i++) {
-            polygonPaths[i] = selectedProducts[i].getPolygon().getPath();
+            totalPathCount += selectedProducts[i].getPolygon().getPathCount();
+        }
+        Path2D.Double[] polygonPaths = new Path2D.Double[totalPathCount];
+        for (int i = 0, index=0; i < selectedProducts.length; i++) {
+            AbstractGeometry2D productGeometry = selectedProducts[i].getPolygon();
+            for (int p=0; p<productGeometry.getPathCount(); p++) {
+                polygonPaths[index++] = productGeometry.getPathAt(p);
+            }
         }
         this.worldWindowPanel.highlightPolygons(polygonPaths);
         if (polygonPaths.length == 1) {

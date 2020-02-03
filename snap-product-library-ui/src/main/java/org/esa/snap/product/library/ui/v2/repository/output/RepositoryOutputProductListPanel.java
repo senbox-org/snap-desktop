@@ -251,7 +251,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             pageProducts.add(this.availableProducts.get(i));
         }
         this.currentPageNumber = newCurrentPageNumber;
-        this.productListPanel.getProductListModel().setProducts(pageProducts);
+        this.productListPanel.setProducts(pageProducts);
         refreshPaginationButtons();
         firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
     }

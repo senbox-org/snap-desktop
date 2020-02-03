@@ -22,10 +22,10 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
     }
 
     @Override
-    public void refresh(int index, OutputProductListModel productListModel) {
-        super.refresh(index, productListModel);
+    public void refresh(OutputProductListModel productListModel) {
+        super.refresh(productListModel);
 
-        RepositoryProduct repositoryProduct = productListModel.getProductAt(index);
+        RepositoryProduct repositoryProduct = getRepositoryProduct();
         DownloadProgressStatus progressPercent = productListModel.getProductDownloadPercent(repositoryProduct);
         updateDownloadingPercent(progressPercent);
     }
