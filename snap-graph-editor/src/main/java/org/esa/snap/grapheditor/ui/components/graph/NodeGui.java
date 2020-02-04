@@ -16,12 +16,13 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
+import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public class NodeGui {
+public class NodeGui implements NodeListener {
     public static final int STATUS_MASK_OVER = 1 << 1;
     public static final int STATUS_MASK_SELECTED = 1 << 2;
 
@@ -78,10 +79,12 @@ public class NodeGui {
     private boolean tooltipVisible_ = false;
     private int tooltipIndex_ = CONNECTION_NONE;
 
+    private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
     private ArrayList<Connection> connections = new ArrayList<>();
 
-    private Object previous_config = null;
-
+    private Object previousConfig = null;
+    private boolean hasInputsChanged = false;
+    private Object output = null;
 
     public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
@@ -348,7 +351,11 @@ public class NodeGui {
 
     public void select() {
         if ((status & STATUS_MASK_SELECTED) == 0) 
-            status += STATUS_MASK_SELECTED; 
+            status += STATUS_MASK_SELECTED;
+        if (hasInputsChanged) {
+            // TODO UPDATE inputs...
+            hasInputsChanged = false;
+        }
     } 
 
     public void deselect() {
@@ -361,23 +368,26 @@ public class NodeGui {
         return false;
     }
 
+    public void disconnect(int index) {
+        for (int i = index + 1; i < this.connections.size(); i++) {
+            this.connections.get(i).setTargetIndex(i - 1);
+        }
+
+        numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
+        height = (numInputs + 1) * connectionOffset;
+        this.connections.get(index).getSource().removeNodeListener(this);
+        this.connections.remove(index);
+        hasInputsChanged = true;
+    }
+
     public NodeDragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.connections.size() > iy) {
                 Connection c = this.connections.get(iy);
                 if (c != null) {
-
-                    for (int i = iy + 1; i < this.connections.size(); i++) {
-                        this.connections.get(i).setTargetIndex(i - 1);
-                    }
-
-                    numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
-                    height = (numInputs + 1) * connectionOffset;
-                    this.connections.remove(c);
-
+                    disconnect(iy);
                     c.showSourceTooltip();
-
                     return new NodeDragAction(new Connection(c.getSource(), p));
                 }
             }
@@ -455,32 +465,49 @@ public class NodeGui {
         if (index == CONNECTION_NONE)
             return false;
         for (Connection c: connections) {
-            if (c != null && c.getSource() == other) {
+            if (c != null && other == c.getSource()) {
                 return false;
             }
         }
-        return (connections.size() <= index || connections.get(index) == null);
+        return (connections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
+    }
+
+    private void connect(Connection c){
+        connections.add(c);
+        c.getSource().addNodeListener(this);
+        hasInputsChanged = true;
     }
 
     public void addConnection(Connection connection, int index) {
         if (index == connections.size())  {
-            connections.add(connection);
-        } else if (index < connections.size()) {
-            connections.set(index, connection);
+            connect(connection);
         } else {
-            for (int i = connections.size(); i < index + 1; i++) {
-                connections.add(null);
-            }
-            connections.add(connection);
+            return;
         }
+
         if (metadata.getMaxNumberOfInputs() == -1) {
             if (connections.size() < metadata.getMinNumberOfInputs()) {
                 numInputs = metadata.getMinNumberOfInputs();
-            } else {
+            } else if (metadata.getMaxNumberOfInputs() > 0 ) {
+                numInputs = Math.min(metadata.getMaxNumberOfInputs(), numInputs + 1);
+            }else {
                 numInputs = connections.size() + 1;
             }
+
             height = (numInputs + 1) * connectionOffset;
         }
     }
 
+    @Override
+    public void outputChanged(NodeGui source) {
+        hasInputsChanged = true;
+    }
+
+    public void addNodeListener(NodeListener l) {
+        nodeListeners.add(l);
+    }
+
+    public void removeNodeListener(NodeListener l) {
+        nodeListeners.remove(l);
+    }
 }
