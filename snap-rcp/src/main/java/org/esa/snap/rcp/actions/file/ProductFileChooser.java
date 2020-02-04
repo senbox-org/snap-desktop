@@ -289,6 +289,7 @@ public class ProductFileChooser extends SnapFileChooser {
                     readerInspectorExposeParameters = metadatainsp.getMetadata(input);
                 } catch (Exception ex) {
                     addUIComponents = false;
+                    Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("Failed to read the metadata file! "));
                     logger.log(Level.SEVERE, "Failed to read the metadata file! ", ex);
                 }
             }
