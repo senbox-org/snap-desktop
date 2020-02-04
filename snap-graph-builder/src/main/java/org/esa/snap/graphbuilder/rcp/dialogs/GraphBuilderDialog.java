@@ -28,11 +28,7 @@ import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -53,17 +49,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
  */
-public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog, LabelBarProgressMonitor.ProgressBarListener {
+public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog, LabelBarProgressMonitor.ProgressBarListener, HelpCtx.Provider {
 
     private static final ImageIcon processIcon = TangoIcons.actions_media_playback_start(TangoIcons.Res.R22);
     private static final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
@@ -113,14 +105,19 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         initUI();
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx("addLandCoverBand");
+    }
+
     /**
      * Initializes the dialog components
      */
     private void initUI() {
         if (this.allowGraphBuilding) {
-            super.getJDialog().setMinimumSize(new Dimension(650, 750));
+            super.getJDialog().setMinimumSize(new Dimension(700, 750));
         } else {
-            super.getJDialog().setMinimumSize(new Dimension(650, 500));
+            super.getJDialog().setMinimumSize(new Dimension(700, 550));
         }
 
         final JPanel mainPanel = new JPanel(new BorderLayout(4, 4));
@@ -130,12 +127,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel = new JTabbedPane();
         //tabbedPanel.setTabPlacement(JTabbedPane.LEFT);
         tabbedPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tabbedPanel.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(final ChangeEvent e) {
-                validateAllNodes();
-            }
-        });
+        tabbedPanel.addChangeListener(e -> validateAllNodes());
 
         statusLabel = new JLabel("");
         statusLabel.setForeground(new Color(255, 0, 0));
@@ -143,17 +135,19 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
 
-        if (allowGraphBuilding) {
+        if (true){//allowGraphBuilding) {
             graphPanel = new GraphPanel(graphEx);
             graphPanel.setBackground(Color.WHITE);
             graphPanel.setPreferredSize(new Dimension(1500, 1000));
             final JScrollPane scrollPane = new JScrollPane(graphPanel);
             scrollPane.setPreferredSize(new Dimension(300, 300));
 
-            final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                                                        scrollPane, midPanel);
+            final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, midPanel);
             splitPane.setOneTouchExpandable(true);
-            splitPane.setResizeWeight(0.6);
+            splitPane.setResizeWeight(0.4);
+            if(!allowGraphBuilding) {
+                splitPane.setDividerLocation(0);
+            }
             splitPane.setBorder(new BasicBorders.MarginBorder());
 
             mainPanel.add(splitPane, BorderLayout.CENTER);
@@ -182,12 +176,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         progBarMonitor.addListener(this);
 
         final JButton progressCancelBtn = new JButton("Cancel");
-        progressCancelBtn.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                cancelProcessing();
-            }
-        });
+        progressCancelBtn.addActionListener(e -> cancelProcessing());
         progressPanel.add(progressCancelBtn, BorderLayout.EAST);
 
         progressPanel.setVisible(false);
@@ -211,60 +200,30 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
         final JButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        processButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                doProcessing();
-            }
-        });
+        processButton.addActionListener(e -> doProcessing());
 
         final JButton saveButton = DialogUtils.createButton("saveButton", "Save", saveIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        saveButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                saveGraph();
-            }
-        });
+        saveButton.addActionListener(e -> saveGraph());
 
         final JButton loadButton = DialogUtils.createButton("loadButton", "Load", loadIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        loadButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                loadGraph();
-            }
-        });
+        loadButton.addActionListener(e -> loadGraph());
 
         final JButton clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        clearButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                clearGraph();
-            }
-        });
+        clearButton.addActionListener(e -> clearGraph());
 
         final JButton infoButton = DialogUtils.createButton("infoButton", "Note", infoIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        infoButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                OnInfo();
-            }
-        });
+        infoButton.addActionListener(e -> OnInfo());
         //getClass().getName() + name
         final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
-        helpButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                OnHelp();
-            }
-        });
+        helpButton.addActionListener(e -> OnHelp());
 
         gbc.weightx = 0;
         if (allowGraphBuilding) {
             panel.add(loadButton, gbc);
-            panel.add(saveButton, gbc);
             panel.add(clearButton, gbc);
             panel.add(infoButton, gbc);
         }
+        panel.add(saveButton, gbc);
         panel.add(helpButton, gbc);
         panel.add(processButton, gbc);
     }
@@ -348,8 +307,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      * Validates the input and then saves the current graph to a file
      */
     public void saveGraph() {
-
-        //if(validateAllNodes()) {
         try {
             final File file = graphEx.saveGraph();
             if (file != null) {
@@ -358,9 +315,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
         }
-        //} else {
-        //    showErrorDialog(statusLabel.getText());
-        //}
     }
 
     @Override
@@ -634,7 +588,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
 
         @Override
-        protected GraphExecuter doInBackground() throws Exception {
+        protected GraphExecuter doInBackground() {
 
             pm.beginTask("Processing Graph...", 10);
             try {
@@ -669,7 +623,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds));
 
                 final List<File> fileList = graphEx.getProductsToOpenInDAT();
-                final File[] files = fileList.toArray(new File[fileList.size()]);
+                final File[] files = fileList.toArray(new File[0]);
                 notifyMSG(ProcessingListener.MSG.DONE, files);
 
                 ProcessingStats stats = openTargetProducts(files);
