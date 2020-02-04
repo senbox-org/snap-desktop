@@ -41,6 +41,7 @@ public class GraphBuilder extends JPanel {
         settingsButton.addActionListener(e -> {
             SettingManager.getInstance().showSettingsDialog(parentWindow);
         });
+        toolBar.setFloatable(false);
         toolBar.add(settingsButton);
 
         statusBar = new StatusPanel();
@@ -64,7 +65,13 @@ public class GraphBuilder extends JPanel {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
+            for (UIManager.LookAndFeelInfo look : looks) {
+                System.out.println(look.getClassName());
+                if (look.getClassName().contains("NimbusLookAndFeel")) {
+                    UIManager.setLookAndFeel(look.getClassName());
+                }
+            }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | UnsupportedLookAndFeelException e) {
             e.printStackTrace();
