@@ -11,12 +11,19 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 
+import com.bc.ceres.binding.dom.DomElement;
+import com.bc.ceres.binding.dom.XppDomElement;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
+import org.esa.snap.grapheditor.gpf.ui.UIValidation;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
+import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
@@ -27,7 +34,6 @@ public class NodeGui implements NodeListener {
     public static final int STATUS_MASK_SELECTED = 1 << 2;
 
     private static final int MAX_LINE_LENGTH = 45;
-    
 
 
     // private static final Color errorColor = new Color(255, 80, 80, 128);
@@ -82,7 +88,7 @@ public class NodeGui implements NodeListener {
     private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
     private ArrayList<Connection> connections = new ArrayList<>();
 
-    private Object previousConfig = null;
+    private XppDomElement config = null;
     private boolean hasInputsChanged = false;
     private Object output = null;
 
@@ -91,11 +97,26 @@ public class NodeGui implements NodeListener {
         this.y = 0;
         this.metadata = metadata;
         this.operatorUI = operatorUI;
+
         this.node = node;
         this.name = this.node.getId();
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
+
+        config = new XppDomElement("parameters");
+    }
+
+    private XppDomElement updateParameters() {
+        XppDomElement update = new XppDomElement("parameters");
+        this.operatorUI.updateParameters();
+        try {
+            this.operatorUI.convertToDOM(update);
+        } catch (GraphException e) {
+            e.printStackTrace();
+            return new XppDomElement("parameters");
+        }
+        return update;
     }
 
     public void paintNode(Graphics2D g) {
@@ -352,20 +373,59 @@ public class NodeGui implements NodeListener {
     public void select() {
         if ((status & STATUS_MASK_SELECTED) == 0) 
             status += STATUS_MASK_SELECTED;
+        System.out.println("\033[1;32m>> SELECTED\033[0m");
         if (hasInputsChanged) {
             // TODO UPDATE inputs...
+            // Remove Sources
+            Product products[] = new Product[connections.size()];
+            for (int i = 0; i < products.length; i++) {
+                products[i] = connections.get(i).getSourceProduct();
+            }
+            operatorUI.setSourceProducts(products);
+            operatorUI.updateParameters();
             hasInputsChanged = false;
         }
-    } 
+    }
+
+    public Product getProduct() {
+        if (operatorUI.validateParameters().getState() == UIValidation.State.OK) {
+            operatorUI.initParameters();
+        }
+        return null;
+    }
 
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
-        check_changes();
+        if (check_changes()) {
+            System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
+            for (NodeListener l : nodeListeners) {
+                l.outputChanged(this);
+            }
+        }
+    }
+
+    private boolean equals(DomElement a, DomElement b){
+        if (b.getName() == a.getName()) {
+            if (b.getValue() == a.getValue()) {
+                if (a.getChildCount() == b.getChildCount()) {
+                    for (int i = 0; i < a.getChildCount(); i++) {
+                        if (!equals(a.getChild(i), b.getChild(i))) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean check_changes() {
-        return false;
+        XppDomElement update = updateParameters();
+        boolean res =  equals(config, update);
+        config = update;
+        return !res;
     }
 
     public void disconnect(int index) {
@@ -471,6 +531,7 @@ public class NodeGui implements NodeListener {
         }
         return (connections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
     }
+
 
     private void connect(Connection c){
         connections.add(c);

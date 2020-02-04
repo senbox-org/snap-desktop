@@ -1,5 +1,7 @@
 package org.esa.snap.grapheditor.ui.components.graph;
 
+import org.esa.snap.core.datamodel.Product;
+
 import java.awt.*;
 
 public class Connection {
@@ -123,5 +125,11 @@ public class Connection {
 
     public int getTargetIndex() {
         return this.targetIndex;
+    }
+
+    public Product getSourceProduct() {
+        if (source != null)
+            return source.getProduct();
+        return null;
     }
 }
