@@ -79,7 +79,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private boolean showRightClickHelp = false;
 
     public GraphPanel(GraphExecuter graphExec) {
-
         graphEx = graphExec;
 
         createAddOpMenu();

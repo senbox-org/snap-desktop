@@ -35,7 +35,6 @@ public class NodeGui implements NodeListener {
 
     private static final int MAX_LINE_LENGTH = 45;
 
-
     // private static final Color errorColor = new Color(255, 80, 80, 128);
     // private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(233, 229, 225, 230); //Color
@@ -90,9 +89,9 @@ public class NodeGui implements NodeListener {
 
     private XppDomElement config = null;
     private boolean hasInputsChanged = false;
-    private Object output = null;
+    private Product output = null;
 
-    public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
+    public NodeGui (Node node, Map<String, Object> configuration, @NotNull SimplifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
         this.y = 0;
         this.metadata = metadata;
@@ -107,6 +106,7 @@ public class NodeGui implements NodeListener {
         config = new XppDomElement("parameters");
     }
 
+    @NotNull
     private XppDomElement updateParameters() {
         XppDomElement update = new XppDomElement("parameters");
         this.operatorUI.updateParameters();
@@ -119,7 +119,7 @@ public class NodeGui implements NodeListener {
         return update;
     }
 
-    public void paintNode(Graphics2D g) {
+    public void paintNode(@NotNull Graphics2D g) {
         g.setFont(textFont);
         
         if (textW <= 0) {
@@ -152,7 +152,6 @@ public class NodeGui implements NodeListener {
         
         paintInputs(g);
         paintOutput(g);
-
     }
 
     public void paintConnections(Graphics2D g) {
@@ -195,7 +194,6 @@ public class NodeGui implements NodeListener {
         }
         return result.toArray(new String[0]);
     }
-
 
     public void tooltip(Graphics2D g) {
         if (tooltipVisible_ && tooltipText_ != null) {
@@ -254,7 +252,8 @@ public class NodeGui implements NodeListener {
         }
     }
 
-    private int numInputs() { 
+    @Contract(pure = true)
+    private int numInputs() {
         return numInputs;
     }  
 
@@ -294,7 +293,7 @@ public class NodeGui implements NodeListener {
         this.y = y;
     }
 
-    public void setPosition(Point p) {
+    public void setPosition(@NotNull Point p) {
         this.x = p.x;
         this.y = p.y;
     }
@@ -315,7 +314,7 @@ public class NodeGui implements NodeListener {
         return name;
     }
 
-    private int getInputIndex(Point p) {
+    private int getInputIndex(@NotNull Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
         if (Math.abs(dx) <= connectionHalfSize && dy > 0) {
@@ -330,9 +329,7 @@ public class NodeGui implements NodeListener {
         return -1;
     }
 
-
-
-    private boolean isOverOutput(Point p) {
+    private boolean isOverOutput(@NotNull Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
         return (metadata.hasOutput()
@@ -340,7 +337,7 @@ public class NodeGui implements NodeListener {
                 && Math.abs(dy - connectionOffset) <= connectionHalfSize);
     }
 
-    public boolean contains(Point p) {
+    public boolean contains(@NotNull Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
         boolean inside = (dx >= 0 && dy >= 0 && dx <= width && dy <= height);
@@ -391,7 +388,7 @@ public class NodeGui implements NodeListener {
         if (operatorUI.validateParameters().getState() == UIValidation.State.OK) {
             operatorUI.initParameters();
         }
-        return null;
+        return output;
     }
 
     public void deselect() {
@@ -482,7 +479,6 @@ public class NodeGui implements NodeListener {
         }
     }
 
-
     public JComponent getPreferencePanel(AppContext context){
         if (preferencePanel == null) {
             try {
@@ -531,7 +527,6 @@ public class NodeGui implements NodeListener {
         }
         return (connections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
     }
-
 
     private void connect(Connection c){
         connections.add(c);
