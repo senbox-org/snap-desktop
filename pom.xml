@@ -20,9 +20,6 @@
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
         <tao.version>1.0.1</tao.version>
-        <nbm.plugin.group.id>org.apache.netbeans.utilities</nbm.plugin.group.id>
-        <nbm.plugin.artifact.id>nbm-maven-plugin</nbm.plugin.artifact.id>
-        <nbm.plugin.version>4.3</nbm.plugin.version>
     </properties>
 
     <modules>
