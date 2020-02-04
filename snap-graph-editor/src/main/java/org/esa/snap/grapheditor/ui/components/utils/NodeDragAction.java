@@ -1,4 +1,7 @@
-package org.esa.snap.grapheditor.ui.components.graph;
+package org.esa.snap.grapheditor.ui.components.utils;
+
+import org.esa.snap.grapheditor.ui.components.graph.Connection;
+import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
 import java.awt.*;
 

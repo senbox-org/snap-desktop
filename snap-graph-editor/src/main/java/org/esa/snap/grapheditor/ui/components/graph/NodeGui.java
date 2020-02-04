@@ -15,6 +15,7 @@ import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
+import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
@@ -70,12 +71,16 @@ public class NodeGui {
     private final OperatorUI operatorUI;
     private final Node node;
     private final Map<String, Object> configuration;
+    private int numInputs;
+
     private JComponent preferencePanel = null;
     private String[] tooltipText_ = null;
     private boolean tooltipVisible_ = false;
     private int tooltipIndex_ = CONNECTION_NONE;
 
     private ArrayList<Connection> connections = new ArrayList<>();
+
+    private Object previous_config = null;
 
 
     public NodeGui (Node node, Map<String, Object> configuration, SimplifiedMetadata metadata, OperatorUI operatorUI){
@@ -86,7 +91,8 @@ public class NodeGui {
         this.node = node;
         this.name = this.node.getId();
         this.configuration = configuration;
-        height = Math.max(height, connectionOffset * (metadata.getMinNumberOfInputs() + 1));
+        numInputs = metadata.getMinNumberOfInputs();
+        height = Math.max(height, connectionOffset * (numInputs + 1));
     }
 
     public void paintNode(Graphics2D g) {
@@ -218,7 +224,7 @@ public class NodeGui {
     }
 
     private int numInputs() { 
-        return metadata.getMinNumberOfInputs(); 
+        return numInputs;
     }  
 
     private void paintOutput(Graphics2D g) {
@@ -339,8 +345,13 @@ public class NodeGui {
     } 
 
     public void deselect() {
-        if ((status & STATUS_MASK_SELECTED) > 0) 
-            status -= STATUS_MASK_SELECTED; 
+        if ((status & STATUS_MASK_SELECTED) > 0)
+            status -= STATUS_MASK_SELECTED;
+        check_changes();
+    }
+
+    private boolean check_changes() {
+        return false;
     }
 
     public NodeDragAction drag(Point p) {
@@ -441,7 +452,13 @@ public class NodeGui {
             }
             connections.add(connection);
         }
-
+        if (metadata.getMaxNumberOfInputs() == -1) {
+            if (connections.size() < metadata.getMinNumberOfInputs()) {
+                numInputs = metadata.getMinNumberOfInputs();
+            } else {
+                numInputs = connections.size() + 1;
+            }
+        }
     }
 
 }

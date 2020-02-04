@@ -20,7 +20,7 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import org.esa.snap.grapheditor.ui.components.graph.NodeDragAction;
+import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
