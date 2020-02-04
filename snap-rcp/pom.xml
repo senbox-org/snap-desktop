@@ -44,6 +44,7 @@
                         <publicPackage>org.esa.snap.rcp.about</publicPackage>
                         <publicPackage>org.esa.snap.rcp.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.util.*</publicPackage>
+						<publicPackage>org.jfree.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -255,6 +256,15 @@
             <version>${snap.version}</version>
         </dependency>
 
+		<dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+        </dependency>
+
         <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
           (prerequisite: snap-gpf needs to be moved to snap-core before) -->
         <dependency>
@@ -271,10 +281,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+			<scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+			<scope>test</scope>
         </dependency>
 
     </dependencies>
