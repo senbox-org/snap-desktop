@@ -133,7 +133,8 @@ public class NodeGui {
 
     public void paintConnections(Graphics2D g) {
         for (Connection c: connections) {
-            c.draw(g);
+            if (c != null)
+                c.draw(g);
         }
     }
 
@@ -218,6 +219,12 @@ public class NodeGui {
                 g.setStroke(borderStroke);
                 g.setColor(borderColor());
                 g.drawOval(xc, yc, connectionSize, connectionSize);
+                if (i >= metadata.getMinNumberOfInputs()) {
+                    g.setColor(Color.lightGray);
+                    g.setStroke(textStroke);
+                    g.fillOval(xc + 3, yc + 3, connectionSize - 6, connectionSize - 6);
+                    g.drawOval(xc + 3, yc + 3, connectionSize - 6, connectionSize - 6);
+                }
                 yc += connectionOffset;
             }
         }
@@ -358,14 +365,19 @@ public class NodeGui {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.connections.size() > iy) {
-                if (this.connections.get(iy) != null) {
-                    Connection c = this.connections.get(iy);
-                    if (this.connections.size() > iy + 1) {
-                        this.connections.set(iy, null);
-                    } else {
-                        this.connections.remove(c);
+                Connection c = this.connections.get(iy);
+                if (c != null) {
+
+                    for (int i = iy + 1; i < this.connections.size(); i++) {
+                        this.connections.get(i).setTargetIndex(i - 1);
                     }
+
+                    numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
+                    height = (numInputs + 1) * connectionOffset;
+                    this.connections.remove(c);
+
                     c.showSourceTooltip();
+
                     return new NodeDragAction(new Connection(c.getSource(), p));
                 }
             }
@@ -437,8 +449,17 @@ public class NodeGui {
         return CONNECTION_NONE;
     }
 
-    public boolean isConnectionAvailable(int index) {
-        return (index == CONNECTION_OUTPUT || connections.size() <= index || connections.get(index) == null);
+    public boolean isConnectionAvailable(int index, NodeGui other) {
+        if (index == CONNECTION_OUTPUT)
+            return true;
+        if (index == CONNECTION_NONE)
+            return false;
+        for (Connection c: connections) {
+            if (c != null && c.getSource() == other) {
+                return false;
+            }
+        }
+        return (connections.size() <= index || connections.get(index) == null);
     }
 
     public void addConnection(Connection connection, int index) {
@@ -458,6 +479,7 @@ public class NodeGui {
             } else {
                 numInputs = connections.size() + 1;
             }
+            height = (numInputs + 1) * connectionOffset;
         }
     }
 

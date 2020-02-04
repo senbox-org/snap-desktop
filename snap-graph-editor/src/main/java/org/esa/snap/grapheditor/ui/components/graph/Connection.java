@@ -100,7 +100,7 @@ public class Connection {
                 res  = true;
             }
         } else if (this.source != null) {
-            res = node.isConnectionAvailable(connection);
+            res = node.isConnectionAvailable(connection, this.source);
             this.target = node;
             this.targetIndex = connection;
 
@@ -115,5 +115,13 @@ public class Connection {
         if (this.source != null) {
             this.source.over(source.getOutputPosition());
         }
+    }
+
+    public void setTargetIndex(int index) {
+        this.targetIndex = index;
+    }
+
+    public int getTargetIndex() {
+        return this.targetIndex;
     }
 }

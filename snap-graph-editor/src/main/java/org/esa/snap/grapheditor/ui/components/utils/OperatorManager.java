@@ -317,7 +317,4 @@ public class OperatorManager {
         Node node = createNode(metadata.getName());
         return new NodeGui(node, getConfiguration(node), metadata, ui);
     }
-
-
-
 }
