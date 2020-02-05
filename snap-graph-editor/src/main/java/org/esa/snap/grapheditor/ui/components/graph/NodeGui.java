@@ -404,22 +404,27 @@ public class NodeGui implements NodeListener {
         if (state == UIValidation.State.OK) {
             Operator op = metadata.getOperator();
             SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
-            int n = Math.min(descriptors.length, connections.size());
-            if (n == 1) {
-                op.setSourceProduct(connections.get(0).getSourceProduct());
-                System.out.println("Single Product");
-            } else {
-                for (int i = 0; i < n; i++) {
-                    Product p = connections.get(i).getSourceProduct();
-                    if (p == null) {
-                        incomplete();
-                        return;
-                    }
-                    op.setSourceProduct(descriptors[i].getName(),p );
+            int n = 0;
+            if (descriptors != null && descriptors.length > 0) {
+                n = Math.min(descriptors.length, connections.size());
+                if (n == 1) {
+                    op.setSourceProduct(connections.get(0).getSourceProduct());
+                    System.out.println("Single Product");
+                    System.out.println(op.getSourceProduct());
+                } else {
+                    for (int i = 0; i < n; i++) {
+                        Product p = connections.get(i).getSourceProduct();
+                        if (p == null) {
+                            incomplete();
+                            return;
+                        }
+                        op.setSourceProduct(descriptors[i].getName(), p);
 
+                    }
                 }
             }
             if (metadata.getMaxNumberOfInputs() < 0 && connections.size() > n) {
+                System.out.println("HEREEE");
                 Product products[] = new Product[connections.size() - n];
                 for (int i = n; i < connections.size(); i++) {
                     Product p = connections.get(i).getSourceProduct();
@@ -429,9 +434,11 @@ public class NodeGui implements NodeListener {
                     }
                     products[i - n] = p;
                 }
+                System.out.println(products.length);
                 op.setSourceProducts(products);
 
             }
+
 
             for (String param: configuration.keySet()) {
                 op.setParameter(param, configuration.get(param));
@@ -462,8 +469,9 @@ public class NodeGui implements NodeListener {
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
-        if (check_changes() || recomputeOutputNeeded) {
+        if (recomputeOutputNeeded || check_changes()) {
             System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
+            operatorUI.updateParameters();
             recomputeOutput();
             for (NodeListener l : nodeListeners) {
                 l.outputChanged(this);

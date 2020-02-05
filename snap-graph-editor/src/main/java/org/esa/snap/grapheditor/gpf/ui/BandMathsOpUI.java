@@ -106,17 +106,18 @@ public class BandMathsOpUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
+        if (paramBand != null) {
+            bandDesc.name = paramBand.getValueAsText();
+            bandDesc.type = paramBandType.getValueAsText();
+            bandDesc.unit = paramBandUnit.getValueAsText();
+            String noDataValueStr = paramNoDataValue.getValueAsText();
+            bandDesc.noDataValue = noDataValueStr.isEmpty() ? 0 : Double.parseDouble(noDataValueStr);
+            bandDesc.expression = paramExpression.getValueAsText();
 
-        bandDesc.name = paramBand.getValueAsText();
-        bandDesc.type = paramBandType.getValueAsText();
-        bandDesc.unit = paramBandUnit.getValueAsText();
-        String noDataValueStr = paramNoDataValue.getValueAsText();
-        bandDesc.noDataValue = noDataValueStr.isEmpty() ? 0 : Double.parseDouble(noDataValueStr);
-        bandDesc.expression = paramExpression.getValueAsText();
-
-        final BandMathsOp.BandDescriptor[] bandDescriptors = new BandMathsOp.BandDescriptor[1];
-        bandDescriptors[0] = bandDesc;
-        paramMap.put("targetBandDescriptors", bandDescriptors);
+            final BandMathsOp.BandDescriptor[] bandDescriptors = new BandMathsOp.BandDescriptor[1];
+            bandDescriptors[0] = bandDesc;
+            paramMap.put("targetBandDescriptors", bandDescriptors);
+        }
     }
 
     private void initVariables() {
