@@ -47,7 +47,7 @@ public class GraphPanel extends JPanel
     private NodeGui selectedNode = null;
     private NodeDragAction dragAction = null;
 
-    private OperatorManager operatorManager = new OperatorManager();
+    private OperatorManager operatorManager = OperatorManager.getInstance();
 
     private ArrayList<GraphListener> graphListeners = new ArrayList<>();
 

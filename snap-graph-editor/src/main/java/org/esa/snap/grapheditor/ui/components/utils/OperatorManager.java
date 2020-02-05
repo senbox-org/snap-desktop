@@ -47,13 +47,9 @@ public class OperatorManager {
         private final int maxNInputs;
         private final boolean hasOutputProduct;
 
-        private final Operator operator;
 
-
-        public SimplifiedMetadata(final Operator op, final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
+        public SimplifiedMetadata(final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
             this.descriptor = opDescriptor;
-            this.operator = op;
-
 
             if (descriptor.getSourceProductsDescriptor() != null) {
                 minNInputs = descriptor.getSourceProductDescriptors().length + 1;
@@ -76,10 +72,6 @@ public class OperatorManager {
 
             category_lower = category.toLowerCase();
             name_lower = name.toLowerCase();
-        }
-
-        public Operator getOperator() {
-            return operator;
         }
 
         public String getName() {
@@ -151,22 +143,37 @@ public class OperatorManager {
 
     private final ArrayList<Node> nodes = new ArrayList<>();
 
-    public OperatorManager() {
+    static private OperatorManager instance = null;
+
+    static public OperatorManager getInstance() {
+        if (instance == null) {
+            instance = new OperatorManager();
+        }
+        return instance;
+    }
+
+    private OperatorManager() {
         gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
-            Operator op = opSpi.createOperator();
-
             OperatorDescriptor descriptor = opSpi.getOperatorDescriptor();
             if (descriptor != null && !descriptor.isInternal()) {
                 final OperatorMetadata operatorMetadata = opSpi.getOperatorClass()
                         .getAnnotation(OperatorMetadata.class);
 
                 metadatas.add(operatorMetadata);
-                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(op, operatorMetadata, descriptor));
+                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata, descriptor));
                               
             }
         }
+    }
+
+    public Operator getOperator(SimplifiedMetadata metadata) {
+        OperatorSpi spi = opSpiRegistry.getOperatorSpi(metadata.getName());
+        if (spi != null) {
+            return spi.createOperator();
+        }
+        return null;
     }
 
     public Collection<SimplifiedMetadata> getSimplifiedMetadatas() {

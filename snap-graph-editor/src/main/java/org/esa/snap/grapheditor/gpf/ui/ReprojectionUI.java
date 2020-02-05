@@ -98,7 +98,8 @@ public class ReprojectionUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
 
-
+        if (paramMap == null)
+            return;
         paramMap.clear();
         paramMap.put("resamplingName", Objects.requireNonNull(resampleComboBox.getSelectedItem()).toString());
         paramMap.put("includeTiePointGrids", includeTPcheck.isSelected());

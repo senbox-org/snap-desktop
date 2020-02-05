@@ -213,7 +213,8 @@ public class ResamplingUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
+        if (paramMap == null)
+            return;
         updateResamplingPreset();
         paramMap.clear();
         //if we use always target width and height because this way, there are no errors when changing sources (for example, the name of the band could not be found)

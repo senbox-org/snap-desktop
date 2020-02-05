@@ -122,7 +122,8 @@ public class TargetUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
+        if (paramMap == null)
+            return;
         if (targetProductSelector != null && targetProductSelector.getModel().getProductName() != null) {
             paramMap.put("file", targetProductSelector.getModel().getProductFile());
             paramMap.put("formatName", targetProductSelector.getModel().getFormatName());

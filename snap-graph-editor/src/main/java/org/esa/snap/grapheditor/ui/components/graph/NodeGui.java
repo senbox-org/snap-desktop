@@ -17,12 +17,14 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
+import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
@@ -84,6 +86,9 @@ public class NodeGui implements NodeListener {
 
     private final SimplifiedMetadata metadata;
     private final OperatorUI operatorUI;
+    private final Operator operator;
+    private final OperatorContext context;
+
     private final Node node;
     private Map<String, Object> configuration;
     private int numInputs;
@@ -111,6 +116,9 @@ public class NodeGui implements NodeListener {
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
+        operator = OperatorManager.getInstance().getOperator(metadata);
+        context = new OperatorContext(operator);
+
     }
 
 
@@ -393,59 +401,48 @@ public class NodeGui implements NodeListener {
             recomputeOutputNeeded = true;
         }
     }
-    private void incomplete() {
+    private boolean incomplete() {
         output = null;
         validationStatus = ValidationStatus.WARNING;
+        return true;
     }
 
-    private void recomputeOutput() {
+    private boolean recomputeOutput() {
         recomputeOutputNeeded = false;
         UIValidation.State state = operatorUI.validateParameters().getState();
+
         if (state == UIValidation.State.OK) {
-            Operator op = metadata.getOperator();
             SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
-            int n = 0;
-            if (descriptors != null && descriptors.length > 0) {
-                n = Math.min(descriptors.length, connections.size());
-                if (n == 1) {
-                    op.setSourceProduct(connections.get(0).getSourceProduct());
-                    System.out.println("Single Product");
-                    System.out.println(op.getSourceProduct());
-                } else {
-                    for (int i = 0; i < n; i++) {
-                        Product p = connections.get(i).getSourceProduct();
-                        if (p == null) {
-                            incomplete();
-                            return;
-                        }
-                        op.setSourceProduct(descriptors[i].getName(), p);
-
-                    }
-                }
+            if (connections.size() < descriptors.length) {
+                return incomplete();
             }
-            if (metadata.getMaxNumberOfInputs() < 0 && connections.size() > n) {
-                System.out.println("HEREEE");
-                Product products[] = new Product[connections.size() - n];
-                for (int i = n; i < connections.size(); i++) {
+            for (int i = 0; i < descriptors.length; i++ ){
+                SourceProductDescriptor descr = metadata.getDescriptor().getSourceProductDescriptors()[i];
+                Product p = connections.get(i).getSourceProduct();
+                if (p == null)
+                    return incomplete();
+                System.out.println(descr.getName());
+                context.setSourceProduct(descr.getName(), p);
+            }
+            if (connections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
+                Product products[] = new Product[connections.size() - descriptors.length];
+                for (int i = descriptors.length; i < connections.size(); i++) {
                     Product p = connections.get(i).getSourceProduct();
-                    if (p == null) {
-                        incomplete();
-                        return;
-                    }
-                    products[i - n] = p;
+                    if (p == null)
+                        return incomplete();
+                    products[i - descriptors.length] = p;
                 }
-                System.out.println(products.length);
-                op.setSourceProducts(products);
-
+                context.setSourceProducts(products);
             }
 
+            System.out.println(context.getSourceProducts());
 
             for (String param: configuration.keySet()) {
-                op.setParameter(param, configuration.get(param));
+                System.out.println(param);
+                context.setParameter(param, configuration.get(param));
             }
             try {
-                op.initialize();
-                output = op.getTargetProduct();
+                output = context.getTargetProduct();
                 validationStatus = ValidationStatus.VALIDATED;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -460,6 +457,7 @@ public class NodeGui implements NodeListener {
                 validationStatus = ValidationStatus.WARNING;
             }
         }
+        return true;
     }
 
     public Product getProduct() {
@@ -472,9 +470,10 @@ public class NodeGui implements NodeListener {
         if (recomputeOutputNeeded || check_changes()) {
             System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
             operatorUI.updateParameters();
-            recomputeOutput();
-            for (NodeListener l : nodeListeners) {
-                l.outputChanged(this);
+            if (recomputeOutput()) {
+                for (NodeListener l : nodeListeners) {
+                    l.outputChanged(this);
+                }
             }
         }
     }

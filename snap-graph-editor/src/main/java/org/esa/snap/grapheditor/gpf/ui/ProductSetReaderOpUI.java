@@ -56,7 +56,8 @@ public class ProductSetReaderOpUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
+        if (paramMap == null)
+            return;
         final File[] fileList = productSetTable.getFileList();
         if (fileList.length == 0) return;
 

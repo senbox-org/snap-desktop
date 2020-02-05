@@ -156,7 +156,8 @@ public class SubsetUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
+        if (paramMap == null)
+            return;
         OperatorUIUtils.updateParamList(bandList, paramMap, "bandNames");
 
         paramMap.remove("referenceBand");
