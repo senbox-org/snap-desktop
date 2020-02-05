@@ -20,6 +20,7 @@ import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
@@ -46,9 +47,12 @@ public class OperatorManager {
         private final int maxNInputs;
         private final boolean hasOutputProduct;
 
+        private final Operator operator;
 
-        public SimplifiedMetadata(final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
+
+        public SimplifiedMetadata(final Operator op, final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
             this.descriptor = opDescriptor;
+            this.operator = op;
 
 
             if (descriptor.getSourceProductsDescriptor() != null) {
@@ -72,6 +76,10 @@ public class OperatorManager {
 
             category_lower = category.toLowerCase();
             name_lower = name.toLowerCase();
+        }
+
+        public Operator getOperator() {
+            return operator;
         }
 
         public String getName() {
@@ -128,6 +136,10 @@ public class OperatorManager {
             }
             return "";
         }
+
+        public OperatorDescriptor getDescriptor() {
+            return descriptor;
+        }
     
     }
 
@@ -143,13 +155,15 @@ public class OperatorManager {
         gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
+            Operator op = opSpi.createOperator();
+
             OperatorDescriptor descriptor = opSpi.getOperatorDescriptor();
             if (descriptor != null && !descriptor.isInternal()) {
                 final OperatorMetadata operatorMetadata = opSpi.getOperatorClass()
                         .getAnnotation(OperatorMetadata.class);
 
                 metadatas.add(operatorMetadata);
-                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata, descriptor));
+                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(op, operatorMetadata, descriptor));
                               
             }
         }

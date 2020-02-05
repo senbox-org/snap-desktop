@@ -40,6 +40,7 @@ import javax.swing.JComponent;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -153,8 +154,8 @@ public abstract class BaseOperatorUI implements OperatorUI {
                     final DomElement childElement = parentElement.createChild(getElementName(p));
                     final Object childValue = p.getValue();
                     final Converter converter = descriptor.getConverter();
-                    if(converter == null) {
-                        throw new GraphException(operatorName+" BaseOperatorUI: no converter found for parameter "+descriptor.getName());
+                    if (converter == null) {
+                        throw new GraphException(operatorName + " BaseOperatorUI: no converter found for parameter " + descriptor.getName());
                     }
 
                     String text = converter.format(childValue);
@@ -230,5 +231,15 @@ public abstract class BaseOperatorUI implements OperatorUI {
             return alias;
         }
         return p.getDescriptor().getName();
+    }
+
+    public Map<String, Object> getParameters() {
+//        HashMap<String, Object> params = new HashMap<>();
+//        if (propertySet != null) {
+//            for (Property p: this.propertySet.getProperties()) {
+//                params.put(p.getName(), p.getValue());
+//            }
+//        }
+        return paramMap;
     }
 }

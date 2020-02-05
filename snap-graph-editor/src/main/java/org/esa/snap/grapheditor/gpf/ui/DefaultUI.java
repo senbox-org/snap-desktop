@@ -25,6 +25,7 @@ import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -88,5 +89,9 @@ public class DefaultUI extends BaseOperatorUI {
                 }
             }
         }
+    }
+
+    public Map<String, Object> getParameters() {
+        return paramMap;
     }
 }

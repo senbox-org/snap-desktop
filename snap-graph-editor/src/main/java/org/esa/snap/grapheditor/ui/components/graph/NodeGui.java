@@ -7,36 +7,44 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
-import com.bc.ceres.binding.dom.DomElement;
-import com.bc.ceres.binding.dom.XppDomElement;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.Operator;
+import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.core.gpf.graph.Node;
-import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
 import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+
 public class NodeGui implements NodeListener {
+    public enum ValidationStatus {
+        UNCHECKED,
+        VALIDATED,
+        ERROR,
+        WARNING,
+    }
+
+
     public static final int STATUS_MASK_OVER = 1 << 1;
     public static final int STATUS_MASK_SELECTED = 1 << 2;
 
     private static final int MAX_LINE_LENGTH = 45;
 
-    // private static final Color errorColor = new Color(255, 80, 80, 128);
-    // private static final Color validateColor =  new Color(0, 177, 255, 128);
+    private static final Color errorColor = new Color(255, 80, 80, 128);
+    private static final Color validateColor =  new Color(0, 177, 255, 128);
     private static final Color unknownColor =  new Color(233, 229, 225, 230); //Color
     // private static final Color connectionColor = new Color(66, 66, 66, 255);
     private static final Color activeColor = new Color(254, 223, 176, 180);
@@ -68,15 +76,16 @@ public class NodeGui implements NodeListener {
 
     private int textW = -1;
     private int textH = -1;
-    
+
     private String name;
-    
+
     private int status = 0;
+    private ValidationStatus validationStatus = ValidationStatus.UNCHECKED;
 
     private final SimplifiedMetadata metadata;
     private final OperatorUI operatorUI;
     private final Node node;
-    private final Map<String, Object> configuration;
+    private Map<String, Object> configuration;
     private int numInputs;
 
     private JComponent preferencePanel = null;
@@ -87,9 +96,9 @@ public class NodeGui implements NodeListener {
     private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
     private ArrayList<Connection> connections = new ArrayList<>();
 
-    private XppDomElement config = null;
-    private boolean hasInputsChanged = false;
+    private boolean hasChanged = false;
     private Product output = null;
+    private boolean recomputeOutputNeeded = true;
 
     public NodeGui (Node node, Map<String, Object> configuration, @NotNull SimplifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
@@ -102,29 +111,16 @@ public class NodeGui implements NodeListener {
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
-
-        config = new XppDomElement("parameters");
     }
 
-    @NotNull
-    private XppDomElement updateParameters() {
-        XppDomElement update = new XppDomElement("parameters");
-        this.operatorUI.updateParameters();
-        try {
-            this.operatorUI.convertToDOM(update);
-        } catch (GraphException e) {
-            e.printStackTrace();
-            return new XppDomElement("parameters");
-        }
-        return update;
-    }
+
 
     public void paintNode(@NotNull Graphics2D g) {
         g.setFont(textFont);
-        
+
         if (textW <= 0) {
             FontMetrics fontMetrics = g.getFontMetrics();
-                    
+
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(name);
 
@@ -144,12 +140,12 @@ public class NodeGui implements NodeListener {
         g.setStroke(borderStroke);
         g.setColor(this.borderColor());
         g.drawRoundRect(x, y, width, height, 8, 8);
-        
+
         g.setStroke(textStroke);
         g.setColor(Color.darkGray);
 
         g.drawString(name, x + (width - textW) / 2 , y + (5 + textH));
-        
+
         paintInputs(g);
         paintOutput(g);
     }
@@ -255,7 +251,7 @@ public class NodeGui implements NodeListener {
     @Contract(pure = true)
     private int numInputs() {
         return numInputs;
-    }  
+    }
 
     private void paintOutput(Graphics2D g) {
         if (metadata.hasOutput()) {
@@ -266,16 +262,30 @@ public class NodeGui implements NodeListener {
             g.setStroke(borderStroke);
             g.setColor(borderColor());
             g.drawRect(xc, yc, connectionSize, connectionSize);
-        }        
+        }
     }
 
     private Color color() {
-        if ((this.status & STATUS_MASK_OVER) > 0) {
-            return unknownColor.brighter();
+
+        Color c;
+        switch (validationStatus) {
+            case ERROR:
+                c = errorColor;
+                break;
+            case VALIDATED:
+                c = validateColor;
+                break;
+            case WARNING:
+            default:
+                c = unknownColor;
+                break;
         }
-        return unknownColor;
+        if ((this.status & STATUS_MASK_OVER) > 0) {
+            return c.brighter();
+        }
+        return c;
     }
-    
+
     private Color borderColor() {
         return color().darker().darker();
     }
@@ -350,7 +360,7 @@ public class NodeGui implements NodeListener {
     }
 
     public void over(Point p) {
-        if ((status & STATUS_MASK_OVER) == 0) 
+        if ((status & STATUS_MASK_OVER) == 0)
             status += STATUS_MASK_OVER;
 
         int iy = getConnectionAt(p);
@@ -362,66 +372,127 @@ public class NodeGui implements NodeListener {
     }
 
     public void none() {
-        if ((status & STATUS_MASK_OVER) > 0) 
+        if ((status & STATUS_MASK_OVER) > 0)
             status -= STATUS_MASK_OVER;
         hide_tooltip();
     }
 
     public void select() {
-        if ((status & STATUS_MASK_SELECTED) == 0) 
+        if ((status & STATUS_MASK_SELECTED) == 0)
             status += STATUS_MASK_SELECTED;
         System.out.println("\033[1;32m>> SELECTED\033[0m");
-        if (hasInputsChanged) {
+        if (hasChanged) {
             // TODO UPDATE inputs...
-            // Remove Sources
             Product products[] = new Product[connections.size()];
             for (int i = 0; i < products.length; i++) {
                 products[i] = connections.get(i).getSourceProduct();
             }
             operatorUI.setSourceProducts(products);
             operatorUI.updateParameters();
-            hasInputsChanged = false;
+            hasChanged = false;
+            recomputeOutputNeeded = true;
+        }
+    }
+    private void incomplete() {
+        output = null;
+        validationStatus = ValidationStatus.WARNING;
+    }
+
+    private void recomputeOutput() {
+        recomputeOutputNeeded = false;
+        UIValidation.State state = operatorUI.validateParameters().getState();
+        if (state == UIValidation.State.OK) {
+            Operator op = metadata.getOperator();
+            SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
+            int n = Math.min(descriptors.length, connections.size());
+            if (n == 1) {
+                op.setSourceProduct(connections.get(0).getSourceProduct());
+                System.out.println("Single Product");
+            } else {
+                for (int i = 0; i < n; i++) {
+                    Product p = connections.get(i).getSourceProduct();
+                    if (p == null) {
+                        incomplete();
+                        return;
+                    }
+                    op.setSourceProduct(descriptors[i].getName(),p );
+
+                }
+            }
+            if (metadata.getMaxNumberOfInputs() < 0 && connections.size() > n) {
+                Product products[] = new Product[connections.size() - n];
+                for (int i = n; i < connections.size(); i++) {
+                    Product p = connections.get(i).getSourceProduct();
+                    if (p == null) {
+                        incomplete();
+                        return;
+                    }
+                    products[i - n] = p;
+                }
+                op.setSourceProducts(products);
+
+            }
+
+            for (String param: configuration.keySet()) {
+                op.setParameter(param, configuration.get(param));
+            }
+            try {
+                op.initialize();
+                output = op.getTargetProduct();
+                validationStatus = ValidationStatus.VALIDATED;
+            } catch (Exception e) {
+                e.printStackTrace();
+                output = null;
+                validationStatus = ValidationStatus.ERROR;
+            }
+        } else {
+            output = null;
+            if (state == UIValidation.State.ERROR) {
+                validationStatus = ValidationStatus.ERROR;
+            } else if (state == UIValidation.State.WARNING) {
+                validationStatus = ValidationStatus.WARNING;
+            }
         }
     }
 
     public Product getProduct() {
-        if (operatorUI.validateParameters().getState() == UIValidation.State.OK) {
-            operatorUI.initParameters();
-        }
         return output;
     }
 
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
-        if (check_changes()) {
+        if (check_changes() || recomputeOutputNeeded) {
             System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
+            recomputeOutput();
             for (NodeListener l : nodeListeners) {
                 l.outputChanged(this);
             }
         }
     }
 
-    private boolean equals(DomElement a, DomElement b){
-        if (b.getName() == a.getName()) {
-            if (b.getValue() == a.getValue()) {
-                if (a.getChildCount() == b.getChildCount()) {
-                    for (int i = 0; i < a.getChildCount(); i++) {
-                        if (!equals(a.getChild(i), b.getChild(i))) {
-                            return false;
-                        }
-                    }
-                    return true;
+    private boolean equals(Map<String, Object> a,Map<String, Object> b){
+        Set<String> aset = a.keySet();
+        Set<String> bset = b.keySet();
+        if (aset.size() == bset.size() && bset.containsAll(aset)) {
+            for (String key: aset) {
+                System.out.println(key);
+                Object aobj = a.get(key);
+                Object bobj = b.get(key);
+                if ((aobj == null && bobj != null) || (aobj != null && !aobj.equals(bobj))){
+                    return false;
                 }
             }
+            return true;
         }
         return false;
     }
 
     private boolean check_changes() {
-        XppDomElement update = updateParameters();
-        boolean res =  equals(config, update);
-        config = update;
+        operatorUI.updateParameters();
+        Map<String, Object> update = operatorUI.getParameters();
+        boolean res = equals(update, this.configuration);
+        this.configuration = new HashMap<>(update);
         return !res;
     }
 
@@ -434,7 +505,7 @@ public class NodeGui implements NodeListener {
         height = (numInputs + 1) * connectionOffset;
         this.connections.get(index).getSource().removeNodeListener(this);
         this.connections.remove(index);
-        hasInputsChanged = true;
+        hasChanged = true;
     }
 
     public NodeDragAction drag(Point p) {
@@ -531,7 +602,7 @@ public class NodeGui implements NodeListener {
     private void connect(Connection c){
         connections.add(c);
         c.getSource().addNodeListener(this);
-        hasInputsChanged = true;
+        hasChanged = true;
     }
 
     public void addConnection(Connection connection, int index) {
@@ -556,7 +627,7 @@ public class NodeGui implements NodeListener {
 
     @Override
     public void outputChanged(NodeGui source) {
-        hasInputsChanged = true;
+        hasChanged = true;
     }
 
     public void addNodeListener(NodeListener l) {
