@@ -18,6 +18,9 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
+import org.esa.snap.rcp.util.Dialogs;
+import org.openide.filesystems.FileObject;
+import org.openide.util.HelpCtx;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -77,6 +80,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private GraphNode connectSourceTargetNode = null;
     private GraphNode disconnectTargetNode = null;
     private boolean showRightClickHelp = false;
+    private final ActionFileSystem actionFileSystem;
 
     public GraphPanel(GraphExecuter graphExec) {
         graphEx = graphExec;
@@ -85,6 +89,8 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
 
         addMouseListener(this);
         addMouseMotionListener(this);
+
+        actionFileSystem = new ActionFileSystem();
     }
 
     /**
@@ -108,7 +114,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         }
 
         @Override
-        protected Boolean doInBackground() throws Exception {
+        protected Boolean doInBackground() {
             // get operator list from graph executor
             final Set<String> gpfOperatorSet = graphEx.GetOperatorList();
             final String[] gpfOperatorList = new String[gpfOperatorSet.size()];
@@ -193,12 +199,26 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     public void actionPerformed(ActionEvent event) {
 
         final String name = event.getActionCommand();
-        if (name.equals("Delete")) {
-            graphEx.removeOperator(selectedNode);
-            if (selectedNode == activeNode) {
-                activeNode = null;
-            }
-            repaint();
+
+        switch (name) {
+            case "Delete":
+                graphEx.removeOperator(selectedNode);
+                repaint();
+                break;
+            case "Operator Help":
+                callOperatorHelp(selectedNode.getID());
+                break;
+        }
+    }
+
+    private void callOperatorHelp(final String id) {
+        FileObject file = ActionFileSystem.findOperatorFile(id);
+        if(file != null) {
+            String helpId = (String) file.getAttribute("helpId");
+
+            new HelpCtx(helpId).display();
+        } else {
+            Dialogs.showWarning("Operator help for " + id +" not found.");
         }
     }
 
@@ -218,6 +238,13 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
                 popup.add(item);
                 item.setHorizontalTextPosition(JMenuItem.RIGHT);
                 item.addActionListener(this);
+
+                if(actionFileSystem.getOperatorFile(selectedNode.getID()) != null) {
+                    final JMenuItem operatorHelp = new JMenuItem("Operator Help");
+                    popup.add(operatorHelp);
+                    operatorHelp.setHorizontalTextPosition(JMenuItem.RIGHT);
+                    operatorHelp.addActionListener(this);
+                }
 
                 final NodeSource[] sources = selectedNode.getNode().getSources();
                 if (sources.length > 0) {
@@ -265,6 +292,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     protected void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
