@@ -232,14 +232,12 @@ public class GraphPanel extends JPanel
                 }
             }
             for (NodeGui node : nodes) {
-                if (node != dragAction.getSource() && node.contains(e.getPoint())) {
+                if (node.contains(e.getPoint())) {
                     if (node.over(e.getPoint())) {
                         repainted = true;
                     }
-                } else if (node != dragAction.getSource()) {
-                    if (node.none())
+                } else if (node.none())
                         repainted = true;
-                }
             }
             if (repainted)
                 repaint();
