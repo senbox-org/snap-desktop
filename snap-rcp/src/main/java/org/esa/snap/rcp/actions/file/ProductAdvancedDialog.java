@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.actions.file;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.dataio.ProductReaderExposedParams;
-import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
@@ -11,6 +11,7 @@ import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
@@ -55,7 +56,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     private ProductSubsetDef productSubsetDef = null;
 
-    private ProductReaderPlugIn plugin;
     private AtomicBoolean updatingUI;
 
     private int productWidth;
@@ -72,7 +72,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     protected Logger logger = Logger.getLogger(getClass().getName());
 
-//    public ProductAdvancedDialog(Window window, String title, File file) throws Exception {
     public ProductAdvancedDialog(Window window, String title, ProductReaderExposedParams readerExposedParams, MetadataInspector.Metadata readerInspectorExposeParameters){
         super(window, title, ID_OK | ID_CANCEL | ID_HELP, "advancedDialog");
         this.readerExposedParams = readerExposedParams;
@@ -126,17 +125,22 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     private void setGeoCoord(){
         if (this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+            ParamGroup pg = new ParamGroup();
             // set GeoCoding coordinates
             GeoPos geoPos1 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
             GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductHeight()), null);
             paramNorthLat1 = new Parameter("geo_lat1", MathUtils.crop(geoPos1.getLat(), -90.0, 90.0));
-            paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -90.0, 90.0));
+            paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -180.0, 180.0));
             paramSouthLat2 = new Parameter("geo_lat2", MathUtils.crop(geoPos2.getLat(), -90.0, 90.0));
-            paramEastLon2 = new Parameter("geo_lon2", MathUtils.crop(geoPos2.getLon(), -90.0, 90.0));
+            paramEastLon2 = new Parameter("geo_lon2", MathUtils.crop(geoPos2.getLon(), -180.0, 180.0));
             paramWestLon1.getProperties().setDescription("West bound longitude");
             paramNorthLat1.getProperties().setDescription("North bound latitude");
             paramSouthLat2.getProperties().setDescription("South bound latitude");
             paramEastLon2.getProperties().setDescription("East bound longitude");
+            pg.addParameter(paramNorthLat1);
+            pg.addParameter(paramWestLon1);
+            pg.addParameter(paramSouthLat2);
+            pg.addParameter(paramEastLon2);
         }
     }
 
@@ -177,11 +181,12 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
     public void createSubsetDef (){
         if (pixelPanel.isVisible()) {
             pixelPanelChanged();
+            updateSubsetDefNodeNameList(false);
         }
         if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
             geoCodingChange();
+            updateSubsetDefNodeNameList(true);
         }
-        updateSubsetDefNodeNameList();
     }
 
     @Override
@@ -189,7 +194,10 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         super.onCancel();
     }
 
-    private void updateSubsetDefNodeNameList() {
+    /**
+     * @param geoRegion if <code>true</code>, the geoCoding parameters will be send
+     */
+    private void updateSubsetDefNodeNameList(boolean geoRegion) {
         //if the user specify the bands that want to be added in the product add only them, else mark the fact that the product must have all the bands
         if (!bandList.isSelectionEmpty()) {
             productSubsetDef.addNodeNames((String[]) bandList.getSelectedValuesList().stream().toArray(String[]::new));
@@ -236,12 +244,31 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         if (!copyMetadata.isSelected()) {
             productSubsetDef.setIgnoreMetadata(true);
         }
-        if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
+        if(geoRegion){
+            setGeometry();
+        }else{
+            if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
+                productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
+                                                         Integer.parseInt(paramY1.getValueAsText()),
+                                                         Integer.parseInt(paramWidth.getValueAsText()),
+                                                         Integer.parseInt(paramHeight.getValueAsText())));
+            }
+        }
+    }
 
-            productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
-                                                     Integer.parseInt(paramY1.getValueAsText()),
-                                                     Integer.parseInt(paramWidth.getValueAsText()),
-                                                     Integer.parseInt(paramHeight.getValueAsText())));
+    private void setGeometry(){
+        if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+            final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
+                                              (Double) paramWestLon1.getValue());
+            final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
+                                          (Double) paramEastLon2.getValue());
+            GeoCoding geoCoding = this.readerInspectorExposeParameters.getGeoCoding();
+            final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
+            final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
+
+            Rectangle bounds = new Rectangle((int)(pixelPos1.x), (int) (pixelPos1.y), (int) (pixelPos2.x - pixelPos1.x), (int) (pixelPos2.y - pixelPos1.y));
+            Geometry geometry = ProductUtils.computeGeoRegion(geoCoding, productWidth, productHeight, bounds);
+            productSubsetDef.setGeoRegion(geometry);
         }
     }
 
@@ -445,11 +472,9 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().contains("pixelCoordRadio")) {
-//                updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
                 pixelPanel.setVisible(true);
                 geoPanel.setVisible(false);
             } else {
-//                updateUIState(new ParamChangeEvent(this, new Parameter("pixel_"), null));
                 pixelPanel.setVisible(false);
                 geoPanel.setVisible(true);
             }
@@ -458,10 +483,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     public ProductSubsetDef getProductSubsetDef() {
         return productSubsetDef;
-    }
-
-    public ProductReaderPlugIn getPlugin() {
-        return plugin;
     }
 
     public static Path convertInputToPath(Object input) {
