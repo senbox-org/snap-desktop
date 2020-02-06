@@ -10,6 +10,7 @@ import java.util.HashSet;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
+import javax.swing.*;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -36,16 +37,18 @@ public class AddNodeWidget {
     private int pos_y = 0;
     private int over_y = -1;
 
-    private int parent_width = 0;
+    final private JComponent parent;
     
     
-    public AddNodeWidget(OperatorManager opManager) {
-       operatorManager = opManager;
+    public AddNodeWidget(JComponent parent, OperatorManager opManager) {
+        this.parent = parent;
+        operatorManager = opManager;
     }
 
-    public void paint( int width, int height, Graphics2D g) {
+    public void paint(Graphics2D g) {
         if (visible) {
-            parent_width = width;
+            int width = parent.getWidth();
+            int height = parent.getHeight();
             Stroke oldStroke = g.getStroke();
             int arc = 8;
             int x = (width - widgetWidth) / 2;
@@ -245,7 +248,7 @@ public class AddNodeWidget {
     }
 
     public boolean mouseMoved(Point p) {
-        int x = p.x - (parent_width - widgetWidth) / 2;
+        int x = p.x - (parent.getWidth() - widgetWidth) / 2;
         int y = p.y - (yOffset + widgetHeight);
         int old_y = over_y;
         over_y = -1;

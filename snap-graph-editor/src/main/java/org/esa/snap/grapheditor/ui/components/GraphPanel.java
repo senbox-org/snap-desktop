@@ -52,7 +52,7 @@ public class GraphPanel extends JPanel
     public GraphPanel() {
         super();
         this.setBackground(Color.lightGray);
-        this.addNodeWidget = new AddNodeWidget(operatorManager);
+        this.addNodeWidget = new AddNodeWidget(this, operatorManager);
         this.addMenu = new JPopupMenu();
         addMenu.add(operatorManager.createOperatorMenu(this));
 
@@ -90,7 +90,7 @@ public class GraphPanel extends JPanel
         drawConnections(g2);
         drawDrag(g2);
         drawTooltip(g2);
-        this.addNodeWidget.paint(getWidth(), getHeight(), g2);
+        this.addNodeWidget.paint(g2);
     }
 
     private void drawGrid(Graphics2D g) {
@@ -122,7 +122,9 @@ public class GraphPanel extends JPanel
 
     private void drawDrag(Graphics2D g) {
         if (dragAction != null) {
-            dragAction.draw(g);
+            Graphics2D gdrag = (Graphics2D)g.create();
+            dragAction.draw(gdrag);
+            gdrag.dispose();
         }
     }
 
