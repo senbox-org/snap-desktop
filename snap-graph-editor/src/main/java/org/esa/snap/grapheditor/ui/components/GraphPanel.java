@@ -1,7 +1,6 @@
 package org.esa.snap.grapheditor.ui.components;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
@@ -13,9 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -25,7 +21,7 @@ import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
-import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
+import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
@@ -68,7 +64,7 @@ public class GraphPanel extends JPanel
 
     private void addNode(NodeGui node) {
         if (node != null) {
-            node.setPosition(GridUtils.normalize(lastMousePosition));
+            node.setPosition(GraphicUtils.normalize(lastMousePosition));
             this.nodes.add(node);
             for (GraphListener listener : graphListeners) {
                 listener.created(node);
@@ -92,8 +88,8 @@ public class GraphPanel extends JPanel
         drawGrid(g2);
         drawNodes(g2);
         drawConnections(g2);
-        drawTooltip(g2);
         drawDrag(g2);
+        drawTooltip(g2);
         this.addNodeWidget.paint(getWidth(), getHeight(), g2);
     }
 
@@ -102,7 +98,7 @@ public class GraphPanel extends JPanel
         int height = getHeight();
         if (gridPattern == null || gridPattern.getWidth() != width || gridPattern.getHeight() != height) {
             // initalize gridPattern image buffer
-            gridPattern = GridUtils.gridPattern(width, height);
+            gridPattern = GraphicUtils.gridPattern(width, height);
         }
         // render gridPattern buffer image
         g.drawImage(gridPattern, 0, 0, null);
@@ -221,10 +217,15 @@ public class GraphPanel extends JPanel
     public void keyTyped(KeyEvent event) {
     }
 
+
+
     @Override
     public void mouseDragged(MouseEvent e) {
         if (dragAction != null) {
+            Rectangle r = dragAction.getBoundingBox();
             dragAction.move(e.getPoint());
+            Rectangle u = dragAction.getBoundingBox();
+            boolean repainted = false;
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
                 for (GraphListener listener : graphListeners) {
                     listener.updated(dragAction.getSource());
@@ -232,12 +233,18 @@ public class GraphPanel extends JPanel
             }
             for (NodeGui node : nodes) {
                 if (node != dragAction.getSource() && node.contains(e.getPoint())) {
-                    node.over(e.getPoint());
+                    if (node.over(e.getPoint())) {
+                        repainted = true;
+                    }
                 } else if (node != dragAction.getSource()) {
-                    node.none();
+                    if (node.none())
+                        repainted = true;
                 }
             }
-            repaint();
+            if (repainted)
+                repaint();
+            else
+                repaint(GraphicUtils.union(r, u));
         }
     }
 
@@ -323,7 +330,7 @@ public class GraphPanel extends JPanel
     private void endDrag() {
         if (dragAction != null) {
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
-                Point p = GridUtils.normalize(dragAction.getSource().getPostion());
+                Point p = GraphicUtils.normalize(dragAction.getSource().getPostion());
                 moveNode(dragAction.getSource(), p.x, p.y);
             } else {
                 for (NodeGui node: nodes) {

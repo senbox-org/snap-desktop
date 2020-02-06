@@ -1,12 +1,9 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.Point;
 
-public class GridUtils {
+public class GraphicUtils {
     public static final int gridSize = 15;
     private static final int gridMajor = 5;
     private static final Color gridMajorColor = new Color(0, 0, 0, 30);
@@ -66,5 +63,13 @@ public class GridUtils {
 
     static public int floor(int dim) {
         return (int)Math.floor(dim / (float)gridSize) * gridSize;
+    }
+
+    static public Rectangle union(Rectangle a, Rectangle b) {
+        int tlx = Math.min(a.x, b.x);
+        int tly = Math.min(a.y, b.y);
+        int brx = Math.max(a.x + a.width, b.x + b.width);
+        int bry = Math.max(a.y + a.height, b.y + b.height);
+        return new Rectangle(tlx, tly, brx - tlx, bry - tly);
     }
 }

@@ -62,4 +62,11 @@ public class NodeDragAction {
             this.connection.draw(g);
         }
     }
+
+    public Rectangle getBoundingBox() {
+        if (type == Type.DRAG){
+            return this.source.getBoundingBox();
+        }
+        return this.connection.getBoundingBox();
+    }
 }

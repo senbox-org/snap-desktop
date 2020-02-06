@@ -115,7 +115,7 @@ public class Connection {
 
     public void showSourceTooltip(){
         if (this.source != null) {
-            this.source.over(source.getOutputPosition());
+            this.source.over(source.getPostion());
         }
     }
 
@@ -131,5 +131,26 @@ public class Connection {
         if (source != null)
             return source.getProduct();
         return null;
+    }
+
+    public Rectangle getBoundingBox() {
+        Point end;
+        Point start;
+
+        if (target == null) {
+            end = endPoint;
+        } else {
+            end = target.getInputPosition(targetIndex);
+        }
+        if (source == null) {
+            start = endPoint;
+        } else {
+            start = source.getOutputPosition();
+        }
+        int top_x = Math.min(start.x, end.x);
+        int top_y = Math.min(start.y, end.y);
+        int w = Math.abs(start.x - end.x);
+        int h = Math.abs(start.y - end.y);
+        return new Rectangle(top_x - 5, top_y - 5, w + 10, h + 10);
     }
 }

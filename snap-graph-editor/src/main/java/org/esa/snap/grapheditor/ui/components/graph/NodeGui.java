@@ -1,11 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.graph;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +16,7 @@ import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
-import org.esa.snap.grapheditor.ui.components.utils.GridUtils;
+import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
@@ -99,7 +94,8 @@ public class NodeGui implements NodeListener {
     private int tooltipIndex_ = CONNECTION_NONE;
 
     private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
-    private ArrayList<Connection> connections = new ArrayList<>();
+    private ArrayList<Connection> incomingConnections = new ArrayList<>();
+    private ArrayList<Connection> outgoingConnections = new ArrayList<>();
 
     private boolean hasChanged = false;
     private Product output = null;
@@ -132,7 +128,7 @@ public class NodeGui implements NodeListener {
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(name);
 
-            width = Math.max(GridUtils.floor(textW + 30), minWidth);
+            width = Math.max(GraphicUtils.floor(textW + 30), minWidth);
         }
 
         if ((this.status & STATUS_MASK_SELECTED) > 0) {
@@ -159,7 +155,7 @@ public class NodeGui implements NodeListener {
     }
 
     public void paintConnections(Graphics2D g) {
-        for (Connection c: connections) {
+        for (Connection c: incomingConnections) {
             if (c != null)
                 c.draw(g);
         }
@@ -367,22 +363,28 @@ public class NodeGui implements NodeListener {
         return isOverOutput(p);
     }
 
-    public void over(Point p) {
-        if ((status & STATUS_MASK_OVER) == 0)
+    public boolean over(Point p) {
+        boolean changed = false;
+        if ((status & STATUS_MASK_OVER) == 0) {
             status += STATUS_MASK_OVER;
-
+            changed = true;
+        }
         int iy = getConnectionAt(p);
-        if (iy != CONNECTION_NONE) {
+        if (iy != CONNECTION_NONE ) {
             show_tooltip(iy);
-            return;
+            return iy != tooltipIndex_;
         }
         hide_tooltip();
+        return changed;
     }
 
-    public void none() {
-        if ((status & STATUS_MASK_OVER) > 0)
-            status -= STATUS_MASK_OVER;
+    public boolean none() {
         hide_tooltip();
+        if ((status & STATUS_MASK_OVER) > 0) {
+            status -= STATUS_MASK_OVER;
+            return true;
+        }
+        return false;
     }
 
     public void select() {
@@ -391,9 +393,9 @@ public class NodeGui implements NodeListener {
         System.out.println("\033[1;32m>> SELECTED\033[0m");
         if (hasChanged) {
             // TODO UPDATE inputs...
-            Product products[] = new Product[connections.size()];
+            Product products[] = new Product[incomingConnections.size()];
             for (int i = 0; i < products.length; i++) {
-                products[i] = connections.get(i).getSourceProduct();
+                products[i] = incomingConnections.get(i).getSourceProduct();
             }
             operatorUI.setSourceProducts(products);
             operatorUI.updateParameters();
@@ -413,21 +415,21 @@ public class NodeGui implements NodeListener {
 
         if (state == UIValidation.State.OK) {
             SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
-            if (connections.size() < descriptors.length) {
+            if (incomingConnections.size() < descriptors.length) {
                 return incomplete();
             }
             for (int i = 0; i < descriptors.length; i++ ){
                 SourceProductDescriptor descr = metadata.getDescriptor().getSourceProductDescriptors()[i];
-                Product p = connections.get(i).getSourceProduct();
+                Product p = incomingConnections.get(i).getSourceProduct();
                 if (p == null)
                     return incomplete();
                 System.out.println(descr.getName());
                 context.setSourceProduct(descr.getName(), p);
             }
-            if (connections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
-                Product products[] = new Product[connections.size() - descriptors.length];
-                for (int i = descriptors.length; i < connections.size(); i++) {
-                    Product p = connections.get(i).getSourceProduct();
+            if (incomingConnections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
+                Product products[] = new Product[incomingConnections.size() - descriptors.length];
+                for (int i = descriptors.length; i < incomingConnections.size(); i++) {
+                    Product p = incomingConnections.get(i).getSourceProduct();
                     if (p == null)
                         return incomplete();
                     products[i - descriptors.length] = p;
@@ -504,34 +506,37 @@ public class NodeGui implements NodeListener {
     }
 
     public void disconnect(int index) {
-        for (int i = index + 1; i < this.connections.size(); i++) {
-            this.connections.get(i).setTargetIndex(i - 1);
+        for (int i = index + 1; i < this.incomingConnections.size(); i++) {
+            this.incomingConnections.get(i).setTargetIndex(i - 1);
         }
 
         numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
         height = (numInputs + 1) * connectionOffset;
-        this.connections.get(index).getSource().removeNodeListener(this);
-        this.connections.remove(index);
+        Connection c = this.incomingConnections.get(index);
+        c.getSource().removeNodeListener(c);
+        this.incomingConnections.remove(c);
         hasChanged = true;
     }
 
     public NodeDragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
-            if (this.connections.size() > iy) {
-                Connection c = this.connections.get(iy);
+            if (this.incomingConnections.size() > iy) {
+                Connection c = this.incomingConnections.get(iy);
                 if (c != null) {
                     disconnect(iy);
                     c.showSourceTooltip();
                     return new NodeDragAction(new Connection(c.getSource(), p));
                 }
             }
-
+            tooltipVisible_ = false;
             return new NodeDragAction(new Connection(this, iy, p));
         }
         if (isOverOutput(p)) {
+            tooltipVisible_ = false;
             return new NodeDragAction(new Connection(this, p));
         }
+        tooltipVisible_ = false;
         return new NodeDragAction(this,  p);
     }
 
@@ -598,34 +603,34 @@ public class NodeGui implements NodeListener {
             return true;
         if (index == CONNECTION_NONE)
             return false;
-        for (Connection c: connections) {
+        for (Connection c: incomingConnections) {
             if (c != null && other == c.getSource()) {
                 return false;
             }
         }
-        return (connections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
+        return (incomingConnections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
     }
 
     private void connect(Connection c){
-        connections.add(c);
-        c.getSource().addNodeListener(this);
+        incomingConnections.add(c);
+        c.getSource().addNodeListener(c);
         hasChanged = true;
     }
 
     public void addConnection(Connection connection, int index) {
-        if (index == connections.size())  {
+        if (index == incomingConnections.size())  {
             connect(connection);
         } else {
             return;
         }
 
         if (metadata.getMaxNumberOfInputs() == -1) {
-            if (connections.size() < metadata.getMinNumberOfInputs()) {
+            if (incomingConnections.size() < metadata.getMinNumberOfInputs()) {
                 numInputs = metadata.getMinNumberOfInputs();
             } else if (metadata.getMaxNumberOfInputs() > 0 ) {
                 numInputs = Math.min(metadata.getMaxNumberOfInputs(), numInputs + 1);
             }else {
-                numInputs = connections.size() + 1;
+                numInputs = incomingConnections.size() + 1;
             }
 
             height = (numInputs + 1) * connectionOffset;
@@ -637,11 +642,33 @@ public class NodeGui implements NodeListener {
         hasChanged = true;
     }
 
-    public void addNodeListener(NodeListener l) {
-        nodeListeners.add(l);
+    public void addNodeListener(Connection c) {
+        nodeListeners.add(c.getTarget());
+        outgoingConnections.add(c);
     }
 
-    public void removeNodeListener(NodeListener l) {
-        nodeListeners.remove(l);
+    public void removeNodeListener(Connection c) {
+        nodeListeners.remove(c.getTarget());
+        outgoingConnections.remove(c);
+    }
+
+    public Rectangle getBoundingBox(){
+        Rectangle r;
+        if (tooltipVisible_) {
+            int tx = tooltipIndex_ == CONNECTION_OUTPUT ? x - 8 : x - 8 - 80;
+            int ty = y - 8;
+            int w = width + 16 + 80;
+            int h = height + 16;
+            r = new Rectangle(x, y, w, h);
+        } else {
+            r = new Rectangle(x - 8, y - 8, width + 16, height + 16);
+        }
+        for (Connection c: incomingConnections) {
+            r = GraphicUtils.union(r, c.getBoundingBox());
+        }
+        for (Connection c: outgoingConnections) {
+            r = GraphicUtils.union(r, c.getBoundingBox());
+        }
+        return r;
     }
 }
