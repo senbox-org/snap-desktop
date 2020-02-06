@@ -643,7 +643,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private ImageInfo createDefaultImageInfo() {
         try {
             return ProductUtils.createImageInfo(getFormModel().getRasters(), false, ProgressMonitor.NULL);
-        } catch (IOException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
                                           "Failed to create default image settings:\n" + e.getMessage(),
                                           "I/O Error",
