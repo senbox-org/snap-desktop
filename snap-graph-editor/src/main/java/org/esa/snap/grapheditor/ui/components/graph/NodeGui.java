@@ -145,7 +145,11 @@ public class NodeGui implements NodeListener {
         g.drawRoundRect(x, y, width, height, 8, 8);
 
         g.setStroke(textStroke);
-        g.setColor(Color.darkGray);
+        if (this.validationStatus != ValidationStatus.UNCHECKED) {
+            g.setColor(Color.white);
+        } else {
+            g.setColor(Color.darkGray);
+        }
 
         g.drawString(name, x + (width - textW) / 2 , y + (5 + textH));
 
