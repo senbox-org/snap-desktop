@@ -40,8 +40,8 @@ public class NodeGui implements NodeListener {
 
     private static final int MAX_LINE_LENGTH = 45;
 
-    private static final Color errorColor = new Color(255, 80, 80, 128);
-    private static final Color validateColor =  new Color(0, 177, 255, 128);
+    private static final Color errorColor = new Color(255, 80, 80, 200);
+    private static final Color validateColor =  new Color(51, 153, 102, 200);
     private static final Color unknownColor =  new Color(233, 229, 225, 230); //Color
     // private static final Color connectionColor = new Color(66, 66, 66, 255);
     private static final Color activeColor = new Color(254, 223, 176, 180);
@@ -95,7 +95,6 @@ public class NodeGui implements NodeListener {
 
     private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
     private ArrayList<Connection> incomingConnections = new ArrayList<>();
-    private ArrayList<Connection> outgoingConnections = new ArrayList<>();
 
     private boolean hasChanged = false;
     private Product output = null;
@@ -513,7 +512,7 @@ public class NodeGui implements NodeListener {
         numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
         height = (numInputs + 1) * connectionOffset;
         Connection c = this.incomingConnections.get(index);
-        c.getSource().removeNodeListener(c);
+        c.getSource().removeNodeListener(this);
         this.incomingConnections.remove(c);
         hasChanged = true;
     }
@@ -613,7 +612,7 @@ public class NodeGui implements NodeListener {
 
     private void connect(Connection c){
         incomingConnections.add(c);
-        c.getSource().addNodeListener(c);
+        c.getSource().addNodeListener(this);
         hasChanged = true;
     }
 
@@ -642,14 +641,12 @@ public class NodeGui implements NodeListener {
         hasChanged = true;
     }
 
-    public void addNodeListener(Connection c) {
-        nodeListeners.add(c.getTarget());
-        outgoingConnections.add(c);
+    public void addNodeListener(NodeListener l) {
+        nodeListeners.add(l);
     }
 
-    public void removeNodeListener(Connection c) {
-        nodeListeners.remove(c.getTarget());
-        outgoingConnections.remove(c);
+    public void removeNodeListener(NodeListener l) {
+        nodeListeners.remove(l);
     }
 
     public Rectangle getBoundingBox(){
@@ -659,20 +656,10 @@ public class NodeGui implements NodeListener {
             int ty = y - 8;
             int w = width + 16 + 80;
             int h = height + 16;
-            r = new Rectangle(x, y, w, h);
+            r = new Rectangle(tx, ty, w, h);
         } else {
             r = new Rectangle(x - 8, y - 8, width + 16, height + 16);
         }
-
-        /*
-        for (Connection c: incomingConnections) {
-            r = GraphicUtils.union(r, c.getBoundingBox());
-        }
-        for (Connection c: outgoingConnections) {
-            r = GraphicUtils.union(r, c.getBoundingBox());
-        }
-        */
-
         return r;
     }
 }
