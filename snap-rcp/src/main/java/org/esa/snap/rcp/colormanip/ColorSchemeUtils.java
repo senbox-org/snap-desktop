@@ -191,57 +191,21 @@ public class ColorSchemeUtils {
 
     public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
 
-        ColorSchemeInfo matchingColorSchemeInfo = null;
-
-        ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
-
-        if (colorPaletteSchemes != null) {
+        ColorSchemeManager colorSchemeManager = ColorSchemeManager.getDefault();
+        if (colorSchemeManager != null) {
 
             String bandName = productSceneView.getBaseImageLayer().getName().trim();
             bandName = bandName.substring(bandName.indexOf(" ")).trim();
 
-            ArrayList<ColorSchemeInfo> defaultSchemes = colorPaletteSchemes.getColorSchemeLutInfos();
-
-            final String WILDCARD = new String("*");
-
-            for (ColorSchemeInfo colorSchemeInfo : defaultSchemes) {
-                String cpdName = colorSchemeInfo.getName().trim();
-
-                if (matchingColorSchemeInfo == null || (matchingColorSchemeInfo != null && colorSchemeInfo.isOverRide())) {
-                    if (bandName.equals(cpdName)) {
-                        matchingColorSchemeInfo = colorSchemeInfo;
-                    } else if (cpdName.contains(WILDCARD)) {
-                        if (!cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
-                            String basename = cpdName.substring(0, cpdName.length() - 1);
-                            if (bandName.startsWith(basename)) {
-                                matchingColorSchemeInfo = colorSchemeInfo;
-                            }
-                        } else if (cpdName.startsWith(WILDCARD) && !cpdName.endsWith(WILDCARD)) {
-                            String basename = cpdName.substring(1, cpdName.length());
-                            if (bandName.endsWith(basename)) {
-                                matchingColorSchemeInfo = colorSchemeInfo;
-                            }
-                        } else if (cpdName.startsWith(WILDCARD) && cpdName.endsWith(WILDCARD)) {
-                            String basename = cpdName.substring(1, cpdName.length() - 1);
-                            if (bandName.contains(basename)) {
-                                matchingColorSchemeInfo = colorSchemeInfo;
-                            }
-                        } else {
-                            String basename = cpdName;
-                            String wildcard = "\\*";
-                            String basenameSplit[] = basename.split(wildcard);
-                            if (basenameSplit.length == 2 && basenameSplit[0].length() > 0 && basenameSplit[1].length() > 0) {
-                                if (bandName.startsWith(basenameSplit[0]) && bandName.endsWith(basenameSplit[1])) {
-                                    matchingColorSchemeInfo = colorSchemeInfo;
-                                }
-                            }
-                        }
-                    }
+            ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = colorSchemeManager.getColorSchemeLookupInfos();
+            for (ColorSchemeLookupInfo colorSchemeLookupInfo : colorSchemeLookupInfos) {
+                if (colorSchemeLookupInfo.isMatch(bandName)) {
+                    return colorSchemeManager.getColorSchemeInfoBySchemeId(colorSchemeLookupInfo.getScheme_id());
                 }
             }
         }
 
-        return matchingColorSchemeInfo;
+        return null;
     }
 
 
@@ -272,7 +236,6 @@ public class ColorSchemeUtils {
 
         return logScaled;
     }
-
 
 
     public static String getCdpFileNameFromSchemeSelection(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo) {
