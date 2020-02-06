@@ -567,14 +567,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 } else {
                     // the configuration is wrong.
                     statusLabel.error(this.currentNode.getID() ,e.getMessage());
-                    propagate(currentNode, Status.ERROR);
+                    propagate(currentNode, GraphNode.Status.ERROR);
                 }
                 return;
             }
             String newSettings = this.currentNode.getNode().getConfiguration().toXml();
             boolean hasChanged = !this.currentSettings.equals(newSettings);
             if (hasChanged) {
-                this.currentNode.setStatus(Status.VALIDATED);
+                this.currentNode.setStatus(GraphNode.Status.VALIDATED);
                 validate(this.currentNode);
             }
         }
@@ -592,7 +592,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         if (isProcessing) return false;
 
-        if (node.getStatus() == Status.UNKNWON) {
+        if (node.getStatus() == GraphNode.Status.UNKNWON) {
             return false;
         }
 
