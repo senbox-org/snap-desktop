@@ -15,6 +15,7 @@ public class NodeDragAction {
     private Type type;
     private NodeGui source;
     private Point origin;
+    private Point current;
     private Connection connection = null;
 
     private static Point diff(Point a, Point b) {
@@ -25,6 +26,7 @@ public class NodeDragAction {
         this.type = Type.DRAG;
         this.source = source;
         this.origin = diff(origin, source.getPostion());
+        this.current = origin;
     }
 
     public NodeDragAction(Connection c) {
@@ -49,9 +51,11 @@ public class NodeDragAction {
 
     public void move(Point p){
         if (type == Type.DRAG) {
-            int x = p.x - this.origin.x;
-            int y = p.y - this.origin.y;
-            this.source.setPosition(x, y);
+            current = p;
+
+            //int x = p.x - this.origin.x;
+            //int y = p.y - this.origin.y;
+            //this.source.setPosition(x, y);
         } else {
             this.connection.setEndPoint(p);
         }
@@ -60,12 +64,32 @@ public class NodeDragAction {
     public void draw(Graphics2D g) {
         if (this.connection != null) {
             this.connection.draw(g);
+        } else {
+            int dx = current.x - (source.getX() + origin.x);
+            int dy = current.y - (source.getY() + origin.y);
+            g.translate(dx, dy);
+            AlphaComposite c = AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f);
+            g.setComposite(c);
+            this.source.paintNode(g);
+        }
+
+    }
+
+    public void drop() {
+        if (type == Type.DRAG) {
+            int x = this.current.x - this.origin.x;
+            int y = this.current.y - this.origin.y;
+            this.source.setPosition(x, y);
         }
     }
 
     public Rectangle getBoundingBox() {
-        if (type == Type.DRAG){
-            return this.source.getBoundingBox();
+        if (type == Type.DRAG) {
+            Rectangle r = source.getBoundingBox();
+            int x = (current.x - origin.x) - 8;
+            int y = (current.y - origin.y) - 8;
+
+            return new Rectangle(x, y, r.width, r.height);
         }
         return this.connection.getBoundingBox();
     }

@@ -329,6 +329,7 @@ public class GraphPanel extends JPanel
 
     private void endDrag() {
         if (dragAction != null) {
+            dragAction.drop();
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
                 Point p = GraphicUtils.normalize(dragAction.getSource().getPostion());
                 moveNode(dragAction.getSource(), p.x, p.y);

@@ -50,7 +50,7 @@ public class NodeGui implements NodeListener {
     private static final Color tooltipBorder = Color.white;
     private static final Color tooltipColor = Color.lightGray;
 
-    static final private BasicStroke borderStroke = new BasicStroke(3);
+    static final private BasicStroke borderStroke = new BasicStroke(2);
     static final private BasicStroke tooltipStroke = new BasicStroke(1.5f);
     static final private BasicStroke textStroke = new BasicStroke(1);
     static final private BasicStroke activeStroke = new BasicStroke(6);
@@ -663,12 +663,16 @@ public class NodeGui implements NodeListener {
         } else {
             r = new Rectangle(x - 8, y - 8, width + 16, height + 16);
         }
+
+        /*
         for (Connection c: incomingConnections) {
             r = GraphicUtils.union(r, c.getBoundingBox());
         }
         for (Connection c: outgoingConnections) {
             r = GraphicUtils.union(r, c.getBoundingBox());
         }
+        */
+
         return r;
     }
 }
