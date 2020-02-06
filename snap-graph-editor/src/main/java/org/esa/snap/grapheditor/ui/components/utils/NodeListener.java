@@ -7,5 +7,5 @@ public interface NodeListener {
      * Update the inputs node of the connected nodes.
      * @param source: source of the event
      */
-    public void outputChanged(NodeGui source);
+    void outputChanged(NodeGui source);
 }
