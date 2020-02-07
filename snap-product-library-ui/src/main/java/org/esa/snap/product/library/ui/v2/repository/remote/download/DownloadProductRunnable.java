@@ -23,13 +23,16 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     private final RemoteProductDownloader remoteProductDownloader;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
+    private final boolean uncompressedDownloadedProducts;
 
-    public DownloadProductRunnable(RemoteProductDownloader remoteProductDownloader, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+    public DownloadProductRunnable(RemoteProductDownloader remoteProductDownloader, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore,
+                                   AllLocalFolderProductsRepository allLocalFolderProductsRepository, boolean uncompressedDownloadedProducts) {
         super();
 
         this.remoteProductDownloader = remoteProductDownloader;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
+        this.uncompressedDownloadedProducts = uncompressedDownloadedProducts;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
 
             updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0, null); // 0%
 
-            productPath = this.remoteProductDownloader.download(progressListener);
+            productPath = this.remoteProductDownloader.download(progressListener, this.uncompressedDownloadedProducts);
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         }

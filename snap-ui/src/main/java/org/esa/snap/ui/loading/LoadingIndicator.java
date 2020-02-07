@@ -3,7 +3,7 @@ package org.esa.snap.ui.loading;
 /**
  * Created by jcoravu on 31/12/2018.
  */
-public interface ILoadingIndicator {
+public interface LoadingIndicator {
 
     public boolean isRunning(int threadId);
 

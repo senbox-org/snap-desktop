@@ -34,7 +34,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     private static final String PAGE_PRODUCTS_CHANGED = "pageProductsChanged";
 
-    private static final byte PRODUCT_COUNT_PER_PAGE = 20;
+    public static final byte VISIBLE_PRODUCTS_PER_PAGE = 20;
 
     private final JLabel titleLabel;
     private final JLabel sortByLabel;
@@ -44,11 +44,14 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private final Map<String, Comparator<RepositoryProduct>> availableComparators;
 
     private Comparator<RepositoryProduct> currentComparator;
+    private int visibleProductsPerPage;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
                                             ActionListener stopButtonListener, int progressBarWidth) {
 
         super(new BorderLayout(0, componentDimension.getGapBetweenRows()/2));
+
+        this.visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
 
         this.titleLabel = new JLabel(getTitle());
         Dimension size = this.titleLabel.getPreferredSize();
@@ -131,6 +134,10 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     public OutputProductResults getOutputProductResults() {
         AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.productListPanel.getRepositorySelectionPanel().getSelectedProductsRepositoryPanel();
         return selectedProductsRepositoryPanel.getOutputProductResults();
+    }
+
+    public void setVisibleProductsPerPage(int visibleProductsPerPage) {
+        this.visibleProductsPerPage = visibleProductsPerPage;
     }
 
     public OutputProductListPaginationPanel getProductListPaginationPanel() {
@@ -257,8 +264,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             throw new IllegalArgumentException("The new current page number " + newCurrentPageNumber +" must be > 0.");
         }
         OutputProductResults outputProductResults = getOutputProductResults();
-        int startIndex = (newCurrentPageNumber-1) * PRODUCT_COUNT_PER_PAGE;
-        int endIndex = startIndex + PRODUCT_COUNT_PER_PAGE - 1;
+        int startIndex = (newCurrentPageNumber-1) * this.visibleProductsPerPage;
+        int endIndex = startIndex + this.visibleProductsPerPage - 1;
         if (endIndex >= outputProductResults.getAvailableProductCount()) {
             endIndex = outputProductResults.getAvailableProductCount() - 1;
         }
@@ -296,8 +303,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         OutputProductResults outputProductResults = getOutputProductResults();
         int count = 0;
         if (outputProductResults.getAvailableProductCount() > 0) {
-            count = outputProductResults.getAvailableProductCount() / PRODUCT_COUNT_PER_PAGE;
-            if (outputProductResults.getAvailableProductCount() % PRODUCT_COUNT_PER_PAGE > 0) {
+            count = outputProductResults.getAvailableProductCount() / this.visibleProductsPerPage;
+            if (outputProductResults.getAvailableProductCount() % this.visibleProductsPerPage > 0) {
                 count++;
             }
         }

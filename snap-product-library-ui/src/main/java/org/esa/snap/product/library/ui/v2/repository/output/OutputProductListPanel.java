@@ -2,7 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
-import org.esa.snap.product.library.ui.v2.VerticalScrollablePanel;
+import org.esa.snap.ui.loading.VerticalScrollablePanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;

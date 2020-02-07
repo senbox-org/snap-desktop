@@ -13,8 +13,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
-import org.esa.snap.ui.loading.IItemRenderer;
-import org.esa.snap.ui.loading.LabelListCellRenderer;
+import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.ComboBoxModel;
@@ -240,7 +239,7 @@ public class RepositorySelectionPanel extends JPanel {
                 refreshRepositoryLabelWidth();
             }
         };
-        IItemRenderer<AbstractProductsRepositoryPanel> itemRenderer = new IItemRenderer<AbstractProductsRepositoryPanel>() {
+        ItemRenderer<AbstractProductsRepositoryPanel> itemRenderer = new ItemRenderer<AbstractProductsRepositoryPanel>() {
             @Override
             public String getItemDisplayText(AbstractProductsRepositoryPanel panel) {
                 return (panel == null) ? "" : panel.getName();

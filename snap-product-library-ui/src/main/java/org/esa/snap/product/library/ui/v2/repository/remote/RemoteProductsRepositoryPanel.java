@@ -18,8 +18,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.loading.IItemRenderer;
-import org.esa.snap.ui.loading.LabelListCellRenderer;
+import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.ImageIcon;
@@ -62,7 +61,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.missionParameterListener = missionParameterListener;
 
         if (this.productsRepositoryProvider.requiresAuthentication()) {
-            IItemRenderer<Credentials> accountsItemRenderer = new IItemRenderer<Credentials>() {
+            ItemRenderer<Credentials> accountsItemRenderer = new ItemRenderer<Credentials>() {
                 @Override
                 public String getItemDisplayText(Credentials item) {
                     return (item == null) ? " " : item.getUserPrincipal().getName();

@@ -3,7 +3,7 @@ package org.esa.snap.remote.execution.local.folder;
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.remote.execution.utils.UnixMountLocalFolderResult;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 
 public class UnmountMacLocalFolderTimerRunnable extends AbstractTimerRunnable<Void> {
 
@@ -12,7 +12,7 @@ public class UnmountMacLocalFolderTimerRunnable extends AbstractTimerRunnable<Vo
 
     private final IUnmountLocalSharedFolderCallback callback;
 
-    public UnmountMacLocalFolderTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, String localSharedFolderPath,
+    public UnmountMacLocalFolderTimerRunnable(LoadingIndicator loadingIndicator, int threadId, String localSharedFolderPath,
                                               UnixMountLocalFolderResult localMachineLinuxMountFolder, IUnmountLocalSharedFolderCallback callback) {
 
         super(loadingIndicator, threadId, 500);

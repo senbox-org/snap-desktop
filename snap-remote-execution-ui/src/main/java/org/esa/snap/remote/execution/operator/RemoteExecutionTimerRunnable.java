@@ -9,8 +9,8 @@ import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.remote.execution.topology.RemoteTopology;
 import org.esa.snap.remote.execution.topology.RemoteTopologyUtils;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
@@ -29,14 +29,14 @@ import java.util.Map;
 public class RemoteExecutionTimerRunnable extends AbstractTimerRunnable<Product> {
 
     private final AppContext appContext;
-    private final IMessageDialog parentWindow;
+    private final MessageDialog parentWindow;
     private final Map<String, Object> parameterMap;
     private final boolean openTargetProductInApplication;
     private final IMountLocalSharedFolderResult mountLocalSharedFolderResult;
     private final RemoteTopology remoteTopologyToSave;
     private final Path remoteTopologyFilePath;
 
-    public RemoteExecutionTimerRunnable(AppContext appContext, IMessageDialog parentWindow, ILoadingIndicator loadingIndicator,
+    public RemoteExecutionTimerRunnable(AppContext appContext, MessageDialog parentWindow, LoadingIndicator loadingIndicator,
                                         int threadId, Map<String, Object> parameterMap, boolean openTargetProductInApplication,
                                         IMountLocalSharedFolderResult mountLocalSharedFolderResult,
                                         RemoteTopology remoteTopologyToSave, Path remoteTopologyFilePath) {

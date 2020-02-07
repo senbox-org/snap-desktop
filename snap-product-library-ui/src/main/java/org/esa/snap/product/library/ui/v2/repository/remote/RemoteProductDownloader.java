@@ -26,8 +26,9 @@ public class RemoteProductDownloader {
         this.credentials = credentials;
     }
 
-    public Path download(ProgressListener progressListener) throws Exception {
-        return this.remoteProductsRepositoryProvider.downloadProduct(this.productToDownload, this.credentials, this.localRepositoryFolderPath, progressListener);
+    public Path download(ProgressListener progressListener, boolean uncompressedDownloadedProduct) throws Exception {
+        return this.remoteProductsRepositoryProvider.downloadProduct(this.productToDownload, this.credentials, this.localRepositoryFolderPath,
+                                                                     progressListener, uncompressedDownloadedProduct);
     }
 
     public void cancel() {

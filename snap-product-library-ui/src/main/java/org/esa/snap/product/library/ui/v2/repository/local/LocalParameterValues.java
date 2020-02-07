@@ -11,11 +11,16 @@ import java.util.List;
 public class LocalParameterValues {
 
     private final List<RemoteRepositoryCredentials> repositoriesCredentials;
+    private final int visibleProductsPerPage;
+    private final boolean uncompressedDownloadedProducts;
     private final LocalRepositoryParameterValues localRepositoryParameterValues;
 
-    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, LocalRepositoryParameterValues localRepositoryParameterValues) {
+    public LocalParameterValues(List<RemoteRepositoryCredentials> repositoriesCredentials, int visibleProductsPerPage,
+                                boolean uncompressedDownloadedProducts, LocalRepositoryParameterValues localRepositoryParameterValues) {
 
         this.repositoriesCredentials = repositoriesCredentials;
+        this.visibleProductsPerPage = visibleProductsPerPage;
+        this.uncompressedDownloadedProducts = uncompressedDownloadedProducts;
         this.localRepositoryParameterValues = localRepositoryParameterValues;
     }
 
@@ -25,5 +30,13 @@ public class LocalParameterValues {
 
     public LocalRepositoryParameterValues getLocalRepositoryParameterValues() {
         return localRepositoryParameterValues;
+    }
+
+    public int getVisibleProductsPerPage() {
+        return visibleProductsPerPage;
+    }
+
+    public boolean isUncompressedDownloadedProducts() {
+        return uncompressedDownloadedProducts;
     }
 }

@@ -5,8 +5,8 @@ import org.esa.snap.remote.execution.local.folder.MountLinuxLocalFolderTimerRunn
 import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
 import org.esa.snap.remote.execution.local.folder.LinuxLocalSharedFolder;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JLabel;
@@ -46,7 +46,7 @@ public class LinuxRemoteTopologyPanel extends RemoteTopologyPanel {
     }
 
     @Override
-    public void mountLocalSharedFolderAsync(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback) {
+    public void mountLocalSharedFolderAsync(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback) {
         LinuxLocalSharedFolder linuxLocalSharedDrive = buildLocalSharedFolder();
         if (canMountLocalSharedFolder(parentWindow, linuxLocalSharedDrive)) {
             MountLinuxLocalFolderTimerRunnable runnable = new MountLinuxLocalFolderTimerRunnable(parentWindow, loadingIndicator, threadId, linuxLocalSharedDrive, callback);
@@ -65,7 +65,7 @@ public class LinuxRemoteTopologyPanel extends RemoteTopologyPanel {
     }
 
     @Override
-    protected boolean canMountLocalSharedFolder(IMessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
+    protected boolean canMountLocalSharedFolder(MessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
         boolean canMount = super.canMountLocalSharedFolder(parentWindow, localSharedFolder);
 
         if (canMount) {

@@ -6,7 +6,7 @@ import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComp
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.AttributeValueFilter;
-import org.esa.snap.ui.loading.IItemRenderer;
+import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -60,7 +60,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.atributeFiltersMap.put(EQUAL_VALUE_FILTER, "Equal");
         this.atributeFiltersMap.put(CONTAINS_VALUE_FILTER, "Contains");
 
-        IItemRenderer<AttributeValueFilter> filtersItemRenderer = new IItemRenderer<AttributeValueFilter>() {
+        ItemRenderer<AttributeValueFilter> filtersItemRenderer = new ItemRenderer<AttributeValueFilter>() {
             @Override
             public String getItemDisplayText(AttributeValueFilter item) {
                 return (item == null) ? " " : getFilterDisplayName(item);

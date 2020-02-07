@@ -9,13 +9,13 @@ import java.awt.*;
  */
 public class LabelListCellRenderer<ItemType> extends JLabel implements ListCellRenderer<ItemType> {
 
-    private final IItemRenderer<ItemType> itemRenderer;
+    private final ItemRenderer<ItemType> itemRenderer;
 
     public LabelListCellRenderer(Insets margins) {
         this(margins, null);
     }
 
-    public LabelListCellRenderer(Insets margins, IItemRenderer<ItemType> itemRenderer) {
+    public LabelListCellRenderer(Insets margins, ItemRenderer<ItemType> itemRenderer) {
         this.itemRenderer = itemRenderer;
 
         setOpaque(true);
@@ -26,7 +26,7 @@ public class LabelListCellRenderer<ItemType> extends JLabel implements ListCellR
         this(itemHeight, null);
     }
 
-    public LabelListCellRenderer(int itemHeight, IItemRenderer<ItemType> itemRenderer) {
+    public LabelListCellRenderer(int itemHeight, ItemRenderer<ItemType> itemRenderer) {
         this.itemRenderer = itemRenderer;
 
         setOpaque(true);

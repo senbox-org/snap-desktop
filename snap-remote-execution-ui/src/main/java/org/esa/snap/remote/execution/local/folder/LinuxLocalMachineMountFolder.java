@@ -2,7 +2,7 @@ package org.esa.snap.remote.execution.local.folder;
 
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.remote.execution.utils.UnixMountLocalFolderResult;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 
 import java.io.IOException;
 
@@ -25,7 +25,7 @@ public class LinuxLocalMachineMountFolder implements IMountLocalSharedFolderResu
     }
 
     @Override
-    public void unmountLocalSharedFolderAsync(ILoadingIndicator loadingIndicator, int threadId, IUnmountLocalSharedFolderCallback callback) {
+    public void unmountLocalSharedFolderAsync(LoadingIndicator loadingIndicator, int threadId, IUnmountLocalSharedFolderCallback callback) {
         if (canUnmountLocalSharedFolder()) {
             UnmountLinuxLocalFolderTimerRunnable runnable = new UnmountLinuxLocalFolderTimerRunnable(loadingIndicator, threadId, this.linuxLocalSharedDrive.getLocalSharedFolderPath(),
                                                                                             this.linuxLocalSharedDrive.getLocalPassword(), this.localMachineLinuxMountFolder, callback);

@@ -2,7 +2,7 @@ package org.esa.snap.remote.execution.machines;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.ui.loading.AbstractModalDialog;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -212,7 +212,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
     private void testConnectionButtonPressed() {
         RemoteMachineProperties sshServerCredentials = buildRemoteMachineCredentialsItem(false);
         if (sshServerCredentials != null) {
-            ILoadingIndicator loadingIndicator = getLoadingIndicator();
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
             int threadId = getNewCurrentThreadId();
             TestConnectionTimerRunnable runnable = new TestConnectionTimerRunnable(this, loadingIndicator, threadId, sshServerCredentials);
             runnable.executeAsync();

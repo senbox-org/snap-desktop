@@ -5,8 +5,8 @@ import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
 import org.esa.snap.remote.execution.machines.RemoteMachineProperties;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.Box;
@@ -67,7 +67,7 @@ public abstract class RemoteTopologyPanel extends JPanel {
 
     public abstract void addComponents(int gapBetweenColumns, int gapBetweenRows, ActionListener browseLocalSharedFolderButtonListener, JPanel remoteMachinesButtonsPanel);
 
-    public abstract void mountLocalSharedFolderAsync(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback);
+    public abstract void mountLocalSharedFolderAsync(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback);
 
     protected abstract AbstractLocalSharedFolder buildLocalSharedFolder();
 
@@ -110,7 +110,7 @@ public abstract class RemoteTopologyPanel extends JPanel {
         return remoteTopology;
     }
 
-    protected boolean canMountLocalSharedFolder(IMessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
+    protected boolean canMountLocalSharedFolder(MessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
         if (StringUtils.isBlank(localSharedFolder.getRemoteSharedFolderPath())) {
             parentWindow.showErrorDialog("The remote shared folder path is not specified.");
             getRemoteSharedFolderPathTextField().requestFocus();

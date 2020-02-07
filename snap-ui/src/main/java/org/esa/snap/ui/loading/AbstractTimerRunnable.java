@@ -16,9 +16,9 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     private final Timer timer;
     private final int timerDelayInMilliseconds;
     private final int threadId;
-    private final ILoadingIndicator loadingIndicator;
+    private final LoadingIndicator loadingIndicator;
 
-    protected AbstractTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, int timerDelayInMilliseconds) {
+    protected AbstractTimerRunnable(LoadingIndicator loadingIndicator, int threadId, int timerDelayInMilliseconds) {
         this.loadingIndicator = loadingIndicator;
         this.threadId = threadId;
         this.timerDelayInMilliseconds = timerDelayInMilliseconds;
