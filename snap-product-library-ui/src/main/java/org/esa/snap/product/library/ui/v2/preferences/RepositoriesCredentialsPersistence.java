@@ -6,6 +6,8 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.engine_utilities.util.CryptoUtils;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsConfigurations;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadRemoteProductsHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -221,7 +223,7 @@ public final class RepositoriesCredentialsPersistence {
         if (autoUncompressVal != null && !autoUncompressVal.isEmpty()) {
             return autoUncompressVal.contentEquals("true");
         }
-        return false;
+        return DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
     }
 
     /**
@@ -232,7 +234,7 @@ public final class RepositoriesCredentialsPersistence {
         if (recordsOnPageVal != null && !recordsOnPageVal.isEmpty()) {
             return Integer.parseInt(recordsOnPageVal);
         }
-        return 10;
+        return RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
     }
 
     /**
