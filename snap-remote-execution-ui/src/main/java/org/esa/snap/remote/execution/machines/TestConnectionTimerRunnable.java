@@ -3,8 +3,8 @@ package org.esa.snap.remote.execution.machines;
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
 import org.esa.snap.ui.loading.GenericRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 
 import javax.swing.SwingUtilities;
 
@@ -13,12 +13,12 @@ import javax.swing.SwingUtilities;
  */
 public class TestConnectionTimerRunnable extends AbstractTimerRunnable<RemoteMachineConnectionResult> {
 
-    private final IMessageDialog parentWindow;
+    private final MessageDialog parentWindow;
     private final RemoteMachineProperties sshServer;
 
     private String loadingIndicatorMessage;
 
-    public TestConnectionTimerRunnable(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId, RemoteMachineProperties sshServerCredentials) {
+    public TestConnectionTimerRunnable(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId, RemoteMachineProperties sshServerCredentials) {
         super(loadingIndicator, threadId, 500);
 
         this.parentWindow = parentWindow;

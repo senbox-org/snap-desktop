@@ -1,8 +1,6 @@
 package org.esa.snap.ui.loading;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,12 +18,12 @@ public class SwingUtils {
 
     private static class ComboBoxEditorComponent<ItemType> implements ComboBoxEditor {
 
-        private final IItemRenderer<ItemType> itemRenderer;
+        private final ItemRenderer<ItemType> itemRenderer;
         private final JTextField editorTextField;
 
         private ItemType item;
 
-        private ComboBoxEditorComponent(IItemRenderer<ItemType> itemRenderer) {
+        private ComboBoxEditorComponent(ItemRenderer<ItemType> itemRenderer) {
             this.itemRenderer = itemRenderer;
             this.editorTextField = new JTextField("", 9);
             this.editorTextField.setBorder(null);
@@ -76,7 +74,7 @@ public class SwingUtils {
         }
     }
 
-    public static <ItemType> JComboBox<ItemType> buildComboBox(IItemRenderer<ItemType> itemRenderer, int textFieldPreferredHeight, boolean isEditable) {
+    public static <ItemType> JComboBox<ItemType> buildComboBox(ItemRenderer<ItemType> itemRenderer, int textFieldPreferredHeight, boolean isEditable) {
         JComboBox<ItemType> comboBox = new JComboBox<ItemType>();
         Dimension comboBoxSize = comboBox.getPreferredSize();
         comboBoxSize.height = textFieldPreferredHeight;
@@ -108,7 +106,7 @@ public class SwingUtils {
     }
 
     public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, int textFieldPreferredHeight, boolean isEditable) {
-        IItemRenderer<String> itemRenderer = new IItemRenderer<String>() {
+        ItemRenderer<String> itemRenderer = new ItemRenderer<String>() {
             @Override
             public String getItemDisplayText(String item) {
                 return (item == null) ? " " : item;

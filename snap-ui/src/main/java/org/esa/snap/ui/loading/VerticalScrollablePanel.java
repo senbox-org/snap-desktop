@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2;
+package org.esa.snap.ui.loading;
 
 import java.awt.Rectangle;
 import javax.swing.Scrollable;

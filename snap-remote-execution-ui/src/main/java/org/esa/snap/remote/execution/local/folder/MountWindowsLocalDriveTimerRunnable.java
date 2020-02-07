@@ -2,16 +2,16 @@ package org.esa.snap.remote.execution.local.folder;
 
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 
 public class MountWindowsLocalDriveTimerRunnable extends AbstractTimerRunnable<Boolean> {
 
-    private final IMessageDialog parentWindow;
+    private final MessageDialog parentWindow;
     private final WindowsLocalSharedDrive windowsLocalSharedDrive;
     private final IMountLocalSharedFolderCallback callback;
 
-    public MountWindowsLocalDriveTimerRunnable(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId,
+    public MountWindowsLocalDriveTimerRunnable(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId,
                                                WindowsLocalSharedDrive windowsLocalSharedDrive, IMountLocalSharedFolderCallback callback) {
 
         super(loadingIndicator, threadId, 500);

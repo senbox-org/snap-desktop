@@ -41,7 +41,7 @@ import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.AbstractModalDialog;
 import org.esa.snap.ui.loading.CustomFileChooser;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -228,7 +228,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         JDialog dialog = getJDialog();
         dialog.setMinimumSize(new Dimension(650, 590));
 
-        ILoadingIndicator loadingIndicator = getLoadingIndicator();
+        LoadingIndicator loadingIndicator = getLoadingIndicator();
         int threadId = getNewCurrentThreadId();
 
         Path remoteTopologyFilePath = getRemoteTopologyFilePath();
@@ -251,7 +251,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         if (this.mountLocalSharedFolderResult == null) {
             super.close();
         } else {
-            ILoadingIndicator loadingIndicator = getLoadingIndicator();
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
             int threadId = getNewCurrentThreadId();
             IUnmountLocalSharedFolderCallback callback = new IUnmountLocalSharedFolderCallback() {
                 @Override
@@ -792,7 +792,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
     private void runOperatorAsync(Map<String, Object> parametersMap, boolean openTargetProductInApplication) {
         Path remoteTopologyFilePath = getRemoteTopologyFilePath();
         RemoteTopology remoteTopologyToSave = this.remoteTopologyPanel.buildRemoteTopology();
-        ILoadingIndicator loadingIndicator = getLoadingIndicator();
+        LoadingIndicator loadingIndicator = getLoadingIndicator();
         int threadId = getNewCurrentThreadId();
         RemoteExecutionTimerRunnable runnable = new RemoteExecutionTimerRunnable(this.appContext, this, loadingIndicator, threadId,
                                                                                 parametersMap, openTargetProductInApplication, this.mountLocalSharedFolderResult,
@@ -844,7 +844,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
     private void showDialogToSelectSourceProducts() {
         if (this.mountLocalSharedFolderResult == null) {
             // mount the local folder and then select the source product
-            ILoadingIndicator loadingIndicator = getLoadingIndicator();
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
             int threadId = getNewCurrentThreadId();
             IMountLocalSharedFolderCallback callback = new IMountLocalSharedFolderCallback() {
                 @Override
@@ -855,7 +855,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
             };
             this.remoteTopologyPanel.mountLocalSharedFolderAsync(this, loadingIndicator, threadId, callback);
         } else if (this.remoteTopologyPanel.hasChangedParameters(this.mountLocalSharedFolderResult.getLocalSharedDrive())) {
-            ILoadingIndicator loadingIndicator = getLoadingIndicator();
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
             int threadId = getNewCurrentThreadId();
             IUnmountLocalSharedFolderCallback callback = new IUnmountLocalSharedFolderCallback() {
                 @Override

@@ -11,7 +11,6 @@ import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
@@ -21,8 +20,7 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.loading.IItemRenderer;
-import org.esa.snap.ui.loading.LabelListCellRenderer;
+import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.ComboBoxModel;
@@ -65,7 +63,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository(databaseParameters);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
-        IItemRenderer<LocalRepositoryFolder> foldersItemRenderer = new IItemRenderer<LocalRepositoryFolder>() {
+        ItemRenderer<LocalRepositoryFolder> foldersItemRenderer = new ItemRenderer<LocalRepositoryFolder>() {
             @Override
             public String getItemDisplayText(LocalRepositoryFolder item) {
                 return (item == null) ? " " : item.getPath().toString();
@@ -73,7 +71,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         };
         this.foldersComboBox = SwingUtils.buildComboBox(foldersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
 
-        IItemRenderer<String> missionsItemRenderer = new IItemRenderer<String>() {
+        ItemRenderer<String> missionsItemRenderer = new ItemRenderer<String>() {
             @Override
             public String getItemDisplayText(String item) {
                 return (item == null) ? " " : item;
@@ -92,7 +90,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.removeFoldersButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
         this.removeFoldersButton.setToolTipText("Remove all local folders");
 
-        IItemRenderer<String> attributeValuesItemRenderer = new IItemRenderer<String>() {
+        ItemRenderer<String> attributeValuesItemRenderer = new ItemRenderer<String>() {
             @Override
             public String getItemDisplayText(String item) {
                 return (item == null) ? " " : item;

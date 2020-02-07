@@ -2,7 +2,7 @@ package org.esa.snap.remote.execution.local.folder;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ public class WindowsLocalMachineMountDrive implements IMountLocalSharedFolderRes
     }
 
     @Override
-    public void unmountLocalSharedFolderAsync(ILoadingIndicator loadingIndicator, int threadId, IUnmountLocalSharedFolderCallback callback) {
+    public void unmountLocalSharedFolderAsync(LoadingIndicator loadingIndicator, int threadId, IUnmountLocalSharedFolderCallback callback) {
         if (canUnmountLocalSharedDrive()) {
             UnmountWindowsLocalDriveTimerRunnable runnable = new UnmountWindowsLocalDriveTimerRunnable(loadingIndicator, threadId, this.windowsLocalSharedDrive.getLocalSharedDrive(), callback);
             runnable.executeAsync();

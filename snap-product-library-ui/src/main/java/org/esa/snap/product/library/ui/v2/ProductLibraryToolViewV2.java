@@ -49,6 +49,8 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
+import org.esa.snap.ui.loading.CustomSplitPane;
+import org.esa.snap.ui.loading.SwingUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -199,8 +201,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         int gapBetweenRows = getGapBetweenRows();
         int gapBetweenColumns = getGapBetweenRows();
-        Color transparentDividerColor = new Color(255, 255, 255, 0);
-        this.horizontalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, gapBetweenColumns-2, 0, transparentDividerColor);
+        int visibleDividerSize = gapBetweenColumns-2;
+        int dividerMargins = 0;
+        float initialDividerLocationPercent = 0.5f;
+        this.horizontalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibleDividerSize, dividerMargins, initialDividerLocationPercent, SwingUtils.TRANSPARENT_COLOR);
         this.horizontalSplitPane.setLeftComponent(this.repositorySelectionPanel.getSelectedProductsRepositoryPanel());
         this.horizontalSplitPane.setRightComponent(this.repositoryProductListPanel);
 

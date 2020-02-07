@@ -1,7 +1,5 @@
 package org.esa.snap.product.library.ui.v2;
 
-import java.awt.Insets;
-
 /**
  * Created by jcoravu on 26/8/2019.
  */
