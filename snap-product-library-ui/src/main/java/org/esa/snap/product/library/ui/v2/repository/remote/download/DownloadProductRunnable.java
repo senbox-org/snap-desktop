@@ -60,8 +60,8 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     }
 
     @Override
-    public final void stopRunning() {
-        super.stopRunning();
+    public final void cancelRunning() {
+        super.cancelRunning();
 
         this.remoteProductDownloader.cancel();
     }
@@ -79,7 +79,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
             @Override
             public void notifyProgress(short progressPercent) {
-                updateDownloadingProgressPercent(getProductToDownload(), progressPercent, null);
+                updateDownloadingProgressPercent(getProductToDownload(), progressPercent, null); // 'null' => no download local path
             }
         };
 
@@ -93,7 +93,6 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0, null); // 0%
 
             productPath = this.remoteProductDownloader.download(progressListener);
-
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         }

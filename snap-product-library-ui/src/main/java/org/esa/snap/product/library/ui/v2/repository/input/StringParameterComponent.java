@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.input;
 
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.Dimension;
 
 /**
@@ -26,7 +26,7 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
     }
 
     @Override
-    public JTextField getComponent() {
+    public JComponent getComponent() {
         return this.component;
     }
 
@@ -34,6 +34,17 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
     public String getParameterValue() {
         String value = this.component.getText().trim();
         return (value.trim().equals("") ? null : value);
+    }
+
+    @Override
+    public void setParameterValue(Object value) {
+        if (value == null) {
+            clearParameterValue();
+        } else if (value instanceof String) {
+            this.component.setText((String) value);
+        } else {
+            throw new ClassCastException("The parameter value type '" + value + "' must be '" + String.class + "'.");
+        }
     }
 
     @Override

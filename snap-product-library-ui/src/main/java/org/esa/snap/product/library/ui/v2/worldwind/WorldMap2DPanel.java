@@ -47,8 +47,8 @@ public class WorldMap2DPanel extends LayerCanvas implements WorldMap {
     }
 
     @Override
-    public void setSelection(Rectangle2D selectionArea) {
-        this.map2DSelector.setSelectedArea(selectionArea);
+    public void setSelectedArea(Rectangle2D selectedArea) {
+        this.map2DSelector.setSelectedArea(selectedArea);
     }
 
     @Override

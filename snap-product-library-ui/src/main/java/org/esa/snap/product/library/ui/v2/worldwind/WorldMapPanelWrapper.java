@@ -6,19 +6,9 @@ import org.esa.snap.ui.loading.CircularProgressIndicatorLabel;
 import org.esa.snap.ui.loading.GenericRunnable;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -82,6 +72,13 @@ public class WorldMapPanelWrapper extends JPanel {
     public void clearSelectedArea() {
         if (this.currentWorldMap != null) {
             this.currentWorldMap.disableSelection();
+        }
+    }
+
+    public void setSelectedArea(Rectangle2D selectedArea) {
+        if (this.currentWorldMap != null) {
+            this.currentWorldMap.setSelectedArea(selectedArea);
+            this.currentWorldMap.refresh();
         }
     }
 
@@ -205,7 +202,7 @@ public class WorldMapPanelWrapper extends JPanel {
             selectedArea = currentWorldMap.getSelectedArea();
         }
         this.currentWorldMap = (WorldMap)worldMapPanel;
-        this.currentWorldMap.setSelection(selectedArea);
+        this.currentWorldMap.setSelectedArea(selectedArea);
 
         removeAll();
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);

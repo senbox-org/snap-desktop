@@ -60,7 +60,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                onStopExecuting();
+                onFinishRunning();
             }
         };
         SwingUtilities.invokeLater(runnable);
@@ -83,7 +83,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         return this.progressPanel.hideProgressPanel(this.threadId);
     }
 
-    protected void onStopExecuting() {
+    protected void onFinishRunning() {
     }
 
     protected void onFailed(Exception exception) {

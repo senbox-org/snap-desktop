@@ -2,8 +2,9 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JComboBox;
+import javax.swing.*;
 
 /**
  * Created by jcoravu on 7/8/2019.
@@ -17,12 +18,23 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
 
         super(parameterName, parameterLabelText, required);
 
-        this.component = RemoteProductsRepositoryPanel.buildComboBox(values, defaultValue, componentDimension);
+        this.component = SwingUtils.buildComboBox(values, defaultValue, componentDimension.getTextFieldPreferredHeight(), false);
     }
 
     @Override
-    public JComboBox<String> getComponent() {
+    public JComponent getComponent() {
         return this.component;
+    }
+
+    @Override
+    public void setParameterValue(Object value) {
+        if (value == null) {
+            clearParameterValue();
+        } else if (value instanceof String) {
+            this.component.setSelectedItem(value);
+        } else {
+            throw new ClassCastException("The parameter value type '" + value + "' must be '" + String.class+"'.");
+        }
     }
 
     @Override

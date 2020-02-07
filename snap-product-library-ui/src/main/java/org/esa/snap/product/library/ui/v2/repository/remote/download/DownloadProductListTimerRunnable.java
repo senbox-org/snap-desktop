@@ -106,7 +106,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     @Override
-    protected void onStopExecuting() {
+    protected void onFinishRunning() {
         this.threadListener.onStopExecuting(this);
     }
 

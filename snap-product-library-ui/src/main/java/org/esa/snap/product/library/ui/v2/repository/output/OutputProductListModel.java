@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Created by jcoravu on 21/8/2019.
  */
-public abstract class OutputProductListModel {
+public class OutputProductListModel {
 
     private final OutputProductResultsCallback outputProductResultsCallback;
 
@@ -31,8 +31,6 @@ public abstract class OutputProductListModel {
         this.outputProductResultsCallback = outputProductResultsCallback;
         this.products = new ArrayList<>();
     }
-
-    public abstract Map<String, String> getRemoteMissionVisibleAttributes(String mission);
 
     protected void fireIntervalAdded(int startIndex, int endIndex) {
     }
