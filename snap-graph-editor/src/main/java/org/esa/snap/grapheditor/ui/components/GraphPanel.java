@@ -207,6 +207,7 @@ public class GraphPanel extends JPanel
     private void removeSelectedNode() {
         if (selectedNode != null) {
             this.nodes.remove(selectedNode);
+            selectedNode.delete();
             for (GraphListener listener : graphListeners) {
                 listener.deleted(selectedNode);
             }

@@ -521,6 +521,14 @@ public class NodeGui implements NodeListener {
         hasChanged = true;
     }
 
+    public void delete() {
+        // To avoid co-modifaction of the nodeListeners arraylist
+        ArrayList<NodeListener> listeners = new ArrayList<>(nodeListeners);
+        for (NodeListener l: listeners) {
+            l.sourceDeleted(this);
+        }
+    }
+
     public NodeDragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
@@ -643,6 +651,19 @@ public class NodeGui implements NodeListener {
     @Override
     public void outputChanged(NodeGui source) {
         hasChanged = true;
+    }
+
+    @Override
+    public void sourceDeleted(NodeGui source) {
+        for (int i = 0; i < incomingConnections.size();i ++) {
+            Connection c = incomingConnections.get(i);
+            if (c.getSource() == source) {
+                // as only one input connection from a node is permitted we can safely break the loop.
+                disconnect(i);
+                break;
+            }
+        }
+
     }
 
     public void addNodeListener(NodeListener l) {

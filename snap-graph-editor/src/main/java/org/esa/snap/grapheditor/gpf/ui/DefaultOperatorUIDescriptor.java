@@ -18,7 +18,7 @@ package org.esa.snap.grapheditor.gpf.ui;
 import com.bc.ceres.core.Assert;
 
 /**
- * Provides a standard implementation for {@link OperatorUIDescriptor}.
+ * Provides a standard implementation for {@link OperatorUIDescriptor}.w
  */
 public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor {
 

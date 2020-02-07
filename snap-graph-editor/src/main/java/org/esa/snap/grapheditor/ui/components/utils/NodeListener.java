@@ -8,4 +8,6 @@ public interface NodeListener {
      * @param source: source of the event
      */
     void outputChanged(NodeGui source);
+
+    void sourceDeleted(NodeGui source);
 }
