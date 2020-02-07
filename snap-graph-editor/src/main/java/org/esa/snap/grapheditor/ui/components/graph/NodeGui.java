@@ -810,20 +810,33 @@ public class NodeGui implements NodeListener {
 
     /**
      * Loads parameters from stored XML element.
-     * @param presentationXML xml presentation root
+     * @param parameters xml presentation root
      */
-    public void loadParameters(final XppDom presentationXML) {
-        for (XppDom params : presentationXML.getChildren()) {
-            final String id = params.getAttribute("id");
-            if (id != null && id.equals(node.getId())) {
-                //displayParameters = params;
-                final XppDom dpElem = params.getChild("displayPosition");
-                if (dpElem != null) {
-                    this.x = (int) Float.parseFloat(dpElem.getAttribute("x"));
-                    this.y = (int) Float.parseFloat(dpElem.getAttribute("y"));
-                }
-                return;
-            }
+    public void loadParameters(final XppDom parameters) {
+        //displayParameters = params;
+        final XppDom dpElem = parameters.getChild("displayPosition");
+        if (dpElem != null) {
+            this.x = (int) Float.parseFloat(dpElem.getAttribute("x"));
+            this.y = (int) Float.parseFloat(dpElem.getAttribute("y"));
         }
+        return;
+
+    }
+
+    /**
+     * Save parameters as XML element.
+     *
+     * @return Xml node containing the display informations.
+     */
+    public XppDom saveParameters() {
+        XppDom elem = new XppDom("node");
+        elem.setAttribute("id", node.getId());
+        XppDom dpElem = new XppDom("displayPosition");
+        elem.addChild(dpElem);
+
+        dpElem.setAttribute("y", String.valueOf(this.getY()));
+        dpElem.setAttribute("x", String.valueOf(this.getX()));
+
+        return elem;
     }
 }
