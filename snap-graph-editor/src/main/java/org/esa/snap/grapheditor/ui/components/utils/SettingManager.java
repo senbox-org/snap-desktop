@@ -10,6 +10,8 @@ import java.util.HashMap;
 public class SettingManager {
     private enum SettingType {
         INT,
+        KEY,
+        COLOR,
         BOOLEAN,
         STRING,
         DOUBLE
@@ -143,15 +145,17 @@ public class SettingManager {
     private HashMap<String, SettingValue> settings = new HashMap<>();
     static private SettingManager instance_ = null;
 
-    static final private String TOOLTIPENABLED = "tooltipEnabled";
-    static final private String TOOLTIPWHILECONNECTING = "tooltipWhileConnectingEnabled";
-    static final private String COMMANDPANELENABLED =  "commandPanelEnabled";
-    static final private String COMMANDPANELKEY = "commandPanelKey";
+    static final private String TOOLTIPENABLED = "tooltip enabled";
+    static final private String COMMANDPANELENABLED =  "command panel enabled";
+    static final private String COMMANDPANELKEY = "command panel Key";
+    static final private String AUTOVALIDATEKEY = "auto validate enabled";
+    static final private String BGGRIDVISIBLEKEY = "background grid visible";
 
     private SettingManager(){
         settings.put(TOOLTIPENABLED, new SettingValue(true));
-        settings.put(TOOLTIPWHILECONNECTING, new SettingValue(true));
         settings.put(COMMANDPANELENABLED, new SettingValue(true));
+        settings.put(AUTOVALIDATEKEY, new SettingValue(true));
+        settings.put(BGGRIDVISIBLEKEY, new SettingValue(true));
         settings.put(COMMANDPANELKEY, new SettingValue(KeyEvent.VK_TAB));
     }
 
@@ -159,14 +163,13 @@ public class SettingManager {
         return settings.get(TOOLTIPENABLED).asBoolean();
     }
 
-    public boolean isShowTooltipWhileConnectingEnabled() {
-        return settings.get(TOOLTIPWHILECONNECTING).asBoolean();
-    }
-
     public boolean isCommandPanelEnabled() {
         return settings.get(COMMANDPANELENABLED).asBoolean();
     }
 
+    public boolean isBgGridVisible() {
+        return settings.get(BGGRIDVISIBLEKEY).asBoolean();
+    }
     public int getCommandPanelKey() {
         return  settings.get(COMMANDPANELKEY).asInt();
     }
