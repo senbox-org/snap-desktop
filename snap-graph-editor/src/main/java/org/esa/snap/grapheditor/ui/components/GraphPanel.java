@@ -94,14 +94,16 @@ public class GraphPanel extends JPanel
     }
 
     private void drawGrid(Graphics2D g) {
-        int width = getWidth();
-        int height = getHeight();
-        if (gridPattern == null || gridPattern.getWidth() != width || gridPattern.getHeight() != height) {
-            // initalize gridPattern image buffer
-            gridPattern = GraphicUtils.gridPattern(width, height);
+        if (SettingManager.getInstance().isBgGridVisible()) {
+            int width = getWidth();
+            int height = getHeight();
+            if (gridPattern == null || gridPattern.getWidth() != width || gridPattern.getHeight() != height) {
+                // initalize gridPattern image buffer
+                gridPattern = GraphicUtils.gridPattern(width, height);
+            }
+            // render gridPattern buffer image
+            g.drawImage(gridPattern, 0, 0, null);
         }
-        // render gridPattern buffer image
-        g.drawImage(gridPattern, 0, 0, null);
     }
 
     private void drawNodes(Graphics2D g) {
