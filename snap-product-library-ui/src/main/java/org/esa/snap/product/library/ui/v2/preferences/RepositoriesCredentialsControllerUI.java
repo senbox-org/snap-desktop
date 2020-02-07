@@ -5,6 +5,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsConfigurations;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsTableModel;
 import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesTableModel;
 import org.esa.snap.rcp.SnapApp;
@@ -15,26 +16,9 @@ import org.esa.snap.ui.AppContext;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.net.URL;
@@ -81,14 +65,20 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     private final JTable credentialsListTable;
     private final List<RemoteProductsRepositoryProvider> remoteRepositories = new ArrayList<>();
     private JPanel credentialsListPanel;
+    private JRadioButton autoUncompressEnabled;
+    private JComboBox<Integer> recordsOnPageCb;
     private RepositoriesCredentialsBean repositoriesCredentialsBean = new RepositoriesCredentialsBean();
     private List<RemoteRepositoryCredentials> repositoriesCredentials;
+    private boolean autoUncompress;
+    private int nrRecordsOnPage;
     private boolean isInitialized = false;
     private int currentSelectedRow = -1;
 
     public RepositoriesCredentialsControllerUI() {
         RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
         this.repositoriesCredentials = createCopy(repositoriesCredentialsController.getRepositoriesCredentials());
+        this.autoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        this.nrRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
         loadRemoteRepositories();
         repositoriesListTable = buildRepositoriesListTable();
         credentialsListTable = buildCredentialsListTable();
@@ -147,9 +137,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
 
     private void loadRemoteRepositories() {
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
-        for (int k=0; k<remoteRepositoryProductProviders.length; k++) {
-            if (remoteRepositoryProductProviders[k].requiresAuthentication()) {
-                this.remoteRepositories.add(remoteRepositoryProductProviders[k]);
+        for (RemoteProductsRepositoryProvider remoteRepositoryProductProvider : remoteRepositoryProductProviders) {
+            if (remoteRepositoryProductProvider.requiresAuthentication()) {
+                this.remoteRepositories.add(remoteRepositoryProductProvider);
             }
         }
     }
@@ -172,6 +162,14 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             changedRepositoriesCredentials.add(repositoryCredentialsFromTable);
         }
         return changedRepositoriesCredentials;
+    }
+
+    private boolean getChangedAutoUncompress() {
+        return autoUncompressEnabled.isSelected();
+    }
+
+    private int getChangedNrRecordsOnPage() {
+        return recordsOnPageCb.getItemAt(recordsOnPageCb.getSelectedIndex());
     }
 
     private List<Credentials> getRemoteRepositoryCredentials(String remoteRepositoryId) {
@@ -228,6 +226,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 SwingUtilities.invokeLater(() -> repositoriesListTable.changeSelection(0, RepositoriesTableModel.REPO_NAME_COLUMN, false, false));
             } else {
                 refreshCredentialsTable();
+                refreshSearchResultsConfigurations();
             }
         }
     }
@@ -241,8 +240,11 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             try {
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
                 List<RemoteRepositoryCredentials> changedRepositoriesCredentials = getChangedRemoteRepositories();
-                repositoriesCredentialsController.saveCredentials(createCopy(changedRepositoriesCredentials));
-
+                boolean changedAutoUncompress = getChangedAutoUncompress();
+                int changedNrRecordsOnPage = getChangedNrRecordsOnPage();
+                repositoriesCredentialsController.saveConfigurations(new RepositoriesCredentialsConfigurations(createCopy(changedRepositoriesCredentials), changedAutoUncompress, changedNrRecordsOnPage));
+                this.autoUncompress = changedAutoUncompress;
+                this.nrRecordsOnPage = changedNrRecordsOnPage;
                 AppContext appContext = SnapApp.getDefault().getAppContext();
                 appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
             } catch (Exception ex) {
@@ -262,6 +264,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
         this.repositoriesCredentials = createCopy(repositoriesCredentialsController.getRepositoriesCredentials());
         this.currentSelectedRow = -1;
+        this.autoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        this.nrRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
     }
 
     /**
@@ -271,17 +275,21 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     @Override
     public boolean isChanged() {
+        boolean changed = false;
+        RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
         if (repositoriesListTable.getSelectedRow() >= 0) {
-            RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
+
             List<RemoteRepositoryCredentials> savedRepositoriesCredentials = repositoriesCredentialsController.getRepositoriesCredentials();
 
             List<RemoteRepositoryCredentials> changedRepositoriesCredentials = getChangedRemoteRepositories();
 
             if (RepositoriesCredentialsPersistence.validCredentials(changedRepositoriesCredentials)) {
-                return isRepositoriesChanged(savedRepositoriesCredentials, changedRepositoriesCredentials);
+                changed = isRepositoriesChanged(savedRepositoriesCredentials, changedRepositoriesCredentials);
             }
         }
-        return false;
+        boolean savedAutoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        int savedRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
+        return changed || savedAutoUncompress != getChangedAutoUncompress() || savedRecordsOnPage != getChangedNrRecordsOnPage();
     }
 
     /**
@@ -291,7 +299,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("vfs_editor");
+        return new HelpCtx("productLibraryTool");
     }
 
     /**
@@ -502,9 +510,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         remoteRepositoriesPanel.setDividerLocation(0.5);
         JScrollPane remoteRepositoriesListPane = buildRepositoriesListPanel();
         JPanel remoteRepositoryCredentialsListPane = buildCredentialsListPanel();
-        Dimension minimumSize = new Dimension(350, 410);
-        remoteRepositoriesListPane.setMinimumSize(minimumSize);
-        remoteRepositoryCredentialsListPane.setMinimumSize(minimumSize);
+        Dimension minimumSize = new Dimension(350, 350);
+        remoteRepositoriesListPane.setPreferredSize(minimumSize);
+        remoteRepositoryCredentialsListPane.setPreferredSize(minimumSize);
         remoteRepositoryCredentialsListPane.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -531,6 +539,49 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         return remoteRepositoriesPanel;
     }
 
+    private JPanel buildAutoUncompressPanel() {
+        JPanel autoUncompressPanel = new JPanel();
+        autoUncompressPanel.setLayout(new BoxLayout(autoUncompressPanel, BoxLayout.LINE_AXIS));
+        autoUncompressEnabled = new JRadioButton("Yes");
+        JRadioButton autoUncompressDisabled = new JRadioButton("No", true);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(autoUncompressEnabled);
+        buttonGroup.add(autoUncompressDisabled);
+        autoUncompressEnabled.setSelected(this.autoUncompress);
+        JPanel autoUncompressRBsPanel = new JPanel();
+        autoUncompressRBsPanel.setLayout(new BoxLayout(autoUncompressRBsPanel, BoxLayout.LINE_AXIS));
+        autoUncompressRBsPanel.add(autoUncompressEnabled);
+        autoUncompressRBsPanel.add(autoUncompressDisabled);
+        autoUncompressPanel.add(new JLabel("Auto uncompress downloaded archive products:", SwingConstants.LEFT));
+        autoUncompressPanel.add(Box.createHorizontalGlue());
+        autoUncompressPanel.add(autoUncompressRBsPanel);
+        autoUncompressPanel.add(Box.createHorizontalGlue());
+        return autoUncompressPanel;
+    }
+
+    private JPanel buildRecordsOnPagePanel() {
+        JPanel recordsOnPagePanel = new JPanel();
+        recordsOnPagePanel.setLayout(new BoxLayout(recordsOnPagePanel, BoxLayout.LINE_AXIS));
+        recordsOnPageCb = new JComboBox<>(new Integer[]{10, 20, 30, 40, 50});
+        recordsOnPageCb.setSelectedItem(this.nrRecordsOnPage);
+        recordsOnPagePanel.add(new JLabel("Number of records on search result page:", SwingConstants.LEFT));
+        recordsOnPagePanel.add(Box.createHorizontalGlue());
+        recordsOnPagePanel.add(recordsOnPageCb);
+        recordsOnPagePanel.add(Box.createHorizontalGlue());
+        return recordsOnPagePanel;
+    }
+
+    private JPanel buildExtraConfigurationsPanel() {
+        JPanel extraConfigurationsPanel = new JPanel();
+        extraConfigurationsPanel.setBorder(BorderFactory.createTitledBorder("Other options"));
+        extraConfigurationsPanel.setLayout(new BoxLayout(extraConfigurationsPanel, BoxLayout.LINE_AXIS));
+        extraConfigurationsPanel.add(buildAutoUncompressPanel());
+        extraConfigurationsPanel.add(Box.createHorizontalGlue());
+        extraConfigurationsPanel.add(buildRecordsOnPagePanel());
+        extraConfigurationsPanel.add(Box.createHorizontalGlue());
+        return extraConfigurationsPanel;
+    }
+
     /**
      * Creates and gets the root panel for remote repositories tab ui.
      *
@@ -538,8 +589,8 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     private JPanel buildRemoteRepositoriesTabUI() {
         JPanel remoteRepositoriesTabUI = new JPanel(new BorderLayout());
-        remoteRepositoriesTabUI.add(buildRemoteRepositoriesPanel());
-        remoteRepositoriesTabUI.setPreferredSize(new Dimension(730, 410));
+        remoteRepositoriesTabUI.add(buildRemoteRepositoriesPanel(), BorderLayout.CENTER);
+        remoteRepositoriesTabUI.add(buildExtraConfigurationsPanel(), BorderLayout.PAGE_END);
         return remoteRepositoriesTabUI;
     }
 
@@ -578,8 +629,13 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         }
     }
 
+    private void refreshSearchResultsConfigurations() {
+        this.autoUncompressEnabled.setSelected(this.autoUncompress);
+        this.recordsOnPageCb.setSelectedItem(this.nrRecordsOnPage);
+    }
+
     /**
-     * The bean with fields annoted with {@link Preference} for VFS Options.
+     * The bean with fields annoted with {@link Preference} for Product Library Remote Repositories Credentials Options.
      */
     static class RepositoriesCredentialsBean {
         @Preference(label = "S", key = "s")

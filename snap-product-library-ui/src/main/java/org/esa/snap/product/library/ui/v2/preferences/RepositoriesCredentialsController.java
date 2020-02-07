@@ -1,19 +1,19 @@
 package org.esa.snap.product.library.ui.v2.preferences;
 
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.ui.v2.preferences.model.RepositoriesCredentialsConfigurations;
 import org.esa.snap.runtime.EngineConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * A controller for Product Library Remote Repositories Credentials.
- * Used for establish a strategy with storing remote repositories credentials data.
+ * Used for establish a strategy with storing remote repositories credentials configuration data.
  *
  * @author Adrian Draghici
  */
@@ -24,17 +24,16 @@ public class RepositoriesCredentialsController {
     private static Logger logger = Logger.getLogger(RepositoriesCredentialsController.class.getName());
 
     private final Path plConfigFile;
-    private List<RemoteRepositoryCredentials> repositoriesCredentials;
+    private RepositoriesCredentialsConfigurations repositoriesCredentialsConfigurations;
 
 
     /**
-     * Creates the new VFS Remote File Repositories Controller with given config file.
+     * Creates the new Remote Repositories Credentials Controller with given config file.
      */
     private RepositoriesCredentialsController(Path plConfigFile) {
         this.plConfigFile = plConfigFile;
-        this.repositoriesCredentials = new ArrayList<>();
         try {
-            this.repositoriesCredentials = RepositoriesCredentialsPersistence.load(this.plConfigFile);
+            this.repositoriesCredentialsConfigurations = RepositoriesCredentialsPersistence.load(this.plConfigFile);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to read the credentials from the application preferences.", e);
         }
@@ -48,15 +47,38 @@ public class RepositoriesCredentialsController {
         return instance;
     }
 
+    /**
+     * Gets the list of Remote Repositories Credentials.
+     *
+     * @return the list of Remote Repositories Credentials
+     */
     public List<RemoteRepositoryCredentials> getRepositoriesCredentials() {
-        return this.repositoriesCredentials;
+        return this.repositoriesCredentialsConfigurations.getRepositoriesCredentials();
     }
 
     /**
-     * Writes the provided Remote Repositories Credentials on SNAP configuration file.
+     * Gets whether auto-decompression of archived downloaded products is enabled
+     *
+     * @return {@code true} if the auto-decompression of archived downloaded products is enabled
      */
-    void saveCredentials(List<RemoteRepositoryCredentials> repositoriesCredentialsForSave) throws IOException {
-        this.repositoriesCredentials = repositoriesCredentialsForSave;
-        RepositoriesCredentialsPersistence.save(this.plConfigFile, this.repositoriesCredentials);
+    public boolean isAutoUncompress() {
+        return this.repositoriesCredentialsConfigurations.isAutoUncompress();
+    }
+
+    /**
+     * Gets the number of products on search results page
+     *
+     * @return the number of products on search results page
+     */
+    public int getNrRecordsOnPage() {
+        return this.repositoriesCredentialsConfigurations.getNrRecordsOnPage();
+    }
+
+    /**
+     * Writes the provided Remote Repositories Credentials configurations on SNAP configuration file.
+     */
+    void saveConfigurations(RepositoriesCredentialsConfigurations repositoriesCredentialsConfigurationsForSave) throws IOException {
+        this.repositoriesCredentialsConfigurations = repositoriesCredentialsConfigurationsForSave;
+        RepositoriesCredentialsPersistence.save(this.plConfigFile, this.repositoriesCredentialsConfigurations);
     }
 }
