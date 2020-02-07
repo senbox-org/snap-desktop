@@ -27,10 +27,11 @@ public class MainPanel extends JSplitPane {
         super(JSplitPane.HORIZONTAL_SPLIT);
 
         graphPanel = new GraphPanel();
-        optionPanel = new OptionPanel(context);
+        optionPanel = new OptionPanel(this, context);
         graphPanel.addGraphListener(optionPanel);
         this.setLeftComponent(graphPanel);
         this.setRightComponent(optionPanel);
+        optionPanel.setVisible(false);
 
         this.setOneTouchExpandable(true);
         this.setDividerLocation(800);

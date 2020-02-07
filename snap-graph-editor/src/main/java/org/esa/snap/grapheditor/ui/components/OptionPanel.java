@@ -1,17 +1,17 @@
 package org.esa.snap.grapheditor.ui.components;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.ui.AppContext;
 
+import java.awt.*;
+
 public class OptionPanel extends JPanel implements GraphListener {
 
     private static final long serialVersionUID = -6760564459151183901L;
+    private final JSplitPane parent;
 
     private NodeGui selectedNode = null;
     private AppContext context; 
@@ -20,8 +20,11 @@ public class OptionPanel extends JPanel implements GraphListener {
     private SpringLayout layout;
     private final JLabel optionTitle = new JLabel("");
 
-    public OptionPanel(AppContext context) {
+    private int width = 300;
+
+    public OptionPanel(JSplitPane parent, AppContext context) {
         this.context = context;
+        this.parent = parent;
 
         ///// INIT GUI
         layout=  new SpringLayout();
@@ -32,11 +35,16 @@ public class OptionPanel extends JPanel implements GraphListener {
         layout.putConstraint(SpringLayout.WEST, optionTitle, 4, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.EAST, optionTitle, -4, SpringLayout.EAST, this);
         layout.putConstraint(SpringLayout.SOUTH, optionTitle, 30, SpringLayout.NORTH, this);
+
+        this.setMinimumSize(new Dimension(300, 300));
+        this.setPreferredSize(new Dimension(300, 800));
     }
 
 
     @Override
     public void selected(NodeGui source) {
+        this.setVisible(true);
+        this.parent.setDividerLocation(parent.getWidth() - width);
         if (selectedNode != null) {
             deselected(selectedNode);
         }
@@ -67,6 +75,8 @@ public class OptionPanel extends JPanel implements GraphListener {
         this.revalidate();
         this.repaint();
         this.optionTitle.setText("");
+        width = this.getWidth();
+        this.setVisible(false);
     }
 
     @Override
