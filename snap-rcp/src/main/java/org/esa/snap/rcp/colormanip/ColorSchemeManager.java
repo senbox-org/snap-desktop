@@ -26,8 +26,10 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
  * Manages all the color schemes
  *
  * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
  * @date Jan 2020
  */
+
 public class ColorSchemeManager {
 
     public boolean isjComboBoxShouldFire() {
@@ -115,7 +117,7 @@ public class ColorSchemeManager {
                 createSortedInfos();
 
                 setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-                jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), true, 0, getjComboBoxFirstEntryName(), null, null, null, 0, 0, false, true, false, null, null, null, colorPaletteAuxDir);
+                jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), true, getjComboBoxFirstEntryName(), null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
                 colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
                 colorSchemeSortedInfos.add(jComboBoxFirstEntryColorSchemeInfo);
                 colorSchemeSortedVerboseInfos.add(jComboBoxFirstEntryColorSchemeInfo);
@@ -144,7 +146,7 @@ public class ColorSchemeManager {
     private void createSortedInfos() {
 
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
-            if (!colorSchemeInfo.isDevider()) {
+            if (!colorSchemeInfo.isDivider()) {
                 colorSchemeSortedInfos.add(colorSchemeInfo);
             }
         }
@@ -162,7 +164,7 @@ public class ColorSchemeManager {
 //        String NULL_VALUE = "zzzzz";
 
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
-            if (!colorSchemeInfo.isDevider()) {
+            if (!colorSchemeInfo.isDivider()) {
                 colorSchemeSortedVerboseInfos.add(colorSchemeInfo);
             }
         }
@@ -307,14 +309,14 @@ public class ColorSchemeManager {
 
         final String[] toolTipsArray = new String[colorSchemeCurrentInfos.size()];
         final Boolean[] enabledArray = new Boolean[colorSchemeCurrentInfos.size()];
-        final Boolean[] deviderArray = new Boolean[colorSchemeCurrentInfos.size()];
+        final Boolean[] dividerArray = new Boolean[colorSchemeCurrentInfos.size()];
 
         int i = 0;
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeCurrentInfos) {
-            if (colorSchemeInfo.isEnabled() || (!colorSchemeInfo.isEnabled() && (showDisabled || colorSchemeInfo.isDevider()))) {
+            if (colorSchemeInfo.isEnabled() || (!colorSchemeInfo.isEnabled() && (showDisabled || colorSchemeInfo.isDivider()))) {
                 toolTipsArray[i] = colorSchemeInfo.getDescription();
                 enabledArray[i] = colorSchemeInfo.isEnabled();
-                deviderArray[i] = colorSchemeInfo.isDevider();
+                dividerArray[i] = colorSchemeInfo.isDivider();
                 jComboBox.addItem(colorSchemeInfo);
                 i++;
             }
@@ -323,7 +325,7 @@ public class ColorSchemeManager {
         final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
         myComboBoxRenderer.setTooltipList(toolTipsArray);
         myComboBoxRenderer.setEnabledList(enabledArray);
-        myComboBoxRenderer.setDeviderList(deviderArray);
+        myComboBoxRenderer.setDividerList(dividerArray);
         jComboBox.setRenderer(myComboBoxRenderer);
     }
 
@@ -367,7 +369,6 @@ public class ColorSchemeManager {
         Element rootElement = dom.getDocumentElement();
         NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
 
-        int entryNumber = 1; // for sorting by original order
 
         if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
             for (int i = 0; i < schemeNodeList.getLength(); i++) {
@@ -387,7 +388,6 @@ public class ColorSchemeManager {
                     String colorBarTitle = null;
                     String colorBarLabels = null;
                     String description = null;
-                    String rootSchemeName = null;
                     String displayName = null;
 
                     File standardCpdFile = null;
@@ -395,8 +395,7 @@ public class ColorSchemeManager {
 
                     boolean enabled = true;
 
-                    boolean overRide = false;
-                    boolean devider = false;
+                    boolean divider = false;
                     boolean primaryScheme = false;
 
 
@@ -410,7 +409,7 @@ public class ColorSchemeManager {
                     String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
                     standardCpdFilename = getTextValue(schemeElement, "CPD_FILENAME");
                     universalCpdFilename = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
-                    String deviderString = getTextValue(schemeElement, "DEVIDER");
+                    String dividerString = getTextValue(schemeElement, "DIVIDER");
                     String primarySchemeString = getTextValue(schemeElement, "PRIMARY");
 
 
@@ -431,9 +430,9 @@ public class ColorSchemeManager {
                         logScaled = true;
                     }
 
-                    devider = false;
-                    if (deviderString != null && deviderString.length() > 0 && deviderString.toLowerCase().equals("true")) {
-                        devider = true;
+                    divider = false;
+                    if (dividerString != null && dividerString.length() > 0 && dividerString.toLowerCase().equals("true")) {
+                        divider = true;
                     }
 
                     primaryScheme = false;
@@ -479,9 +478,13 @@ public class ColorSchemeManager {
 
                         enabled = validEntry;
 
-                        colorSchemeInfo = new ColorSchemeInfo(id, devider, entryNumber, displayName, rootSchemeName, description, standardCpdFilename, min, max, logScaled, overRide, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                        colorSchemeInfo = new ColorSchemeInfo(id, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
 
-                        entryNumber++;
+                        if (!colorSchemeInfo.isEnabled()) {
+                            description = checkScheme(colorSchemeInfo);
+                            colorSchemeInfo.setDescription(description);
+                        }
+
 
 
                         if (colorSchemeInfo != null) {
@@ -529,8 +532,8 @@ public class ColorSchemeManager {
             colorSchemeInfos.add(colorSchemeInfo);
         }
 
-        ColorSchemeInfo devider = new ColorSchemeInfo("-- Additional Schemes --", true, 0, "-- Additional Scheme --", null, null, null, 0, 0, false, true, false, null, null, null, colorPaletteAuxDir);
-        colorSchemeInfos.add(devider);
+        ColorSchemeInfo divider = new ColorSchemeInfo("-- Additional Schemes --", true, "-- Additional Scheme --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
+        colorSchemeInfos.add(divider);
 
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeAdditionalInfos) {
             colorSchemeInfos.add(colorSchemeInfo);
@@ -611,7 +614,7 @@ public class ColorSchemeManager {
         boolean checksOut = true;
 
         if (min != ColorSchemeDefaults.DOUBLE_NULL && max != ColorSchemeDefaults.DOUBLE_NULL) {
-            if (min == max) {
+            if (min >= max) {
                 checksOut = false;
             }
         }
@@ -702,7 +705,7 @@ public class ColorSchemeManager {
 
         private String[] tooltips;
         private Boolean[] enabledList;
-        private Boolean[] deviderList;
+        private Boolean[] dividerList;
 
         public Component getListCellRendererComponent(JList list, Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
@@ -721,7 +724,7 @@ public class ColorSchemeManager {
 //            }
 
 
-            if (index >= 0 && deviderList != null && index < deviderList.length && deviderList[index]) {
+            if (index >= 0 && dividerList != null && index < dividerList.length && dividerList[index]) {
                 setBackground(Color.lightGray);
                 setForeground(Color.black);
             } else {
@@ -770,8 +773,8 @@ public class ColorSchemeManager {
             this.enabledList = enabledList;
         }
 
-        public void setDeviderList(Boolean[] deviderList) {
-            this.deviderList = deviderList;
+        public void setDividerList(Boolean[] dividerList) {
+            this.dividerList = dividerList;
         }
     }
 
@@ -788,20 +791,29 @@ public class ColorSchemeManager {
     public String checkScheme(ColorSchemeInfo colorSchemeInfo) {
         String message = "";
 
-        String standardFileMessage = "";
-        String universalFileMessage = "";
 
         if (colorSchemeInfo != null) {
+            String description = "";
+
+            if (colorSchemeInfo.getDescription() != null) {
+                description = colorSchemeInfo.getDescription() + "<br>";
+            }
+
+            String standardFileMessage = "";
+            String universalFileMessage = "";
+
+            String message_head = "WARNING!: Configuration issue for scheme = '" + colorSchemeInfo.getName() + "':<br>";
+
             String standardFilename = colorSchemeInfo.getCpdFilename(false);
 
             if (standardFilename != null && standardFilename.length() > 0) {
                 File standardFile = new File(colorPaletteAuxDir, standardFilename);
 
                 if (standardFile == null || !standardFile.exists()) {
-                    standardFileMessage = "Scheme file " + standardFilename + " does not exist";
+                    standardFileMessage = "Scheme file '" + standardFilename + "' does not exist<br>";
                 }
             } else {
-                standardFileMessage = "Scheme does not contain a standard file";
+                standardFileMessage = "Scheme does not contain a standard file<br>";
             }
 
             String universalFilename = colorSchemeInfo.getCpdFilename(true);
@@ -810,13 +822,22 @@ public class ColorSchemeManager {
                 File universalFile = new File(colorPaletteAuxDir, universalFilename);
 
                 if (universalFile == null || !universalFile.exists()) {
-                    universalFileMessage = "Scheme file " + universalFilename + " does not exist";
+                    universalFileMessage = "Scheme file '" + universalFilename + "' does not exist<br>";
                 }
             } else {
-                universalFileMessage = "Scheme does not contain a universal file";
+                universalFileMessage = "Scheme does not contain a universal file<br>";
             }
 
-            message = "<html>" + standardFileMessage + "<br>" + universalFileMessage + "</html>";
+            String minMaxIssue = "";
+            if (!testMinMax(colorSchemeInfo.getMinValue(), colorSchemeInfo.getMaxValue(), colorSchemeInfo.isLogScaled())) {
+                minMaxIssue = "Issue with min, max values: min= '"
+                        + colorSchemeInfo.getMinValue()
+                        + "', max= '"
+                        + colorSchemeInfo.getMaxValue()
+                        + "' <br>";
+            }
+
+            message = "<html>" +  message_head + description + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
 
         } else {
             message = "Configuration Error";

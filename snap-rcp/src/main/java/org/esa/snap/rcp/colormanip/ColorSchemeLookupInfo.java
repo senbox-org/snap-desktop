@@ -1,9 +1,6 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
-import org.esa.snap.ui.product.ProductSceneView;
-
-import java.util.ArrayList;
 
 
 /**

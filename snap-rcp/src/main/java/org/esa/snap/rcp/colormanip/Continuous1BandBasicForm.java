@@ -653,14 +653,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         if (colorSchemeInfo != null) {
             if (colorSchemeInfo.isEnabled()) {
-                if (!colorSchemeInfo.isDevider()) {
+                if (!colorSchemeInfo.isDivider()) {
                     ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, parentForm.getFormModel().getProductSceneView());
 
                     parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
                 }
             } else {
-                if (!colorSchemeInfo.isDevider()) {
+                if (!colorSchemeInfo.isDivider()) {
                     System.out.println("Add a notification message window");
+
+                    String message = standardColorPaletteSchemes.checkScheme(colorSchemeInfo);
+                    System.out.println(message);
                     //todo Add notification window if not enabled
                 }
             }
