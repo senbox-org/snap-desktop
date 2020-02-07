@@ -220,8 +220,6 @@ public class GraphPanel extends JPanel
     public void keyTyped(KeyEvent event) {
     }
 
-
-
     @Override
     public void mouseDragged(MouseEvent e) {
         if (dragAction != null) {
