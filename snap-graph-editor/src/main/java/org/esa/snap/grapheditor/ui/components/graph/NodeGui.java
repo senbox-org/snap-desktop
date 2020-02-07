@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
@@ -25,7 +26,12 @@ import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-
+/**
+ * NodeGui is the main component of the GraphBuilder and it represents a node that is an instance of an Operator
+ * It can self-validate as well as notify the connected nodes of its changes.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class NodeGui implements NodeListener {
     public enum ValidationStatus {
         UNCHECKED,
@@ -145,13 +151,13 @@ public class NodeGui implements NodeListener {
         g.drawRoundRect(x, y, width, height, 8, 8);
 
         g.setStroke(textStroke);
-        if (this.validationStatus != ValidationStatus.UNCHECKED) {
+        if (this.validationStatus == ValidationStatus.ERROR || this.validationStatus == ValidationStatus.VALIDATED) {
             g.setColor(Color.white);
         } else {
             g.setColor(Color.darkGray);
         }
 
-        g.drawString(name, x + (width - textW) / 2 , y + (5 + textH));
+        g.drawString(name, x + (width - textW) / 2 , y + (textH + 3));
 
         paintInputs(g);
         paintOutput(g);
@@ -800,5 +806,24 @@ public class NodeGui implements NodeListener {
             }
         }
         return max_d;
+    }
+
+    /**
+     * Loads parameters from stored XML element.
+     * @param presentationXML xml presentation root
+     */
+    public void loadParameters(final XppDom presentationXML) {
+        for (XppDom params : presentationXML.getChildren()) {
+            final String id = params.getAttribute("id");
+            if (id != null && id.equals(node.getId())) {
+                //displayParameters = params;
+                final XppDom dpElem = params.getChild("displayPosition");
+                if (dpElem != null) {
+                    this.x = (int) Float.parseFloat(dpElem.getAttribute("x"));
+                    this.y = (int) Float.parseFloat(dpElem.getAttribute("y"));
+                }
+                return;
+            }
+        }
     }
 }
