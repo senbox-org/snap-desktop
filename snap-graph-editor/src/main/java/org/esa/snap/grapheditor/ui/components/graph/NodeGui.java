@@ -354,6 +354,11 @@ public class NodeGui implements NodeListener {
                 && Math.abs(dy - connectionOffset) <= connectionHalfSize);
     }
 
+    /**
+     * Checks if a point is inside the NodeGui body and connectors
+     * @param p point
+     * @return if the point is inside the NodeGui body
+     */
     public boolean contains(@NotNull Point p) {
         int dx = p.x - x;
         int dy = p.y - y;
@@ -366,6 +371,11 @@ public class NodeGui implements NodeListener {
         return isOverOutput(p);
     }
 
+    /**
+     * Adds the STATUS_OVER_MASK to the NodeGui and show tooltip if needed
+     * @param p mouse position
+     * @return if the status changed
+     */
     public boolean over(Point p) {
         boolean changed;
         if ((status & STATUS_MASK_OVER) == 0) {
@@ -382,6 +392,10 @@ public class NodeGui implements NodeListener {
         return changed;
     }
 
+    /**
+     * Remove status mask
+     * @return if the status changed
+     */
     public boolean none() {
         hide_tooltip();
         if ((status & STATUS_MASK_OVER) > 0) {
@@ -391,11 +405,14 @@ public class NodeGui implements NodeListener {
         return false;
     }
 
+    /**
+     * Select nodes and update the operatorUI if needed.
+     */
     public void select() {
         if ((status & STATUS_MASK_SELECTED) == 0)
             status += STATUS_MASK_SELECTED;
         System.out.println("\033[1;32m>> SELECTED\033[0m");
-        if (hasChanged) {
+        if (hasChanged && operatorUI != null) {
             // TODO UPDATE inputs...
             Product products[] = new Product[incomingConnections.size()];
             for (int i = 0; i < products.length; i++) {
@@ -466,10 +483,17 @@ public class NodeGui implements NodeListener {
         return true;
     }
 
+    /**
+     * Gets cached target product
+     * @return cached target product.
+     */
     public Product getProduct() {
         return output;
     }
 
+    /**
+     * Deselect a node and revalidate the node if changes have been detected.
+     */
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
@@ -509,6 +533,10 @@ public class NodeGui implements NodeListener {
         return !res;
     }
 
+    /**
+     * Disconnect an input connection.
+     * @param index input index
+     */
     public void disconnect(int index) {
         for (int i = index + 1; i < this.incomingConnections.size(); i++) {
             this.incomingConnections.get(i).setTargetIndex(i - 1);
@@ -522,14 +550,24 @@ public class NodeGui implements NodeListener {
         hasChanged = true;
     }
 
+    /**
+     * Delete a node and notifies all connected node.
+     */
     public void delete() {
         // To avoid co-modifaction of the nodeListeners arraylist
         ArrayList<NodeListener> listeners = new ArrayList<>(nodeListeners);
         for (NodeListener l: listeners) {
             l.sourceDeleted(this);
         }
+        incomingConnections.clear();
     }
 
+    /**
+     * Starts a new NodeDragAction when the drag of the node starts.
+     * Depending on the mouse position (p), the drag action can be a NodeGui drag, a new connection or a disconnection.
+     * @param p mouse position
+     * @return new drag action
+     */
     public NodeDragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
@@ -574,6 +612,11 @@ public class NodeGui implements NodeListener {
         }
     }
 
+    /**
+     * Gets the OperatorUI associated to this NodeGui
+     * @param context application context required to create the OperatorUI
+     * @return OperatorUI
+     */
     public JComponent getPreferencePanel(AppContext context){
         if (preferencePanel == null) {
             try {
@@ -587,18 +630,36 @@ public class NodeGui implements NodeListener {
         return preferencePanel;
     }
 
+    /**
+     * Gives the chosen input connector position
+     * @param index chosen input index
+     * @return absolute position of the chosen input connector
+     */
     public Point getInputPosition(int index) {
         return new Point(x, y + connectionOffset * (index + 1));
     }
 
+    /**
+     * Gives the output connector position
+     * @return absolute position of the output connector
+     */
     public Point getOutputPosition() {
         return new Point(x + width, y + connectionOffset);
     }
 
+    /**
+     * Informs if the tool-tip is visible or not.
+     * @return if tool-tip is visible
+     */
     public boolean hasTooltip() {
         return tooltipVisible_;
     }
 
+    /**
+     * Computes the input or output index at a certain position.
+     * @param p position
+     * @return input index (>=0), output (NodeGui.CONNECTION_OUTPUT), none (NodeGui.CONNECTION_NONE)
+     */
     public int getConnectionAt(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
@@ -610,6 +671,13 @@ public class NodeGui implements NodeListener {
         return CONNECTION_NONE;
     }
 
+    /**
+     * Checks if a certain input is available to be connected with a source node.
+     * It verify that the index is free and that the two nodes are not already connected together.
+     * @param index input index
+     * @param other source node
+     * @return connection availability
+     */
     public boolean isConnectionAvailable(int index, NodeGui other) {
         if (index == CONNECTION_OUTPUT)
             return true;
@@ -623,12 +691,21 @@ public class NodeGui implements NodeListener {
         return (incomingConnections.size() == index && (metadata.getMaxNumberOfInputs() <0 || index < metadata.getMaxNumberOfInputs()));
     }
 
+    /**
+     * Internal function to add a new input connection
+     * @param c connection to be add
+     */
     private void connect(Connection c){
         incomingConnections.add(c);
         c.getSource().addNodeListener(this);
         hasChanged = true;
     }
 
+    /**
+     * Connect a new input node to the first available connection.
+     * @param connection object representing the connection between nodes
+     * @param index input index
+     */
     public void addConnection(Connection connection, int index) {
         if (index == incomingConnections.size())  {
             connect(connection);
@@ -667,14 +744,29 @@ public class NodeGui implements NodeListener {
 
     }
 
+    /**
+     * Add a NodeListener.
+     * This happen when connecting a new node as output.
+     * @param l NodeListener to be added
+     */
     public void addNodeListener(NodeListener l) {
         nodeListeners.add(l);
     }
 
+    /**
+     * Remove a NodeListeners.
+     * This happen when disconnecting or deleting a node.
+     * @param l NodeListener to be removed
+     */
     public void removeNodeListener(NodeListener l) {
         nodeListeners.remove(l);
     }
 
+    /**
+     * Returns the area to be repainted.
+     * Function useful to know which region of the GraphPanel repaint.
+     * @return Rectangle containing the NodeGui and its tool-tip (if visible)
+     */
     public Rectangle getBoundingBox(){
         Rectangle r;
         if (tooltipVisible_) {
