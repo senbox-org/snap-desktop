@@ -62,7 +62,7 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
     }
 
     @Override
-    protected void onStopExecuting() {
+    protected void onFinishRunning() {
         this.threadListener.onStopExecuting(this);
     }
 

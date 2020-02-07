@@ -13,6 +13,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.ui.loading.IItemRenderer;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -37,6 +38,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +60,7 @@ public class RepositorySelectionPanel extends JPanel {
 
     private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
     private JPanel topBarButtonsPanel;
-    private ItemListener repositoriesItemListener;
+    private ItemListener productsRepositoryListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     MissionParameterListener missionParameterListener, WorldMapPanelWrapper worldWindowPanel,
@@ -130,17 +133,11 @@ public class RepositorySelectionPanel extends JPanel {
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
     }
 
-    public AbstractProductsRepositoryPanel getSelectedRepository() {
+    public AbstractProductsRepositoryPanel getSelectedProductsRepositoryPanel() {
         return (AbstractProductsRepositoryPanel)this.repositoriesComboBox.getSelectedItem();
     }
 
-    public void refreshRepositoryParameterComponents() {
-        getSelectedRepository().refreshParameterComponents();
-        refreshRepositoryLabelWidth();
-    }
-
-    //TODO Jean rename method
-    public void setDataSourcesBorder(Border border) {
+    public void setAllProductsRepositoryPanelBorder(Border border) {
         int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {
             AbstractProductsRepositoryPanel repositoryPanel = this.repositoriesComboBox.getModel().getElementAt(i);
@@ -200,7 +197,7 @@ public class RepositorySelectionPanel extends JPanel {
                 this.topBarButtonsPanel.getComponent(i).setEnabled(enabled);
             }
         }
-        AbstractProductsRepositoryPanel selectedDataSource = getSelectedRepository();
+        AbstractProductsRepositoryPanel selectedDataSource = getSelectedProductsRepositoryPanel();
         Stack<JComponent> stack = new Stack<JComponent>();
         stack.push(selectedDataSource);
         while (!stack.isEmpty()) {
@@ -219,8 +216,12 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     private void refreshRepositoryLabelWidth() {
-        int maximumLabelWidth = getSelectedRepository().computeLeftPanelMaximumLabelWidth();
-        RemoteProductsRepositoryPanel.setLabelSize(this.repositoryLabel, maximumLabelWidth);
+        int maximumLabelWidth = getSelectedProductsRepositoryPanel().computeLeftPanelMaximumLabelWidth();
+        Dimension labelSize = this.repositoryLabel.getPreferredSize();
+        labelSize.width = maximumLabelWidth;
+        this.repositoryLabel.setPreferredSize(labelSize);
+        this.repositoryLabel.setMinimumSize(labelSize);
+
         Container parentContainer = this.repositoryLabel.getParent();
         if (parentContainer != null) {
             parentContainer.revalidate();
@@ -228,26 +229,32 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    public void setRepositoriesItemListener(ItemListener repositoriesItemListener) {
-        this.repositoriesItemListener = repositoriesItemListener;
+    public void setRepositoriesItemListener(ItemListener productsRepositoryListener) {
+        this.productsRepositoryListener = productsRepositoryListener;
     }
 
     private void createRepositoriesComboBox(RemoteProductsRepositoryProvider[] productsRepositoryProviders, MissionParameterListener missionParameterListener) {
-        this.repositoriesComboBox = RemoteProductsRepositoryPanel.buildComboBox(this.componentDimension);
-        for (int i=0; i<productsRepositoryProviders.length; i++) {
-            RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], this.componentDimension, missionParameterListener, this.worldWindowPanel);
-            this.repositoriesComboBox.addItem(remoteProductsRepositoryPanel);
-        }
-        this.repositoriesComboBox.addItem(new AllLocalProductsRepositoryPanel(this.componentDimension, this.worldWindowPanel));
-
-        int cellItemHeight = this.repositoriesComboBox.getPreferredSize().height;
-        LabelListCellRenderer<AbstractProductsRepositoryPanel> renderer = new LabelListCellRenderer<AbstractProductsRepositoryPanel>(cellItemHeight) {
+        PropertyChangeListener parameterComponentsChangedListener = new PropertyChangeListener() {
             @Override
-            protected String getItemDisplayText(AbstractProductsRepositoryPanel value) {
-                return (value == null) ? "" : value.getName();
+            public void propertyChange(PropertyChangeEvent event) {
+                refreshRepositoryLabelWidth();
             }
         };
-        this.repositoriesComboBox.setRenderer(renderer);
+        IItemRenderer<AbstractProductsRepositoryPanel> itemRenderer = new IItemRenderer<AbstractProductsRepositoryPanel>() {
+            @Override
+            public String getItemDisplayText(AbstractProductsRepositoryPanel panel) {
+                return (panel == null) ? "" : panel.getName();
+            }
+        };
+        this.repositoriesComboBox = SwingUtils.buildComboBox(itemRenderer, this.componentDimension.getTextFieldPreferredHeight(), false);
+        for (int i=0; i<productsRepositoryProviders.length; i++) {
+            RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], this.componentDimension, missionParameterListener, this.worldWindowPanel);
+            remoteProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);
+            this.repositoriesComboBox.addItem(remoteProductsRepositoryPanel);
+        }
+        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = new AllLocalProductsRepositoryPanel(this.componentDimension, this.worldWindowPanel);
+        allLocalProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);
+        this.repositoriesComboBox.addItem(allLocalProductsRepositoryPanel);
         this.repositoriesComboBox.setMaximumRowCount(7);
         this.repositoriesComboBox.setSelectedIndex(0);
         this.repositoriesComboBox.addItemListener(new ItemListener() {
@@ -255,9 +262,9 @@ public class RepositorySelectionPanel extends JPanel {
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                     newSelectedRepository();
-                }
-                if (repositoriesItemListener != null) {
-                    repositoriesItemListener.itemStateChanged(itemEvent);
+                    if (productsRepositoryListener != null) {
+                        productsRepositoryListener.itemStateChanged(null);
+                    }
                 }
             }
         });
@@ -297,7 +304,7 @@ public class RepositorySelectionPanel extends JPanel {
     }
 
     private void createTopBarButtonsPanel() {
-        JButton[] topBarButtons = getSelectedRepository().getTopBarButton();
+        JButton[] topBarButtons = getSelectedProductsRepositoryPanel().getTopBarButton();
         if (topBarButtons != null && topBarButtons.length > 0) {
             this.topBarButtonsPanel = new JPanel(new GridLayout(1, topBarButtons.length, this.componentDimension.getGapBetweenColumns(), 0));
             for (int i=0; i<topBarButtons.length; i++) {
@@ -336,6 +343,7 @@ public class RepositorySelectionPanel extends JPanel {
         add(this.progressBarHelper.getStopButton(), c);
     }
 
+    //TODO Jean move to the ui module
     public static ImageIcon loadImage(String resourceImagePath) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL imageURL = classLoader.getResource(resourceImagePath);
@@ -345,6 +353,7 @@ public class RepositorySelectionPanel extends JPanel {
         return new ImageIcon(imageURL);
     }
 
+    //TODO Jean move to the ui module
     public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
         ImageIcon icon = loadImage(resourceImagePath);
         if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
@@ -354,6 +363,7 @@ public class RepositorySelectionPanel extends JPanel {
         return icon;
     }
 
+    //TODO Jean move to the ui module
     public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
         ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);
         JButton button = new JButton(icon);

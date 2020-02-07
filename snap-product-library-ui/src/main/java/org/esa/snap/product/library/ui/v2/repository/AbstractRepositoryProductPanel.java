@@ -30,7 +30,6 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
-    private static final Color TRANSPARENT_COLOR = new Color(255, 255, 255, 0);
 
     private final JLabel nameLabel;
     private final JLabel quickLookImageLabel;
@@ -73,7 +72,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         Dimension buttonSize = new Dimension(this.expandImageIcon.getIconWidth() + 2, this.expandImageIcon.getIconHeight() + 2);
 
         this.expandOrCollapseButton = new JButton(this.expandImageIcon);
-        this.expandOrCollapseButton.setBackground(TRANSPARENT_COLOR);
+        this.expandOrCollapseButton.setBackground(SwingUtils.TRANSPARENT_COLOR);
         this.expandOrCollapseButton.setOpaque(false);
         this.expandOrCollapseButton.setPreferredSize(buttonSize);
         this.expandOrCollapseButton.setMinimumSize(buttonSize);
@@ -140,7 +139,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         String mission = (StringUtils.isBlank(repositoryProduct.getMission()) ? "N/A" : repositoryProduct.getMission());
         this.missionLabel.setText(buildAttributeLabelText("Mission", mission));
 
-        Map<String, String> visibleAttributes = productListModel.getRemoteMissionVisibleAttributes(repositoryProduct.getMission());
+        Map<String, String> visibleAttributes = this.repositoryProductPanelBackground.getRemoteMissionVisibleAttributes(repositoryProduct.getMission());
         updateVisibleAttributes(repositoryProduct, visibleAttributes);
 
         ImageIcon imageIcon = productListModel.getProductQuickLookImage(repositoryProduct);

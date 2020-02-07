@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 
 import org.jdesktop.swingx.JXDatePicker;
 
+import javax.swing.*;
 import java.awt.Dimension;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,13 +30,24 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
     }
 
     @Override
-    public JXDatePicker getComponent() {
+    public JComponent getComponent() {
         return this.component;
     }
 
     @Override
     public Date getParameterValue() {
         return this.component.getDate();
+    }
+
+    @Override
+    public void setParameterValue(Object value) {
+        if (value == null) {
+            clearParameterValue();
+        } else if (value instanceof Date) {
+            this.component.setDate((Date)value);
+        } else {
+            throw new ClassCastException("The parameter value type '" + value + "' must be '" + Date.class+"'.");
+        }
     }
 
     @Override

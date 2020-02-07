@@ -31,6 +31,11 @@ public abstract class AbstractParameterComponent<ValueType> {
         return label;
     }
 
+    //TODO jean make abstract
+    public void setParameterValue(Object value) {
+
+    }
+
     public String getRequiredErrorDialogMessage() {
         if (this.required) {
             return "The '" + this.label.getText()+"' parameter value is required.";

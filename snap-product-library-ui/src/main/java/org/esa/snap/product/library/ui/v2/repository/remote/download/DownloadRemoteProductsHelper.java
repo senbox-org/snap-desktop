@@ -33,10 +33,9 @@ public class DownloadRemoteProductsHelper {
 
     private ThreadNamePoolExecutor threadPoolExecutor;
     private Set<AbstractBackgroundDownloadRunnable> runningTasks;
-    private int currentStartRunningCount;
     private int threadId;
-    private int totalProducts;
-    private int totalDownloaded;
+    private int totalDownloadingProducts;
+    private int totalDownloadedProducts;
 
     public DownloadRemoteProductsHelper(ProgressBarHelperImpl progressPanel, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel) {
         this.progressPanel = progressPanel;
@@ -92,8 +91,8 @@ public class DownloadRemoteProductsHelper {
                 }
             };
             this.runningTasks.add(runnable);
-            this.totalProducts++;
             this.threadPoolExecutor.execute(runnable); // start the thread
+            this.totalDownloadingProducts++;
         }
 
         onUpdateProgressBarDownloadedProducts();
@@ -106,7 +105,7 @@ public class DownloadRemoteProductsHelper {
         return (this.threadPoolExecutor != null);
     }
 
-    public void stopDownloadingProducts() {
+    public void cancelDownloadingProducts() {
         if (this.runningTasks != null) {
 
             if (logger.isLoggable(Level.FINE)) {
@@ -115,13 +114,13 @@ public class DownloadRemoteProductsHelper {
 
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
                 if (runnable instanceof DownloadProductRunnable) {
-                    runnable.stopRunning();
+                    runnable.cancelRunning();
                 }
             }
         }
     }
 
-    public void stopDownloadingProductsQuickLookImage() {
+    public void cancelDownloadingProductsQuickLookImage() {
         if (this.runningTasks != null) {
 
             if (logger.isLoggable(Level.FINE)) {
@@ -130,7 +129,7 @@ public class DownloadRemoteProductsHelper {
 
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
                 if (runnable instanceof DownloadProductsQuickLookImageRunnable) {
-                    runnable.stopRunning();
+                    runnable.cancelRunning();
                 }
             }
         }
@@ -138,9 +137,8 @@ public class DownloadRemoteProductsHelper {
 
     private void createThreadPoolExecutorIfNeeded() {
         if (this.threadPoolExecutor == null) {
-            this.totalProducts = 0;
-            this.totalDownloaded = 0;
-            this.currentStartRunningCount = 0;
+            this.totalDownloadingProducts = 0;
+            this.totalDownloadedProducts = 0;
             this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
             int maximumThreadCount = Runtime.getRuntime().availableProcessors() - 1;
             this.threadPoolExecutor = new ThreadNamePoolExecutor("product-library", maximumThreadCount);
@@ -178,24 +176,34 @@ public class DownloadRemoteProductsHelper {
         SwingUtilities.invokeLater(runnable);
     }
 
+    private boolean hasDownloadingProducts() {
+        for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
+            if (runnable instanceof DownloadProductRunnable) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void onStartRunningDownloadProductThread() {
-        this.currentStartRunningCount++;
-        if (this.currentStartRunningCount == 1) {
+        if (hasDownloadingProducts()) {
             this.progressPanel.showProgressPanel(this.threadId); // show the progress panel
         }
     }
 
     private void onFinishRunningDownloadProductThread(DownloadProductRunnable parentRunnable, SaveDownloadedProductData saveProductData) {
         if (this.runningTasks.remove(parentRunnable)) {
-            this.totalDownloaded++;
+            this.totalDownloadedProducts++;
 
             onUpdateProgressBarDownloadedProducts();
 
             if (saveProductData != null) {
                 onFinishSavingProduct(saveProductData);
             }
-            if (this.runningTasks.size() == 0) {
+            if (!hasDownloadingProducts()) {
                 this.progressPanel.hideProgressPanel(this.threadId); // hide the progress panel
+            }
+            if (this.runningTasks.size() == 0) {
                 shutdownThreadPoolExecutor();
             }
         } else {
@@ -221,12 +229,16 @@ public class DownloadRemoteProductsHelper {
 
     private void onUpdateProgressBarDownloadedProducts() {
         if (this.progressPanel.isCurrentThread(this.threadId)) {
-            String text = buildProgressBarDownloadingText(this.totalDownloaded, this.totalProducts);
+            String text = buildProgressBarDownloadingText(this.totalDownloadedProducts, this.totalDownloadingProducts);
             this.progressPanel.updateProgressBarText(this.threadId, text);
         }
     }
 
     private void updateDownloadingProgressPercentLater(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Update the downloading progress percent " + progressPercent + "% of the product '" + repositoryProduct.getName()+"' using the '" + repositoryProduct.getMission()+"' mission.");
+        }
+
         Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, this.repositoryProductListPanel, downloadedPath) {
             @Override
             public void run() {

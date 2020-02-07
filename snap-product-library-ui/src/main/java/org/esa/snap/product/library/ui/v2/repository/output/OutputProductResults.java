@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by jcoravu on 30/1/2020.
@@ -24,11 +25,17 @@ public class OutputProductResults {
     private final Map<RepositoryProduct, ImageIcon> scaledQuickLookImages;
     private final Map<RepositoryProduct, LocalProgressStatus> localProductsMap;
     private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
+    private final List<RepositoryProduct> availableProducts;
+
+    private int currentPageNumber;
 
     public OutputProductResults() {
         this.scaledQuickLookImages = new HashMap<>();
         this.downloadingProductsProgressValue = new HashMap<>();
         this.localProductsMap = new HashMap<>();
+        this.availableProducts = new ArrayList<>();
+
+        this.currentPageNumber = 0;
     }
 
     public Map<RepositoryProduct, LocalProgressStatus> getLocalProductsMap() {
@@ -70,5 +77,25 @@ public class OutputProductResults {
         for (int i=0; i<keysToRemove.size(); i++) {
             getDownloadingProductsProgressValue().remove(keysToRemove.get(i));
         }
+    }
+
+    public void setCurrentPageNumber(int currentPageNumber) {
+        this.currentPageNumber = currentPageNumber;
+    }
+
+    public int getCurrentPageNumber() {
+        return this.currentPageNumber;
+    }
+
+    public int getAvailableProductCount() {
+        return this.availableProducts.size();
+    }
+
+    public void addProducts(List<RepositoryProduct> products) {
+        this.availableProducts.addAll(products);
+    }
+
+    public RepositoryProduct getProductAt(int index) {
+        return this.availableProducts.get(index);
     }
 }

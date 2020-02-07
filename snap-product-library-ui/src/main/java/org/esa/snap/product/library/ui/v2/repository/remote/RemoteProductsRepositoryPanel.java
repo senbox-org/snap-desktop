@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
@@ -17,6 +18,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.IItemRenderer;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -46,8 +48,10 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final JComboBox<Credentials> userAccountsComboBox;
 
+    private ItemListener missionItemListener;
     private ActionListener downloadProductListener;
     private ActionListener openDownloadedRemoteProductListener;
+    private RemoteInputParameterValues remoteInputParameterValues;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
                                          MissionParameterListener missionParameterListener, WorldMapPanelWrapper worlWindPanel) {
@@ -58,15 +62,13 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.missionParameterListener = missionParameterListener;
 
         if (this.productsRepositoryProvider.requiresAuthentication()) {
-            this.userAccountsComboBox = buildComboBox(componentDimension);
-            int cellItemHeight = this.userAccountsComboBox.getPreferredSize().height;
-            LabelListCellRenderer<Credentials> renderer = new LabelListCellRenderer<Credentials>(cellItemHeight) {
+            IItemRenderer<Credentials> accountsItemRenderer = new IItemRenderer<Credentials>() {
                 @Override
-                protected String getItemDisplayText(Credentials value) {
-                    return (value == null) ? " " : value.getUserPrincipal().getName();
+                public String getItemDisplayText(Credentials item) {
+                    return (item == null) ? " " : item.getUserPrincipal().getName();
                 }
             };
-            this.userAccountsComboBox.setRenderer(renderer);
+            this.userAccountsComboBox = SwingUtils.buildComboBox(accountsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
         } else {
             this.userAccountsComboBox = null;
         }
@@ -74,15 +76,16 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         String[] availableMissions = this.productsRepositoryProvider.getAvailableMissions();
         if (availableMissions.length > 0) {
             String valueToSelect = availableMissions[0];
-            this.missionsComboBox = buildComboBox(availableMissions, valueToSelect, this.componentDimension);
-            this.missionsComboBox.addItemListener(new ItemListener() {
+            this.missionsComboBox = SwingUtils.buildComboBox(availableMissions, valueToSelect, this.componentDimension.getTextFieldPreferredHeight(), false);
+            this.missionItemListener = new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent itemEvent) {
                     if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                         newSelectedMission();
                     }
                 }
-            });
+            };
+            this.missionsComboBox.addItemListener(this.missionItemListener);
         } else {
             throw new IllegalStateException("At least one supported mission must be defined.");
         }
@@ -110,8 +113,13 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public AbstractProgressTimerRunnable<?> buildThreadToSearchProducts(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
-                                                                        RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel productResultsPanel) {
+    public void resetInputParameterValues() {
+        this.remoteInputParameterValues = null;
+    }
+
+    @Override
+    public AbstractProgressTimerRunnable<?> buildSearchProductListThread(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
+                                                                         RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel productResultsPanel) {
 
         Credentials selectedCredentials = null;
         boolean canContinue = true;
@@ -137,10 +145,11 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         if (canContinue) {
             Map<String, Object> parameterValues = getParameterValues();
             if (parameterValues != null) {
-                String selectedMission = getSelectedMission();
+                String selectedMission = getSelectedMission(); // the selected mission can not be null
                 if (selectedMission == null) {
                     throw new NullPointerException("The remote mission is null");
                 }
+                this.remoteInputParameterValues = new RemoteInputParameterValues(parameterValues, selectedMission);
                 return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
                                                              remoteRepositoriesSemaphore, productResultsPanel, getName(), selectedMission, parameterValues);
             }
@@ -178,7 +187,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    protected void addParameterComponents() {
+    protected void addInputParameterComponentsToPanel() {
         ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
@@ -203,7 +212,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
         Class<?> areaOfInterestClass = Rectangle2D.class;
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
-        String selectedMission = (String) this.missionsComboBox.getSelectedItem();
+        String selectedMission = getSelectedMission();
         List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
         this.parameterComponents = panel.addParameterComponents(parameters, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
@@ -220,8 +229,25 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         if (areaOfInterestParameter != null) {
             addAreaParameterComponent(areaOfInterestParameter);
         }
+    }
 
-        refreshLabelWidths();
+    @Override
+    public boolean refreshInputParameterComponentValues() {
+        if (this.remoteInputParameterValues != null) {
+            this.missionsComboBox.removeItemListener(this.missionItemListener);
+            try {
+                this.missionsComboBox.setSelectedItem(this.remoteInputParameterValues.getMissionName());
+            } finally {
+                this.missionsComboBox.addItemListener(this.missionItemListener);
+            }
+            for (int i=0; i<this.parameterComponents.size(); i++) {
+                AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
+                Object parameterValue = this.remoteInputParameterValues.getParameterValue(inputParameterComponent.getParameterName());
+                inputParameterComponent.setParameterValue(parameterValue);
+            }
+            return true;
+        }
+        return false;
     }
 
     public Credentials getSelectedAccount() {

@@ -2,6 +2,7 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 
+import javax.swing.*;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -18,7 +19,7 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
     }
 
     @Override
-    public WorldMapPanelWrapper getComponent() {
+    public JComponent getComponent() {
         return this.worldMapPanelWrapper;
     }
 
@@ -30,5 +31,16 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
     @Override
     public void clearParameterValue() {
         this.worldMapPanelWrapper.clearSelectedArea();
+    }
+
+    @Override
+    public void setParameterValue(Object value) {
+        if (value == null) {
+            clearParameterValue();
+        } else if (value instanceof Rectangle2D) {
+            this.worldMapPanelWrapper.setSelectedArea((Rectangle2D)value);
+        } else {
+            throw new ClassCastException("The parameter value type '" + value + "' must be '" + Rectangle2D.class+"'.");
+        }
     }
 }

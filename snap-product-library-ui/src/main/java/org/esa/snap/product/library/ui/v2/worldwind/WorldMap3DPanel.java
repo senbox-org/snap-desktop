@@ -82,8 +82,8 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
     }
 
     @Override
-    public void setSelection(Rectangle2D selectionArea) {
-        this.selector.setSelectedArea(selectionArea);
+    public void setSelectedArea(Rectangle2D selectedArea) {
+        this.selector.setSelectedArea(selectedArea);
     }
 
     @Override

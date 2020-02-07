@@ -53,11 +53,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
 
         this.productListModel = new OutputProductListModel(outputProductResultsCallback) {
             @Override
-            public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
-                return OutputProductListPanel.this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
-            }
-
-            @Override
             protected void fireIntervalAdded(int startIndex, int endIndex) {
                 performProductsAdded(startIndex, endIndex);
             }
@@ -94,6 +89,11 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     }
 
     @Override
+    public Map<String, String> getRemoteMissionVisibleAttributes(String mission) {
+        return this.repositorySelectionPanel.getRemoteMissionVisibleAttributes(mission);
+    }
+
+    @Override
     public Color getProductPanelBackground(AbstractRepositoryProductPanel productPanel) {
         if (this.selectedProductPanels.contains(productPanel)) {
             return this.selectionBackgroundColor;
@@ -112,15 +112,12 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         return null;
     }
 
-    public OutputProductListModel getProductListModel() {
-        return productListModel;
+    public RepositorySelectionPanel getRepositorySelectionPanel() {
+        return repositorySelectionPanel;
     }
 
-    public void clearSelectedProductPanels() {
-        this.selectedProductPanels = new HashSet<>();
-        revalidate();
-        repaint();
-        firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+    public OutputProductListModel getProductListModel() {
+        return productListModel;
     }
 
     public void setProducts(List<RepositoryProduct> products) {
@@ -153,7 +150,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     }
 
     private void performProductsAdded(int startIndex, int endIndex) {
-        AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedRepository();
+        AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
         for (int i=startIndex; i<=endIndex; i++) {
             AbstractRepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension, this.expandImageIcon, this.collapseImageIcon);
             repositoryProductPanel.setOpaque(true);
@@ -297,7 +294,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     }
 
     private void showProductsPopupMenu(AbstractRepositoryProductPanel repositoryProductPanel, int mouseX, int mouseY) {
-        JPopupMenu popup = this.repositorySelectionPanel.getSelectedRepository().buildProductListPopupMenu(getSelectedProducts(), this.productListModel);
+        JPopupMenu popup = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel().buildProductListPopupMenu(getSelectedProducts(), this.productListModel);
         popup.show(repositoryProductPanel, mouseX, mouseY);
     }
 }
