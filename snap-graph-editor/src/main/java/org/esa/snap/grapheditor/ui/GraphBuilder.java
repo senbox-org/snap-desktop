@@ -64,18 +64,6 @@ public class GraphBuilder extends JPanel {
     }
 
     public static void main(String[] args) {
-        try {
-            UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
-            for (UIManager.LookAndFeelInfo look : looks) {
-                System.out.println(look.getClassName());
-                if (look.getClassName().contains("NimbusLookAndFeel")) {
-                    UIManager.setLookAndFeel(look.getClassName());
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
 
         AppContext context = new DefaultAppContext("Standalone Graph Editor");
 
