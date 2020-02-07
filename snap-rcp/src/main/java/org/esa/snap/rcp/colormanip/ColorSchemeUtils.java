@@ -286,6 +286,8 @@ public class ColorSchemeUtils {
             return false;
         }
 
+        productSceneView.getImageInfo().setColorSchemeInfo(colorSchemeInfo);
+
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
         String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorSchemeInfo);

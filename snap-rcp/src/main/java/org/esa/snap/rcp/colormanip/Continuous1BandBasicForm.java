@@ -64,6 +64,7 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RA
 //          - Added notification to user in the GUI when a scheme has been used in a non-nominal state (if the preferences altered)
 //          - Implemented ColorSchemeManager
 //          - Added verbose options to the scheme selector
+//          - Added call to store and retrieve color scheme selector settings from ImageInfo
 
 
 
@@ -235,14 +236,14 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         standardColorPaletteSchemes.getjComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (standardColorPaletteSchemes.getjComboBox().getSelectedIndex() != 0) {
+//                if (standardColorPaletteSchemes.getjComboBox().getSelectedIndex() != 0) {
                     if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
                         standardColorPaletteSchemes.setjComboBoxShouldFire(false);
-
+                        ColorSchemeDefaults.debug("Inside standardColorPaletteSchemes listener");
                         handleColorPaletteInfoComboBoxSelection(standardColorPaletteSchemes.getjComboBox(), false);
                         standardColorPaletteSchemes.setjComboBoxShouldFire(true);
                     }
-                }
+//                }
             }
         });
 
@@ -299,6 +300,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             colorPaletteChooser.reloadPalettes();
         }
 
+        ColorSchemeDefaults.debug("updateFormMode() in BasicForm");
+
         final ImageInfo imageInfo = formModel.getOriginalImageInfo();
         final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
 
@@ -327,8 +330,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         boolean visible = false;
 
+
+
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
-        colorPaletteSchemes.isSchemeSet();
+        colorPaletteSchemes.setSelected(imageInfo.getColorSchemeInfo());
 
         if (colorPaletteSchemes.isSchemeSet() &&
                 schemeApply &&
@@ -341,24 +346,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel.setVisible(visible);
 
 
-
         colorPaletteSchemes.checkPreferences(configuration);
-//        boolean useDisplayName = configuration.getPropertyBool(PROPERTY_SCHEME_VERBOSE_KEY, PROPERTY_SCHEME_VERBOSE_DEFAULT);
-//        if (useDisplayName != colorPaletteSchemes.isUseDisplayName()) {
-//            colorPaletteSchemes.setUseDisplayName(useDisplayName);
-//        }
-//
-//        boolean sortSchemes = configuration.getPropertyBool(PROPERTY_SCHEME_SORT_KEY, PROPERTY_SCHEME_SORT_DEFAULT);
-//        if (sortSchemes != colorPaletteSchemes.isSortComboBox()) {
-//            ColorSchemeManager.getDefault().setSortComboBox(sortSchemes);
-//        }
-//
-//
-//        boolean showDisabled = configuration.getPropertyBool(PROPERTY_SCHEME_SHOW_DISABLED_KEY, PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
-//        if (showDisabled != colorPaletteSchemes.isShowDisabled()) {
-//            ColorSchemeManager.getDefault().setShowDisabled(showDisabled);
-//        }
-
 
 
         parentForm.revalidateToolViewPaneControl();
@@ -531,12 +519,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     currentInfo.setLogScaled(isTargetLogScaled);
                     colorPaletteChooser.setLog10Display(isTargetLogScaled);
                 }
+
+                standardColorPaletteSchemes.reset();
+                currentInfo.setColorSchemeInfo(standardColorPaletteSchemes.getNoneColorSchemeInfo());
+
                 currentMinFieldValue = Double.toString(min);
                 currentMaxFieldValue = Double.toString(max);
                 parentForm.applyChanges();
 
                 // Some other field has been changed so reset the scheme selector to no scheme
-                standardColorPaletteSchemes.reset();
 
             }
         }
@@ -660,10 +651,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 }
             } else {
                 if (!colorSchemeInfo.isDivider()) {
-                    System.out.println("Add a notification message window");
-
+                    ColorSchemeDefaults.debug("Add a notification message window");
                     String message = standardColorPaletteSchemes.checkScheme(colorSchemeInfo);
-                    System.out.println(message);
+                    ColorSchemeDefaults.debug(message);
+
                     //todo Add notification window if not enabled
                 }
             }

@@ -192,8 +192,16 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+            if (productSceneView.getImageInfo().getColorSchemeInfo() == null) {
+                ColorSchemeDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
+                ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+            } else {
+                ColorSchemeDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
+            }
+
+            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
+            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
         }
 
         installChildForm();
@@ -201,9 +209,12 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         updateTitle();
         updateToolButtons();
 
+        ColorSchemeDefaults.debug("In ColorManipulationFormImpl: about to do updateMultiApplyState ");
         updateMultiApplyState();
+        ColorSchemeDefaults.debug("In ColorManipulationFormImpl: finished updateMultiApplyState ");
 
         if (getFormModel().isValid()) {
+            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: apply changes");
             applyChanges();
         }
     }
@@ -416,6 +427,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     @Override
     public void applyChanges() {
+        ColorSchemeDefaults.debug("Applying changes in ColorManipulationFormImpl");
         updateMultiApplyState();
         if (getFormModel().isValid()) {
             try {

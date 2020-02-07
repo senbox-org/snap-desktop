@@ -32,23 +32,14 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
 
 public class ColorSchemeManager {
 
-    public boolean isjComboBoxShouldFire() {
-        return jComboBoxShouldFire;
-    }
-
-    public void setjComboBoxShouldFire(boolean jComboBoxShouldFire) {
-        this.jComboBoxShouldFire = jComboBoxShouldFire;
-    }
-
-
     private ArrayList<ColorSchemeInfo> colorSchemeInfos = new ArrayList<ColorSchemeInfo>();
 
     private ArrayList<ColorSchemeInfo> colorSchemePrimaryInfos = new ArrayList<ColorSchemeInfo>();
     private ArrayList<ColorSchemeInfo> colorSchemeAdditionalInfos = new ArrayList<ColorSchemeInfo>();
 
-
     private ArrayList<ColorSchemeInfo> colorSchemeSortedInfos = new ArrayList<ColorSchemeInfo>();
     private ArrayList<ColorSchemeInfo> colorSchemeSortedVerboseInfos = new ArrayList<ColorSchemeInfo>();
+
     private ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = new ArrayList<ColorSchemeLookupInfo>();
 
     private File colorSchemesFile = null;
@@ -57,9 +48,9 @@ public class ColorSchemeManager {
     private JComboBox jComboBox = null;
     private boolean jComboBoxShouldFire = true;
 
-    private final String STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME = "-- none --";
-    private String jComboBoxFirstEntryName = null;
-    private ColorSchemeInfo jComboBoxFirstEntryColorSchemeInfo = null;
+    private final String COLOR_SCHEME_NONE_LABEL = "-- none --";
+    private String jComboBoxNoneEntryName = null;
+    private ColorSchemeInfo noneColorSchemeInfo = null;
 
     private File colorPaletteAuxDir = null;
     private File colorSchemesAuxDir = null;
@@ -88,6 +79,8 @@ public class ColorSchemeManager {
     public void init() {
 
         if (!initialized) {
+            setjComboBoxShouldFire(false);
+
             Path getColorSchemesAuxDir = ColorSchemeUtils.getDirNameColorSchemes();
             if (getColorSchemesAuxDir != null) {
                 this.colorSchemesAuxDir = getColorSchemesAuxDir.toFile();
@@ -116,11 +109,11 @@ public class ColorSchemeManager {
                 createSortedVerboseInfos();
                 createSortedInfos();
 
-                setjComboBoxFirstEntryName(STANDARD_SCHEME_COMBO_BOX_FIRST_ENTRY_NAME);
-                jComboBoxFirstEntryColorSchemeInfo = new ColorSchemeInfo(getjComboBoxFirstEntryName(), true, getjComboBoxFirstEntryName(), null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
-                colorSchemeInfos.add(jComboBoxFirstEntryColorSchemeInfo);
-                colorSchemeSortedInfos.add(jComboBoxFirstEntryColorSchemeInfo);
-                colorSchemeSortedVerboseInfos.add(jComboBoxFirstEntryColorSchemeInfo);
+                setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
+                setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), true, getjComboBoxNoneEntryName(), null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir));
+                colorSchemeInfos.add(getNoneColorSchemeInfo());
+                colorSchemeSortedInfos.add(getNoneColorSchemeInfo());
+                colorSchemeSortedVerboseInfos.add(getNoneColorSchemeInfo());
 
 
                 initComboBox();
@@ -130,6 +123,7 @@ public class ColorSchemeManager {
             }
 
             initialized = true;
+            setjComboBoxShouldFire(true);
         }
     }
 
@@ -265,32 +259,43 @@ public class ColorSchemeManager {
 
 
     private void refreshComboBox() {
+        boolean shouldFire = isjComboBoxShouldFire();
+        setjComboBoxShouldFire(false);
         ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
         if (selectedColorSchemeInfo != null && selectedColorSchemeInfo.isEnabled()) {
-            currentSelection = selectedColorSchemeInfo;
+            setCurrentSelection(selectedColorSchemeInfo);
         }
         jComboBox.removeAllItems();
         populateComboBox();
-        if (currentSelection != null) {
-            jComboBox.setSelectedItem(currentSelection);
+        if (getCurrentSelection() != null) {
+            ColorSchemeDefaults.debug("Setting selected to stored value=" + getCurrentSelection());
+            setSelected(getCurrentSelection());
         }
         jComboBox.repaint();
+        setjComboBoxShouldFire(shouldFire);
     }
 
 
     // If user selects an invalid scheme then use the current selection, otherwise update to the selected scheme
     private void validateSelection() {
+        ColorSchemeDefaults.debug("Checking validation");
+
         if (jComboBox != null) {
             ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
-            if (selectedColorSchemeInfo != null && selectedColorSchemeInfo != currentSelection) {
+            if (selectedColorSchemeInfo != null && selectedColorSchemeInfo != getCurrentSelection()) {
                 if (selectedColorSchemeInfo.isEnabled()) {
-                    currentSelection = selectedColorSchemeInfo;
-                } else if (currentSelection != null) {
-                    jComboBox.setSelectedItem(currentSelection);
+                    ColorSchemeDefaults.debug("Validated Selected");
+                    setCurrentSelection(selectedColorSchemeInfo);
+                } else if (getCurrentSelection() != null) {
+                    ColorSchemeDefaults.debug("Setting to prior selection");
+                    setSelected(getCurrentSelection());
                 }
             }
         }
+
+        ColorSchemeDefaults.debug("Finished Checking validation");
     }
+
 
     private void populateComboBox() {
 
@@ -486,21 +491,27 @@ public class ColorSchemeManager {
                         }
 
 
-
                         if (colorSchemeInfo != null) {
-//                            if (overRide) {
-//                                // look for previous name which user may be overriding and delete it in the colorSchemeInfo object
-//                                ColorSchemeInfo colorSchemeInfoToDelete = null;
-//                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeInfos) {
-//                                    if (storedColorSchemeInfo.getName().equals(id)) {
-//                                        colorSchemeInfoToDelete = storedColorSchemeInfo;
-//                                        break;
-//                                    }
-//                                }
-//                                if (colorSchemeInfoToDelete != null) {
-//                                    colorSchemeInfos.remove(colorSchemeInfoToDelete);
-//                                }
-//                            }
+                            // determine if this is a duplicate entry
+                            for (ColorSchemeInfo storedColorSchemeInfo : colorSchemePrimaryInfos) {
+                                if (id.equals(storedColorSchemeInfo.getName())) {
+                                    colorSchemeInfo.setDuplicateEntry(true);
+                                    break;
+                                }
+                            }
+                            if (!colorSchemeInfo.isDuplicateEntry()) {
+                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeAdditionalInfos) {
+                                    if (id.equals(storedColorSchemeInfo.getName())) {
+                                        colorSchemeInfo.setDuplicateEntry(true);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (colorSchemeInfo.isDuplicateEntry()) {
+                                colorSchemeInfo.setDescription("WARNING!: duplicate scheme entry");
+                            }
+
                             if (primaryScheme) {
                                 colorSchemePrimaryInfos.add(colorSchemeInfo);
                             } else {
@@ -597,7 +608,7 @@ public class ColorSchemeManager {
         if (schemeId != null && schemeId.length() > 0) {
             for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
                 if (colorSchemeInfo != null && colorSchemeInfo.getName() != null) {
-                    if (schemeId.toLowerCase().equals(colorSchemeInfo.getName().toLowerCase())){
+                    if (schemeId.toLowerCase().equals(colorSchemeInfo.getName().toLowerCase())) {
                         return colorSchemeInfo;
                     }
                 }
@@ -606,8 +617,6 @@ public class ColorSchemeManager {
 
         return null;
     }
-
-
 
 
     private boolean testMinMax(double min, double max, boolean isLogScaled) {
@@ -629,9 +638,12 @@ public class ColorSchemeManager {
         return checksOut;
     }
 
+    // don't allow to fire
     public void setSelected(ColorSchemeInfo colorSchemeInfo) {
 
-        currentSelection = colorSchemeInfo;
+        boolean shouldFire = isjComboBoxShouldFire();
+        setjComboBoxShouldFire(false);
+        setCurrentSelection(colorSchemeInfo);
 
         // loop through and find rootScheme
         if (jComboBox != null) {
@@ -641,24 +653,21 @@ public class ColorSchemeManager {
                 reset();
             }
         }
+
+        setjComboBoxShouldFire(shouldFire);
     }
 
     public void reset() {
-        if (jComboBox != null) {
-            jComboBox.setSelectedItem(jComboBoxFirstEntryColorSchemeInfo);
-        }
+        setSelected(getNoneColorSchemeInfo());
     }
 
     public boolean isSchemeSet() {
-        if (jComboBox != null && jComboBoxFirstEntryColorSchemeInfo != jComboBox.getSelectedItem()) {
+        if (jComboBox != null && getNoneColorSchemeInfo() != jComboBox.getSelectedItem()) {
             return true;
         }
 
         return false;
     }
-
-
-
 
 
     public static String getTextValue(Element ele, String tagName) {
@@ -682,7 +691,6 @@ public class ColorSchemeManager {
     }
 
 
-
     public ArrayList<ColorSchemeLookupInfo> getColorSchemeLookupInfos() {
         return colorSchemeLookupInfos;
     }
@@ -698,6 +706,23 @@ public class ColorSchemeManager {
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
             colorSchemeInfo.setUseDisplayName(verbose);
         }
+    }
+
+    public ColorSchemeInfo getNoneColorSchemeInfo() {
+        return noneColorSchemeInfo;
+    }
+
+    public void setNoneColorSchemeInfo(ColorSchemeInfo noneColorSchemeInfo) {
+        this.noneColorSchemeInfo = noneColorSchemeInfo;
+    }
+
+    public ColorSchemeInfo getCurrentSelection() {
+        return currentSelection;
+    }
+
+    public void setCurrentSelection(ColorSchemeInfo currentSelection) {
+        ColorSchemeDefaults.debug("Setting currentSelection=" + currentSelection.toString());
+        this.currentSelection = currentSelection;
     }
 
 
@@ -779,12 +804,12 @@ public class ColorSchemeManager {
     }
 
 
-    public String getjComboBoxFirstEntryName() {
-        return jComboBoxFirstEntryName;
+    public String getjComboBoxNoneEntryName() {
+        return jComboBoxNoneEntryName;
     }
 
-    private void setjComboBoxFirstEntryName(String jComboBoxFirstEntryName) {
-        this.jComboBoxFirstEntryName = jComboBoxFirstEntryName;
+    private void setjComboBoxNoneEntryName(String jComboBoxNoneEntryName) {
+        this.jComboBoxNoneEntryName = jComboBoxNoneEntryName;
     }
 
 
@@ -837,7 +862,7 @@ public class ColorSchemeManager {
                         + "' <br>";
             }
 
-            message = "<html>" +  message_head + description + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
+            message = "<html>" + message_head + description + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
 
         } else {
             message = "Configuration Error";
@@ -845,5 +870,13 @@ public class ColorSchemeManager {
 
 
         return message;
+    }
+
+    public boolean isjComboBoxShouldFire() {
+        return jComboBoxShouldFire;
+    }
+
+    public void setjComboBoxShouldFire(boolean jComboBoxShouldFire) {
+        this.jComboBoxShouldFire = jComboBoxShouldFire;
     }
 }
