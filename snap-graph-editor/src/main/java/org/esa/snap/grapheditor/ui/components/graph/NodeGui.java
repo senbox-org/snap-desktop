@@ -437,6 +437,9 @@ public class NodeGui implements NodeListener {
     }
 
     private boolean recomputeOutput() {
+        if (incomingConnections.size() < metadata.getMinNumberOfInputs()) {
+            return incomplete();
+        }
         recomputeOutputNeeded = false;
         UIValidation.State state = operatorUI.validateParameters().getState();
 
