@@ -266,7 +266,11 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
             final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
 
-            Rectangle bounds = new Rectangle((int)(pixelPos1.x), (int) (pixelPos1.y), (int) (pixelPos2.x - pixelPos1.x), (int) (pixelPos2.y - pixelPos1.y));
+            final Rectangle.Float region = new Rectangle.Float();
+            region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
+            final Rectangle.Float productBounds = new Rectangle.Float(0, 0, productWidth, productHeight);
+            Rectangle2D finalRegion = productBounds.createIntersection(region);
+            Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int) finalRegion.getMaxX() - (int) finalRegion.getMinX(), (int)finalRegion.getMaxY() - (int)finalRegion.getMinY());
             Geometry geometry = ProductUtils.computeGeoRegion(geoCoding, productWidth, productHeight, bounds);
             productSubsetDef.setGeoRegion(geometry);
         }
@@ -539,8 +543,8 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         //reset filed values when the user writes wrong values
         paramX1.setValue(0, null);
         paramY1.setValue(0, null);
-        paramWidth.setValue(w - 1, null);
-        paramHeight.setValue(h - 1, null);
+        paramWidth.setValue(w, null);
+        paramHeight.setValue(h, null);
 
         paramX1.setValue(x1, null);
         paramY1.setValue(y1, null);
