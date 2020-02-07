@@ -688,4 +688,25 @@ public class NodeGui implements NodeListener {
         }
         return r;
     }
+
+    /**
+     * Compute the distance from a node in the graph. 
+     * The node distance is useful to evaluate the correct validation order, node at the same distance can be
+     * validate in parallel, otherwise in sequence.
+     * @param n node to compute the distance
+     * @return  -1 if the node n is not connected or is an output, the maximum distance if the node n is an input.
+     */
+    public int distance(NodeGui n) {
+        if (n == this) {
+            return 0;
+        }
+        int max_d = -1;
+        for (Connection c: incomingConnections) {
+            int d = c.getSource().distance(n);
+            if (d > max_d) {
+                max_d = d + 1;
+            }
+        }
+        return max_d;
+    }
 }
