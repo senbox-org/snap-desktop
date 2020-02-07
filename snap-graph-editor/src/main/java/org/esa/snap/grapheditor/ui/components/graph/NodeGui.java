@@ -519,12 +519,19 @@ public class NodeGui implements NodeListener {
         Set<String> bset = b.keySet();
         if (aset.size() == bset.size() && bset.containsAll(aset)) {
             for (String key: aset) {
-                System.out.println(key);
                 Object aobj = a.get(key);
                 Object bobj = b.get(key);
-                if ((aobj == null && bobj != null) || (aobj != null && !aobj.equals(bobj))){
+                if (aobj == null && bobj == null) // if both are null
+                    continue;
+                if (aobj == null && bobj != null || bobj == null && aobj != null) // if only one of the two is null
                     return false;
-                }
+                // As not all object implement a correct equality I try to use the toString method and comapring
+                // the string... To be see if it actually improve the situation.
+                String astr = aobj.toString();
+                String bstr = bobj.toString();
+                if (!astr.equals(bstr))
+                    return false;
+
             }
             return true;
         }
@@ -825,7 +832,6 @@ public class NodeGui implements NodeListener {
 
     /**
      * Save parameters as XML element.
-     *
      * @return Xml node containing the display informations.
      */
     public XppDom saveParameters() {
@@ -839,4 +845,5 @@ public class NodeGui implements NodeListener {
 
         return elem;
     }
+
 }
