@@ -367,16 +367,17 @@ public class NodeGui implements NodeListener {
     }
 
     public boolean over(Point p) {
-        boolean changed = false;
+        boolean changed;
         if ((status & STATUS_MASK_OVER) == 0) {
             status += STATUS_MASK_OVER;
-            changed = true;
         }
         int iy = getConnectionAt(p);
         if (iy != CONNECTION_NONE ) {
+            changed = iy != tooltipIndex_;
             show_tooltip(iy);
-            return iy != tooltipIndex_;
+            return changed;
         }
+        changed = tooltipVisible_;
         hide_tooltip();
         return changed;
     }
