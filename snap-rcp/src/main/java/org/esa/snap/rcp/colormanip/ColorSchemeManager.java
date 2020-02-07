@@ -315,6 +315,7 @@ public class ColorSchemeManager {
         final String[] toolTipsArray = new String[colorSchemeCurrentInfos.size()];
         final Boolean[] enabledArray = new Boolean[colorSchemeCurrentInfos.size()];
         final Boolean[] dividerArray = new Boolean[colorSchemeCurrentInfos.size()];
+        final Boolean[] duplicateArray = new Boolean[colorSchemeCurrentInfos.size()];
 
         int i = 0;
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeCurrentInfos) {
@@ -322,6 +323,7 @@ public class ColorSchemeManager {
                 toolTipsArray[i] = colorSchemeInfo.getDescription();
                 enabledArray[i] = colorSchemeInfo.isEnabled();
                 dividerArray[i] = colorSchemeInfo.isDivider();
+                duplicateArray[i] = colorSchemeInfo.isDuplicateEntry();
                 jComboBox.addItem(colorSchemeInfo);
                 i++;
             }
@@ -331,6 +333,7 @@ public class ColorSchemeManager {
         myComboBoxRenderer.setTooltipList(toolTipsArray);
         myComboBoxRenderer.setEnabledList(enabledArray);
         myComboBoxRenderer.setDividerList(dividerArray);
+        myComboBoxRenderer.setDuplicateList(duplicateArray);
         jComboBox.setRenderer(myComboBoxRenderer);
     }
 
@@ -478,7 +481,6 @@ public class ColorSchemeManager {
                         }
 
 
-//                        if (validEntry) {
                         ColorSchemeInfo colorSchemeInfo = null;
 
                         enabled = validEntry;
@@ -517,9 +519,7 @@ public class ColorSchemeManager {
                             } else {
                                 colorSchemeAdditionalInfos.add(colorSchemeInfo);
                             }
-//                            colorSchemeInfos.add(colorSchemeInfo);
                         }
-//                        }
                     }
                 }
             }
@@ -731,6 +731,7 @@ public class ColorSchemeManager {
         private String[] tooltips;
         private Boolean[] enabledList;
         private Boolean[] dividerList;
+        private Boolean[] duplicateList;
 
         public Component getListCellRendererComponent(JList list, Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
@@ -770,7 +771,9 @@ public class ColorSchemeManager {
                     setBackground(Color.white);
                     setForeground(Color.black);
 
-                    if (index >= 0 && enabledList != null && index < enabledList.length && !enabledList[index]) {
+                    if (index >= 0 && duplicateList != null && index < duplicateList.length && duplicateList[index]) {
+                        setForeground(Color.red);
+                    } else if (index >= 0 && enabledList != null && index < enabledList.length && !enabledList[index]) {
                         setForeground(Color.gray);
                     }
                 }
@@ -800,6 +803,10 @@ public class ColorSchemeManager {
 
         public void setDividerList(Boolean[] dividerList) {
             this.dividerList = dividerList;
+        }
+
+        public void setDuplicateList(Boolean[] duplicateList) {
+            this.duplicateList = duplicateList;
         }
     }
 
