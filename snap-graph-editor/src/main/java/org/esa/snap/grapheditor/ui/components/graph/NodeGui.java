@@ -690,7 +690,7 @@ public class NodeGui implements NodeListener {
     }
 
     /**
-     * Compute the distance from a node in the graph. 
+     * Compute the distance from a node in the graph.
      * The node distance is useful to evaluate the correct validation order, node at the same distance can be
      * validate in parallel, otherwise in sequence.
      * @param n node to compute the distance
