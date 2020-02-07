@@ -27,6 +27,8 @@ public class DownloadRemoteProductsHelper {
 
     private static final Logger logger = Logger.getLogger(DownloadRemoteProductsHelper.class.getName());
 
+    public static final boolean UNCOMPRESSED_DOWNLOADED_PRODUCTS = false;
+
     private final ProgressBarHelperImpl progressPanel;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private final RepositoryOutputProductListPanel repositoryProductListPanel;
@@ -36,11 +38,17 @@ public class DownloadRemoteProductsHelper {
     private int threadId;
     private int totalDownloadingProducts;
     private int totalDownloadedProducts;
+    private boolean uncompressedDownloadedProducts;
 
     public DownloadRemoteProductsHelper(ProgressBarHelperImpl progressPanel, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel) {
         this.progressPanel = progressPanel;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
         this.repositoryProductListPanel = repositoryProductListPanel;
+        this.uncompressedDownloadedProducts = UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+    }
+
+    public void setUncompressedDownloadedProducts(boolean uncompressedDownloadedProducts) {
+        this.uncompressedDownloadedProducts = uncompressedDownloadedProducts;
     }
 
     public RemoteRepositoriesSemaphore getRemoteRepositoriesSemaphore() {
@@ -68,7 +76,8 @@ public class DownloadRemoteProductsHelper {
         createThreadPoolExecutorIfNeeded();
 
         for (int i=0; i<remoteProductDownloaders.length; i++) {
-            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloaders[i], this.remoteRepositoriesSemaphore, allLocalFolderProductsRepository) {
+            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloaders[i], this.remoteRepositoriesSemaphore,
+                                                                           allLocalFolderProductsRepository, this.uncompressedDownloadedProducts) {
                 @Override
                 protected void startRunning() {
                     super.startRunning();

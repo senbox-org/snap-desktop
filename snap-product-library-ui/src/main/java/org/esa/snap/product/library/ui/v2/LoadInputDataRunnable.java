@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
+import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadRemoteProductsHelper;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
@@ -28,9 +30,14 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
 
     @Override
     protected LocalParameterValues execute() throws Exception {
+        int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
+        boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
         List<RemoteRepositoryCredentials> repositoriesCredentials = null;
         try {
             repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
+            //TODO Jean read the two variables from preferences
+//            int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
+//            boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load the remote repository credentials.", exception);
         }
@@ -38,20 +45,11 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
         LocalRepositoryParameterValues localRepositoryParameterValues = null;
         try {
             localRepositoryParameterValues = this.allLocalFolderProductsRepository.loadParameterValues();
-//            if (missions.size() > 1) {
-//                Comparator<RemoteMission> comparator = new Comparator<RemoteMission>() {
-//                    @Override
-//                    public int compare(RemoteMission o1, RemoteMission o2) {
-//                        return o1.getName().compareToIgnoreCase(o2.getName());
-//                    }
-//                };
-//                Collections.sort(missions, comparator);
-//            }
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load input data from the database.", exception);
         }
 
-        return new LocalParameterValues(repositoriesCredentials, localRepositoryParameterValues);
+        return new LocalParameterValues(repositoriesCredentials, visibleProductsPerPage, uncompressedDownloadedProducts, localRepositoryParameterValues);
     }
 
     @Override

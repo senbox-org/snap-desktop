@@ -146,7 +146,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             LoadInputDataRunnable thread = new LoadInputDataRunnable(allLocalFolderProductsRepository) {
                 @Override
                 protected void onSuccessfullyExecuting(LocalParameterValues parameterValues) {
-                    repositorySelectionPanel.setInputData(parameterValues);
+                    onFinishLoadingInputData(parameterValues);
                 }
             };
             thread.executeAsync();
@@ -168,9 +168,21 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return this.textFieldPreferredHeight;
     }
 
+    private void onFinishLoadingInputData(LocalParameterValues parameterValues) {
+        this.repositorySelectionPanel.setInputData(parameterValues);
+        this.repositoryProductListPanel.setVisibleProductsPerPage(parameterValues.getVisibleProductsPerPage());
+        this.downloadRemoteProductsHelper.setUncompressedDownloadedProducts(parameterValues.isUncompressedDownloadedProducts());
+    }
+
     private void refreshUserAccounts() {
         List<RemoteRepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
+        //TODO Jean read the two variables from preferences
+        int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
+        boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+
         this.repositorySelectionPanel.refreshUserAccounts(repositoriesCredentials);
+        this.repositoryProductListPanel.setVisibleProductsPerPage(visibleProductsPerPage);
+        this.downloadRemoteProductsHelper.setUncompressedDownloadedProducts(uncompressedDownloadedProducts);
     }
 
     private void initialize() {
@@ -215,18 +227,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         this.repositorySelectionPanel.getSelectedProductsRepositoryPanel().addInputParameterComponents();
 
-        this.appContext.getApplicationWindow().addPropertyChangeListener(RepositoriesCredentialsControllerUI.REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshUserAccounts();
-                    }
-                });
-            }
-        });
-
         RemoteRepositoriesSemaphore remoteRepositoriesSemaphore = new RemoteRepositoriesSemaphore(remoteRepositoryProductProviders);
         ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
         this.downloadRemoteProductsHelper = new DownloadRemoteProductsHelper(progressBarHelper, remoteRepositoriesSemaphore, this.repositoryProductListPanel) {
@@ -235,6 +235,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 ProductLibraryToolViewV2.this.repositorySelectionPanel.finishDownloadingProduct(saveProductData);
             }
         };
+
+        this.appContext.getApplicationWindow().addPropertyChangeListener(RepositoriesCredentialsControllerUI.REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshUserAccounts();
+                    }
+                });
+            }
+        });
     }
 
     private void createProductListPanel() {
@@ -681,6 +693,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
                 List<RepositoryProduct> productsWithoutQuickLookImage = productListModel.findProductsWithoutQuickLookImage();
                 if (productsWithoutQuickLookImage.size() > 0) {
+                    if (logger.isLoggable(Level.FINE)) {
+                        int currentPageNumber = selectedProductsRepositoryPanel.getOutputProductResults().getCurrentPageNumber();
+                        logger.log(Level.FINE, "Start downloading the quick look images for " + productsWithoutQuickLookImage.size()+" products from page number " + currentPageNumber + ".");
+                    }
+
                     RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)selectedProductsRepositoryPanel;
                     Credentials selectedCredentials = remoteProductsRepositoryPanel.getSelectedAccount();
                     RemoteProductsRepositoryProvider productsRepositoryProvider = remoteProductsRepositoryPanel.getProductsRepositoryProvider();

@@ -75,7 +75,15 @@ public class SwingUtils {
     }
 
     public static <ItemType> JComboBox<ItemType> buildComboBox(ItemRenderer<ItemType> itemRenderer, int textFieldPreferredHeight, boolean isEditable) {
-        JComboBox<ItemType> comboBox = new JComboBox<ItemType>();
+        JComboBox<ItemType> comboBox = new JComboBox<ItemType>() {
+            @Override
+            public void setEnabled(boolean enabled) {
+                super.setEnabled(enabled);
+                if (getEditor() != null && getEditor().getEditorComponent() != null) {
+                    getEditor().getEditorComponent().setEnabled(enabled);
+                }
+            }
+        };
         Dimension comboBoxSize = comboBox.getPreferredSize();
         comboBoxSize.height = textFieldPreferredHeight;
         comboBox.setPreferredSize(comboBoxSize);
@@ -96,7 +104,14 @@ public class SwingUtils {
                 while (sourceComponent != null && !(sourceComponent instanceof JComboBox)) {
                     sourceComponent = sourceComponent.getParent();
                 }
-                ((JComboBox)sourceComponent).showPopup();
+                JComboBox sourceComboBox = ((JComboBox)sourceComponent);
+                if (sourceComboBox.isEnabled()) {
+                    if (sourceComboBox.isPopupVisible()) {
+                        sourceComboBox.hidePopup();
+                    } else {
+                        sourceComboBox.showPopup();
+                    }
+                }
             }
         });
         int cellItemHeight = comboBox.getPreferredSize().height;
