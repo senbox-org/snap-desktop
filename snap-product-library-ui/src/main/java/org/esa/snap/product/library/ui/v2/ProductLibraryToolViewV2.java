@@ -51,6 +51,8 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -168,6 +170,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return this.textFieldPreferredHeight;
     }
 
+    @Override
+    public Color getTextFieldBackgroundColor() {
+        return Color.WHITE;
+    }
+
     private void onFinishLoadingInputData(LocalParameterValues parameterValues) {
         this.repositorySelectionPanel.setInputData(parameterValues);
         this.repositoryProductListPanel.setVisibleProductsPerPage(parameterValues.getVisibleProductsPerPage());
@@ -175,14 +182,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void refreshUserAccounts() {
-        List<RemoteRepositoryCredentials> repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
-        //TODO Jean read the two variables from preferences
-        int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
-        boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
-
-        this.repositorySelectionPanel.refreshUserAccounts(repositoriesCredentials);
-        this.repositoryProductListPanel.setVisibleProductsPerPage(visibleProductsPerPage);
-        this.downloadRemoteProductsHelper.setUncompressedDownloadedProducts(uncompressedDownloadedProducts);
+        RepositoriesCredentialsController controller = RepositoriesCredentialsController.getInstance();
+        this.repositorySelectionPanel.refreshUserAccounts(controller.getRepositoriesCredentials());
+        this.repositoryProductListPanel.setVisibleProductsPerPage(controller.getNrRecordsOnPage());
+        this.downloadRemoteProductsHelper.setUncompressedDownloadedProducts(controller.isAutoUncompress());
     }
 
     private void initialize() {
@@ -213,7 +216,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         int gapBetweenRows = getGapBetweenRows();
         int gapBetweenColumns = getGapBetweenRows();
-        int visibleDividerSize = gapBetweenColumns-2;
+        int visibleDividerSize = gapBetweenColumns - 2;
         int dividerMargins = 0;
         float initialDividerLocationPercent = 0.5f;
         this.horizontalSplitPane = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibleDividerSize, dividerMargins, initialDividerLocationPercent, SwingUtils.TRANSPARENT_COLOR);
@@ -332,7 +335,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 ProductLibraryToolViewV2.this.leftMouseButtonClicked(polygonPaths);
             }
         };
-        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener);
+        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener, getTextFieldBackgroundColor());
         this.worldWindowPanel.setPreferredSize(new Dimension(400, 250));
         this.worldWindowPanel.addWorldMapPanelAsync(false, true);
     }
@@ -687,6 +690,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void outputProductsPageChanged() {
+        this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
         if (this.localRepositoryProductsThread == null) {
             AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
             if (selectedProductsRepositoryPanel instanceof RemoteProductsRepositoryPanel) {
@@ -701,7 +705,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)selectedProductsRepositoryPanel;
                     Credentials selectedCredentials = remoteProductsRepositoryPanel.getSelectedAccount();
                     RemoteProductsRepositoryProvider productsRepositoryProvider = remoteProductsRepositoryPanel.getProductsRepositoryProvider();
-                    this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
                     this.downloadRemoteProductsHelper.downloadProductsQuickLookImageAsync(productsWithoutQuickLookImage, productsRepositoryProvider, selectedCredentials, this.repositoryProductListPanel);
                 }
             }

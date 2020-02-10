@@ -37,12 +37,12 @@ public class WorldMapPanelWrapper extends JPanel {
     private WorldMap currentWorldMap;
     private PolygonMouseListener mouseListener;
 
-    public WorldMapPanelWrapper(PolygonMouseListener mouseListener) {
+    public WorldMapPanelWrapper(PolygonMouseListener mouseListener, Color backgroundColor) {
         super(new GridBagLayout());
 
         this.mouseListener = mouseListener;
 
-        setBackground(Color.WHITE);
+        setBackground(backgroundColor);
         setOpaque(true);
         setBorder(new EtchedBorder());
 
@@ -60,8 +60,13 @@ public class WorldMapPanelWrapper extends JPanel {
     }
 
     @Override
-    public Color getBackground() {
-        return isEnabled() ? super.getBackground() : UIManager.getColor("TextField.inactiveBackground");
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        this.worldMap2DPanel.setEnabled(enabled);
+        if (this.worldMap3DPanel != null) {
+            this.worldMap3DPanel.setEnabled(enabled);
+        }
     }
 
     public void addWorldMapPanelAsync(boolean flatWorld, boolean removeExtraLayers) {
@@ -218,10 +223,12 @@ public class WorldMapPanelWrapper extends JPanel {
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-                    processRightMouseClick(mouseEvent);
-                } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-                    processLeftMouseClick(mouseEvent);
+                if (isEnabled()) {
+                    if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+                        processRightMouseClick(mouseEvent);
+                    } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+                        processLeftMouseClick(mouseEvent);
+                    }
                 }
             }
         };

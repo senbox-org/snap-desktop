@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -15,7 +16,7 @@ public class OutputProductListPaginationPanel extends JPanel {
     private final JButton nextPageButton;
     private final JButton firstPageButton;
     private final JButton lastPageButton;
-    private final JTextField totalPagesTextField;
+    private final JLabel totalPagesTextField;
 
     public OutputProductListPaginationPanel(ComponentDimension componentDimension, ActionListener firstPageButtonListener, ActionListener previousPageButtonListener,
                                             ActionListener nextPageButtonListener, ActionListener lastPageButtonListener) {
@@ -46,12 +47,13 @@ public class OutputProductListPaginationPanel extends JPanel {
         setComponentSize(this.nextPageButton, buttonPreferredSize);
         setComponentSize(this.lastPageButton, buttonPreferredSize);
 
-        this.totalPagesTextField = new JTextField(8);
-        this.totalPagesTextField.setEditable(false);
+        this.totalPagesTextField = new JLabel("                    ");
         this.totalPagesTextField.setHorizontalAlignment(JLabel.CENTER);
-        Dimension preferredSize = this.totalPagesTextField.getPreferredSize();
-        preferredSize.height = componentDimension.getTextFieldPreferredHeight();
-        setComponentSize(this.totalPagesTextField, preferredSize);
+        this.totalPagesTextField.setBorder(new EtchedBorder());
+
+        Dimension labelPreferredSize = this.totalPagesTextField.getPreferredSize();
+        labelPreferredSize.height = componentDimension.getTextFieldPreferredHeight();
+        setComponentSize(this.totalPagesTextField, labelPreferredSize);
 
         add(this.firstPageButton);
         add(Box.createHorizontalStrut(componentDimension.getGapBetweenColumns()));

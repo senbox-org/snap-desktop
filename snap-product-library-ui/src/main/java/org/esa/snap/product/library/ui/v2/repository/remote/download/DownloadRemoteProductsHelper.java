@@ -148,10 +148,10 @@ public class DownloadRemoteProductsHelper {
         if (this.threadPoolExecutor == null) {
             this.totalDownloadingProducts = 0;
             this.totalDownloadedProducts = 0;
+            this.runningTasks = new HashSet<>();
             this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
             int maximumThreadCount = Runtime.getRuntime().availableProcessors() - 1;
             this.threadPoolExecutor = new ThreadNamePoolExecutor("product-library", maximumThreadCount);
-            this.runningTasks = new HashSet<>();
         }
     }
 
@@ -196,6 +196,9 @@ public class DownloadRemoteProductsHelper {
 
     private void onStartRunningDownloadProductThread() {
         if (hasDownloadingProducts()) {
+            if (!this.progressPanel.isCurrentThread(this.threadId)) {
+                this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
+            }
             this.progressPanel.showProgressPanel(this.threadId); // show the progress panel
         }
     }
@@ -233,7 +236,7 @@ public class DownloadRemoteProductsHelper {
     private void shutdownThreadPoolExecutor() {
         this.threadPoolExecutor.shutdown();
         this.threadPoolExecutor = null; // reset the thread pool
-        this.runningTasks = null;
+        this.runningTasks = null; // reset the running tasks
     }
 
     private void onUpdateProgressBarDownloadedProducts() {

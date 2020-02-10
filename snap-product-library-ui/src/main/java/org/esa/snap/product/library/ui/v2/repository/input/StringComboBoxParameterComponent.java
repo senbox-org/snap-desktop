@@ -18,6 +18,7 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
         super(parameterName, parameterLabelText, required);
 
         this.component = SwingUtils.buildComboBox(values, defaultValue, componentDimension.getTextFieldPreferredHeight(), false);
+        this.component.setBackground(componentDimension.getTextFieldBackgroundColor());
     }
 
     @Override

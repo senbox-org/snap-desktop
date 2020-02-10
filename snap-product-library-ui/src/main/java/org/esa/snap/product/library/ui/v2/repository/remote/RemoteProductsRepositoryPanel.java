@@ -18,6 +18,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -27,8 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -67,7 +67,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                     return (item == null) ? " " : item.getUserPrincipal().getName();
                 }
             };
-            this.userAccountsComboBox = SwingUtils.buildComboBox(accountsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
+            this.userAccountsComboBox = new CustomComboBox(accountsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
         } else {
             this.userAccountsComboBox = null;
         }
@@ -76,6 +76,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         if (availableMissions.length > 0) {
             String valueToSelect = availableMissions[0];
             this.missionsComboBox = SwingUtils.buildComboBox(availableMissions, valueToSelect, this.componentDimension.getTextFieldPreferredHeight(), false);
+            this.missionsComboBox.setBackground(this.componentDimension.getTextFieldBackgroundColor());
             this.missionItemListener = new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent itemEvent) {

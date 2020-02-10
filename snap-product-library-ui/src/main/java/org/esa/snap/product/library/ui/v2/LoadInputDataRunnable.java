@@ -34,10 +34,10 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
         boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
         List<RemoteRepositoryCredentials> repositoriesCredentials = null;
         try {
-            repositoriesCredentials = RepositoriesCredentialsController.getInstance().getRepositoriesCredentials();
-            //TODO Jean read the two variables from preferences
-//            int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
-//            boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+            RepositoriesCredentialsController controller = RepositoriesCredentialsController.getInstance();
+            repositoriesCredentials = controller.getRepositoriesCredentials();
+            visibleProductsPerPage = controller.getNrRecordsOnPage();
+            uncompressedDownloadedProducts = controller.isAutoUncompress();
         } catch (Exception exception) {
             logger.log(Level.SEVERE, "Failed to load the remote repository credentials.", exception);
         }

@@ -1,31 +1,23 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
+import javafx.scene.control.ComboBox;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.CustomComboBox;
+import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by jcoravu on 21/8/2019.
@@ -41,39 +33,18 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private final ProgressBarHelperImpl progressBarHelper;
     private final OutputProductListPanel productListPanel;
     private final OutputProductListPaginationPanel productListPaginationPanel;
-    private final Map<String, Comparator<RepositoryProduct>> availableComparators;
+    private final CustomComboBox<ComparatorItem> comparatorsComboBox;
 
-    private Comparator<RepositoryProduct> currentComparator;
     private int visibleProductsPerPage;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
                                             ActionListener stopButtonListener, int progressBarWidth) {
 
-        super(new BorderLayout(0, componentDimension.getGapBetweenRows()/2));
+        super(new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
         this.visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
 
         this.titleLabel = new JLabel(getTitle());
-        Dimension size = this.titleLabel.getPreferredSize();
-        size.height += 2; // add more pixels
-        this.titleLabel.setPreferredSize(size);
-
-        this.sortByLabel = new JLabel();
-        this.sortByLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-                    showProductsPopupMenu(mouseEvent.getX(), mouseEvent.getY());
-                }
-            }
-        });
-
-        String currentComparatorName = "Product Name";
-        this.availableComparators = new LinkedHashMap<>();
-        this.availableComparators.put(currentComparatorName, buildProductNameComparator());
-        this.availableComparators.put("Mission", buildMissionComparator());
-        this.availableComparators.put("Acquisition Date", buildAcquisitionDateComparator());
-        this.availableComparators.put("File Size", buildFileSizeComparator());
 
         this.productListPanel = new OutputProductListPanel(repositorySelectionPanel, componentDimension, this);
         this.productListPanel.addDataChangedListener(new PropertyChangeListener() {
@@ -84,6 +55,39 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
             }
         });
+
+        ItemRenderer<ComparatorItem> itemRenderer = new ItemRenderer<ComparatorItem>() {
+            @Override
+            public String getItemDisplayText(ComparatorItem item) {
+                return (item == null) ? " " : " " + item.getDisplayName();
+            }
+        };
+        this.comparatorsComboBox = new CustomComboBox<>(itemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
+        this.comparatorsComboBox.addItem(buildProductNameComparator());
+        this.comparatorsComboBox.addItem(buildMissionComparator());
+        this.comparatorsComboBox.addItem(buildAcquisitionDateComparator());
+        this.comparatorsComboBox.addItem(buildFileSizeComparator());
+        this.comparatorsComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    productListPanel.getProductListModel().sortProducts();
+                }
+            }
+        });
+        int maximumPreferredWidth = 0;
+        JLabel label = new JLabel();
+        for (int i=0; i<this.comparatorsComboBox.getItemCount(); i++) {
+            label.setText(itemRenderer.getItemDisplayText(this.comparatorsComboBox.getItemAt(i)));
+            maximumPreferredWidth = Math.max(maximumPreferredWidth, label.getPreferredSize().width);
+        }
+        Dimension comboBoxSize = new Dimension(maximumPreferredWidth + componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
+        this.comparatorsComboBox.setPreferredSize(comboBoxSize);
+        this.comparatorsComboBox.setMaximumSize(comboBoxSize);
+        this.comparatorsComboBox.setMinimumSize(comboBoxSize);
+
+        this.sortByLabel = label;
+        this.sortByLabel.setText("Sort by");
 
         ActionListener firstPageButtonListener = new ActionListener() {
             @Override
@@ -112,7 +116,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         this.productListPaginationPanel = new OutputProductListPaginationPanel(componentDimension, firstPageButtonListener, previousPageButtonListener,
                                                                                nextPageButtonListener, lastPageButtonListener);
 
-        this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, size.height) {
+        this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, componentDimension.getTextFieldPreferredHeight()) {
             @Override
             protected void setParametersEnabledWhileDownloading(boolean enabled) {
                 // do nothing
@@ -120,14 +124,12 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         };
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
-        setCurrentComparator(currentComparatorName);
-
         addComponents(componentDimension);
     }
 
     @Override
     public Comparator<RepositoryProduct> getProductsComparator() {
-        return this.currentComparator;
+        return (ComparatorItem)this.comparatorsComboBox.getSelectedItem();
     }
 
     @Override
@@ -329,46 +331,26 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         return "Products";
     }
 
-    private void showProductsPopupMenu(int mouseX, int mouseY) {
-        JPopupMenu popup = new JPopupMenu();
-        for (String displayName : this.availableComparators.keySet()) {
-            JMenuItem menuItem = new JMenuItem(displayName);
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    JMenuItem item = (JMenuItem)actionEvent.getSource();
-                    setCurrentComparator(item.getText());
-                }
-            });
-            popup.add(menuItem);
-        }
-        popup.show(this.sortByLabel, mouseX, mouseY);
-    }
-
     private void resetOutputProducts() {
         AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.productListPanel.getRepositorySelectionPanel().getSelectedProductsRepositoryPanel();
         selectedProductsRepositoryPanel.resetOutputProducts();
     }
 
-    private void setCurrentComparator(String displayName) {
-        this.currentComparator = this.availableComparators.get(displayName);
-        this.sortByLabel.setText("Sort By: " + displayName);
-        this.productListPanel.getProductListModel().sortProducts();
-    }
-
     private void addComponents(ComponentDimension componentDimension) {
-        int bottomMargin = componentDimension.getGapBetweenRows() / 2;
-        Insets progressBarMargins = new Insets(0, 0, bottomMargin, 0);
-        Insets stopButtonMargins = new Insets(0, componentDimension.getGapBetweenRows(), bottomMargin, 0);
+        int gapBetweenRows = 0;
+        int gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
         JPanel northPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.SOUTH, 1, 1, bottomMargin, 0);
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         northPanel.add(this.titleLabel, c);
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, progressBarMargins);
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, stopButtonMargins);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.progressBarHelper.getStopButton(), c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.SOUTH, 1, 1, bottomMargin, componentDimension.getGapBetweenColumns());
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.sortByLabel, c);
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        northPanel.add(this.comparatorsComboBox, c);
 
         JScrollPane scrollPane = new JScrollPane(this.productListPanel);
         scrollPane.getViewport().setOpaque(true);
@@ -378,8 +360,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private static Comparator<RepositoryProduct> buildProductNameComparator() {
-        return new Comparator<RepositoryProduct>() {
+    private static ComparatorItem buildProductNameComparator() {
+        return new ComparatorItem("Product Name") {
             @Override
             public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                 return o1.getName().compareToIgnoreCase(o2.getName());
@@ -387,8 +369,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         };
     }
 
-    private static Comparator<RepositoryProduct> buildAcquisitionDateComparator() {
-        return new Comparator<RepositoryProduct>() {
+    private static ComparatorItem buildAcquisitionDateComparator() {
+        return new ComparatorItem("Acquisition Date") {
             @Override
             public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                 Date acquisitionDate1 = o1.getAcquisitionDate();
@@ -407,8 +389,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         };
     }
 
-    private static Comparator<RepositoryProduct> buildMissionComparator() {
-        return new Comparator<RepositoryProduct>() {
+    private static ComparatorItem buildMissionComparator() {
+        return new ComparatorItem("Mission") {
             @Override
             public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                 if (o1.getMission() == null && o2.getMission() == null) {
@@ -425,8 +407,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         };
     }
 
-    private static Comparator<RepositoryProduct> buildFileSizeComparator() {
-        return new Comparator<RepositoryProduct>() {
+    private static ComparatorItem buildFileSizeComparator() {
+        return new ComparatorItem("File size") {
             @Override
             public int compare(RepositoryProduct o1, RepositoryProduct o2) {
                 long fileSize1 = o1.getApproximateSize();
@@ -440,5 +422,18 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 return 1;
             }
         };
+    }
+
+    private static abstract class ComparatorItem implements Comparator<RepositoryProduct> {
+
+        private final String displayName;
+
+        private ComparatorItem(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 }

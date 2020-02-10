@@ -16,110 +16,6 @@ public class SwingUtils {
     private SwingUtils() {
     }
 
-    private static class ComboBoxEditorComponent<ItemType> implements ComboBoxEditor {
-
-        private final ItemRenderer<ItemType> itemRenderer;
-        private final JTextField editorTextField;
-
-        private ItemType item;
-
-        private ComboBoxEditorComponent(ItemRenderer<ItemType> itemRenderer) {
-            this.itemRenderer = itemRenderer;
-            this.editorTextField = new JTextField("", 9);
-            this.editorTextField.setBorder(null);
-        }
-
-        @Override
-        public JTextField getEditorComponent() {
-            return this.editorTextField;
-        }
-
-        @Override
-        public void setItem(Object item) {
-            this.item = (ItemType)item;
-            String text;
-            if (this.item == null) {
-                text = "";
-            } else {
-                text = this.itemRenderer.getItemDisplayText(this.item);
-            }
-            this.editorTextField.setText(text);
-        }
-
-        @Override
-        public Object getItem() {
-            String newValue = this.editorTextField.getText();
-            if (this.item != null && !(this.item instanceof String))  {
-                // the item is not a string
-                if (newValue.equals(this.itemRenderer.getItemDisplayText(this.item)))  {
-                    return this.item;
-                }
-            }
-            return newValue;
-        }
-
-        @Override
-        public void selectAll() {
-            // do nothing
-        }
-
-        @Override
-        public void addActionListener(ActionListener listener) {
-            this.editorTextField.addActionListener(listener);
-        }
-
-        @Override
-        public void removeActionListener(ActionListener listener) {
-            this.editorTextField.removeActionListener(listener);
-        }
-    }
-
-    public static <ItemType> JComboBox<ItemType> buildComboBox(ItemRenderer<ItemType> itemRenderer, int textFieldPreferredHeight, boolean isEditable) {
-        JComboBox<ItemType> comboBox = new JComboBox<ItemType>() {
-            @Override
-            public void setEnabled(boolean enabled) {
-                super.setEnabled(enabled);
-                if (getEditor() != null && getEditor().getEditorComponent() != null) {
-                    getEditor().getEditorComponent().setEnabled(enabled);
-                }
-            }
-        };
-        Dimension comboBoxSize = comboBox.getPreferredSize();
-        comboBoxSize.height = textFieldPreferredHeight;
-        comboBox.setPreferredSize(comboBoxSize);
-        comboBox.setMinimumSize(comboBoxSize);
-        comboBox.setMaximumRowCount(5); // the maximum number of visible items in the popup
-        comboBox.setEditable(true); // set the combo box as editable
-        ComboBoxEditorComponent<ItemType> comboBoxEditorComponent = new ComboBoxEditorComponent<ItemType>(itemRenderer);
-        JTextField editorTextField = comboBoxEditorComponent.getEditorComponent();
-        editorTextField.setOpaque(false); // set the editor text transparent
-        if (!isEditable) {
-            comboBoxEditorComponent.getEditorComponent().setEditable(false); // set the editor component read only
-        }
-        comboBox.setEditor(comboBoxEditorComponent);
-        editorTextField.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                Container sourceComponent = (JComponent)mouseEvent.getSource();
-                while (sourceComponent != null && !(sourceComponent instanceof JComboBox)) {
-                    sourceComponent = sourceComponent.getParent();
-                }
-                JComboBox sourceComboBox = ((JComboBox)sourceComponent);
-                if (sourceComboBox.isEnabled()) {
-                    if (sourceComboBox.isPopupVisible()) {
-                        sourceComboBox.hidePopup();
-                    } else {
-                        sourceComboBox.showPopup();
-                    }
-                }
-            }
-        });
-        int cellItemHeight = comboBox.getPreferredSize().height;
-        comboBox.setRenderer(new LabelListCellRenderer<ItemType>(cellItemHeight, itemRenderer));
-
-        return comboBox;
-    }
-
     public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, int textFieldPreferredHeight, boolean isEditable) {
         ItemRenderer<String> itemRenderer = new ItemRenderer<String>() {
             @Override
@@ -127,7 +23,7 @@ public class SwingUtils {
                 return (item == null) ? " " : item;
             }
         };
-        JComboBox<String> comboBox = buildComboBox(itemRenderer, textFieldPreferredHeight, isEditable);
+        JComboBox<String> comboBox = new CustomComboBox(itemRenderer, textFieldPreferredHeight, isEditable);
         if (values != null) {
             for (int i = 0; i < values.length; i++) {
                 comboBox.addItem(values[i]);

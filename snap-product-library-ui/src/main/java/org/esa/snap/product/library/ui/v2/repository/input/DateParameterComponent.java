@@ -3,7 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,10 +17,13 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
 
     private final JXDatePicker component;
 
-    public DateParameterComponent(String parameterName, String parameterLabelText, boolean required, int textFieldPreferredHeight) {
+    public DateParameterComponent(String parameterName, String parameterLabelText, boolean required, int textFieldPreferredHeight, Color backgroundColor) {
         super(parameterName, parameterLabelText, required);
 
         this.component = new JXDatePicker();
+        this.component.setBackground(backgroundColor);
+        this.component.getEditor().setOpaque(false);
+        this.component.setOpaque(true);
         this.component.setFormats(DATE_FORMAT);
 
         Dimension preferredSize = this.component.getPreferredSize();

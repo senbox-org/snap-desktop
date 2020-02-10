@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.input;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Created by jcoravu on 7/8/2019.
@@ -10,10 +10,11 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
 
     private final JTextField component;
 
-    public StringParameterComponent(String parameterName, String defaultValue, String parameterLabelText, boolean required, int textFieldPreferredHeight) {
+    public StringParameterComponent(String parameterName, String defaultValue, String parameterLabelText, boolean required, int textFieldPreferredHeight, Color backgroundColor) {
         super(parameterName, parameterLabelText, required);
 
         this.component = new JTextField();
+        this.component.setBackground(backgroundColor);
 
         Dimension preferredSize = this.component.getPreferredSize();
         preferredSize.height = textFieldPreferredHeight;

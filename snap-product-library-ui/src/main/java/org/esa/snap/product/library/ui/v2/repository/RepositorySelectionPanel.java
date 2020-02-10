@@ -13,26 +13,14 @@ import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -245,7 +233,7 @@ public class RepositorySelectionPanel extends JPanel {
                 return (panel == null) ? "" : panel.getName();
             }
         };
-        this.repositoriesComboBox = SwingUtils.buildComboBox(itemRenderer, this.componentDimension.getTextFieldPreferredHeight(), false);
+        this.repositoriesComboBox = new CustomComboBox(itemRenderer, this.componentDimension.getTextFieldPreferredHeight(), false, this.componentDimension.getTextFieldBackgroundColor());
         for (int i=0; i<productsRepositoryProviders.length; i++) {
             RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = new RemoteProductsRepositoryPanel(productsRepositoryProviders[i], this.componentDimension, missionParameterListener, this.worldWindowPanel);
             remoteProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);

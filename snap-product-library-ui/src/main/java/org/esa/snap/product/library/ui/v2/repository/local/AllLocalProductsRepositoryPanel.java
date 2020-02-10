@@ -20,6 +20,7 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -30,13 +31,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -69,7 +69,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                 return (item == null) ? " " : item.getPath().toString();
             }
         };
-        this.foldersComboBox = SwingUtils.buildComboBox(foldersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
+        this.foldersComboBox = new CustomComboBox(foldersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
         ItemRenderer<String> missionsItemRenderer = new ItemRenderer<String>() {
             @Override
@@ -77,9 +77,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                 return (item == null) ? " " : item;
             }
         };
-        this.remoteMissionsComboBox = SwingUtils.buildComboBox(missionsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
+        this.remoteMissionsComboBox = new CustomComboBox(missionsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
         this.attributesComboBox = SwingUtils.buildComboBox(null, null, componentDimension.getTextFieldPreferredHeight(), false);
+        this.attributesComboBox.setBackground(componentDimension.getTextFieldBackgroundColor());
 
         this.addFolderButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
         this.addFolderButton.setToolTipText("Add new local folder");
@@ -96,7 +97,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                 return (item == null) ? " " : item;
             }
         };
-        this.attributeValuesEditableComboBox = SwingUtils.buildComboBox(attributeValuesItemRenderer, componentDimension.getTextFieldPreferredHeight(), true);
+        this.attributeValuesEditableComboBox = new CustomComboBox(attributeValuesItemRenderer, componentDimension.getTextFieldPreferredHeight(), true, componentDimension.getTextFieldBackgroundColor());
         this.attributeValuesEditableComboBox.addItem(null);
     }
 

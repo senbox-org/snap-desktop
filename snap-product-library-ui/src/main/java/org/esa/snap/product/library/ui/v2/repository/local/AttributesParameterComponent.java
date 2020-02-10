@@ -6,6 +6,7 @@ import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComp
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.AttributeValueFilter;
+import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -66,7 +67,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
                 return (item == null) ? " " : getFilterDisplayName(item);
             }
         };
-        this.filtersComboBox = SwingUtils.buildComboBox(filtersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false);
+        this.filtersComboBox = new CustomComboBox(filtersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
         JLabel label = new JLabel();
         int maximumWidth = 0;
@@ -100,12 +101,8 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
             }
         });
 
-        this.attributesList = new JList<AttributeFilter>(new DefaultListModel<AttributeFilter>()) {
-            @Override
-            public Color getBackground() {
-                return isEnabled() ? super.getBackground() : UIManager.getColor("TextField.inactiveBackground");
-            }
-        };
+        this.attributesList = new JList<AttributeFilter>(new DefaultListModel<AttributeFilter>());
+        this.attributesList.setBackground(componentDimension.getTextFieldBackgroundColor());
         this.attributesList.setVisibleRowCount(5);
         this.attributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         int cellItemHeight = this.attributeNamesComboBox.getPreferredSize().height;
@@ -115,14 +112,23 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
                 if (attribute == null) {
                     return " ";
                 }
-                return attribute.getName() + " " +getFilterDisplayName(attribute.getValueFilter()) + " " + attribute.getValue();
+                return attribute.getName() + " " + getFilterDisplayName(attribute.getValueFilter()) + " " + attribute.getValue();
             }
         });
 
         int gapBetweenColumns = componentDimension.getGapBetweenColumns();
         int gapBetweenRows = componentDimension.getGapBetweenRows();
 
-        this.component = new JPanel(new GridBagLayout());
+        this.component = new JPanel(new GridBagLayout()) {
+            @Override
+            public void setEnabled(boolean enabled) {
+                super.setEnabled(enabled);
+
+                for (int i=0; i<getComponentCount(); i++) {
+                    getComponent(i).setEnabled(enabled);
+                }
+            }
+        };
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
         this.component.add(this.attributeNamesComboBox, c);
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
