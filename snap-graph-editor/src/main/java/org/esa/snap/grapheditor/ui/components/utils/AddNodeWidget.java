@@ -5,14 +5,22 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 
+import javafx.util.Pair;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
 import javax.swing.*;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AddNodeWidget {
     static final private int widgetWidth = 400;
@@ -29,7 +37,7 @@ public class AddNodeWidget {
 
     private OperatorManager operatorManager;
 
-    private final HashSet<SimplifiedMetadata> results = new HashSet<>();
+    private final ArrayList<SimplifiedMetadata> results = new ArrayList<>();
 
     private boolean visible = false;
     private String searchString = "";
@@ -201,20 +209,39 @@ public class AddNodeWidget {
         return list.toArray(new String[list.size()]);
     }
 
+    private class ResultComparator implements Comparator<Pair<SimplifiedMetadata, Double>>
+    {
+        public ResultComparator()
+        {
+        }
+
+        @Override
+        public int compare(Pair<SimplifiedMetadata, Double> i1, Pair<SimplifiedMetadata, Double> i2)
+        {
+            return -i1.getValue().compareTo(i2.getValue());
+        }
+    }
+
     private void updateSearch() {
         results.clear();
+        ArrayList<Pair<SimplifiedMetadata, Double>> searchResult= new ArrayList<>();
         if (searchString.length() > 0) {
             final String normSearch[] = smartTokenizer(searchString);
+
             for (SimplifiedMetadata metadata: operatorManager.getSimplifiedMetadatas()) {
-                
-                for (final String tag : normSearch) {
-                    if (metadata.find(tag)) {
-                        results.add(metadata);
-                        break;
-                    }
+                double dist = metadata.fuzzySearch(normSearch);
+                if (dist >= 0) {
+                    searchResult.add(new Pair<>(metadata, dist));
                 }
             }
+            searchResult.sort(new ResultComparator());
+            for (Pair<SimplifiedMetadata, Double> res: searchResult) {
+                results.add(res.getKey());
+            }
+
         }
+
+
         if (pos_y >= results.size()) {
             pos_y = results.size() - 1;
         }

@@ -96,6 +96,20 @@ public class OperatorManager {
             return false;
         }
 
+        public double fuzzySearch(final String[] keywords) {
+            double res = -1.0;
+            for (String keyword: keywords) {
+                if (name_lower.contains(keyword) && res < keyword.length()) {
+                    res = keyword.length();
+                } else if (category_lower.contains(keyword) && res < 0) {
+                    res = 0;
+                }
+            }
+            if (res > 0)
+                return res / (double)name_lower.length();
+            return res;
+        }
+
         public int getMinNumberOfInputs() {
             return minNInputs;
         }
