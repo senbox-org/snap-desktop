@@ -3,6 +3,7 @@ package org.esa.snap.grapheditor.ui.components.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import java.awt.event.ActionListener;
@@ -249,6 +250,14 @@ public class GraphManager implements NodeListener {
         this.nodes.add(newNode);
         newNode.addNodeListener(this);
         return newNode;
+    }
+
+    public List<NodeGui> getNodes() {
+        return this.nodes;
+    }
+
+    public void evaluate() {
+        // TODO evaluate graph
     }
 
     @Override

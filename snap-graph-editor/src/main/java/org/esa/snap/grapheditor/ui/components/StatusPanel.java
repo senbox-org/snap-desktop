@@ -34,7 +34,7 @@ public class StatusPanel extends JPanel implements ActionListener {
         messageLabel.setForeground(Color.white);
         topPane.add(messageLabel, BorderLayout.LINE_START);
 
-        showButton = new JButton("↑");
+        showButton = new JButton("...");
         showButton.setPreferredSize(new Dimension(30, 30));
         showButton.addActionListener(this);
         topPane.add(showButton, BorderLayout.LINE_END);

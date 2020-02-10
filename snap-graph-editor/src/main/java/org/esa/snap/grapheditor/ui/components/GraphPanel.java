@@ -39,7 +39,6 @@ public class GraphPanel extends JPanel
 
     private Point lastMousePosition = new Point(0, 0);
 
-    private ArrayList<NodeGui> nodes = new ArrayList<>();
     private NodeGui selectedNode = null;
     private NodeDragAction dragAction = null;
 
@@ -65,7 +64,6 @@ public class GraphPanel extends JPanel
     private void addNode(NodeGui node) {
         if (node != null) {
             node.setPosition(GraphicUtils.normalize(lastMousePosition));
-            this.nodes.add(node);
             for (GraphListener listener : graphListeners) {
                 listener.created(node);
             }
@@ -108,7 +106,7 @@ public class GraphPanel extends JPanel
 
     private void drawNodes(Graphics2D g) {
         Graphics2D gNode = (Graphics2D) g.create();
-        for (NodeGui node : nodes) {
+        for (NodeGui node : graphManager.getNodes()) {
             node.paintNode(gNode);
         }
         gNode.dispose();
@@ -116,7 +114,7 @@ public class GraphPanel extends JPanel
 
     private void drawConnections(Graphics2D g) {
         Graphics2D gNode = (Graphics2D) g.create();
-        for (NodeGui node : nodes) {
+        for (NodeGui node : graphManager.getNodes()) {
             node.paintConnections(gNode);
         }
         gNode.dispose();
@@ -133,7 +131,7 @@ public class GraphPanel extends JPanel
     private void drawTooltip(Graphics2D g) {
         if (SettingManager.getInstance().isShowToolipEnabled()) {
             Graphics2D gNode = (Graphics2D) g.create();
-            for (NodeGui node : nodes) {
+            for (NodeGui node : graphManager.getNodes()) {
                 node.tooltip(gNode);
             }
             gNode.dispose();
@@ -208,7 +206,6 @@ public class GraphPanel extends JPanel
 
     private void removeSelectedNode() {
         if (selectedNode != null) {
-            this.nodes.remove(selectedNode);
             selectedNode.delete();
             for (GraphListener listener : graphListeners) {
                 listener.deleted(selectedNode);
@@ -234,7 +231,7 @@ public class GraphPanel extends JPanel
                     listener.updated(dragAction.getSource());
                 }
             }
-            for (NodeGui node : nodes) {
+            for (NodeGui node : graphManager.getNodes()) {
                 if (node.contains(e.getPoint())) {
                     if (node.over(e.getPoint())) {
                         repainted = true;
@@ -258,7 +255,7 @@ public class GraphPanel extends JPanel
                 return;
             }
         }
-        for (NodeGui node : nodes) {
+        for (NodeGui node : graphManager.getNodes()) {
             if (node.contains(lastMousePosition)) {
                 node.over(lastMousePosition);
             } else {
@@ -286,7 +283,7 @@ public class GraphPanel extends JPanel
             }
         }
         boolean somethingSelected = false;
-        for (NodeGui node : nodes) {
+        for (NodeGui node : graphManager.getNodes()) {
             if (node.contains(lastMousePosition)) {
                 selectNode(node);
                 somethingSelected = true;
@@ -317,7 +314,7 @@ public class GraphPanel extends JPanel
                 }
             }
             Point p = e.getPoint();
-            for (NodeGui node : nodes) {
+            for (NodeGui node : graphManager.getNodes()) {
                 if (node.contains(p)) {
                     dragAction = node.drag(e.getPoint());
                     return;
@@ -335,7 +332,7 @@ public class GraphPanel extends JPanel
                 Point p = GraphicUtils.normalize(dragAction.getSource().getPostion());
                 moveNode(dragAction.getSource(), p.x, p.y);
             } else {
-                for (NodeGui node: nodes) {
+                for (NodeGui node: graphManager.getNodes()) {
                     if (node != dragAction.getSource() && node.hasTooltip()) {
                         // means is over a connection point
                         dragAction.getConnection().connect(node);

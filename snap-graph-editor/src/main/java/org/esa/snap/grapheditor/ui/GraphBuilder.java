@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
+import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
@@ -47,7 +48,7 @@ public class GraphBuilder extends JPanel {
         ImageIcon runIcon = TangoIcons.actions_media_playback_start(TangoIcons.R22);
         runButton.setIcon(runIcon);
         runButton.addActionListener(e -> {
-
+            GraphManager.getInstance().evaluate();
         });
 
         toolBar.setFloatable(false);
