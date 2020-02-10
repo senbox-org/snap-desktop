@@ -9,10 +9,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 public class StatusPanel extends JPanel implements ActionListener, NotificationListener {
 
@@ -25,9 +27,18 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
     private static final Color warningColor = new Color(220, 150, 0);
     private static final Color okColor = new Color(0, 128, 0);
 
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
+
+    private final JScrollPane scrollPane;
+
     private JPanel topPane;
     private JButton showButton;
     private JLabel messageLabel;
+    private JEditorPane historyPane;
+
+
+    private String history = "";
 
     private boolean extended = false;
 
@@ -43,7 +54,7 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
         messageLabel = new JLabel("");
         topPane.add(messageLabel, BorderLayout.LINE_START);
 
-        showButton = new JButton("...");
+        showButton = new JButton("+");
         showButton.setPreferredSize(new Dimension(30, 30));
         showButton.addActionListener(this);
         topPane.add(showButton, BorderLayout.LINE_END);
@@ -52,6 +63,26 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
 
         this.add(topPane, BorderLayout.PAGE_START);
 
+        historyPane = new JEditorPane();
+        historyPane.setEditable(false);
+        HTMLEditorKit kit = new HTMLEditorKit();
+        historyPane.setEditorKit(kit);
+        historyPane.setContentType("text/html");
+        scrollPane = new JScrollPane(historyPane);
+        this.add(scrollPane, BorderLayout.CENTER);
+
+        initStylesheet(kit);
+
+        unextend();
+
+    }
+
+    private void initStylesheet(HTMLEditorKit kit) {
+        StyleSheet css = kit.getStyleSheet();
+        css.addRule(".error{color: #C80000; font-weight: bold}");
+        css.addRule(".warning{color: #DC9600; font-weight: bold}");
+        css.addRule(".ok{color:#008000; font-weight: bold}");
+        css.addRule(".info{color: #000;}");
     }
 
     @Override
@@ -65,35 +96,50 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
 
     private void extend() {
         extended = true;
-        this.setPreferredSize(new Dimension(30, 200));
-        this.showButton.setText("↓");
+        this.setPreferredSize(new Dimension(30, 250));
+        this.showButton.setText("-");
+        this.scrollPane.setVisible(true);
     }
 
     private void unextend() {
         extended = false;
         this.setPreferredSize(new Dimension(30, 30));
-        this.showButton.setText("↑");
+        this.showButton.setText("+");
+        this.scrollPane.setVisible(false);
     }
 
     @Override
     public void notificationIncoming(Notification n) {
         this.messageLabel.setText(n.getSource()+": "+n.getMessage());
         Color fg;
+        String cssClass;
         switch (n.getLevel()) {
             case ok:
+                cssClass = "ok";
                 fg = okColor;
                 break;
             case error:
                 fg = errorColor;
+                cssClass = "error";
                 break;
             case warning:
+                cssClass = "warning";
                 fg = warningColor;
                 break;
             case info:
             default:
+                cssClass = "info";
                 fg = Color.black;
         }
         this.messageLabel.setForeground(fg);
         this.messageLabel.repaint();
+        history += "<span class=\"" + cssClass +"\">";
+        history += timeStamp() +" "+ n.getSource() + ": " + n.getMessage() + "</span><br>";
+        historyPane.setText(history);
+    }
+
+    private String timeStamp() {
+        LocalDateTime now = LocalDateTime.now();
+        return "[" +dtf.format(now) + "]";
     }
 }
