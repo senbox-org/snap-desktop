@@ -20,8 +20,8 @@ import org.esa.snap.grapheditor.gpf.ui.UIValidation;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
-import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
+import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
+import org.esa.snap.grapheditor.ui.components.utils.SimplifiedMetadata;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -117,7 +117,7 @@ public class NodeGui implements NodeListener {
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
-        operator = OperatorManager.getInstance().getOperator(metadata);
+        operator = GraphManager.getInstance().getOperator(metadata);
         context = new OperatorContext(operator);
 
     }

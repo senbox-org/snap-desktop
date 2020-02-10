@@ -22,7 +22,7 @@ import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
-import org.esa.snap.grapheditor.ui.components.utils.OperatorManager;
+import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 public class GraphPanel extends JPanel
@@ -43,7 +43,7 @@ public class GraphPanel extends JPanel
     private NodeGui selectedNode = null;
     private NodeDragAction dragAction = null;
 
-    private OperatorManager operatorManager = OperatorManager.getInstance();
+    private GraphManager graphManager = GraphManager.getInstance();
 
     private ArrayList<GraphListener> graphListeners = new ArrayList<>();
 
@@ -52,9 +52,9 @@ public class GraphPanel extends JPanel
     public GraphPanel() {
         super();
         this.setBackground(Color.lightGray);
-        this.addNodeWidget = new AddNodeWidget(this, operatorManager);
+        this.addNodeWidget = new AddNodeWidget(this, graphManager);
         this.addMenu = new JPopupMenu();
-        addMenu.add(operatorManager.createOperatorMenu(this));
+        addMenu.add(graphManager.createOperatorMenu(this));
 
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
@@ -416,6 +416,6 @@ public class GraphPanel extends JPanel
     @Override
     public void actionPerformed(ActionEvent e) {
         String opName = e.getActionCommand();
-        this.addNode(operatorManager.newNode(opName));
+        this.addNode(graphManager.newNode(opName));
     }
 }

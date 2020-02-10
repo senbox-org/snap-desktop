@@ -6,21 +6,15 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
 import javafx.util.Pair;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-import org.esa.snap.grapheditor.ui.components.utils.OperatorManager.SimplifiedMetadata;
 
 import javax.swing.*;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AddNodeWidget {
     static final private int widgetWidth = 400;
@@ -35,7 +29,7 @@ public class AddNodeWidget {
     private static final int hOffset = fsize * 2 + 8;
     private static final int yOffset = 30;
 
-    private OperatorManager operatorManager;
+    private GraphManager graphManager;
 
     private final ArrayList<SimplifiedMetadata> results = new ArrayList<>();
 
@@ -48,9 +42,9 @@ public class AddNodeWidget {
     final private JComponent parent;
     
     
-    public AddNodeWidget(JComponent parent, OperatorManager opManager) {
+    public AddNodeWidget(JComponent parent, GraphManager opManager) {
         this.parent = parent;
-        operatorManager = opManager;
+        graphManager = opManager;
     }
 
     public void paint(Graphics2D g) {
@@ -143,7 +137,7 @@ public class AddNodeWidget {
 
     private NodeGui createNode(int index) {
         SimplifiedMetadata opMetaData = results.toArray(new SimplifiedMetadata[results.size()])[index];
-        return operatorManager.newNode(opMetaData);
+        return graphManager.newNode(opMetaData);
     }
 
     public NodeGui enter() {
@@ -228,7 +222,7 @@ public class AddNodeWidget {
         if (searchString.length() > 0) {
             final String normSearch[] = smartTokenizer(searchString);
 
-            for (SimplifiedMetadata metadata: operatorManager.getSimplifiedMetadatas()) {
+            for (SimplifiedMetadata metadata: graphManager.getSimplifiedMetadatas()) {
                 double dist = metadata.fuzzySearch(normSearch);
                 if (dist >= 0) {
                     searchResult.add(new Pair<>(metadata, dist));
@@ -240,7 +234,6 @@ public class AddNodeWidget {
             }
 
         }
-
 
         if (pos_y >= results.size()) {
             pos_y = results.size() - 1;

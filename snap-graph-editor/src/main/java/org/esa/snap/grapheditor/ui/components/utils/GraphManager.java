@@ -32,122 +32,7 @@ import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
-public class OperatorManager {
-    
-    public class SimplifiedMetadata {
-        private String name;
-        private final String name_lower;
-        private final String description;
-        private final String category;
-        private final String category_lower;
-        private final OperatorDescriptor descriptor;
-        private final OperatorMetadata metadata;
-
-        private final int minNInputs;
-        private final int maxNInputs;
-        private final boolean hasOutputProduct;
-
-
-        public SimplifiedMetadata(final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
-            this.descriptor = opDescriptor;
-
-            if (descriptor.getSourceProductsDescriptor() != null) {
-                minNInputs = descriptor.getSourceProductDescriptors().length + 1;
-                maxNInputs = -1;
-            } else {
-                minNInputs = descriptor.getSourceProductDescriptors().length;
-                maxNInputs = minNInputs;
-            }
-            hasOutputProduct = descriptor.getTargetProductDescriptor() != null;
-
-            metadata = opMetadatada;
-
-            name = metadata.label();
-            if (name == null || name.length() == 0) {
-                name = metadata.alias();
-            }
-
-            description = metadata.description();
-            category = metadata.category();
-
-            category_lower = category.toLowerCase();
-            name_lower = name.toLowerCase();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-
-        public boolean find(final String string) {
-            if (name_lower.contains(string)) {
-                return true;
-            }
-            if (category_lower.contains(string)) {
-                return true;
-            }
-            return false;
-        }
-
-        public double fuzzySearch(final String[] keywords) {
-            double res = -1.0;
-            for (String keyword: keywords) {
-                if (name_lower.contains(keyword) && res < keyword.length()) {
-                    res = keyword.length();
-                } else if (category_lower.contains(keyword) && res < 0) {
-                    res = 0;
-                }
-            }
-            if (res > 0)
-                return res / (double)name_lower.length();
-            return res;
-        }
-
-        public int getMinNumberOfInputs() {
-            return minNInputs;
-        }
-
-        public int getMaxNumberOfInputs() {
-            return maxNInputs;
-        }
-
-        public boolean hasInputs() {
-            return (minNInputs > 0);
-        }
-
-        public boolean hasOutput() {
-            return hasOutputProduct;
-        }
-
-        public String getOutputDescription() {
-            if (hasOutput())
-                return descriptor.getDescription(); // TODO or get label??
-            return "";
-        }
-
-        public String getInputDescription(int index) {
-            if (hasInputs()) {
-                if (index <  descriptor.getSourceProductDescriptors().length) {
-                    return descriptor.getSourceProductDescriptors()[index].getDescription(); // TODO or label?
-                } else if (descriptor.getSourceProductsDescriptor() != null) {
-                    return descriptor.getSourceProductsDescriptor().getDescription();
-                }
-            }
-            return "";
-        }
-
-        public OperatorDescriptor getDescriptor() {
-            return descriptor;
-        }
-    
-    }
+public class GraphManager implements NodeListener {
 
     private final GPF gpf;
     private final OperatorSpiRegistry opSpiRegistry;
@@ -155,18 +40,18 @@ public class OperatorManager {
     private final ArrayList<OperatorMetadata> metadatas = new ArrayList<>();
     private final HashMap<String, SimplifiedMetadata> simpleMetadatas = new HashMap<>();
 
-    private final ArrayList<Node> nodes = new ArrayList<>();
+    private final ArrayList<NodeGui> nodes = new ArrayList<>();
 
-    static private OperatorManager instance = null;
+    static private GraphManager instance = null;
 
-    static public OperatorManager getInstance() {
+    static public GraphManager getInstance() {
         if (instance == null) {
-            instance = new OperatorManager();
+            instance = new GraphManager();
         }
         return instance;
     }
 
-    private OperatorManager() {
+    private GraphManager() {
         gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
@@ -204,7 +89,6 @@ public class OperatorManager {
         final XppDomElement parameters = new XppDomElement("parameters");
         newNode.setConfiguration(parameters);
 
-        this.nodes.add(newNode);
         return newNode;
     }
 
@@ -267,9 +151,20 @@ public class OperatorManager {
     private String id(final String opName) {
         final String res = opName + " ";
         int counter = 0;
-        for (final Node n : nodes) {
-            if (n.getId().startsWith(res)) {
-                counter++;
+        int N = res.length();
+        for (NodeGui n : nodes) {
+
+            if (n.getName().startsWith(res)) {
+                String postfix = n.getName().substring(N);
+                try {
+                    int id = Integer.parseInt(postfix);
+                    if (id >= counter) {
+                        counter = id + 1;
+                    }
+                } catch (NumberFormatException e) {
+                    // not a problem
+                    continue;
+                }
             }
         }
 
@@ -350,6 +245,19 @@ public class OperatorManager {
     public NodeGui newNode(SimplifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
-        return new NodeGui(node, getConfiguration(node), metadata, ui);
+        NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
+        this.nodes.add(newNode);
+        newNode.addNodeListener(this);
+        return newNode;
+    }
+
+    @Override
+    public void outputChanged(NodeGui source) {
+        // TODO Revalidate rest of the graph.
+    }
+
+    @Override
+    public void sourceDeleted(NodeGui source) {
+        this.nodes.remove(source);
     }
 }

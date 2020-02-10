@@ -35,14 +35,24 @@ public class GraphBuilder extends JPanel {
 
         toolBar = new JToolBar();
         this.add(toolBar, BorderLayout.PAGE_START);
+
         JButton settingsButton = new JButton();
-        ImageIcon icon = TangoIcons.categories_preferences_system(TangoIcons.Res.R22);
-        settingsButton.setIcon(icon);
+        ImageIcon settingIcon = TangoIcons.categories_preferences_system(TangoIcons.Res.R22);
+        settingsButton.setIcon(settingIcon);
         settingsButton.addActionListener(e -> {
             SettingManager.getInstance().showSettingsDialog(parentWindow);
         });
+
+        JButton runButton = new JButton();
+        ImageIcon runIcon = TangoIcons.actions_media_playback_start(TangoIcons.R22);
+        runButton.setIcon(runIcon);
+        runButton.addActionListener(e -> {
+
+        });
+
         toolBar.setFloatable(false);
         toolBar.add(settingsButton);
+        toolBar.add(runButton);
 
         statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
