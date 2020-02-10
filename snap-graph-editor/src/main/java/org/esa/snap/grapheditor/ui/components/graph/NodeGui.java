@@ -17,14 +17,11 @@ import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
-import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
-import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
-import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
-import org.esa.snap.grapheditor.ui.components.utils.SimplifiedMetadata;
+import org.esa.snap.grapheditor.ui.components.utils.*;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.opengis.filter.Not;
 
 /**
  * NodeGui is the main component of the GraphBuilder and it represents a node that is an instance of an Operator
@@ -432,6 +429,7 @@ public class NodeGui implements NodeListener {
     }
     private boolean incomplete() {
         output = null;
+        NotificationManager.getInstance().warning(this.getName(), "Some input proudcts are missing. Node can not be validated");
         validationStatus = ValidationStatus.WARNING;
         return true;
     }
@@ -453,7 +451,6 @@ public class NodeGui implements NodeListener {
                 Product p = incomingConnections.get(i).getSourceProduct();
                 if (p == null)
                     return incomplete();
-                System.out.println(descr.getName());
                 context.setSourceProduct(descr.getName(), p);
             }
             if (incomingConnections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
@@ -474,18 +471,22 @@ public class NodeGui implements NodeListener {
                 context.setParameter(param, configuration.get(param));
             }
             try {
+
                 output = context.getTargetProduct();
+                NotificationManager.getInstance().ok(this.getName(), "Validated");
                 validationStatus = ValidationStatus.VALIDATED;
             } catch (Exception e) {
-                e.printStackTrace();
+                NotificationManager.getInstance().error(this.getName(), e.getMessage());
                 output = null;
                 validationStatus = ValidationStatus.ERROR;
             }
         } else {
             output = null;
             if (state == UIValidation.State.ERROR) {
+                NotificationManager.getInstance().error(this.getName(), "Operator UI could not be validated");
                 validationStatus = ValidationStatus.ERROR;
             } else if (state == UIValidation.State.WARNING) {
+                NotificationManager.getInstance().warning(this.getName(), "Operator UI could not be validated");
                 validationStatus = ValidationStatus.WARNING;
             }
         }

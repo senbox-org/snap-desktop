@@ -249,6 +249,7 @@ public class GraphManager implements NodeListener {
         NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
         this.nodes.add(newNode);
         newNode.addNodeListener(this);
+        NotificationManager.getInstance().info(newNode.getName(), "Created");
         return newNode;
     }
 
@@ -267,6 +268,7 @@ public class GraphManager implements NodeListener {
 
     @Override
     public void sourceDeleted(NodeGui source) {
+        NotificationManager.getInstance().info(source.getName(), "Deleted");
         this.nodes.remove(source);
     }
 }
