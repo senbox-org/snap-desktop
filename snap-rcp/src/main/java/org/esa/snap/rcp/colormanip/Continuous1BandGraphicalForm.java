@@ -17,13 +17,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Scaling;
-import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.core.datamodel.StxFactory;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
@@ -43,6 +37,8 @@ import java.awt.Component;
 //            by tracking the source and target log scaling and passing this information to the method
 //            setColorPaletteDef() in the class ImageInfo.
 //          - Set computeZoomInToSliderLimits() to be the default display behavior of the histogram display
+// FEB 2020 - Knowles
+//          - Added call to reset the color scheme to 'none'
 
 
 public class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
@@ -119,6 +115,11 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
         final ImageInfoEditorModel newModel = new ImageInfoEditorModel1B(imageInfo);
         imageInfoEditor.setModel(newModel);
+
+        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+
 
         final RasterDataNode raster = formModel.getRaster();
         setLogarithmicDisplay(raster, newModel.getImageInfo().isLogScaled());
@@ -258,6 +259,12 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         autoDistribute = true;
 
         if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+
+            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+            parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+
+
             currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
             currentInfo.setLogScaled(isTargetLogScaled);
             imageInfoEditor.setLogScaled(currentInfo.isLogScaled());

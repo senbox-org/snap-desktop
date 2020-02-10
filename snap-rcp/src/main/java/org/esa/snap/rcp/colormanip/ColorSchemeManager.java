@@ -110,7 +110,7 @@ public class ColorSchemeManager {
                 createSortedInfos();
 
                 setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
-                setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), true, getjComboBoxNoneEntryName(), null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir));
+                setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), false, getjComboBoxNoneEntryName(), null, null, 0, 0, false, true, null, null, null, colorPaletteAuxDir));
                 colorSchemeInfos.add(getNoneColorSchemeInfo());
                 colorSchemeSortedInfos.add(getNoneColorSchemeInfo());
                 colorSchemeSortedVerboseInfos.add(getNoneColorSchemeInfo());
@@ -721,9 +721,15 @@ public class ColorSchemeManager {
     }
 
     public void setCurrentSelection(ColorSchemeInfo currentSelection) {
+
+        if (currentSelection == null) {
+            currentSelection = noneColorSchemeInfo;
+        }
+
         ColorSchemeDefaults.debug("Setting currentSelection=" + currentSelection.toString());
         this.currentSelection = currentSelection;
     }
+
 
 
     class MyComboBoxRenderer extends BasicComboBoxRenderer {
@@ -820,16 +826,22 @@ public class ColorSchemeManager {
     }
 
 
+    public boolean isNoneScheme(ColorSchemeInfo colorSchemeInfo) {
+        return (noneColorSchemeInfo != null && noneColorSchemeInfo == colorSchemeInfo) ? true : false;
+    }
+
+
+
     public String checkScheme(ColorSchemeInfo colorSchemeInfo) {
         String message = "";
 
 
         if (colorSchemeInfo != null) {
-            String description = "";
-
-            if (colorSchemeInfo.getDescription() != null) {
-                description = colorSchemeInfo.getDescription() + "<br>";
-            }
+//            String description = "";
+//
+//            if (colorSchemeInfo.getDescription() != null) {
+//                description = colorSchemeInfo.getDescription() + "<br>";
+//            }
 
             String standardFileMessage = "";
             String universalFileMessage = "";
@@ -842,7 +854,7 @@ public class ColorSchemeManager {
                 File standardFile = new File(colorPaletteAuxDir, standardFilename);
 
                 if (standardFile == null || !standardFile.exists()) {
-                    standardFileMessage = "Scheme file '" + standardFilename + "' does not exist<br>";
+                    standardFileMessage = "Scheme standard file '" + standardFilename + "' does not exist<br>";
                 }
             } else {
                 standardFileMessage = "Scheme does not contain a standard file<br>";
@@ -854,7 +866,7 @@ public class ColorSchemeManager {
                 File universalFile = new File(colorPaletteAuxDir, universalFilename);
 
                 if (universalFile == null || !universalFile.exists()) {
-                    universalFileMessage = "Scheme file '" + universalFilename + "' does not exist<br>";
+                    universalFileMessage = "Scheme universal file '" + universalFilename + "' does not exist<br>";
                 }
             } else {
                 universalFileMessage = "Scheme does not contain a universal file<br>";
@@ -869,7 +881,7 @@ public class ColorSchemeManager {
                         + "' <br>";
             }
 
-            message = "<html>" + message_head + description + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
+            message = "<html>" + message_head  + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
 
         } else {
             message = "Configuration Error";

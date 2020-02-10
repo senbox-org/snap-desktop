@@ -134,11 +134,17 @@ public class ColorSchemeUtils {
     }
 
 
+
+
     public static void setImageInfoToGeneralColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         boolean imageInfoSet = false;
 
         File defaultCpdFile = getDefaultCpd(configuration);
+
+        ColorSchemeInfo colorSchemeInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        productSceneView.getImageInfo().setColorSchemeInfo(colorSchemeInfo);
+
 
         ColorPaletteDef colorPaletteDef = null;
 

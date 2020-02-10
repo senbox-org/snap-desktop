@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.colormanip;
 
+import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -23,8 +24,10 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.Range;
+import org.esa.snap.ui.SimpleDialog;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -33,6 +36,7 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
@@ -65,6 +69,10 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RA
 //          - Implemented ColorSchemeManager
 //          - Added verbose options to the scheme selector
 //          - Added call to store and retrieve color scheme selector settings from ImageInfo
+// FEB 2020 - Knowles
+//          - Added functionality to select 'none' from the scheme selector
+//          - Color scheme will be red if it is a duplicate scheme
+//          - Popup window will notify a user why a color scheme is disabled (missing cpd file, etc.)
 
 
 
@@ -240,7 +248,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
                         standardColorPaletteSchemes.setjComboBoxShouldFire(false);
                         ColorSchemeDefaults.debug("Inside standardColorPaletteSchemes listener");
-                        handleColorPaletteInfoComboBoxSelection(standardColorPaletteSchemes.getjComboBox(), false);
+                        handleColorPaletteInfoComboBoxSelection();
                         standardColorPaletteSchemes.setjComboBoxShouldFire(true);
                     }
 //                }
@@ -638,24 +646,39 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         return jPanel;
     }
 
+    private ImageInfo createDefaultImageInfo() {
+        try {
+            return ProductUtils.createImageInfo(parentForm.getFormModel().getRasters(), false, ProgressMonitor.NULL);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(getContentPanel(),
+                    "Failed to create default image settings:\n" + e.getMessage(),
+                    "I/O Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
 
-    private void handleColorPaletteInfoComboBoxSelection(JComboBox jComboBox, boolean isDefaultList) {
-        ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
+    private void handleColorPaletteInfoComboBoxSelection() {
+        ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) standardColorPaletteSchemes.getjComboBox().getSelectedItem();
 
         if (colorSchemeInfo != null) {
-            if (colorSchemeInfo.isEnabled()) {
-                if (!colorSchemeInfo.isDivider()) {
+            if (colorSchemeInfo.isEnabled() && !colorSchemeInfo.isDivider()) {
+                if (standardColorPaletteSchemes.isNoneScheme(colorSchemeInfo)) {
+                    ColorSchemeUtils.setImageInfoToGeneralColor(configuration, createDefaultImageInfo(), parentForm.getFormModel().getProductSceneView());
+                } else {
                     ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, parentForm.getFormModel().getProductSceneView());
-
-                    parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
                 }
+                parentForm.getFormModel().setModifiedImageInfo(parentForm.getFormModel().getProductSceneView().getImageInfo());
+
             } else {
                 if (!colorSchemeInfo.isDivider()) {
                     ColorSchemeDefaults.debug("Add a notification message window");
                     String message = standardColorPaletteSchemes.checkScheme(colorSchemeInfo);
                     ColorSchemeDefaults.debug(message);
 
-                    //todo Add notification window if not enabled
+                    SimpleDialog dialog = new SimpleDialog("Color Manipulation: Color Scheme", message, standardColorPaletteSchemes.getjComboBox());
+                    dialog.setVisible(true);
+                    dialog.setEnabled(true);
                 }
             }
         }

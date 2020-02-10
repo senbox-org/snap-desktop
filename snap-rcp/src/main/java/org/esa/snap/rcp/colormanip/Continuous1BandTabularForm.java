@@ -17,10 +17,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.binding.ValueRange;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
@@ -43,6 +40,9 @@ import java.awt.Component;
 //          - Added checks to ensure that only positive values are allowed in log scaling mode.
 //          - Added checks to ensure that palette values are numeric.
 //          - Added checks to ensure that value entries are numerically between the adjacent values.
+// FEB 2020 - Knowles
+//          - Added call to reset the color scheme to 'none'
+
 
 
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
@@ -179,6 +179,13 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+
+            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+            getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+
+
+
             final ColorPaletteDef.Point point = getImageInfo().getColorPaletteDef().getPointAt(rowIndex);
             final ValueRange valueRange;
             if (rowIndex == 0) {

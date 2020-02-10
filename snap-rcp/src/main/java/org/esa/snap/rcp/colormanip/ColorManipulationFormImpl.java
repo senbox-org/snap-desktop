@@ -17,14 +17,8 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
+
+import javax.swing.*;
 
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
@@ -82,6 +76,8 @@ import java.util.concurrent.Executors;
 // JAN 2020 - Knowles
 //          - Added installers for the xml files in the color_schemes auxdata directory
 //          - Minor color scheme revisions
+// FEB 2020 - Knowles
+//          - Wrapped this tool in a JScrollPane
 
     
 @NbBundle.Messages({
@@ -111,6 +107,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private boolean colorPalettesAuxFilesInstalled;
     private boolean colorSchemesAuxFilesInstalled;
     private JPanel contentPanel;
+    private JPanel innerContentPanel;
     private ColorManipulationChildForm childForm;
     private ColorManipulationChildForm continuous1BandSwitcherForm;
     private ColorManipulationChildForm discrete1BandTabularForm;
@@ -353,13 +350,23 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         helpButton.addActionListener(e -> toolView.getHelpCtx().display());
 
         editorPanel = new JPanel(new BorderLayout(4, 4));
+        editorPanel.add(moreOptionsPane.getContentPanel(), BorderLayout.SOUTH);
+
         toolButtonsPanel = GridBagUtils.createPanel();
+
+
+        innerContentPanel = new JPanel(new BorderLayout(4, 4));
+        innerContentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        innerContentPanel.setPreferredSize(new Dimension(300, 320));
+        innerContentPanel.add(editorPanel, BorderLayout.CENTER);
+        innerContentPanel.add(toolButtonsPanel, BorderLayout.EAST);
+
+        JScrollPane jScrollPane = new JScrollPane(innerContentPanel);
 
         contentPanel = new JPanel(new BorderLayout(4, 4));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        contentPanel.setPreferredSize(new Dimension(320, 200));
-        contentPanel.add(editorPanel, BorderLayout.CENTER);
-        contentPanel.add(toolButtonsPanel, BorderLayout.EAST);
+        contentPanel.setPreferredSize(new Dimension(300, 200));
+        contentPanel.add(jScrollPane, BorderLayout.CENTER);
 
         setProductSceneView(SnapApp.getDefault().getSelectedProductSceneView());
 

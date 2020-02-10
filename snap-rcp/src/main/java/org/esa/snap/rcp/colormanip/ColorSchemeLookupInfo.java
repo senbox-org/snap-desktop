@@ -13,7 +13,7 @@ import org.esa.snap.core.datamodel.ColorSchemeInfo;
 public class ColorSchemeLookupInfo {
 
     private String regex;
-    private String[] regexArray; // implement later
+    private String[] regexArray;
     private String scheme_id;
     private ColorSchemeInfo colorSchemeInfo;
     private String description;
@@ -26,7 +26,7 @@ public class ColorSchemeLookupInfo {
             setScheme_id(scheme_id);
             setDescription(description);
             setColorSchemeInfo(colorSchemeInfo);
-            setRegexArray(null);
+            setRegexArray(regex);
         }
     }
 
@@ -43,8 +43,20 @@ public class ColorSchemeLookupInfo {
         return regexArray;
     }
 
-    public void setRegexArray(String[] regexArray) {
-        this.regexArray = regexArray;
+    public void setRegexArray(String regex) {
+
+        if (regex != null && regex.length() > 0) {
+            String wildcard = ",";
+            String regexArray[] = regex.split(wildcard);
+
+            for (int i=0; i < regexArray.length-1; i++) {
+                regexArray[i] = regexArray[i].trim();
+            }
+
+            this.regexArray = regexArray;
+        } else {
+            this.regexArray =  null;
+        }
     }
 
     public String getScheme_id() {
@@ -72,15 +84,18 @@ public class ColorSchemeLookupInfo {
     }
 
 
-    public boolean isMatch(String bandName) {
+
+
+    public boolean isMatch(String bandName, String regex) {
 
         boolean match = false;
 
         if (bandName == null || bandName.length() == 0) { return false; }
+        if (regex == null || regex.length() == 0) { return false; }
 
         final String WILDCARD = new String("*");
 
-        String regex = getRegex().trim();
+        regex = regex.trim();
 
         if (bandName.equals(regex)) {
             match = true;
@@ -114,5 +129,26 @@ public class ColorSchemeLookupInfo {
 
         return match;
     }
+
+
+
+
+
+    public boolean isMatch(String bandName) {
+        boolean match = false;
+
+        if (bandName == null || bandName.length() == 0) { return false; }
+
+        for (String regex: getRegexArray()) {
+            match = isMatch(bandName, regex);
+            if (match) {
+                break;
+            }
+        }
+
+        return match;
+    }
+
+
 }
 
