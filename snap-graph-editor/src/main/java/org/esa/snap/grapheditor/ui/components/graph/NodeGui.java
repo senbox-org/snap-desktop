@@ -850,4 +850,16 @@ public class NodeGui implements NodeListener {
         return elem;
     }
 
+    public ValidationStatus validate() {
+        recomputeOutput();
+        return this.validationStatus;
+    }
+
+    public void invalidate() {
+        this.validationStatus = ValidationStatus.ERROR;
+    }
+
+    public  ValidationStatus getValidationStatus() {
+        return this.validationStatus;
+    }
 }

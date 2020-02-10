@@ -1,10 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import java.awt.event.ActionListener;
 
@@ -264,6 +260,34 @@ public class GraphManager implements NodeListener {
     @Override
     public void outputChanged(NodeGui source) {
         // TODO Revalidate rest of the graph.
+        HashMap<Integer, HashSet<NodeGui>> orderedGraph = new HashMap<>();
+        for (NodeGui n: nodes) {
+            if (n != source) {
+                int dist = n.distance(source);
+                if (dist > 0) {
+                    Integer key = new Integer(dist);
+                    if (!orderedGraph.containsKey(key)) {
+                        orderedGraph.put(key, new HashSet<>());
+                    }
+                    orderedGraph.get(key).add(n);
+                }
+            }
+        }
+        if (source.getValidationStatus() == NodeGui.ValidationStatus.ERROR) {
+            for (Integer key: orderedGraph.keySet()) {
+                for (NodeGui n: orderedGraph.get(key)) {
+                    n.invalidate();
+                }
+            }
+        } else {
+            ArrayList<Integer> indexes = new ArrayList<>(orderedGraph.keySet());
+            Collections.sort(indexes);
+            for (Integer key: indexes) {
+                for (NodeGui n: orderedGraph.get(key)) {
+                    n.validate();
+                }
+            }
+        }
     }
 
     @Override
