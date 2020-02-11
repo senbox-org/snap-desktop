@@ -20,14 +20,16 @@ public abstract class AbstractBackgroundDownloadRunnable implements Runnable, Th
     }
 
     public void cancelRunning() {
-        synchronized (this) {
-            this.isRunning = false;
-        }
+        setRunning(false);
     }
 
     protected void startRunning() {
+        setRunning(true);
+    }
+
+    protected final void setRunning(boolean running) {
         synchronized (this) {
-            this.isRunning = true;
+            this.isRunning = running;
         }
     }
 }

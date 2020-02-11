@@ -36,7 +36,7 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
         editorTextField.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if (isEnabled()) {
+                if (isEnabled() && SwingUtilities.isLeftMouseButton(mouseEvent)) {
                     if (isPopupVisible()) {
                         hidePopup();
                     } else {
@@ -45,8 +45,7 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
                 }
             }
         });
-        int cellItemHeight = getPreferredSize().height;
-        setRenderer(new LabelListCellRenderer<ItemType>(cellItemHeight, itemRenderer) {
+        setRenderer(new LabelListCellRenderer<ItemType>(this.preferredHeight, itemRenderer) {
             @Override
             public JLabel getListCellRendererComponent(JList<? extends ItemType> list, ItemType value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

@@ -84,12 +84,14 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
                 this.remoteRepositoriesSemaphore.releasePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
             }
         } catch (Exception exception) {
+            logger.log(Level.SEVERE, "Failed to download the product quick look images.", exception);
         } finally {
             finishRunning();
         }
     }
 
     protected void finishRunning() {
+        setRunning(false);
     }
 
     private void setProductQuickLookImageLater(RepositoryProduct product, BufferedImage quickLookImage) {

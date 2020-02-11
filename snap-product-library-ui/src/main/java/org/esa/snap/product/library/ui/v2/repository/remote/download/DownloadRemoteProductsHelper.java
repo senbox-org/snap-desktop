@@ -2,8 +2,8 @@ package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.engine_utilities.util.ThreadNamePoolExecutor;
-import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
@@ -14,9 +14,7 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.SwingUtilities;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +29,8 @@ public class DownloadRemoteProductsHelper {
 
     private final ProgressBarHelperImpl progressPanel;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
-    private final RepositoryOutputProductListPanel repositoryProductListPanel;
+    private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
+    private final DownloadProductListener downloadProductListener;
 
     private ThreadNamePoolExecutor threadPoolExecutor;
     private Set<AbstractBackgroundDownloadRunnable> runningTasks;
@@ -40,11 +39,14 @@ public class DownloadRemoteProductsHelper {
     private int totalDownloadedProducts;
     private boolean uncompressedDownloadedProducts;
 
-    public DownloadRemoteProductsHelper(ProgressBarHelperImpl progressPanel, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel) {
+    public DownloadRemoteProductsHelper(ProgressBarHelperImpl progressPanel, RemoteRepositoriesSemaphore remoteRepositoriesSemaphore,
+                                        DownloadProductListener downloadProductListener) {
+
         this.progressPanel = progressPanel;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
-        this.repositoryProductListPanel = repositoryProductListPanel;
+        this.downloadProductListener = downloadProductListener;
         this.uncompressedDownloadedProducts = UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+        this.downloadingProductsProgressValue = new HashMap<>();
     }
 
     public void setUncompressedDownloadedProducts(boolean uncompressedDownloadedProducts) {
@@ -65,6 +67,7 @@ public class DownloadRemoteProductsHelper {
 
             @Override
             protected void finishRunning() {
+                super.finishRunning();
                 finishRunningDownloadProductsQuickLookImageThreadLater(this);
             }
         };
@@ -96,6 +99,7 @@ public class DownloadRemoteProductsHelper {
 
                 @Override
                 protected void finishRunning(SaveDownloadedProductData saveProductData) {
+                    super.finishRunning(saveProductData);
                     finishRunningDownloadProductThreadLater(this, saveProductData);
                 }
             };
@@ -105,9 +109,6 @@ public class DownloadRemoteProductsHelper {
         }
 
         onUpdateProgressBarDownloadedProducts();
-    }
-
-    protected void onFinishSavingProduct(SaveDownloadedProductData saveProductData) {
     }
 
     public boolean isRunning() {
@@ -142,6 +143,21 @@ public class DownloadRemoteProductsHelper {
                 }
             }
         }
+    }
+
+    public List<DownloadProductRunnable> findDownloadingProducts() {
+        List<DownloadProductRunnable> downloadingProductRunnables;
+        if (this.runningTasks != null && this.runningTasks.size() > 0) {
+            downloadingProductRunnables = new ArrayList<>();
+            for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
+                if (runnable instanceof DownloadProductRunnable) {
+                    downloadingProductRunnables.add((DownloadProductRunnable)runnable);
+                }
+            }
+        } else {
+            downloadingProductRunnables = Collections.emptyList();
+        }
+        return downloadingProductRunnables;
     }
 
     private void createThreadPoolExecutorIfNeeded() {
@@ -209,12 +225,17 @@ public class DownloadRemoteProductsHelper {
 
             onUpdateProgressBarDownloadedProducts();
 
-            if (saveProductData != null) {
-                onFinishSavingProduct(saveProductData);
+            boolean hasProductsToDownload = hasDownloadingProducts();
+
+            this.downloadProductListener.onFinishDownloadingProduct(parentRunnable, saveProductData, hasProductsToDownload);
+
+            if (!hasProductsToDownload) {
+                // there are no downloading products
+                if (!this.progressPanel.hideProgressPanel(this.threadId)) { // hide the progress panel
+                    throw new IllegalStateException("Failed to hide the progress panel because there are no downloading products.");
+                }
             }
-            if (!hasDownloadingProducts()) {
-                this.progressPanel.hideProgressPanel(this.threadId); // hide the progress panel
-            }
+
             if (this.runningTasks.size() == 0) {
                 shutdownThreadPoolExecutor();
             }
@@ -251,7 +272,7 @@ public class DownloadRemoteProductsHelper {
             logger.log(Level.FINE, "Update the downloading progress percent " + progressPercent + "% of the product '" + repositoryProduct.getName()+"' using the '" + repositoryProduct.getMission()+"' mission.");
         }
 
-        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, this.repositoryProductListPanel, downloadedPath) {
+        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, downloadedPath, this.downloadProductListener) {
             @Override
             public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
@@ -263,7 +284,7 @@ public class DownloadRemoteProductsHelper {
     }
 
     private void updateDownloadingProductStatusLater(RepositoryProduct repositoryProduct, byte downloadStatus) {
-        Runnable runnable = new UpdateDownloadingProductStatusRunnable(repositoryProduct, downloadStatus, this.repositoryProductListPanel) {
+        Runnable runnable = new UpdateDownloadingProductStatusRunnable(repositoryProduct, downloadStatus, this.downloadProductListener) {
             @Override
             public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
@@ -289,18 +310,17 @@ public class DownloadRemoteProductsHelper {
 
         private final RepositoryProduct repositoryProduct;
         private final byte downloadStatus;
-        private final RepositoryOutputProductListPanel repositoryProductListPanel;
+        private final DownloadProductListener downloadProductListener;
 
-        private UpdateDownloadingProductStatusRunnable(RepositoryProduct repositoryProduct, byte downloadStatus, RepositoryOutputProductListPanel repositoryProductListPanel) {
+        private UpdateDownloadingProductStatusRunnable(RepositoryProduct repositoryProduct, byte downloadStatus, DownloadProductListener downloadProductListener) {
             this.repositoryProduct = repositoryProduct;
             this.downloadStatus = downloadStatus;
-            this.repositoryProductListPanel = repositoryProductListPanel;
+            this.downloadProductListener = downloadProductListener;
         }
 
         @Override
         public void run() {
-            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setProductDownloadStatus(this.repositoryProduct, this.downloadStatus);
+            this.downloadProductListener.onUpdateProductDownloadStatus(this.repositoryProduct, this.downloadStatus);
         }
     }
 
@@ -308,22 +328,21 @@ public class DownloadRemoteProductsHelper {
 
         private final RepositoryProduct productToDownload;
         private final short progressPercent;
-        private final RepositoryOutputProductListPanel repositoryProductListPanel;
         private final Path downloadedPath;
+        private final DownloadProductListener downloadProductListener;
 
-        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent,
-                                                        RepositoryOutputProductListPanel repositoryProductListPanel, Path downloadedPath) {
+        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent, Path downloadedPath,
+                                                        DownloadProductListener downloadProductListener) {
 
             this.productToDownload = productToDownload;
+            this.downloadProductListener = downloadProductListener;
             this.progressPercent = progressPercent;
-            this.repositoryProductListPanel = repositoryProductListPanel;
             this.downloadedPath = downloadedPath;
         }
 
         @Override
         public void run() {
-            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setProductDownloadPercent(this.productToDownload, this.progressPercent, this.downloadedPath);
+            this.downloadProductListener.onUpdateProductDownloadPercent(this.productToDownload, this.progressPercent, this.downloadedPath);
         }
     }
 

@@ -161,7 +161,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
         boolean canOpenSelectedProducts = true;
         for (int i=0; i<selectedProducts.length && canOpenSelectedProducts; i++) {
-            DownloadProgressStatus downloadProgressStatus = productListModel.getProductDownloadPercent(selectedProducts[i]);
+            DownloadProgressStatus downloadProgressStatus = productListModel.getOutputProductResults().getDownloadingProductProgressValue(selectedProducts[i]);
             if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
                 canOpenSelectedProducts = false;
             }

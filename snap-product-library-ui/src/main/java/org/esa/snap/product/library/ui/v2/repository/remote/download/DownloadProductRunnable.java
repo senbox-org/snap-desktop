@@ -36,7 +36,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     }
 
     @Override
-    public void run() {
+    public final void run() {
         SaveDownloadedProductData saveProductData = null;
         try {
             startRunning();
@@ -73,9 +73,14 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     }
 
     protected void finishRunning(SaveDownloadedProductData saveProductData) {
+        setRunning(false);
     }
 
     protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+    }
+
+    public RepositoryProduct getProductToDownload() {
+        return this.remoteProductDownloader.getProductToDownload();
     }
 
     private SaveDownloadedProductData downloadAndSaveProduct() throws Exception {
@@ -98,6 +103,10 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             productPath = this.remoteProductDownloader.download(progressListener, this.uncompressedDownloadedProducts);
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
+        }
+
+        if (!isRunning()) {
+            return null;
         }
 
         SaveDownloadedProductData saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,

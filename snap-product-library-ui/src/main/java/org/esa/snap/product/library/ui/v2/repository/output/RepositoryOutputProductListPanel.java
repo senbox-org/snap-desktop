@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
-import javafx.scene.control.ComboBox;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
@@ -12,11 +11,16 @@ import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,7 +91,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         this.comparatorsComboBox.setMinimumSize(comboBoxSize);
 
         this.sortByLabel = label;
-        this.sortByLabel.setText("Sort by");
+        this.sortByLabel.setText("Sort By");
 
         ActionListener firstPageButtonListener = new ActionListener() {
             @Override
@@ -344,13 +348,13 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         northPanel.add(this.titleLabel, c);
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        northPanel.add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        northPanel.add(this.progressBarHelper.getStopButton(), c);
-        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.sortByLabel, c);
-        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.comparatorsComboBox, c);
+        c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        northPanel.add(this.progressBarHelper.getProgressBar(), c);
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        northPanel.add(this.progressBarHelper.getStopButton(), c);
 
         JScrollPane scrollPane = new JScrollPane(this.productListPanel);
         scrollPane.getViewport().setOpaque(true);

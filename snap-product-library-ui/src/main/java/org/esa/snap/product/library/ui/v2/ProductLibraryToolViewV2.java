@@ -20,17 +20,15 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
-import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.*;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.OpenDownloadedProductsRunnable;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
+import org.esa.snap.product.library.ui.v2.repository.remote.*;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListener;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadRemoteProductsHelper;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
@@ -51,8 +49,6 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -62,11 +58,10 @@ import org.openide.windows.TopComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -103,7 +98,7 @@ import java.util.logging.Logger;
         "CTL_ProductLibraryTopComponentV2Name=Product Library v2",
         "CTL_ProductLibraryTopComponentV2Description=Product Library v2",
 })
-public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension {
+public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension, RemoteRepositoriesProductProgress {
 
     private static final Logger logger = Logger.getLogger(ProductLibraryToolViewV2.class.getName());
 
@@ -115,6 +110,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private RepositoryOutputProductListPanel repositoryProductListPanel;
     private RepositorySelectionPanel repositorySelectionPanel;
     private CustomSplitPane horizontalSplitPane;
+    private DownloadingProductsPopupMenu downloadingProductsPopupMenu;
 
     private AbstractProgressTimerRunnable<?> searchProductListThread;
     private AbstractProgressTimerRunnable<?> localRepositoryProductsThread;
@@ -175,6 +171,22 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return Color.WHITE;
     }
 
+    @Override
+    public DownloadProgressStatus findRemoteRepositoryProductDownloadProgress(RepositoryProduct repositoryProduct) {
+        int productsRepositoryCount = this.repositorySelectionPanel.getProductsRepositoryCount();
+        for (int i=0; i<productsRepositoryCount; i++) {
+            AbstractProductsRepositoryPanel productsRepositoryPanel = this.repositorySelectionPanel.getProductsRepositoryPanelAt(i);
+            if (productsRepositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel) productsRepositoryPanel;
+                DownloadProgressStatus progressPercentItem = remoteProductsRepositoryPanel.getOutputProductResults().getDownloadingProductsProgressValue(repositoryProduct);
+                if (progressPercentItem != null) {
+                    return progressPercentItem;
+                }
+            }
+        }
+        return null;
+    }
+
     private void onFinishLoadingInputData(LocalParameterValues parameterValues) {
         this.repositorySelectionPanel.setInputData(parameterValues);
         this.repositoryProductListPanel.setVisibleProductsPerPage(parameterValues.getVisibleProductsPerPage());
@@ -232,12 +244,23 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         RemoteRepositoriesSemaphore remoteRepositoriesSemaphore = new RemoteRepositoriesSemaphore(remoteRepositoryProductProviders);
         ProgressBarHelperImpl progressBarHelper = this.repositoryProductListPanel.getProgressBarHelper();
-        this.downloadRemoteProductsHelper = new DownloadRemoteProductsHelper(progressBarHelper, remoteRepositoriesSemaphore, this.repositoryProductListPanel) {
+        DownloadProductListener downloadProductListener = new DownloadProductListener() {
             @Override
-            protected void onFinishSavingProduct(SaveDownloadedProductData saveProductData) {
-                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishDownloadingProduct(saveProductData);
+            public void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable, SaveDownloadedProductData saveProductData, boolean hasProductsToDownload) {
+                ProductLibraryToolViewV2.this.onFinishDownloadingProduct(downloadProductRunnable, saveProductData);
+            }
+
+            @Override
+            public void onUpdateProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+                ProductLibraryToolViewV2.this.onUpdateProductDownloadPercent(repositoryProduct, progressPercent, downloadedPath);
+            }
+
+            @Override
+            public void onUpdateProductDownloadStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
+                ProductLibraryToolViewV2.this.onUpdateProductDownloadStatus(repositoryProduct, downloadStatus);
             }
         };
+        this.downloadRemoteProductsHelper = new DownloadRemoteProductsHelper(progressBarHelper, remoteRepositoriesSemaphore, downloadProductListener);
 
         this.appContext.getApplicationWindow().addPropertyChangeListener(RepositoriesCredentialsControllerUI.REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, new PropertyChangeListener() {
             @Override
@@ -250,6 +273,97 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 });
             }
         });
+
+        progressBarHelper.addVisiblePropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                Boolean visibleState = (Boolean)event.getNewValue();
+                if (!visibleState.booleanValue()) {
+                    onHideDownloadingProgressBar();
+                }
+            }
+        });
+        progressBarHelper.getProgressBar().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                showDownloadingProductsPopup((JComponent)mouseEvent.getSource());
+            }
+        });
+    }
+
+    private void onHideDownloadingProgressBar() {
+        if (this.downloadingProductsPopupMenu != null) {
+            this.downloadingProductsPopupMenu.setVisible(false);
+            this.downloadingProductsPopupMenu = null;
+        }
+    }
+
+    private void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable, SaveDownloadedProductData saveProductData) {
+        if (saveProductData != null) {
+            this.repositorySelectionPanel.finishDownloadingProduct(saveProductData);
+        }
+        if (this.downloadingProductsPopupMenu != null) {
+            this.downloadingProductsPopupMenu.onFinishDownloadingProduct(downloadProductRunnable);
+        }
+    }
+
+    private void onUpdateProductDownloadStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
+        DownloadProgressStatus progressProgressStatus = findRemoteRepositoryProductDownloadProgress(repositoryProduct);
+        if (progressProgressStatus == null) {
+            throw new IllegalStateException("The remote repository product '" + repositoryProduct.getName()+"' does not exists to update the status.");
+        } else {
+            progressProgressStatus.setStatus(downloadStatus);
+            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.refreshProductDownloadPercent(repositoryProduct);
+            if (this.downloadingProductsPopupMenu != null) {
+                this.downloadingProductsPopupMenu.onUpdateProductDownloadProgress(repositoryProduct, progressProgressStatus);
+            }
+        }
+    }
+
+    private void onUpdateProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+        DownloadProgressStatus progressProgressStatus = findRemoteRepositoryProductDownloadProgress(repositoryProduct);
+        if (progressProgressStatus == null) {
+            throw new IllegalStateException("The remote repository product '" + repositoryProduct.getName()+"' does not exists to update the progress percent.");
+        } else {
+            progressProgressStatus.setValue(progressPercent);
+            progressProgressStatus.setDownloadedPath(downloadedPath);
+            OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+            productListModel.refreshProductDownloadPercent(repositoryProduct);
+            if (this.downloadingProductsPopupMenu != null) {
+                this.downloadingProductsPopupMenu.onUpdateProductDownloadProgress(repositoryProduct, progressProgressStatus);
+            }
+        }
+    }
+
+    private void showDownloadingProductsPopup(JComponent invoker) {
+        List<DownloadProductRunnable> downloadingProductRunnables = this.downloadRemoteProductsHelper.findDownloadingProducts();
+        if (downloadingProductRunnables.size() > 0) {
+            Color backgroundColor = getTextFieldBackgroundColor();
+            int gapBetweenRows = getGapBetweenRows()/2;
+            int gapBetweenColumns = getGapBetweenColumns()/2;
+            DownloadingProductsPopupMenu popupMenu = new DownloadingProductsPopupMenu(downloadingProductRunnables, this, gapBetweenRows, gapBetweenColumns, backgroundColor);
+            popupMenu.addPopupMenuListener(new PopupMenuListener() {
+                @Override
+                public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
+                    downloadingProductsPopupMenu = (DownloadingProductsPopupMenu)popupMenuEvent.getSource();
+                    downloadingProductsPopupMenu.refresh(); // refresh the texts in the panels after registering the listener
+                }
+
+                @Override
+                public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
+                    ProductLibraryToolViewV2.this.downloadingProductsPopupMenu = null; // reset the listener
+                }
+
+                @Override
+                public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
+                    // do nothing
+                }
+            });
+            int x = invoker.getWidth() - popupMenu.getPreferredSize().width;
+            int y = invoker.getHeight();
+            popupMenu.show(invoker, x, y);
+        }
     }
 
     private void createProductListPanel() {
@@ -654,7 +768,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
         selectedProductsRepositoryPanel.addInputParameterComponents();
         selectedProductsRepositoryPanel.resetInputParameterValues();
-        this.repositoryProductListPanel.clearOutputList(false);
+        this.repositoryProductListPanel.clearOutputList(true);
     }
 
     private void cancelDownloadingProducts() {

@@ -147,6 +147,14 @@ public class RepositorySelectionPanel extends JPanel {
         allLocalProductsRepositoryPanel.addAttributesIfMissing(saveProductData.getProductAttributeNames());
     }
 
+    public int getProductsRepositoryCount() {
+        return this.repositoriesComboBox.getModel().getSize();
+    }
+
+    public AbstractProductsRepositoryPanel getProductsRepositoryPanelAt(int index) {
+        return this.repositoriesComboBox.getModel().getElementAt(index);
+    }
+
     public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
         int count = this.repositoriesComboBox.getModel().getSize();
         for (int i=0; i<count; i++) {

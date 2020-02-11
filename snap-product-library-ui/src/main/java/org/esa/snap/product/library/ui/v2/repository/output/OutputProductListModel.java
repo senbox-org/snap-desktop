@@ -49,8 +49,9 @@ public class OutputProductListModel {
         return this.products.get(index);
     }
 
-    public ImageIcon getProductQuickLookImage(RepositoryProduct repositoryProduct) {
-        return this.outputProductResultsCallback.getOutputProductResults().getProductQuickLookImage(repositoryProduct);
+    //TODO Jean remove
+    public OutputProductResults getOutputProductResults() {
+        return this.outputProductResultsCallback.getOutputProductResults();
     }
 
     public void updateProductQuickLookImage(RepositoryProduct repositoryProduct) {
@@ -119,8 +120,9 @@ public class OutputProductListModel {
         if (pendingOpenDownloadedProducts.length > 0) {
             int startIndex = pendingOpenDownloadedProducts.length - 1;
             int endIndex = 0;
+            OutputProductResults outputProductResults = this.outputProductResultsCallback.getOutputProductResults();
             for (int i=0; i<pendingOpenDownloadedProducts.length; i++) {
-                DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(pendingOpenDownloadedProducts[i]);
+                DownloadProgressStatus progressPercent = outputProductResults.getDownloadingProductsProgressValue(pendingOpenDownloadedProducts[i]);
                 if (progressPercent != null && progressPercent.canOpen()) {
                     progressPercent.setStatus(DownloadProgressStatus.PENDING_OPEN);
                     productsToOpen.put(pendingOpenDownloadedProducts[i], progressPercent.getDownloadedPath());
@@ -147,19 +149,21 @@ public class OutputProductListModel {
         if (pendingDownloadProducts.length > 0) {
             int startIndex = pendingDownloadProducts.length - 1;
             int endIndex = 0;
+            OutputProductResults outputProductResults = this.outputProductResultsCallback.getOutputProductResults();
             for (int i=0; i<pendingDownloadProducts.length; i++) {
-                DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(pendingDownloadProducts[i]);
+                DownloadProgressStatus progressPercent = outputProductResults.getDownloadingProductsProgressValue(pendingDownloadProducts[i]);
                 if (progressPercent == null || progressPercent.isStoppedDownload()) {
                     productsToDownload.add(pendingDownloadProducts[i]);
                     int index = findProductIndex(pendingDownloadProducts[i]);
                     if (index >= 0) {
+                        // the product to download is visible in the current page
                         if (startIndex > index) {
                             startIndex = index;
                         }
                         if (endIndex < index) {
                             endIndex = index;
                         }
-                        getDownloadingProductsProgressValue().put(pendingDownloadProducts[i], new DownloadProgressStatus());
+                        outputProductResults.addDownloadingProductsProgressValue(pendingDownloadProducts[i], new DownloadProgressStatus());
                     }
                 }
             }
@@ -174,14 +178,6 @@ public class OutputProductListModel {
         return this.outputProductResultsCallback.getOutputProductResults().getLocalProductsMap();
     }
 
-    private Map<RepositoryProduct, DownloadProgressStatus> getDownloadingProductsProgressValue() {
-        return this.outputProductResultsCallback.getOutputProductResults().getDownloadingProductsProgressValue();
-    }
-
-    public LocalProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
-        return getLocalProductsMap().get(repositoryProduct);
-    }
-
     public List<RepositoryProduct> addPendingOpenProducts(RepositoryProduct[] pendingOpenProducts) {
         return addPendingLocalProgressProducts(pendingOpenProducts, LocalProgressStatus.PENDING_OPEN);
     }
@@ -191,7 +187,7 @@ public class OutputProductListModel {
     }
 
     public void setOpenDownloadedProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
-        DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(repositoryProduct);
+        DownloadProgressStatus progressPercent = this.outputProductResultsCallback.getOutputProductResults().getDownloadingProductsProgressValue(repositoryProduct);
         if (progressPercent != null) {
             progressPercent.setStatus(openStatus);
             int index = findProductIndex(repositoryProduct);
@@ -217,31 +213,11 @@ public class OutputProductListModel {
         }
     }
 
-    public void setProductDownloadStatus(RepositoryProduct repositoryProduct, byte status) {
-        DownloadProgressStatus progressPercent = getDownloadingProductsProgressValue().get(repositoryProduct);
-        if (progressPercent != null) {
-            progressPercent.setStatus(status);
-            int index = findProductIndex(repositoryProduct);
-            if (index >= 0) {
-                fireIntervalChanged(index, index);
-            }
+    public void refreshProductDownloadPercent(RepositoryProduct repositoryProduct) {
+        int index = findProductIndex(repositoryProduct);
+        if (index >= 0) {
+            fireIntervalChanged(index, index); // the downloading product is visible in the current page
         }
-    }
-
-    public void setProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
-        DownloadProgressStatus progressPercentItem = getDownloadingProductsProgressValue().get(repositoryProduct);
-        if (progressPercentItem != null) {
-            progressPercentItem.setValue(progressPercent);
-            progressPercentItem.setDownloadedPath(downloadedPath);
-            int index = findProductIndex(repositoryProduct);
-            if (index >= 0) {
-                fireIntervalChanged(index, index);
-            }
-        }
-    }
-
-    public DownloadProgressStatus getProductDownloadPercent(RepositoryProduct repositoryProduct) {
-        return getDownloadingProductsProgressValue().get(repositoryProduct);
     }
 
     public void clear() {

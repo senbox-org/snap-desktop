@@ -1,22 +1,21 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
-import javafx.scene.control.Label;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Rectangle;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created by jcoravu on 12/9/2019.
  */
 public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
+
+    public static final String VISIBLE_PROGRESS_BAR = "visibleProgressBar";
 
     private final JButton stopButton;
     private final JProgressBar progressBar;
@@ -124,8 +123,16 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         }
     }
 
+    public void addVisiblePropertyChangeListener(PropertyChangeListener changeListener) {
+        this.progressBar.addPropertyChangeListener(VISIBLE_PROGRESS_BAR, changeListener);
+    }
+
     private void setProgressPanelVisible(boolean visible) {
+        boolean oldVisible = this.progressBar.isVisible();
         this.progressBar.setVisible(visible);
         this.stopButton.setVisible(visible);
+        if (oldVisible != visible) {
+            this.progressBar.firePropertyChange(VISIBLE_PROGRESS_BAR, oldVisible, visible);
+        }
     }
 }

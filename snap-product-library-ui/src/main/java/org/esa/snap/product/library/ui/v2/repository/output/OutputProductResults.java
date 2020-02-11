@@ -38,12 +38,24 @@ public class OutputProductResults {
         this.currentPageNumber = 0;
     }
 
+    public LocalProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
+        return this.localProductsMap.get(repositoryProduct);
+    }
+
     public Map<RepositoryProduct, LocalProgressStatus> getLocalProductsMap() {
         return localProductsMap;
     }
 
-    public Map<RepositoryProduct, DownloadProgressStatus> getDownloadingProductsProgressValue() {
-        return downloadingProductsProgressValue;
+    public DownloadProgressStatus getDownloadingProductsProgressValue(RepositoryProduct repositoryProduct) {
+        return this.downloadingProductsProgressValue.get(repositoryProduct);
+    }
+
+    public void addDownloadingProductsProgressValue(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus) {
+        this.downloadingProductsProgressValue.put(repositoryProduct, downloadProgressStatus);
+    }
+
+    public DownloadProgressStatus getDownloadingProductProgressValue(RepositoryProduct repositoryProduct) {
+        return this.downloadingProductsProgressValue.get(repositoryProduct);
     }
 
     public ImageIcon getProductQuickLookImage(RepositoryProduct repositoryProduct) {
@@ -61,8 +73,8 @@ public class OutputProductResults {
     }
 
     public void removePendingDownloadProducts() {
-        java.util.List<RepositoryProduct> keysToRemove = new ArrayList<>(getDownloadingProductsProgressValue().size());
-        Iterator<Map.Entry<RepositoryProduct, DownloadProgressStatus>> it = getDownloadingProductsProgressValue().entrySet().iterator();
+        java.util.List<RepositoryProduct> keysToRemove = new ArrayList<>(this.downloadingProductsProgressValue.size());
+        Iterator<Map.Entry<RepositoryProduct, DownloadProgressStatus>> it = this.downloadingProductsProgressValue.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<RepositoryProduct, DownloadProgressStatus> entry = it.next();
             DownloadProgressStatus progressPercent = entry.getValue();
@@ -75,7 +87,7 @@ public class OutputProductResults {
             }
         }
         for (int i=0; i<keysToRemove.size(); i++) {
-            getDownloadingProductsProgressValue().remove(keysToRemove.get(i));
+            this.downloadingProductsProgressValue.remove(keysToRemove.get(i));
         }
     }
 

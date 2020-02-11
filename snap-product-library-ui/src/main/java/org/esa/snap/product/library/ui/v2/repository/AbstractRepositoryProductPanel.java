@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.urlLabel = new JLabel("");
         this.secondAttributeLabel = new JLabel("");
         this.missionLabel = new JLabel("");
-        this.statusLabel = new JLabel("");
+        this.statusLabel = buildStatusLabel();
 
         Dimension buttonSize = new Dimension(this.expandImageIcon.getIconWidth() + 2, this.expandImageIcon.getIconHeight() + 2);
 
@@ -120,11 +121,15 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         return super.getBackground();
     }
 
+    protected JLabel buildStatusLabel() {
+        return new JLabel("");
+    }
+
     protected final Color getDefaultForegroundColor() {
         return this.sizeLabel.getForeground();
     }
 
-    public void refresh(OutputProductListModel productListModel) {
+    public void refresh(OutputProductResults outputProductResults) {
         RepositoryProduct repositoryProduct = getRepositoryProduct();
 
         if (this.attributesPanel != null) {
@@ -135,23 +140,16 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         this.nameLabel.setText(repositoryProduct.getName());
         this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
-
-        String mission = (StringUtils.isBlank(repositoryProduct.getMission()) ? "N/A" : repositoryProduct.getMission());
-        this.missionLabel.setText(buildAttributeLabelText("Mission", mission));
+        this.missionLabel.setText(buildMissionLabelText(repositoryProduct.getMission()));
+        this.acquisitionDateLabel.setText(buildAcquisitionDateLabelText(repositoryProduct.getAcquisitionDate()));
 
         Map<String, String> visibleAttributes = this.repositoryProductPanelBackground.getRemoteMissionVisibleAttributes(repositoryProduct.getMission());
         updateVisibleAttributes(repositoryProduct, visibleAttributes);
 
-        ImageIcon imageIcon = productListModel.getProductQuickLookImage(repositoryProduct);
+        ImageIcon imageIcon = outputProductResults.getProductQuickLookImage(repositoryProduct);
         this.quickLookImageLabel.setIcon(imageIcon);
 
-        String dateAsString = "N/A";
-        if (repositoryProduct.getAcquisitionDate() != null) {
-            dateAsString = DATE_FORMAT.format(repositoryProduct.getAcquisitionDate());
-        }
-        this.acquisitionDateLabel.setText(buildAttributeLabelText("Acquisition date", dateAsString));
-
-        updateSize(repositoryProduct);
+        this.sizeLabel.setText(buildSizeLabelText(repositoryProduct.getApproximateSize()));
     }
 
     public final RepositoryProduct getRepositoryProduct() {
@@ -197,23 +195,6 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         panel.add(this.urlLabel, BorderLayout.NORTH);
         panel.add(columnsPanel, BorderLayout.WEST);
         return panel;
-    }
-
-    private void updateSize(RepositoryProduct repositoryProduct) {
-        String sizeText = "Size: ";
-        if (repositoryProduct.getApproximateSize() > 0) {
-            float oneKyloByte = 1024.0f;
-            double sizeInMegaBytes = repositoryProduct.getApproximateSize() / (oneKyloByte * oneKyloByte);
-            if (sizeInMegaBytes > oneKyloByte) {
-                double sizeInGigaBytes = sizeInMegaBytes / oneKyloByte;
-                sizeText += FORMAT.format(sizeInGigaBytes) + " GB";
-            } else {
-                sizeText += FORMAT.format(sizeInMegaBytes) + " MB";
-            }
-        } else {
-            sizeText += "N/A";
-        }
-        this.sizeLabel.setText(sizeText);
     }
 
     private void addAttributesPanel(RepositoryProduct repositoryProduct) {
@@ -264,5 +245,34 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
     private static String buildAttributeLabelText(String attributeDisplayName, String attributeValue) {
         return attributeDisplayName + ": " + attributeValue;
+    }
+
+    public static String buildAcquisitionDateLabelText(Date acquisitionDate) {
+        String dateAsString = "N/A";
+        if (acquisitionDate != null) {
+            dateAsString = DATE_FORMAT.format(acquisitionDate);
+        }
+        return buildAttributeLabelText("Acquisition date", dateAsString);
+    }
+
+    public static String buildMissionLabelText(String mission) {
+        return buildAttributeLabelText("Mission", (StringUtils.isBlank(mission) ? "N/A" : mission));
+    }
+
+    public static String buildSizeLabelText(long sizeInBytes) {
+        String sizeText = "Size: ";
+        if (sizeInBytes > 0) {
+            float oneKyloByte = 1024.0f;
+            double sizeInMegaBytes = sizeInBytes / (oneKyloByte * oneKyloByte);
+            if (sizeInMegaBytes > oneKyloByte) {
+                double sizeInGigaBytes = sizeInMegaBytes / oneKyloByte;
+                sizeText += FORMAT.format(sizeInGigaBytes) + " GB";
+            } else {
+                sizeText += FORMAT.format(sizeInMegaBytes) + " MB";
+            }
+        } else {
+            sizeText += "N/A";
+        }
+        return sizeText;
     }
 }

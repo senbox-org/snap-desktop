@@ -139,7 +139,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         boolean fireListSelectionChanged = false;
         for (int i=startIndex; i<=endIndex; i++) {
             AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
-            repositoryProductPanel.refresh(this.productListModel);
+            repositoryProductPanel.refresh(this.productListModel.getOutputProductResults());
             if (this.selectedProductPanels.contains(repositoryProductPanel)) {
                 fireListSelectionChanged = true;
             }
@@ -158,7 +158,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
             repositoryProductPanel.addMouseListener(this.mouseListener);
             add(repositoryProductPanel);
 
-            repositoryProductPanel.refresh(this.productListModel);
+            repositoryProductPanel.refresh(this.productListModel.getOutputProductResults());
         }
         revalidate();
         repaint();

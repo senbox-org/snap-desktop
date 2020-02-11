@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.ImageIcon;
@@ -21,11 +22,11 @@ public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel 
     }
 
     @Override
-    public void refresh(OutputProductListModel productListModel) {
-        super.refresh(productListModel);
+    public void refresh(OutputProductResults outputProductResults) {
+        super.refresh(outputProductResults);
 
         RepositoryProduct repositoryProduct = getRepositoryProduct();
-        LocalProgressStatus localProgressStatus = productListModel.getOpeningProductStatus(repositoryProduct);
+        LocalProgressStatus localProgressStatus = outputProductResults.getOpeningProductStatus(repositoryProduct);
         updateProgressStatus(localProgressStatus);
     }
 
