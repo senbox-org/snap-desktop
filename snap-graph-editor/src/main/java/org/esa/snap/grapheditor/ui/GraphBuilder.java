@@ -22,6 +22,9 @@ public class GraphBuilder extends JPanel {
      * GraphBuilder serail ID
      */
     private static final long serialVersionUID = 50849209475264574L;
+    private final JButton saveAsButton;
+    private final JButton saveButton;
+    private final JButton runButton;
 
     private JToolBar toolBar;
     private StatusPanel statusBar;
@@ -44,16 +47,41 @@ public class GraphBuilder extends JPanel {
             SettingManager.getInstance().showSettingsDialog(parentWindow);
         });
 
-        JButton runButton = new JButton();
+        runButton = new JButton();
         ImageIcon runIcon = TangoIcons.actions_media_playback_start(TangoIcons.R22);
         runButton.setIcon(runIcon);
         runButton.addActionListener(e -> {
             GraphManager.getInstance().evaluate();
         });
 
+        saveButton = new JButton();
+        ImageIcon saveIcon = TangoIcons.actions_document_save(TangoIcons.R22);
+        saveButton.setIcon(saveIcon);
+
+        saveAsButton = new JButton();
+        ImageIcon saveAsIcon = TangoIcons.actions_document_save_as(TangoIcons.R22);
+        saveAsButton.setIcon(saveAsIcon);
+
+        saveAsButton.setEnabled(false);
+        saveButton.setEnabled(false)    ;
+
+        JButton openButton = new JButton();
+        ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.R22);
+        openButton.setIcon(openIcon);
+
+        JButton newButton = new JButton();
+        ImageIcon newIcon = TangoIcons.actions_document_new(TangoIcons.R22);
+        newButton.setIcon(newIcon);
+
         toolBar.setFloatable(false);
-        toolBar.add(settingsButton);
+        toolBar.add(newButton);
+        toolBar.add(openButton);
+        toolBar.add(saveButton);
+        toolBar.add(saveAsButton);
+        toolBar.addSeparator();
         toolBar.add(runButton);
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(settingsButton);
 
         statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
