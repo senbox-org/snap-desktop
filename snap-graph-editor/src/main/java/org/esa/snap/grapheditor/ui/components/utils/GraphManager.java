@@ -18,6 +18,7 @@ import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
 
+import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -28,9 +29,11 @@ import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
+import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
 public class GraphManager implements NodeListener {
@@ -399,14 +402,47 @@ public class GraphManager implements NodeListener {
                         SimplifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
                         NodeGui ng = new NodeGui(n, getConfiguration(n), meta, ui);
-                        // TODO load position ng.loadParameters(n.ge);
                         nodes.add(ng);
                     } else {
                         NotificationManager.getInstance().error("Graph",
                                                                 "Operator '" + n.getOperatorName() +"' not known.");
                     }
                 }
-                //TODO connect nodes
+                // Load position
+                final XppDom presentationXML = graph.getApplicationData("Presentation");
+                if (presentationXML != null) {
+                    for (XppDom el : presentationXML.getChildren()) {
+                        if (el.getName().equals("node")) {
+                            String id = el.getAttribute("id");
+                            for (NodeGui n: nodes) {
+                                if (n.getName().equals(id)) {
+                                    n.loadParameters(el);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                //Connect nodes
+                for (NodeGui trgNode: nodes) {
+                    int index = 0;
+                    for (NodeSource src: trgNode.getNode().getSources()) {
+                        String id = src.getSourceNodeId();
+                        NodeGui srcNode = null;
+                        for (NodeGui ns: nodes) {
+                            if (ns.getName().equals(id)) {
+                                srcNode = ns;
+                                break;
+                            }
+                        }
+                        if (srcNode != null) {
+                            Connection cnn = new Connection(srcNode, trgNode, index);
+                            trgNode.addConnection(cnn, index);
+                            index ++;
+                        }
+                    }
+                }
+
                 loadGraph(nodes);
             }
             return nodes;

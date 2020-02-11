@@ -30,6 +30,7 @@ import org.opengis.filter.Not;
  * @author Martino Ferrari (CS Group)
  */
 public class NodeGui implements NodeListener {
+
     public enum ValidationStatus {
         UNCHECKED,
         VALIDATED,
@@ -862,4 +863,9 @@ public class NodeGui implements NodeListener {
     public  ValidationStatus getValidationStatus() {
         return this.validationStatus;
     }
+
+    public Node getNode() {
+        return this.node;
+    }
+
 }
