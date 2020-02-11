@@ -5,8 +5,7 @@ import java.util.*;
 
 import java.awt.event.ActionListener;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import javax.swing.*;
 
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Converter;
@@ -24,6 +23,7 @@ import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
+import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
@@ -354,6 +354,16 @@ public class GraphManager implements NodeListener {
      * @param selectedFile file to open
      */
     public void openGraph(File selectedFile) {
-        // TODO implement XML loading 
+        clearGraph();
+        // TODO implement XML loading
+        NotificationManager.getInstance().processStart();
+    }
+
+    private class GraphLoad extends SwingWorker<ArrayList<NodeGui>, Object> {
+
+        @Override
+        protected ArrayList<NodeGui> doInBackground() throws Exception {
+            return null;
+        }
     }
 }
