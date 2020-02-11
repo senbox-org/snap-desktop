@@ -1,6 +1,8 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 import java.awt.event.ActionListener;
@@ -24,6 +26,7 @@ import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
@@ -374,15 +377,39 @@ public class GraphManager implements NodeListener {
     }
 
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
+        private File source;
 
-        GraphLoadWorker(File file) {}
+        GraphLoadWorker(File file) {
+            source = file;
+        }
 
         @Override
         protected ArrayList<NodeGui> doInBackground() throws Exception {
             ArrayList<NodeGui> nodes = new ArrayList<>();
-
-            loadGraph(nodes);
-            return null;
+            Graph graph = null;
+            InputStreamReader fileReader = new InputStreamReader(new FileInputStream(source));
+            try {
+                graph = GraphIO.read(fileReader);
+            } finally {
+                fileReader.close();
+            }
+            if (graph != null) {
+                for (Node n : graph.getNodes()) {
+                    if (simpleMetadatas.containsKey(n.getOperatorName())) {
+                        SimplifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
+                        OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
+                        NodeGui ng = new NodeGui(n, getConfiguration(n), meta, ui);
+                        // TODO load position ng.loadParameters(n.ge);
+                        nodes.add(ng);
+                    } else {
+                        NotificationManager.getInstance().error("Graph",
+                                                                "Operator '" + n.getOperatorName() +"' not known.");
+                    }
+                }
+                //TODO connect nodes
+                loadGraph(nodes);
+            }
+            return nodes;
         }
     }
 }
