@@ -357,12 +357,31 @@ public class GraphManager implements NodeListener {
         clearGraph();
         // TODO implement XML loading
         NotificationManager.getInstance().processStart();
+        GraphLoadWorker worker = new GraphLoadWorker(selectedFile);
+        worker.execute();
+
     }
 
-    private class GraphLoad extends SwingWorker<ArrayList<NodeGui>, Object> {
+    private void loadGraph(ArrayList<NodeGui> nodes) {
+        clearGraph();
+        for (NodeGui n: nodes) {
+            n.addNodeListener(this);
+            this.nodes.add(n);
+        }
+        NotificationManager.getInstance().processEnd();
+        NotificationManager.getInstance().info("Graph", "Loaded and ready");
+        triggerEvent();
+    }
+
+    private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
+
+        GraphLoadWorker(File file) {}
 
         @Override
         protected ArrayList<NodeGui> doInBackground() throws Exception {
+            ArrayList<NodeGui> nodes = new ArrayList<>();
+
+            loadGraph(nodes);
             return null;
         }
     }
