@@ -1,6 +1,8 @@
 package org.esa.snap.grapheditor.ui;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
@@ -34,12 +36,18 @@ public class GraphBuilder extends JPanel implements GraphListener {
 
     private Window parentWindow;
 
-    private boolean isEmpty = true;
     private boolean hasChanged = false;
+
+    private String fileName = "Untitled.xml";
 
     public GraphBuilder(Window frame, AppContext context) {
         super();
         parentWindow = frame;
+
+        // Initialise empty graph
+        GraphManager.getInstance().createEmptyGraph();
+
+        // Init GUI
         this.setLayout(new BorderLayout(0, 0));
 
         toolBar = new JToolBar();
@@ -68,7 +76,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         saveAsButton.setIcon(saveAsIcon);
 
         saveAsButton.setEnabled(false);
-        saveButton.setEnabled(false)    ;
+        saveButton.setEnabled(false);
 
         JButton openButton = new JButton();
         ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.R22);
@@ -77,6 +85,11 @@ public class GraphBuilder extends JPanel implements GraphListener {
         JButton newButton = new JButton();
         ImageIcon newIcon = TangoIcons.actions_document_new(TangoIcons.R22);
         newButton.setIcon(newIcon);
+        newButton.addActionListener(e -> {
+            if (confirmClean()) {
+                newGraph();
+            }
+        });
 
         toolBar.setFloatable(false);
         toolBar.add(newButton);
@@ -97,44 +110,22 @@ public class GraphBuilder extends JPanel implements GraphListener {
         mainPanel.getGraphPanel().addGraphListener(this);
     }
 
-    private JFrame getFrame() {
-        Container comp = this.getParent();
-        while (comp != null && !(comp instanceof JFrame)) {
-            comp = comp.getParent();
-        }
-
-        if (comp == null){
-            return null;
-        }
-        return (JFrame) comp;
-    }
-
-    public static void main(String[] args) {
-
-        AppContext context = new DefaultAppContext("Standalone Graph Editor");
-
-        JFrame mainFrame = new JFrame();
-        GraphBuilder builder = new GraphBuilder(mainFrame, context);
-
-        
-        mainFrame.setLayout(new BorderLayout());
-        mainFrame.setSize(1024, 800);
-        mainFrame.add(builder, BorderLayout.CENTER);
-
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setVisible(true);
-    }
 
     private void somethingChanged() {
-        if (isEmpty) {
-            isEmpty = false;
-            runButton.setEnabled(true);
-        }
         if (!hasChanged) {
             hasChanged = true;
             saveAsButton.setEnabled(true);
             saveButton.setEnabled(true);
         }
+    }
+
+    private void newGraph() {
+        GraphManager.getInstance().createEmptyGraph();
+        hasChanged = false;
+        saveAsButton.setEnabled(false);
+        saveButton.setEnabled(false);
+        fileName = "Untitled.xml";
+        this.repaint();
     }
 
     @Override
@@ -161,4 +152,45 @@ public class GraphBuilder extends JPanel implements GraphListener {
     public void deleted(NodeGui source) {
         somethingChanged();
     }
+
+    public boolean confirmClean() {
+        if (hasChanged) {
+            int dialogResult = JOptionPane.showConfirmDialog (null,
+                                                              "This graph has unsaved changes, are you sure to close it?",
+                                                              "Warning", JOptionPane.YES_NO_OPTION);
+            return dialogResult == JOptionPane.YES_OPTION;
+        }
+        return true;
+    }
+
+    /**
+     * Simple main routine to test the GraphBuilder, in the future it could be and independent executable as well.
+     * @param args
+     */
+    public static void main(String[] args) {
+
+        AppContext context = new DefaultAppContext("Standalone Graph Editor");
+
+        JFrame mainFrame = new JFrame();
+        GraphBuilder builder = new GraphBuilder(mainFrame, context);
+
+
+        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setSize(1024, 800);
+        mainFrame.add(builder, BorderLayout.CENTER);
+        mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        mainFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (builder.confirmClean()) {
+                    mainFrame.setVisible(false);
+                    mainFrame.dispose();
+                    System.exit(0);
+                }
+            }
+        });
+        mainFrame.setVisible(true);
+    }
+
 }

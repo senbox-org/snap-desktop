@@ -327,6 +327,20 @@ public class GraphManager implements NodeListener {
     public void sourceDeleted(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Deleted");
         this.nodes.remove(source);
+    }
 
+    /***
+     * Initialize a simple graph composed by a Reader and a Writer
+     */
+    public void createEmptyGraph() {
+        for (NodeGui n: nodes) {
+            n.removeNodeListener(this);
+        }
+        this.nodes.clear();
+
+        NodeGui n = newNode("Read");
+        n.setPosition(90, 30);
+        n = newNode("Write");
+        n.setPosition(390, 30);
     }
 }

@@ -16,6 +16,12 @@ import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+/**
+ * Simple expansible status panel composed of a status label, a progress bar an expansion button and a expansible
+ * history.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class StatusPanel extends JPanel implements ActionListener, NotificationListener {
 
     /**
@@ -23,24 +29,26 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
      */
     private static final long serialVersionUID = -1363239999143252182L;
 
+    // Color Palette
     private static final Color errorColor = new Color(200, 0,0);
     private static final Color warningColor = new Color(220, 150, 0);
     private static final Color okColor = new Color(0, 128, 0);
 
+    // Date formatter
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-
+    // Basic components
     private final JScrollPane scrollPane;
     private final JProgressBar progressBar;
-
     private JPanel topPane;
     private JButton showButton;
     private JLabel messageLabel;
     private JEditorPane historyPane;
 
-
+    // History string
     private String history = "";
 
+    // Status flag
     private boolean extended = false;
 
     public StatusPanel() {
