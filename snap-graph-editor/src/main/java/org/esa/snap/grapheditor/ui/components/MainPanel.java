@@ -37,4 +37,9 @@ public class MainPanel extends JSplitPane {
         this.setDividerLocation(800);
     }
 
+    public GraphPanel getGraphPanel() {
+        return graphPanel;
+    }
+
+
 }

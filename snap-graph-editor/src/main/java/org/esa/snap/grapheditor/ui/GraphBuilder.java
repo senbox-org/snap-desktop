@@ -6,6 +6,8 @@ import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
+import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 import org.esa.snap.tango.TangoIcons;
@@ -17,7 +19,7 @@ import org.esa.snap.ui.DefaultAppContext;
  * 
  * @author Martino Ferrari (CS Group)
  */
-public class GraphBuilder extends JPanel {
+public class GraphBuilder extends JPanel implements GraphListener {
     /**
      * GraphBuilder serail ID
      */
@@ -31,6 +33,9 @@ public class GraphBuilder extends JPanel {
     private MainPanel mainPanel;
 
     private Window parentWindow;
+
+    private boolean isEmpty = true;
+    private boolean hasChanged = false;
 
     public GraphBuilder(Window frame, AppContext context) {
         super();
@@ -88,6 +93,8 @@ public class GraphBuilder extends JPanel {
 
         mainPanel = new MainPanel(context);
         this.add(mainPanel, BorderLayout.CENTER);
+
+        mainPanel.getGraphPanel().addGraphListener(this);
     }
 
     private JFrame getFrame() {
@@ -116,5 +123,42 @@ public class GraphBuilder extends JPanel {
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
+    }
+
+    private void somethingChanged() {
+        if (isEmpty) {
+            isEmpty = false;
+            runButton.setEnabled(true);
+        }
+        if (!hasChanged) {
+            hasChanged = true;
+            saveAsButton.setEnabled(true);
+            saveButton.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void selected(NodeGui source) {
+        somethingChanged();
+    }
+
+    @Override
+    public void deselected(NodeGui source) {
+        somethingChanged();
+    }
+
+    @Override
+    public void updated(NodeGui source) {
+        somethingChanged();
+    }
+
+    @Override
+    public void created(NodeGui source) {
+        somethingChanged();
+    }
+
+    @Override
+    public void deleted(NodeGui source) {
+        somethingChanged();
     }
 }
