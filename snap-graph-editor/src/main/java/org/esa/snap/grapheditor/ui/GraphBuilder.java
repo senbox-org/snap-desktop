@@ -3,8 +3,11 @@ package org.esa.snap.grapheditor.ui;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.nio.file.Path;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
@@ -81,6 +84,16 @@ public class GraphBuilder extends JPanel implements GraphListener {
         JButton openButton = new JButton();
         ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.R22);
         openButton.setIcon(openIcon);
+        openButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file", "xml"));
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            }
+        });
 
         JButton newButton = new JButton();
         ImageIcon newIcon = TangoIcons.actions_document_new(TangoIcons.R22);
