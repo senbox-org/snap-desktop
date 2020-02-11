@@ -28,6 +28,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.file.export.ExportImageAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -40,11 +41,7 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -79,7 +76,7 @@ import java.util.concurrent.Executors;
 // FEB 2020 - Knowles
 //          - Wrapped this tool in a JScrollPane
 
-    
+
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
 })
@@ -357,7 +354,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         innerContentPanel = new JPanel(new BorderLayout(4, 4));
         innerContentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        innerContentPanel.setPreferredSize(new Dimension(300, 320));
+        innerContentPanel.setPreferredSize(new Dimension(280, 360));
         innerContentPanel.add(editorPanel, BorderLayout.CENTER);
         innerContentPanel.add(toolButtonsPanel, BorderLayout.EAST);
 
@@ -365,7 +362,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         contentPanel = new JPanel(new BorderLayout(4, 4));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        contentPanel.setPreferredSize(new Dimension(300, 200));
+        contentPanel.setPreferredSize(new Dimension(280, 200));
         contentPanel.add(jScrollPane, BorderLayout.CENTER);
 
         setProductSceneView(SnapApp.getDefault().getSelectedProductSceneView());
@@ -377,28 +374,41 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         multiApplyButton.setEnabled(getFormModel().isValid() && !getFormModel().isContinuous3BandImage());
     }
 
+
     @Override
     public void installToolButtons() {
+
+        int numColumns = 1; // 1 or 2
         toolButtonsPanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 1.0;
         gbc.gridy = 0;
-        gbc.insets.bottom = 0;
+        gbc.insets.bottom = 2;
         gbc.gridwidth = 1;
+
         gbc.gridy++;
         toolButtonsPanel.add(resetButton, gbc);
+        if (numColumns == 1) {
+            gbc.gridy++;
+        }
+
         toolButtonsPanel.add(multiApplyButton, gbc);
         gbc.gridy++;
         toolButtonsPanel.add(importButton, gbc);
+        if (numColumns == 1) {
+            gbc.gridy++;
+        }
+
         toolButtonsPanel.add(exportButton, gbc);
         gbc.gridy++;
+
         AbstractButton[] additionalButtons = getChildForm().getToolButtons();
         for (int i = 0; i < additionalButtons.length; i++) {
             AbstractButton button = additionalButtons[i];
             toolButtonsPanel.add(button, gbc);
-            if (i % 2 == 1) {
+            if (i % numColumns == 1) {
                 gbc.gridy++;
             }
         }
@@ -406,15 +416,16 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         gbc.gridy++;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weighty = 1.0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = numColumns;
         toolButtonsPanel.add(new JLabel(" "), gbc); // filler
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.0;
         gbc.gridwidth = 1;
         gbc.gridy++;
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         toolButtonsPanel.add(helpButton, gbc);
     }
+
 
     @Override
     public void installMoreOptions() {
@@ -464,9 +475,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
 
-
-
-
     private void applyMultipleColorPaletteDef() {
         if (!getFormModel().isValid()) {
             return;
@@ -504,10 +512,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
 
         final BandChooser bandChooser = new BandChooser(SwingUtilities.getWindowAncestor(toolView),
-                                                        "Apply to other bands",
-                                                        toolView.getHelpCtx().getHelpID(),
-                                                        availableBands,
-                                                        bandsToBeModified, false);
+                "Apply to other bands",
+                toolView.getHelpCtx().getHelpID(),
+                availableBands,
+                bandsToBeModified, false);
 
         final Set<RasterDataNode> modifiedRasters = new HashSet<>(availableBands.length);
         if (bandChooser.show() == BandChooser.ID_OK) {
@@ -547,7 +555,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreateCpdFileFilter() {
         if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
-            final String description =  FILE_EXTENSION_CPD.toUpperCase() + " - Default color palette format (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
+            final String description = FILE_EXTENSION_CPD.toUpperCase() + " - Default color palette format (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
             snapFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_CPD, description);
         }
         return snapFileFilter;
@@ -556,8 +564,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreatePalFileFilter() {
         if (palFileFilter == null) {
             final String formatName = "GENERIC_COLOR_PALETTE_FILE";
-            final String description = FILE_EXTENSION_PAL.toUpperCase() + " - Generic 256 point color palette format (*."+FILE_EXTENSION_PAL + ")";  /*I18N*/
-            palFileFilter = new SnapFileFilter(formatName, "."+FILE_EXTENSION_PAL, description);
+            final String description = FILE_EXTENSION_PAL.toUpperCase() + " - Generic 256 point color palette format (*." + FILE_EXTENSION_PAL + ")";  /*I18N*/
+            palFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_PAL, description);
         }
         return palFileFilter;
     }
@@ -565,8 +573,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreateCptFileFilter() {
         if (cptFileFilter == null) {
             final String formatName = "CPT_COLOR_PALETTE_FILE";
-            final String description = FILE_EXTENSION_CPT.toUpperCase() + " - Generic mapping tools color palette format (*."+FILE_EXTENSION_CPT + ")";  /*I18N*/
-            cptFileFilter = new SnapFileFilter(formatName, "."+FILE_EXTENSION_CPT, description);
+            final String description = FILE_EXTENSION_CPT.toUpperCase() + " - Generic mapping tools format (*." + FILE_EXTENSION_CPT + ")";  /*I18N*/
+            cptFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_CPT, description);
         }
         return cptFileFilter;
     }
@@ -582,7 +590,70 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setDialogTitle("Import Colour Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateCpdFileFilter());
+        fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
+
+
+        final JPanel optionsPanel = new JPanel(new GridLayout(2, 1));
+        optionsPanel.setBorder(BorderFactory.createTitledBorder("CPT Options"));
+
+        JRadioButton buttonSourceLogScaled = new JRadioButton("Source Log Scaled");
+        buttonSourceLogScaled.setSelected(false);
+        buttonSourceLogScaled.setEnabled(false);
+        buttonSourceLogScaled.setToolTipText("The source cpt values are log scaled");
+
+        JRadioButton buttonCptValue = new JRadioButton("Use CPT Value");
+        buttonCptValue.setSelected(false);
+        buttonCptValue.setEnabled(false);
+        buttonCptValue.setToolTipText("The use cpt values instead of current min/max range settings");
+
+        optionsPanel.add(buttonSourceLogScaled);
+        optionsPanel.add(buttonCptValue);
+        optionsPanel.setEnabled(false);
+
+
+        fileChooser.addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, evt -> {
+            final SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
+
+//            snapFileFilter.getFileSelectionMode().getValue();
+
+            if (snapFileFilter != null) {
+                String format = snapFileFilter.getFormatName();
+                System.out.println("FORMAT=" + format);
+                boolean cptEnabled = "CPT_COLOR_PALETTE_FILE".equals(snapFileFilter.getFormatName());
+                System.out.println("enabled=" + cptEnabled);
+
+                buttonSourceLogScaled.setEnabled(cptEnabled);
+                buttonCptValue.setEnabled(cptEnabled);
+                optionsPanel.setEnabled(cptEnabled);
+            }
+        });
+
+
+        JComponent commentsPanel = new JLabel("");
+//        commentsPanel.setBorder(BorderFactory.createTitledBorder("Comments")); /*I18N*/
+//        commentsPanel.setToolTipText("Some comments");
+
+        final JPanel accessory = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = .5;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.insets = new Insets(3, 3, 3, 3);
+
+
+//        accessory.setLayout(new BoxLayout(accessory, BoxLayout.Y_AXIS));
+        accessory.add(optionsPanel, gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        accessory.add(commentsPanel, gbc);
+        fileChooser.setAccessory(accessory);
+
+
         final int result = fileChooser.showOpenDialog(getToolViewPaneControl());
         final File file = fileChooser.getSelectedFile();
         if (file != null && file.getParentFile() != null) {
@@ -591,13 +662,26 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null && file.canRead()) {
                 try {
-                    final ColorPaletteDef colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(file);
+                    ColorPaletteDef colorPaletteDef;
+
+                    if (file.getName().endsWith(FILE_EXTENSION_CPT)) {
+                        colorPaletteDef = ColorPaletteDef.loadCpt(file);
+                    } else {
+                        colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(file);
+                    }
+
+
                     final ColorPaletteDef currentCPD = targetImageInfo.getColorPaletteDef();
                     final double min = currentCPD.getMinDisplaySample();
                     final double max = currentCPD.getMaxDisplaySample();
-                    final boolean isSourceLogScaled = colorPaletteDef.isLogScaled();
+
+                    final boolean isSourceLogScaled = buttonSourceLogScaled.isSelected();
+
+//                    final boolean isSourceLogScaled = colorPaletteDef.isLogScaled();
                     final boolean isTargetLogScaled = targetImageInfo.isLogScaled();
-                    final boolean autoDistribute = true;
+
+                    final boolean autoDistribute = !buttonCptValue.isSelected();
+//                    final boolean autoDistribute = true;
                     if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
                         targetImageInfo.setColorPaletteDef(colorPaletteDef, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
                     }
@@ -625,9 +709,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 return;
             }
             targetImageInfo.setColorPaletteDef(colorPaletteDef,
-                                               stx.getMinimum(),
-                                               stx.getMaximum(),
-                                               autoDistribute);
+                    stx.getMinimum(),
+                    stx.getMaximum(),
+                    autoDistribute);
         }
     }
 
@@ -636,10 +720,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return Boolean.TRUE;
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
-                                                   "Automatically distribute points of\n" +
-                                                           "colour palette between min/max?",
-                                                   "Import Colour Palette",
-                                                   JOptionPane.YES_NO_CANCEL_OPTION
+                "Automatically distribute points of\n" +
+                        "colour palette between min/max?",
+                "Import Colour Palette",
+                JOptionPane.YES_NO_CANCEL_OPTION
         );
         if (answer == JOptionPane.YES_OPTION) {
             return Boolean.TRUE;
@@ -680,12 +764,12 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                         final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
                         String path = file.getPath();
 
-                        if (path.endsWith("."+FILE_EXTENSION_PAL)) {
+                        if (path.endsWith("." + FILE_EXTENSION_PAL)) {
                             ColorPaletteDef.storePal(colorPaletteDef, file);
-                        } else if (path.endsWith("."+FILE_EXTENSION_CPT)) {
+                        } else if (path.endsWith("." + FILE_EXTENSION_CPT)) {
                             ColorPaletteDef.storeCpt(colorPaletteDef, file);
                         } else {
-                            file = FileUtils.ensureExtension(file, "."+FILE_EXTENSION_CPD);
+                            file = FileUtils.ensureExtension(file, "." + FILE_EXTENSION_CPD);
                             ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
                         }
                     } catch (IOException e) {
@@ -785,15 +869,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
 
-
     private ImageInfo createDefaultImageInfo() {
         try {
             return ProductUtils.createImageInfo(getFormModel().getRasters(), false, ProgressMonitor.NULL);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(getContentPanel(),
-                                          "Failed to create default image settings:\n" + e.getMessage(),
-                                          "I/O Error",
-                                          JOptionPane.ERROR_MESSAGE);
+                    "Failed to create default image settings:\n" + e.getMessage(),
+                    "I/O Error",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
