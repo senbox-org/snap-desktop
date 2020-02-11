@@ -85,13 +85,16 @@ public class GraphBuilder extends JPanel implements GraphListener {
         ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.R22);
         openButton.setIcon(openIcon);
         openButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file", "xml"));
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-            int result = fileChooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+
+            if (confirmClean()) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file", "xml"));
+                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                int result = fileChooser.showOpenDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    GraphManager.getInstance().openGraph(selectedFile);
+                }
             }
         });
 

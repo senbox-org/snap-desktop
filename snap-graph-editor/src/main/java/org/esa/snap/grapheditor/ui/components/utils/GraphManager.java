@@ -1,5 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
+import java.io.File;
 import java.util.*;
 
 import java.awt.event.ActionListener;
@@ -329,18 +330,30 @@ public class GraphManager implements NodeListener {
         this.nodes.remove(source);
     }
 
-    /***
-     * Initialize a simple graph composed by a Reader and a Writer
-     */
-    public void createEmptyGraph() {
+    private void clearGraph() {
         for (NodeGui n: nodes) {
             n.removeNodeListener(this);
         }
         this.nodes.clear();
+    }
+
+    /***
+     * Initialize a simple graph composed by a Reader and a Writer
+     */
+    public void createEmptyGraph() {
+        clearGraph();
 
         NodeGui n = newNode("Read");
         n.setPosition(90, 30);
         n = newNode("Write");
         n.setPosition(390, 30);
+    }
+
+    /**
+     * Open an existing Graph.
+     * @param selectedFile file to open
+     */
+    public void openGraph(File selectedFile) {
+        // TODO implement XML loading 
     }
 }
