@@ -48,10 +48,29 @@ public class NotificationManager {
         notify(Notification.ok(source, message));
     }
 
+    public void processStart() {
+        for (NotificationListener l : listeners) {
+            l.processStart();
+        }
+    }
+
+    public void processEnd() {
+        for (NotificationListener l : listeners) {
+            l.processEnd();
+        }
+    }
+
+    public void progress(int value) {
+        for (NotificationListener l : listeners) {
+            l.progress(value);
+        }
+    }
+
     static public NotificationManager getInstance() {
         if (instance == null) {
             instance = new NotificationManager();
         }
         return instance;
     }
+
 }

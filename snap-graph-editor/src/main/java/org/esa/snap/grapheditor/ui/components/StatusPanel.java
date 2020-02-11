@@ -31,6 +31,7 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
 
 
     private final JScrollPane scrollPane;
+    private final JProgressBar progressBar;
 
     private JPanel topPane;
     private JButton showButton;
@@ -49,15 +50,38 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
 
         topPane = new JPanel();
         topPane.setPreferredSize(new Dimension(30, 30));
-        topPane.setLayout(new BorderLayout(5,0));
+        SpringLayout topLayout = new SpringLayout();
+        topPane.setLayout(topLayout);//new BorderLayout(5,0));
 
         messageLabel = new JLabel("");
-        topPane.add(messageLabel, BorderLayout.LINE_START);
+        topPane.add(messageLabel);
+
+
+        progressBar = new JProgressBar();
+        progressBar.setPreferredSize(new Dimension(200, 30));
+        topPane.add(progressBar);
 
         showButton = new JButton("+");
         showButton.setPreferredSize(new Dimension(30, 30));
         showButton.addActionListener(this);
-        topPane.add(showButton, BorderLayout.LINE_END);
+        topPane.add(showButton);
+
+        // SETUP LAYOUT
+
+        topLayout.putConstraint(SpringLayout.EAST, showButton, -2, SpringLayout.EAST, topPane);
+        topLayout.putConstraint(SpringLayout.WEST, showButton, -30, SpringLayout.EAST, showButton);
+        topLayout.putConstraint(SpringLayout.NORTH, showButton, 2, SpringLayout.NORTH, topPane);
+        topLayout.putConstraint(SpringLayout.SOUTH, showButton, -2, SpringLayout.SOUTH, topPane);
+
+        topLayout.putConstraint(SpringLayout.EAST, progressBar, -4, SpringLayout.WEST, showButton);
+        topLayout.putConstraint(SpringLayout.WEST, progressBar, -150, SpringLayout.EAST, progressBar);
+        topLayout.putConstraint(SpringLayout.NORTH, progressBar, 2, SpringLayout.NORTH, topPane);
+        topLayout.putConstraint(SpringLayout.SOUTH, progressBar, -2, SpringLayout.SOUTH, topPane);
+
+        topLayout.putConstraint(SpringLayout.EAST, messageLabel, -4, SpringLayout.WEST, progressBar);
+        topLayout.putConstraint(SpringLayout.WEST, messageLabel, 2, SpringLayout.WEST, topPane);
+        topLayout.putConstraint(SpringLayout.NORTH, messageLabel, 2, SpringLayout.NORTH, topPane);
+        topLayout.putConstraint(SpringLayout.SOUTH, messageLabel, -2, SpringLayout.SOUTH, topPane);
 
         this.setLayout(new BorderLayout(5, 0));
 
@@ -70,7 +94,7 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
         historyPane.setContentType("text/html");
         scrollPane = new JScrollPane(historyPane);
         this.add(scrollPane, BorderLayout.CENTER);
-
+        scrollPane.setVisible(false);
         initStylesheet(kit);
 
         unextend();
@@ -136,6 +160,23 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
         history += "<span class=\"" + cssClass +"\">";
         history += timeStamp() +" "+ n.getSource() + ": " + n.getMessage() + "</span><br>";
         historyPane.setText(history);
+    }
+
+    @Override
+    public void processStart() {
+        this.progressBar.setIndeterminate(true);
+    }
+
+    @Override
+    public void processEnd() {
+        this.progressBar.setIndeterminate(false);
+        this.progressBar.setValue(0);
+    }
+
+    @Override
+    public void progress(int value) {
+        this.progressBar.setIndeterminate(false);
+        this.progressBar.setValue(value);
     }
 
     private String timeStamp() {

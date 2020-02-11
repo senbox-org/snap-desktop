@@ -41,6 +41,8 @@ public class GraphManager implements NodeListener {
 
     static private GraphManager instance = null;
 
+    private HashSet<RefreshListener> listeners = new HashSet<>();
+
     static public GraphManager getInstance() {
         if (instance == null) {
             instance = new GraphManager();
@@ -61,6 +63,20 @@ public class GraphManager implements NodeListener {
                 simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata, descriptor));
                               
             }
+        }
+    }
+
+    public void addEventListener(RefreshListener l) {
+        listeners.add(l);
+    }
+
+    public void removeEventListener(RefreshListener l) {
+        listeners.remove(l);
+    }
+
+    private void triggerEvent() {
+        for (RefreshListener l : listeners) {
+            l.refresh();
         }
     }
 
@@ -257,10 +273,11 @@ public class GraphManager implements NodeListener {
         // TODO evaluate graph
     }
 
-    @Override
-    public void outputChanged(NodeGui source) {
-        // TODO Revalidate rest of the graph.
+
+    private void validateGraph(NodeGui source) {
         HashMap<Integer, HashSet<NodeGui>> orderedGraph = new HashMap<>();
+        int total = 0;
+        NotificationManager.getInstance().processStart();
         for (NodeGui n: nodes) {
             if (n != source) {
                 int dist = n.distance(source);
@@ -270,29 +287,46 @@ public class GraphManager implements NodeListener {
                         orderedGraph.put(key, new HashSet<>());
                     }
                     orderedGraph.get(key).add(n);
+                    total ++;
                 }
             }
         }
+        NotificationManager.getInstance().processEnd();
         if (source.getValidationStatus() == NodeGui.ValidationStatus.ERROR) {
+            int i = 0;
             for (Integer key: orderedGraph.keySet()) {
                 for (NodeGui n: orderedGraph.get(key)) {
+                    i ++;
+                    NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
                     n.invalidate();
                 }
             }
         } else {
+            int i = 0;
             ArrayList<Integer> indexes = new ArrayList<>(orderedGraph.keySet());
             Collections.sort(indexes);
             for (Integer key: indexes) {
                 for (NodeGui n: orderedGraph.get(key)) {
+                    i ++;
+                    NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
                     n.validate();
                 }
             }
         }
+        NotificationManager.getInstance().processEnd();
+        triggerEvent();
+    }
+
+    @Override
+    public void outputChanged(NodeGui source) {
+        // TODO Revalidate rest of the graph.
+        validateGraph(source);
     }
 
     @Override
     public void sourceDeleted(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Deleted");
         this.nodes.remove(source);
+
     }
 }

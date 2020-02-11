@@ -23,10 +23,11 @@ import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
+import org.esa.snap.grapheditor.ui.components.utils.RefreshListener;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 public class GraphPanel extends JPanel
-        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener {
+        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener, RefreshListener {
 
     /**
      * Genrated UID
@@ -414,5 +415,10 @@ public class GraphPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
         String opName = e.getActionCommand();
         this.addNode(graphManager.newNode(opName));
+    }
+
+    @Override
+    public void refresh() {
+        this.repaint();
     }
 }
