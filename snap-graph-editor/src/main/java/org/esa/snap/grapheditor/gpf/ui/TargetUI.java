@@ -106,7 +106,12 @@ public class TargetUI extends BaseOperatorUI {
 
     @Override
     public UIValidation validateParameters() {
-
+        if (targetProductSelector == null) {
+            return new UIValidation(UIValidation.State.WARNING, "targetProductSelector is NULL");
+        }
+        if (targetProductSelector.getModel() == null) {
+            return new UIValidation(UIValidation.State.WARNING, "target model is NULL");
+        }
         final String productName = targetProductSelector.getModel().getProductName();
         if (productName == null || productName.isEmpty())
             return new UIValidation(UIValidation.State.ERROR, "productName not specified");

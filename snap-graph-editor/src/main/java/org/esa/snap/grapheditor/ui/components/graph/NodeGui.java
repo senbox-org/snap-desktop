@@ -154,7 +154,7 @@ public class NodeGui implements NodeListener {
             g.setColor(Color.darkGray);
         }
 
-        g.drawString(name, x + (width - textW) / 2 , y + (textH + 3));
+        g.drawString(name, x + (width - textW) / 2 , y + (textH + 5));
 
         paintInputs(g);
         paintOutput(g);
