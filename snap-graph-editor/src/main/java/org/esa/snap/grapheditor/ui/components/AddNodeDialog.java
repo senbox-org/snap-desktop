@@ -18,7 +18,7 @@ import java.util.HashSet;
 
 public class AddNodeDialog extends JDialog implements KeyListener {
     static final private int width = 400;
-    static final private int height = 64;
+    static final private int height = 48;
     private final JTextField searchField;
     private final JList<UnifiedMetadata> resultsList;
     private final DefaultListModel<UnifiedMetadata> results = new DefaultListModel<>();
@@ -31,6 +31,8 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     public AddNodeDialog() {
         super();
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        this.setUndecorated(true);
+
         JPanel p = new JPanel(new BorderLayout(2,2));
         searchField = new JTextField();
         searchField.setEnabled(true);
@@ -75,7 +77,8 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
     public void popdown() {
         this.setVisible(false);
-        parent.requestFocus();
+        if (parent != null)
+            parent.requestFocus();
     }
 
     @Override
