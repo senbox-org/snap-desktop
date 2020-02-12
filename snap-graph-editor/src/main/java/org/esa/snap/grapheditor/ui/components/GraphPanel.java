@@ -36,8 +36,6 @@ public class GraphPanel extends JPanel
 
     private BufferedImage gridPattern = null;
 
-    private AddNodeDialog addNodeDialog = new AddNodeDialog();
-
     private Point lastMousePosition = new Point(0, 0);
 
     private NodeGui selectedNode = null;
@@ -55,7 +53,6 @@ public class GraphPanel extends JPanel
 
         // set event listener for refreshing UI when needed
         GraphManager.getInstance().addEventListener(this);
-        addNodeDialog.addListener(this);
 
         this.setBackground(Color.lightGray);
         this.addMenu = new JPopupMenu();
@@ -158,11 +155,9 @@ public class GraphPanel extends JPanel
         int key = event.getKeyCode();
 
         if (key == SettingManager.getInstance().getCommandPanelKey()) {
-            if (this.addNodeDialog.isVisible()) {
-                this.addNodeDialog.popdown();
-            }  else {
-                this.addNodeDialog.popup(this);
-            }
+            AddNodeDialog addNodeDialog = new AddNodeDialog(this);
+            addNodeDialog.addListener(this);
+
             this.repaint();// this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); //
                            // this.addNodeWidget.getBoundingRect(getWidth(),
                            // getHeight()));
@@ -264,24 +259,11 @@ public class GraphPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
         this.requestFocus();
         if (e.getButton() != MouseEvent.BUTTON1) {
-            addNodeDialog.popdown();
             // addNodeWidget.hide();
             if (e.getButton() == MouseEvent.BUTTON3) {
                 addMenu.show(this, e.getX(), e.getY());
             }
             return;
-        } else {
-            if (addNodeDialog.isVisible()) {
-                addNodeDialog.popdown();
-            /*    NodeGui node = addNodeWidget.click(e.getPoint());
-                if (node != null) {
-                    addNode(node);
-                    repaint();
-                    return;
-                }
-            */
-            }
-
         }
         boolean somethingSelected = false;
         for (NodeGui node : graphManager.getNodes()) {
@@ -304,9 +286,6 @@ public class GraphPanel extends JPanel
     public void mousePressed(MouseEvent e) {
         this.requestFocus();
         if (e.getButton() == MouseEvent.BUTTON1) {
-           if (addNodeDialog.isVisible()) {
-               addNodeDialog.popdown();
-           }
 //                NodeGui node = addNodeWidget.click(e.getPoint());
 //                if (node != null) {
 //                    addNode(node);

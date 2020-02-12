@@ -10,8 +10,7 @@ import org.esa.snap.grapheditor.ui.components.utils.UnifiedMetadata;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,9 +27,10 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     private int currentActive = -1;
     private JComponent parent;
 
-    public AddNodeDialog() {
-        super();
+    public AddNodeDialog(JComponent component) {
+        super((JFrame) SwingUtilities.getWindowAncestor(component));
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        parent = component;
         this.setUndecorated(true);
 
         JPanel p = new JPanel(new BorderLayout(2,2));
@@ -49,15 +49,20 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         p.add(resultsList, BorderLayout.PAGE_END);
 
         this.add(p, BorderLayout.CENTER);
-        setVisible(false);
+        this.addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                popdown();
+            }
+        });
+        this.popup((JFrame) SwingUtilities.getWindowAncestor(component));
     }
 
     public  void addListener(AddNodeListener l) {
         listeners.add(l);
     }
 
-    public void popup(JComponent parent) {
-        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(parent);
+    private void popup(JFrame topFrame) {
         int x = topFrame.getX();
         int y = topFrame.getY();
         int fwidth = topFrame.getWidth();
@@ -76,9 +81,14 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     }
 
     public void popdown() {
-        this.setVisible(false);
-        if (parent != null)
-            parent.requestFocus();
+        this.getOwner().setEnabled(true);
+
+        this.dispose();
+        if (parent != null) {
+            parent.requestFocusInWindow();//requestFocusInWindow()
+        }
+
+        listeners.clear();
     }
 
     @Override
