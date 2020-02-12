@@ -18,13 +18,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public final class RepositoriesCredentialsPersistence {
 
-    /**
-     * The separator used on remote repositories/remote repository properties ids list.
-     */
-    private static final String LIST_ITEM_SEPARATOR = ";";
     /**
      * The pattern for remote repository.
      */
@@ -34,9 +31,9 @@ public final class RepositoriesCredentialsPersistence {
      */
     private static final String CRED_ID_KEY = "%cred_id%";
     /**
-     * The preference key for remote repositories list.
+     * The regex for extract remote repositories IDs.
      */
-    private static final String PREFERENCE_KEY_REPOSITORIES = "repositories";
+    private static final String REPOSITORIES_IDS_REGEX = "repository_(.*?)\\.credential_.*?\\.username";
     /**
      * The preference key for remote repositories auto-uncompress setting.
      */
@@ -50,9 +47,9 @@ public final class RepositoriesCredentialsPersistence {
      */
     private static final String PREFERENCE_KEY_REPOSITORY = "repository_" + REPO_ID_KEY;
     /**
-     * The preference key for remote repository credentials list.
+     * The regex for extract remote repository credentials IDs.
      */
-    private static final String PREFERENCE_KEY_REPOSITORY_CREDENTIALS = PREFERENCE_KEY_REPOSITORY + ".credentials";
+    private static final String REPOSITORY_CREDENTIALS_IDS_REGEX = PREFERENCE_KEY_REPOSITORY + "\\.credential_(.*?)\\.username";
     /**
      * The preference key for remote repository credential item.
      */
@@ -80,10 +77,10 @@ public final class RepositoriesCredentialsPersistence {
         return passwordKey;
     }
 
-    private static String buildCredentialsKey(String repositoryId) {
-        String credentialsKey = PREFERENCE_KEY_REPOSITORY_CREDENTIALS;
-        credentialsKey = credentialsKey.replace(REPO_ID_KEY, repositoryId);
-        return credentialsKey;
+    private static String buildCredentialsIdsRegex(String repositoryId) {
+        String credentialsIdsRegex = REPOSITORY_CREDENTIALS_IDS_REGEX;
+        credentialsIdsRegex = credentialsIdsRegex.replace(REPO_ID_KEY, repositoryId);
+        return credentialsIdsRegex;
     }
 
     static boolean validCredentials(List<RemoteRepositoryCredentials> repositoriesCredentials) {
@@ -99,15 +96,14 @@ public final class RepositoriesCredentialsPersistence {
 
     private static void saveCredentials(Properties properties, List<RemoteRepositoryCredentials> repositoriesCredentials) {
         if (validCredentials(repositoriesCredentials)) {
-            String repositoriesIds = "";
             for (RemoteRepositoryCredentials repositoryCredentials : repositoriesCredentials) {
-                String repositoryCredentialsIds = "";
+                String repositoryId = repositoryCredentials.getRepositoryName();
                 int id = 1;
                 for (Credentials credential : repositoryCredentials.getCredentialsList()) {
                     String credentialId = "" + id++;
                     String username = credential.getUserPrincipal().getName();
                     if (StringUtils.isNotNullAndNotEmpty(username)) {
-                        String usernameKey = buildUsernameKey(repositoryCredentials.getRepositoryName(), credentialId);
+                        String usernameKey = buildUsernameKey(repositoryId, credentialId);
                         properties.setProperty(usernameKey, username);
                     } else {
                         throw new IllegalArgumentException("empty username");
@@ -116,29 +112,16 @@ public final class RepositoriesCredentialsPersistence {
                     if (StringUtils.isNotNullAndNotEmpty(password)) {
                         String encryptedPassword;
                         try {
-                            encryptedPassword = CryptoUtils.encrypt(password, repositoryCredentials.getRepositoryName());
+                            encryptedPassword = CryptoUtils.encrypt(password, repositoryId);
                         } catch (Exception e) {
                             throw new IllegalStateException("Failed to encrypt the password.", e);
                         }
-                        String passwordKey = buildPasswordKey(repositoryCredentials.getRepositoryName(), credentialId);
+                        String passwordKey = buildPasswordKey(repositoryId, credentialId);
                         properties.setProperty(passwordKey, encryptedPassword);
                     } else {
                         throw new IllegalArgumentException("empty password");
                     }
-                    repositoryCredentialsIds = !repositoryCredentialsIds.isEmpty() ? repositoryCredentialsIds + LIST_ITEM_SEPARATOR + credentialId : credentialId;
                 }
-                if (StringUtils.isNotNullAndNotEmpty(repositoryCredentialsIds)) {
-                    String credentialsKey = buildCredentialsKey(repositoryCredentials.getRepositoryName());
-                    properties.setProperty(credentialsKey, repositoryCredentialsIds);
-                    if (repositoriesIds.isEmpty()) {
-                        repositoriesIds = repositoryCredentials.getRepositoryName();
-                    } else {
-                        repositoriesIds = repositoriesIds.concat(LIST_ITEM_SEPARATOR + repositoryCredentials.getRepositoryName());
-                    }
-                }
-            }
-            if (StringUtils.isNotNullAndNotEmpty(repositoriesIds)) {
-                properties.setProperty(PREFERENCE_KEY_REPOSITORIES, repositoriesIds);
             }
 
         } else {
@@ -181,19 +164,21 @@ public final class RepositoriesCredentialsPersistence {
      */
     private static List<RemoteRepositoryCredentials> loadCredentials(Properties properties) {
         List<RemoteRepositoryCredentials> repositoriesCredentials = new ArrayList<>();
-        String repositoriesIds = properties.getProperty(PREFERENCE_KEY_REPOSITORIES);
-        if (StringUtils.isNullOrEmpty(repositoriesIds)) {
-            return repositoriesCredentials;
+        Set<String> propertyNames = properties.stringPropertyNames();
+        List<String> repositoriesIdsList = new ArrayList<>();
+        for (String propertyName : propertyNames) {
+            String repositoryId = propertyName.replaceAll(REPOSITORIES_IDS_REGEX, "$1");
+            if (!repositoriesIdsList.contains(repositoryId)) {
+                repositoriesIdsList.add(repositoryId);
+            }
         }
-        String[] repositoriesIdsList = repositoriesIds.split(LIST_ITEM_SEPARATOR);
         for (String repositoryId : repositoriesIdsList) {
             List<Credentials> repositoryCredentials = new ArrayList<>();
-            String credentialsKey = buildCredentialsKey(repositoryId);
-            String repositoryCredentialsIdsString = properties.getProperty(credentialsKey);
-            if (repositoryCredentialsIdsString == null) {
-                continue;
+            List<String> repositoryCredentialsIds = new ArrayList<>();
+            for (String propertyName : propertyNames) {
+                String credentialId = propertyName.replaceAll(buildCredentialsIdsRegex(repositoryId), "$1");
+                repositoryCredentialsIds.add(credentialId);
             }
-            String[] repositoryCredentialsIds = repositoryCredentialsIdsString.split(LIST_ITEM_SEPARATOR);
             for (String credentialId : repositoryCredentialsIds) {
                 String usernameKey = buildUsernameKey(repositoryId, credentialId);
                 String username = properties.getProperty(usernameKey);
