@@ -42,6 +42,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         parentWindow = frame;
 
         // Initialise empty graph
+        GraphManager.getInstance().setAppContext(context);
         GraphManager.getInstance().createEmptyGraph();
 
         // Init GUI
@@ -118,7 +119,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         StatusPanel statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
 
-        MainPanel mainPanel = new MainPanel(context);
+        MainPanel mainPanel = new MainPanel();
         this.add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.getGraphPanel().addGraphListener(this);

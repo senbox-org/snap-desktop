@@ -12,6 +12,7 @@ import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
+import org.esa.snap.core.gpf.graph.Graph;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
@@ -416,6 +417,13 @@ public class NodeGui implements NodeListener {
         if ((status & STATUS_MASK_SELECTED) == 0)
             status += STATUS_MASK_SELECTED;
         System.out.println("\033[1;32m>> SELECTED\033[0m");
+        updateSources();
+    }
+
+    public void updateSources() {
+        if (operatorUI == null) {
+            getPreferencePanel();
+        }
         if (hasChanged && operatorUI != null) {
             // TODO UPDATE inputs...
             Product products[] = new Product[incomingConnections.size()];
@@ -426,8 +434,12 @@ public class NodeGui implements NodeListener {
             operatorUI.updateParameters();
             hasChanged = false;
             recomputeOutputNeeded = true;
+
+            // initialize panel
+            getPreferencePanel();
         }
     }
+
     private boolean incomplete() {
         output = null;
         NotificationManager.getInstance().warning(this.getName(), "Some input proudcts are missing. Node can not be validated");
@@ -439,6 +451,8 @@ public class NodeGui implements NodeListener {
         if (incomingConnections.size() < metadata.getMinNumberOfInputs()) {
             return incomplete();
         }
+        operatorUI.updateParameters();
+
         recomputeOutputNeeded = false;
         UIValidation.State state = operatorUI.validateParameters().getState();
 
@@ -484,12 +498,17 @@ public class NodeGui implements NodeListener {
         } else {
             output = null;
             if (state == UIValidation.State.ERROR) {
-                NotificationManager.getInstance().error(this.getName(), "Operator UI could not be validated");
+                String msg = operatorUI.validateParameters().getMsg();
+                NotificationManager.getInstance().error(this.getName(), "Operator UI could not be validated `" + msg + "`" );
                 validationStatus = ValidationStatus.ERROR;
             } else if (state == UIValidation.State.WARNING) {
-                NotificationManager.getInstance().warning(this.getName(), "Operator UI could not be validated");
+                String msg = operatorUI.validateParameters().getMsg();
+                NotificationManager.getInstance().warning(this.getName(), "Operator UI could not be validated `" +msg + "`");
                 validationStatus = ValidationStatus.WARNING;
             }
+        }
+        for (NodeListener l : nodeListeners) {
+            l.outputChanged(this);
         }
         return true;
     }
@@ -510,12 +529,7 @@ public class NodeGui implements NodeListener {
             status -= STATUS_MASK_SELECTED;
         if (recomputeOutputNeeded || check_changes()) {
             System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
-            operatorUI.updateParameters();
-            if (recomputeOutput()) {
-                for (NodeListener l : nodeListeners) {
-                    l.outputChanged(this);
-                }
-            }
+            GraphManager.getInstance().validate(this);
         }
     }
 
@@ -632,13 +646,12 @@ public class NodeGui implements NodeListener {
 
     /**
      * Gets the OperatorUI associated to this NodeGui
-     * @param context application context required to create the OperatorUI
      * @return OperatorUI
      */
-    public JComponent getPreferencePanel(AppContext context){
+    public JComponent getPreferencePanel(){
         if (preferencePanel == null) {
             try {
-                preferencePanel = operatorUI.CreateOpTab(this.metadata.getName(), configuration ,context);
+                preferencePanel = operatorUI.CreateOpTab(this.metadata.getName(), configuration , GraphManager.getInstance().getContext());
             } catch (Exception e) {
                 SystemUtils.LOG.info(e.getMessage());
                 preferencePanel = null;
@@ -865,7 +878,7 @@ public class NodeGui implements NodeListener {
     }
 
     public void invalidate() {
-        this.validationStatus = ValidationStatus.ERROR;
+        this.validationStatus = ValidationStatus.WARNING;
     }
 
     public  ValidationStatus getValidationStatus() {

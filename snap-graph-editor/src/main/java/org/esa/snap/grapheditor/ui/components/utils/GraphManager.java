@@ -39,8 +39,10 @@ import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.ui.AppContext;
 
 public class GraphManager implements NodeListener {
+
 
     private final GPF gpf;
     private final OperatorSpiRegistry opSpiRegistry;
@@ -53,6 +55,10 @@ public class GraphManager implements NodeListener {
     static private GraphManager instance = null;
 
     private HashSet<RefreshListener> listeners = new HashSet<>();
+    private AppContext appContext = null;
+
+    private ValidateWorker currentJob = null;
+
 
     static public GraphManager getInstance() {
         if (instance == null) {
@@ -75,6 +81,10 @@ public class GraphManager implements NodeListener {
                               
             }
         }
+    }
+
+    public void setAppContext(AppContext context) {
+        this.appContext = context;
     }
 
     public void addEventListener(RefreshListener l) {
@@ -284,67 +294,38 @@ public class GraphManager implements NodeListener {
         // TODO evaluate graph
     }
 
-
-    private void validateGraph(NodeGui source) {
-        HashMap<Integer, HashSet<NodeGui>> orderedGraph = new HashMap<>();
-        int total = 0;
-        NotificationManager.getInstance().processStart();
-        for (NodeGui n: nodes) {
-            if (n != source) {
-                int dist = n.distance(source);
-                if (dist > 0) {
-                    Integer key = new Integer(dist);
-                    if (!orderedGraph.containsKey(key)) {
-                        orderedGraph.put(key, new HashSet<>());
-                    }
-                    orderedGraph.get(key).add(n);
-                    total ++;
-                }
-            }
-        }
-        NotificationManager.getInstance().processEnd();
-        if (source.getValidationStatus() == NodeGui.ValidationStatus.ERROR) {
-            int i = 0;
-            for (Integer key: orderedGraph.keySet()) {
-                for (NodeGui n: orderedGraph.get(key)) {
-                    i ++;
-                    NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
-                    n.invalidate();
-                }
-            }
-        } else {
-            int i = 0;
-            ArrayList<Integer> indexes = new ArrayList<>(orderedGraph.keySet());
-            Collections.sort(indexes);
-            for (Integer key: indexes) {
-                for (NodeGui n: orderedGraph.get(key)) {
-                    i ++;
-                    NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
-                    n.validate();
-                }
-            }
-        }
-        NotificationManager.getInstance().processEnd();
-        triggerEvent();
+    public void validate(NodeGui source) {
+        validate(source, true);
     }
+
+    private void validate(NodeGui source, boolean sourceFlag) {
+        if (currentJob != null && !currentJob.isDone()) {
+            currentJob.cancel(true);
+        }
+        currentJob = new ValidateWorker(nodes, source, sourceFlag);
+        currentJob.execute();
+    }
+
+
 
     @Override
     public void outputChanged(NodeGui source) {
         // TODO Revalidate rest of the graph.
-        validateGraph(source);
+        validate(source, false);
     }
 
     @Override
     public void sourceDeleted(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Deleted");
         this.nodes.remove(source);
+        validate(source, false);
     }
 
     @Override
     public void connectionAdded(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Connected");
         // Try to revalidate graph
-        validateGraph(source);
+        validate(source, false);
     }
 
     private void clearGraph() {
@@ -416,6 +397,73 @@ public class GraphManager implements NodeListener {
             NotificationManager.getInstance().error("Graph Saver", "file saving error `" + e.getMessage() + "`");
         }
         return  false;
+    }
+
+    public AppContext getContext() {
+        return appContext;
+    }
+
+    private class ValidateWorker extends  SwingWorker<Boolean, Object> {
+        private final boolean validateSource;
+        private ArrayList<NodeGui> nodes;
+        private NodeGui source;
+        ValidateWorker(ArrayList<NodeGui> nodes, NodeGui source, boolean validateSource) {
+            this.nodes = new ArrayList<>(nodes);
+            this.source = source;
+            this.validateSource = validateSource;
+        }
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            NotificationManager.getInstance().processStart();
+            NotificationManager.getInstance().info("Graph", "validation started");
+            if (this.validateSource)
+                source.validate();
+
+            HashMap<Integer, HashSet<NodeGui>> orderedGraph = new HashMap<>();
+            int total = 0;
+            for (NodeGui n: nodes) {
+                if (n != source) {
+                    int dist = n.distance(source);
+                    if (dist > 0) {
+                        Integer key = new Integer(dist);
+                        if (!orderedGraph.containsKey(key)) {
+                            orderedGraph.put(key, new HashSet<>());
+                        }
+                        orderedGraph.get(key).add(n);
+                        total ++;
+                    }
+                }
+            }
+            NotificationManager.getInstance().processEnd();
+            boolean status = true;
+            if (source.getValidationStatus() == NodeGui.ValidationStatus.ERROR) {
+                int i = 0;
+                for (Integer key: orderedGraph.keySet()) {
+                    for (NodeGui n: orderedGraph.get(key)) {
+                        i ++;
+                        NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
+                        n.invalidate();
+                    }
+                }
+                status =false;
+            } else {
+                int i = 0;
+                ArrayList<Integer> indexes = new ArrayList<>(orderedGraph.keySet());
+                Collections.sort(indexes);
+                for (Integer key: indexes) {
+                    for (NodeGui n: orderedGraph.get(key)) {
+                        i ++;
+                        NotificationManager.getInstance().progress((int)(i /(float) total) * 100);
+                        n.updateSources();
+                        n.validate();
+                    }
+                }
+            }
+
+            NotificationManager.getInstance().processEnd();
+            triggerEvent();
+            return status;
+        }
     }
 
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {

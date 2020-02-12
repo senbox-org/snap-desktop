@@ -14,7 +14,6 @@ public class OptionPanel extends JPanel implements GraphListener {
     private final JSplitPane parent;
 
     private NodeGui selectedNode = null;
-    private AppContext context; 
 
     private JComponent currentOptionWidget = null;
     private SpringLayout layout;
@@ -22,8 +21,7 @@ public class OptionPanel extends JPanel implements GraphListener {
 
     private int width = 300;
 
-    public OptionPanel(JSplitPane parent, AppContext context) {
-        this.context = context;
+    public OptionPanel(JSplitPane parent) {
         this.parent = parent;
 
         ///// INIT GUI
@@ -49,7 +47,7 @@ public class OptionPanel extends JPanel implements GraphListener {
             deselected(selectedNode);
         }
         if (source != null) {
-            currentOptionWidget = source.getPreferencePanel(context);
+            currentOptionWidget = source.getPreferencePanel();
             this.optionTitle.setText(source.getName());            
             if (currentOptionWidget != null) {
                 this.add(currentOptionWidget);

@@ -22,7 +22,7 @@ public class MainPanel extends JSplitPane {
     private OptionPanel optionPanel;
     private GraphPanel graphPanel;
 
-    public MainPanel(AppContext context) {
+    public MainPanel() {
         super(JSplitPane.HORIZONTAL_SPLIT);
 
 
@@ -31,7 +31,7 @@ public class MainPanel extends JSplitPane {
         JScrollPane scrollPane = new JScrollPane(graphPanel);
         scrollPane.setPreferredSize(new Dimension(300, 300));
 
-        optionPanel = new OptionPanel(this, context);
+        optionPanel = new OptionPanel(this);
         graphPanel.addGraphListener(optionPanel);
         this.setLeftComponent(scrollPane);
         this.setRightComponent(optionPanel);
