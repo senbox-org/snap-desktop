@@ -430,12 +430,12 @@ public class GraphPanel extends JPanel
 
     @Override
     public void outputChanged(NodeGui source) {
-        // nothing
+        // nothing to do, not really a change.
     }
 
     @Override
     public void sourceDeleted(NodeGui source) {
-        // nothing
+        // nothing to do, already notified.
     }
 
     @Override
