@@ -1,7 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.remote.products.repository.HTTPServerException;
@@ -44,20 +43,20 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
         try {
             startRunning();
 
-            if (!isRunning()) {
+            if (isFinished()) {
                 return; // nothing to return
             }
 
             this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
             try {
-                if (!isRunning()) {
+                if (isFinished()) {
                     return; // nothing to return
                 }
 
                 int maximumInternalServerErrorCount = 3;
                 int internalServerErrorCount = 0;
                 for (int i = 0; i < this.productsWithoutQuickLookImage.size() && internalServerErrorCount < maximumInternalServerErrorCount; i++) {
-                    if (!isRunning()) {
+                    if (isFinished()) {
                         return; // nothing to return
                     }
 

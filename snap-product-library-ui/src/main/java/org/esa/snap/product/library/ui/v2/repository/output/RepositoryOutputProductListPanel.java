@@ -56,7 +56,6 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             public void propertyChange(PropertyChangeEvent evt) {
                 updateProductListCountTitle();
                 refreshPaginationButtons();
-                firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
             }
         });
 
@@ -168,13 +167,14 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             getOutputProductResults().addProducts(products);
             displayPageProducts(1); // display the first page
         } else {
-            this.productListPanel.getProductListModel().clear();
+            // no products to display
+            clearPageProducts();
         }
     }
 
     public void clearOutputList(boolean canResetProductListCountTitle) {
         resetOutputProducts();
-        this.productListPanel.getProductListModel().clear();
+        clearPageProducts();
         if (canResetProductListCountTitle) {
             resetProductListCountTitle(); // remove the product count from the title
         }
@@ -185,7 +185,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         if (outputProductResults.getAvailableProductCount() > 0) {
             displayPageProducts(outputProductResults.getCurrentPageNumber());
         } else {
-            this.productListPanel.getProductListModel().clear();
+            clearPageProducts();
         }
     }
 
@@ -281,6 +281,12 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         }
         outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
         this.productListPanel.setProducts(pageProducts);
+        firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
+    }
+
+    private void clearPageProducts() {
+        this.productListPanel.getProductListModel().clear();
+        firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
     }
 
     private void refreshPaginationButtons() {

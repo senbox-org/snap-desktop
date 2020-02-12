@@ -133,7 +133,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
             java.util.TimerTask timerTask = new java.util.TimerTask() {
                 @Override
                 public void run() {
-                    if (isRunning()) {
+                    if (!isFinished()) {
                         notifyTimerWakeUpLater();
                     }
                 }
@@ -152,7 +152,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (isRunning()) {
+                if (!isFinished()) {
                     onTimerWakeUp();
                 }
             }

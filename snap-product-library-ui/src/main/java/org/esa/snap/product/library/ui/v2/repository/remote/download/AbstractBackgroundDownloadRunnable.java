@@ -13,9 +13,9 @@ public abstract class AbstractBackgroundDownloadRunnable implements Runnable, Th
     }
 
     @Override
-    public boolean isRunning() {
+    public boolean isFinished() {
         synchronized (this) {
-            return (this.isRunning != null && this.isRunning.booleanValue());
+            return (this.isRunning != null && !this.isRunning.booleanValue());
         }
     }
 

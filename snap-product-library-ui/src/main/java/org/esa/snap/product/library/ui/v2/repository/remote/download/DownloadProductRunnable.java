@@ -40,9 +40,12 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         SaveDownloadedProductData saveProductData = null;
         try {
             startRunning();
-            if (isRunning()) {
-                saveProductData = downloadAndSaveProduct();
+
+            if (isFinished()) {
+                return; // nothing to return
             }
+
+            saveProductData = downloadAndSaveProduct();
         } catch (java.lang.InterruptedException exception) {
             RepositoryProduct repositoryProduct = this.remoteProductDownloader.getProductToDownload();
             logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "'.");
@@ -94,7 +97,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         Path productPath = null;
         this.remoteRepositoriesSemaphore.acquirePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         try {
-            if (!isRunning()) {
+            if (isFinished()) {
                 return null;
             }
 
@@ -105,7 +108,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         }
 
-        if (!isRunning()) {
+        if (isFinished()) {
             return null;
         }
 

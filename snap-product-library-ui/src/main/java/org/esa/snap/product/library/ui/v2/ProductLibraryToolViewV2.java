@@ -221,9 +221,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     @Override
     public void onUpdateProductDownloadStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
         DownloadProgressStatus progressProgressStatus = findRemoteRepositoryProductDownloadProgress(repositoryProduct);
-        if (progressProgressStatus == null) {
-            throw new IllegalStateException("The remote repository product '" + repositoryProduct.getName()+"' does not exists to update the status.");
-        } else {
+        if (progressProgressStatus != null) {
             progressProgressStatus.setStatus(downloadStatus);
             OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
             productListModel.refreshProductDownloadPercent(repositoryProduct);
@@ -236,9 +234,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     @Override
     public void onUpdateProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
         DownloadProgressStatus progressProgressStatus = findRemoteRepositoryProductDownloadProgress(repositoryProduct);
-        if (progressProgressStatus == null) {
-            throw new IllegalStateException("The remote repository product '" + repositoryProduct.getName()+"' does not exists to update the progress percent.");
-        } else {
+        if (progressProgressStatus != null) {
             progressProgressStatus.setValue(progressPercent);
             progressProgressStatus.setDownloadedPath(downloadedPath);
             OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
@@ -820,7 +816,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 if (productsWithoutQuickLookImage.size() > 0) {
                     if (logger.isLoggable(Level.FINE)) {
                         int currentPageNumber = selectedProductsRepositoryPanel.getOutputProductResults().getCurrentPageNumber();
-                        logger.log(Level.FINE, "Start downloading the quick look images for " + productsWithoutQuickLookImage.size()+" products from page number " + currentPageNumber + ".");
+                        String repositoryName = selectedProductsRepositoryPanel.getName();
+                        logger.log(Level.FINE, "Start downloading the quick look images for " + productsWithoutQuickLookImage.size()+" products from page number " + currentPageNumber + " using the '" +repositoryName+"' remote repository.");
                     }
 
                     RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)selectedProductsRepositoryPanel;

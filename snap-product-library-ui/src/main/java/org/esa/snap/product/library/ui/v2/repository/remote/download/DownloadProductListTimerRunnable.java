@@ -55,7 +55,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     protected Void execute() throws Exception {
         this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
         try {
-            if (!isRunning()) {
+            if (isFinished()) {
                 return null; // nothing to return
             }
 
@@ -63,14 +63,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                 ProductListDownloaderListener downloaderListener = new ProductListDownloaderListener() {
                     @Override
                     public void notifyProductCount(long totalProductCount) {
-                        if (isRunning()) {
+                        if (!isFinished()) {
                             updateProductListSizeLater(totalProductCount);
                         }
                     }
 
                     @Override
                     public void notifyPageProducts(int pageNumber, List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
-                        if (isRunning()) {
+                        if (!isFinished()) {
                             updatePageProductsLater(pageResults, totalProductCount, retrievedProductCount);
                         }
                     }

@@ -77,7 +77,7 @@ public class DownloadingProductPanel extends JPanel {
     }
 
     public void refreshDownloadStatus(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
-        if (!this.downloadProductRunnable.isRunning()) {
+        if (this.downloadProductRunnable.isFinished()) {
             disableComponents();
         }
         RepositoryProduct productToDownload = this.downloadProductRunnable.getProductToDownload();
@@ -88,7 +88,7 @@ public class DownloadingProductPanel extends JPanel {
     }
 
     public boolean refreshDownloadStatus(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus) {
-        if (!this.downloadProductRunnable.isRunning()) {
+        if (this.downloadProductRunnable.isFinished()) {
             disableComponents();
         }
         if (repositoryProduct == this.downloadProductRunnable.getProductToDownload()) {
@@ -112,10 +112,10 @@ public class DownloadingProductPanel extends JPanel {
     }
 
     private void disablePanel() {
-        if (this.downloadProductRunnable.isRunning()) {
-            throw new IllegalStateException("The thread to download the product is still running.");
-        } else {
+        if (this.downloadProductRunnable.isFinished()) {
             disableComponents();
+        } else {
+            throw new IllegalStateException("The thread to download the product has not finished yet.");
         }
     }
 
