@@ -52,6 +52,7 @@ public class GraphPanel extends JPanel
 
     public GraphPanel() {
         super();
+        this.setFocusable(true);
         // set event listener for refreshing UI when needed
         GraphManager.getInstance().addEventListener(this);
 
@@ -277,6 +278,7 @@ public class GraphPanel extends JPanel
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        this.requestFocus();
         if (e.getButton() != MouseEvent.BUTTON1) {
             addNodeWidget.hide();
             if (e.getButton() == MouseEvent.BUTTON3) {
@@ -311,6 +313,7 @@ public class GraphPanel extends JPanel
 
     @Override
     public void mousePressed(MouseEvent e) {
+        this.requestFocus();
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (addNodeWidget.isVisible()) {
                 NodeGui node = addNodeWidget.click(e.getPoint());

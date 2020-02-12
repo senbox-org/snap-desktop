@@ -481,15 +481,6 @@ public class GraphManager implements NodeListener {
         }
     }
 
-    private static class EvaluateWorker extends  SwingWorker<Boolean, Object> {
-        private ArrayList<NodeGui> nodes;
-
-        @Override
-        protected Boolean doInBackground() {
-
-            return true;
-        }
-    }
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
         private File source;
 

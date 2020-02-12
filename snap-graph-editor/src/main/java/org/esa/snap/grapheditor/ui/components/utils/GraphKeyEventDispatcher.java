@@ -17,18 +17,19 @@ public class GraphKeyEventDispatcher implements KeyEventDispatcher {
 
     @Override
     public boolean dispatchKeyEvent(@NotNull KeyEvent event) {
-        switch(event.getID()) {
-            case (KeyEvent.KEY_PRESSED):
-                defaultListener.keyPressed(event);
-                break;
-            case (KeyEvent.KEY_RELEASED):
-                defaultListener.keyReleased(event);
-                break;
-            case (KeyEvent.KEY_TYPED):
-                defaultListener.keyPressed(event);
-                break;
+        if (defaultListener == event.getSource()) {
+            switch(event.getID()) {
+                case (KeyEvent.KEY_RELEASED):
+                    defaultListener.keyReleased(event);
+                    break;
+                case (KeyEvent.KEY_PRESSED):
+                case (KeyEvent.KEY_TYPED):
+                    defaultListener.keyPressed(event);
+                    break;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
 }
