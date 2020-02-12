@@ -205,7 +205,6 @@ public class GraphBuilder extends JPanel implements GraphListener {
      * @param args program arguments
      */
     public static void main(String[] args) {
-
         AppContext context = new DefaultAppContext("Standalone Graph Editor");
 
         JFrame mainFrame = new JFrame();

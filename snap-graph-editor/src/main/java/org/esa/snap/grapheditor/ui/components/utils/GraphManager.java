@@ -384,13 +384,18 @@ public class GraphManager implements NodeListener {
 
     public boolean saveGraph(File f) {
         Graph graph = new Graph("graph");
+        XppDom presentationEl = new XppDom("applicationData");
+        presentationEl.setAttribute("id", "Presentation");
+
         for (NodeGui n: nodes) {
             for (Connection c: n.getIncomingConnections()) {
-                NodeSource source = new NodeSource(c.getSource().getName() + " - " + n.getName(), c.getSource().getName());
+                NodeSource source = new NodeSource("sourceProduct", c.getSource().getName());
                 n.getNode().addSource(source);
             }
+            presentationEl.addChild(n.saveParameters());
             graph.addNode(n.getNode());
         }
+        graph.setAppData("Presentation", presentationEl);
         try {
             OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(f));
             GraphIO.write(graph, fileWriter);
@@ -411,7 +416,7 @@ public class GraphManager implements NodeListener {
         @Override
         protected ArrayList<NodeGui> doInBackground() throws Exception {
             ArrayList<NodeGui> nodes = new ArrayList<>();
-            Graph graph = null;
+            Graph graph;
             InputStreamReader fileReader = new InputStreamReader(new FileInputStream(source));
             try {
                 graph = GraphIO.read(fileReader);

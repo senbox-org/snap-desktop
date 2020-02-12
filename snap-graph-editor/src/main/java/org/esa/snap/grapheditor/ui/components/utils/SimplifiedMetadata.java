@@ -17,7 +17,7 @@ public class SimplifiedMetadata {
     private final boolean hasOutputProduct;
 
 
-    public SimplifiedMetadata(final OperatorMetadata opMetadatada, final OperatorDescriptor opDescriptor) {
+    public SimplifiedMetadata(final OperatorMetadata opMetadata, final OperatorDescriptor opDescriptor) {
         this.descriptor = opDescriptor;
 
         if (descriptor.getSourceProductsDescriptor() != null) {
@@ -29,7 +29,7 @@ public class SimplifiedMetadata {
         }
         hasOutputProduct = descriptor.getTargetProductDescriptor() != null;
 
-        metadata = opMetadatada;
+        metadata = opMetadata;
 
         name = metadata.label();
         if (name == null || name.length() == 0) {
@@ -47,10 +47,20 @@ public class SimplifiedMetadata {
         return name;
     }
 
+    /**
+     * Operator description, unused due missing description.
+     *
+     * @return description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Operator category the same as in the menu.
+     *
+     * @return category
+     */
     public String getCategory() {
         return category;
     }
