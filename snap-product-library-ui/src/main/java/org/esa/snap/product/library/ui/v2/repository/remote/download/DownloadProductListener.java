@@ -15,4 +15,6 @@ public interface DownloadProductListener {
     public void onUpdateProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath);
 
     public void onUpdateProductDownloadStatus(RepositoryProduct repositoryProduct, byte status);
+
+    public void onCancelDownloadingProduct(DownloadProductRunnable downloadProductRunnable);
 }

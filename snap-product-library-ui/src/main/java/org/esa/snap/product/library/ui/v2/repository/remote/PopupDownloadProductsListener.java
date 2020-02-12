@@ -10,5 +10,5 @@ public interface PopupDownloadProductsListener {
 
     public void onUpdateProductDownloadProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus);
 
-    public void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable);
+    public void onStopDownloadingProduct(DownloadProductRunnable downloadProductRunnable);
 }

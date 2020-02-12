@@ -29,7 +29,6 @@ public class DownloadRemoteProductsHelper {
 
     private final ProgressBarHelperImpl progressPanel;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
-    private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
     private final DownloadProductListener downloadProductListener;
 
     private ThreadNamePoolExecutor threadPoolExecutor;
@@ -46,7 +45,6 @@ public class DownloadRemoteProductsHelper {
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
         this.downloadProductListener = downloadProductListener;
         this.uncompressedDownloadedProducts = UNCOMPRESSED_DOWNLOADED_PRODUCTS;
-        this.downloadingProductsProgressValue = new HashMap<>();
     }
 
     public void setUncompressedDownloadedProducts(boolean uncompressedDownloadedProducts) {
@@ -85,6 +83,12 @@ public class DownloadRemoteProductsHelper {
                 protected void startRunning() {
                     super.startRunning();
                     startRunningDownloadProductThreadLater();
+                }
+
+                @Override
+                public void cancelRunning() {
+                    super.cancelRunning();
+                    cancelRunningDownloadProductThreadLater(this);
                 }
 
                 @Override
@@ -181,6 +185,20 @@ public class DownloadRemoteProductsHelper {
         SwingUtilities.invokeLater(runnable);
     }
 
+    private void cancelRunningDownloadProductThreadLater(DownloadProductRunnable parentRunnableItem) {
+        Runnable runnable = new PairRunnable<DownloadProductRunnable, Void>(parentRunnableItem, null) {
+            @Override
+            public void run() {
+                onCancelRunningDownloadProductThread(this.first);
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    private void onCancelRunningDownloadProductThread(DownloadProductRunnable parentRunnableItem) {
+        this.downloadProductListener.onCancelDownloadingProduct(parentRunnableItem);
+    }
+
     private void finishRunningDownloadProductThreadLater(DownloadProductRunnable parentRunnableItem, SaveDownloadedProductData saveProductDataItem) {
         Runnable runnable = new PairRunnable<DownloadProductRunnable, SaveDownloadedProductData>(parentRunnableItem, saveProductDataItem) {
             @Override
@@ -230,10 +248,8 @@ public class DownloadRemoteProductsHelper {
             this.downloadProductListener.onFinishDownloadingProduct(parentRunnable, saveProductData, hasProductsToDownload);
 
             if (!hasProductsToDownload) {
-                // there are no downloading products
-                if (!this.progressPanel.hideProgressPanel(this.threadId)) { // hide the progress panel
-                    throw new IllegalStateException("Failed to hide the progress panel because there are no downloading products.");
-                }
+                // there are no downloading products and hide the progress panel if visible
+                this.progressPanel.hideProgressPanel(this.threadId);
             }
 
             if (this.runningTasks.size() == 0) {

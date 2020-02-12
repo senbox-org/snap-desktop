@@ -1,5 +1,8 @@
-package org.esa.snap.product.library.ui.v2.repository.remote;
+package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.PopupDownloadProductsListener;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -14,10 +17,8 @@ public class DownloadingProductsPopupMenu extends JPopupMenu implements PopupDow
 
     private final DownloadingProductsPopupPanel downloadingProductsPopupPanel;
 
-    public DownloadingProductsPopupMenu(List<DownloadProductRunnable> downloadingProductRunnables, RemoteRepositoriesProductProgress remoteRepositoriesProductProgress,
-                                        int gapBetweenRows, int gapBetweenColumns, Color backgroundColor) {
-
-        this.downloadingProductsPopupPanel = new DownloadingProductsPopupPanel(remoteRepositoriesProductProgress, downloadingProductRunnables, 5, gapBetweenRows, gapBetweenColumns);
+    public DownloadingProductsPopupMenu(List<DownloadProductRunnable> downloadingProductRunnables, int gapBetweenRows, int gapBetweenColumns, Color backgroundColor) {
+        this.downloadingProductsPopupPanel = new DownloadingProductsPopupPanel(downloadingProductRunnables, 5, gapBetweenRows, gapBetweenColumns);
         this.downloadingProductsPopupPanel.setOpaque(false);
 
         JScrollPane scrollPane = new JScrollPane(this.downloadingProductsPopupPanel);
@@ -36,11 +37,11 @@ public class DownloadingProductsPopupMenu extends JPopupMenu implements PopupDow
     }
 
     @Override
-    public void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable) {
-        this.downloadingProductsPopupPanel.finishDownloadingProduct(downloadProductRunnable);
+    public void onStopDownloadingProduct(DownloadProductRunnable downloadProductRunnable) {
+        this.downloadingProductsPopupPanel.stopDownloadingProduct(downloadProductRunnable);
     }
 
-    public void refresh() {
-        this.downloadingProductsPopupPanel.refresh();
+    public void refresh(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
+        this.downloadingProductsPopupPanel.refresh(remoteRepositoriesProductProgress);
     }
 }

@@ -108,13 +108,6 @@ public class OutputProductListModel {
         }
     }
 
-    public void removePendingDownloadProducts() {
-        this.outputProductResultsCallback.getOutputProductResults().removePendingDownloadProducts();
-        if (this.products.size() > 0) {
-            fireIntervalChanged(0, this.products.size()-1);
-        }
-    }
-
     public Map<RepositoryProduct, Path> addPendingOpenDownloadedProducts(RepositoryProduct[] pendingOpenDownloadedProducts) {
         Map<RepositoryProduct, Path> productsToOpen = new HashMap<>();
         if (pendingOpenDownloadedProducts.length > 0) {

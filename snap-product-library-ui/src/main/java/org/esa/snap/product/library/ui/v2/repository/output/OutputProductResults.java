@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
-import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -8,8 +7,10 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jcoravu on 30/1/2020.
@@ -72,23 +73,9 @@ public class OutputProductResults {
         return imageIcon;
     }
 
-    public void removePendingDownloadProducts() {
-        java.util.List<RepositoryProduct> keysToRemove = new ArrayList<>(this.downloadingProductsProgressValue.size());
-        Iterator<Map.Entry<RepositoryProduct, DownloadProgressStatus>> it = this.downloadingProductsProgressValue.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<RepositoryProduct, DownloadProgressStatus> entry = it.next();
-            DownloadProgressStatus progressPercent = entry.getValue();
-            if (progressPercent.isPendingDownload()) {
-                keysToRemove.add(entry.getKey());
-            } else if (progressPercent.isDownloading()) {
-                if (progressPercent.getValue() < 100) {
-                    progressPercent.setStatus(DownloadProgressStatus.STOP_DOWNLOADING);
-                }
-            }
-        }
-        for (int i=0; i<keysToRemove.size(); i++) {
-            this.downloadingProductsProgressValue.remove(keysToRemove.get(i));
-        }
+    public boolean removePendingDownloadProduct(RepositoryProduct repositoryProduct) {
+        DownloadProgressStatus previousProgressStatus = this.downloadingProductsProgressValue.remove(repositoryProduct);
+        return (previousProgressStatus != null);
     }
 
     public void setCurrentPageNumber(int currentPageNumber) {

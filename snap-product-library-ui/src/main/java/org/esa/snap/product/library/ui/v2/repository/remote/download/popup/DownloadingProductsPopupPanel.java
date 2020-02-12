@@ -1,8 +1,8 @@
-package org.esa.snap.product.library.ui.v2.repository.remote;
+package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 
-import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListener;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
-import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
@@ -12,7 +12,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -20,16 +19,10 @@ import java.util.List;
  */
 public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
 
-    private final RemoteRepositoriesProductProgress remoteRepositoriesProductProgress;
-
     private int preferredScrollableHeight;
 
-    public DownloadingProductsPopupPanel(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress, List<DownloadProductRunnable> downloadingProductRunnables,
-                                         int visibleProductCount, int gapBetweenRows, int gapBetweenColumns) {
-
+    public DownloadingProductsPopupPanel(List<DownloadProductRunnable> downloadingProductRunnables, int visibleProductCount, int gapBetweenRows, int gapBetweenColumns) {
         super(null);
-
-        this.remoteRepositoriesProductProgress = remoteRepositoriesProductProgress;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -60,25 +53,25 @@ public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
         int productCount = getComponentCount();
         for (int i=0; i<productCount; i++) {
             DownloadingProductPanel downloadingProductPanel = (DownloadingProductPanel)getComponent(i);
-            downloadingProductPanel.refresh(repositoryProduct, progressProgressStatus);
+            downloadingProductPanel.refreshDownloadStatus(repositoryProduct, progressProgressStatus);
         }
     }
 
-    public void finishDownloadingProduct(DownloadProductRunnable downloadProductRunnable) {
+    public void stopDownloadingProduct(DownloadProductRunnable downloadProductRunnable) {
         int productCount = getComponentCount();
         for (int i=0; i<productCount; i++) {
             DownloadingProductPanel downloadingProductPanel = (DownloadingProductPanel)getComponent(i);
-            if (downloadingProductPanel.finishDownloading(downloadProductRunnable)) {
+            if (downloadingProductPanel.stopDownloading(downloadProductRunnable)) {
                 break;
             }
         }
     }
 
-    public void refresh() {
+    public void refresh(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
         int productCount = getComponentCount();
         for (int i=0; i<productCount; i++) {
             DownloadingProductPanel downloadingProductPanel = (DownloadingProductPanel)getComponent(i);
-            downloadingProductPanel.refresh(this.remoteRepositoriesProductProgress);
+            downloadingProductPanel.refreshDownloadStatus(remoteRepositoriesProductProgress);
         }
     }
 }

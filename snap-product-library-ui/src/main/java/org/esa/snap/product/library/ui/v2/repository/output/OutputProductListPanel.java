@@ -204,10 +204,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         return selectedProducts;
     }
 
-    public void removePendingDownloadProducts() {
-        this.productListModel.removePendingDownloadProducts();
-    }
-
     public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
         return this.productListModel.addPendingDownloadProducts(pendingProducts);
     }

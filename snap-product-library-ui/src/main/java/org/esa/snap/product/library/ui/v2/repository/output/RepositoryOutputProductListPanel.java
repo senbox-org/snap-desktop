@@ -42,7 +42,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private int visibleProductsPerPage;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
-                                            ActionListener stopButtonListener, int progressBarWidth) {
+                                            ActionListener stopButtonListener, int progressBarWidth, boolean showStopDownloadButton) {
 
         super(new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
@@ -128,7 +128,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         };
         this.progressBarHelper.getStopButton().addActionListener(stopButtonListener);
 
-        addComponents(componentDimension);
+        addComponents(componentDimension, showStopDownloadButton);
     }
 
     @Override
@@ -340,7 +340,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         selectedProductsRepositoryPanel.resetOutputProducts();
     }
 
-    private void addComponents(ComponentDimension componentDimension) {
+    private void addComponents(ComponentDimension componentDimension, boolean showStopDownloadButton) {
         int gapBetweenRows = 0;
         int gapBetweenColumns = componentDimension.getGapBetweenColumns();
 
@@ -353,8 +353,10 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         northPanel.add(this.comparatorsComboBox, c);
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.progressBarHelper.getProgressBar(), c);
-        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        northPanel.add(this.progressBarHelper.getStopButton(), c);
+        if (showStopDownloadButton) {
+            c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+            northPanel.add(this.progressBarHelper.getStopButton(), c);
+        }
 
         JScrollPane scrollPane = new JScrollPane(this.productListPanel);
         scrollPane.getViewport().setOpaque(true);
