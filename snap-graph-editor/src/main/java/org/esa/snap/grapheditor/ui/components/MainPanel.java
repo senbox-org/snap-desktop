@@ -1,8 +1,10 @@
 package org.esa.snap.grapheditor.ui.components;
 
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 import org.esa.snap.ui.AppContext;
+
+import java.awt.*;
 
 /**
  * Main panel of the graph builder composed by a the graph panel and the
@@ -23,10 +25,15 @@ public class MainPanel extends JSplitPane {
     public MainPanel(AppContext context) {
         super(JSplitPane.HORIZONTAL_SPLIT);
 
+
         graphPanel = new GraphPanel();
+        graphPanel.setPreferredSize(new Dimension(2000, 1500));
+        JScrollPane scrollPane = new JScrollPane(graphPanel);
+        scrollPane.setPreferredSize(new Dimension(300, 300));
+
         optionPanel = new OptionPanel(this, context);
         graphPanel.addGraphListener(optionPanel);
-        this.setLeftComponent(graphPanel);
+        this.setLeftComponent(scrollPane);
         this.setRightComponent(optionPanel);
         optionPanel.setVisible(false);
 

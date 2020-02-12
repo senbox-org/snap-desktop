@@ -389,7 +389,7 @@ public class GraphManager implements NodeListener {
 
         for (NodeGui n: nodes) {
             for (Connection c: n.getIncomingConnections()) {
-                NodeSource source = new NodeSource("sourceProduct", c.getSource().getName());
+                NodeSource source = new NodeSource("sourceProduct", c.getSource().getNode().getId());
                 n.getNode().addSource(source);
             }
             presentationEl.addChild(n.saveParameters());
