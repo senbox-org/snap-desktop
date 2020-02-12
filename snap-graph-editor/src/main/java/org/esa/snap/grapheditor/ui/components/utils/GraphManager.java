@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.util.*;
 
 import java.awt.event.ActionListener;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.*;
 
@@ -420,15 +421,15 @@ public class GraphManager implements NodeListener {
         @Override
         protected ArrayList<NodeGui> doInBackground() throws Exception {
             ArrayList<NodeGui> nodes = new ArrayList<>();
-            Graph graph;
+            AtomicReference<Graph> graph = new AtomicReference<>();
             InputStreamReader fileReader = new InputStreamReader(new FileInputStream(source));
             try {
-                graph = GraphIO.read(fileReader);
+                graph.set(GraphIO.read(fileReader));
             } finally {
                 fileReader.close();
             }
-            if (graph != null) {
-                for (Node n : graph.getNodes()) {
+            if (graph.get() != null) {
+                for (Node n : graph.get().getNodes()) {
                     if (simpleMetadatas.containsKey(n.getOperatorName())) {
                         UnifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
@@ -440,7 +441,7 @@ public class GraphManager implements NodeListener {
                     }
                 }
                 // Load position
-                final XppDom presentationXML = graph.getApplicationData("Presentation");
+                final XppDom presentationXML = graph.get().getApplicationData("Presentation");
                 if (presentationXML != null) {
                     for (XppDom el : presentationXML.getChildren()) {
                         if (el.getName().equals("node")) {
