@@ -1,12 +1,12 @@
 package org.esa.snap.rcp.actions.file;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.dataio.ProductReaderExposedParams;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
@@ -270,7 +270,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
             final Rectangle.Float productBounds = new Rectangle.Float(0, 0, productWidth, productHeight);
             Rectangle2D finalRegion = productBounds.createIntersection(region);
-            Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int) finalRegion.getMaxX() - (int) finalRegion.getMinX(), (int)finalRegion.getMaxY() - (int)finalRegion.getMinY());
+            Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)Math.floor(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)Math.floor(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
             Geometry geometry = ProductUtils.computeGeoRegion(geoCoding, productWidth, productHeight, bounds);
             productSubsetDef.setGeoRegion(geometry);
         }
@@ -459,12 +459,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                     }
 
                 }
-                int x1 = ((Number) paramX1.getValue()).intValue();
-                int y1 = ((Number) paramY1.getValue()).intValue();
-                int x2 = ((Number) paramWidth.getValue()).intValue();
-                int y2 = ((Number) paramHeight.getValue()).intValue();
-
-                productSubsetDef.setRegion(x1, y1, x2, y2);
             } finally {
                 updatingUI.set(false);
             }
@@ -587,8 +581,8 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
             paramX1.setValue((int) finalRegion.getMinX(), null);
             paramY1.setValue((int) finalRegion.getMinY(), null);
-            int width = (int) finalRegion.getMaxX() - (int) finalRegion.getMinX();
-            int height = (int) finalRegion.getMaxY() - (int) finalRegion.getMinY();
+            int width = (int) finalRegion.getMaxX() - (int) finalRegion.getMinX() + 1;
+            int height = (int) finalRegion.getMaxY() - (int) finalRegion.getMinY() + 1;
             paramWidth.setValue(width, null);
             paramHeight.setValue(height, null);
         }
