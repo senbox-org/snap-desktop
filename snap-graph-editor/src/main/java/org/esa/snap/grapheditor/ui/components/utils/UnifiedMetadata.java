@@ -47,6 +47,11 @@ public class UnifiedMetadata {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return "<html><b>"+name+"</b><br>"+category+"</html>";
+    }
+
     /**
      * Operator description, unused due missing description.
      *

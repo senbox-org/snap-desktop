@@ -25,7 +25,6 @@ public class MainPanel extends JSplitPane {
     public MainPanel() {
         super(JSplitPane.HORIZONTAL_SPLIT);
 
-
         graphPanel = new GraphPanel();
         graphPanel.setPreferredSize(new Dimension(2000, 1500));
         JScrollPane scrollPane = new JScrollPane(graphPanel);

@@ -13,8 +13,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
@@ -37,7 +36,7 @@ public class GraphPanel extends JPanel
 
     private BufferedImage gridPattern = null;
 
-    private AddNodeWidget addNodeWidget;
+    private AddNodeDialog addNodeDialog = new AddNodeDialog();
 
     private Point lastMousePosition = new Point(0, 0);
 
@@ -57,7 +56,6 @@ public class GraphPanel extends JPanel
         GraphManager.getInstance().addEventListener(this);
 
         this.setBackground(Color.lightGray);
-        this.addNodeWidget = new AddNodeWidget(this, graphManager);
         this.addMenu = new JPopupMenu();
         addMenu.add(graphManager.createOperatorMenu(this));
 
@@ -99,7 +97,7 @@ public class GraphPanel extends JPanel
         drawConnections(g2);
         drawDrag(g2);
         drawTooltip(g2);
-        this.addNodeWidget.paint(g2);
+       // this.addNodeWidget.paint(g2);
     }
 
     private void drawGrid(Graphics2D g) {
@@ -151,26 +149,6 @@ public class GraphPanel extends JPanel
 
     @Override
     public void keyPressed(KeyEvent event) {
-        int key = event.getKeyCode();
-
-        if (this.addNodeWidget.isVisible()) {
-            switch (key) {
-            case (KeyEvent.VK_UP):
-                this.addNodeWidget.up();
-                this.repaint();
-                break;
-            case (KeyEvent.VK_DOWN):
-                this.addNodeWidget.down();
-                this.repaint();
-                break;
-            case (KeyEvent.VK_BACK_SPACE):
-                // backspace
-                this.addNodeWidget.backspace();
-                this.repaint(); // this.addNodeWidget.getBoundingRect(getWidth(), getHeight()));
-                break;
-            }
-
-        }
     }
 
     @Override
@@ -178,7 +156,12 @@ public class GraphPanel extends JPanel
         int key = event.getKeyCode();
 
         if (key == SettingManager.getInstance().getCommandPanelKey()) {
-            this.addNodeWidget.changeStatus(lastMousePosition);
+            if (this.addNodeDialog.isVisible()) {
+                this.addNodeDialog.popdown();
+            }  else {
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                this.addNodeDialog.popup(this, topFrame.getX(), topFrame.getY(), topFrame.getWidth());
+            }
             this.repaint();// this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); //
                            // this.addNodeWidget.getBoundingRect(getWidth(),
                            // getHeight()));
@@ -191,28 +174,28 @@ public class GraphPanel extends JPanel
             return;
         }
 
-        if (this.addNodeWidget.isVisible()) {
-            switch (key) {
-            case (10):
-                // return
-                this.addNode(this.addNodeWidget.enter());
-                break;
-            case (27):
-                // escape
-                this.addNodeWidget.hide();
-                break;
-            case (KeyEvent.VK_UP):
-                break;
-            case (KeyEvent.VK_DOWN):
-                break;
-            case (KeyEvent.VK_BACK_SPACE):
-                break;
-            default:
-                this.addNodeWidget.type(event.getKeyChar());
-                break;
-            }
-            this.repaint();
-        }
+//        if (this.addNodeWidget.isVisible()) {
+//            switch (key) {
+//            case (10):
+//                // return
+//                this.addNode(this.addNodeWidget.enter());
+//                break;
+//            case (27):
+//                // escape
+//                this.addNodeWidget.hide();
+//                break;
+//            case (KeyEvent.VK_UP):
+//                break;
+//            case (KeyEvent.VK_DOWN):
+//                break;
+//            case (KeyEvent.VK_BACK_SPACE):
+//                break;
+//            default:
+//                this.addNodeWidget.type(event.getKeyChar());
+//                break;
+//            }
+//            this.repaint();
+//        }
     }
 
     private void removeSelectedNode() {
@@ -260,12 +243,12 @@ public class GraphPanel extends JPanel
     @Override
     public void mouseMoved(MouseEvent e) {
         lastMousePosition = e.getPoint();
-        if (addNodeWidget.isVisible()) {
-            if (addNodeWidget.mouseMoved(lastMousePosition)) {
-                repaint();
-                return;
-            }
-        }
+//        if (addNodeWidget.isVisible()) {
+//            if (addNodeWidget.mouseMoved(lastMousePosition)) {
+//                repaint();
+//                return;
+//            }
+//        }
         for (NodeGui node : graphManager.getNodes()) {
             if (node.contains(lastMousePosition)) {
                 node.over(lastMousePosition);
@@ -280,19 +263,24 @@ public class GraphPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
         this.requestFocus();
         if (e.getButton() != MouseEvent.BUTTON1) {
-            addNodeWidget.hide();
+            addNodeDialog.popdown();
+            // addNodeWidget.hide();
             if (e.getButton() == MouseEvent.BUTTON3) {
                 addMenu.show(this, e.getX(), e.getY());
             }
+            return;
         } else {
-            if (addNodeWidget.isVisible()) {
-                NodeGui node = addNodeWidget.click(e.getPoint());
+            if (addNodeDialog.isVisible()) {
+                addNodeDialog.popdown();
+            /*    NodeGui node = addNodeWidget.click(e.getPoint());
                 if (node != null) {
                     addNode(node);
                     repaint();
                     return;
                 }
+            */
             }
+
         }
         boolean somethingSelected = false;
         for (NodeGui node : graphManager.getNodes()) {
@@ -315,17 +303,19 @@ public class GraphPanel extends JPanel
     public void mousePressed(MouseEvent e) {
         this.requestFocus();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            if (addNodeWidget.isVisible()) {
-                NodeGui node = addNodeWidget.click(e.getPoint());
-                if (node != null) {
-                    addNode(node);
-                    moveNode(node, e.getX() - 10, e.getY() - 10);
-
-                    dragAction = node.drag(e.getPoint());
-                    repaint();
-                    return;
-                }
-            }
+           if (addNodeDialog.isVisible()) {
+               addNodeDialog.popdown();
+           }
+//                NodeGui node = addNodeWidget.click(e.getPoint());
+//                if (node != null) {
+//                    addNode(node);
+//                    moveNode(node, e.getX() - 10, e.getY() - 10);
+//
+//                    dragAction = node.drag(e.getPoint());
+//                    repaint();
+//                    return;
+//                }
+//            }
             Point p = e.getPoint();
             for (NodeGui node : graphManager.getNodes()) {
                 if (node.contains(p)) {
@@ -374,18 +364,18 @@ public class GraphPanel extends JPanel
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (addNodeWidget.isVisible()) {
-            int rotation = e.getWheelRotation();
-            boolean up = rotation < 0;
-            for (int i = 0; i < Math.abs(rotation); i++) {
-                if (up) {
-                    addNodeWidget.up();
-                } else {
-                    addNodeWidget.down();
-                }
-            }
-            repaint();
-        }
+//        if (addNodeWidget.isVisible()) {
+//            int rotation = e.getWheelRotation();
+//            boolean up = rotation < 0;
+//            for (int i = 0; i < Math.abs(rotation); i++) {
+//                if (up) {
+//                    addNodeWidget.up();
+//                } else {
+//                    addNodeWidget.down();
+//                }
+//            }
+//            repaint();
+//        }
     }
 
     private void selectNode(NodeGui node) {
