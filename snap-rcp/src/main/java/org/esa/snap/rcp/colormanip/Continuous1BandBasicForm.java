@@ -418,125 +418,112 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private void applyChanges(RangeKey key) {
         if (shouldFireChooserEvent) {
             boolean checksOut = true;
+            String errorMessage = "";
 
             final ColorPaletteDef selectedCPD = colorPaletteChooser.getSelectedColorPaletteDefinition();
             final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
             final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
-            final ColorPaletteDef deepCopy = selectedCPD.createDeepCopy();
-            deepCopy.setDiscrete(currentCPD.isDiscrete());
+            final ColorPaletteDef selectedCpdDeepCopy = selectedCPD.createDeepCopy();
+            selectedCpdDeepCopy.setDiscrete(currentCPD.isDiscrete());
 
-            final double min;
-            final double max;
-            final boolean isSourceLogScaled;
-            final boolean isTargetLogScaled;
-            final ColorPaletteDef cpd;
-            final boolean autoDistribute;
 
+            // Set target values to be the same as the current values by default
+            ColorPaletteDef sourceCpd = currentCPD;
+            double targetMin = currentCPD.getMinDisplaySample();
+            double targetMax = currentCPD.getMaxDisplaySample();
+            boolean sourceLogScaled = currentInfo.isLogScaled();
+            boolean targetLogScaled = currentInfo.isLogScaled();
+            boolean targetAutoDistribute = currentCPD.isAutoDistribute();
+
+
+            // Set any target values which will be changed from the source values
             switch (key) {
                 case FromCpdFile:
-                    Range rangeFromFile = colorPaletteChooser.getRangeFromFile();
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
-                    min = rangeFromFile.getMin();
-                    max = rangeFromFile.getMax();
-                    cpd = currentCPD;
-                    autoDistribute = true;
+                    targetMin = currentCPD.getSourceFileMin();
+                    targetMax = currentCPD.getSourceFileMax();
+                    targetAutoDistribute = true;
                     break;
                 case FromData:
                     final Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
-                    min = stx.getMinimum();
-                    max = stx.getMaximum();
-                    cpd = currentCPD;
-                    autoDistribute = true;
+                    targetMin = stx.getMinimum();
+                    targetMax = stx.getMaximum();
+                    targetAutoDistribute = true;
                     break;
                 case FromMinMaxFields:
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
-
                     if (ColorUtils.checkRangeCompatibility(minField.getText().toString(), maxField.getText().toString())) {
-                        min = Double.parseDouble(minField.getText().toString());
-                        max = Double.parseDouble(maxField.getText().toString());
+                        targetMin = Double.parseDouble(minField.getText().toString());
+                        targetMax = Double.parseDouble(maxField.getText().toString());
                     } else {
                         checksOut = false;
-                        min = 0; //bogus unused values set just so it is initialized to make idea happy
-                        max = 0; //bogus unused values set just so it is initialized to make idea happy
                     }
-
-                    cpd = currentCPD;
-                    autoDistribute = true;
+                    targetAutoDistribute = true;
                     break;
                 case FromLogButton:
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = !currentInfo.isLogScaled();
-                    min = currentCPD.getMinDisplaySample();
-                    max = currentCPD.getMaxDisplaySample();
-                    cpd = currentCPD;
-
-                    autoDistribute = true;
+                    targetLogScaled = !currentInfo.isLogScaled();
+                    targetAutoDistribute = true;
                     break;
                 case InvertPalette:
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
-                    min = currentCPD.getMinDisplaySample();
-                    max = currentCPD.getMaxDisplaySample();
-                    cpd = currentCPD;
-
-                    autoDistribute = true;
+                    targetAutoDistribute = true;
                     break;
                 default:
+                    // this case is coming from a palette selection so the source needs to reflect the palette instead of the imageInfo
                     if (loadWithCPDFileValuesCheckBox.isSelected()) {
-                        isSourceLogScaled = selectedCPD.isLogScaled();
-                        isTargetLogScaled = selectedCPD.isLogScaled();
-                        autoDistribute = false;
-                        currentInfo.setLogScaled(isTargetLogScaled);
-                        rangeFromFile = colorPaletteChooser.getRangeFromFile();
+                        sourceLogScaled = selectedCPD.isLogScaled();
+                        sourceCpd = selectedCpdDeepCopy;
+                        targetLogScaled = selectedCPD.isLogScaled();
+                        targetMin = selectedCPD.getSourceFileMin();
+                        targetMax = selectedCPD.getSourceFileMax();
 
-                        min = rangeFromFile.getMin();
-                        max = rangeFromFile.getMax();
-                        cpd = deepCopy;
-                        deepCopy.setLogScaled(isTargetLogScaled);
-                        deepCopy.setAutoDistribute(autoDistribute);
-
-
-                        if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+//                        currentInfo.setLogScaled(targetLogScaled);
+//                        selectedCpdDeepCopy.setLogScaled(targetLogScaled);
+//                        selectedCpdDeepCopy.setAutoDistribute(targetAutoDistribute);
+                        targetAutoDistribute = false;
+                        if (ColorUtils.checkRangeCompatibility(targetMin, targetMax, targetLogScaled)) {
                             listenToLogDisplayButtonEnabled[0] = false;
-                            logDisplayButton.setSelected(isTargetLogScaled);
+                            logDisplayButton.setSelected(targetLogScaled);
                             listenToLogDisplayButtonEnabled[0] = true;
+                        } else {
+                            checksOut = false;
+                            errorMessage = "A problem exists in the cpd file due to min, max, and/or log scaling conflicts";
                         }
                     } else {
-                        isSourceLogScaled = selectedCPD.isLogScaled();
-                        isTargetLogScaled = currentInfo.isLogScaled();
-                        min = currentCPD.getMinDisplaySample();
-                        max = currentCPD.getMaxDisplaySample();
-                        cpd = deepCopy;
-                        autoDistribute = true;
+                        sourceLogScaled = selectedCPD.isLogScaled();
+                        sourceCpd = selectedCpdDeepCopy;
+                        targetAutoDistribute = true;
                     }
 
             }
 
-            if (checksOut && ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
+
+            if (checksOut && !ColorUtils.checkRangeCompatibility(targetMin, targetMax, targetLogScaled)) {
+                checksOut = false;
+                errorMessage = "A problem exists due to min, max, and/or log scaling conflicts";
+            }
+
+            if (checksOut) {
                 if (key == RangeKey.InvertPalette) {
-                    currentInfo.setColorPaletteDefInvert(cpd);
+                    currentInfo.setColorPaletteDefInvert(sourceCpd);
                 } else {
-                    currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+                    currentInfo.setColorPaletteDef(sourceCpd, targetMin, targetMax, targetAutoDistribute, sourceLogScaled, targetLogScaled);
                 }
 
                 if (key == RangeKey.FromLogButton) {
-                    currentInfo.setLogScaled(isTargetLogScaled);
-                    colorPaletteChooser.setLog10Display(isTargetLogScaled);
+                    currentInfo.setLogScaled(targetLogScaled);
+                    colorPaletteChooser.setLog10Display(targetLogScaled);
                 }
 
                 standardColorPaletteSchemes.reset();
                 currentInfo.setColorSchemeInfo(standardColorPaletteSchemes.getNoneColorSchemeInfo());
 
-                currentMinFieldValue = Double.toString(min);
-                currentMaxFieldValue = Double.toString(max);
+                currentMinFieldValue = Double.toString(targetMin);
+                currentMaxFieldValue = Double.toString(targetMax);
                 parentForm.applyChanges();
-
-                // Some other field has been changed so reset the scheme selector to no scheme
-
+            } else if (key != RangeKey.FromMinMaxFields) {
+                // Show error for all case except the min and max fields because those use a document listener which causes problems
+                // The error will also be display at the bottom of the GUI
+                SimpleDialog dialog = new SimpleDialog("Color Manipulation: Color Scheme", errorMessage, standardColorPaletteSchemes.getjComboBox());
+                dialog.setVisible(true);
+                dialog.setEnabled(true);
             }
         }
     }
