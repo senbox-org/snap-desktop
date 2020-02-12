@@ -1,6 +1,7 @@
 package org.esa.snap.grapheditor.ui.components.graph;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.opengis.filter.Not;
  * @author Martino Ferrari (CS Group)
  */
 public class NodeGui implements NodeListener {
+
 
     public enum ValidationStatus {
         UNCHECKED,
@@ -868,4 +870,8 @@ public class NodeGui implements NodeListener {
         return this.node;
     }
 
+
+    public ArrayList<Connection> getIncomingConnections() {
+        return incomingConnections;
+    }
 }

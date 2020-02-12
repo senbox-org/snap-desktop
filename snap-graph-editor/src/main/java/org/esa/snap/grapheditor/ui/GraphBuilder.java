@@ -41,7 +41,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
 
     private boolean hasChanged = false;
 
-    private String fileName = "Untitled.xml";
+    private File openFile = null;
 
     public GraphBuilder(Window frame, AppContext context) {
         super();
@@ -73,10 +73,48 @@ public class GraphBuilder extends JPanel implements GraphListener {
         saveButton = new JButton();
         ImageIcon saveIcon = TangoIcons.actions_document_save(TangoIcons.R22);
         saveButton.setIcon(saveIcon);
+        saveButton.addActionListener(e -> {
+            if (hasChanged) {
+                if (openFile == null) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file",
+                                                                          "xml"));
+                    fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                    int result = fileChooser.showSaveDialog(this);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = fileChooser.getSelectedFile();
+                        if (GraphManager.getInstance().saveGraph(selectedFile)) {
+                            hasChanged = false;
+                            openFile = selectedFile;
+                        }
+                    }
+                } else {
+                    if (GraphManager.getInstance().saveGraph(openFile)) {
+                        hasChanged = false;
+                    }
+                }
+            }
+        });
 
         saveAsButton = new JButton();
         ImageIcon saveAsIcon = TangoIcons.actions_document_save_as(TangoIcons.R22);
         saveAsButton.setIcon(saveAsIcon);
+        saveAsButton.addActionListener(e-> {
+            if (hasChanged) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file",
+                                                                      "xml"));
+                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                int result = fileChooser.showSaveDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    if (GraphManager.getInstance().saveGraph(selectedFile)) {
+                        hasChanged = false;
+                        openFile = selectedFile;
+                    }
+                }
+            }
+        });
 
         saveAsButton.setEnabled(false);
         saveButton.setEnabled(false);
@@ -94,6 +132,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     GraphManager.getInstance().openGraph(selectedFile);
+                    openFile = selectedFile;
                 }
             }
         });
@@ -140,7 +179,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         hasChanged = false;
         saveAsButton.setEnabled(false);
         saveButton.setEnabled(false);
-        fileName = "Untitled.xml";
+        openFile = null;
         this.repaint();
     }
 

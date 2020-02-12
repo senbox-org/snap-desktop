@@ -2,7 +2,10 @@ package org.esa.snap.grapheditor.ui.components.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.*;
 
 import java.awt.event.ActionListener;
@@ -377,6 +380,25 @@ public class GraphManager implements NodeListener {
         NotificationManager.getInstance().processEnd();
         NotificationManager.getInstance().info("Graph", "Loaded and ready");
         triggerEvent();
+    }
+
+    public boolean saveGraph(File f) {
+        Graph graph = new Graph("graph");
+        for (NodeGui n: nodes) {
+            for (Connection c: n.getIncomingConnections()) {
+                NodeSource source = new NodeSource(c.getSource().getName() + " - " + n.getName(), c.getSource().getName());
+                n.getNode().addSource(source);
+            }
+            graph.addNode(n.getNode());
+        }
+        try {
+            OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(f));
+            GraphIO.write(graph, fileWriter);
+            return true;
+        } catch (FileNotFoundException e){
+            NotificationManager.getInstance().error("Graph Saver", e.getMessage());
+        }
+        return  false;
     }
 
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
