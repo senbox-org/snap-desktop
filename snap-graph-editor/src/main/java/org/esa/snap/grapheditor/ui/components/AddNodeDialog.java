@@ -2,6 +2,8 @@ package org.esa.snap.grapheditor.ui.components;
 
 
 import javafx.util.Pair;
+import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.utils.AddNodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.UnifiedMetadata;
@@ -13,7 +15,6 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class AddNodeDialog extends JDialog implements KeyListener {
     static final private int width = 400;
@@ -22,12 +23,14 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     private final JList<UnifiedMetadata> resultsList;
     private final DefaultListModel<UnifiedMetadata> results = new DefaultListModel<>();
 
+    private HashSet<AddNodeListener> listeners = new HashSet<>();
+
     private int currentActive = -1;
     private JComponent parent;
 
     public AddNodeDialog() {
         super();
-        getRootPane().setBorder( BorderFactory.createLineBorder(Color.BLACK));
+        getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK));
         JPanel p = new JPanel(new BorderLayout(2,2));
         searchField = new JTextField();
         searchField.setEnabled(true);
@@ -45,6 +48,10 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
         this.add(p, BorderLayout.CENTER);
         setVisible(false);
+    }
+
+    public  void addListener(AddNodeListener l) {
+        listeners.add(l);
     }
 
     public void popup(JComponent parent) {
@@ -129,18 +136,32 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         }
     }
 
+
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
             case (10):
 //                // return
 //                this.addNode(this.addNodeWidget.enter());
+                this.enter();
                 this.popdown();
                 break;
             case (27):
                 // escape
                 this.popdown();
                 break;
+        }
+    }
+
+    private void enter() {
+        if (currentActive < 0 || currentActive > results.getSize() - 1) {
+            return;
+        }
+        UnifiedMetadata meta = results.get(currentActive);
+        System.out.println(meta.getName());
+        NodeGui n = GraphManager.getInstance().newNode(meta);
+        for (AddNodeListener l: listeners){
+            l.newNodeAdded(n);
         }
     }
 

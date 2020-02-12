@@ -274,7 +274,7 @@ public class GraphManager implements NodeListener {
         return newNode(simpleMetadata.get(opName));
     }
 
-    NodeGui newNode(UnifiedMetadata metadata) {
+    public NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
         this.graph.addNode(node);
