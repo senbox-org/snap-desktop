@@ -23,11 +23,12 @@ import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
+import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.RefreshListener;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 public class GraphPanel extends JPanel
-        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener, RefreshListener {
+        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener, RefreshListener, NodeListener {
 
     /**
      * Genrated UID
@@ -60,11 +61,16 @@ public class GraphPanel extends JPanel
         this.addMouseListener(this);
         this.addMouseWheelListener(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new GraphKeyEventDispatcher(this));
+
+        for (NodeGui n: GraphManager.getInstance().getNodes()){
+            n.addNodeListener(this);
+        }
     }
 
     private void addNode(NodeGui node) {
         if (node != null) {
             node.setPosition(GraphicUtils.normalize(lastMousePosition));
+            node.addNodeListener(this);
             for (GraphListener listener : graphListeners) {
                 listener.created(node);
             }
@@ -420,5 +426,22 @@ public class GraphPanel extends JPanel
     @Override
     public void refresh() {
         this.repaint();
+    }
+
+    @Override
+    public void outputChanged(NodeGui source) {
+        // nothing
+    }
+
+    @Override
+    public void sourceDeleted(NodeGui source) {
+        // nothing
+    }
+
+    @Override
+    public void connectionAdded(NodeGui source) {
+        for (GraphListener l: graphListeners) {
+            l.updated(source);
+        }
     }
 }

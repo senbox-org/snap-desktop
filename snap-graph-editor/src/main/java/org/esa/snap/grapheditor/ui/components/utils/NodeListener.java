@@ -14,4 +14,6 @@ public interface NodeListener {
      * @param source source of the event
      */
     void sourceDeleted(NodeGui source);
+
+    void connectionAdded(NodeGui source);
 }

@@ -716,6 +716,9 @@ public class NodeGui implements NodeListener {
     private void connect(Connection c){
         incomingConnections.add(c);
         c.getSource().addNodeListener(this);
+        for (NodeListener listener: this.nodeListeners) {
+            listener.connectionAdded(this);
+        }
         hasChanged = true;
     }
 
@@ -760,6 +763,11 @@ public class NodeGui implements NodeListener {
             }
         }
 
+    }
+
+    @Override
+    public void connectionAdded(NodeGui source) {
+        hasChanged = true;
     }
 
     /**

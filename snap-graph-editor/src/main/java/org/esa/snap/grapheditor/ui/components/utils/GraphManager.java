@@ -340,6 +340,13 @@ public class GraphManager implements NodeListener {
         this.nodes.remove(source);
     }
 
+    @Override
+    public void connectionAdded(NodeGui source) {
+        NotificationManager.getInstance().info(source.getName(), "Connected");
+        // Try to revalidate graph
+        validateGraph(source);
+    }
+
     private void clearGraph() {
         for (NodeGui n: nodes) {
             n.removeNodeListener(this);
