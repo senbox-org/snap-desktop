@@ -8,12 +8,15 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
@@ -457,6 +460,15 @@ public class NodeGui implements NodeListener {
         UIValidation.State state = operatorUI.validateParameters().getState();
 
         if (state == UIValidation.State.OK) {
+            final XppDomElement config = new XppDomElement("parameters");
+            try {
+                this.operatorUI.convertToDOM(config);
+                node.setConfiguration(config);
+            } catch (GraphException e) {
+                NotificationManager.getInstance().error(this.getName(), "could not retrieve configuration `" + e.getMessage() + "`" );
+                validationStatus = ValidationStatus.ERROR;
+            }
+
             SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
             if (incomingConnections.size() < descriptors.length) {
                 return incomplete();
@@ -577,6 +589,7 @@ public class NodeGui implements NodeListener {
         numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
         height = (numInputs + 1) * connectionOffset;
         Connection c = this.incomingConnections.get(index);
+        this.node.removeSource(this.node.getSource(index));
         c.getSource().removeNodeListener(this);
         this.incomingConnections.remove(c);
         hasChanged = true;
@@ -732,6 +745,8 @@ public class NodeGui implements NodeListener {
         for (NodeListener listener: this.nodeListeners) {
             listener.connectionAdded(this);
         }
+        NodeSource nodeSource =  new NodeSource("sourceProduct", c.getSource().getName());
+        this.node.addSource(nodeSource);
         hasChanged = true;
     }
 

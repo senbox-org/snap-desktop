@@ -51,6 +51,8 @@ public class GraphManager implements NodeListener {
     private final HashMap<String, UnifiedMetadata> simpleMetadatas = new HashMap<>();
 
     private final ArrayList<NodeGui> nodes = new ArrayList<>();
+    private final Graph graph = new Graph("");
+
 
     static private GraphManager instance = null;
 
@@ -279,6 +281,7 @@ public class GraphManager implements NodeListener {
     public NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
+        this.graph.addNode(node);
         NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
         this.nodes.add(newNode);
         newNode.addNodeListener(this);
@@ -331,6 +334,7 @@ public class GraphManager implements NodeListener {
     private void clearGraph() {
         for (NodeGui n: nodes) {
             n.removeNodeListener(this);
+            this.graph.removeNode(n.getName());
         }
         this.nodes.clear();
     }
@@ -373,17 +377,10 @@ public class GraphManager implements NodeListener {
 
     public boolean saveGraph(File f) {
         NotificationManager.getInstance().processStart();
-        Graph graph = new Graph("graph");
         XppDom presentationEl = new XppDom("applicationData");
         presentationEl.setAttribute("id", "Presentation");
-
         for (NodeGui n: nodes) {
-            for (Connection c: n.getIncomingConnections()) {
-                NodeSource source = new NodeSource("sourceProduct", c.getSource().getNode().getId());
-                n.getNode().addSource(source);
-            }
             presentationEl.addChild(n.saveParameters());
-            graph.addNode(n.getNode());
         }
         graph.setAppData("Presentation", presentationEl);
         try {
@@ -466,6 +463,14 @@ public class GraphManager implements NodeListener {
         }
     }
 
+    private class EvaluateWorker extends  SwingWorker<Boolean, Object> {
+        private ArrayList<NodeGui> nodes;
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            return true;
+        }
+    }
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
         private File source;
 
