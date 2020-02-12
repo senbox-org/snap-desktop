@@ -1,6 +1,10 @@
-package org.esa.snap.product.library.ui.v2.repository.remote;
+package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductStatusLabel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -20,7 +24,7 @@ public class DownloadingProductPanel extends JPanel {
     private final JLabel acquisitionDateLabel;
     private final JLabel sizeLabel;
     private final JLabel missionLabel;
-    private final RemoteProductStatusLabel statusLabel;
+    private final RemoteProductStatusLabel downloadStatusLabel;
     private final DownloadProductRunnable downloadProductRunnable;
 
     public DownloadingProductPanel(DownloadProductRunnable downloadProductRunnable, int gapBetweenColumns) {
@@ -33,13 +37,15 @@ public class DownloadingProductPanel extends JPanel {
         RepositoryProduct productToDownload = this.downloadProductRunnable.getProductToDownload();
 
         this.nameLabel = new JLabel(productToDownload.getName());
-        this.acquisitionDateLabel = new JLabel("");
-        this.missionLabel = new JLabel();
-        this.statusLabel = new RemoteProductStatusLabel();
+        this.acquisitionDateLabel = new JLabel(RemoteRepositoryProductPanel.buildAcquisitionDateLabelText(productToDownload.getAcquisitionDate()));
+        this.missionLabel = new JLabel(RemoteRepositoryProductPanel.buildMissionLabelText(productToDownload.getMission()));
+        this.sizeLabel = new JLabel(RemoteRepositoryProductPanel.buildSizeLabelText(productToDownload.getApproximateSize()));
+        this.downloadStatusLabel = new RemoteProductStatusLabel();
 
-        this.sizeLabel = new JLabel(RemoteRepositoryProductPanel.buildSizeLabelText(123456789));
+        // set fixed width for 'size' label
+        int preferredSizeWidth = this.acquisitionDateLabel.getPreferredSize().width;
         Dimension preferredSize = this.sizeLabel.getPreferredSize();
-        preferredSize.width += preferredSize.height; // extend the width
+        preferredSize.width = preferredSizeWidth;
         this.sizeLabel.setPreferredSize(preferredSize);
         this.sizeLabel.setMaximumSize(preferredSize);
         this.sizeLabel.setMinimumSize(preferredSize);
@@ -67,51 +73,50 @@ public class DownloadingProductPanel extends JPanel {
         c = SwingUtils.buildConstraints(0, 3, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         add(this.sizeLabel, c);
         c = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
-        add(this.statusLabel, c);
-
-        this.missionLabel.setText(RemoteRepositoryProductPanel.buildMissionLabelText(productToDownload.getMission()));
-        this.acquisitionDateLabel.setText(RemoteRepositoryProductPanel.buildAcquisitionDateLabelText(productToDownload.getAcquisitionDate()));
-        this.sizeLabel.setText(RemoteRepositoryProductPanel.buildSizeLabelText(productToDownload.getApproximateSize()));
+        add(this.downloadStatusLabel, c);
     }
 
-    public void refresh(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
+    public void refreshDownloadStatus(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
         if (!this.downloadProductRunnable.isRunning()) {
             disableComponents();
         }
         RepositoryProduct productToDownload = this.downloadProductRunnable.getProductToDownload();
         DownloadProgressStatus progressProgressStatus = remoteRepositoriesProductProgress.findRemoteRepositoryProductDownloadProgress(productToDownload);
-        if (progressProgressStatus == null) {
-            //throw new IllegalStateException("The remote repository product '" + productToDownload.getName()+"' does not exists.");
-        } else {
-            this.statusLabel.updateDownloadingPercent(progressProgressStatus, this.sizeLabel.getForeground());
+        if (progressProgressStatus != null) {
+            this.downloadStatusLabel.updateDownloadingPercent(progressProgressStatus, this.sizeLabel.getForeground());
         }
     }
 
-    public boolean refresh(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus) {
+    public boolean refreshDownloadStatus(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus) {
         if (!this.downloadProductRunnable.isRunning()) {
             disableComponents();
         }
         if (repositoryProduct == this.downloadProductRunnable.getProductToDownload()) {
-            this.statusLabel.updateDownloadingPercent(progressProgressStatus, this.sizeLabel.getForeground());
+            this.downloadStatusLabel.updateDownloadingPercent(progressProgressStatus, this.sizeLabel.getForeground());
             return true;
         }
         return false;
     }
 
-    public boolean finishDownloading(DownloadProductRunnable downloadProductRunnable) {
+    public boolean stopDownloading(DownloadProductRunnable downloadProductRunnable) {
         if (this.downloadProductRunnable == downloadProductRunnable) {
-            if (this.downloadProductRunnable.isRunning()) {
-                throw new IllegalStateException("The thread to download the product is still running.");
-            } else {
-                disableComponents();
-                return true;
-            }
+            disablePanel();
+            return true;
         }
         return false;
     }
 
     private void stopButtonPressed() {
         this.downloadProductRunnable.cancelRunning();
+        disablePanel();
+    }
+
+    private void disablePanel() {
+        if (this.downloadProductRunnable.isRunning()) {
+            throw new IllegalStateException("The thread to download the product is still running.");
+        } else {
+            disableComponents();
+        }
     }
 
     private void disableComponents() {
@@ -120,6 +125,6 @@ public class DownloadingProductPanel extends JPanel {
         this.missionLabel.setEnabled(false);
         this.acquisitionDateLabel.setEnabled(false);
         this.sizeLabel.setEnabled(false);
-        this.statusLabel.setEnabled(false);
+        this.downloadStatusLabel.setEnabled(false);
     }
 }

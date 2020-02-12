@@ -63,7 +63,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     }
 
     @Override
-    public final void cancelRunning() {
+    public void cancelRunning() {
         super.cancelRunning();
 
         this.remoteProductDownloader.cancel();
