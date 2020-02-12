@@ -290,17 +290,9 @@ public class GraphManager implements NodeListener {
     }
 
     public void evaluate() {
-        // TODO evaluate graph
-        ArrayList<NodeGui> targets = new ArrayList<>();
-        for (NodeGui n: nodes) {
-            if (n.isTarget()) {
-                targets.add(n);
-            }
-        }
         if (currentJob != null && !currentJob.isDone()) {
             currentJob.cancel(true);
         }
-        System.out.println("Ready to evaluate, n: " + targets.size());
         GraphProcessor processor = new GraphProcessor();
         try {
             processor.executeGraph(graph, NotificationManager.getInstance());
@@ -391,6 +383,7 @@ public class GraphManager implements NodeListener {
         for (NodeGui n: nodes) {
             n.addNodeListener(this);
             this.nodes.add(n);
+            this.graph.addNode(n.getNode());
         }
         NotificationManager.getInstance().processEnd();
         NotificationManager.getInstance().info("Graph", "Loaded and ready");
