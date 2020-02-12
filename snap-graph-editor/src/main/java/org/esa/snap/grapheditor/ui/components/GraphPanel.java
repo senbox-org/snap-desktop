@@ -27,7 +27,7 @@ import org.esa.snap.grapheditor.ui.components.utils.RefreshListener;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 public class GraphPanel extends JPanel
-        implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener, RefreshListener, NodeListener, AddNodeListener {
+        implements KeyListener, MouseListener, MouseMotionListener, ActionListener, RefreshListener, NodeListener, AddNodeListener {
 
     /**
      * Generated UID
@@ -60,7 +60,6 @@ public class GraphPanel extends JPanel
 
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
-        this.addMouseWheelListener(this);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new GraphKeyEventDispatcher(this));
 
         for (NodeGui n: GraphManager.getInstance().getNodes()){
@@ -169,29 +168,6 @@ public class GraphPanel extends JPanel
             removeSelectedNode();
             return;
         }
-
-//        if (this.addNodeWidget.isVisible()) {
-//            switch (key) {
-//            case (10):
-//                // return
-//                this.addNode(this.addNodeWidget.enter());
-//                break;
-//            case (27):
-//                // escape
-//                this.addNodeWidget.hide();
-//                break;
-//            case (KeyEvent.VK_UP):
-//                break;
-//            case (KeyEvent.VK_DOWN):
-//                break;
-//            case (KeyEvent.VK_BACK_SPACE):
-//                break;
-//            default:
-//                this.addNodeWidget.type(event.getKeyChar());
-//                break;
-//            }
-//            this.repaint();
-//        }
     }
 
     private void removeSelectedNode() {
@@ -239,12 +215,6 @@ public class GraphPanel extends JPanel
     @Override
     public void mouseMoved(MouseEvent e) {
         lastMousePosition = e.getPoint();
-//        if (addNodeWidget.isVisible()) {
-//            if (addNodeWidget.mouseMoved(lastMousePosition)) {
-//                repaint();
-//                return;
-//            }
-//        }
         for (NodeGui node : graphManager.getNodes()) {
             if (node.contains(lastMousePosition)) {
                 node.over(lastMousePosition);
@@ -286,16 +256,6 @@ public class GraphPanel extends JPanel
     public void mousePressed(MouseEvent e) {
         this.requestFocus();
         if (e.getButton() == MouseEvent.BUTTON1) {
-//                NodeGui node = addNodeWidget.click(e.getPoint());
-//                if (node != null) {
-//                    addNode(node);
-//                    moveNode(node, e.getX() - 10, e.getY() - 10);
-//
-//                    dragAction = node.drag(e.getPoint());
-//                    repaint();
-//                    return;
-//                }
-//            }
             Point p = e.getPoint();
             for (NodeGui node : graphManager.getNodes()) {
                 if (node.contains(p)) {
@@ -340,22 +300,6 @@ public class GraphPanel extends JPanel
     @Override
     public void mouseExited(MouseEvent e) {
         // Nothing to do...
-    }
-
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-//        if (addNodeWidget.isVisible()) {
-//            int rotation = e.getWheelRotation();
-//            boolean up = rotation < 0;
-//            for (int i = 0; i < Math.abs(rotation); i++) {
-//                if (up) {
-//                    addNodeWidget.up();
-//                } else {
-//                    addNodeWidget.down();
-//                }
-//            }
-//            repaint();
-//        }
     }
 
     private void selectNode(NodeGui node) {
