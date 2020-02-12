@@ -17,7 +17,6 @@ import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
@@ -159,8 +158,7 @@ public class GraphPanel extends JPanel
             if (this.addNodeDialog.isVisible()) {
                 this.addNodeDialog.popdown();
             }  else {
-                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                this.addNodeDialog.popup(this, topFrame.getX(), topFrame.getY(), topFrame.getWidth());
+                this.addNodeDialog.popup(this);
             }
             this.repaint();// this.addNodeWidget.getBoundingRect(getWidth(), getHeight())); //
                            // this.addNodeWidget.getBoundingRect(getWidth(),

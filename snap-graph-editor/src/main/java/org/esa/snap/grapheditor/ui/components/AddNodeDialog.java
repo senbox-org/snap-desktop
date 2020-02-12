@@ -47,7 +47,12 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         setVisible(false);
     }
 
-    public void popup(JComponent parent, int x, int y, int fwidth) {
+    public void popup(JComponent parent) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(parent);
+        int x = topFrame.getX();
+        int y = topFrame.getY();
+        int fwidth = topFrame.getWidth();
+
         currentActive = -1;
         this.parent = parent;
         searchField.setText("");
