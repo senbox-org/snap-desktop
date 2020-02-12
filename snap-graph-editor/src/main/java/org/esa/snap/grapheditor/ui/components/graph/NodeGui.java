@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NodeGui implements NodeListener {
 
-
     public enum ValidationStatus {
         UNCHECKED,
         VALIDATED,
@@ -419,7 +418,6 @@ public class NodeGui implements NodeListener {
     public void select() {
         if ((status & STATUS_MASK_SELECTED) == 0)
             status += STATUS_MASK_SELECTED;
-        System.out.println("\033[1;32m>> SELECTED\033[0m");
         updateSources();
     }
 
@@ -491,10 +489,7 @@ public class NodeGui implements NodeListener {
                 context.setSourceProducts(products);
             }
 
-            System.out.println(context.getSourceProducts());
-
             for (String param: configuration.keySet()) {
-                System.out.println(param);
                 context.setParameter(param, configuration.get(param));
             }
             try {
@@ -540,7 +535,6 @@ public class NodeGui implements NodeListener {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
         if (recomputeOutputNeeded || check_changes()) {
-            System.out.println("\033[1;32m>> SOMETHING CHANGED\033[0m");
             GraphManager.getInstance().validate(this);
         }
     }
@@ -665,6 +659,7 @@ public class NodeGui implements NodeListener {
         if (preferencePanel == null) {
             try {
                 preferencePanel = operatorUI.CreateOpTab(this.metadata.getName(), configuration , GraphManager.getInstance().getContext());
+                operatorUI.initParameters();
             } catch (Exception e) {
                 SystemUtils.LOG.info(e.getMessage());
                 preferencePanel = null;
@@ -904,6 +899,14 @@ public class NodeGui implements NodeListener {
         return this.node;
     }
 
+    public boolean isSource() {
+        return !this.metadata.hasInputs();
+    }
+
+    public boolean isTarget() {
+        // NOTE That one node listener is the GraphManager and one is the GraphPanel
+        return !this.metadata.hasOutput() || this.getNode().getOperatorName().equals("Write");
+    }
 
     public ArrayList<Connection> getIncomingConnections() {
         return incomingConnections;

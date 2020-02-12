@@ -297,6 +297,19 @@ public class GraphManager implements NodeListener {
         // TODO evaluate graph
     }
 
+    private void validate() {
+        ArrayList<NodeGui> sources = new ArrayList<>();
+        for (NodeGui n: nodes ){
+            if (n.isSource()) {
+                sources.add(n);
+            }
+        }
+        for (NodeGui n: sources) {
+            n.updateSources();
+            validate(n, true);
+        }
+    }
+
     public void validate(NodeGui source) {
         validate(source, true);
     }
@@ -361,7 +374,6 @@ public class GraphManager implements NodeListener {
         NotificationManager.getInstance().processStart();
         GraphLoadWorker worker = new GraphLoadWorker(selectedFile);
         worker.execute();
-
     }
 
     private void loadGraph(ArrayList<NodeGui> nodes) {
@@ -373,6 +385,7 @@ public class GraphManager implements NodeListener {
         NotificationManager.getInstance().processEnd();
         NotificationManager.getInstance().info("Graph", "Loaded and ready");
         triggerEvent();
+        validate();
     }
 
     public boolean saveGraph(File f) {
@@ -404,18 +417,20 @@ public class GraphManager implements NodeListener {
         private final boolean validateSource;
         private ArrayList<NodeGui> nodes;
         private NodeGui source;
+
         ValidateWorker(ArrayList<NodeGui> nodes, NodeGui source, boolean validateSource) {
             this.nodes = new ArrayList<>(nodes);
             this.source = source;
             this.validateSource = validateSource;
         }
+
         @Override
         protected Boolean doInBackground() throws Exception {
             NotificationManager.getInstance().processStart();
             NotificationManager.getInstance().info("Graph", "validation started");
-            if (this.validateSource)
+            if (this.validateSource) {
                 source.validate();
-
+            }
             HashMap<Integer, HashSet<NodeGui>> orderedGraph = new HashMap<>();
             int total = 0;
             for (NodeGui n: nodes) {
@@ -468,6 +483,7 @@ public class GraphManager implements NodeListener {
 
         @Override
         protected Boolean doInBackground() throws Exception {
+
             return true;
         }
     }
@@ -489,11 +505,12 @@ public class GraphManager implements NodeListener {
                 fileReader.close();
             }
             if (graph.get() != null) {
+
                 for (Node n : graph.get().getNodes()) {
                     if (simpleMetadatas.containsKey(n.getOperatorName())) {
                         UnifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
-                        NodeGui ng = new NodeGui(n, getConfiguration(n), meta, ui);
+                        NodeGui ng = new NodeGui(copyNode(n), getConfiguration(n), meta, ui);
                         nodes.add(ng);
                     } else {
                         NotificationManager.getInstance().error("Graph",
@@ -516,9 +533,18 @@ public class GraphManager implements NodeListener {
                     }
                 }
                 //Connect nodes
-                for (NodeGui trgNode: nodes) {
+                for (Node n: graph.get().getNodes()) {
                     int index = 0;
-                    for (NodeSource src: trgNode.getNode().getSources()) {
+
+                    NodeGui trgNode = null;
+                    for (NodeGui ng: nodes) {
+                        if (ng.getName().equals(n.getId())){
+                            trgNode = ng;
+                            break;
+                        }
+                    }
+
+                    for (NodeSource src: n.getSources()) {
                         String id = src.getSourceNodeId();
                         NodeGui srcNode = null;
                         for (NodeGui ns: nodes) {
@@ -534,10 +560,16 @@ public class GraphManager implements NodeListener {
                         }
                     }
                 }
-
                 loadGraph(nodes);
             }
             return nodes;
+        }
+
+        private Node copyNode(Node n) {
+            Node copy = new Node(n.getId(), n.getOperatorName());
+            copy.setConfiguration(n.getConfiguration());
+
+            return copy;
         }
     }
 }

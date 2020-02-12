@@ -163,17 +163,20 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
+        System.out.println(sourceProductSelector);
         if (sourceProductSelector != null) {
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {
                 paramMap.put(FILE_PARAMETER, prod.getFileLocation());
             }
         }
-        String selectedFormat = (String)formatNameComboBox.getSelectedItem();
-        if(selectedFormat != null && selectedFormat.equals(ANY_FORMAT)) {
-            selectedFormat = null;
+        if (formatNameComboBox != null && formatNameComboBox.getSelectedItem() != null) {
+            String selectedFormat = (String)formatNameComboBox.getSelectedItem();
+            if(selectedFormat != null && selectedFormat.equals(ANY_FORMAT)) {
+                selectedFormat = null;
+            }
+            paramMap.put(FORMAT_PARAMETER, selectedFormat);
         }
-        paramMap.put(FORMAT_PARAMETER, selectedFormat);
     }
 
     public void setSourceProduct(final Product product) {
