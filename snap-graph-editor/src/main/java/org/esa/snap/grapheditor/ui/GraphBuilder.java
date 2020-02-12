@@ -74,26 +74,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         ImageIcon saveIcon = TangoIcons.actions_document_save(TangoIcons.R22);
         saveButton.setIcon(saveIcon);
         saveButton.addActionListener(e -> {
-            if (hasChanged) {
-                if (openFile == null) {
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file",
-                                                                          "xml"));
-                    fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-                    int result = fileChooser.showSaveDialog(this);
-                    if (result == JFileChooser.APPROVE_OPTION) {
-                        File selectedFile = fileChooser.getSelectedFile();
-                        if (GraphManager.getInstance().saveGraph(selectedFile)) {
-                            hasChanged = false;
-                            openFile = selectedFile;
-                        }
-                    }
-                } else {
-                    if (GraphManager.getInstance().saveGraph(openFile)) {
-                        hasChanged = false;
-                    }
-                }
-            }
+            saveGraph();
         });
 
         saveAsButton = new JButton();
@@ -101,18 +82,8 @@ public class GraphBuilder extends JPanel implements GraphListener {
         saveAsButton.setIcon(saveAsIcon);
         saveAsButton.addActionListener(e-> {
             if (hasChanged) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file",
-                                                                      "xml"));
-                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-                int result = fileChooser.showSaveDialog(this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    if (GraphManager.getInstance().saveGraph(selectedFile)) {
-                        hasChanged = false;
-                        openFile = selectedFile;
-                    }
-                }
+                openFile = null;
+                saveGraph();
             }
         });
 
@@ -181,6 +152,29 @@ public class GraphBuilder extends JPanel implements GraphListener {
         saveButton.setEnabled(false);
         openFile = null;
         this.repaint();
+    }
+
+    private void saveGraph() {
+        if (hasChanged) {
+            if (openFile == null) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Graph XML file",
+                                                                      "xml"));
+                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                int result = fileChooser.showSaveDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    if (GraphManager.getInstance().saveGraph(selectedFile)) {
+                        hasChanged = false;
+                        openFile = selectedFile;
+                    }
+                }
+            } else {
+                if (GraphManager.getInstance().saveGraph(openFile)) {
+                    hasChanged = false;
+                }
+            }
+        }
     }
 
     @Override
