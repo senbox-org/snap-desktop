@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.nio.file.Path;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -31,11 +30,6 @@ public class GraphBuilder extends JPanel implements GraphListener {
     private static final long serialVersionUID = 50849209475264574L;
     private final JButton saveAsButton;
     private final JButton saveButton;
-    private final JButton runButton;
-
-    private JToolBar toolBar;
-    private StatusPanel statusBar;
-    private MainPanel mainPanel;
 
     private Window parentWindow;
 
@@ -43,7 +37,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
 
     private File openFile = null;
 
-    public GraphBuilder(Window frame, AppContext context) {
+    GraphBuilder(Window frame, AppContext context) {
         super();
         parentWindow = frame;
 
@@ -53,29 +47,23 @@ public class GraphBuilder extends JPanel implements GraphListener {
         // Init GUI
         this.setLayout(new BorderLayout(0, 0));
 
-        toolBar = new JToolBar();
+        JToolBar toolBar = new JToolBar();
         this.add(toolBar, BorderLayout.PAGE_START);
 
         JButton settingsButton = new JButton();
         ImageIcon settingIcon = TangoIcons.categories_preferences_system(TangoIcons.Res.R22);
         settingsButton.setIcon(settingIcon);
-        settingsButton.addActionListener(e -> {
-            SettingManager.getInstance().showSettingsDialog(parentWindow);
-        });
+        settingsButton.addActionListener(e -> SettingManager.getInstance().showSettingsDialog(parentWindow));
 
-        runButton = new JButton();
+        JButton runButton = new JButton();
         ImageIcon runIcon = TangoIcons.actions_media_playback_start(TangoIcons.R22);
         runButton.setIcon(runIcon);
-        runButton.addActionListener(e -> {
-            GraphManager.getInstance().evaluate();
-        });
+        runButton.addActionListener(e -> GraphManager.getInstance().evaluate());
 
         saveButton = new JButton();
         ImageIcon saveIcon = TangoIcons.actions_document_save(TangoIcons.R22);
         saveButton.setIcon(saveIcon);
-        saveButton.addActionListener(e -> {
-            saveGraph();
-        });
+        saveButton.addActionListener(e -> saveGraph());
 
         saveAsButton = new JButton();
         ImageIcon saveAsIcon = TangoIcons.actions_document_save_as(TangoIcons.R22);
@@ -127,10 +115,10 @@ public class GraphBuilder extends JPanel implements GraphListener {
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(settingsButton);
 
-        statusBar = new StatusPanel();
+        StatusPanel statusBar = new StatusPanel();
         this.add(statusBar, BorderLayout.PAGE_END);
 
-        mainPanel = new MainPanel(context);
+        MainPanel mainPanel = new MainPanel(context);
         this.add(mainPanel, BorderLayout.CENTER);
 
         mainPanel.getGraphPanel().addGraphListener(this);
@@ -202,7 +190,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
         somethingChanged();
     }
 
-    public boolean confirmClean() {
+    private boolean confirmClean() {
         if (hasChanged) {
             int dialogResult = JOptionPane.showConfirmDialog (null,
                                                               "This graph has unsaved changes, are you sure to close it?",
@@ -214,7 +202,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
 
     /**
      * Simple main routine to test the GraphBuilder, in the future it could be and independent executable as well.
-     * @param args
+     * @param args program arguments
      */
     public static void main(String[] args) {
 
