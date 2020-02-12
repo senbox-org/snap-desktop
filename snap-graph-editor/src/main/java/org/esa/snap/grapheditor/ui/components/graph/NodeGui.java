@@ -1,7 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.graph;
 
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,6 @@ import org.esa.snap.grapheditor.ui.components.utils.*;
 import org.esa.snap.ui.AppContext;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.opengis.filter.Not;
 
 /**
  * NodeGui is the main component of the GraphBuilder and it represents a node that is an instance of an Operator
@@ -85,7 +83,7 @@ public class NodeGui implements NodeListener {
     private int status = 0;
     private ValidationStatus validationStatus = ValidationStatus.UNCHECKED;
 
-    private final SimplifiedMetadata metadata;
+    private final UnifiedMetadata metadata;
     private final OperatorUI operatorUI;
     private final Operator operator;
     private final OperatorContext context;
@@ -106,7 +104,7 @@ public class NodeGui implements NodeListener {
     private Product output = null;
     private boolean recomputeOutputNeeded = true;
 
-    public NodeGui (Node node, Map<String, Object> configuration, @NotNull SimplifiedMetadata metadata, OperatorUI operatorUI){
+    public NodeGui (Node node, Map<String, Object> configuration, @NotNull UnifiedMetadata metadata, OperatorUI operatorUI){
         this.x = 0;
         this.y = 0;
         this.metadata = metadata;

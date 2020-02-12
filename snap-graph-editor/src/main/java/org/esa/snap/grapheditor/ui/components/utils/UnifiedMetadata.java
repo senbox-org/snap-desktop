@@ -3,7 +3,7 @@ package org.esa.snap.grapheditor.ui.components.utils;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 
-public class SimplifiedMetadata {
+public class UnifiedMetadata {
     private String name;
     private final String name_lower;
     private final String description;
@@ -17,7 +17,7 @@ public class SimplifiedMetadata {
     private final boolean hasOutputProduct;
 
 
-    public SimplifiedMetadata(final OperatorMetadata opMetadata, final OperatorDescriptor opDescriptor) {
+    public UnifiedMetadata(final OperatorMetadata opMetadata, final OperatorDescriptor opDescriptor) {
         this.descriptor = opDescriptor;
 
         if (descriptor.getSourceProductsDescriptor() != null) {

@@ -31,7 +31,7 @@ public class AddNodeWidget {
 
     private GraphManager graphManager;
 
-    private final ArrayList<SimplifiedMetadata> results = new ArrayList<>();
+    private final ArrayList<UnifiedMetadata> results = new ArrayList<>();
 
     private boolean visible = false;
     private String searchString = "";
@@ -94,7 +94,7 @@ public class AddNodeWidget {
                 yoff = y + widgetHeight + 10; 
                 int ypos = 0;
                 int i = 0;
-                for (SimplifiedMetadata res: results) {
+                for (UnifiedMetadata res: results) {
                     Color cMain = Color.gray;
                     Color cSecond = Color.darkGray;
                     if (i == pos_y) {
@@ -136,7 +136,7 @@ public class AddNodeWidget {
     }
 
     private NodeGui createNode(int index) {
-        SimplifiedMetadata opMetaData = results.toArray(new SimplifiedMetadata[results.size()])[index];
+        UnifiedMetadata opMetaData = results.toArray(new UnifiedMetadata[results.size()])[index];
         return graphManager.newNode(opMetaData);
     }
 
@@ -203,14 +203,14 @@ public class AddNodeWidget {
         return list.toArray(new String[list.size()]);
     }
 
-    private class ResultComparator implements Comparator<Pair<SimplifiedMetadata, Double>>
+    private class ResultComparator implements Comparator<Pair<UnifiedMetadata, Double>>
     {
         public ResultComparator()
         {
         }
 
         @Override
-        public int compare(Pair<SimplifiedMetadata, Double> i1, Pair<SimplifiedMetadata, Double> i2)
+        public int compare(Pair<UnifiedMetadata, Double> i1, Pair<UnifiedMetadata, Double> i2)
         {
             return -i1.getValue().compareTo(i2.getValue());
         }
@@ -218,18 +218,18 @@ public class AddNodeWidget {
 
     private void updateSearch() {
         results.clear();
-        ArrayList<Pair<SimplifiedMetadata, Double>> searchResult= new ArrayList<>();
+        ArrayList<Pair<UnifiedMetadata, Double>> searchResult= new ArrayList<>();
         if (searchString.length() > 0) {
             final String normSearch[] = smartTokenizer(searchString);
 
-            for (SimplifiedMetadata metadata: graphManager.getSimplifiedMetadatas()) {
+            for (UnifiedMetadata metadata: graphManager.getSimplifiedMetadatas()) {
                 double dist = metadata.fuzzySearch(normSearch);
                 if (dist >= 0) {
                     searchResult.add(new Pair<>(metadata, dist));
                 }
             }
             searchResult.sort(new ResultComparator());
-            for (Pair<SimplifiedMetadata, Double> res: searchResult) {
+            for (Pair<UnifiedMetadata, Double> res: searchResult) {
                 results.add(res.getKey());
             }
 

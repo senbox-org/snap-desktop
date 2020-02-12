@@ -45,7 +45,7 @@ public class GraphManager implements NodeListener {
     private final OperatorSpiRegistry opSpiRegistry;
 
     private final ArrayList<OperatorMetadata> metadatas = new ArrayList<>();
-    private final HashMap<String, SimplifiedMetadata> simpleMetadatas = new HashMap<>();
+    private final HashMap<String, UnifiedMetadata> simpleMetadatas = new HashMap<>();
 
     private final ArrayList<NodeGui> nodes = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class GraphManager implements NodeListener {
                         .getAnnotation(OperatorMetadata.class);
 
                 metadatas.add(operatorMetadata);
-                simpleMetadatas.put(operatorMetadata.alias(), new SimplifiedMetadata(operatorMetadata, descriptor));
+                simpleMetadatas.put(operatorMetadata.alias(), new UnifiedMetadata(operatorMetadata, descriptor));
                               
             }
         }
@@ -90,7 +90,7 @@ public class GraphManager implements NodeListener {
         }
     }
 
-    public Operator getOperator(SimplifiedMetadata metadata) {
+    public Operator getOperator(UnifiedMetadata metadata) {
         OperatorSpi spi = opSpiRegistry.getOperatorSpi(metadata.getName());
         if (spi != null) {
             return spi.createOperator();
@@ -98,7 +98,7 @@ public class GraphManager implements NodeListener {
         return null;
     }
 
-    public Collection<SimplifiedMetadata> getSimplifiedMetadatas() {
+    public Collection<UnifiedMetadata> getSimplifiedMetadatas() {
         return simpleMetadatas.values();
     }
 
@@ -251,7 +251,7 @@ public class GraphManager implements NodeListener {
 
     public JMenu createOperatorMenu(ActionListener listener) {
         JMenu addMenu = new JMenu("Add");
-        for (SimplifiedMetadata metadata: getSimplifiedMetadatas()) {
+        for (UnifiedMetadata metadata: getSimplifiedMetadatas()) {
             JMenu menu = getCategoryMenu(addMenu, metadata.getCategory());
             JMenuItem item = new JMenuItem(metadata.getName());
             item.setHorizontalTextPosition(JMenuItem.RIGHT);
@@ -265,7 +265,7 @@ public class GraphManager implements NodeListener {
         return newNode(simpleMetadatas.get(opName));
     }
 
-    public NodeGui newNode(SimplifiedMetadata metadata) {
+    public NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
         NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
@@ -426,7 +426,7 @@ public class GraphManager implements NodeListener {
             if (graph != null) {
                 for (Node n : graph.getNodes()) {
                     if (simpleMetadatas.containsKey(n.getOperatorName())) {
-                        SimplifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
+                        UnifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
                         NodeGui ng = new NodeGui(n, getConfiguration(n), meta, ui);
                         nodes.add(ng);
