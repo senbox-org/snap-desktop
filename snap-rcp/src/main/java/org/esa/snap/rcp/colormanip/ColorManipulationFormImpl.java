@@ -684,7 +684,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 //                    final boolean autoDistribute = true;
                     if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
                         targetImageInfo.setColorPaletteDef(colorPaletteDef, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+                        ColorSchemeInfo colorSchemeInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+                        targetImageInfo.setColorSchemeInfo(colorSchemeInfo);
                     }
+
+
                     currentCPD.getFirstPoint().setLabel(file.getName());
                     getFormModel().setModifiedImageInfo(targetImageInfo);
                     getFormModel().applyModifiedImageInfo();

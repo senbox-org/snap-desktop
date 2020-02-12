@@ -881,7 +881,7 @@ public class ColorSchemeManager {
                         + "' <br>";
             }
 
-            message = "<html>" + message_head  + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
+            message = "<html>" + message_head + standardFileMessage + universalFileMessage + minMaxIssue + "</html>";
 
         } else {
             message = "Configuration Error";
