@@ -4,7 +4,6 @@ package org.esa.snap.grapheditor.ui.components;
 import javafx.util.Pair;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.AddNodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.AddNodeWidget;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.UnifiedMetadata;
 
