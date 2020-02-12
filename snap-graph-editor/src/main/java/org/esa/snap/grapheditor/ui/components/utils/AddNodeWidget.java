@@ -23,10 +23,10 @@ public class AddNodeWidget {
     static final private Color fillColor = new Color(0, 0, 0, 180); 
     static final private Color strokeColor = new Color(0, 0, 0, 255);
 
-    private static final int fsize = 12;
-    private static final Font mainFont = new Font("Ariel", Font.BOLD, fsize);
-    private static final Font secondaryFont = new Font("Ariel", Font.ITALIC, fsize - 1);
-    private static final int hOffset = fsize * 2 + 8;
+    private static final int fontSize = 12;
+    private static final Font mainFont = new Font("Ariel", Font.BOLD, fontSize);
+    private static final Font secondaryFont = new Font("Ariel", Font.ITALIC, fontSize - 1);
+    private static final int hOffset = fontSize * 2 + 8;
     private static final int yOffset = 30;
 
     private GraphManager graphManager;
@@ -70,7 +70,7 @@ public class AddNodeWidget {
             int offset = 10;
 
             textG.clipRect(x + 10, y + 5, widgetWidth - 20, widgetHeight - 10);
-            textG.drawString(searchString, x + offset, y + widgetHeight / 2 + fsize / 2);
+            textG.drawString(searchString, x + offset, y + widgetHeight / 2 + fontSize / 2);
             textG.dispose();
 
             
@@ -99,11 +99,11 @@ public class AddNodeWidget {
                     Color cSecond = Color.darkGray;
                     if (i == pos_y) {
                         resG.setColor(Color.lightGray);
-                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, hOffset);
+                        resG.fillRect(x, yoff + ypos - fontSize / 2 - 3, widgetWidth, hOffset);
                         cMain = Color.black;
                     } else if (i == over_y) {
                         resG.setColor(Color.darkGray);
-                        resG.fillRect(x, yoff + ypos - fsize / 2 - 3, widgetWidth, hOffset);
+                        resG.fillRect(x, yoff + ypos - fontSize / 2 - 3, widgetWidth, hOffset);
                         cSecond = Color.gray;
                         cMain = Color.lightGray;
                     }
@@ -113,7 +113,7 @@ public class AddNodeWidget {
                     
                     resG.setFont(secondaryFont);
                     resG.setColor(cSecond);
-                    resG.drawString(res.getCategory(), x + offset, yoff + ypos + fsize + 6);
+                    resG.drawString(res.getCategory(), x + offset, yoff + ypos + fontSize + 6);
                     ypos += hOffset;
                     i ++;
                 }
@@ -122,7 +122,7 @@ public class AddNodeWidget {
         }
     }
 
-    public void show(Point position) {
+    private void show(Point position) {
         mouseMoved(position);
         visible = true;
     }
@@ -136,7 +136,7 @@ public class AddNodeWidget {
     }
 
     private NodeGui createNode(int index) {
-        UnifiedMetadata opMetaData = results.toArray(new UnifiedMetadata[results.size()])[index];
+        UnifiedMetadata opMetaData = results.toArray(new UnifiedMetadata[0])[index];
         return graphManager.newNode(opMetaData);
     }
 
@@ -159,7 +159,7 @@ public class AddNodeWidget {
 
     public Rectangle getBoundingRect(final int width, final int height) {
         return new Rectangle((width - widgetWidth) / 2 - 5, 30 - 5, widgetWidth + 10,
-                widgetHeight + 5 + (fsize + 10) * results.size());
+                widgetHeight + 5 + (fontSize + 10) * results.size());
     }
 
     public boolean isVisible() {
@@ -184,28 +184,28 @@ public class AddNodeWidget {
     static private String[] smartTokenizer(final String string) {
         final HashSet<String> list = new HashSet<>();
         if (string.length() > 0) {
-            String token = "";
+            StringBuilder token = new StringBuilder();
             for (int i = 0; i < string.length(); i++) {
                 final char c = string.charAt(i);
                 if ((c == '.' || c == ' ')) {
                     if (token.length() > 0)
-                        list.add(token.toLowerCase());
-                    token = "";
+                        list.add(token.toString().toLowerCase());
+                    token = new StringBuilder();
                 } else {
-                    token += c;
+                    token.append(c);
                 }
             }
             if (token.length() > 0)
-                list.add(token.toLowerCase());
+                list.add(token.toString().toLowerCase());
 
             list.add(string.toLowerCase());
         }
-        return list.toArray(new String[list.size()]);
+        return list.toArray(new String[0]);
     }
 
-    private class ResultComparator implements Comparator<Pair<UnifiedMetadata, Double>>
+    private static class ResultComparator implements Comparator<Pair<UnifiedMetadata, Double>>
     {
-        public ResultComparator()
+        ResultComparator()
         {
         }
 
@@ -220,9 +220,9 @@ public class AddNodeWidget {
         results.clear();
         ArrayList<Pair<UnifiedMetadata, Double>> searchResult= new ArrayList<>();
         if (searchString.length() > 0) {
-            final String normSearch[] = smartTokenizer(searchString);
+            final String[] normSearch = smartTokenizer(searchString);
 
-            for (UnifiedMetadata metadata: graphManager.getSimplifiedMetadatas()) {
+            for (UnifiedMetadata metadata: graphManager.getSimplifiedMetadata()) {
                 double dist = metadata.fuzzySearch(normSearch);
                 if (dist >= 0) {
                     searchResult.add(new Pair<>(metadata, dist));
@@ -273,7 +273,7 @@ public class AddNodeWidget {
         int old_y = over_y;
         over_y = -1;
         if (x >= 0 && p.x <= widgetWidth && y > 0) {
-            int y_ind = (int)Math.ceil(y / hOffset);
+            int y_ind = (int)Math.ceil(y / (float)hOffset);
             if (y_ind < results.size()) {
                 over_y = y_ind;
             }

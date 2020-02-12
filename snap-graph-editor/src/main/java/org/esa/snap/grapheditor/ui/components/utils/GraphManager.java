@@ -47,8 +47,8 @@ public class GraphManager implements NodeListener {
     private final GPF gpf;
     private final OperatorSpiRegistry opSpiRegistry;
 
-    private final ArrayList<OperatorMetadata> metadatas = new ArrayList<>();
-    private final HashMap<String, UnifiedMetadata> simpleMetadatas = new HashMap<>();
+    private final ArrayList<OperatorMetadata> metadata = new ArrayList<>();
+    private final HashMap<String, UnifiedMetadata> simpleMetadata = new HashMap<>();
 
     private final ArrayList<NodeGui> nodes = new ArrayList<>();
     private final Graph graph = new Graph("");
@@ -75,11 +75,10 @@ public class GraphManager implements NodeListener {
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
             OperatorDescriptor descriptor = opSpi.getOperatorDescriptor();
             if (descriptor != null && !descriptor.isInternal()) {
-                final OperatorMetadata operatorMetadata = opSpi.getOperatorClass()
-                        .getAnnotation(OperatorMetadata.class);
+                OperatorMetadata operatorMetadata = opSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
 
-                metadatas.add(operatorMetadata);
-                simpleMetadatas.put(operatorMetadata.alias(), new UnifiedMetadata(operatorMetadata, descriptor));
+                metadata.add(operatorMetadata);
+                simpleMetadata.put(operatorMetadata.alias(), new UnifiedMetadata(operatorMetadata, descriptor));
                               
             }
         }
@@ -111,12 +110,8 @@ public class GraphManager implements NodeListener {
         return null;
     }
 
-    public Collection<UnifiedMetadata> getSimplifiedMetadatas() {
-        return simpleMetadatas.values();
-    }
-
-    public ArrayList<OperatorMetadata> getMetadata() {
-        return metadatas;
+    public Collection<UnifiedMetadata> getSimplifiedMetadata() {
+        return simpleMetadata.values();
     }
 
     private Node createNode(final String operator) {
@@ -199,7 +194,6 @@ public class GraphManager implements NodeListener {
                     }
                 } catch (NumberFormatException e) {
                     // not a problem
-                    continue;
                 }
             }
         }
@@ -264,7 +258,7 @@ public class GraphManager implements NodeListener {
 
     public JMenu createOperatorMenu(ActionListener listener) {
         JMenu addMenu = new JMenu("Add");
-        for (UnifiedMetadata metadata: getSimplifiedMetadatas()) {
+        for (UnifiedMetadata metadata: getSimplifiedMetadata()) {
             JMenu menu = getCategoryMenu(addMenu, metadata.getCategory());
             JMenuItem item = new JMenuItem(metadata.getName());
             item.setHorizontalTextPosition(JMenuItem.RIGHT);
@@ -275,10 +269,10 @@ public class GraphManager implements NodeListener {
     }
 
     public NodeGui newNode(String opName){
-        return newNode(simpleMetadatas.get(opName));
+        return newNode(simpleMetadata.get(opName));
     }
 
-    public NodeGui newNode(UnifiedMetadata metadata) {
+    NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
         this.graph.addNode(node);
@@ -321,8 +315,6 @@ public class GraphManager implements NodeListener {
         currentJob = new ValidateWorker(nodes, source, sourceFlag);
         currentJob.execute();
     }
-
-
 
     @Override
     public void outputChanged(NodeGui source) {
@@ -425,7 +417,7 @@ public class GraphManager implements NodeListener {
         }
 
         @Override
-        protected Boolean doInBackground() throws Exception {
+        protected Boolean doInBackground() {
             NotificationManager.getInstance().processStart();
             NotificationManager.getInstance().info("Graph", "validation started");
             if (this.validateSource) {
@@ -437,7 +429,7 @@ public class GraphManager implements NodeListener {
                 if (n != source) {
                     int dist = n.distance(source);
                     if (dist > 0) {
-                        Integer key = new Integer(dist);
+                        Integer key = dist;
                         if (!orderedGraph.containsKey(key)) {
                             orderedGraph.put(key, new HashSet<>());
                         }
@@ -478,11 +470,11 @@ public class GraphManager implements NodeListener {
         }
     }
 
-    private class EvaluateWorker extends  SwingWorker<Boolean, Object> {
+    private static class EvaluateWorker extends  SwingWorker<Boolean, Object> {
         private ArrayList<NodeGui> nodes;
 
         @Override
-        protected Boolean doInBackground() throws Exception {
+        protected Boolean doInBackground() {
 
             return true;
         }
@@ -498,17 +490,15 @@ public class GraphManager implements NodeListener {
         protected ArrayList<NodeGui> doInBackground() throws Exception {
             ArrayList<NodeGui> nodes = new ArrayList<>();
             AtomicReference<Graph> graph = new AtomicReference<>();
-            InputStreamReader fileReader = new InputStreamReader(new FileInputStream(source));
-            try {
+            try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(source))) {
                 graph.set(GraphIO.read(fileReader));
-            } finally {
-                fileReader.close();
             }
+
             if (graph.get() != null) {
 
                 for (Node n : graph.get().getNodes()) {
-                    if (simpleMetadatas.containsKey(n.getOperatorName())) {
-                        UnifiedMetadata meta = simpleMetadatas.get(n.getOperatorName());
+                    if (simpleMetadata.containsKey(n.getOperatorName())) {
+                        UnifiedMetadata meta = simpleMetadata.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
                         NodeGui ng = new NodeGui(copyNode(n), getConfiguration(n), meta, ui);
                         nodes.add(ng);
@@ -543,20 +533,22 @@ public class GraphManager implements NodeListener {
                             break;
                         }
                     }
-
-                    for (NodeSource src: n.getSources()) {
-                        String id = src.getSourceNodeId();
-                        NodeGui srcNode = null;
-                        for (NodeGui ns: nodes) {
-                            if (ns.getName().equals(id)) {
-                                srcNode = ns;
-                                break;
+                    if (trgNode != null) {
+                        for (NodeSource src: n.getSources()) {
+                            String id = src.getSourceNodeId();
+                            NodeGui srcNode = null;
+                            for (NodeGui ns: nodes) {
+                                if (ns.getName().equals(id)) {
+                                    srcNode = ns;
+                                    break;
+                                }
                             }
-                        }
-                        if (srcNode != null) {
-                            Connection cnn = new Connection(srcNode, trgNode, index);
-                            trgNode.addConnection(cnn, index);
-                            index ++;
+                            if (srcNode != null) {
+                                Connection cnn = new Connection(srcNode, trgNode, index);
+                                    trgNode.addConnection(cnn, index);
+                                    index ++;
+
+                            }
                         }
                     }
                 }

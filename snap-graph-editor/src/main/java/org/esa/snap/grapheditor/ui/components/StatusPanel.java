@@ -64,7 +64,6 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
         messageLabel = new JLabel("");
         topPane.add(messageLabel);
 
-
         progressBar = new JProgressBar();
         progressBar.setPreferredSize(new Dimension(200, 30));
         topPane.add(progressBar);
