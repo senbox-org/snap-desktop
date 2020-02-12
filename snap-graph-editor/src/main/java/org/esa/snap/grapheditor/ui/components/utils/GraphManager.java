@@ -383,6 +383,7 @@ public class GraphManager implements NodeListener {
     }
 
     public boolean saveGraph(File f) {
+        NotificationManager.getInstance().processStart();
         Graph graph = new Graph("graph");
         XppDom presentationEl = new XppDom("applicationData");
         presentationEl.setAttribute("id", "Presentation");
@@ -399,9 +400,12 @@ public class GraphManager implements NodeListener {
         try {
             OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(f));
             GraphIO.write(graph, fileWriter);
+            NotificationManager.getInstance().processEnd();
+            NotificationManager.getInstance().info("Graph Saver", "file saved `"+f.getName()+"`");
             return true;
         } catch (FileNotFoundException e){
-            NotificationManager.getInstance().error("Graph Saver", e.getMessage());
+            NotificationManager.getInstance().processEnd();
+            NotificationManager.getInstance().error("Graph Saver", "file saving error `" + e.getMessage() + "`");
         }
         return  false;
     }
