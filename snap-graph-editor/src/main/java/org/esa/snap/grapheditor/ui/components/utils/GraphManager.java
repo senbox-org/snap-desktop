@@ -31,7 +31,9 @@ import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.graph.Graph;
+import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.GraphIO;
+import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.SystemUtils;
@@ -289,6 +291,22 @@ public class GraphManager implements NodeListener {
 
     public void evaluate() {
         // TODO evaluate graph
+        ArrayList<NodeGui> targets = new ArrayList<>();
+        for (NodeGui n: nodes) {
+            if (n.isTarget()) {
+                targets.add(n);
+            }
+        }
+        if (currentJob != null && !currentJob.isDone()) {
+            currentJob.cancel(true);
+        }
+        System.out.println("Ready to evaluate, n: " + targets.size());
+        GraphProcessor processor = new GraphProcessor();
+        try {
+            processor.executeGraph(graph, NotificationManager.getInstance());
+        } catch (GraphException e) {
+            NotificationManager.getInstance().error("Graph Execution", e.getMessage());
+        }
     }
 
     private void validate() {

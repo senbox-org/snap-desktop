@@ -31,7 +31,7 @@ public class GraphPanel extends JPanel
         implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, ActionListener, RefreshListener, NodeListener {
 
     /**
-     * Genrated UID
+     * Generated UID
      */
     private static final long serialVersionUID = -8787328074424783352L;
 
@@ -52,6 +52,9 @@ public class GraphPanel extends JPanel
 
     public GraphPanel() {
         super();
+        // set event listener for refreshing UI when needed
+        GraphManager.getInstance().addEventListener(this);
+
         this.setBackground(Color.lightGray);
         this.addNodeWidget = new AddNodeWidget(this, graphManager);
         this.addMenu = new JPopupMenu();
