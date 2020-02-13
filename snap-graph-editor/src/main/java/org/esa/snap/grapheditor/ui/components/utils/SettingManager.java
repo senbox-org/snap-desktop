@@ -7,89 +7,107 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
+/**
+ * Simple setting manager for the GraphBuilder.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class SettingManager {
+    /**
+     * Internal enum to manage different type of values
+     */
     private enum SettingType {
         INT,
-        KEY,
-        COLOR,
+        // COLOR, future
         BOOLEAN,
         STRING,
         DOUBLE
     }
 
-    private class SettingValue  {
+    /**
+     * Internal class to contain multiple type of settings, and create the correct setting component.
+     */
+    private static class SettingValue  {
         private SettingType type;
         private Object value;
 
-        public SettingValue(boolean val) {
+        private SettingValue(boolean val) {
             type = SettingType.BOOLEAN;
             value = val;
         }
 
-        public SettingValue(int val) {
+        /**
+         * For future use
+         * @param val integer value
+         */
+        private SettingValue(int val) {
             type = SettingType.INT;
             value = val;
         }
 
-        public SettingValue(double val) {
+        /**
+         * For future use
+         * @param val double value
+         */
+        private SettingValue(double val) {
             type = SettingType.DOUBLE;
             value = val;
         }
 
-        public SettingValue(String val) {
+        /**
+         * For future use
+         * @param val string value
+         */
+        private SettingValue(String val) {
             type = SettingType.STRING;
             value = val;
         }
 
-        public SettingType getType() {
-            return type;
-        }
-
-        public boolean asBoolean() {
+        private boolean asBoolean() {
             if (type == SettingType.BOOLEAN)
                 return (boolean) value;
             return false;
         }
 
-        public int asInt() {
+        private int asInt() {
             if (type == SettingType.INT)
                 return (int) value;
             return 0;
         }
 
-        public double asDouble() {
+        private double asDouble() {
             if (type == SettingType.DOUBLE)
                 return (double) value;
             return 0;
         }
 
-        public String asString() {
+        private String asString() {
             if (type == SettingType.STRING)
                 return (String) value;
             return "";
         }
 
-        public void set(int val) {
+        private void set(int val) {
             if (type == SettingType.INT)
                 value = val;
         }
 
-        public void set(double val) {
+        private void set(double val) {
             if (type == SettingType.DOUBLE)
                 value = val;
         }
 
-        public void set(boolean val) {
+        private void set(boolean val) {
             if (type == SettingType.BOOLEAN)
                 value = val;
         }
 
-        public void set(String val) {
+        private void set(String val) {
             if (type == SettingType.STRING)
                 value = val;
         }
 
-        public void updateValue(Object component) {
+        private void updateValue(Object component) {
             switch (type) {
                 case BOOLEAN:
                     set(((JCheckBox)component).isSelected());
@@ -106,9 +124,9 @@ public class SettingManager {
             }
         }
 
-        public Pair<JComponent, Object> getComponent(String title) {
-            Object comp = null;
-            JComponent cont = null;
+        private Pair<JComponent, Object> getComponent(String title) {
+            Object comp;
+            JComponent cont;
 
             JPanel p = new JPanel();
             p.add(new JLabel(title), BorderLayout.LINE_START);
@@ -150,29 +168,54 @@ public class SettingManager {
     static final private String AUTOVALIDATEKEY = "auto validate enabled";
     static final private String BGGRIDVISIBLEKEY = "background grid visible";
 
+    /**
+     * Initialize SettingManager with default values.
+     */
     private SettingManager(){
+        //TODO load previous settings.
         settings.put(TOOLTIPENABLED, new SettingValue(true));
         settings.put(COMMANDPANELENABLED, new SettingValue(true));
         settings.put(AUTOVALIDATEKEY, new SettingValue(true));
         settings.put(BGGRIDVISIBLEKEY, new SettingValue(true));
     }
 
+    /**
+     * Is tooltip enabled?
+     * @return tooltip enabled preference
+     */
     public boolean isShowToolipEnabled() {
         return settings.get(TOOLTIPENABLED).asBoolean();
     }
 
+    /**
+     * Is command panel enabled?
+     * @return command panel enabled preference
+     */
     public boolean isCommandPanelEnabled() {
         return settings.get(COMMANDPANELENABLED).asBoolean();
     }
 
+    /**
+     * Is background grid visible?
+     * @return background grid visibility preference
+     */
     public boolean isBgGridVisible() {
         return settings.get(BGGRIDVISIBLEKEY).asBoolean();
     }
+
+    /**
+     * Get command panel short-cut (CONSTANT = TAB)
+     * @return command panel key
+     */
     public int getCommandPanelKey() {
         return KeyEvent.VK_TAB;
     }
 
-    public JDialog showSettingsDialog(Window parent) {
+    /**
+     * Display the setting dialog
+     * @param parent owner of the dialog
+     */
+    public void showSettingsDialog(Window parent) {
         JDialog dialog = new JDialog(parent, "Graph Editor Settings");
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -190,9 +233,7 @@ public class SettingManager {
         buttonPanel.add(okButton, BorderLayout.LINE_END);
         panel.add(buttonPanel);
 
-        cancelButton.addActionListener(e -> {
-            dialog.setVisible(false);
-        });
+        cancelButton.addActionListener(e -> dialog.setVisible(false));
 
         okButton.addActionListener(e -> {
             for (String title: components.keySet()){
@@ -212,10 +253,13 @@ public class SettingManager {
 
         dialog.setVisible(true);
 
-        return dialog;
     }
 
-    static final public SettingManager getInstance() {
+    /**
+     * Get SettingManager instance.
+     * @return instance
+     */
+    static public SettingManager getInstance() {
         if (instance_ == null)
             instance_ = new SettingManager();
         return instance_;

@@ -6,67 +6,111 @@ import org.esa.snap.grapheditor.ui.components.interfaces.NotificationListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * Simple Notification Manager, used to dispatch the notification to all interested parties. It also implements the
+ * ProgressMonitor interface to be compatible with the GraphExecutor.
+ *
+ * @author Martino Ferrari
+ */
 public class NotificationManager implements ProgressMonitor {
     static private NotificationManager instance = null;
 
     private HashSet<NotificationListener> listeners = new HashSet<>();
-    private ArrayList<Notification> notifications = new ArrayList<>();
+    // Maybe for future applications. In case we want to store log history.
+    // private ArrayList<Notification> notifications = new ArrayList<>();
 
+    /**
+     * Private constructor. Using singleton pattern.
+     */
     private NotificationManager() {}
 
+    /**
+     * internal function to notify all listeners of a new incoming notification.
+     * @param n new notification
+     */
     private void notify(Notification n) {
-        this.notifications.add(n);
+        // this.notifications.add(n); // see line #13
         for (NotificationListener l: listeners) {
             l.notificationIncoming(n);
         }
     }
 
-    public ArrayList<Notification> getNotifications() {
-        return notifications;
-    }
-
+    /**
+     * Add new listener to the notification Manager
+     * @param l new listener
+     */
     public void addNotificationListener(NotificationListener l){
         listeners.add(l);
     }
 
-    public void removeNotificationListener(NotificationListener l) {
-        listeners.remove(l);
-    }
-
-    public void info(String source, String message) {
+    /**
+     * Informative notification
+     * @param source sender
+     * @param message content
+     */
+    void info(String source, String message) {
         notify(Notification.info(source, message));
     }
 
+    /**
+     * Warning notification
+     * @param source sender
+     * @param message content
+     */
     public void warning(String source, String message) {
         notify(Notification.warning(source, message));
     }
 
+    /**
+     * Error notification
+     * @param source sender
+     * @param message content
+     */
     public void error(String source, String message) {
         notify(Notification.error(source, message));
     }
 
+    /**
+     * Validated notification
+     * @param source sender
+     * @param message content
+     */
     public void ok(String source, String message) {
         notify(Notification.ok(source, message));
     }
 
-    public void processStart() {
+    /**
+     * A process started.
+     */
+    void processStart() {
         for (NotificationListener l : listeners) {
             l.processStart();
         }
     }
 
-    public void processEnd() {
+    /**
+     * A process ended.
+     */
+    void processEnd() {
         for (NotificationListener l : listeners) {
             l.processEnd();
         }
     }
 
-    public void progress(int value) {
+    /**
+     * Update the progress of a process.
+     * @param value new progress value (0-100)
+     */
+    void progress(int value) {
         for (NotificationListener l : listeners) {
             l.progress(value);
         }
     }
 
+    /**
+     * Get the NotificationManager
+     * @return the notification manager instance.
+     */
     static public NotificationManager getInstance() {
         if (instance == null) {
             instance = new NotificationManager();

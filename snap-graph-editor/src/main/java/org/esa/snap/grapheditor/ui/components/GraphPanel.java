@@ -159,7 +159,8 @@ public class GraphPanel extends JPanel
     public void keyReleased(KeyEvent event) {
         int key = event.getKeyCode();
 
-        if (key == SettingManager.getInstance().getCommandPanelKey()) {
+        if (key == SettingManager.getInstance().getCommandPanelKey()
+                && SettingManager.getInstance().isCommandPanelEnabled()) {
             AddNodeDialog addNodeDialog = new AddNodeDialog(this);
             addNodeDialog.addListener(this);
 
