@@ -23,7 +23,6 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
     private HashSet<AddNodeListener> listeners = new HashSet<>();
 
-    private int currentActive = -1;
     private JComponent parent;
 
     public AddNodeDialog(JComponent component) {
@@ -40,11 +39,8 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
         resultsList = new JList<>(results);
         resultsList.setVisible(false);
-        resultsList.addListSelectionListener(e-> {
-            if (e.getFirstIndex() != currentActive) {
-                currentActive = e.getFirstIndex();
-            }
-        });
+
+        resultsList.addKeyListener(this);
         p.add(resultsList, BorderLayout.PAGE_END);
 
         this.add(p, BorderLayout.CENTER);
@@ -66,8 +62,6 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         int y = topFrame.getY();
         int fwidth = topFrame.getWidth();
 
-        currentActive = -1;
-        this.parent = parent;
         searchField.setText("");
         results.removeAllElements();
         resultsList.setVisible(false);
@@ -86,7 +80,7 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         if (parent != null) {
             parent.requestFocusInWindow();//requestFocusInWindow()
         }
-
+        results.clear();
         listeners.clear();
     }
 
@@ -98,7 +92,6 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     private void updateResults() {
         String searchString = searchField.getText();
         if (searchString.length() == 0) {
-            currentActive = -1;
             resultsList.setVisible(false);
             results.clear();
             return;
@@ -115,22 +108,24 @@ public class AddNodeDialog extends JDialog implements KeyListener {
             }
             results.removeAllElements();
             if (searchResult.size() > 0) {
+                int prevActive = resultsList.getSelectedIndex();
                 searchResult.sort(new ResultComparator());
                 for (Pair<UnifiedMetadata, Double> res: searchResult) {
                     results.addElement(res.getKey());
                    // results.add(res.getKey());
                 }
-                if (currentActive < 0) {
-                    currentActive = 0;
-                }
                 resultsList.setVisible(true);
-                resultsList.setSelectedIndex(currentActive);
+
+                if (prevActive >= 0) {
+                    int currentActive = Math.min(prevActive, results.size() - 1);
+                    resultsList.setSelectedIndex(currentActive);
+                } else {
+                    resultsList.setSelectedIndex(0);
+                }
                 this.setSize(width, height + resultsList.getPreferredSize().height + 4);
             } else {
-                currentActive = -1;
                 resultsList.setVisible(false);
                 this.setSize(width, height);
-
             }
             this.revalidate();
         }
@@ -145,16 +140,8 @@ public class AddNodeDialog extends JDialog implements KeyListener {
             case (KeyEvent.VK_DOWN):
                 down();
                 break;
-        }
-    }
-
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
             case (10):
-//                // return
-//                this.addNode(this.addNodeWidget.enter());
+                // enter
                 this.enter();
                 this.popdown();
                 break;
@@ -165,11 +152,18 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         }
     }
 
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // nothing to do..
+    }
+
     private void enter() {
-        if (currentActive < 0 || currentActive > results.getSize() - 1) {
+        if (results.size() == 0) {
             return;
         }
-        UnifiedMetadata meta = results.get(currentActive);
+
+        UnifiedMetadata meta = resultsList.getSelectedValue(); // results.get(currentActive);
         System.out.println(meta.getName());
         NodeGui n = GraphManager.getInstance().newNode(meta);
         for (AddNodeListener l: listeners){
@@ -178,18 +172,16 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     }
 
     private void down() {
-        if (currentActive < 0) return;
-        if (currentActive < results.getSize() - 1) {
-            currentActive++;
-            this.resultsList.setSelectedIndex(currentActive);
+        if (results.size() <= 1) return;
+        if (resultsList.getSelectedIndex() < results.getSize() - 1) {
+            this.resultsList.setSelectedIndex(resultsList.getSelectedIndex() + 1);
         }
     }
 
     private void up() {
-        if (currentActive < 0) return;
-        if (currentActive > 0) {
-            currentActive --;
-            this.resultsList.setSelectedIndex(currentActive);
+        if (results.size() <= 1) return;
+        if (resultsList.getSelectedIndex() > 0) {
+            this.resultsList.setSelectedIndex(resultsList.getSelectedIndex() - 1);
         }
     }
 

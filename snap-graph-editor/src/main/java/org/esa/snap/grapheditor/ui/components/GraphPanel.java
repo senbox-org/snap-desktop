@@ -195,7 +195,9 @@ public class GraphPanel extends JPanel
                     listener.updated(dragAction.getSource());
                 }
             }
-            for (NodeGui node : graphManager.getNodes()) {
+            // reverse loop to get correct node
+            for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
+                NodeGui node = graphManager.getNodes().get(i);
                 if (node.contains(e.getPoint())) {
                     if (node.over(e.getPoint())) {
                         repainted = true;
@@ -213,7 +215,9 @@ public class GraphPanel extends JPanel
     @Override
     public void mouseMoved(MouseEvent e) {
         lastMousePosition = e.getPoint();
-        for (NodeGui node : graphManager.getNodes()) {
+        // reverse loop to get correct node
+        for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
+            NodeGui node = graphManager.getNodes().get(i);
             if (node.contains(lastMousePosition)) {
                 node.over(lastMousePosition);
             } else {
@@ -234,7 +238,9 @@ public class GraphPanel extends JPanel
             return;
         }
         boolean somethingSelected = false;
-        for (NodeGui node : graphManager.getNodes()) {
+        // reverse loop to get correct node
+        for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
+            NodeGui node = graphManager.getNodes().get(i);
             if (node.contains(lastMousePosition)) {
                 selectNode(node);
                 somethingSelected = true;
@@ -255,7 +261,9 @@ public class GraphPanel extends JPanel
         this.requestFocus();
         if (e.getButton() == MouseEvent.BUTTON1) {
             Point p = e.getPoint();
-            for (NodeGui node : graphManager.getNodes()) {
+            // reverse loop to get correct node
+            for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
+                NodeGui node = graphManager.getNodes().get(i);
                 if (node.contains(p)) {
                     dragAction = node.drag(e.getPoint());
                     return;
