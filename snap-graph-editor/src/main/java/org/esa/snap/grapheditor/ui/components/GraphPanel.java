@@ -203,24 +203,23 @@ public class GraphPanel extends JPanel
             Rectangle u = dragAction.getBoundingBox();
             boolean repainted = false;
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
-                for (GraphListener listener : graphListeners) {
-                    listener.updated(dragAction.getSource());
-                }
-            }
-            // reverse loop to get correct node
-            for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
-                NodeGui node = graphManager.getNodes().get(i);
-                if (node.contains(e.getPoint())) {
-                    if (node.over(e.getPoint())) {
-                        repainted = true;
-                    }
-                } else if (node.none())
-                        repainted = true;
-            }
-            if (repainted)
-                repaint();
-            else
                 repaint(GraphicUtils.union(r, u));
+            } else {
+                // reverse loop to get correct node
+                for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
+                    NodeGui node = graphManager.getNodes().get(i);
+                    if (node.contains(e.getPoint())) {
+                        if (node.over(e.getPoint())) {
+                            repainted = true;
+                        }
+                    } else if (node.none())
+                        repainted = true;
+                }
+                if (repainted)
+                    repaint();
+                else
+                    repaint(GraphicUtils.union(r, u));
+            }
         }
     }
 
