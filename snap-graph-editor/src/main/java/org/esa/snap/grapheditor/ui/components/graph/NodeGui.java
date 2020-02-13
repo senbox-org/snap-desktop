@@ -617,7 +617,7 @@ public class NodeGui implements NodeListener {
      * @param p mouse position
      * @return new drag action
      */
-    public NodeDragAction drag(Point p) {
+    public DragAction drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.incomingConnections.size() > iy) {
@@ -625,18 +625,18 @@ public class NodeGui implements NodeListener {
                 if (c != null) {
                     disconnect(iy);
                     c.showSourceTooltip();
-                    return new NodeDragAction(new Connection(c.getSource(), p));
+                    return new DragAction(new Connection(c.getSource(), p));
                 }
             }
             tooltipVisible_ = false;
-            return new NodeDragAction(new Connection(this, iy, p));
+            return new DragAction(new Connection(this, iy, p));
         }
         if (isOverOutput(p)) {
             tooltipVisible_ = false;
-            return new NodeDragAction(new Connection(this, p));
+            return new DragAction(new Connection(this, p));
         }
         tooltipVisible_ = false;
-        return new NodeDragAction(this,  p);
+        return new DragAction(this, p);
     }
 
     /**

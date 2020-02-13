@@ -10,7 +10,7 @@ import java.awt.*;
  *
  * @author Martino Ferrari (CS Group)
  */
-public class NodeDragAction {
+public class DragAction {
     /**
      * Drag Action type enum to identify the two major types of interactions.
      *  - DRAG: drag a node
@@ -27,14 +27,24 @@ public class NodeDragAction {
     private Point current;
     private Connection connection = null;
 
-    public NodeDragAction(NodeGui source, Point origin) {
+    /**
+     * Constructor for the Node drag action case.
+     *
+     * @param source node to be dragged
+     * @param origin mouse click point
+     */
+    public DragAction(NodeGui source, Point origin) {
         this.type = Type.DRAG;
         this.source = source;
         this.origin = GraphicalUtils.diff(origin, source.getPostion());
         this.current = origin;
     }
 
-    public NodeDragAction(Connection c) {
+    /**
+     * Constructor for the Connection drag action case.
+     * @param c connection line to be dragged
+     */
+    public DragAction(Connection c) {
         connection = new Connection(source, origin);
         this.source = c.getSource() != null ? c.getSource() : c.getTarget();
         this.connection = c;
@@ -42,18 +52,34 @@ public class NodeDragAction {
         this.type = Type.CONNECT;
     }
 
+    /**
+     * Get the type of DragAction.
+     * @return the DragAction type
+     */
     public Type getType() {
         return this.type;
     }
 
-    public NodeGui getSource() {
+    /**
+     * Get the dragged node
+     * @return the dragged node
+     */
+    public NodeGui getNode() {
         return source;
     }
 
+    /**
+     * Get the dragged connection
+     * @return the dragged connection
+     */
     public Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Move the dragged object to a new position
+     * @param p new drag position
+     */
     public void move(Point p){
         if (type == Type.DRAG) {
             current = p;
@@ -62,6 +88,10 @@ public class NodeDragAction {
         }
     }
 
+    /**
+     * Draw current dragged element.
+     * @param g renderer to be used
+     */
     public void draw(Graphics2D g) {
         if (this.connection != null) {
             this.connection.draw(g);
@@ -76,6 +106,9 @@ public class NodeDragAction {
 
     }
 
+    /**
+     * Conclude the drag action,
+     */
     public void drop() {
         if (type == Type.DRAG) {
             int x = this.current.x - this.origin.x;
@@ -84,6 +117,11 @@ public class NodeDragAction {
         }
     }
 
+    /**
+     * Compute the bounding box of the DragAction.
+     *
+     * @return area impacted by the DragAction
+     */
     public Rectangle getBoundingBox() {
         if (type == Type.DRAG) {
             Rectangle r = source.getBoundingBox();

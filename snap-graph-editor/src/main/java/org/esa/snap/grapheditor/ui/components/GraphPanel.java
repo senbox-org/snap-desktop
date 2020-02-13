@@ -14,7 +14,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
+import org.esa.snap.grapheditor.ui.components.utils.DragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
@@ -45,7 +45,7 @@ public class GraphPanel extends JPanel
     private Point lastMousePosition = new Point(0, 0);
 
     private NodeGui selectedNode = null;
-    private NodeDragAction dragAction = null;
+    private DragAction dragAction = null;
 
     private GraphManager graphManager = GraphManager.getInstance();
 
@@ -202,7 +202,7 @@ public class GraphPanel extends JPanel
             dragAction.move(e.getPoint());
             Rectangle u = dragAction.getBoundingBox();
             boolean repainted = false;
-            if (dragAction.getType() == NodeDragAction.Type.DRAG) {
+            if (dragAction.getType() == DragAction.Type.DRAG) {
                 repaint(GraphicalUtils.union(r, u));
             } else {
                 // reverse loop to get correct node
@@ -288,12 +288,12 @@ public class GraphPanel extends JPanel
     private void endDrag() {
         if (dragAction != null) {
             dragAction.drop();
-            if (dragAction.getType() == NodeDragAction.Type.DRAG) {
-                Point p = GraphicalUtils.normalize(dragAction.getSource().getPostion());
-                moveNode(dragAction.getSource(), p.x, p.y);
+            if (dragAction.getType() == DragAction.Type.DRAG) {
+                Point p = GraphicalUtils.normalize(dragAction.getNode().getPostion());
+                moveNode(dragAction.getNode(), p.x, p.y);
             } else {
                 for (NodeGui node: graphManager.getNodes()) {
-                    if (node != dragAction.getSource() && node.hasTooltip()) {
+                    if (node != dragAction.getNode() && node.hasTooltip()) {
                         // means is over a connection point
                         dragAction.getConnection().connect(node);
                     }
@@ -406,7 +406,7 @@ public class GraphPanel extends JPanel
         for (GraphListener listener : graphListeners) {
             listener.created(node);
         }
-        this.dragAction = new NodeDragAction(node, p);
+        this.dragAction = new DragAction(node, p);
         repaint();
     }
 }
