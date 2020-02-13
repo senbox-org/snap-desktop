@@ -54,8 +54,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
     private MetadataInspector.Metadata readerInspectorExposeParameters;
 
-    private ProductSubsetDef productSubsetDef = null;
-
     private AtomicBoolean updatingUI;
 
     private int productWidth;
@@ -77,7 +75,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         this.readerExposedParams = readerExposedParams;
         this.readerInspectorExposeParameters = readerInspectorExposeParameters;
         updatingUI = new AtomicBoolean(false);
-        this.productSubsetDef = new ProductSubsetDef();
         createUI();
     }
 
@@ -178,15 +175,15 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         setContent(createPanel());
     }
 
-    public void createSubsetDef (){
+    public ProductSubsetDef createSubsetDef (){
         if (pixelPanel.isVisible()) {
             pixelPanelChanged();
-            updateSubsetDefNodeNameList(false);
+            return updateSubsetDefNodeNameList(false);
         }
         if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
-            geoCodingChange();
-            updateSubsetDefNodeNameList(true);
+            return updateSubsetDefNodeNameList(true);
         }
+        return null;
     }
 
     @Override
@@ -197,7 +194,8 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
     /**
      * @param geoRegion if <code>true</code>, the geoCoding parameters will be send
      */
-    private void updateSubsetDefNodeNameList(boolean geoRegion) {
+    private ProductSubsetDef updateSubsetDefNodeNameList(boolean geoRegion) {
+        ProductSubsetDef productSubsetDef = new ProductSubsetDef();
         //if the user specify the bands that want to be added in the product add only them, else mark the fact that the product must have all the bands
         if (!bandList.isSelectionEmpty()) {
             productSubsetDef.addNodeNames((String[]) bandList.getSelectedValuesList().stream().toArray(String[]::new));
@@ -245,7 +243,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             productSubsetDef.setIgnoreMetadata(true);
         }
         if(geoRegion){
-            setGeometry();
+            setGeometry(productSubsetDef);
         }else{
             if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
                 productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
@@ -254,9 +252,10 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                                                          Integer.parseInt(paramHeight.getValueAsText())));
             }
         }
+        return productSubsetDef;
     }
 
-    private void setGeometry(){
+    private void setGeometry(ProductSubsetDef productSubsetDef){
         if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
             final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
                                               (Double) paramWestLon1.getValue());
@@ -270,7 +269,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
             final Rectangle.Float productBounds = new Rectangle.Float(0, 0, productWidth, productHeight);
             Rectangle2D finalRegion = productBounds.createIntersection(region);
-            Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)Math.floor(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)Math.floor(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
+            Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
             Geometry geometry = ProductUtils.computeGeoRegion(geoCoding, productWidth, productHeight, bounds);
             productSubsetDef.setGeoRegion(geometry);
         }
@@ -479,10 +478,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         }
     }
 
-    public ProductSubsetDef getProductSubsetDef() {
-        return productSubsetDef;
-    }
-
     public static Path convertInputToPath(Object input) {
         if (input == null) {
             throw new NullPointerException();
@@ -581,8 +576,8 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
 
             paramX1.setValue((int) finalRegion.getMinX(), null);
             paramY1.setValue((int) finalRegion.getMinY(), null);
-            int width = (int) finalRegion.getMaxX() - (int) finalRegion.getMinX() + 1;
-            int height = (int) finalRegion.getMaxY() - (int) finalRegion.getMinY() + 1;
+            int width = (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1;
+            int height = (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1;
             paramWidth.setValue(width, null);
             paramHeight.setValue(height, null);
         }

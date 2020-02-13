@@ -322,8 +322,7 @@ public class ProductFileChooser extends SnapFileChooser {
         try {
             ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", readerExposedParams,readerInspectorExposeParameters);
             if(advancedDialog.show() == advancedDialog.ID_OK) {
-                advancedDialog.createSubsetDef();
-                productSubsetDef = advancedDialog.getProductSubsetDef();
+                productSubsetDef = advancedDialog.createSubsetDef();
                 return true;
                 }
         }catch (Exception e) {
