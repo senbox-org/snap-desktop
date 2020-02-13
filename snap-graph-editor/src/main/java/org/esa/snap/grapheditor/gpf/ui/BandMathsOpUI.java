@@ -60,7 +60,6 @@ public class BandMathsOpUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
-
         Object[] bandDescriptors = (Object[])paramMap.get("targetBands");
         if(bandDescriptors == null)
             bandDescriptors = (Object[])paramMap.get("targetBandDescriptors");

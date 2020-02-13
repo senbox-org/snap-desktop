@@ -10,7 +10,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
-import org.esa.snap.grapheditor.ui.components.GraphPanel;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;

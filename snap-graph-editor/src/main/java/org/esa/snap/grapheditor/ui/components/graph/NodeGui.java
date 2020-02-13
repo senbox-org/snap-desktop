@@ -108,7 +108,7 @@ public class NodeGui implements NodeListener, NodeInterface {
     private Product output = null;
     private boolean recomputeOutputNeeded = true;
 
-    public NodeGui (Node node, Map<String, Object> configuration, @NotNull UnifiedMetadata metadata, OperatorUI operatorUI){
+    public NodeGui (Node node, Map<String, Object> configuration, @NotNull UnifiedMetadata metadata, OperatorUI operatorUI, OperatorContext context){
         this.x = 0;
         this.y = 0;
         this.metadata = metadata;
@@ -119,9 +119,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
-        Operator operator = GraphManager.getInstance().getOperator(metadata);
-        context = new OperatorContext(operator);
-
+        this.context = context;
     }
 
 
@@ -536,7 +534,10 @@ public class NodeGui implements NodeListener, NodeInterface {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
         if (recomputeOutputNeeded || check_changes()) {
-            GraphManager.getInstance().validate(this);
+            for (NodeListener l : nodeListeners) {
+                l.validateNode(this);
+            }
+
         }
     }
 
@@ -805,6 +806,9 @@ public class NodeGui implements NodeListener, NodeInterface {
     public void connectionAdded(NodeInterface source) {
         hasChanged = true;
     }
+
+    @Override
+    public void validateNode(NodeInterface node) {}
 
     /**
      * Add a NodeListener.

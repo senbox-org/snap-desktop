@@ -36,6 +36,7 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.graph.NodeSource;
+import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
@@ -136,7 +137,7 @@ public class GraphManager implements NodeListener {
      * @param metadata input metadata
      * @return the new operator
      */
-    public Operator getOperator(UnifiedMetadata metadata) {
+    private Operator getOperator(UnifiedMetadata metadata) {
         OperatorSpi spi = opSpiRegistry.getOperatorSpi(metadata.getName());
         if (spi != null) {
             return spi.createOperator();
@@ -363,7 +364,9 @@ public class GraphManager implements NodeListener {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
         this.graph.addNode(node);
-        NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
+        Operator operator = GraphManager.getInstance().getOperator(metadata);
+        assert operator != null;
+        NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui, new OperatorContext(operator));
         this.nodes.add(newNode);
         newNode.addNodeListener(this);
         NotificationManager.getInstance().info(newNode.getName(), "Created");
@@ -415,7 +418,7 @@ public class GraphManager implements NodeListener {
      * The validation will be done on a separate thread.
      * @param source root node of the sub-graph
      */
-    public void validate(NodeGui source) {
+    private void validate(NodeGui source) {
         validate(source, true);
     }
 
@@ -456,6 +459,11 @@ public class GraphManager implements NodeListener {
         NotificationManager.getInstance().info(source.getName(), "Connected");
         // Try to revalidate graph
         validate(srcNode, true);
+    }
+
+    @Override
+    public void validateNode(NodeInterface node) {
+        validate((NodeGui)node);
     }
 
     /**
@@ -650,7 +658,9 @@ public class GraphManager implements NodeListener {
                     if (simpleMetadata.containsKey(n.getOperatorName())) {
                         UnifiedMetadata meta = simpleMetadata.get(n.getOperatorName());
                         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(meta.getName());
-                        NodeGui ng = new NodeGui(copyNode(n), getConfiguration(n), meta, ui);
+                        Operator operator = GraphManager.getInstance().getOperator(meta);
+                        assert operator != null;
+                        NodeGui ng = new NodeGui(copyNode(n), getConfiguration(n), meta, ui, new OperatorContext(operator));
                         nodes.add(ng);
                     } else {
                         NotificationManager.getInstance().error("Graph",

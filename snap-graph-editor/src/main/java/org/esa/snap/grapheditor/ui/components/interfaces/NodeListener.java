@@ -20,4 +20,10 @@ public interface NodeListener {
      * @param source source of the event
      */
     void connectionAdded(NodeInterface source);
+
+    /**
+     * Ask for validation of the node
+     * @param node node to be verified
+     */
+    void validateNode(NodeInterface node);
 }

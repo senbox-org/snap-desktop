@@ -390,6 +390,11 @@ public class GraphPanel extends JPanel
     }
 
     @Override
+    public void validateNode(NodeInterface node) {
+        // nothing to do..
+    }
+
+    @Override
     public void newNodeAdded(NodeGui node) {
         addNode(node);
         repaint();
