@@ -3,7 +3,6 @@ package org.esa.snap.grapheditor.ui.components.utils;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.grapheditor.ui.components.interfaces.NotificationListener;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -15,7 +14,7 @@ import java.util.HashSet;
 public class NotificationManager implements ProgressMonitor {
     static private NotificationManager instance = null;
 
-    private HashSet<NotificationListener> listeners = new HashSet<>();
+    private final HashSet<NotificationListener> listeners = new HashSet<>();
     // Maybe for future applications. In case we want to store log history.
     // private ArrayList<Notification> notifications = new ArrayList<>();
 

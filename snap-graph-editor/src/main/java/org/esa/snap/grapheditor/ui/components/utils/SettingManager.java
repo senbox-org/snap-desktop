@@ -28,7 +28,7 @@ public class SettingManager {
      * Internal class to contain multiple type of settings, and create the correct setting component.
      */
     private static class SettingValue  {
-        private SettingType type;
+        private final SettingType type;
         private Object value;
 
         private SettingValue(boolean val) {
@@ -160,7 +160,7 @@ public class SettingManager {
 
     }
 
-    private HashMap<String, SettingValue> settings = new HashMap<>();
+    private final HashMap<String, SettingValue> settings = new HashMap<>();
     static private SettingManager instance_ = null;
 
     static final private String TOOLTIPENABLED = "tooltip enabled";

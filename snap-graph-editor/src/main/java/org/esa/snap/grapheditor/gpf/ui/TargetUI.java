@@ -37,14 +37,12 @@ public class TargetUI extends BaseOperatorUI {
     private static final String FORMAT_PARAMETER = "formatName";
     private static final String deafultFileName = "target";
     private String sourceProductName;
-    private AppContext appContext;
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         paramMap = parameterMap;
         targetProductSelector = new TargetProductSelector(new TargetProductSelectorModel(), true);
-        this.appContext = appContext;
 
         File saveDir = null;
         final Object value = paramMap.get(FILE_PARAMETER);

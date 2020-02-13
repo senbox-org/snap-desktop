@@ -33,7 +33,7 @@ public class GraphBuilder extends JPanel implements GraphListener {
     private final JButton saveAsButton;
     private final JButton saveButton;
 
-    private Window parentWindow;
+    private final Window parentWindow;
 
     private boolean hasChanged = false;
 

@@ -13,7 +13,7 @@ import java.awt.event.KeyListener;
  * @author Martino Ferrari (CS Group)
  */
 public class GraphKeyEventDispatcher implements KeyEventDispatcher {
-    private KeyListener defaultListener;
+    private final KeyListener defaultListener;
 
     /**
      * Create the dispatcher and set the default key listener.

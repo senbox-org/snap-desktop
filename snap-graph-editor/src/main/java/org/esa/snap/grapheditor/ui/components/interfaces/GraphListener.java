@@ -10,31 +10,31 @@ import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 public interface GraphListener {
     /**
      * Notifies about a node selection.
-     * @param source
+     * @param source event source
      */
     void selected(NodeGui source);
 
     /**
      * Notifies about a node deselection.
-     * @param source
+     * @param source event source
      */
     void deselected(NodeGui source);
 
     /**
      * Notifies about a changes on a node.
-     * @param source
+     * @param source event source
      */
     void updated(NodeGui source);
 
     /**
      * Notifies about a new node.
-     * @param source
+     * @param source event source
      */
     void created(NodeGui source);
 
     /**
      * Notifies about a delete of a node.
-     * @param source
+     * @param source event source
      */
     void deleted(NodeGui source);
 

@@ -17,7 +17,7 @@ public class MainPanel extends JSplitPane {
      */
     private static final long serialVersionUID = -8426716511820611531L;
 
-    private GraphPanel graphPanel;
+    private final GraphPanel graphPanel;
 
     public MainPanel() {
         super(JSplitPane.HORIZONTAL_SPLIT);

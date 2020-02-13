@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
 
-import javax.swing.*;
-
 /**
  * Simple back compatibility class.
  *
@@ -18,7 +16,7 @@ public class GraphBuilderDialog extends ModelessDialog {
         this(theAppContext, title, helpID, true);
     }
 
-    public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID, final boolean allowGraphBuilding) {
+    private GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID, final boolean allowGraphBuilding) {
         super(theAppContext.getApplicationWindow(), title, 0, helpID);
         super.getJDialog().setMinimumSize(new Dimension(1200, 800));
 

@@ -20,16 +20,16 @@ import java.util.HashSet;
  *
  * @author Martino Ferrari (CS Group)
  */
-public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
+class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
     static final private int width = 400;
     static final private int height = 48;
     private final JTextField searchField;
     private final JList<UnifiedMetadata> resultsList;
     private final DefaultListModel<UnifiedMetadata> results = new DefaultListModel<>();
 
-    private HashSet<AddNodeListener> listeners = new HashSet<>();
+    private final HashSet<AddNodeListener> listeners = new HashSet<>();
 
-    private JComponent parent;
+    private final JComponent parent;
 
     /**
      * Create and popup a new AddNodeDialog.

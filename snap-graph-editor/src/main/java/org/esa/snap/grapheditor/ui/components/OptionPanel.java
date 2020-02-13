@@ -20,7 +20,7 @@ public class OptionPanel extends JPanel implements GraphListener {
     private NodeGui selectedNode = null;
 
     private JComponent currentOptionWidget = null;
-    private SpringLayout layout;
+    private final SpringLayout layout;
     private final JLabel optionTitle = new JLabel("");
 
     private int width = 300;

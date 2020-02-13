@@ -33,8 +33,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_GraphEditorAction_MenuText",
         popupText = "#CTL_GraphEditorAction_MenuText",
-        iconBase = "org/esa/snap/grapheditor/icons/graph.png",
-        lazy = true
+        iconBase = "org/esa/snap/grapheditor/icons/graph.png"
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Tools",position = 311, separatorBefore = 300),

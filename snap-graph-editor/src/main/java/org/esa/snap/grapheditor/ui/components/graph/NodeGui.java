@@ -80,7 +80,7 @@ public class NodeGui implements NodeListener {
     private int textW = -1;
     private int textH = -1;
 
-    private String name;
+    private final String name;
 
     private int status = 0;
     private ValidationStatus validationStatus = ValidationStatus.UNCHECKED;
@@ -98,8 +98,8 @@ public class NodeGui implements NodeListener {
     private boolean tooltipVisible_ = false;
     private int tooltipIndex_ = CONNECTION_NONE;
 
-    private ArrayList<NodeListener> nodeListeners = new ArrayList<>();
-    private ArrayList<Connection> incomingConnections = new ArrayList<>();
+    private final ArrayList<NodeListener> nodeListeners = new ArrayList<>();
+    private final ArrayList<Connection> incomingConnections = new ArrayList<>();
 
     private boolean hasChanged = false;
     private Product output = null;

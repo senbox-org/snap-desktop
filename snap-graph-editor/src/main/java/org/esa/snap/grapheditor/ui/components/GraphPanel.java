@@ -47,11 +47,11 @@ public class GraphPanel extends JPanel
     private NodeGui selectedNode = null;
     private DragAction dragAction = null;
 
-    private GraphManager graphManager = GraphManager.getInstance();
+    private final GraphManager graphManager = GraphManager.getInstance();
 
-    private ArrayList<GraphListener> graphListeners = new ArrayList<>();
+    private final ArrayList<GraphListener> graphListeners = new ArrayList<>();
 
-    private JPopupMenu addMenu;
+    private final JPopupMenu addMenu;
 
     GraphPanel() {
         super();

@@ -59,10 +59,8 @@ import org.esa.snap.ui.AppContext;
  * @author Martino Ferrari (CS Group)
  */
 public class GraphManager implements NodeListener {
-    private final GPF gpf;
     private final OperatorSpiRegistry opSpiRegistry;
 
-    private final ArrayList<OperatorMetadata> metadata = new ArrayList<>();
     private final HashMap<String, UnifiedMetadata> simpleMetadata = new HashMap<>();
 
     private final ArrayList<NodeGui> nodes = new ArrayList<>();
@@ -71,7 +69,7 @@ public class GraphManager implements NodeListener {
 
     static private GraphManager instance = null;
 
-    private HashSet<RefreshListener> listeners = new HashSet<>();
+    private final HashSet<RefreshListener> listeners = new HashSet<>();
     private AppContext appContext = null;
 
     private ValidateWorker currentJob = null;
@@ -92,13 +90,14 @@ public class GraphManager implements NodeListener {
      * metadata lists.
      */
     private GraphManager() {
-        gpf = GPF.getDefaultInstance();
+        GPF gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
         for (final OperatorSpi opSpi : opSpiRegistry.getOperatorSpis()) {
             OperatorDescriptor descriptor = opSpi.getOperatorDescriptor();
             if (descriptor != null && !descriptor.isInternal()) {
                 OperatorMetadata operatorMetadata = opSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
 
+                ArrayList<OperatorMetadata> metadata = new ArrayList<>();
                 metadata.add(operatorMetadata);
                 simpleMetadata.put(operatorMetadata.alias(), new UnifiedMetadata(operatorMetadata, descriptor));
                               
@@ -362,15 +361,12 @@ public class GraphManager implements NodeListener {
     public NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
-        if (node != null) {
-            this.graph.addNode(node);
-            NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
-            this.nodes.add(newNode);
-            newNode.addNodeListener(this);
-            NotificationManager.getInstance().info(newNode.getName(), "Created");
-            return newNode;
-        }
-        return  null;
+        this.graph.addNode(node);
+        NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
+        this.nodes.add(newNode);
+        newNode.addNodeListener(this);
+        NotificationManager.getInstance().info(newNode.getName(), "Created");
+        return newNode;
     }
 
     /**
@@ -505,8 +501,8 @@ public class GraphManager implements NodeListener {
     }
 
     /**
-     * Load a list of nodes and revaldiate current graph.
-     * @param nodes
+     * Load a list of nodes and re-validate current graph.
+     * @param nodes nodes to be loaded
      */
     private void loadGraph(ArrayList<NodeGui> nodes) {
         for (NodeGui n: nodes) {
@@ -560,8 +556,8 @@ public class GraphManager implements NodeListener {
      */
     private class ValidateWorker extends  SwingWorker<Boolean, Object> {
         private final boolean validateSource;
-        private ArrayList<NodeGui> nodes;
-        private NodeGui source;
+        private final ArrayList<NodeGui> nodes;
+        private final NodeGui source;
 
 
         /**
@@ -637,7 +633,7 @@ public class GraphManager implements NodeListener {
      * @author Martino Ferrari (CS Group)
      */
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
-        private File source;
+        private final File source;
 
         /**
          * Initialize the worker with the file to load.

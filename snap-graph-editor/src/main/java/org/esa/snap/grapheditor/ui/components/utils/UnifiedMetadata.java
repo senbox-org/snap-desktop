@@ -10,7 +10,6 @@ public class UnifiedMetadata {
     private final String category;
     private final String category_lower;
     private final OperatorDescriptor descriptor;
-    private final OperatorMetadata metadata;
 
     private final int minNInputs;
     private final int maxNInputs;
@@ -29,15 +28,13 @@ public class UnifiedMetadata {
         }
         hasOutputProduct = descriptor.getTargetProductDescriptor() != null;
 
-        metadata = opMetadata;
-
-        name = metadata.label();
-        if (name == null || name.length() == 0) {
-            name = metadata.alias();
+        name = opMetadata.label();
+        if (name.length() == 0) {
+            name = opMetadata.alias();
         }
 
-        description = metadata.description();
-        category = metadata.category();
+        description = opMetadata.description();
+        category = opMetadata.category();
 
         category_lower = category.toLowerCase();
         name_lower = name.toLowerCase();
@@ -68,16 +65,6 @@ public class UnifiedMetadata {
      */
     public String getCategory() {
         return category;
-    }
-
-    public boolean find(final String string) {
-        if (name_lower.contains(string)) {
-            return true;
-        }
-        if (category_lower.contains(string)) {
-            return true;
-        }
-        return false;
     }
 
     public double fuzzySearch(final String[] keywords) {

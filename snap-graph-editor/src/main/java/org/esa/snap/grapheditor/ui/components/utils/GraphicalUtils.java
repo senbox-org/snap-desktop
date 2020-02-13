@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
  * @author Martino Ferrari (CS Group)
  */
 public class GraphicalUtils {
-    public static final int gridSize = 15;
+    private static final int gridSize = 15;
     private static final int gridMajor = 5;
     private static final Color gridMajorColor = new Color(0, 0, 0, 30);
     private static final Color gridMinorColor = new Color(0, 0, 0, 15);

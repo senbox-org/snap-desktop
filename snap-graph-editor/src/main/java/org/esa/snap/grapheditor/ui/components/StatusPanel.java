@@ -40,9 +40,9 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
     // Basic components
     private final JScrollPane scrollPane;
     private final JProgressBar progressBar;
-    private JButton showButton;
-    private JLabel messageLabel;
-    private JEditorPane historyPane;
+    private final JButton showButton;
+    private final JLabel messageLabel;
+    private final JEditorPane historyPane;
 
     // History string
     private String history = "";

@@ -21,7 +21,7 @@ public class DragAction {
         CONNECT,
     }
 
-    private Type type;
+    private final Type type;
     private NodeGui source;
     private Point origin;
     private Point current;
@@ -45,7 +45,6 @@ public class DragAction {
      * @param c connection line to be dragged
      */
     public DragAction(Connection c) {
-        connection = new Connection(source, origin);
         this.source = c.getSource() != null ? c.getSource() : c.getTarget();
         this.connection = c;
         this.origin = c.getEndPoint();

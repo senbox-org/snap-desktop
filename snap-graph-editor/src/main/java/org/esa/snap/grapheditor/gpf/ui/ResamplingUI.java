@@ -76,7 +76,6 @@ public class ResamplingUI extends BaseOperatorUI {
     private final String DOWNSAMPLING_METHOD_PARAMETER_NAME = "downsamplingMethod";
     private final String FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME = "flagDownsamplingMethod";
     private final String PYRAMID_LEVELS_PARAMETER_NAME = "resampleOnPyramidLevels";
-    private final String BAND_RESAMPLINGS_PARAMETER_NAME = "bandResamplings";
 
     private ArrayList<String> listBands = new ArrayList();
     private int lastProductWidth = 0;
@@ -94,8 +93,6 @@ public class ResamplingUI extends BaseOperatorUI {
     private JComboBox flagDownsamplingCombo = new JComboBox();
     private JCheckBox pyramidLevelCheckBox = new JCheckBox("Resample on pyramid levels (for faster imaging)");
     private BindingContext bindingContext;
-    private OperatorDescriptor operatorDescriptor;
-    private OperatorParameterSupport parameterSupport;
 
     private boolean updatingTargetWidthAndHeight = false;
 
@@ -114,9 +111,9 @@ public class ResamplingUI extends BaseOperatorUI {
             throw new IllegalArgumentException("No SPI found for operator name '" + operatorName + "'");
         }
 
-        operatorDescriptor = operatorSpi.getOperatorDescriptor();
+        OperatorDescriptor operatorDescriptor = operatorSpi.getOperatorDescriptor();
 
-        parameterSupport = new OperatorParameterSupport(operatorDescriptor);
+        OperatorParameterSupport parameterSupport = new OperatorParameterSupport(operatorDescriptor);
         final PropertySet propertySet = parameterSupport.getPropertySet();
         bindingContext = new BindingContext(propertySet);
 
@@ -238,6 +235,7 @@ public class ResamplingUI extends BaseOperatorUI {
             paramMap.remove("targetHeight");
         }
 
+        String BAND_RESAMPLINGS_PARAMETER_NAME = "bandResamplings";
         if(advancedMethodCheckBox.isSelected() && hasSourceProducts()) {
             paramMap.put(BAND_RESAMPLINGS_PARAMETER_NAME, generateBandResamplings (sourceProducts[0]));
         } else {
