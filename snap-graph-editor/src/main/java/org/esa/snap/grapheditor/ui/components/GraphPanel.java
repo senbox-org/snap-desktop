@@ -18,7 +18,7 @@ import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
-import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
+import org.esa.snap.grapheditor.ui.components.utils.GraphicalUtils;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
@@ -75,7 +75,7 @@ public class GraphPanel extends JPanel
 
     private void addNode(NodeGui node) {
         if (node != null) {
-            node.setPosition(GraphicUtils.normalize(lastMousePosition));
+            node.setPosition(GraphicalUtils.normalize(lastMousePosition));
             node.addNodeListener(this);
             for (GraphListener listener : graphListeners) {
                 listener.created(node);
@@ -110,7 +110,7 @@ public class GraphPanel extends JPanel
             int height = getHeight();
             if (gridPattern == null || gridPattern.getWidth() != width || gridPattern.getHeight() != height) {
                 // initalize gridPattern image buffer
-                gridPattern = GraphicUtils.gridPattern(width, height);
+                gridPattern = GraphicalUtils.gridPattern(width, height);
             }
             // render gridPattern buffer image
             g.drawImage(gridPattern, 0, 0, null);
@@ -203,7 +203,7 @@ public class GraphPanel extends JPanel
             Rectangle u = dragAction.getBoundingBox();
             boolean repainted = false;
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
-                repaint(GraphicUtils.union(r, u));
+                repaint(GraphicalUtils.union(r, u));
             } else {
                 // reverse loop to get correct node
                 for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
@@ -218,7 +218,7 @@ public class GraphPanel extends JPanel
                 if (repainted)
                     repaint();
                 else
-                    repaint(GraphicUtils.union(r, u));
+                    repaint(GraphicalUtils.union(r, u));
             }
         }
     }
@@ -289,7 +289,7 @@ public class GraphPanel extends JPanel
         if (dragAction != null) {
             dragAction.drop();
             if (dragAction.getType() == NodeDragAction.Type.DRAG) {
-                Point p = GraphicUtils.normalize(dragAction.getSource().getPostion());
+                Point p = GraphicalUtils.normalize(dragAction.getSource().getPostion());
                 moveNode(dragAction.getSource(), p.x, p.y);
             } else {
                 for (NodeGui node: graphManager.getNodes()) {
@@ -388,7 +388,7 @@ public class GraphPanel extends JPanel
     public void newNodeAddedAtCurrentPosition(NodeGui node) {
         if (node == null)
             return;
-        node.setPosition(GraphicUtils.normalize(node.getPostion()));
+        node.setPosition(GraphicalUtils.normalize(node.getPostion()));
         node.addNodeListener(this);
         for (GraphListener listener : graphListeners) {
             listener.created(node);
@@ -401,7 +401,7 @@ public class GraphPanel extends JPanel
         if (node == null)
             return;
         Point p = new Point(node.getX() + node.getWidth() / 2, node.getY() + node.getHeight() /2);
-        node.setPosition(GraphicUtils.normalize(node.getPostion()));
+        node.setPosition(GraphicalUtils.normalize(node.getPostion()));
         node.addNodeListener(this);
         for (GraphListener listener : graphListeners) {
             listener.created(node);

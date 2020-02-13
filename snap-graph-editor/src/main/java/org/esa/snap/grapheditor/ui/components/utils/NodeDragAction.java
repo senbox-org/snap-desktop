@@ -5,7 +5,17 @@ import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
 import java.awt.*;
 
+/**
+ * Simple class to handle different kind of Drag user interactions.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class NodeDragAction {
+    /**
+     * Drag Action type enum to identify the two major types of interactions.
+     *  - DRAG: drag a node
+     *  - CONNECT: drag/create a connection line
+     */
     public enum Type {
         DRAG,
         CONNECT,
@@ -17,14 +27,10 @@ public class NodeDragAction {
     private Point current;
     private Connection connection = null;
 
-    private static Point diff(Point a, Point b) {
-        return new Point(a.x - b.x, a.y - b.y);
-    }
-
     public NodeDragAction(NodeGui source, Point origin) {
         this.type = Type.DRAG;
         this.source = source;
-        this.origin = diff(origin, source.getPostion());
+        this.origin = GraphicalUtils.diff(origin, source.getPostion());
         this.current = origin;
     }
 

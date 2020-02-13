@@ -132,7 +132,7 @@ public class NodeGui implements NodeListener {
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(name);
 
-            width = Math.max(GraphicUtils.normalizeDimension(textW + 30), minWidth);
+            width = Math.max(GraphicalUtils.normalizeDimension(textW + 30), minWidth);
         }
 
         if ((this.status & STATUS_MASK_SELECTED) > 0) {

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Martino Ferrari (CS Group)
  */
-public class GraphicUtils {
+public class GraphicalUtils {
     public static final int gridSize = 15;
     private static final int gridMajor = 5;
     private static final Color gridMajorColor = new Color(0, 0, 0, 30);
@@ -90,5 +90,15 @@ public class GraphicUtils {
         int brx = Math.max(a.x + a.width, b.x + b.width);
         int bry = Math.max(a.y + a.height, b.y + b.height);
         return new Rectangle(tlx, tly, brx - tlx, bry - tly);
+    }
+
+    /**
+     * Simple function to compute the difference between two points.
+     * @param a first point
+     * @param b second point
+     * @return difference between point a and point b
+     */
+    public static Point diff(Point a, Point b) {
+        return new Point(a.x - b.x, a.y - b.y);
     }
 }
