@@ -163,7 +163,6 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-        System.out.println(sourceProductSelector);
         if (sourceProductSelector != null) {
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {

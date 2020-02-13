@@ -84,7 +84,7 @@ public class DefaultUI extends BaseOperatorUI {
                             p.setValue(bandNames[0]);
                         }
                     } catch (ValidationException e) {
-                        System.out.println(e.toString());
+                        e.printStackTrace();
                     }
                 }
             }
