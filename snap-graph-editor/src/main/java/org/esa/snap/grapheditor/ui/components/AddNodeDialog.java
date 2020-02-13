@@ -89,7 +89,7 @@ class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
                 popdown();
             }
         });
-        this.popup((JFrame) SwingUtilities.getWindowAncestor(component));
+        this.popup();
     }
 
     /**
@@ -119,10 +119,10 @@ class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
         return null;
     }
 
-    private void popup(JFrame topFrame) {
-        int x = topFrame.getX();
-        int y = topFrame.getY();
-        int fwidth = topFrame.getWidth();
+    private void popup() {
+        int x = getOwner().getX();
+        int y = getOwner().getY();
+        int fwidth = getOwner().getWidth();
 
         searchField.setText("");
         results.removeAllElements();
