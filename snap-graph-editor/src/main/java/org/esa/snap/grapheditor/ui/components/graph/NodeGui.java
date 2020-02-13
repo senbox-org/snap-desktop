@@ -22,6 +22,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
 import org.esa.snap.grapheditor.ui.components.interfaces.ConnectionInterface;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.*;
 import org.jetbrains.annotations.Contract;
@@ -33,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Martino Ferrari (CS Group)
  */
-public class NodeGui implements NodeListener {
+public class NodeGui implements NodeListener, NodeInterface {
 
     public enum ValidationStatus {
         UNCHECKED,
@@ -788,7 +789,7 @@ public class NodeGui implements NodeListener {
     }
 
     @Override
-    public void sourceDeleted(NodeGui source) {
+    public void sourceDeleted(NodeInterface source) {
         for (int i = 0; i < incomingConnections.size();i ++) {
             ConnectionInterface c = incomingConnections.get(i);
             if (c.getSource() == source) {
@@ -801,7 +802,7 @@ public class NodeGui implements NodeListener {
     }
 
     @Override
-    public void connectionAdded(NodeGui source) {
+    public void connectionAdded(NodeInterface source) {
         hasChanged = true;
     }
 

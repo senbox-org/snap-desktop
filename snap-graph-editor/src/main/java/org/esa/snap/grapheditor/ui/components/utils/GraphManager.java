@@ -41,6 +41,7 @@ import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
 import org.esa.snap.ui.AppContext;
@@ -438,10 +439,11 @@ public class GraphManager implements NodeListener {
      * @param source source of the event
      */
     @Override
-    public void sourceDeleted(NodeGui source) {
+    public void sourceDeleted(NodeInterface source) {
+        NodeGui srcNode = (NodeGui) source;
         NotificationManager.getInstance().info(source.getName(), "Deleted");
-        this.nodes.remove(source);
-        validate(source, false);
+        this.nodes.remove(srcNode);
+        validate(srcNode, false);
     }
 
     /**
@@ -449,10 +451,11 @@ public class GraphManager implements NodeListener {
      * @param source source of the event
      */
     @Override
-    public void connectionAdded(NodeGui source) {
+    public void connectionAdded(NodeInterface source) {
+        NodeGui srcNode = (NodeGui) source;
         NotificationManager.getInstance().info(source.getName(), "Connected");
         // Try to revalidate graph
-        validate(source, true);
+        validate(srcNode, true);
     }
 
     /**

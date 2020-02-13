@@ -16,6 +16,7 @@ import javax.swing.*;
 import javafx.util.Pair;
 import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.utils.DragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
@@ -376,14 +377,15 @@ public class GraphPanel extends JPanel
 
 
     @Override
-    public void sourceDeleted(NodeGui source) {
+    public void sourceDeleted(NodeInterface source) {
         // nothing to do, already notified.
     }
 
     @Override
-    public void connectionAdded(NodeGui source) {
+    public void connectionAdded(NodeInterface source) {
+        NodeGui srcNode = (NodeGui) source;
         for (GraphListener l: graphListeners) {
-            l.updated(source);
+            l.updated(srcNode);
         }
     }
 
