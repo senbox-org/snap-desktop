@@ -8,6 +8,11 @@ import org.esa.snap.ui.AppContext;
 
 import java.awt.*;
 
+/**
+ * Simple side panel to show and edit Node properties. It uses the GraphListener to show and hide when needed.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class OptionPanel extends JPanel implements GraphListener {
 
     private static final long serialVersionUID = -6760564459151183901L;
@@ -21,7 +26,12 @@ public class OptionPanel extends JPanel implements GraphListener {
 
     private int width = 300;
 
-    public OptionPanel(JSplitPane parent) {
+    /**
+     * Create and setup the OptionPanel. *Note* that this components must be added inside a JSplitPane.
+     *
+     * @param parent container of the OptionPanel
+     */
+    OptionPanel(JSplitPane parent) {
         this.parent = parent;
 
         ///// INIT GUI

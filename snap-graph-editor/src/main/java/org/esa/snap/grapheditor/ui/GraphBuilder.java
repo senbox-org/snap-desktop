@@ -10,6 +10,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
+import org.esa.snap.grapheditor.ui.components.GraphPanel;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
@@ -19,7 +20,8 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DefaultAppContext;
 
 /**
- * Main View for the new Graph Builder
+ * Main View for the new Graph Builder.
+ * It implement the GraphListener to know when the graph changes to enable/disable save functionality.
  * 
  * @author Martino Ferrari (CS Group)
  */
@@ -37,6 +39,11 @@ public class GraphBuilder extends JPanel implements GraphListener {
 
     private File openFile = null;
 
+    /**
+     * Create a new GraphBuilder inside a frame.
+     * @param frame parent frame window
+     * @param context application context
+     */
     GraphBuilder(Window frame, AppContext context) {
         super();
         parentWindow = frame;

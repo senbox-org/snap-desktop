@@ -51,6 +51,9 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
     // Status flag
     private boolean extended = false;
 
+    /**
+     * Create and setup a new StatusPanel. The default status is collapsed.
+     */
     public StatusPanel() {
         super();
 

@@ -24,8 +24,16 @@ import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.RefreshListener;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
+/**
+ * The GraphPanel is the swing component that visualize the whole graph and enable interaction within it.
+ * Most of the interaction is mouse based (drag and drop, pop-up menus) but as well with the keyboard (AddNodeDialog,
+ * delete...).
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class GraphPanel extends JPanel
-        implements KeyListener, MouseListener, MouseMotionListener, ActionListener, RefreshListener, NodeListener, AddNodeListener {
+        implements KeyListener, MouseListener, MouseMotionListener,
+        ActionListener, RefreshListener, NodeListener, AddNodeListener {
 
     /**
      * Generated UID
@@ -45,7 +53,7 @@ public class GraphPanel extends JPanel
 
     private JPopupMenu addMenu;
 
-    public GraphPanel() {
+    GraphPanel() {
         super();
         this.setFocusable(true);
 
@@ -161,10 +169,14 @@ public class GraphPanel extends JPanel
             return;
         }
 
-        if (key == 127) {
+        if (key == KeyEvent.VK_SPACE) {
+            if (selectedNode != null) {
+                deselectNode(selectedNode);
+                selectedNode = null;
+            }
+        } else if (key == KeyEvent.VK_DELETE) { // 127) {
             // DELETE KEY
             removeSelectedNode();
-            return;
         }
     }
 

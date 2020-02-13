@@ -14,6 +14,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
+/**
+ * Simple floating dialog enabling users to quickly search and add new nodes to the graph using both keyboard and mouse
+ * interaction.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
     static final private int width = 400;
     static final private int height = 48;
@@ -25,7 +31,12 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
 
     private JComponent parent;
 
-    public AddNodeDialog(JComponent component) {
+    /**
+     * Create and popup a new AddNodeDialog.
+     *
+     * @param component the component that called up the dialog
+     */
+    AddNodeDialog(JComponent component) {
         super((JFrame) SwingUtilities.getWindowAncestor(component));
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK));
         parent = component;
@@ -81,7 +92,11 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
         this.popup((JFrame) SwingUtilities.getWindowAncestor(component));
     }
 
-    public  void addListener(AddNodeListener l) {
+    /**
+     * Add listener to the dialog
+     * @param l simple AddNodeListener
+     */
+    void addListener(AddNodeListener l) {
         listeners.add(l);
     }
 
@@ -99,8 +114,7 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
             return null;
         UnifiedMetadata meta = resultsList.getSelectedValue();
         if (meta != null) {
-            NodeGui node = GraphManager.getInstance().newNode(meta);
-            return node;
+            return GraphManager.getInstance().newNode(meta);
         }
         return null;
     }
@@ -121,7 +135,7 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
         searchField.requestFocus();
     }
 
-    public void popdown() {
+    private void popdown() {
         this.getOwner().setEnabled(true);
 
         this.dispose();
@@ -174,6 +188,11 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
         }
     }
 
+    /**
+     * Function called each time a new key is typed in the search bar, it use a simple search algorithm (it could be
+     * improved in the future) to search in the Operators names as well as in the categories.
+     * A simple fitness based results ordering algorithm is also implemented.
+     */
     private void updateResults() {
         String searchString = searchField.getText();
         if (searchString.length() == 0) {
@@ -183,38 +202,36 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
             return;
         }
         ArrayList<Pair<UnifiedMetadata, Double>> searchResult= new ArrayList<>();
-        if (searchString.length() > 0) {
-            final String[] normSearch = smartTokenizer(searchString);
+        final String[] normSearch = smartTokenizer(searchString);
 
-            for (UnifiedMetadata metadata: GraphManager.getInstance().getSimplifiedMetadata()) {
-                double dist = metadata.fuzzySearch(normSearch);
-                if (dist >= 0) {
-                    searchResult.add(new Pair<>(metadata, dist));
-                }
+        for (UnifiedMetadata metadata: GraphManager.getInstance().getSimplifiedMetadata()) {
+            double dist = metadata.fuzzySearch(normSearch);
+            if (dist >= 0) {
+                searchResult.add(new Pair<>(metadata, dist));
             }
-            results.removeAllElements();
-            if (searchResult.size() > 0) {
-                int prevActive = resultsList.getSelectedIndex();
-                searchResult.sort(new ResultComparator());
-                for (Pair<UnifiedMetadata, Double> res: searchResult) {
-                    results.addElement(res.getKey());
-                    // results.add(res.getKey());
-                }
-                resultsList.setVisible(true);
-
-                if (prevActive >= 0) {
-                    int currentActive = Math.min(prevActive, results.size() - 1);
-                    resultsList.setSelectedIndex(currentActive);
-                } else {
-                    resultsList.setSelectedIndex(0);
-                }
-                this.setSize(width, height + resultsList.getPreferredSize().height + 4);
-            } else {
-                resultsList.setVisible(false);
-                this.setSize(width, height);
-            }
-            this.revalidate();
         }
+        results.removeAllElements();
+        if (searchResult.size() > 0) {
+            int prevActive = resultsList.getSelectedIndex();
+            searchResult.sort(new ResultComparator());
+            for (Pair<UnifiedMetadata, Double> res: searchResult) {
+                results.addElement(res.getKey());
+                // results.add(res.getKey());
+            }
+            resultsList.setVisible(true);
+
+            if (prevActive >= 0) {
+                int currentActive = Math.min(prevActive, results.size() - 1);
+                resultsList.setSelectedIndex(currentActive);
+            } else {
+                resultsList.setSelectedIndex(0);
+            }
+            this.setSize(width, height + resultsList.getPreferredSize().height + 4);
+        } else {
+            resultsList.setVisible(false);
+            this.setSize(width, height);
+        }
+        this.revalidate();
     }
 
     private void enter() {
