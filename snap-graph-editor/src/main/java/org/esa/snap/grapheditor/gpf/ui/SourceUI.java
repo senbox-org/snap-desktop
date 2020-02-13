@@ -191,7 +191,7 @@ public class SourceUI extends BaseOperatorUI {
 
         public void selectionChanged(SelectionChangeEvent event) {
             final Object selected = event.getSelection().getSelectedValue();
-            if (selected != null && selected instanceof Product) {
+            if (selected instanceof Product) {
                 Product product = (Product) selected;
                 if (product.getFileLocation() != null) {
                     updateFormatNamesCombo(product.getFileLocation());
