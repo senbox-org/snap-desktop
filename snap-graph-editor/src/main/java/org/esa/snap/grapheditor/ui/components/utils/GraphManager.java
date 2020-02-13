@@ -485,11 +485,11 @@ public class GraphManager implements NodeListener {
      */
     public void createEmptyGraph() {
         clearGraph();
-
         NodeGui n = newNode("Read");
         n.setPosition(90, 30);
         n = newNode("Write");
         n.setPosition(390, 30);
+        NotificationManager.getInstance().info("Graph", "empty graph created.");
     }
 
     /**
