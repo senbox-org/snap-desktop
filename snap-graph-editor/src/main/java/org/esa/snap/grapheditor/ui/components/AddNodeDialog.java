@@ -45,12 +45,8 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    UnifiedMetadata meta = resultsList.getSelectedValue();
-                    if (meta != null) {
-                        System.out.println(meta.getName());
-                        NodeGui node = GraphManager.getInstance().newNode(meta);
-                        Point p = SwingUtilities.convertPoint(resultsList, e.getPoint(), parent);
-                        node.setPosition(p.x - node.getWidth() / 2, p.y - node.getHeight() / 2);
+                    NodeGui node = createNode(e.getPoint());
+                    if (node != null) {
                         for (AddNodeListener l: listeners) {
                             l.newNodeAddedAtCurrentPosition(node);
                         }
@@ -62,12 +58,8 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    UnifiedMetadata meta = resultsList.getSelectedValue();
-                    if (meta != null) {
-                        System.out.println(meta.getName());
-                        NodeGui node = GraphManager.getInstance().newNode(meta);
-                        Point p = SwingUtilities.convertPoint(resultsList, e.getPoint(), parent);
-                        node.setPosition(p.x - node.getWidth() / 2, p.y - node.getHeight() / 2);
+                    NodeGui node = createNode(e.getPoint());
+                    if (node != null) {
                         for (AddNodeListener l: listeners) {
                             l.newNodeAddedStartDrag(node);
                         }
@@ -91,6 +83,26 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
 
     public  void addListener(AddNodeListener l) {
         listeners.add(l);
+    }
+
+    private NodeGui createNode(Point p){
+        NodeGui node = createNode();
+        if (node != null){
+            Point relativeP = SwingUtilities.convertPoint(resultsList, p, parent);
+            node.setPosition(relativeP.x - node.getWidth() / 2, relativeP.y - node.getHeight() / 2);
+        }
+        return node;
+    }
+
+    private NodeGui createNode() {
+        if (results.size() == 0)
+            return null;
+        UnifiedMetadata meta = resultsList.getSelectedValue();
+        if (meta != null) {
+            NodeGui node = GraphManager.getInstance().newNode(meta);
+            return node;
+        }
+        return null;
     }
 
     private void popup(JFrame topFrame) {
@@ -206,15 +218,11 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
     }
 
     private void enter() {
-        if (results.size() == 0) {
-            return;
-        }
-        UnifiedMetadata meta = resultsList.getSelectedValue();
-        if (meta == null)
-            return;
-        NodeGui n = GraphManager.getInstance().newNode(meta);
-        for (AddNodeListener l: listeners){
-            l.newNodeAdded(n);
+        NodeGui n = createNode();
+        if (n != null) {
+            for (AddNodeListener l: listeners){
+                l.newNodeAdded(n);
+            }
         }
     }
 
