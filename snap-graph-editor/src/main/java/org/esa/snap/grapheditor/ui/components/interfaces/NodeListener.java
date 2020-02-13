@@ -13,17 +13,17 @@ public interface NodeListener {
      * Notify that a source NodeGui has been deleted.
      * @param source source of the event
      */
-    void sourceDeleted(NodeInterface source);
+    void sourceDeleted(Object source);
 
     /**
      * Notify that a new connection has been created.
      * @param source source of the event
      */
-    void connectionAdded(NodeInterface source);
+    void connectionAdded(Object source);
 
     /**
      * Ask for validation of the node
      * @param node node to be verified
      */
-    void validateNode(NodeInterface node);
+    void validateNode(Object node);
 }

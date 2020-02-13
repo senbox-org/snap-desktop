@@ -1,5 +1,9 @@
 package org.esa.snap.grapheditor.ui.components.interfaces;
 
+import org.esa.snap.core.datamodel.Product;
+
+import java.awt.*;
+
 /**
  * Minimal Node Gui Interface
  *
@@ -11,4 +15,17 @@ public interface NodeInterface {
      * @return the node unique name
      */
     String getName();
+
+    Point getInputPosition(int connector);
+
+    Point getOutputPosition();
+
+    Product getProduct();
+
+    void addNodeListener(NodeListener l);
+
+    void removeNodeListener(NodeListener l);
+
+    int distance(NodeInterface n);
 }
+

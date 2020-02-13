@@ -29,7 +29,7 @@ public interface ConnectionInterface {
      * @param node target node
      * @return distance (-1 if not connected)
      */
-    int distance(Object node);
+    int distance(NodeInterface node);
 
     /**
      * Get source output product

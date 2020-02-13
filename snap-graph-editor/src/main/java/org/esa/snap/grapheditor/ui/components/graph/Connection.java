@@ -2,6 +2,7 @@ package org.esa.snap.grapheditor.ui.components.graph;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.grapheditor.ui.components.interfaces.ConnectionInterface;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 
 import java.awt.*;
@@ -18,34 +19,34 @@ public class Connection implements ConnectionInterface
     private static final int handlerHalfSize = handlerSize / 2;
 
 
-    private NodeGui source;
-    private NodeGui target = null;
+    private NodeInterface source;
+    private NodeInterface target = null;
     private int targetIndex = -1;
     private Point endPoint = null;
 
-    public Connection(NodeGui from, NodeGui to, int index) {
+    public Connection(NodeInterface from, NodeInterface to, int index) {
         source = from;
         target = to;
         targetIndex = index;
     }
 
-    public Connection(NodeGui from, Point to) {
+    public Connection(NodeInterface from, Point to) {
         source = from;
         endPoint = to;
     }
 
-    public Connection(NodeGui to, int index, Point from) {
+    public Connection(NodeInterface to, int index, Point from) {
         source = null;
         target = to;
         targetIndex = index;
         endPoint = from;
     }
 
-    public NodeGui getSource() {
+    public NodeInterface getSource() {
         return source;
     }
 
-    public NodeGui getTarget() {
+    public NodeInterface getTarget() {
         return target;
     }
 
@@ -75,8 +76,8 @@ public class Connection implements ConnectionInterface
 
 
     @Override
-    public int distance(Object node) {
-        return getSource().distance((NodeGui) node);
+    public int distance(NodeInterface node) {
+        return source.distance(node);
     }
 
     public void draw(Graphics2D base) {
@@ -132,7 +133,7 @@ public class Connection implements ConnectionInterface
 
         }
         if (res) {
-            this.target.addConnection(this, targetIndex);
+            this.target.addConnection(source, targetIndex);
         }
     }
 
