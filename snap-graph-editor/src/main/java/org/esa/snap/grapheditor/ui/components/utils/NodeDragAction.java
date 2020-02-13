@@ -9,7 +9,6 @@ public class NodeDragAction {
     public enum Type {
         DRAG,
         CONNECT,
-        DISCONNECT
     }
 
     private Type type;
@@ -52,10 +51,6 @@ public class NodeDragAction {
     public void move(Point p){
         if (type == Type.DRAG) {
             current = p;
-
-            //int x = p.x - this.origin.x;
-            //int y = p.y - this.origin.y;
-            //this.source.setPosition(x, y);
         } else {
             this.connection.setEndPoint(p);
         }

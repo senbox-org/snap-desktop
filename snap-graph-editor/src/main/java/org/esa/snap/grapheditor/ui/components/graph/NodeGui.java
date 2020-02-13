@@ -41,8 +41,8 @@ public class NodeGui implements NodeListener {
     }
 
 
-    public static final int STATUS_MASK_OVER = 1 << 1;
-    public static final int STATUS_MASK_SELECTED = 1 << 2;
+    private static final int STATUS_MASK_OVER = 1 << 1;
+    private static final int STATUS_MASK_SELECTED = 1 << 2;
 
     private static final int MAX_LINE_LENGTH = 45;
 
@@ -69,8 +69,8 @@ public class NodeGui implements NodeListener {
 
     static final private int minWidth = 60;
 
-    static final public int CONNECTION_NONE = -202;
-    static final public int CONNECTION_OUTPUT = -1;
+    static final int CONNECTION_NONE = -202;
+    static final int CONNECTION_OUTPUT = -1;
 
     private int x;
     private int y;
@@ -87,7 +87,6 @@ public class NodeGui implements NodeListener {
 
     private final UnifiedMetadata metadata;
     private final OperatorUI operatorUI;
-    private final Operator operator;
     private final OperatorContext context;
 
     private final Node node;
@@ -117,7 +116,7 @@ public class NodeGui implements NodeListener {
         this.configuration = configuration;
         numInputs = metadata.getMinNumberOfInputs();
         height = Math.max(height, connectionOffset * (numInputs + 1));
-        operator = GraphManager.getInstance().getOperator(metadata);
+        Operator operator = GraphManager.getInstance().getOperator(metadata);
         context = new OperatorContext(operator);
 
     }
@@ -133,7 +132,7 @@ public class NodeGui implements NodeListener {
             textH = fontMetrics.getHeight();
             textW = fontMetrics.stringWidth(name);
 
-            width = Math.max(GraphicUtils.floor(textW + 30), minWidth);
+            width = Math.max(GraphicUtils.normalizeDimension(textW + 30), minWidth);
         }
 
         if ((this.status & STATUS_MASK_SELECTED) > 0) {
@@ -171,7 +170,7 @@ public class NodeGui implements NodeListener {
     }
 
     @NotNull
-    static private ArrayList<String> split_line(@NotNull String line) {
+    static private ArrayList<String> splitLine(@NotNull String line) {
         ArrayList<String> result = new ArrayList<>();
 
         if (line.length() <= MAX_LINE_LENGTH) {
@@ -199,7 +198,7 @@ public class NodeGui implements NodeListener {
         if (input == null) return null;
         ArrayList<String> result = new ArrayList<>();
         for (String line: input.split("\n")) {
-            result.addAll(split_line(line));
+            result.addAll(splitLine(line));
         }
         return result.toArray(new String[0]);
     }
@@ -425,8 +424,7 @@ public class NodeGui implements NodeListener {
             getPreferencePanel();
         }
         if (hasChanged && operatorUI != null) {
-            // TODO UPDATE inputs...
-            Product products[] = new Product[incomingConnections.size()];
+            Product[] products = new Product[incomingConnections.size()];
             for (int i = 0; i < products.length; i++) {
                 products[i] = incomingConnections.get(i).getSourceProduct();
             }
@@ -440,16 +438,16 @@ public class NodeGui implements NodeListener {
         }
     }
 
-    private boolean incomplete() {
+    private void incomplete() {
         output = null;
         NotificationManager.getInstance().warning(this.getName(), "Some input proudcts are missing. Node can not be validated");
         validationStatus = ValidationStatus.WARNING;
-        return true;
     }
 
-    private boolean recomputeOutput() {
+    private void recomputeOutput() {
         if (incomingConnections.size() < metadata.getMinNumberOfInputs()) {
-            return incomplete();
+            incomplete();
+            return;
         }
         operatorUI.updateParameters();
 
@@ -466,23 +464,28 @@ public class NodeGui implements NodeListener {
                 validationStatus = ValidationStatus.ERROR;
             }
 
-            SourceProductDescriptor descriptors[] = metadata.getDescriptor().getSourceProductDescriptors();
+            SourceProductDescriptor[] descriptors = metadata.getDescriptor().getSourceProductDescriptors();
             if (incomingConnections.size() < descriptors.length) {
-                return incomplete();
+                incomplete();
+                return;
             }
             for (int i = 0; i < descriptors.length; i++ ){
                 SourceProductDescriptor descr = metadata.getDescriptor().getSourceProductDescriptors()[i];
                 Product p = incomingConnections.get(i).getSourceProduct();
-                if (p == null)
-                    return incomplete();
+                if (p == null) {
+                    incomplete();
+                    return;
+                }
                 context.setSourceProduct(descr.getName(), p);
             }
             if (incomingConnections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
-                Product products[] = new Product[incomingConnections.size() - descriptors.length];
+                Product[] products = new Product[incomingConnections.size() - descriptors.length];
                 for (int i = descriptors.length; i < incomingConnections.size(); i++) {
                     Product p = incomingConnections.get(i).getSourceProduct();
-                    if (p == null)
-                        return incomplete();
+                    if (p == null) {
+                        incomplete();
+                        return;
+                    }
                     products[i - descriptors.length] = p;
                 }
                 context.setSourceProducts(products);
@@ -513,10 +516,7 @@ public class NodeGui implements NodeListener {
                 validationStatus = ValidationStatus.WARNING;
             }
         }
-        for (NodeListener l : nodeListeners) {
-            l.outputChanged(this);
-        }
-        return true;
+
     }
 
     /**
@@ -547,7 +547,7 @@ public class NodeGui implements NodeListener {
                 Object bobj = b.get(key);
                 if (aobj == null && bobj == null) // if both are null
                     continue;
-                if (aobj == null && bobj != null || bobj == null && aobj != null) // if only one of the two is null
+                if (aobj == null || bobj == null) // if only one of the two is null
                     return false;
                 // As not all object implement a correct equality I try to use the toString method and comapring
                 // the string... To be see if it actually improve the situation.
@@ -574,7 +574,7 @@ public class NodeGui implements NodeListener {
      * Disconnect an input connection.
      * @param index input index
      */
-    public void disconnect(int index) {
+    private void disconnect(int index) {
         for (int i = index + 1; i < this.incomingConnections.size(); i++) {
             this.incomingConnections.get(i).setTargetIndex(i - 1);
         }
@@ -673,7 +673,7 @@ public class NodeGui implements NodeListener {
      * @param index chosen input index
      * @return absolute position of the chosen input connector
      */
-    public Point getInputPosition(int index) {
+    Point getInputPosition(int index) {
         return new Point(x, y + connectionOffset * (index + 1));
     }
 
@@ -681,7 +681,7 @@ public class NodeGui implements NodeListener {
      * Gives the output connector position
      * @return absolute position of the output connector
      */
-    public Point getOutputPosition() {
+    Point getOutputPosition() {
         return new Point(x + width, y + connectionOffset);
     }
 
@@ -698,7 +698,7 @@ public class NodeGui implements NodeListener {
      * @param p position
      * @return input index (>=0), output (NodeGui.CONNECTION_OUTPUT), none (NodeGui.CONNECTION_NONE)
      */
-    public int getConnectionAt(Point p) {
+    int getConnectionAt(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             return iy;
@@ -716,7 +716,7 @@ public class NodeGui implements NodeListener {
      * @param other source node
      * @return connection availability
      */
-    public boolean isConnectionAvailable(int index, NodeGui other) {
+    boolean isConnectionAvailable(int index, NodeGui other) {
         if (index == CONNECTION_OUTPUT)
             return true;
         if (index == CONNECTION_NONE)
@@ -861,8 +861,6 @@ public class NodeGui implements NodeListener {
             this.x = (int) Float.parseFloat(dpElem.getAttribute("x"));
             this.y = (int) Float.parseFloat(dpElem.getAttribute("y"));
         }
-        return;
-
     }
 
     /**
@@ -881,9 +879,8 @@ public class NodeGui implements NodeListener {
         return elem;
     }
 
-    public ValidationStatus validate() {
+    public void validate() {
         recomputeOutput();
-        return this.validationStatus;
     }
 
     public void invalidate() {
@@ -907,7 +904,4 @@ public class NodeGui implements NodeListener {
         return !this.metadata.hasOutput() || this.getNode().getOperatorName().equals("Write");
     }
 
-    public ArrayList<Connection> getIncomingConnections() {
-        return incomingConnections;
-    }
 }

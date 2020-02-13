@@ -31,7 +31,7 @@ public class Connection {
         endPoint = to;
     }
 
-    public Connection(NodeGui to, int index, Point from) {
+    Connection(NodeGui to, int index, Point from) {
         source = null;
         target = to;
         targetIndex = index;
@@ -87,15 +87,15 @@ public class Connection {
         g.dispose();
     }
 
-    public boolean connect(NodeGui node) {
+    public void connect(NodeGui node) {
         if (this.source != null && this.target != null) {
-            return false;
+            return;
         }
         boolean res = false;
 
         int connection = node.getConnectionAt(endPoint);
         if (connection == NodeGui.CONNECTION_NONE)
-            return false;
+            return;
         if (connection == NodeGui.CONNECTION_OUTPUT) {
             if (this.target != null) {
                 this.source = node;
@@ -110,24 +110,19 @@ public class Connection {
         if (res) {
             this.target.addConnection(this, targetIndex);
         }
-        return res;
     }
 
-    public void showSourceTooltip(){
+    void showSourceTooltip(){
         if (this.source != null) {
             this.source.over(source.getPostion());
         }
     }
 
-    public void setTargetIndex(int index) {
+    void setTargetIndex(int index) {
         this.targetIndex = index;
     }
 
-    public int getTargetIndex() {
-        return this.targetIndex;
-    }
-
-    public Product getSourceProduct() {
+    Product getSourceProduct() {
         if (source != null)
             return source.getProduct();
         return null;

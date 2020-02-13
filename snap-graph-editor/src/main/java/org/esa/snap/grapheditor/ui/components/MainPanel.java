@@ -2,8 +2,6 @@ package org.esa.snap.grapheditor.ui.components;
 
 import javax.swing.*;
 
-import org.esa.snap.ui.AppContext;
-
 import java.awt.*;
 
 /**
@@ -19,7 +17,6 @@ public class MainPanel extends JSplitPane {
      */
     private static final long serialVersionUID = -8426716511820611531L;
 
-    private OptionPanel optionPanel;
     private GraphPanel graphPanel;
 
     public MainPanel() {
@@ -30,7 +27,7 @@ public class MainPanel extends JSplitPane {
         JScrollPane scrollPane = new JScrollPane(graphPanel);
         scrollPane.setPreferredSize(new Dimension(300, 300));
 
-        optionPanel = new OptionPanel(this);
+        OptionPanel optionPanel = new OptionPanel(this);
         graphPanel.addGraphListener(optionPanel);
         this.setLeftComponent(scrollPane);
         this.setRightComponent(optionPanel);

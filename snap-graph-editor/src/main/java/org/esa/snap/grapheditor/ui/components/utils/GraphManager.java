@@ -45,9 +45,20 @@ import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
 import org.esa.snap.ui.AppContext;
 
+/**
+ * The GraphManager implements most of the funcionality needed from the GraphBuilder and unify tools from different
+ * parts of SNAP.
+ * The main capabilities are:
+ *  - create nodes
+ *  - store the full graph
+ *  - save and load graph
+ *  - multi-threading graph validation
+ *  - graph evaluation
+ * It is also implemented as a *singleton*.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class GraphManager implements NodeListener {
-
-
     private final GPF gpf;
     private final OperatorSpiRegistry opSpiRegistry;
 
@@ -65,7 +76,10 @@ public class GraphManager implements NodeListener {
 
     private ValidateWorker currentJob = null;
 
-
+    /**
+     * Access the GraphManager instance,
+     * @return the instance
+     */
     static public GraphManager getInstance() {
         if (instance == null) {
             instance = new GraphManager();
@@ -73,6 +87,10 @@ public class GraphManager implements NodeListener {
         return instance;
     }
 
+    /**
+     * private GraphManager initializer. It extract all the Operator from the Operator SPI registry and fill the
+     * metadata lists.
+     */
     private GraphManager() {
         gpf = GPF.getDefaultInstance();
         opSpiRegistry = gpf.getOperatorSpiRegistry();
@@ -88,24 +106,36 @@ public class GraphManager implements NodeListener {
         }
     }
 
+    /**
+     * Sets the default AppContex.
+     * @param context default app context
+     */
     public void setAppContext(AppContext context) {
         this.appContext = context;
     }
 
+    /**
+     * Add a RefreshListener, it will be notify when a refresh is needed.
+     * @param l listener to add
+     */
     public void addEventListener(RefreshListener l) {
         listeners.add(l);
     }
 
-    public void removeEventListener(RefreshListener l) {
-        listeners.remove(l);
-    }
-
+    /**
+     * Notify all listeners to refresh the UI.
+     */
     private void triggerEvent() {
         for (RefreshListener l : listeners) {
             l.refresh();
         }
     }
 
+    /**
+     * Create an Operator from metadata.
+     * @param metadata input metadata
+     * @return the new operator
+     */
     public Operator getOperator(UnifiedMetadata metadata) {
         OperatorSpi spi = opSpiRegistry.getOperatorSpi(metadata.getName());
         if (spi != null) {
@@ -114,10 +144,19 @@ public class GraphManager implements NodeListener {
         return null;
     }
 
+    /**
+     * Retrive the collection of metadata loaded from the register.
+     * @return all the available metadata
+     */
     public Collection<UnifiedMetadata> getSimplifiedMetadata() {
         return simpleMetadata.values();
     }
 
+    /**
+     * Creates a new graph Node from the operator name.
+     * @param operator operator name
+     * @return the new graph Node
+     */
     private Node createNode(final String operator) {
         final Node newNode = new Node(id(operator), operator);
 
@@ -127,7 +166,12 @@ public class GraphManager implements NodeListener {
         return newNode;
     }
 
-    public Map<String, Object> getConfiguration(final Node node) {
+    /**
+     * Extract the configuration from a graph Node.
+     * @param node input node
+     * @return node configuration map
+     */
+    private Map<String, Object> getConfiguration(final Node node) {
         final HashMap<String, Object> parameterMap = new HashMap<>();
         final String opName = node.getOperatorName();
         final OperatorSpi operatorSpi = opSpiRegistry.getOperatorSpi(opName);
@@ -183,6 +227,11 @@ public class GraphManager implements NodeListener {
         return parameterMap;
     }
 
+    /**
+     * Create a unique ID for a given operator
+     * @param opName operator name
+     * @return unique ID
+     */
     private String id(final String opName) {
         final String res = opName + " ";
         int counter = 0;
@@ -205,6 +254,12 @@ public class GraphManager implements NodeListener {
         return res + counter;
     }
 
+    /**
+     * Get propertyConverter for the given property.
+     * @param valueContainer property container
+     * @param name name of the property to be converted
+     * @return the propertyConverter if it is found (null otherwise)
+     */
     private static Converter<?> getConverter(final PropertyContainer valueContainer, final String name) {
         final Property[] properties = valueContainer.getProperties();
 
@@ -219,6 +274,12 @@ public class GraphManager implements NodeListener {
         return null;
     }
 
+    /**
+     * Get the DOM property converter for a given poperty.
+     * @param valueContainer property container
+     * @param name property name
+     * @return dom converter
+     */
     private static DomConverter getDomConverter(final PropertyContainer valueContainer, final String name) {
         final Property[] properties = valueContainer.getProperties();
 
@@ -233,6 +294,12 @@ public class GraphManager implements NodeListener {
         return null;
     }
 
+    /**
+     * Retrieve the sub-menu for the given category
+     * @param menu root menu
+     * @param category searched category
+     * @return category sub-menu
+     */
     static private JMenu getCategoryMenu(JMenu menu, String category) {
         if (category == null || category.length() == 0) 
             return menu;
@@ -259,7 +326,11 @@ public class GraphManager implements NodeListener {
         return newMenu;
     }
 
-
+    /**
+     * Create the Operator Menu using the available metadata.
+     *
+     * @return new operators menu
+     */
     public JMenu createOperatorMenu(ActionListener listener) {
         JMenu addMenu = new JMenu("Add");
         for (UnifiedMetadata metadata: getSimplifiedMetadata()) {
@@ -272,25 +343,47 @@ public class GraphManager implements NodeListener {
         return addMenu;
     }
 
+    /**
+     * Creates a new node from the operator name.
+     * @param opName operator name
+     * @return new node
+     */
     public NodeGui newNode(String opName){
-        return newNode(simpleMetadata.get(opName));
+        if (simpleMetadata.containsKey(opName))
+            return newNode(simpleMetadata.get(opName));
+        return null;
     }
 
+    /**
+     * Creates a new node from a given operator metadata
+     * @param metadata operator metadata
+     * @return new node
+     */
     public NodeGui newNode(UnifiedMetadata metadata) {
         OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(metadata.getName());
         Node node = createNode(metadata.getName());
-        this.graph.addNode(node);
-        NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
-        this.nodes.add(newNode);
-        newNode.addNodeListener(this);
-        NotificationManager.getInstance().info(newNode.getName(), "Created");
-        return newNode;
+        if (node != null) {
+            this.graph.addNode(node);
+            NodeGui newNode = new NodeGui(node, getConfiguration(node), metadata, ui);
+            this.nodes.add(newNode);
+            newNode.addNodeListener(this);
+            NotificationManager.getInstance().info(newNode.getName(), "Created");
+            return newNode;
+        }
+        return  null;
     }
 
+    /**
+     * Get the list of all nodes of the current graph
+     * @return list of current nodes
+     */
     public List<NodeGui> getNodes() {
         return this.nodes;
     }
 
+    /**
+     * Evaluates the current graph.
+     */
     public void evaluate() {
         if (currentJob != null && !currentJob.isDone()) {
             currentJob.cancel(true);
@@ -303,6 +396,10 @@ public class GraphManager implements NodeListener {
         }
     }
 
+    /**
+     * Validate the full graph.
+     * The validation will be done on a separate thread.
+     */
     private void validate() {
         ArrayList<NodeGui> sources = new ArrayList<>();
         for (NodeGui n: nodes ){
@@ -316,10 +413,22 @@ public class GraphManager implements NodeListener {
         }
     }
 
+    /**
+     * Validate a subset of the graph starting from the given node, including the node.
+     * The validation will be done on a separate thread.
+     * @param source root node of the sub-graph
+     */
     public void validate(NodeGui source) {
         validate(source, true);
     }
 
+    /**
+     * Validate a subset of the graph from the given node, including or not the given node.
+     * The validation will be done on a separate thread.
+     *
+     * @param source root node of the sub-graph
+     * @param sourceFlag validate root node or not
+     */
     private void validate(NodeGui source, boolean sourceFlag) {
         if (currentJob != null && !currentJob.isDone()) {
             currentJob.cancel(true);
@@ -328,12 +437,20 @@ public class GraphManager implements NodeListener {
         currentJob.execute();
     }
 
+    /**
+     * Revalidate the graph from the changed node.
+     * @param source source of the event
+     */
     @Override
     public void outputChanged(NodeGui source) {
         // TODO Revalidate rest of the graph.
         validate(source, false);
     }
 
+    /**
+     * remove a node and revalidate the part of graph affected.
+     * @param source source of the event
+     */
     @Override
     public void sourceDeleted(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Deleted");
@@ -341,13 +458,20 @@ public class GraphManager implements NodeListener {
         validate(source, false);
     }
 
+    /**
+     * add a new connection and try to revalidate the part of the graph affected.
+     * @param source source of the event
+     */
     @Override
     public void connectionAdded(NodeGui source) {
         NotificationManager.getInstance().info(source.getName(), "Connected");
         // Try to revalidate graph
-        validate(source, false);
+        validate(source, true);
     }
 
+    /**
+     * Clean up current graph.
+     */
     private void clearGraph() {
         for (NodeGui n: nodes) {
             n.removeNodeListener(this);
@@ -380,8 +504,11 @@ public class GraphManager implements NodeListener {
         worker.execute();
     }
 
+    /**
+     * Load a list of nodes and revaldiate current graph.
+     * @param nodes
+     */
     private void loadGraph(ArrayList<NodeGui> nodes) {
-        clearGraph();
         for (NodeGui n: nodes) {
             n.addNodeListener(this);
             this.nodes.add(n);
@@ -393,6 +520,11 @@ public class GraphManager implements NodeListener {
         validate();
     }
 
+    /**
+     * Save the current graph to file
+     * @param f file where the graph will be saved
+     * @return the success of the operation
+     */
     public boolean saveGraph(File f) {
         NotificationManager.getInstance().processStart();
         XppDom presentationEl = new XppDom("applicationData");
@@ -414,15 +546,30 @@ public class GraphManager implements NodeListener {
         return  false;
     }
 
+    /**
+     * Gets the default app context.
+     * @return the default app context
+     */
     public AppContext getContext() {
         return appContext;
     }
 
+    /**
+     * Worker used to validate the graph or a part of it.
+     * @author Martino Ferrari (CS Group)
+     */
     private class ValidateWorker extends  SwingWorker<Boolean, Object> {
         private final boolean validateSource;
         private ArrayList<NodeGui> nodes;
         private NodeGui source;
 
+
+        /**
+         * Initialize the graph with all the needed informations.
+         * @param nodes current graph nodes
+         * @param source source of the changes to validate
+         * @param validateSource validate the source
+         */
         ValidateWorker(ArrayList<NodeGui> nodes, NodeGui source, boolean validateSource) {
             this.nodes = new ArrayList<>(nodes);
             this.source = source;
@@ -483,9 +630,19 @@ public class GraphManager implements NodeListener {
         }
     }
 
+
+    /**
+     * Worker used to load a graph from file.
+     *
+     * @author Martino Ferrari (CS Group)
+     */
     private class GraphLoadWorker extends SwingWorker<ArrayList<NodeGui>, Object> {
         private File source;
 
+        /**
+         * Initialize the worker with the file to load.
+         * @param file file to load
+         */
         GraphLoadWorker(File file) {
             source = file;
         }

@@ -20,5 +20,9 @@ public interface NodeListener {
      */
     void sourceDeleted(NodeGui source);
 
+    /**
+     * Notify that a new connection has been created.
+     * @param source source of the event
+     */
     void connectionAdded(NodeGui source);
 }

@@ -3,14 +3,25 @@ package org.esa.snap.grapheditor.ui.components.utils;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Utility class to managage graphical components such as background, grid size and normalizing positions and sizes.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class GraphicUtils {
     public static final int gridSize = 15;
     private static final int gridMajor = 5;
     private static final Color gridMajorColor = new Color(0, 0, 0, 30);
     private static final Color gridMinorColor = new Color(0, 0, 0, 15);
 
+    /**
+     * Create a new grid pattern of the given size.
+     * @param width width of the grid pattern
+     * @param height height of the grid pattern
+     * @return grid pattern as BufferedImage
+     */
     static public BufferedImage gridPattern(int width, int height) {
-        // initalize gridPattern image buffer
+        // initialise gridPattern image buffer
         BufferedImage gridPattern = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D gbuff = (Graphics2D) gridPattern.getGraphics();
@@ -47,24 +58,32 @@ public class GraphicUtils {
         return gridPattern;
     }
 
+    /**
+     * Normalize position on the grid.
+     * @param p current position
+     * @return normalized position
+     */
     static public Point normalize(Point p) {
         int x = Math.max(0 ,Math.round(p.x / (float)gridSize) * gridSize);
         int y = Math.max(0, Math.round(p.y / (float)gridSize) * gridSize);
         return new Point(x, y);
     }
 
-    static public int round(int dim) {
-        return Math.round(dim / (float)gridSize) * gridSize;
-    }
-
-    static public int ceil(int dim) {
-        return (int)Math.ceil(dim / (float)gridSize) * gridSize;
-    }
-
-    static public int floor(int dim) {
+    /**
+     * Normalize dimension to the grid spacing.
+     * @param dim original dimension
+     * @return normalized dimension
+     */
+    static public int normalizeDimension(int dim) {
         return (int)Math.floor(dim / (float)gridSize) * gridSize;
     }
 
+    /**
+     * Union of two rectangles, creates a rectangle containing the two inputs.
+     * @param a first rectangle
+     * @param b second rectangle
+     * @return unified rectangle
+     */
     static public Rectangle union(Rectangle a, Rectangle b) {
         int tlx = Math.min(a.x, b.x);
         int tly = Math.min(a.y, b.y);

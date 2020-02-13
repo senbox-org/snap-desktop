@@ -40,7 +40,6 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
     // Basic components
     private final JScrollPane scrollPane;
     private final JProgressBar progressBar;
-    private JPanel topPane;
     private JButton showButton;
     private JLabel messageLabel;
     private JEditorPane historyPane;
@@ -59,7 +58,7 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
 
         NotificationManager.getInstance().addNotificationListener(this);
 
-        topPane = new JPanel();
+        JPanel topPane = new JPanel();
         topPane.setPreferredSize(new Dimension(30, 30));
         SpringLayout topLayout = new SpringLayout();
         topPane.setLayout(topLayout);//new BorderLayout(5,0));
