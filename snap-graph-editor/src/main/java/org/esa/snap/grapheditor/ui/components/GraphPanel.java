@@ -350,10 +350,6 @@ public class GraphPanel extends JPanel
         graphListeners.add(listener);
     }
 
-    public void removeGraphListener(GraphListener listener) {
-        graphListeners.remove(listener);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String opName = e.getActionCommand();
