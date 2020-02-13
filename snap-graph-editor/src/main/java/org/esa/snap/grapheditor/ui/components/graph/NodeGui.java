@@ -538,6 +538,13 @@ public class NodeGui implements NodeListener {
         }
     }
 
+    /**
+     * Check the equality between to Node configurations, validating the existence of the same keys and checking the
+     * values using the toString method (a better way could be found or implemented!).
+     * @param a first node configuration
+     * @param b second node configuration
+     * @return equality between the two configurations
+     */
     private boolean equals(Map<String, Object> a,Map<String, Object> b){
         Set<String> aset = a.keySet();
         Set<String> bset = b.keySet();
@@ -562,6 +569,10 @@ public class NodeGui implements NodeListener {
         return false;
     }
 
+    /**
+     * Check if any changes in the node configuration has been detected.
+     * @return if a change has been detected
+     */
     private boolean check_changes() {
         operatorUI.updateParameters();
         Map<String, Object> update = operatorUI.getParameters();
@@ -628,12 +639,19 @@ public class NodeGui implements NodeListener {
         return new NodeDragAction(this,  p);
     }
 
+    /**
+     * Hide the input/output tooltip
+     */
     private void hide_tooltip() {
         tooltipVisible_ = false;
         tooltipText_ = null;
         tooltipIndex_ = CONNECTION_NONE;
     }
 
+    /**
+     * Show the tooltip for the given input/output connector.
+     * @param connectionIndex input/output connector index
+     */
     private void show_tooltip(int connectionIndex) {
         if (connectionIndex == CONNECTION_OUTPUT && metadata.hasOutput()) {
             // OUTPUT
@@ -879,26 +897,48 @@ public class NodeGui implements NodeListener {
         return elem;
     }
 
+    /**
+     * Validate node using the internal recomputeOutput methdo.
+     */
     public void validate() {
         recomputeOutput();
     }
 
+    /**
+     * Fast invalidation of the node, used when a some previousnode in the graph has an error status.
+     */
     public void invalidate() {
         this.validationStatus = ValidationStatus.WARNING;
     }
 
+    /**
+     * Get current validation status.
+     * @return current status
+     */
     public  ValidationStatus getValidationStatus() {
         return this.validationStatus;
     }
 
+    /**
+     * Get graph Node
+     * @return the node
+     */
     public Node getNode() {
         return this.node;
     }
 
+    /**
+     * Check if the node is a source node or not (if it does not have any inputs is a source node)
+     * @return if it is a source node
+     */
     public boolean isSource() {
         return !this.metadata.hasInputs();
     }
 
+    /**
+     * Check if the node is a target node or not (if it does not have any outputs or is a Write node)
+     * @return if it is a target node
+     */
     public boolean isTarget() {
         // NOTE That one node listener is the GraphManager and one is the GraphPanel
         return !this.metadata.hasOutput() || this.getNode().getOperatorName().equals("Write");
