@@ -434,16 +434,6 @@ public class GraphManager implements NodeListener {
     }
 
     /**
-     * Revalidate the graph from the changed node.
-     * @param source source of the event
-     */
-    @Override
-    public void outputChanged(NodeGui source) {
-        // TODO Revalidate rest of the graph.
-        validate(source, false);
-    }
-
-    /**
      * remove a node and revalidate the part of graph affected.
      * @param source source of the event
      */

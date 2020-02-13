@@ -8,11 +8,6 @@ import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
  * @author Martino Ferrari (CS Group)
  */
 public interface NodeListener {
-    /**
-     * Update the inputs node of the connected nodes.
-     * @param source source of the event
-     */
-    void outputChanged(NodeGui source);
 
     /**
      * Notify that a source NodeGui has been deleted.

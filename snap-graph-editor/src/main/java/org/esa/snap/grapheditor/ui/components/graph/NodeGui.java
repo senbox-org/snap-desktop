@@ -20,6 +20,7 @@ import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
+import org.esa.snap.grapheditor.ui.components.interfaces.ConnectionInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.*;
 import org.jetbrains.annotations.Contract;
@@ -99,7 +100,7 @@ public class NodeGui implements NodeListener {
     private int tooltipIndex_ = CONNECTION_NONE;
 
     private final ArrayList<NodeListener> nodeListeners = new ArrayList<>();
-    private final ArrayList<Connection> incomingConnections = new ArrayList<>();
+    private final ArrayList<ConnectionInterface> incomingConnections = new ArrayList<>();
 
     private boolean hasChanged = false;
     private Product output = null;
@@ -163,9 +164,8 @@ public class NodeGui implements NodeListener {
     }
 
     public void paintConnections(Graphics2D g) {
-        for (Connection c: incomingConnections) {
-            if (c != null)
-                c.draw(g);
+        for (ConnectionInterface c: incomingConnections) {
+            c.draw(g);
         }
     }
 
@@ -592,9 +592,9 @@ public class NodeGui implements NodeListener {
 
         numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
         height = (numInputs + 1) * connectionOffset;
-        Connection c = this.incomingConnections.get(index);
+        ConnectionInterface c = this.incomingConnections.get(index);
         this.node.removeSource(this.node.getSource(index));
-        c.getSource().removeNodeListener(this);
+        c.removeNodesSourceListener(this);
         this.incomingConnections.remove(c);
         hasChanged = true;
     }
@@ -621,11 +621,10 @@ public class NodeGui implements NodeListener {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.incomingConnections.size() > iy) {
-                Connection c = this.incomingConnections.get(iy);
+                ConnectionInterface c = this.incomingConnections.get(iy);
                 if (c != null) {
                     disconnect(iy);
-                    c.showSourceTooltip();
-                    return new DragAction(new Connection(c.getSource(), p));
+                    return new DragAction(new Connection((NodeGui) c.getSource(), p));
                 }
             }
             tooltipVisible_ = false;
@@ -739,7 +738,7 @@ public class NodeGui implements NodeListener {
             return true;
         if (index == CONNECTION_NONE)
             return false;
-        for (Connection c: incomingConnections) {
+        for (ConnectionInterface c: incomingConnections) {
             if (c != null && other == c.getSource()) {
                 return false;
             }
@@ -788,14 +787,9 @@ public class NodeGui implements NodeListener {
     }
 
     @Override
-    public void outputChanged(NodeGui source) {
-        hasChanged = true;
-    }
-
-    @Override
     public void sourceDeleted(NodeGui source) {
         for (int i = 0; i < incomingConnections.size();i ++) {
-            Connection c = incomingConnections.get(i);
+            ConnectionInterface c = incomingConnections.get(i);
             if (c.getSource() == source) {
                 // as only one input connection from a node is permitted we can safely break the loop.
                 disconnect(i);
@@ -859,8 +853,8 @@ public class NodeGui implements NodeListener {
             return 0;
         }
         int max_d = -1;
-        for (Connection c: incomingConnections) {
-            int d = c.getSource().distance(n);
+        for (ConnectionInterface c: incomingConnections) {
+            int d = c.distance(n);
             if (d > max_d) {
                 max_d = d + 1;
             }

@@ -1,10 +1,13 @@
 package org.esa.snap.grapheditor.ui.components.graph;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.grapheditor.ui.components.interfaces.ConnectionInterface;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 
 import java.awt.*;
 
-public class Connection {
+public class Connection implements ConnectionInterface
+{
     private static final Color connectedColor = new Color(66, 66, 66, 255);
     private static final Color activeColor = Color.gray;
 
@@ -26,7 +29,7 @@ public class Connection {
         targetIndex = index;
     }
 
-    public Connection(NodeGui from, Point to) {
+    Connection(NodeGui from, Point to) {
         source = from;
         endPoint = to;
     }
@@ -54,6 +57,17 @@ public class Connection {
         endPoint = p;
     }
 
+
+    @Override
+    public void removeNodesSourceListener(NodeListener l) {
+        this.getSource().removeNodeListener(l);
+    }
+
+
+    @Override
+    public int distance(Object node) {
+        return getSource().distance((NodeGui) node);
+    }
 
     public void draw(Graphics2D base) {
         Graphics2D g = (Graphics2D) base.create();
@@ -112,17 +126,13 @@ public class Connection {
         }
     }
 
-    void showSourceTooltip(){
-        if (this.source != null) {
-            this.source.over(source.getPostion());
-        }
-    }
-
-    void setTargetIndex(int index) {
+    @Override
+    public void setTargetIndex(int index) {
         this.targetIndex = index;
     }
 
-    Product getSourceProduct() {
+    @Override
+    public Product getSourceProduct() {
         if (source != null)
             return source.getProduct();
         return null;
