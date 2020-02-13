@@ -40,7 +40,6 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         resultsList = new JList<>(results);
         resultsList.setVisible(false);
 
-        resultsList.addKeyListener(this);
         p.add(resultsList, BorderLayout.PAGE_END);
 
         this.add(p, BorderLayout.CENTER);
@@ -86,49 +85,7 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        updateResults();
-    }
-
-    private void updateResults() {
-        String searchString = searchField.getText();
-        if (searchString.length() == 0) {
-            resultsList.setVisible(false);
-            results.clear();
-            return;
-        }
-        ArrayList<Pair<UnifiedMetadata, Double>> searchResult= new ArrayList<>();
-        if (searchString.length() > 0) {
-            final String[] normSearch = smartTokenizer(searchString);
-
-            for (UnifiedMetadata metadata: GraphManager.getInstance().getSimplifiedMetadata()) {
-                double dist = metadata.fuzzySearch(normSearch);
-                if (dist >= 0) {
-                    searchResult.add(new Pair<>(metadata, dist));
-                }
-            }
-            results.removeAllElements();
-            if (searchResult.size() > 0) {
-                int prevActive = resultsList.getSelectedIndex();
-                searchResult.sort(new ResultComparator());
-                for (Pair<UnifiedMetadata, Double> res: searchResult) {
-                    results.addElement(res.getKey());
-                   // results.add(res.getKey());
-                }
-                resultsList.setVisible(true);
-
-                if (prevActive >= 0) {
-                    int currentActive = Math.min(prevActive, results.size() - 1);
-                    resultsList.setSelectedIndex(currentActive);
-                } else {
-                    resultsList.setSelectedIndex(0);
-                }
-                this.setSize(width, height + resultsList.getPreferredSize().height + 4);
-            } else {
-                resultsList.setVisible(false);
-                this.setSize(width, height);
-            }
-            this.revalidate();
-        }
+        // Nothing to do..
     }
 
     @Override
@@ -149,6 +106,7 @@ public class AddNodeDialog extends JDialog implements KeyListener {
                 // escape
                 this.popdown();
                 break;
+
         }
     }
 
@@ -156,6 +114,59 @@ public class AddNodeDialog extends JDialog implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         // nothing to do..
+        switch (e.getKeyCode()) {
+            case (KeyEvent.VK_UP):
+            case (KeyEvent.VK_DOWN):
+            case (10):
+            case (27):
+                break;
+            default:
+                updateResults();
+                break;
+        }
+    }
+
+    private void updateResults() {
+        String searchString = searchField.getText();
+        if (searchString.length() == 0) {
+            resultsList.setVisible(false);
+            this.setSize(width, height);
+            results.clear();
+            return;
+        }
+        ArrayList<Pair<UnifiedMetadata, Double>> searchResult= new ArrayList<>();
+        if (searchString.length() > 0) {
+            final String[] normSearch = smartTokenizer(searchString);
+
+            for (UnifiedMetadata metadata: GraphManager.getInstance().getSimplifiedMetadata()) {
+                double dist = metadata.fuzzySearch(normSearch);
+                if (dist >= 0) {
+                    searchResult.add(new Pair<>(metadata, dist));
+                }
+            }
+            results.removeAllElements();
+            if (searchResult.size() > 0) {
+                int prevActive = resultsList.getSelectedIndex();
+                searchResult.sort(new ResultComparator());
+                for (Pair<UnifiedMetadata, Double> res: searchResult) {
+                    results.addElement(res.getKey());
+                    // results.add(res.getKey());
+                }
+                resultsList.setVisible(true);
+
+                if (prevActive >= 0) {
+                    int currentActive = Math.min(prevActive, results.size() - 1);
+                    resultsList.setSelectedIndex(currentActive);
+                } else {
+                    resultsList.setSelectedIndex(0);
+                }
+                this.setSize(width, height + resultsList.getPreferredSize().height + 4);
+            } else {
+                resultsList.setVisible(false);
+                this.setSize(width, height);
+            }
+            this.revalidate();
+        }
     }
 
     private void enter() {
