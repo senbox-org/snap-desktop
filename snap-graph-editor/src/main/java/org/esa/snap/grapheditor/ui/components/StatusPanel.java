@@ -166,8 +166,8 @@ public class StatusPanel extends JPanel implements ActionListener, NotificationL
         }
         this.messageLabel.setForeground(fg);
         this.messageLabel.repaint();
-        history += "<span class=\"" + cssClass +"\">";
-        history += timeStamp() +" "+ n.getSource() + ": " + n.getMessage() + "</span><br>";
+        history += timeStamp() ;
+        history += "<span class=\"" + cssClass +"\"> "+ n.getSource() + ": " + n.getMessage() + "</span><br>";
         historyPane.setText(history);
     }
 
