@@ -1,6 +1,7 @@
 package org.esa.snap.grapheditor.ui.components.interfaces;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
 import java.awt.*;
 
@@ -16,6 +17,12 @@ public interface ConnectionInterface {
      * @param l listener
      */
     void removeNodesSourceListener(NodeListener l);
+
+    /**
+     * Add node listener to source
+     * @param l listener
+     */
+    void addSourceListener(NodeListener l);
 
     /**
      * Compute the distance between the source and a node
@@ -53,4 +60,10 @@ public interface ConnectionInterface {
      * @return target object
      */
     Object getTarget();
+
+    /**
+     * Retrieve source name
+     * @return source string identifier
+     */
+    String getSourceName();
 }

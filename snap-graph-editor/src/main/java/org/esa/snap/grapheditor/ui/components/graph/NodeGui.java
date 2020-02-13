@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 
 import com.bc.ceres.binding.dom.XppDomElement;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
+import javafx.util.Pair;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
@@ -70,8 +71,8 @@ public class NodeGui implements NodeListener {
 
     static final private int minWidth = 60;
 
-    static final int CONNECTION_NONE = -202;
-    static final int CONNECTION_OUTPUT = -1;
+    public static final int CONNECTION_NONE = -202;
+    public static final int CONNECTION_OUTPUT = -1;
 
     private int x;
     private int y;
@@ -617,25 +618,25 @@ public class NodeGui implements NodeListener {
      * @param p mouse position
      * @return new drag action
      */
-    public DragAction drag(Point p) {
+    public Pair<NodeGui, Integer> drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.incomingConnections.size() > iy) {
                 ConnectionInterface c = this.incomingConnections.get(iy);
                 if (c != null) {
                     disconnect(iy);
-                    return new DragAction(new Connection((NodeGui) c.getSource(), p));
+                    return new Pair<> ((NodeGui) c.getSource(), CONNECTION_OUTPUT);
                 }
             }
             tooltipVisible_ = false;
-            return new DragAction(new Connection(this, iy, p));
+            return new Pair<> (this, iy);
         }
         if (isOverOutput(p)) {
             tooltipVisible_ = false;
-            return new DragAction(new Connection(this, p));
+            return new Pair<> (this, CONNECTION_OUTPUT);
         }
         tooltipVisible_ = false;
-        return new DragAction(this, p);
+        return new Pair<>(this, CONNECTION_NONE);
     }
 
     /**
@@ -750,13 +751,13 @@ public class NodeGui implements NodeListener {
      * Internal function to add a new input connection
      * @param c connection to be add
      */
-    private void connect(Connection c){
+    private void connect(ConnectionInterface c){
         incomingConnections.add(c);
-        c.getSource().addNodeListener(this);
+        c.addSourceListener(this);
         for (NodeListener listener: this.nodeListeners) {
             listener.connectionAdded(this);
         }
-        NodeSource nodeSource =  new NodeSource("sourceProduct", c.getSource().getName());
+        NodeSource nodeSource =  new NodeSource("sourceProduct", c.getSourceName());
         this.node.addSource(nodeSource);
         hasChanged = true;
     }
@@ -766,7 +767,7 @@ public class NodeGui implements NodeListener {
      * @param connection object representing the connection between nodes
      * @param index input index
      */
-    public void addConnection(Connection connection, int index) {
+    public void addConnection(ConnectionInterface connection, int index) {
         if (index == incomingConnections.size())  {
             connect(connection);
         } else {

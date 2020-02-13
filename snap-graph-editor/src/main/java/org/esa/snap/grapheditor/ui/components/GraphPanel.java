@@ -13,6 +13,8 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
+import javafx.util.Pair;
+import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.DragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
@@ -277,7 +279,17 @@ public class GraphPanel extends JPanel
             for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
                 NodeGui node = graphManager.getNodes().get(i);
                 if (node.contains(p)) {
-                    dragAction = node.drag(e.getPoint());
+                    Pair<NodeGui, Integer> action =  node.drag(e.getPoint());
+                    int connector = action.getValue();
+                    if (connector == NodeGui.CONNECTION_NONE) {
+                        dragAction = new DragAction(action.getKey(), p);
+                    }
+                    else if (connector == NodeGui.CONNECTION_OUTPUT) {
+                        dragAction = new DragAction(new Connection(action.getKey(), p));
+                    } else {
+                        dragAction = new DragAction(new Connection(action.getKey(), connector, p));
+                    }
+
                     return;
                 }
             }
@@ -362,10 +374,6 @@ public class GraphPanel extends JPanel
         this.repaint();
     }
 
-    @Override
-    public void outputChanged(NodeGui source) {
-        // nothing to do, not really a change.
-    }
 
     @Override
     public void sourceDeleted(NodeGui source) {

@@ -29,12 +29,12 @@ public class Connection implements ConnectionInterface
         targetIndex = index;
     }
 
-    Connection(NodeGui from, Point to) {
+    public Connection(NodeGui from, Point to) {
         source = from;
         endPoint = to;
     }
 
-    Connection(NodeGui to, int index, Point from) {
+    public Connection(NodeGui to, int index, Point from) {
         source = null;
         target = to;
         targetIndex = index;
@@ -49,6 +49,11 @@ public class Connection implements ConnectionInterface
         return target;
     }
 
+    @Override
+    public String getSourceName() {
+        return source.getName();
+    }
+
     public Point getEndPoint() {
         return endPoint;
     }
@@ -61,6 +66,11 @@ public class Connection implements ConnectionInterface
     @Override
     public void removeNodesSourceListener(NodeListener l) {
         this.getSource().removeNodeListener(l);
+    }
+
+    @Override
+    public void addSourceListener(NodeListener l) {
+        this.getSource().addNodeListener(l);
     }
 
 
