@@ -37,7 +37,7 @@ class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
      * @param component the component that called up the dialog
      */
     AddNodeDialog(JComponent component) {
-        super((JFrame) SwingUtilities.getWindowAncestor(component));
+        super(SwingUtilities.getWindowAncestor(component));
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK));
         parent = component;
         this.setUndecorated(true);
