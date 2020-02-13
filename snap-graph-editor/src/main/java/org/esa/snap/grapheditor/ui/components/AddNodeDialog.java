@@ -50,7 +50,7 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
                         System.out.println(meta.getName());
                         NodeGui node = GraphManager.getInstance().newNode(meta);
                         Point p = SwingUtilities.convertPoint(resultsList, e.getPoint(), parent);
-                        node.setPosition(p.x - 10, p.y -10);
+                        node.setPosition(p.x - node.getWidth() / 2, p.y - node.getHeight() / 2);
                         for (AddNodeListener l: listeners) {
                             l.newNodeAddedAtCurrentPosition(node);
                         }
