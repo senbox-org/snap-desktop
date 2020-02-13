@@ -147,7 +147,6 @@ public class SettingManager {
 
     static final private String TOOLTIPENABLED = "tooltip enabled";
     static final private String COMMANDPANELENABLED =  "command panel enabled";
-    static final private String COMMANDPANELKEY = "command panel Key";
     static final private String AUTOVALIDATEKEY = "auto validate enabled";
     static final private String BGGRIDVISIBLEKEY = "background grid visible";
 
@@ -156,7 +155,6 @@ public class SettingManager {
         settings.put(COMMANDPANELENABLED, new SettingValue(true));
         settings.put(AUTOVALIDATEKEY, new SettingValue(true));
         settings.put(BGGRIDVISIBLEKEY, new SettingValue(true));
-        settings.put(COMMANDPANELKEY, new SettingValue(KeyEvent.VK_TAB));
     }
 
     public boolean isShowToolipEnabled() {
@@ -171,7 +169,7 @@ public class SettingManager {
         return settings.get(BGGRIDVISIBLEKEY).asBoolean();
     }
     public int getCommandPanelKey() {
-        return  settings.get(COMMANDPANELKEY).asInt();
+        return KeyEvent.VK_TAB;
     }
 
     public JDialog showSettingsDialog(Window parent) {
