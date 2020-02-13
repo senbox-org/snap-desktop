@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
-public class AddNodeDialog extends JDialog implements KeyListener {
+public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelListener {
     static final private int width = 400;
     static final private int height = 48;
     private final JTextField searchField;
@@ -35,10 +35,12 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         searchField = new JTextField();
         searchField.setEnabled(true);
         searchField.addKeyListener(this);
+        searchField.addMouseWheelListener(this);
         p.add(searchField, BorderLayout.CENTER);
 
         resultsList = new JList<>(results);
         resultsList.setVisible(false);
+        resultsList.addMouseWheelListener(this);
         resultsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -233,6 +235,15 @@ public class AddNodeDialog extends JDialog implements KeyListener {
             list.add(string.toLowerCase());
         }
         return list.toArray(new String[0]);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.getWheelRotation() > 0) {
+            down();
+        } else {
+            up();
+        }
     }
 
     private static class ResultComparator implements Comparator<Pair<UnifiedMetadata, Double>>
