@@ -1,7 +1,12 @@
-package org.esa.snap.grapheditor.ui.components.utils;
+package org.esa.snap.grapheditor.ui.components.interfaces;
 
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
+/**
+ * Simple listener used to notify changes inside the node.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public interface NodeListener {
     /**
      * Update the inputs node of the connected nodes.

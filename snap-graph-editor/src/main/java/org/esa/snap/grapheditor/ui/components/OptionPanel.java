@@ -3,8 +3,7 @@ package org.esa.snap.grapheditor.ui.components;
 import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
-import org.esa.snap.ui.AppContext;
+import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
 
 import java.awt.*;
 

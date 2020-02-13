@@ -1,7 +1,7 @@
 package org.esa.snap.grapheditor.ui.components;
 
 import org.esa.snap.grapheditor.ui.components.utils.Notification;
-import org.esa.snap.grapheditor.ui.components.utils.NotificationListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.NotificationListener;
 import org.esa.snap.grapheditor.ui.components.utils.NotificationManager;
 
 import java.awt.BorderLayout;

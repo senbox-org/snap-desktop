@@ -41,6 +41,8 @@ import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
 import org.esa.snap.ui.AppContext;
 
 public class GraphManager implements NodeListener {

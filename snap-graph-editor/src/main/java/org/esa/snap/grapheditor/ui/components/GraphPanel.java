@@ -13,15 +13,15 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
-import org.esa.snap.grapheditor.ui.components.utils.AddNodeListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.NodeDragAction;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
-import org.esa.snap.grapheditor.ui.components.utils.GraphListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
 import org.esa.snap.grapheditor.ui.components.utils.GraphicUtils;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
-import org.esa.snap.grapheditor.ui.components.utils.NodeListener;
-import org.esa.snap.grapheditor.ui.components.utils.RefreshListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 /**

@@ -1,7 +1,7 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.opengis.filter.Not;
+import org.esa.snap.grapheditor.ui.components.interfaces.NotificationListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;

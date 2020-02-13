@@ -7,6 +7,11 @@ import org.esa.snap.ui.ModelessDialog;
 
 import javax.swing.*;
 
+/**
+ * Simple back compatibility class.
+ *
+ * @author Martino Ferrari (CS Group)
+ */
 public class GraphBuilderDialog extends ModelessDialog {
  
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID){
