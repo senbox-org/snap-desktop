@@ -7,4 +7,5 @@ import java.awt.*;
 public interface AddNodeListener {
     void newNodeAdded(NodeGui node);
     void newNodeAddedAtCurrentPosition(NodeGui node);
+    void newNodeAddedStartDrag(NodeGui node);
 }

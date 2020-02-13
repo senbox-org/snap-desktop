@@ -58,6 +58,23 @@ public class AddNodeDialog extends JDialog implements KeyListener, MouseWheelLis
                     popdown();
                 }
             }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    UnifiedMetadata meta = resultsList.getSelectedValue();
+                    if (meta != null) {
+                        System.out.println(meta.getName());
+                        NodeGui node = GraphManager.getInstance().newNode(meta);
+                        Point p = SwingUtilities.convertPoint(resultsList, e.getPoint(), parent);
+                        node.setPosition(p.x - node.getWidth() / 2, p.y - node.getHeight() / 2);
+                        for (AddNodeListener l: listeners) {
+                            l.newNodeAddedStartDrag(node);
+                        }
+                    }
+                    popdown();
+                }
+            }
         });
 
         p.add(resultsList, BorderLayout.PAGE_END);

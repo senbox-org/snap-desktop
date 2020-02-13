@@ -388,4 +388,18 @@ public class GraphPanel extends JPanel
         }
         repaint();
     }
+
+    @Override
+    public void newNodeAddedStartDrag(NodeGui node) {
+        if (node == null)
+            return;
+        Point p = new Point(node.getX() + node.getWidth() / 2, node.getY() + node.getHeight() /2);
+        node.setPosition(GraphicUtils.normalize(node.getPostion()));
+        node.addNodeListener(this);
+        for (GraphListener listener : graphListeners) {
+            listener.created(node);
+        }
+        this.dragAction = new NodeDragAction(node, p);
+        repaint();
+    }
 }
