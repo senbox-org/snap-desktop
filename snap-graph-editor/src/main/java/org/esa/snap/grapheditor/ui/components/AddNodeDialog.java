@@ -39,6 +39,24 @@ public class AddNodeDialog extends JDialog implements KeyListener {
 
         resultsList = new JList<>(results);
         resultsList.setVisible(false);
+        resultsList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    UnifiedMetadata meta = resultsList.getSelectedValue();
+                    if (meta != null) {
+                        System.out.println(meta.getName());
+                        NodeGui node = GraphManager.getInstance().newNode(meta);
+                        Point p = SwingUtilities.convertPoint(resultsList, e.getPoint(), parent);
+                        node.setPosition(p.x - 10, p.y -10);
+                        for (AddNodeListener l: listeners) {
+                            l.newNodeAddedAtCurrentPosition(node);
+                        }
+                    }
+                    popdown();
+                }
+            }
+        });
 
         p.add(resultsList, BorderLayout.PAGE_END);
 
@@ -110,7 +128,6 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         }
     }
 
-
     @Override
     public void keyReleased(KeyEvent e) {
         // nothing to do..
@@ -173,9 +190,9 @@ public class AddNodeDialog extends JDialog implements KeyListener {
         if (results.size() == 0) {
             return;
         }
-
-        UnifiedMetadata meta = resultsList.getSelectedValue(); // results.get(currentActive);
-        System.out.println(meta.getName());
+        UnifiedMetadata meta = resultsList.getSelectedValue();
+        if (meta == null)
+            return;
         NodeGui n = GraphManager.getInstance().newNode(meta);
         for (AddNodeListener l: listeners){
             l.newNodeAdded(n);

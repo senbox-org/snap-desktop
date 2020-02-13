@@ -373,14 +373,19 @@ public class GraphPanel extends JPanel
 
     @Override
     public void newNodeAdded(NodeGui node) {
-        node.setPosition(lastMousePosition);
         addNode(node);
         repaint();
     }
 
     @Override
     public void newNodeAddedAtCurrentPosition(NodeGui node) {
-        addNode(node);
+        if (node == null)
+            return;
+        node.setPosition(GraphicUtils.normalize(node.getPostion()));
+        node.addNodeListener(this);
+        for (GraphListener listener : graphListeners) {
+            listener.created(node);
+        }
         repaint();
     }
 }

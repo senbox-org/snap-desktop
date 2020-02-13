@@ -49,7 +49,7 @@ public class UnifiedMetadata {
 
     @Override
     public String toString() {
-        return "<html><b>"+name+"</b><br>"+category+"</html>";
+        return "<html>\n<b>"+name+"</b><br>\n"+category+"\n</html>";
     }
 
     /**
