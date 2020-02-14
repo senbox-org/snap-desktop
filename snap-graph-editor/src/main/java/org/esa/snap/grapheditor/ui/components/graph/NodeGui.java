@@ -50,7 +50,6 @@ public class NodeGui implements NodeListener, NodeInterface {
     private static final Color errorColor = new Color(255, 80, 80, 200);
     private static final Color validateColor =  new Color(51, 153, 102, 200);
     private static final Color unknownColor =  new Color(233, 229, 225, 230); //Color
-    // private static final Color connectionColor = new Color(66, 66, 66, 255);
     private static final Color activeColor = new Color(254, 223, 176, 180);
 
     private static final Color tooltipBackground = new Color(0, 0, 0, 180);
