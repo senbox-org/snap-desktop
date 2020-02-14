@@ -27,5 +27,9 @@ public interface NodeInterface {
     void removeNodeListener(NodeListener l);
 
     int distance(NodeInterface n);
+
+    boolean isConnectionAvailable(NodeInterface other, int index);
+
+    void addConnection(NodeInterface node, int index);
 }
 

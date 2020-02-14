@@ -692,7 +692,7 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @param index chosen input index
      * @return absolute position of the chosen input connector
      */
-    Point getInputPosition(int index) {
+    public Point getInputPosition(int index) {
         return new Point(x, y + connectionOffset * (index + 1));
     }
 
@@ -700,7 +700,7 @@ public class NodeGui implements NodeListener, NodeInterface {
      * Gives the output connector position
      * @return absolute position of the output connector
      */
-    Point getOutputPosition() {
+    public Point getOutputPosition() {
         return new Point(x + width, y + connectionOffset);
     }
 
@@ -731,11 +731,11 @@ public class NodeGui implements NodeListener, NodeInterface {
     /**
      * Checks if a certain input is available to be connected with a source node.
      * It verify that the index is free and that the two nodes are not already connected together.
-     * @param index input index
      * @param other source node
+     * @param index input index
      * @return connection availability
      */
-    boolean isConnectionAvailable(int index, NodeGui other) {
+    public boolean isConnectionAvailable(NodeInterface other, int index) {
         if (index == CONNECTION_OUTPUT)
             return true;
         if (index == CONNECTION_NONE)
@@ -789,7 +789,7 @@ public class NodeGui implements NodeListener, NodeInterface {
     }
 
     @Override
-    public void sourceDeleted(NodeInterface source) {
+    public void sourceDeleted(Object source) {
         for (int i = 0; i < incomingConnections.size();i ++) {
             ConnectionInterface c = incomingConnections.get(i);
             if (c.getSource() == source) {
@@ -802,12 +802,12 @@ public class NodeGui implements NodeListener, NodeInterface {
     }
 
     @Override
-    public void connectionAdded(NodeInterface source) {
+    public void connectionAdded(Object source) {
         hasChanged = true;
     }
 
     @Override
-    public void validateNode(NodeInterface node) {}
+    public void validateNode(Object source) {}
 
     /**
      * Add a NodeListener.
@@ -853,7 +853,7 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @param n node to compute the distance
      * @return  -1 if the node n is not connected or is an output, the maximum distance if the node n is an input.
      */
-    public int distance(NodeGui n) {
+    public int distance(NodeInterface n) {
         if (n == this) {
             return 0;
         }

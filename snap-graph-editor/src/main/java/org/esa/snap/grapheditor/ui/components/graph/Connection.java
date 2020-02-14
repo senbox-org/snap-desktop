@@ -127,13 +127,13 @@ public class Connection implements ConnectionInterface
                 res  = true;
             }
         } else if (this.source != null) {
-            res = node.isConnectionAvailable(connection, this.source);
+            res = node.isConnectionAvailable(this.source, connection);
             this.target = node;
             this.targetIndex = connection;
 
         }
         if (res) {
-            this.target.addConnection(source, targetIndex);
+            // this.target.addConnection(source, targetIndex);
         }
     }
 
