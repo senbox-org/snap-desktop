@@ -17,7 +17,6 @@ import javafx.util.Pair;
 import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.utils.*;
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;

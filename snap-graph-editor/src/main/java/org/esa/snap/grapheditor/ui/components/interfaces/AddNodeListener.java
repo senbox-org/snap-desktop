@@ -1,6 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.interfaces;
 
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.NodeGui;
 
 /**
  * Simple listener for the AddNodeDialog, enabling to add nodes and different kind of interactions.

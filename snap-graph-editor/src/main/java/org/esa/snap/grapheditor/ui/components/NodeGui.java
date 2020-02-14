@@ -1,4 +1,4 @@
-package org.esa.snap.grapheditor.ui.components.graph;
+package org.esa.snap.grapheditor.ui.components;
 
 import java.awt.*;
 import java.util.ArrayList;
