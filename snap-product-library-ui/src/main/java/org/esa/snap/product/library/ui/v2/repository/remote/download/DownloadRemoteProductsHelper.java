@@ -1,10 +1,12 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.engine_utilities.util.ThreadNamePoolExecutor;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
@@ -33,6 +35,7 @@ public class DownloadRemoteProductsHelper {
 
     private ThreadNamePoolExecutor threadPoolExecutor;
     private Set<AbstractBackgroundDownloadRunnable> runningTasks;
+    private Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
     private int threadId;
     private int totalDownloadingProducts;
     private int totalDownloadedProducts;
@@ -73,12 +76,21 @@ public class DownloadRemoteProductsHelper {
         this.threadPoolExecutor.execute(runnable); // start the thread
     }
 
-    public void downloadProductsAsync(RemoteProductDownloader[] remoteProductDownloaders, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+    public void downloadProductsAsync(List<RepositoryProduct> productsToDownload, RemoteProductsRepositoryProvider remoteProductsRepositoryProvider,
+                                      RemoteRepositoriesProductProgress remoteRepositoriesProductProgress, Path localRepositoryFolderPath,
+                                      Credentials credentials, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+
         createThreadPoolExecutorIfNeeded();
 
-        for (int i=0; i<remoteProductDownloaders.length; i++) {
-            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloaders[i], this.remoteRepositoriesSemaphore,
-                                                                           allLocalFolderProductsRepository, this.uncompressedDownloadedProducts) {
+        for (int i=0; i<productsToDownload.size(); i++) {
+            RepositoryProduct productToDownload = productsToDownload.get(i);
+            RemoteProductDownloader remoteProductDownloader = new RemoteProductDownloader(remoteProductsRepositoryProvider, productToDownload, localRepositoryFolderPath, credentials);
+            DownloadProgressStatus progressProgressStatus = remoteRepositoriesProductProgress.findRepositoryProductDownloadProgress(productToDownload);
+            if (progressProgressStatus == null) {
+                throw new NullPointerException("The download progress is null.");
+            }
+            this.downloadingProductsProgressValue.put(productToDownload, progressProgressStatus);
+            DownloadProductRunnable runnable = new DownloadProductRunnable(remoteProductDownloader, this.remoteRepositoriesSemaphore, allLocalFolderProductsRepository, this.uncompressedDownloadedProducts) {
                 @Override
                 protected void startRunning() {
                     super.startRunning();
@@ -149,13 +161,19 @@ public class DownloadRemoteProductsHelper {
         }
     }
 
-    public List<DownloadProductRunnable> findDownloadingProducts() {
-        List<DownloadProductRunnable> downloadingProductRunnables;
+    public List<Pair<DownloadProductRunnable, DownloadProgressStatus>> findDownloadingProducts() {
+        List<Pair<DownloadProductRunnable, DownloadProgressStatus>> downloadingProductRunnables;
         if (this.runningTasks != null && this.runningTasks.size() > 0) {
             downloadingProductRunnables = new ArrayList<>();
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
                 if (runnable instanceof DownloadProductRunnable) {
-                    downloadingProductRunnables.add((DownloadProductRunnable)runnable);
+                    DownloadProductRunnable downloadProductRunnable = (DownloadProductRunnable)runnable;
+                    DownloadProgressStatus downloadProgressStatus = this.downloadingProductsProgressValue.get(downloadProductRunnable.getProductToDownload());
+                    if (downloadProgressStatus == null) {
+                        throw new NullPointerException("The download progress is null.");
+                    }
+                    Pair<DownloadProductRunnable, DownloadProgressStatus> pair = new Pair<>(downloadProductRunnable, downloadProgressStatus);
+                    downloadingProductRunnables.add(pair);
                 }
             }
         } else {
@@ -169,6 +187,7 @@ public class DownloadRemoteProductsHelper {
             this.totalDownloadingProducts = 0;
             this.totalDownloadedProducts = 0;
             this.runningTasks = new HashSet<>();
+            this.downloadingProductsProgressValue = new HashMap<>();
             this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
             int maximumThreadCount = Runtime.getRuntime().availableProcessors() - 1;
             this.threadPoolExecutor = new ThreadNamePoolExecutor("product-library", maximumThreadCount);
@@ -274,6 +293,7 @@ public class DownloadRemoteProductsHelper {
         this.threadPoolExecutor.shutdown();
         this.threadPoolExecutor = null; // reset the thread pool
         this.runningTasks = null; // reset the running tasks
+        this.downloadingProductsProgressValue = null;
     }
 
     private void onUpdateProgressBarDownloadedProducts() {
@@ -288,7 +308,8 @@ public class DownloadRemoteProductsHelper {
             logger.log(Level.FINE, "Update the downloading progress percent " + progressPercent + "% of the product '" + repositoryProduct.getName()+"' using the '" + repositoryProduct.getMission()+"' mission.");
         }
 
-        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(repositoryProduct, progressPercent, downloadedPath, this.downloadProductListener) {
+        Runnable runnable = new UpdateDownloadedProgressPercentRunnable(this.downloadProductListener, repositoryProduct, progressPercent, downloadedPath,
+                                                                        this.downloadingProductsProgressValue) {
             @Override
             public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
@@ -300,7 +321,7 @@ public class DownloadRemoteProductsHelper {
     }
 
     private void updateDownloadingProductStatusLater(RepositoryProduct repositoryProduct, byte downloadStatus) {
-        Runnable runnable = new UpdateDownloadingProductStatusRunnable(repositoryProduct, downloadStatus, this.downloadProductListener) {
+        Runnable runnable = new UpdateDownloadingProductStatusRunnable(this.downloadProductListener, repositoryProduct, downloadStatus, this.downloadingProductsProgressValue) {
             @Override
             public void run() {
                 if (progressPanel.isCurrentThread(threadId)) {
@@ -327,16 +348,25 @@ public class DownloadRemoteProductsHelper {
         private final RepositoryProduct repositoryProduct;
         private final byte downloadStatus;
         private final DownloadProductListener downloadProductListener;
+        private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
 
-        private UpdateDownloadingProductStatusRunnable(RepositoryProduct repositoryProduct, byte downloadStatus, DownloadProductListener downloadProductListener) {
+        private UpdateDownloadingProductStatusRunnable(DownloadProductListener downloadProductListener, RepositoryProduct repositoryProduct,
+                                                       byte downloadStatus, Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue) {
+
             this.repositoryProduct = repositoryProduct;
             this.downloadStatus = downloadStatus;
             this.downloadProductListener = downloadProductListener;
+            this.downloadingProductsProgressValue = downloadingProductsProgressValue;
         }
 
         @Override
         public void run() {
-            this.downloadProductListener.onUpdateProductDownloadStatus(this.repositoryProduct, this.downloadStatus);
+            DownloadProgressStatus downloadProgressStatus = this.downloadingProductsProgressValue.get(this.repositoryProduct);
+            if (downloadProgressStatus == null) {
+                throw new NullPointerException("The download progress is null.");
+            }
+            downloadProgressStatus.setStatus(this.downloadStatus);
+            this.downloadProductListener.onUpdateProductDownloadProgress(this.repositoryProduct);
         }
     }
 
@@ -346,19 +376,27 @@ public class DownloadRemoteProductsHelper {
         private final short progressPercent;
         private final Path downloadedPath;
         private final DownloadProductListener downloadProductListener;
+        private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
 
-        private UpdateDownloadedProgressPercentRunnable(RepositoryProduct productToDownload, short progressPercent, Path downloadedPath,
-                                                        DownloadProductListener downloadProductListener) {
+        private UpdateDownloadedProgressPercentRunnable(DownloadProductListener downloadProductListener, RepositoryProduct productToDownload, short progressPercent,
+                                                        Path downloadedPath, Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue) {
 
             this.productToDownload = productToDownload;
             this.downloadProductListener = downloadProductListener;
             this.progressPercent = progressPercent;
             this.downloadedPath = downloadedPath;
+            this.downloadingProductsProgressValue = downloadingProductsProgressValue;
         }
 
         @Override
         public void run() {
-            this.downloadProductListener.onUpdateProductDownloadPercent(this.productToDownload, this.progressPercent, this.downloadedPath);
+            DownloadProgressStatus downloadProgressStatus = this.downloadingProductsProgressValue.get(this.productToDownload);
+            if (downloadProgressStatus == null) {
+                throw new NullPointerException("The download progress is null.");
+            }
+            downloadProgressStatus.setValue(this.progressPercent);
+            downloadProgressStatus.setDownloadedPath(this.downloadedPath);
+            this.downloadProductListener.onUpdateProductDownloadProgress(this.productToDownload);
         }
     }
 

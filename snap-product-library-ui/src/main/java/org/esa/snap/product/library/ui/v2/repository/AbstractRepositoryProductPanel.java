@@ -259,6 +259,10 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         return buildAttributeLabelText("Mission", (StringUtils.isBlank(mission) ? "N/A" : mission));
     }
 
+    public static String buildRepositoryLabelText(String repository) {
+        return buildAttributeLabelText("Repository", (StringUtils.isBlank(repository) ? "N/A" : repository));
+    }
+
     public static String buildSizeLabelText(long sizeInBytes) {
         String sizeText = "Size: ";
         if (sizeInBytes > 0) {

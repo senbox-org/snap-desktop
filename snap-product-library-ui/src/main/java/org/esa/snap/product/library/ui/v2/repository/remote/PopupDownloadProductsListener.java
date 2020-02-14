@@ -8,7 +8,7 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
  */
 public interface PopupDownloadProductsListener {
 
-    public void onUpdateProductDownloadProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus);
+    public void onUpdateProductDownloadProgress(RepositoryProduct repositoryProduct);
 
     public void onStopDownloadingProduct(DownloadProductRunnable downloadProductRunnable);
 }

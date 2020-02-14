@@ -12,9 +12,7 @@ public interface DownloadProductListener {
 
     public void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable, SaveDownloadedProductData saveProductData, boolean hasProductsToDownload);
 
-    public void onUpdateProductDownloadPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath);
-
-    public void onUpdateProductDownloadStatus(RepositoryProduct repositoryProduct, byte status);
+    public void onUpdateProductDownloadProgress(RepositoryProduct repositoryProduct);
 
     public void onCancelDownloadingProduct(DownloadProductRunnable downloadProductRunnable);
 }

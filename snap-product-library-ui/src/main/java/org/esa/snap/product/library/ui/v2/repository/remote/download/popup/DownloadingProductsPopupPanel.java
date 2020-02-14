@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 
+import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;
@@ -21,7 +21,9 @@ public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
 
     private int preferredScrollableHeight;
 
-    public DownloadingProductsPopupPanel(List<DownloadProductRunnable> downloadingProductRunnables, int visibleProductCount, int gapBetweenRows, int gapBetweenColumns) {
+    public DownloadingProductsPopupPanel(List<Pair<DownloadProductRunnable, DownloadProgressStatus>> downloadingProductRunnables,
+                                         int visibleProductCount, int gapBetweenRows, int gapBetweenColumns) {
+
         super(null);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -29,7 +31,9 @@ public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
         Color separatorColor = UIManager.getColor("controlShadow");
         this.preferredScrollableHeight = 0;
         for (int i=0; i<downloadingProductRunnables.size(); i++) {
-            DownloadingProductPanel downloadingProductPanel = new DownloadingProductPanel(downloadingProductRunnables.get(i), gapBetweenColumns);
+            Pair<DownloadProductRunnable, DownloadProgressStatus> pair = downloadingProductRunnables.get(i);
+            DownloadingProductPanel downloadingProductPanel = new DownloadingProductPanel(pair.getFirst(), pair.getSecond(), gapBetweenColumns);
+
             int topLineHeight = (i > 0) ? 1 : 0;
             Border outsideBorder = new MatteBorder(topLineHeight, 0, 0, 0, separatorColor);
             Border insideBorder = new EmptyBorder(gapBetweenRows, gapBetweenColumns, gapBetweenRows, gapBetweenColumns);
@@ -49,11 +53,11 @@ public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
         return size;
     }
 
-    public void updateProductDownloadProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus progressProgressStatus) {
+    public void updateProductDownloadProgress(RepositoryProduct repositoryProduct) {
         int productCount = getComponentCount();
         for (int i=0; i<productCount; i++) {
             DownloadingProductPanel downloadingProductPanel = (DownloadingProductPanel)getComponent(i);
-            downloadingProductPanel.refreshDownloadStatus(repositoryProduct, progressProgressStatus);
+            downloadingProductPanel.refreshDownloadStatus();
         }
     }
 
@@ -67,11 +71,11 @@ public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {
         }
     }
 
-    public void refresh(RemoteRepositoriesProductProgress remoteRepositoriesProductProgress) {
+    public void refresh() {
         int productCount = getComponentCount();
         for (int i=0; i<productCount; i++) {
             DownloadingProductPanel downloadingProductPanel = (DownloadingProductPanel)getComponent(i);
-            downloadingProductPanel.refreshDownloadStatus(remoteRepositoriesProductProgress);
+            downloadingProductPanel.refreshDownloadStatus();
         }
     }
 }

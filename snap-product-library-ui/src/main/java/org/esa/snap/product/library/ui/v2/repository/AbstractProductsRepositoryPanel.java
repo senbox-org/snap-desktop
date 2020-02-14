@@ -59,6 +59,8 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     public abstract boolean refreshInputParameterComponentValues();
 
+    public abstract void resetInputParameterValues();
+
     public abstract AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                                                             ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);
 
@@ -100,10 +102,6 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
             }
         }
         return maximumLabelWidth;
-    }
-
-    public void resetInputParameterValues() {
-
     }
 
     public void clearInputParameterComponentValues() {

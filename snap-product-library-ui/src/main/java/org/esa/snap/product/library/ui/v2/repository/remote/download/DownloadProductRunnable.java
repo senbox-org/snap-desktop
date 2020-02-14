@@ -48,17 +48,17 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             saveProductData = downloadAndSaveProduct();
         } catch (java.lang.InterruptedException exception) {
             RepositoryProduct repositoryProduct = this.remoteProductDownloader.getProductToDownload();
-            logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "'.");
+            logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "', remote pository '" + repositoryProduct.getRepositoryName() + "'.");
             updateDownloadingProductStatus(repositoryProduct, DownloadProgressStatus.STOP_DOWNLOADING);
         } catch (IOException exception) {
             byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
                 downloadStatus = DownloadProgressStatus.NOT_AVAILABLE; // the product to download is not online
             }
-            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), downloadStatus);
+            updateDownloadingProductStatus(this.remoteProductDownloader.getProductToDownload(), downloadStatus);
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } catch (Exception exception) {
-            updateDownloadingProductStatus(remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.FAILED_DOWNLOADING);
+            updateDownloadingProductStatus(this.remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.FAILED_DOWNLOADING);
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } finally {
             finishRunning(saveProductData);

@@ -7,5 +7,5 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
  */
 public interface RemoteRepositoriesProductProgress {
 
-    public DownloadProgressStatus findRemoteRepositoryProductDownloadProgress(RepositoryProduct repositoryProduct);
+    public DownloadProgressStatus findRepositoryProductDownloadProgress(RepositoryProduct repositoryProduct);
 }
