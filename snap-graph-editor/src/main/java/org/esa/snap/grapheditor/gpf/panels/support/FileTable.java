@@ -97,15 +97,6 @@ public class FileTable extends JTable {
         }
     }
 
-    public void setProductEntries(final ProductEntry[] productEntryList) {
-        if (productEntryList != null) {
-            fileModel.clear();
-            for (ProductEntry entry : productEntryList) {
-                fileModel.addFile(entry);
-            }
-        }
-    }
-
     public int getFileCount() {
         int cnt = fileModel.getRowCount();
         if (cnt == 1) {
@@ -127,11 +118,7 @@ public class FileTable extends JTable {
     private JPopupMenu createTablePopup() {
         final JPopupMenu popup = new JPopupMenu();
         final JMenuItem pastelItem = new JMenuItem("Paste");
-        pastelItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                paste();
-            }
-        });
+        pastelItem.addActionListener(e -> paste());
         popup.add(pastelItem);
 
         return popup;
@@ -140,13 +127,10 @@ public class FileTable extends JTable {
     private void paste() {
         try {
             final File[] fileList = ClipboardUtils.getClipboardFileList();
-            if (fileList != null) {
-                setFiles(fileList);
-            }
+            setFiles(fileList);
         } catch (Exception e) {
-            if (SnapApp.getDefault() != null) {
-                Dialogs.showError("Unable to paste from clipboard: " + e.getMessage());
-            }
+            SnapApp.getDefault();
+            Dialogs.showError("Unable to paste from clipboard: " + e.getMessage());
         }
     }
 

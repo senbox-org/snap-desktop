@@ -42,8 +42,6 @@ public interface FileTableModel extends TableModel {
 
     File getFileAt(final int index);
 
-    File[] getFilesAt(final int[] indices);
-
     int getIndexOf(final File file);
 
     void move(final int oldIndex, final int newIndex);

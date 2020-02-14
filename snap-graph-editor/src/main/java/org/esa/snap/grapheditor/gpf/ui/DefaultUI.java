@@ -25,7 +25,6 @@ import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

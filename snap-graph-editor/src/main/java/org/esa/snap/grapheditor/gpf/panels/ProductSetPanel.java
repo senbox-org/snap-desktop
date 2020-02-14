@@ -16,7 +16,6 @@
 package org.esa.snap.grapheditor.gpf.panels;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.grapheditor.gpf.panels.support.FileTable;
@@ -43,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * ProductSet Panel to handle source and target selection
@@ -52,10 +52,7 @@ import java.util.ArrayList;
 public class ProductSetPanel extends JPanel implements TableModelListener {
 
     private final FileTable productSetTable;
-    private final TargetFolderSelector targetProductSelector;
     private final AppContext appContext;
-    private String targetProductNameSuffix = "";
-    private JPanel buttonPanel = null;
 
     private JButton addButton = null, addAllOpenButton = null, dbQueryButton = null, removeButton = null;
     private JButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
@@ -64,8 +61,8 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private final JLabel countLabel = new JLabel();
 
     private static final ImageIcon addIcon = TangoIcons.actions_list_add(TangoIcons.Res.R22);
-    private static final ImageIcon addOpenedIcon = new ImageIcon(ProductSetPanel.class.getClassLoader().
-            getResource("org/esa/snap/grapheditor/icons/add-opened22.png"));
+    private static final ImageIcon addOpenedIcon = new ImageIcon(Objects.requireNonNull(ProductSetPanel.class.getClassLoader().
+            getResource("org/esa/snap/grapheditor/icons/add-opened22.png")));
     private static final ImageIcon removeIcon = TangoIcons.actions_list_remove(TangoIcons.Res.R22);
     private static final ImageIcon searchIcon = TangoIcons.actions_system_search(TangoIcons.Res.R22);
     private static final ImageIcon moveTopIcon = TangoIcons.actions_go_top(TangoIcons.Res.R22);
@@ -78,14 +75,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     // Number of products to populate the table details with. More than this may slow down the user's experience
     private static final int AUTO_POPULATE_DETAILS_LIMIT = 100;
 
-    public ProductSetPanel(final AppContext theAppContext, final String title) {
-        this(theAppContext, title, new FileTable(), false, false);
-    }
-
-    public ProductSetPanel(final AppContext theAppContext, final String title, final FileTableModel fileModel) {
-        this(theAppContext, title, new FileTable(fileModel), false, false);
-    }
-
     public ProductSetPanel(final AppContext theAppContext, final String title, final FileTable fileTable,
                            final boolean incTrgProduct, final boolean incButtonPanel) {
         super(new BorderLayout());
@@ -95,11 +84,12 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
         final JPanel productSetContent = createComponent(productSetTable);
         if (incButtonPanel) {
-            buttonPanel = createButtonPanel(productSetTable);
+            JPanel buttonPanel = createButtonPanel(productSetTable);
             productSetContent.add(buttonPanel, BorderLayout.EAST);
         }
         this.add(productSetContent, BorderLayout.CENTER);
 
+        TargetFolderSelector targetProductSelector;
         if (incTrgProduct) {
             targetProductSelector = new TargetFolderSelector();
             final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
@@ -109,8 +99,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             targetProductSelector.getOpenInAppCheckBox().setVisible(false);
 
             this.add(targetProductSelector.createPanel(), BorderLayout.SOUTH);
-        } else {
-            targetProductSelector = null;
         }
         fileTable.getModel().addTableModelListener(this);
 
@@ -120,10 +108,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     protected void setBorderTitle(final String title) {
         if (title != null)
             setBorder(BorderFactory.createTitledBorder(title));
-    }
-
-    protected JPanel getButtonPanel() {
-        return buttonPanel;
     }
 
     private static JPanel createComponent(final FileTable table) {
@@ -178,7 +162,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
         addButton = DialogUtils.createButton("addButton", "Add", addIcon, panel, DialogUtils.ButtonStyle.Icon);
         addButton.addActionListener(e -> {
-            final File[] files = getFilePath(addButton, "Add Product");
+            final File[] files = getFilePath(addButton);
             if (files != null) {
                 addProducts(tableModel, files);
             }
@@ -303,14 +287,14 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         updateComponents();
     }
 
-    private static File[] getFilePath(Component component, String title) {
+    private static File[] getFilePath(Component component) {
 
         File[] files = null;
         final File openDir = new File(SnapApp.getDefault().getPreferences().
                 get(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, "."));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
-        chooser.setDialogTitle(title);
+        chooser.setDialogTitle("Add Product");
         if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
             files = chooser.getSelectedFiles();
 
@@ -318,79 +302,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                     put(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, chooser.getCurrentDirectory().getAbsolutePath());
         }
         return files;
-    }
-
-    public void setTargetProductName(final String name) {
-        if (targetProductSelector != null) {
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            targetProductSelectorModel.setProductName(name + getTargetProductNameSuffix());
-        }
-    }
-
-    public void onApply() {
-        if (targetProductSelector != null) {
-            final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
-            SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
-        }
-    }
-
-    String getTargetProductNameSuffix() {
-        return targetProductNameSuffix;
-    }
-
-    public void setTargetProductNameSuffix(final String suffix) {
-        targetProductNameSuffix = suffix;
-    }
-
-    public File getTargetFolder() {
-        if (targetProductSelector != null) {
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            return targetProductSelectorModel.getProductDir();
-        }
-        return null;
-    }
-
-    public String getTargetFormat() {
-        if (targetProductSelector != null) {
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            return targetProductSelectorModel.getFormatName();
-        }
-        return null;
-    }
-
-    public void setTargetFolder(final File path) {
-        if (targetProductSelector != null) {
-            final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
-            targetProductSelectorModel.setProductDir(path);
-        }
-    }
-
-    public File[] getFileList() {
-        return productSetTable.getFileList();
-    }
-
-    public File[] getSelectedFiles() {
-        return productSetTable.getModel().getFilesAt(productSetTable.getSelectedRows());
-    }
-
-    public Object getValueAt(final int r, final int c) {
-        return productSetTable.getModel().getValueAt(r, c);
-    }
-
-    public void setProductFileList(final File[] productFileList) {
-        productSetTable.setFiles(productFileList);
-    }
-
-    public void setProductEntryList(final ProductEntry[] productEntryList) {
-        productSetTable.setProductEntries(productEntryList);
-    }
-
-    boolean isSkippingExistingTargetFiles() {
-        return targetProductSelector.isSkippingExistingTargetFiles();
-    }
-
-    boolean isReplacingWritersWithUniqueTargetProduct() {
-        return targetProductSelector.isReplacingWritersWithUniqueTargetProduct();
     }
 
     private enum MOVE { UP, DOWN, TOP, BOTTOM }

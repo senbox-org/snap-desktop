@@ -7,7 +7,6 @@ import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.common.BandMathsOp;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
@@ -20,7 +19,6 @@ import org.esa.snap.ui.product.ProductExpressionPane;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.Vector;
@@ -85,7 +83,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
             targetBand.setDescription("");
             //targetBand.setUnit(dialog.getNewBandsUnit());
 
-            productsList = new ProductNodeList<Product>();
+            productsList = new ProductNodeList<>();
             for (Product prod : sourceProducts) {
                 productsList.add(prod);
             }
@@ -157,7 +155,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
 //        paramExpression.getProperties().setEditorClass(ArithmetikExpressionEditor.class);
 //        paramExpression.getProperties().setValidatorClass(BandArithmeticExprValidator.class);
 
-        setArithmetikValues();
+        setArithmeticValues();
     }
 
     private JComponent createUI() {
@@ -206,19 +204,14 @@ public class BandMathsOpUI extends BaseOperatorUI {
         return gridPanel;
     }
 
-    private void setArithmetikValues() {
+    private void setArithmeticValues() {
         final ParamProperties props = paramExpression.getProperties();
         props.setPropertyValue(ParamProperties.COMP_PRODUCTS_FOR_BAND_ARITHMETHIK_KEY, getCompatibleProducts());
         props.setPropertyValue(ParamProperties.SEL_PRODUCT_FOR_BAND_ARITHMETHIK_KEY, targetProduct);
     }
 
      private ParamChangeListener createParamChangeListener() {
-        return new ParamChangeListener() {
-
-            public void parameterValueChanged(ParamChangeEvent event) {
-                updateUIState(event.getParameter().getName());
-            }
-        };
+        return event -> updateUIState(event.getParameter().getName());
     }
 
     private Product[] getCompatibleProducts() {
@@ -242,26 +235,22 @@ public class BandMathsOpUI extends BaseOperatorUI {
                     }
                 }
             }
-        return compatibleProducts.toArray(new Product[compatibleProducts.size()]);
+        return compatibleProducts.toArray(new Product[0]);
     }
 
     private ActionListener createEditExpressionButtonListener() {
-        return new ActionListener() {
+        return e -> {
+            ProductExpressionPane pep = ProductExpressionPane.createGeneralExpressionPane(getCompatibleProducts(),
+                    targetProduct, appContext.getPreferences());
+            pep.setCode(paramExpression.getValueAsText());
+            int status = pep.showModalDialog(SwingUtilities.getWindowAncestor(panel), "Arithmetic Expression Editor");
+            if (status == ModalDialog.ID_OK) {
+                paramExpression.setValue(pep.getCode(), null);
+                Debug.trace("BandArithmetikDialog: expression is: " + pep.getCode());
 
-            public void actionPerformed(ActionEvent e) {
-                ProductExpressionPane pep = ProductExpressionPane.createGeneralExpressionPane(getCompatibleProducts(),
-                        targetProduct, appContext.getPreferences());
-                pep.setCode(paramExpression.getValueAsText());
-                int status = pep.showModalDialog(SwingUtilities.getWindowAncestor(panel), "Arithmetic Expression Editor");
-                if (status == ModalDialog.ID_OK) {
-                    paramExpression.setValue(pep.getCode(), null);
-                    Debug.trace("BandArithmetikDialog: expression is: " + pep.getCode());
-
-                    bandDesc.expression = paramExpression.getValueAsText();
-                }
-                pep.dispose();
-                pep = null;
+                bandDesc.expression = paramExpression.getValueAsText();
             }
+            pep.dispose();
         };
     }
 
@@ -301,7 +290,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
             paramBandUnit.setUIEnabled(b);
             paramNoDataValue.setUIEnabled(b);
             if (b) {
-                setArithmetikValues();
+                setArithmeticValues();
             }
 
             final String selectedBandName = paramBand.getValueAsText();

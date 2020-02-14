@@ -31,9 +31,9 @@ import java.util.List;
 
 public abstract class BaseFileModel extends AbstractTableModel implements FileTableModel {
 
-    protected String titles[] = null;
-    protected Class types[] = null;
-    protected int widths[] = null;
+    protected String[] titles = null;
+    protected Class[] types = null;
+    protected int[] widths = null;
 
     protected final List<File> fileList = new ArrayList<>(10);
     private final List<TableData> dataList = new ArrayList<>(10);
@@ -50,16 +50,15 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
     protected abstract TableData createFileStats(final ProductEntry entry);
 
     public File[] getFileList() {
-        return fileList.toArray(new File[fileList.size()]);
+        return fileList.toArray(new File[0]);
     }
 
     private static ProductEntry getProductEntry(final File file) {
         try {
             return ProductDB.instance().getProductEntry(file);
         } catch (Exception e) {
-            if (SnapApp.getDefault() != null) {
-                Dialogs.showError("Error getting product entry: " + e.getMessage());
-            }
+            SnapApp.getDefault();
+            Dialogs.showError("Error getting product entry: " + e.getMessage());
         }
         return null;
     }
@@ -83,15 +82,6 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         clearBlankFile();
 
         dataList.add(createFileStats(entry));
-        fireTableDataChanged();
-    }
-
-    public void addFile(final File file, final String[] values) {
-        fileList.add(file);
-        clearBlankFile();
-
-        dataList.add(new TableData(values));
-
         fireTableDataChanged();
     }
 
@@ -177,14 +167,6 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         return fileList.get(index);
     }
 
-    public File[] getFilesAt(final int[] indices) {
-        final List<File> files = new ArrayList<>(indices.length);
-        for (int i : indices) {
-            files.add(fileList.get(i));
-        }
-        return files.toArray(new File[files.size()]);
-    }
-
     public void setColumnWidths(final TableColumnModel columnModel) {
         for (int i = 0; i < widths.length; ++i) {
             columnModel.getColumn(i).setMinWidth(widths[i]);
@@ -194,7 +176,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
     }
 
     public class TableData {
-        protected final String data[] = new String[titles.length];
+        protected final String[] data = new String[titles.length];
         protected final File file;
         protected final ProductEntry entry;
 
@@ -208,12 +190,6 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             this.file = null;
             this.entry = entry;
             updateData();
-        }
-
-        TableData(final String[] values) {
-            System.arraycopy(values, 0, data, 0, data.length);
-            this.entry = null;
-            this.file = null;
         }
 
         public void refresh() {
@@ -231,9 +207,9 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             if(file == null)
                 return;
 
-            final SwingWorker worker = new SwingWorker() {
+            final SwingWorker<Boolean, Object> worker = new SwingWorker<Boolean, Object>() {
                 @Override
-                protected Object doInBackground() throws Exception {
+                protected Boolean doInBackground() throws Exception {
                     try {
                         if (!file.getName().isEmpty()) {
                             try {
@@ -249,7 +225,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
                     } finally {
                         fireTableDataChanged();
                     }
-                    return null;
+                    return true;
                 }
             };
             worker.execute();
@@ -257,12 +233,10 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
 
         Product getProductFromProductManager(final File file) {
             final SnapApp app = SnapApp.getDefault();
-            if(app != null) {
-                final Product[] products = app.getProductManager().getProducts();
-                for(Product p : products) {
-                    if(file.equals(p.getFileLocation())) {
-                        return p;
-                    }
+            final Product[] products = app.getProductManager().getProducts();
+            for(Product p : products) {
+                if(file.equals(p.getFileLocation())) {
+                    return p;
                 }
             }
             return null;

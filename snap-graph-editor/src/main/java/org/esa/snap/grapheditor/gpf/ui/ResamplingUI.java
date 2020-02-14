@@ -59,6 +59,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+
 /**
  * User interface for Resampling
  */
@@ -77,7 +79,7 @@ public class ResamplingUI extends BaseOperatorUI {
     private final String FLAGDOWNSAMPLING_METHOD_PARAMETER_NAME = "flagDownsamplingMethod";
     private final String PYRAMID_LEVELS_PARAMETER_NAME = "resampleOnPyramidLevels";
 
-    private ArrayList<String> listBands = new ArrayList();
+    private ArrayList<String> listBands = new ArrayList<>();
     private int lastProductWidth = 0;
     private int lastProductHeight = 0;
     private String referenceBandParam=null;
@@ -88,9 +90,9 @@ public class ResamplingUI extends BaseOperatorUI {
     private ReferenceBandNameBoxPanel referenceBandNameBoxPanel;
     private TargetWidthAndHeightPanel targetWidthAndHeightPanel;
     private TargetResolutionPanel targetResolutionPanel;
-    private JComboBox upsamplingCombo = new JComboBox();
-    private JComboBox downsamplingCombo = new JComboBox();
-    private JComboBox flagDownsamplingCombo = new JComboBox();
+    private JComboBox<String> upsamplingCombo = new JComboBox<>();
+    private JComboBox<String> downsamplingCombo = new JComboBox<>();
+    private JComboBox<String> flagDownsamplingCombo = new JComboBox<>();
     private JCheckBox pyramidLevelCheckBox = new JCheckBox("Resample on pyramid levels (for faster imaging)");
     private BindingContext bindingContext;
 
@@ -249,19 +251,18 @@ public class ResamplingUI extends BaseOperatorUI {
 
     private String generateBandResamplings(Product sourceProduct) {
         updateResamplingPreset();
-        String bandResamplingsString = "";
+        StringBuilder bandResamplingsString = new StringBuilder();
         for(String bandName : sourceProduct.getBandNames()) {
             for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
                 if(bandResamplingPreset.getBandName().equals(bandName)){
-                    if(!bandResamplingsString.isEmpty()) {
-                        bandResamplingsString = bandResamplingsString + ResamplingPreset.STRING_SEPARATOR;
+                    if(bandResamplingsString.length() > 0) {
+                        bandResamplingsString.append(ResamplingPreset.STRING_SEPARATOR);
                     }
-                    bandResamplingsString = bandResamplingsString + bandResamplingPreset.getBandName() + BandResamplingPreset.SEPARATOR
-                            + bandResamplingPreset.getDownsamplingAlias() + BandResamplingPreset.SEPARATOR + bandResamplingPreset.getUpsamplingAlias();
+                    bandResamplingsString.append(bandResamplingPreset.getBandName()).append(BandResamplingPreset.SEPARATOR).append(bandResamplingPreset.getDownsamplingAlias()).append(BandResamplingPreset.SEPARATOR).append(bandResamplingPreset.getUpsamplingAlias());
                 }
             }
         }
-        return bandResamplingsString;
+        return bandResamplingsString.toString();
     }
 
     private void updateResamplingPreset() {
@@ -492,6 +493,7 @@ public class ResamplingUI extends BaseOperatorUI {
             advancedMethodDefinitionPanel.revalidate();
             advancedMethodDefinitionPanel.setVisible(advancedMethodCheckBox.isSelected());
         }
+        assert product != null;
         if(hasChangedProductListBand(product)) {
             updateListBands(product);
             referenceBandNameBoxPanel.reactToSourceProductChange(product);
@@ -502,37 +504,35 @@ public class ResamplingUI extends BaseOperatorUI {
             targetResolutionPanel.reactToSourceProductChange(product);
         }
 
-        if (product != null) {
-            referenceBandButton.setEnabled(product.getBandNames().length > 0);
+        referenceBandButton.setEnabled(product.getBandNames().length > 0);
 
-            final ProductNodeGroup<Band> productBands = product.getBandGroup();
-            final ProductNodeGroup<TiePointGrid> productTiePointGrids = product.getTiePointGridGroup();
-            double xOffset = Double.NaN;
-            double yOffset = Double.NaN;
-            if (productBands.getNodeCount() > 0) {
-                xOffset = productBands.get(0).getImageToModelTransform().getTranslateX();
-                yOffset = productBands.get(0).getImageToModelTransform().getTranslateY();
-            } else if (productTiePointGrids.getNodeCount() > 0) {
-                xOffset = productTiePointGrids.get(0).getImageToModelTransform().getTranslateX();
-                yOffset = productTiePointGrids.get(0).getImageToModelTransform().getTranslateY();
-            }
-            boolean allowToSetWidthAndHeight = true;
-            if (!Double.isNaN(xOffset) && !Double.isNaN(yOffset)) {
-                allowToSetWidthAndHeight = allOffsetsAreEqual(productBands, xOffset, yOffset) &&
-                        allOffsetsAreEqual(productTiePointGrids, xOffset, yOffset);
-            }
-            widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
-            final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
-
-            boolean resolutionEnable = sceneGeoCoding != null && sceneGeoCoding instanceof CrsGeoCoding;
-            resolutionButton.setEnabled(resolutionEnable);
-            if(resolutionButton.isSelected() && !resolutionEnable) {
-                targetResolutionPanel.setEnabled(false);
-                targetWidthAndHeightPanel.setEnabled(true);
-                widthAndHeightButton.setSelected(true);
-            }
-
+        final ProductNodeGroup<Band> productBands = product.getBandGroup();
+        final ProductNodeGroup<TiePointGrid> productTiePointGrids = product.getTiePointGridGroup();
+        double xOffset = Double.NaN;
+        double yOffset = Double.NaN;
+        if (productBands.getNodeCount() > 0) {
+            xOffset = productBands.get(0).getImageToModelTransform().getTranslateX();
+            yOffset = productBands.get(0).getImageToModelTransform().getTranslateY();
+        } else if (productTiePointGrids.getNodeCount() > 0) {
+            xOffset = productTiePointGrids.get(0).getImageToModelTransform().getTranslateX();
+            yOffset = productTiePointGrids.get(0).getImageToModelTransform().getTranslateY();
         }
+        boolean allowToSetWidthAndHeight = true;
+        if (!Double.isNaN(xOffset) && !Double.isNaN(yOffset)) {
+            allowToSetWidthAndHeight = allOffsetsAreEqual(productBands, xOffset, yOffset) &&
+                    allOffsetsAreEqual(productTiePointGrids, xOffset, yOffset);
+        }
+        widthAndHeightButton.setEnabled(allowToSetWidthAndHeight);
+        final GeoCoding sceneGeoCoding = product.getSceneGeoCoding();
+
+        boolean resolutionEnable = sceneGeoCoding instanceof CrsGeoCoding;
+        resolutionButton.setEnabled(resolutionEnable);
+        if(resolutionButton.isSelected() && !resolutionEnable) {
+            targetResolutionPanel.setEnabled(false);
+            targetWidthAndHeightPanel.setEnabled(true);
+            widthAndHeightButton.setSelected(true);
+        }
+
     }
 
     private RasterDataNode getAnyRasterDataNode(Product product) {
@@ -742,9 +742,7 @@ public class ResamplingUI extends BaseOperatorUI {
         ReferenceBandNameBoxPanel() {
             setToolTipText(REFERENCE_BAND_TOOLTIP_TEXT);
             referenceBandNameBox = new JComboBox<>();
-            referenceBandNameBox.addActionListener(e -> {
-                updateReferenceBandTargetWidthAndHeight();
-            });
+            referenceBandNameBox.addActionListener(e -> updateReferenceBandTargetWidthAndHeight());
             final GridLayout referenceBandNameBoxPanelLayout = new GridLayout(3, 1);
             referenceBandNameBoxPanelLayout.setVgap(2);
             setLayout(referenceBandNameBoxPanelLayout);
@@ -849,27 +847,23 @@ public class ResamplingUI extends BaseOperatorUI {
     private JPanel createAdvancedCheckBoxPanel() {
         advancedMethodCheckBox = new JCheckBox("Advanced Method Definition by Band", false);
 
-        advancedMethodCheckBox.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {
-                    advancedMethodDefinitionPanel.setVisible(true);
-                    advancedMethodDefinitionPanel.validate();
-                    loadPresetPanel.setVisible(true);
-                    upsamplingCombo.setEnabled(false);
-                    downsamplingCombo.setEnabled(false);
-                    flagDownsamplingCombo.setEnabled(false);
-                } else {
-                    advancedMethodDefinitionPanel.setVisible(false);
-                    advancedMethodDefinitionPanel.validate();
-                    loadPresetPanel.setVisible(false);
-                    upsamplingCombo.setEnabled(true);
-                    downsamplingCombo.setEnabled(true);
-                    flagDownsamplingCombo.setEnabled(true);
-                }
-
+        advancedMethodCheckBox.addItemListener(e -> {
+            if(e.getStateChange() == ItemEvent.SELECTED) {
+                advancedMethodDefinitionPanel.setVisible(true);
+                advancedMethodDefinitionPanel.validate();
+                loadPresetPanel.setVisible(true);
+                upsamplingCombo.setEnabled(false);
+                downsamplingCombo.setEnabled(false);
+                flagDownsamplingCombo.setEnabled(false);
+            } else {
+                advancedMethodDefinitionPanel.setVisible(false);
+                advancedMethodDefinitionPanel.validate();
+                loadPresetPanel.setVisible(false);
+                upsamplingCombo.setEnabled(true);
+                downsamplingCombo.setEnabled(true);
+                flagDownsamplingCombo.setEnabled(true);
             }
+
         });
 
         final JPanel propertyPanel = new JPanel(new GridLayout(1, 1));
@@ -907,7 +901,7 @@ public class ResamplingUI extends BaseOperatorUI {
                 File selectedFile;
                 while (true) {
                     int i = fileChooser.showDialog(panel, null);
-                    if (i == SnapFileChooser.APPROVE_OPTION) {
+                    if (i == APPROVE_OPTION) {
                         selectedFile = fileChooser.getSelectedFile();
                         try {
                             ResamplingPreset resamplingPreset = ResamplingPreset.loadResamplingPreset(selectedFile);
@@ -921,7 +915,7 @@ public class ResamplingUI extends BaseOperatorUI {
                             }
                             //todo check upsampling and resampling method exist
 
-                            BandResamplingPreset[] bandResamplingPresetsLoaded = resamplingPreset.getBandResamplingPresets().toArray(new BandResamplingPreset[resamplingPreset.getBandResamplingPresets().size()]);
+                            BandResamplingPreset[] bandResamplingPresetsLoaded = resamplingPreset.getBandResamplingPresets().toArray(new BandResamplingPreset[0]);
                             for(BandResamplingPreset loaded : bandResamplingPresetsLoaded) {
                                 for(BandResamplingPreset bandResamplingPreset : bandResamplingPresets) {
                                     if(bandResamplingPreset.getBandName().equals(loaded.getBandName())) {
@@ -944,7 +938,6 @@ public class ResamplingUI extends BaseOperatorUI {
                         break;
                     } else {
                         // Canceled
-                        selectedFile = null;
                         break;
                     }
                 }
@@ -957,51 +950,48 @@ public class ResamplingUI extends BaseOperatorUI {
         //Add Save preset button
         final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
         JButton saveButton = new JButton("Save Preset", saveIcon);
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        saveButton.addActionListener(e -> {
 
-                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
-                fileChooser.setAcceptAllFileFilterUsed(true);
-                fileChooser.setDialogTitle("Select resampling preset");
-                SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
+            SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
+            fileChooser.setAcceptAllFileFilterUsed(true);
+            fileChooser.setDialogTitle("Select resampling preset");
+            SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
 
-                fileChooser.addChoosableFileFilter(fileFilter);
+            fileChooser.addChoosableFileFilter(fileFilter);
 
-                fileChooser.setFileFilter(fileFilter);
+            fileChooser.setFileFilter(fileFilter);
 
-                fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
+            fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
 
-                File selectedFile;
-                while (true) {
-                    int i = fileChooser.showDialog(panel, null);
-                    if (i == SnapFileChooser.APPROVE_OPTION) {
-                        selectedFile = fileChooser.getSelectedFile();
-                        if (!selectedFile.exists()) {
-                            break;
-                        }
-                        i = JOptionPane.showConfirmDialog(panel,
-                                                          "The file\n" + selectedFile + "\nalready exists.\nOverwrite?",
-                                                          "File exists", JOptionPane.YES_NO_CANCEL_OPTION);
-                        if (i == JOptionPane.CANCEL_OPTION) {
-                            // Canceled
-                            selectedFile = null;
-                            break;
-                        } else if (i == JOptionPane.YES_OPTION) {
-                            // Overwrite existing file
-                            break;
-                        }
-                    } else {
+            File selectedFile;
+            while (true) {
+                int i = fileChooser.showDialog(panel, null);
+                if (i == APPROVE_OPTION) {
+                    selectedFile = fileChooser.getSelectedFile();
+                    if (!selectedFile.exists()) {
+                        break;
+                    }
+                    i = JOptionPane.showConfirmDialog(panel,
+                                                      "The file\n" + selectedFile + "\nalready exists.\nOverwrite?",
+                                                      "File exists", JOptionPane.YES_NO_CANCEL_OPTION);
+                    if (i == JOptionPane.CANCEL_OPTION) {
                         // Canceled
                         selectedFile = null;
                         break;
+                    } else if (i == JOptionPane.YES_OPTION) {
+                        // Overwrite existing file
+                        break;
                     }
+                } else {
+                    // Canceled
+                    selectedFile = null;
+                    break;
                 }
-                if(selectedFile != null) {
-                    updateResamplingPreset();
-                    ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getName(),bandResamplingPresets);
-                    auxPreset.saveToFile(selectedFile, sourceProducts[0]);
-                }
+            }
+            if(selectedFile != null) {
+                updateResamplingPreset();
+                ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getName(),bandResamplingPresets);
+                auxPreset.saveToFile(selectedFile, sourceProducts[0]);
             }
         });
         panel.add(saveButton);

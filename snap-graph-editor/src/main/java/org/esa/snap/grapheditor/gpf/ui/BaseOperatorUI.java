@@ -40,7 +40,6 @@ import javax.swing.JComponent;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -180,7 +179,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 }
             }
         }
-        return bandNames.toArray(new String[bandNames.size()]);
+        return bandNames.toArray(new String[0]);
     }
 
     protected String[] getGeometries() {
@@ -196,7 +195,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 }
             }
         }
-        return geometryNames.toArray(new String[geometryNames.size()]);
+        return geometryNames.toArray(new String[0]);
     }
 
     private void setParamsToConfiguration(final XppDom config) {

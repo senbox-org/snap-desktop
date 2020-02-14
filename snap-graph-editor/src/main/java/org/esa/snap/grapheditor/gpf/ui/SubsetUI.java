@@ -39,9 +39,9 @@ import java.util.Map;
  */
 public class SubsetUI extends BaseOperatorUI {
 
-    private final JList bandList = new JList();
+    private final JList<String> bandList = new JList<>();
 
-    private final JComboBox referenceCombo = new JComboBox();
+    private final JComboBox<String> referenceCombo = new JComboBox<>();
     private final JTextField regionX = new JTextField("");
     private final JTextField regionY = new JTextField("");
     private final JTextField width = new JTextField("");
@@ -68,18 +68,8 @@ public class SubsetUI extends BaseOperatorUI {
 
         initParameters();
 
-        geoText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateGeoRegion();
-            }
-        });
-        geoUpdateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateGeoRegion();
-            }
-        });
+        geoText.addActionListener(e -> updateGeoRegion());
+        geoUpdateButton.addActionListener(e -> updateGeoRegion());
 
         return new JScrollPane(panel);
     }
@@ -92,7 +82,7 @@ public class SubsetUI extends BaseOperatorUI {
         String _oldSelected = (String) referenceCombo.getSelectedItem();
         referenceCombo.removeAllItems();
         for (int i = 0 ; i < bandList.getModel().getSize() ; i++) {
-            String string = (String) bandList.getModel().getElementAt(i);
+            String string = bandList.getModel().getElementAt(i);
             referenceCombo.addItem(string);
             if (string.equals(_oldSelected)) {
                 referenceCombo.setSelectedItem(string);
@@ -137,7 +127,7 @@ public class SubsetUI extends BaseOperatorUI {
         geoRegion = (Geometry) paramMap.get("geoRegion");
         if (geoRegion != null) {
 
-            final Coordinate coord[] = geoRegion.getCoordinates();
+            final Coordinate[] coord = geoRegion.getCoordinates();
             worldMapUI.setSelectionStart((float) coord[0].y, (float) coord[0].x);
             worldMapUI.setSelectionEnd((float) coord[2].y, (float) coord[2].x);
 
@@ -164,7 +154,7 @@ public class SubsetUI extends BaseOperatorUI {
         if(sourceProducts != null ) {
             for (Product prod : sourceProducts) {
                 if (prod.isMultiSize()) {
-                    paramMap.put("referenceBand", (String) referenceCombo.getSelectedItem());
+                    paramMap.put("referenceBand", referenceCombo.getSelectedItem());
                     break;
                 }
             }
@@ -278,7 +268,7 @@ public class SubsetUI extends BaseOperatorUI {
         return contentPane;
     }
 
-    public static JLabel addComponent(JPanel contentPane, GridBagConstraints gbc, String text, JComponent component, int pos) {
+    public static void addComponent(JPanel contentPane, GridBagConstraints gbc, String text, JComponent component, int pos) {
         gbc.gridx = pos;
         gbc.weightx = 0.5;
         final JLabel label = new JLabel(text);
@@ -288,7 +278,6 @@ public class SubsetUI extends BaseOperatorUI {
         contentPane.add(component, gbc);
         gbc.gridx = pos;
         gbc.weightx = 1.0;
-        return label;
     }
 
     private class RadioListener implements ActionListener {
@@ -333,7 +322,7 @@ public class SubsetUI extends BaseOperatorUI {
         try {
             geoRegion = new WKTReader().read(geoText.getText());
 
-            final Coordinate coord[] = geoRegion.getCoordinates();
+            final Coordinate[] coord = geoRegion.getCoordinates();
             worldMapUI.setSelectionStart((float) coord[0].y, (float) coord[0].x);
             worldMapUI.setSelectionEnd((float) coord[2].y, (float) coord[2].x);
             worldMapUI.getWorlMapPane().revalidate();

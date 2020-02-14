@@ -47,10 +47,6 @@ public class OperatorUIRegistry {
         return instance;
     }
 
-    public OperatorUIDescriptor[] getOperatorUIDescriptors() {
-        return operatorUIDescriptors.values().toArray(new OperatorUIDescriptor[operatorUIDescriptors.values().size()]);
-    }
-
     public OperatorUIDescriptor getOperatorUIDescriptor(final String operatorName) {
         return operatorUIDescriptors.get(operatorName);
     }
@@ -93,7 +89,7 @@ public class OperatorUIRegistry {
 
         final Class<? extends OperatorUI> operatorUIClass = getClassAttribute(fileObject, "operatorUIClass", OperatorUI.class, false);
 
-        Boolean disableFromGraphBuilder = false;
+        boolean disableFromGraphBuilder = false;
         try {
             final String disableFromGraphBuilderStr = (String) fileObject.getAttribute("disableFromGraphBuilder");
             if (disableFromGraphBuilderStr != null) {
@@ -105,23 +101,6 @@ public class OperatorUIRegistry {
         }
 
         return new DefaultOperatorUIDescriptor(id, operatorName, operatorUIClass, disableFromGraphBuilder);
-    }
-
-    private static OperatorUI convertToGraphBuilder(OperatorUI original) {
-        // TODO implement method to convert normal ui to graph builder one.
-        return original;
-    }
-    
-    /**
-     * Create Graph Builder Operator UI, for each parameter user could be able to specify a variable
-     * name to be used in the final graph.
-     * 
-     * @param operatorName the Operator name
-     * @return the Operator UI
-     */
-    public static OperatorUI CreateGraphBuilderOperatorUI(final String operatorName) {
-        OperatorUI ui = CreateOperatorUI(operatorName);
-        return convertToGraphBuilder(ui);
     }
 
     public static OperatorUI CreateOperatorUI(final String operatorName) {
@@ -138,20 +117,6 @@ public class OperatorUIRegistry {
             }
         }
         return new DefaultUI();
-    }
-
-    public static boolean showInGraphBuilder(final String operatorName) {
-        final OperatorUIRegistry reg = OperatorUIRegistry.getInstance();
-        if (reg != null) {
-            OperatorUIDescriptor desc = reg.getOperatorUIDescriptor(operatorName);
-            if (desc != null) {
-                if(desc.disableFromGraphBuilder()) {
-                    SystemUtils.LOG.warning(operatorName + " disabled from GraphBuilder");
-                }
-                return !desc.disableFromGraphBuilder();
-            }
-        }
-        return true;
     }
 
     public static <T> Class<T> getClassAttribute(FileObject fileObject,

@@ -15,12 +15,8 @@
  */
 package org.esa.snap.grapheditor.gpf.ui;
 
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.engine_utilities.gpf.CommonReaders;
-
 import javax.swing.JList;
 import java.awt.Dimension;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +26,9 @@ import java.util.Map;
  */
 public final class OperatorUIUtils {
 
-    public final static String SOURCE_BAND_NAMES = "sourceBandNames";
 
-
-    public static void initParamList(final JList paramList, final String[] availNames) {
-        initParamList(paramList, availNames, null);
-    }
-
-    public static void initParamList(final JList paramList, final String[] availNames, final Object[] defaultSelection) {
-        final List selectedValues = paramList.getSelectedValuesList();
+    public static void initParamList(final JList<String> paramList, final String[] availNames, final Object[] defaultSelection) {
+        final List<String> selectedValues = paramList.getSelectedValuesList();
 
         paramList.removeAll();
         paramList.setListData(availNames);
@@ -52,7 +42,7 @@ public final class OperatorUIUtils {
             final String selValue = (String) selectedValue;
 
             for (int j = 0; j < size; ++j) {
-                final String val = (String) paramList.getModel().getElementAt(j);
+                final String val = paramList.getModel().getElementAt(j);
                 if (val.equals(selValue)) {
                     indices.add(j);
                     break;
@@ -73,7 +63,7 @@ public final class OperatorUIUtils {
         setSelectedListIndices(paramList, indices);
     }
 
-    public static void setSelectedListIndices(final JList list, final List<Integer> indices) {
+    public static void setSelectedListIndices(final JList<String> list, final List<Integer> indices) {
         final int[] selIndex = new int[indices.size()];
         for (int i = 0; i < indices.size(); ++i) {
             selIndex[i] = indices.get(i);
@@ -81,12 +71,12 @@ public final class OperatorUIUtils {
         list.setSelectedIndices(selIndex);
     }
 
-    public static void updateParamList(final JList paramList, final Map<String, Object> paramMap, final String paramName) {
-        final List selectedValues = paramList.getSelectedValuesList();
-        final String names[] = new String[selectedValues.size()];
+    public static void updateParamList(final JList<String> paramList, final Map<String, Object> paramMap, final String paramName) {
+        final List<String> selectedValues = paramList.getSelectedValuesList();
+        final String[] names = new String[selectedValues.size()];
         int i = 0;
-        for (Object selectedValue : selectedValues) {
-            names[i++] = (String) selectedValue;
+        for (String selectedValue : selectedValues) {
+            names[i++] = selectedValue;
         }
         if(names.length == 0 && paramMap.get(paramName) != null)    // don't overwrite with empty value
             return;
@@ -94,14 +84,4 @@ public final class OperatorUIUtils {
         paramMap.put(paramName, names);
     }
 
-    public static double getNoDataValue(final File extFile) {
-        try {
-            final Product product = CommonReaders.readProduct(extFile);
-            if (product != null)
-                return product.getBandAt(0).getNoDataValue();
-        } catch (Exception e) {
-            //
-        }
-        return 0;
-    }
 }

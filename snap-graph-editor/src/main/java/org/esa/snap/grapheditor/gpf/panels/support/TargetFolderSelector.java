@@ -33,12 +33,9 @@ public class TargetFolderSelector extends TargetProductSelector {
 
     public JPanel createPanel() {
 
-        replaceWritersWithUniqueTargetProductCBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getFormatNameComboBox().setEnabled(replaceWritersWithUniqueTargetProductCBox.isSelected());
-                getProductDirTextField().setEnabled(replaceWritersWithUniqueTargetProductCBox.isSelected());
-            }
+        replaceWritersWithUniqueTargetProductCBox.addActionListener(e -> {
+            getFormatNameComboBox().setEnabled(replaceWritersWithUniqueTargetProductCBox.isSelected());
+            getProductDirTextField().setEnabled(replaceWritersWithUniqueTargetProductCBox.isSelected());
         });
 
         final JPanel subPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
@@ -76,11 +73,4 @@ public class TargetFolderSelector extends TargetProductSelector {
         return panel;
     }
 
-    public boolean isSkippingExistingTargetFiles() {
-        return skipExistingCBox.isSelected();
-    }
-
-    public boolean isReplacingWritersWithUniqueTargetProduct() {
-        return replaceWritersWithUniqueTargetProductCBox.isSelected();
-    }
 }

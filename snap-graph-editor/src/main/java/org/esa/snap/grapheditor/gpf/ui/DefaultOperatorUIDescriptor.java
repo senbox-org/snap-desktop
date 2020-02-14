@@ -52,13 +52,13 @@ public class DefaultOperatorUIDescriptor implements OperatorUIDescriptor {
         if(operatorUIClass == null) {
             return new DefaultUI();
         }
-        Object object;
+        OperatorUI object;
         try {
             object = operatorUIClass.newInstance();
         } catch (Throwable e) {
             throw new IllegalStateException("operatorUIClass.newInstance()", e);
         }
-        Assert.state(object instanceof OperatorUI, "object instanceof operatorUI");
-        return (OperatorUI) object;
+        Assert.state(object != null, "object instanceof operatorUI");
+        return object;
     }
 }

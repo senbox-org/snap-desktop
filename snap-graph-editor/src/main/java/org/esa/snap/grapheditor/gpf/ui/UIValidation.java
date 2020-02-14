@@ -23,8 +23,8 @@ package org.esa.snap.grapheditor.gpf.ui;
  */
 public class UIValidation {
 
-    private State state = State.OK;
-    private String msg = "";
+    private State state;
+    private String msg;
 
     public enum State {OK, ERROR, WARNING}
 

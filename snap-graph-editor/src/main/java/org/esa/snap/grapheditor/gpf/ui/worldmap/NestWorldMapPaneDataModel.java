@@ -97,7 +97,7 @@ public class NestWorldMapPaneDataModel {
     }
 
     public Product[] getProducts() {
-        return productList.toArray(new Product[productList.size()]);
+        return productList.toArray(new Product[0]);
     }
 
     public void setProducts(Product[] products) {
@@ -123,7 +123,7 @@ public class NestWorldMapPaneDataModel {
             for (GeoPos[] geoBoundary : geoBoundarys) {
                 boundaryList.add(new Boundary(geoBoundary));
             }
-            additionalGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
+            additionalGeoBoundaryList = boundaryList.toArray(new Boundary[0]);
         }
         firePropertyChange(PROPERTY_ADDITIONAL_GEO_BOUNDARIES, oldGeoBoundarys, additionalGeoBoundaryList);
     }
@@ -142,7 +142,7 @@ public class NestWorldMapPaneDataModel {
             for (GeoPos[] geoBoundary : geoBoundarys) {
                 boundaryList.add(new Boundary(geoBoundary));
             }
-            selectedGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
+            selectedGeoBoundaryList = boundaryList.toArray(new Boundary[0]);
         }
         firePropertyChange(PROPERTY_SELECTED_GEO_BOUNDARIES, oldGeoBoundarys, selectedGeoBoundaryList);
     }
@@ -152,30 +152,6 @@ public class NestWorldMapPaneDataModel {
             changeSupport = new PropertyChangeSupport(this);
         }
         changeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removeModelChangeListener(PropertyChangeListener listener) {
-        if (changeSupport != null) {
-            changeSupport.removePropertyChangeListener(listener);
-        }
-    }
-
-    public void addProduct(Product product) {
-        if (!productList.contains(product)) {
-            final Product[] oldProducts = getProducts();
-            if (productList.add(product)) {
-                firePropertyChange(PROPERTY_PRODUCTS, oldProducts, getProducts());
-            }
-        }
-    }
-
-    public void removeProduct(Product product) {
-        if (productList.contains(product)) {
-            final Product[] oldProducts = getProducts();
-            if (productList.remove(product)) {
-                firePropertyChange(PROPERTY_PRODUCTS, oldProducts, getProducts());
-            }
-        }
     }
 
     public boolean isAutoZommEnabled() {

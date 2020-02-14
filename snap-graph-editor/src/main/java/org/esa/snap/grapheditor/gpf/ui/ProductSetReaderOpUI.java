@@ -71,7 +71,4 @@ public class ProductSetReaderOpUI extends BaseOperatorUI {
         paramMap.put("fileList", fList);
     }
 
-    public void setProductFileList(final File[] productFileList) {
-        productSetTable.setFiles(productFileList);
-    }
 }
