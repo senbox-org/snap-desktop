@@ -548,7 +548,7 @@ public class NodeGui implements NodeListener, NodeInterface {
     public void deselect() {
         if ((status & STATUS_MASK_SELECTED) > 0)
             status -= STATUS_MASK_SELECTED;
-        if (recomputeOutputNeeded || check_changes()) {
+        if (recomputeOutputNeeded || output == null || check_changes()) {
             for (NodeListener l : nodeListeners) {
                 l.validateNode(this);
             }
