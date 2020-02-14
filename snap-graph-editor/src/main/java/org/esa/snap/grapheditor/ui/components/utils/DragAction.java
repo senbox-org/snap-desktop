@@ -1,7 +1,6 @@
 package org.esa.snap.grapheditor.ui.components.utils;
 
-import org.esa.snap.grapheditor.ui.components.graph.Connection;
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 
 import java.awt.*;
 
@@ -11,6 +10,7 @@ import java.awt.*;
  * @author Martino Ferrari (CS Group)
  */
 public class DragAction {
+
     /**
      * Drag Action type enum to identify the two major types of interactions.
      *  - DRAG: drag a node
@@ -22,10 +22,10 @@ public class DragAction {
     }
 
     private final Type type;
-    private NodeGui source;
-    private Point origin;
+    private final NodeInterface source;
+    private final Point origin;
     private Point current;
-    private Connection connection = null;
+    private final int connectorIndex;
 
     /**
      * Constructor for the Node drag action case.
@@ -33,22 +33,23 @@ public class DragAction {
      * @param source node to be dragged
      * @param origin mouse click point
      */
-    public DragAction(NodeGui source, Point origin) {
+    public DragAction(NodeInterface source, Point origin) {
         this.type = Type.DRAG;
         this.source = source;
         this.origin = GraphicalUtils.diff(origin, source.getPostion());
         this.current = origin;
+        this.connectorIndex = -202;
     }
 
     /**
      * Constructor for the Connection drag action case.
-     * @param c connection line to be dragged
      */
-    public DragAction(Connection c) {
-        this.source = c.getSource() != null ? c.getSource() : c.getTarget();
-        this.connection = c;
-        this.origin = c.getEndPoint();
+    public DragAction(NodeInterface source, int conectorIndex, Point p) {
+        this.source = source;
+        this.origin = source.getConnectorPosition(conectorIndex);
+        this.current = p;
         this.type = Type.CONNECT;
+        this.connectorIndex = conectorIndex;
     }
 
     /**
@@ -63,28 +64,17 @@ public class DragAction {
      * Get the dragged node
      * @return the dragged node
      */
-    public NodeGui getNode() {
+    public NodeInterface getNode() {
         return source;
     }
 
-    /**
-     * Get the dragged connection
-     * @return the dragged connection
-     */
-    public Connection getConnection() {
-        return connection;
-    }
 
     /**
      * Move the dragged object to a new position
      * @param p new drag position
      */
     public void move(Point p){
-        if (type == Type.DRAG) {
-            current = p;
-        } else {
-            this.connection.setEndPoint(p);
-        }
+        current = p;
     }
 
     /**
@@ -92,15 +82,15 @@ public class DragAction {
      * @param g renderer to be used
      */
     public void draw(Graphics2D g) {
-        if (this.connection != null) {
-            this.connection.draw(g);
+        if (this.type == Type.CONNECT) {
+            GraphicalUtils.drawConnection(g, origin, current, GraphicalUtils.connectionActiveColor);
         } else {
             int dx = current.x - (source.getX() + origin.x);
             int dy = current.y - (source.getY() + origin.y);
             g.translate(dx, dy);
             AlphaComposite c = AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f);
             g.setComposite(c);
-            this.source.paintNode(g);
+            this.source.drawNode(g);
         }
 
     }
@@ -129,6 +119,20 @@ public class DragAction {
 
             return new Rectangle(x, y, r.width, r.height);
         }
-        return this.connection.getBoundingBox();
+        int x = Math.min(current.x, origin.x) - 5;
+        int y = Math.min(current.y, origin.y) - 5;
+        int w = Math.abs(current.x - origin.x) + 10;
+        int h = Math.abs(current.y - origin.y) + 10;
+        return new Rectangle(x, y, w, h);
+    }
+    
+    public void connect(NodeInterface other) {
+        if (type == Type.CONNECT) {
+            if (this.connectorIndex == Constants.CONNECTION_OUTPUT) {
+                other.addConnection(this.source, other.getActiveConnector());
+            } else if (this.connectorIndex >= 0) {
+                this.source.addConnection(other, this.connectorIndex);
+            }
+        }
     }
 }

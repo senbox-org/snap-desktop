@@ -14,18 +14,13 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.*;
 
 import javafx.util.Pair;
-import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.interfaces.AddNodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
-import org.esa.snap.grapheditor.ui.components.utils.DragAction;
+import org.esa.snap.grapheditor.ui.components.utils.*;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-import org.esa.snap.grapheditor.ui.components.utils.GraphKeyEventDispatcher;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
-import org.esa.snap.grapheditor.ui.components.utils.GraphicalUtils;
-import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
-import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 
 /**
  * The GraphPanel is the swing component that visualize the whole graph and enable interaction within it.
@@ -123,7 +118,7 @@ public class GraphPanel extends JPanel
     private void drawNodes(Graphics2D g) {
         Graphics2D gNode = (Graphics2D) g.create();
         for (NodeGui node : graphManager.getNodes()) {
-            node.paintNode(gNode);
+            node.drawNode(gNode);
         }
         gNode.dispose();
     }
@@ -280,15 +275,13 @@ public class GraphPanel extends JPanel
             for (int i = graphManager.getNodes().size() - 1; i >= 0; i--) {
                 NodeGui node = graphManager.getNodes().get(i);
                 if (node.contains(p)) {
-                    Pair<NodeGui, Integer> action =  node.drag(e.getPoint());
+                    Pair<NodeInterface, Integer> action =  node.drag(e.getPoint());
                     int connector = action.getValue();
-                    if (connector == NodeGui.CONNECTION_NONE) {
+                    if (connector == Constants.CONNECTION_NONE) {
                         dragAction = new DragAction(action.getKey(), p);
                     }
-                    else if (connector == NodeGui.CONNECTION_OUTPUT) {
-                        dragAction = new DragAction(new Connection(action.getKey(), p));
-                    } else {
-                        dragAction = new DragAction(new Connection(action.getKey(), connector, p));
+                    else {
+                        dragAction = new DragAction(action.getKey(), connector, p);
                     }
 
                     return;
@@ -309,7 +302,7 @@ public class GraphPanel extends JPanel
                 for (NodeGui node: graphManager.getNodes()) {
                     if (node != dragAction.getNode() && node.hasTooltip()) {
                         // means is over a connection point
-                        dragAction.getConnection().connect(node);
+                        dragAction.connect(node);
                     }
                 }
             }
@@ -353,7 +346,7 @@ public class GraphPanel extends JPanel
         }
     }
 
-    private void moveNode(NodeGui node, int x, int y) {
+    private void moveNode(NodeInterface node, int x, int y) {
         node.setPosition(x, y);
         for (GraphListener listener : graphListeners) {
             listener.updated(node);
@@ -377,12 +370,12 @@ public class GraphPanel extends JPanel
 
 
     @Override
-    public void sourceDeleted(NodeInterface source) {
+    public void sourceDeleted(Object source) {
         // nothing to do, already notified.
     }
 
     @Override
-    public void connectionAdded(NodeInterface source) {
+    public void connectionAdded(Object source) {
         NodeGui srcNode = (NodeGui) source;
         for (GraphListener l: graphListeners) {
             l.updated(srcNode);
@@ -390,7 +383,7 @@ public class GraphPanel extends JPanel
     }
 
     @Override
-    public void validateNode(NodeInterface node) {
+    public void validateNode(Object node) {
         // nothing to do..
     }
 

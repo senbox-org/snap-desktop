@@ -14,6 +14,15 @@ public class GraphicalUtils {
     private static final Color gridMajorColor = new Color(0, 0, 0, 30);
     private static final Color gridMinorColor = new Color(0, 0, 0, 15);
 
+    private static final BasicStroke smallStroke = new BasicStroke(1);
+    private static final BasicStroke bigStroke = new BasicStroke(3);
+
+    private static final int handlerSize = 4;
+    private static final int handlerHalfSize = handlerSize / 2;
+
+    public static final Color connectionConnectedColor = new Color(66, 66, 66, 255);
+    public static final Color connectionActiveColor = Color.gray;
+
     /**
      * Create a new grid pattern of the given size.
      * @param width width of the grid pattern
@@ -100,5 +109,33 @@ public class GraphicalUtils {
      */
     public static Point diff(Point a, Point b) {
         return new Point(a.x - b.x, a.y - b.y);
+    }
+
+    /**
+     *
+     *
+     *
+     * @param g2
+     * @param a
+     * @param b
+     * @param c
+     */
+    public static void drawConnection(Graphics2D g2, Point a, Point b, Color c){
+        Graphics2D g = (Graphics2D) g2.create();
+        g.setColor(c);
+
+        Point end=b;
+        Point start=a;
+
+        g.setStroke(bigStroke);
+        g.drawLine(start.x, start.y, end.x, end.y);
+
+        g.setStroke(smallStroke);
+        g.fillRect(start.x - handlerHalfSize, start.y - handlerHalfSize, handlerSize, handlerSize);
+        g.drawRect(start.x - handlerHalfSize, start.y - handlerHalfSize, handlerSize, handlerSize);
+        g.fillOval(end.x - handlerHalfSize, end.y - handlerHalfSize, handlerSize, handlerSize);
+        g.drawOval(end.x - handlerHalfSize, end.y - handlerHalfSize, handlerSize, handlerSize);
+
+        g.dispose();
     }
 }

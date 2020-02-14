@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 
 import java.awt.*;
 
@@ -17,7 +18,7 @@ public class OptionPanel extends JPanel implements GraphListener {
     private static final long serialVersionUID = -6760564459151183901L;
     private final JSplitPane parent;
 
-    private NodeGui selectedNode = null;
+    private NodeInterface selectedNode = null;
 
     private JComponent currentOptionWidget = null;
     private final SpringLayout layout;
@@ -49,7 +50,7 @@ public class OptionPanel extends JPanel implements GraphListener {
 
 
     @Override
-    public void selected(NodeGui source) {
+    public void selected(NodeInterface source) {
         this.setVisible(true);
         this.parent.setDividerLocation(parent.getWidth() - width);
         if (selectedNode != null) {
@@ -72,7 +73,7 @@ public class OptionPanel extends JPanel implements GraphListener {
     }
 
     @Override
-    public void deselected(NodeGui source) {
+    public void deselected(NodeInterface source) {
         selectedNode = null;    
         if (currentOptionWidget != null) {
             this.layout.removeLayoutComponent(currentOptionWidget);
@@ -87,17 +88,17 @@ public class OptionPanel extends JPanel implements GraphListener {
     }
 
     @Override
-    public void updated(NodeGui source) {
+    public void updated(NodeInterface source) {
         // NOTHING TO DO, it can be used to create history of the graph.
     }
 
     @Override
-    public void created(NodeGui source) {
+    public void created(NodeInterface source) {
         // NOTHGING TO DO.
     }
 
     @Override
-    public void deleted(NodeGui source) {
+    public void deleted(NodeInterface source) {
         deselected(source);
     }
 }

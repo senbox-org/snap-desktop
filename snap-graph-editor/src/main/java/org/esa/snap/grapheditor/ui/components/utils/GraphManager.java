@@ -40,9 +40,7 @@ import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUIRegistry;
-import org.esa.snap.grapheditor.ui.components.graph.Connection;
 import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.interfaces.RefreshListener;
 import org.esa.snap.ui.AppContext;
@@ -442,9 +440,9 @@ public class GraphManager implements NodeListener {
      * @param source source of the event
      */
     @Override
-    public void sourceDeleted(NodeInterface source) {
+    public void sourceDeleted(Object source) {
         NodeGui srcNode = (NodeGui) source;
-        NotificationManager.getInstance().info(source.getName(), "Deleted");
+        NotificationManager.getInstance().info(srcNode.getName(), "Deleted");
         this.nodes.remove(srcNode);
         validate(srcNode, false);
     }
@@ -454,15 +452,15 @@ public class GraphManager implements NodeListener {
      * @param source source of the event
      */
     @Override
-    public void connectionAdded(NodeInterface source) {
+    public void connectionAdded(Object source) {
         NodeGui srcNode = (NodeGui) source;
-        NotificationManager.getInstance().info(source.getName(), "Connected");
+        NotificationManager.getInstance().info(srcNode.getName(), "Connected");
         // Try to revalidate graph
         validate(srcNode, true);
     }
 
     @Override
-    public void validateNode(NodeInterface node) {
+    public void validateNode(Object node) {
         validate((NodeGui)node);
     }
 
@@ -704,10 +702,8 @@ public class GraphManager implements NodeListener {
                                 }
                             }
                             if (srcNode != null) {
-                                Connection cnn = new Connection(srcNode, trgNode, index);
-                                    trgNode.addConnection(cnn, index);
-                                    index ++;
-
+                                trgNode.addConnection(srcNode, index);
+                                index ++;
                             }
                         }
                     }

@@ -20,7 +20,6 @@ import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.grapheditor.gpf.ui.OperatorUI;
 import org.esa.snap.grapheditor.gpf.ui.UIValidation;
-import org.esa.snap.grapheditor.ui.components.interfaces.ConnectionInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.interfaces.NodeListener;
 import org.esa.snap.grapheditor.ui.components.utils.*;
@@ -71,9 +70,6 @@ public class NodeGui implements NodeListener, NodeInterface {
 
     static final private int minWidth = 60;
 
-    public static final int CONNECTION_NONE = -202;
-    public static final int CONNECTION_OUTPUT = -1;
-
     private int x;
     private int y;
     private int width = 90;
@@ -98,10 +94,10 @@ public class NodeGui implements NodeListener, NodeInterface {
     private JComponent preferencePanel = null;
     private String[] tooltipText_ = null;
     private boolean tooltipVisible_ = false;
-    private int tooltipIndex_ = CONNECTION_NONE;
+    private int tooltipIndex_ = Constants.CONNECTION_NONE;
 
     private final ArrayList<NodeListener> nodeListeners = new ArrayList<>();
-    private final ArrayList<ConnectionInterface> incomingConnections = new ArrayList<>();
+    private final ArrayList<NodeInterface> incomingConnections = new ArrayList<>();
 
     private boolean hasChanged = false;
     private Product output = null;
@@ -123,7 +119,7 @@ public class NodeGui implements NodeListener, NodeInterface {
 
 
 
-    public void paintNode(@NotNull Graphics2D g) {
+    public void drawNode(@NotNull Graphics2D g) {
         g.setFont(textFont);
 
         if (textW <= 0) {
@@ -163,8 +159,10 @@ public class NodeGui implements NodeListener, NodeInterface {
     }
 
     public void paintConnections(Graphics2D g) {
-        for (ConnectionInterface c: incomingConnections) {
-            c.draw(g);
+        for (int i = 0; i < incomingConnections.size(); i++) {
+            Point end = getInputPosition(i);
+            Point start = incomingConnections.get(i).getOutputPosition();
+            GraphicalUtils.drawConnection(g, start, end, GraphicalUtils.connectionConnectedColor);
         }
     }
 
@@ -216,7 +214,7 @@ public class NodeGui implements NodeListener, NodeInterface {
 
             int tx;
             int ty;
-            if (tooltipIndex_ == CONNECTION_OUTPUT) {
+            if (tooltipIndex_ == Constants.CONNECTION_OUTPUT) {
                 tx = x + width + connectionSize;
                 ty = y + connectionOffset - (tooltipH / 2);
             } else {
@@ -386,7 +384,7 @@ public class NodeGui implements NodeListener, NodeInterface {
             status += STATUS_MASK_OVER;
         }
         int iy = getConnectionAt(p);
-        if (iy != CONNECTION_NONE ) {
+        if (iy != Constants.CONNECTION_NONE ) {
             changed = iy != tooltipIndex_;
             show_tooltip(iy);
             return changed;
@@ -425,7 +423,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         if (hasChanged && operatorUI != null) {
             Product[] products = new Product[incomingConnections.size()];
             for (int i = 0; i < products.length; i++) {
-                products[i] = incomingConnections.get(i).getSourceProduct();
+                products[i] = incomingConnections.get(i).getProduct();
             }
             operatorUI.setSourceProducts(products);
             operatorUI.updateParameters();
@@ -470,7 +468,7 @@ public class NodeGui implements NodeListener, NodeInterface {
             }
             for (int i = 0; i < descriptors.length; i++ ){
                 SourceProductDescriptor descr = metadata.getDescriptor().getSourceProductDescriptors()[i];
-                Product p = incomingConnections.get(i).getSourceProduct();
+                Product p = incomingConnections.get(i).getProduct();
                 if (p == null) {
                     incomplete();
                     return;
@@ -480,7 +478,7 @@ public class NodeGui implements NodeListener, NodeInterface {
             if (incomingConnections.size() > descriptors.length && metadata.getMaxNumberOfInputs() < 0) {
                 Product[] products = new Product[incomingConnections.size() - descriptors.length];
                 for (int i = descriptors.length; i < incomingConnections.size(); i++) {
-                    Product p = incomingConnections.get(i).getSourceProduct();
+                    Product p = incomingConnections.get(i).getProduct();
                     if (p == null) {
                         incomplete();
                         return;
@@ -588,15 +586,12 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @param index input index
      */
     private void disconnect(int index) {
-        for (int i = index + 1; i < this.incomingConnections.size(); i++) {
-            this.incomingConnections.get(i).setTargetIndex(i - 1);
-        }
 
         numInputs = Math.max(metadata.getMinNumberOfInputs(), numInputs - 1);
         height = (numInputs + 1) * connectionOffset;
-        ConnectionInterface c = this.incomingConnections.get(index);
+        NodeInterface c = this.incomingConnections.get(index);
         this.node.removeSource(this.node.getSource(index));
-        c.removeNodesSourceListener(this);
+        c.removeNodeListener(this);
         this.incomingConnections.remove(c);
         hasChanged = true;
     }
@@ -619,14 +614,14 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @param p mouse position
      * @return new drag action
      */
-    public Pair<NodeGui, Integer> drag(Point p) {
+    public Pair<NodeInterface, Integer> drag(Point p) {
         int iy = getInputIndex(p);
         if (iy >= 0) {
             if (this.incomingConnections.size() > iy) {
-                ConnectionInterface c = this.incomingConnections.get(iy);
+                NodeInterface c = this.incomingConnections.get(iy);
                 if (c != null) {
                     disconnect(iy);
-                    return new Pair<> ((NodeGui) c.getSource(), CONNECTION_OUTPUT);
+                    return new Pair<> (c, Constants.CONNECTION_OUTPUT);
                 }
             }
             tooltipVisible_ = false;
@@ -634,10 +629,10 @@ public class NodeGui implements NodeListener, NodeInterface {
         }
         if (isOverOutput(p)) {
             tooltipVisible_ = false;
-            return new Pair<> (this, CONNECTION_OUTPUT);
+            return new Pair<> (this, Constants.CONNECTION_OUTPUT);
         }
         tooltipVisible_ = false;
-        return new Pair<>(this, CONNECTION_NONE);
+        return new Pair<>(this, Constants.CONNECTION_NONE);
     }
 
     /**
@@ -646,7 +641,7 @@ public class NodeGui implements NodeListener, NodeInterface {
     private void hide_tooltip() {
         tooltipVisible_ = false;
         tooltipText_ = null;
-        tooltipIndex_ = CONNECTION_NONE;
+        tooltipIndex_ = Constants.CONNECTION_NONE;
     }
 
     /**
@@ -654,7 +649,7 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @param connectionIndex input/output connector index
      */
     private void show_tooltip(int connectionIndex) {
-        if (connectionIndex == CONNECTION_OUTPUT && metadata.hasOutput()) {
+        if (connectionIndex == Constants.CONNECTION_OUTPUT && metadata.hasOutput()) {
             // OUTPUT
             tooltipVisible_ = true;
             tooltipText_ = split_text(metadata.getOutputDescription());
@@ -667,6 +662,14 @@ public class NodeGui implements NodeListener, NodeInterface {
         } else {
             hide_tooltip();
         }
+    }
+
+    @Override
+    public int getActiveConnector(){
+        if (hasTooltip()){
+            return tooltipIndex_;
+        }
+        return Constants.CONNECTION_NONE;
     }
 
     /**
@@ -723,9 +726,9 @@ public class NodeGui implements NodeListener, NodeInterface {
             return iy;
         }
         if (isOverOutput(p)) {
-            return CONNECTION_OUTPUT;
+            return Constants.CONNECTION_OUTPUT;
         }
-        return CONNECTION_NONE;
+        return Constants.CONNECTION_NONE;
     }
 
     /**
@@ -736,12 +739,12 @@ public class NodeGui implements NodeListener, NodeInterface {
      * @return connection availability
      */
     public boolean isConnectionAvailable(NodeInterface other, int index) {
-        if (index == CONNECTION_OUTPUT)
+        if (index == Constants.CONNECTION_OUTPUT)
             return true;
-        if (index == CONNECTION_NONE)
+        if (index == Constants.CONNECTION_NONE)
             return false;
-        for (ConnectionInterface c: incomingConnections) {
-            if (c != null && other == c.getSource()) {
+        for (NodeInterface c: incomingConnections) {
+            if (c != null && other == c) {
                 return false;
             }
         }
@@ -752,29 +755,28 @@ public class NodeGui implements NodeListener, NodeInterface {
      * Internal function to add a new input connection
      * @param c connection to be add
      */
-    private void connect(ConnectionInterface c){
+    private void connect(NodeInterface c){
         incomingConnections.add(c);
-        c.addSourceListener(this);
+        c.addNodeListener(this);
         for (NodeListener listener: this.nodeListeners) {
             listener.connectionAdded(this);
         }
-        NodeSource nodeSource =  new NodeSource("sourceProduct", c.getSourceName());
+        NodeSource nodeSource =  new NodeSource("sourceProduct", c.getName());
         this.node.addSource(nodeSource);
         hasChanged = true;
     }
 
     /**
      * Connect a new input node to the first available connection.
-     * @param connection object representing the connection between nodes
+     * @param source object representing the connection between nodes
      * @param index input index
      */
-    public void addConnection(ConnectionInterface connection, int index) {
+    public void addConnection(NodeInterface source, int index) {
         if (index == incomingConnections.size())  {
-            connect(connection);
+            connect(source);
         } else {
             return;
         }
-
         if (metadata.getMaxNumberOfInputs() == -1) {
             if (incomingConnections.size() < metadata.getMinNumberOfInputs()) {
                 numInputs = metadata.getMinNumberOfInputs();
@@ -789,10 +791,19 @@ public class NodeGui implements NodeListener, NodeInterface {
     }
 
     @Override
+    public Point getConnectorPosition(int connectorIndex) {
+        if (connectorIndex >= 0)
+            return getInputPosition(connectorIndex);
+        if (connectorIndex == Constants.CONNECTION_OUTPUT)
+            return getOutputPosition();
+        return null;
+    }
+
+    @Override
     public void sourceDeleted(Object source) {
         for (int i = 0; i < incomingConnections.size();i ++) {
-            ConnectionInterface c = incomingConnections.get(i);
-            if (c.getSource() == source) {
+            NodeInterface c = incomingConnections.get(i);
+            if (c == source) {
                 // as only one input connection from a node is permitted we can safely break the loop.
                 disconnect(i);
                 break;
@@ -835,7 +846,7 @@ public class NodeGui implements NodeListener, NodeInterface {
     public Rectangle getBoundingBox(){
         Rectangle r;
         if (tooltipVisible_) {
-            int tx = tooltipIndex_ == CONNECTION_OUTPUT ? x - 8 : x - 8 - 80;
+            int tx = tooltipIndex_ == Constants.CONNECTION_OUTPUT ? x - 8 : x - 8 - 80;
             int ty = y - 8;
             int w = width + 16 + 80;
             int h = height + 16;
@@ -858,7 +869,7 @@ public class NodeGui implements NodeListener, NodeInterface {
             return 0;
         }
         int max_d = -1;
-        for (ConnectionInterface c: incomingConnections) {
+        for (NodeInterface c: incomingConnections) {
             int d = c.distance(n);
             if (d > max_d) {
                 max_d = d + 1;

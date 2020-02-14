@@ -2,6 +2,7 @@ package org.esa.snap.grapheditor.ui.components.interfaces;
 
 import org.esa.snap.core.datamodel.Product;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -31,5 +32,23 @@ public interface NodeInterface {
     boolean isConnectionAvailable(NodeInterface other, int index);
 
     void addConnection(NodeInterface node, int index);
+
+    Point getConnectorPosition(int conectorIndex);
+
+    void drawNode(Graphics2D g);
+
+    int getY();
+
+    int getX();
+
+    void setPosition(int x, int y);
+
+    Rectangle getBoundingBox();
+
+    Point getPostion();
+
+    JComponent getPreferencePanel();
+
+    int getActiveConnector();
 }
 

@@ -10,8 +10,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.esa.snap.grapheditor.ui.components.MainPanel;
 import org.esa.snap.grapheditor.ui.components.StatusPanel;
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 import org.esa.snap.grapheditor.ui.components.interfaces.GraphListener;
+import org.esa.snap.grapheditor.ui.components.interfaces.NodeInterface;
 import org.esa.snap.grapheditor.ui.components.utils.GraphManager;
 import org.esa.snap.grapheditor.ui.components.utils.SettingManager;
 import org.esa.snap.tango.TangoIcons;
@@ -173,27 +173,23 @@ public class GraphBuilder extends JPanel implements GraphListener {
     }
 
     @Override
-    public void selected(NodeGui source) {
+    public void selected(NodeInterface source) { }
+
+    @Override
+    public void deselected(NodeInterface source) { }
+
+    @Override
+    public void updated(NodeInterface source) {
         somethingChanged();
     }
 
     @Override
-    public void deselected(NodeGui source) {
+    public void created(NodeInterface source) {
         somethingChanged();
     }
 
     @Override
-    public void updated(NodeGui source) {
-        somethingChanged();
-    }
-
-    @Override
-    public void created(NodeGui source) {
-        somethingChanged();
-    }
-
-    @Override
-    public void deleted(NodeGui source) {
+    public void deleted(NodeInterface source) {
         somethingChanged();
     }
 

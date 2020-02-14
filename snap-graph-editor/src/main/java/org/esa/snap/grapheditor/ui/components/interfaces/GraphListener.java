@@ -12,30 +12,30 @@ public interface GraphListener {
      * Notifies about a node selection.
      * @param source event source
      */
-    void selected(NodeGui source);
+    void selected(NodeInterface source);
 
     /**
      * Notifies about a node deselection.
      * @param source event source
      */
-    void deselected(NodeGui source);
+    void deselected(NodeInterface source);
 
     /**
      * Notifies about a changes on a node.
      * @param source event source
      */
-    void updated(NodeGui source);
+    void updated(NodeInterface source);
 
     /**
      * Notifies about a new node.
      * @param source event source
      */
-    void created(NodeGui source);
+    void created(NodeInterface source);
 
     /**
      * Notifies about a delete of a node.
      * @param source event source
      */
-    void deleted(NodeGui source);
+    void deleted(NodeInterface source);
 
 }
