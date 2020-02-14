@@ -1,6 +1,5 @@
 package org.esa.snap.grapheditor.ui.components.interfaces;
 
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
 
 /**
  * Simple interface listener.

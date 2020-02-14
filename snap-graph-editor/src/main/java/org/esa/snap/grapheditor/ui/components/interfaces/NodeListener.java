@@ -1,7 +1,5 @@
 package org.esa.snap.grapheditor.ui.components.interfaces;
 
-import org.esa.snap.grapheditor.ui.components.graph.NodeGui;
-
 /**
  * Simple listener used to notify changes inside the node.
  *
