@@ -16,6 +16,7 @@
 package org.esa.snap.grapheditor.gpf.utils;
 
 import com.bc.ceres.swing.selection.AbstractSelection;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -77,7 +78,7 @@ public class FileListSelection extends AbstractSelection implements Transferable
      * @return the data in the requested flavor, as outlined above
      * @throws UnsupportedFlavorException if the requested data flavor not supported
      */
-    public Object getTransferData(final DataFlavor flavor)
+    public Object getTransferData(@NotNull final DataFlavor flavor)
             throws UnsupportedFlavorException {
         if (flavor.equals(DataFlavor.javaFileListFlavor)) {
             return fileList;
