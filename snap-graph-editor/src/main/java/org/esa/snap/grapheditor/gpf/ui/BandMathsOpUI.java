@@ -77,12 +77,11 @@ public class BandMathsOpUI extends BaseOperatorUI {
         }
         if(sourceProducts != null && sourceProducts.length > 0) {
             targetProduct = sourceProducts[0];
-
-            targetBand = new Band(bandDesc.name, ProductData.TYPE_FLOAT32,
-                    targetProduct.getSceneRasterWidth(), targetProduct.getSceneRasterHeight());
-            targetBand.setDescription("");
-            //targetBand.setUnit(dialog.getNewBandsUnit());
-
+            if (targetProduct != null) {
+                targetBand = new Band(bandDesc.name, ProductData.TYPE_FLOAT32,
+                        targetProduct.getSceneRasterWidth(), targetProduct.getSceneRasterHeight());
+                targetBand.setDescription("");
+            }
             productsList = new ProductNodeList<>();
             for (Product prod : sourceProducts) {
                 productsList.add(prod);
