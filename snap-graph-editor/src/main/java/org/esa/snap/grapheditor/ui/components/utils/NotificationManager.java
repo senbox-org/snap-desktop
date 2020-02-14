@@ -126,6 +126,7 @@ public class NotificationManager implements ProgressMonitor {
     @Override
     public void done() {
         processEnd();
+        info("Graph Processor", "done");
     }
 
     @Override
