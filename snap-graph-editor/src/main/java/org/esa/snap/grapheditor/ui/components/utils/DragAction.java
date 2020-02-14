@@ -36,7 +36,7 @@ public class DragAction {
     public DragAction(NodeInterface source, Point origin) {
         this.type = Type.DRAG;
         this.source = source;
-        this.origin = GraphicalUtils.diff(origin, source.getPostion());
+        this.origin = GraphicalUtils.diff(origin, source.getPosition());
         this.current = origin;
         this.connectorIndex = -202;
     }
@@ -125,12 +125,18 @@ public class DragAction {
         int h = Math.abs(current.y - origin.y) + 10;
         return new Rectangle(x, y, w, h);
     }
-    
+
+    /**
+     * Connect the source node to a second node.
+     * @param other the other node to connect
+     */
     public void connect(NodeInterface other) {
         if (type == Type.CONNECT) {
-            if (this.connectorIndex == Constants.CONNECTION_OUTPUT) {
+            if (this.connectorIndex == Constants.CONNECTION_OUTPUT
+                    && other.isConnectionAvailable(source, other.getActiveConnector())) {
                 other.addConnection(this.source, other.getActiveConnector());
-            } else if (this.connectorIndex >= 0) {
+            } else if (this.connectorIndex >= 0
+                    && source.isConnectionAvailable(other, connectorIndex)) {
                 this.source.addConnection(other, this.connectorIndex);
             }
         }

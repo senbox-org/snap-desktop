@@ -103,6 +103,14 @@ public class NodeGui implements NodeListener, NodeInterface {
     private Product output = null;
     private boolean recomputeOutputNeeded = true;
 
+    /**
+     * Create a new Node Gui.
+     * @param node basic Node information
+     * @param configuration current node configuration
+     * @param metadata unified metadata
+     * @param operatorUI operator properties ui
+     * @param context execution context
+     */
     public NodeGui (Node node, Map<String, Object> configuration, @NotNull UnifiedMetadata metadata, OperatorUI operatorUI, OperatorContext context){
         this.x = 0;
         this.y = 0;
@@ -117,8 +125,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         this.context = context;
     }
 
-
-
+    @Override
     public void drawNode(@NotNull Graphics2D g) {
         g.setFont(textFont);
 
@@ -158,6 +165,10 @@ public class NodeGui implements NodeListener, NodeInterface {
         paintOutput(g);
     }
 
+    /**
+     * Draw incoming connections (if any).
+     * @param g renderer
+     */
     public void paintConnections(Graphics2D g) {
         for (int i = 0; i < incomingConnections.size(); i++) {
             Point end = getInputPosition(i);
@@ -200,7 +211,11 @@ public class NodeGui implements NodeListener, NodeInterface {
         return result.toArray(new String[0]);
     }
 
-    public void tooltip(Graphics2D g) {
+    /**
+     * Draw tooltip if visible.
+     * @param g renderer
+     */
+    public void drawTooltip(Graphics2D g) {
         if (tooltipVisible_ && tooltipText_ != null) {
             FontMetrics fontMetrics = g.getFontMetrics();
 
@@ -275,7 +290,6 @@ public class NodeGui implements NodeListener, NodeInterface {
     }
 
     private Color color() {
-
         Color c;
         switch (validationStatus) {
             case ERROR:
@@ -299,25 +313,30 @@ public class NodeGui implements NodeListener, NodeInterface {
         return color().darker().darker();
     }
 
+    @Override
     public int getX() {
         return x;
     }
 
+    @Override
     public int getY() {
         return y;
     }
 
+    @Override
     public void setPosition(int x, int y){
         this.x = x;
         this.y = y;
     }
 
+    @Override
     public void setPosition(@NotNull Point p) {
         this.x = p.x;
         this.y = p.y;
     }
 
-    public Point getPostion() {
+    @Override
+    public Point getPosition() {
         return new Point(x, y);
     }
 
@@ -416,6 +435,9 @@ public class NodeGui implements NodeListener, NodeInterface {
         updateSources();
     }
 
+    /**
+     * Update sources products.
+     */
     public void updateSources() {
         if (operatorUI == null) {
             getPreferencePanel();
@@ -516,10 +538,7 @@ public class NodeGui implements NodeListener, NodeInterface {
 
     }
 
-    /**
-     * Gets cached target product
-     * @return cached target product.
-     */
+    @Override
     public Product getProduct() {
         return output;
     }
@@ -672,10 +691,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         return Constants.CONNECTION_NONE;
     }
 
-    /**
-     * Gets the OperatorUI associated to this NodeGui
-     * @return OperatorUI
-     */
+    @Override
     public JComponent getPreferencePanel(){
         if (preferencePanel == null) {
             try {
@@ -690,19 +706,12 @@ public class NodeGui implements NodeListener, NodeInterface {
         return preferencePanel;
     }
 
-    /**
-     * Gives the chosen input connector position
-     * @param index chosen input index
-     * @return absolute position of the chosen input connector
-     */
+    @Override
     public Point getInputPosition(int index) {
         return new Point(x, y + connectionOffset * (index + 1));
     }
 
-    /**
-     * Gives the output connector position
-     * @return absolute position of the output connector
-     */
+    @Override
     public Point getOutputPosition() {
         return new Point(x + width, y + connectionOffset);
     }
@@ -731,13 +740,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         return Constants.CONNECTION_NONE;
     }
 
-    /**
-     * Checks if a certain input is available to be connected with a source node.
-     * It verify that the index is free and that the two nodes are not already connected together.
-     * @param other source node
-     * @param index input index
-     * @return connection availability
-     */
+    @Override
     public boolean isConnectionAvailable(NodeInterface other, int index) {
         if (index == Constants.CONNECTION_OUTPUT)
             return true;
@@ -766,11 +769,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         hasChanged = true;
     }
 
-    /**
-     * Connect a new input node to the first available connection.
-     * @param source object representing the connection between nodes
-     * @param index input index
-     */
+    @Override
     public void addConnection(NodeInterface source, int index) {
         if (index == incomingConnections.size())  {
             connect(source);
@@ -820,29 +819,17 @@ public class NodeGui implements NodeListener, NodeInterface {
     @Override
     public void validateNode(Object source) {}
 
-    /**
-     * Add a NodeListener.
-     * This happen when connecting a new node as output.
-     * @param l NodeListener to be added
-     */
+    @Override
     public void addNodeListener(NodeListener l) {
         nodeListeners.add(l);
     }
 
-    /**
-     * Remove a NodeListeners.
-     * This happen when disconnecting or deleting a node.
-     * @param l NodeListener to be removed
-     */
+    @Override
     public void removeNodeListener(NodeListener l) {
         nodeListeners.remove(l);
     }
 
-    /**
-     * Returns the area to be repainted.
-     * Function useful to know which region of the GraphPanel repaint.
-     * @return Rectangle containing the NodeGui and its tool-tip (if visible)
-     */
+    @Override
     public Rectangle getBoundingBox(){
         Rectangle r;
         if (tooltipVisible_) {
@@ -857,13 +844,7 @@ public class NodeGui implements NodeListener, NodeInterface {
         return r;
     }
 
-    /**
-     * Compute the distance from a node in the graph.
-     * The node distance is useful to evaluate the correct validation order, node at the same distance can be
-     * validate in parallel, otherwise in sequence.
-     * @param n node to compute the distance
-     * @return  -1 if the node n is not connected or is an output, the maximum distance if the node n is an input.
-     */
+    @Override
     public int distance(NodeInterface n) {
         if (n == this) {
             return 0;

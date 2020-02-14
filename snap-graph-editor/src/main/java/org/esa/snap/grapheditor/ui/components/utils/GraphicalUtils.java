@@ -112,29 +112,25 @@ public class GraphicalUtils {
     }
 
     /**
+     * Draw a connection line from two given points with a given color.
      *
-     *
-     *
-     * @param g2
-     * @param a
-     * @param b
-     * @param c
+     * @param g2 renderer
+     * @param a start point
+     * @param b end point
+     * @param c color
      */
     public static void drawConnection(Graphics2D g2, Point a, Point b, Color c){
         Graphics2D g = (Graphics2D) g2.create();
         g.setColor(c);
 
-        Point end=b;
-        Point start=a;
-
         g.setStroke(bigStroke);
-        g.drawLine(start.x, start.y, end.x, end.y);
+        g.drawLine(a.x, a.y, b.x, b.y);
 
         g.setStroke(smallStroke);
-        g.fillRect(start.x - handlerHalfSize, start.y - handlerHalfSize, handlerSize, handlerSize);
-        g.drawRect(start.x - handlerHalfSize, start.y - handlerHalfSize, handlerSize, handlerSize);
-        g.fillOval(end.x - handlerHalfSize, end.y - handlerHalfSize, handlerSize, handlerSize);
-        g.drawOval(end.x - handlerHalfSize, end.y - handlerHalfSize, handlerSize, handlerSize);
+        g.fillRect(a.x - handlerHalfSize, a.y - handlerHalfSize, handlerSize, handlerSize);
+        g.drawRect(a.x - handlerHalfSize, a.y - handlerHalfSize, handlerSize, handlerSize);
+        g.fillOval(b.x - handlerHalfSize, b.y - handlerHalfSize, handlerSize, handlerSize);
+        g.drawOval(b.x - handlerHalfSize, b.y - handlerHalfSize, handlerSize, handlerSize);
 
         g.dispose();
     }

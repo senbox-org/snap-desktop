@@ -143,7 +143,7 @@ public class GraphPanel extends JPanel
         if (SettingManager.getInstance().isShowToolipEnabled()) {
             Graphics2D gNode = (Graphics2D) g.create();
             for (NodeGui node : graphManager.getNodes()) {
-                node.tooltip(gNode);
+                node.drawTooltip(gNode);
             }
             gNode.dispose();
         }
@@ -296,7 +296,7 @@ public class GraphPanel extends JPanel
         if (dragAction != null) {
             dragAction.drop();
             if (dragAction.getType() == DragAction.Type.DRAG) {
-                Point p = GraphicalUtils.normalize(dragAction.getNode().getPostion());
+                Point p = GraphicalUtils.normalize(dragAction.getNode().getPosition());
                 moveNode(dragAction.getNode(), p.x, p.y);
             } else {
                 for (NodeGui node: graphManager.getNodes()) {
@@ -397,7 +397,7 @@ public class GraphPanel extends JPanel
     public void newNodeAddedAtCurrentPosition(NodeGui node) {
         if (node == null)
             return;
-        node.setPosition(GraphicalUtils.normalize(node.getPostion()));
+        node.setPosition(GraphicalUtils.normalize(node.getPosition()));
         node.addNodeListener(this);
         for (GraphListener listener : graphListeners) {
             listener.created(node);
@@ -410,7 +410,7 @@ public class GraphPanel extends JPanel
         if (node == null)
             return;
         Point p = new Point(node.getX() + node.getWidth() / 2, node.getY() + node.getHeight() /2);
-        node.setPosition(GraphicalUtils.normalize(node.getPostion()));
+        node.setPosition(GraphicalUtils.normalize(node.getPosition()));
         node.addNodeListener(this);
         for (GraphListener listener : graphListeners) {
             listener.created(node);
