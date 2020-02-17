@@ -289,7 +289,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             final Rectangle.Float productBounds = new Rectangle.Float(0, 0, productWidth, productHeight);
             Rectangle2D finalRegion = productBounds.createIntersection(region);
             Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
-            Geometry geometry = ProductUtils.computeGeoRegion(geoCoding, productWidth, productHeight, bounds);
+            Geometry geometry = ProductUtils.computeGeometryUsingPixelRegion(geoCoding, productWidth, productHeight, bounds);
             productSubsetDef.setGeoRegion(geometry);
         }
     }
