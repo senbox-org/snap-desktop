@@ -38,10 +38,7 @@ public class GraphStruct {
     static public List<GraphStruct> copyGraphStruct(GraphNode[] nodes) {
         ArrayList<GraphStruct> list = new ArrayList<>();
         for (GraphNode g: nodes) {
-            ArrayList<String> children = new ArrayList<>();
-            for (String id: g.getSources()) {
-                children.add(id);
-            }
+            ArrayList<String> children = new ArrayList<>(g.getSources());
             list.add(new GraphStruct(g.getID(), children));
         }
 
