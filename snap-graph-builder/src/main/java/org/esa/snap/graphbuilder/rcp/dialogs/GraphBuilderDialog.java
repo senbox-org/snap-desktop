@@ -39,12 +39,8 @@ import org.esa.snap.ui.ModelessDialog;
 import org.openide.util.HelpCtx;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,9 +76,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private boolean allowGraphBuilding = true;
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
 
+    private Map<String, Object> selectedConfiguration = null;
+    private List<GraphStruct> previousConfiguration = new ArrayList<>();
+    private String selectedId = null;
+
     public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
     private JTabbedPane tabbedPanel = null;
+    private GraphNode selectedNode;
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID) {
         this(theAppContext, title, helpID, true);
@@ -127,7 +128,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel = new JTabbedPane();
         //tabbedPanel.setTabPlacement(JTabbedPane.LEFT);
         tabbedPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tabbedPanel.addChangeListener(e -> validateAllNodes());
+        tabbedPanel.addChangeListener(e -> tabChanged());
 
         statusLabel = new JLabel("");
         statusLabel.setForeground(new Color(255, 0, 0));
@@ -191,6 +192,63 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
 
         setContent(mainPanel);
+    }
+
+    private void tabChanged() {
+        if (changesAreDetected()) {
+            validateAllNodes();
+        }
+    }
+
+    private static boolean equals(Map<String, Object> a, Map<String, Object> b){
+        if (a == null && b == null)
+            return true;
+
+        if (a == null || b == null)
+            return false;
+
+        if (a.keySet().size() == b.keySet().size()) {
+            for (String key : a.keySet()) {
+                if (!b.containsKey(key))
+                    return false;
+                Object objA = a.get(key);
+                Object objB = b.get(key);
+                if (objA != null && objB != null) {
+                    if (!objA.toString().equals(objB.toString()))
+                        return false;
+                }
+                if (objA == null ^ objB == null)
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean changesAreDetected() {
+        boolean result = false;
+        List<GraphStruct> currentStruct = GraphStruct.copyGraphStruct(this.graphEx.getGraphNodes());
+        if (this.selectedId != null) {
+            if (GraphStruct.deepEqual(currentStruct, previousConfiguration)) {
+                result = !equals(this.selectedConfiguration, this.selectedNode.getOperatorUIParameterMap());
+            } else {
+                // the graph has changed and so you need to reverify
+                result = true;
+            }
+        }
+        this.previousConfiguration = currentStruct;
+        this.selectedId = this.tabbedPanel.getTitleAt(this.tabbedPanel.getSelectedIndex());
+        for (GraphNode n: this.graphEx.getGraphNodes()) {
+            if (n.getID().equals(this.selectedId)) {
+                this.selectedNode = (n);
+                this.selectedConfiguration = new HashMap<>(n.getOperatorUIParameterMap());
+            }
+        }
+        if (this.selectedConfiguration == null) {
+            System.err.println("WARNING [org.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog]: Node `"+selectedId+"`not found");
+            this.selectedId = null;
+        }
+        return result;
     }
 
     private void initButtonPanel(final JPanel panel) {

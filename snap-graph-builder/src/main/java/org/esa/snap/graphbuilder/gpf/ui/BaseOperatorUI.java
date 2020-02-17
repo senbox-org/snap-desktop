@@ -231,4 +231,9 @@ public abstract class BaseOperatorUI implements OperatorUI {
         }
         return p.getDescriptor().getName();
     }
+
+    @Override
+    public Map<String, Object> getParameters() {
+        return this.paramMap;
+    }
 }
