@@ -237,15 +237,20 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
         }
         this.previousConfiguration = currentStruct;
-        this.selectedId = this.tabbedPanel.getTitleAt(this.tabbedPanel.getSelectedIndex());
-        for (GraphNode n: this.graphEx.getGraphNodes()) {
-            if (n.getID().equals(this.selectedId)) {
-                this.selectedNode = (n);
-                this.selectedConfiguration = new HashMap<>(n.getOperatorUIParameterMap());
+        if (this.tabbedPanel.getSelectedIndex() >= 0){
+            this.selectedId = this.tabbedPanel.getTitleAt(this.tabbedPanel.getSelectedIndex());
+            for (GraphNode n: this.graphEx.getGraphNodes()) {
+                if (n.getID().equals(this.selectedId)) {
+                    this.selectedNode = (n);
+                    this.selectedConfiguration = new HashMap<>(n.getOperatorUIParameterMap());
+                }
             }
-        }
-        if (this.selectedConfiguration == null) {
-            System.err.println("WARNING [org.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog]: Node `"+selectedId+"`not found");
+            if (this.selectedConfiguration == null) {
+                System.err.println("WARNING [org.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog]: Node `"+selectedId+"`not found");
+                this.selectedId = null;
+            }
+
+        } else {
             this.selectedId = null;
         }
         return result;
