@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Simple setting manager for the GraphBuilder.
@@ -21,7 +22,8 @@ public class SettingManager {
         // COLOR, future
         BOOLEAN,
         STRING,
-        DOUBLE
+        DOUBLE,
+        ENUMS,
     }
 
     /**
@@ -30,10 +32,17 @@ public class SettingManager {
     private static class SettingValue  {
         private final SettingType type;
         private Object value;
+        private Object data = null;
 
         private SettingValue(boolean val) {
             type = SettingType.BOOLEAN;
             value = val;
+        }
+
+        private SettingValue(String[] options, String val) {
+            type = SettingType.ENUMS;
+            value = val;
+            data = options;
         }
 
         /**
@@ -136,6 +145,11 @@ public class SettingManager {
             } else if (type == SettingType.STRING) {
                 comp = new JTextField(this.asString());
                 p.add((JComponent)comp, BorderLayout.LINE_END);
+            } else if (type == SettingType.ENUMS) {
+                JComboBox<String> cb = new JComboBox<>((String[])data);
+                cb.setSelectedItem(value);
+                comp = cb;
+                p.add((JComponent) comp, BorderLayout.LINE_END);
             } else {
                 SpinnerModel model;
 
@@ -153,8 +167,7 @@ public class SettingManager {
                 comp = model;
                 p.add(new JSpinner(model), BorderLayout.LINE_END);
             }
-        cont = p;
-
+            cont = p;
             return new Pair<>(cont, comp);
         }
 
@@ -167,6 +180,7 @@ public class SettingManager {
     static final private String COMMANDPANELENABLED =  "command panel enabled";
     static final private String AUTOVALIDATEKEY = "auto validate enabled";
     static final private String BGGRIDVISIBLEKEY = "background grid visible";
+    static final private String LAYOUTMODE = "layout mode";
 
     /**
      * Initialize SettingManager with default values.
@@ -177,6 +191,8 @@ public class SettingManager {
         settings.put(COMMANDPANELENABLED, new SettingValue(true));
         settings.put(AUTOVALIDATEKEY, new SettingValue(true));
         settings.put(BGGRIDVISIBLEKEY, new SettingValue(true));
+        String[] options = {"classic", "modern"};
+        settings.put(LAYOUTMODE, new SettingValue(options, options[0]));
     }
 
     /**
