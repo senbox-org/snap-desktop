@@ -145,6 +145,7 @@ public class ProductFileChooser extends SnapFileChooser {
         advancedButton = new JButton("Advanced");
         advancedButton.setMnemonic('A');
         advancedButton.addActionListener(e -> openAdvancedDialog());
+        //advancedButton.addActionListener(e -> showAdvancedProductSubsetDialog());
         advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
 
         JPanel panel = GridBagUtils.createPanel();
@@ -155,6 +156,13 @@ public class ProductFileChooser extends SnapFileChooser {
 
         setAccessory(panel);
         addPropertyChangeListener(e -> updateState());
+    }
+
+    //TODO Jean new method
+    private void showAdvancedProductSubsetDialog() {
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        AdvancedProductSubsetDialog dialog = new AdvancedProductSubsetDialog(parentWindow, "Product subset");
+        dialog.show();
     }
 
     private void updateState() {
