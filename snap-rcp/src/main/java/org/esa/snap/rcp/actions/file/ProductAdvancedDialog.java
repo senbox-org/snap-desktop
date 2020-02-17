@@ -78,7 +78,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         createUI();
     }
 
-    private void setPixelCoord(){
+    private void addPixelCoord(ParamGroup pg){
         if (this.readerInspectorExposeParameters == null) {
             paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
             paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
@@ -118,26 +118,43 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             paramHeight.getProperties().setDescription("Product height");
             paramHeight.getProperties().setMaxValue(this.readerInspectorExposeParameters.getProductHeight());
         }
+        pg.addParameter(paramX1);
+        pg.addParameter(paramY1);
+        pg.addParameter(paramWidth);
+        pg.addParameter(paramHeight);
     }
 
-    private void setGeoCoord(){
+    private void addGeoCoord(ParamGroup pg) {
+        paramNorthLat1 = new Parameter("geo_lat1", 90.0);
+        paramNorthLat1.getProperties().setDescription("North bound latitude");
+        paramNorthLat1.getProperties().setPhysicalUnit("°");
+        paramNorthLat1.getProperties().setMinValue(-90.0);
+        paramNorthLat1.getProperties().setMaxValue(90.0);
+        pg.addParameter(paramNorthLat1);
+
+        paramWestLon1 = new Parameter("geo_lon1", -180.0);
+        paramWestLon1.getProperties().setDescription("West bound longitude");
+        paramWestLon1.getProperties().setPhysicalUnit("°");
+        paramWestLon1.getProperties().setMinValue(-180.0);
+        paramWestLon1.getProperties().setMaxValue(180.0);
+        pg.addParameter(paramWestLon1);
+
+        paramSouthLat2 = new Parameter("geo_lat2", -90.0);
+        paramSouthLat2.getProperties().setDescription("South bound latitude");
+        paramSouthLat2.getProperties().setPhysicalUnit("°");
+        paramSouthLat2.getProperties().setMinValue(-90.0);
+        paramSouthLat2.getProperties().setMaxValue(90.0);
+        pg.addParameter(paramSouthLat2);
+
+        paramEastLon2 = new Parameter("geo_lon2", 180.0);
+        paramEastLon2.getProperties().setDescription("East bound longitude");
+        paramEastLon2.getProperties().setPhysicalUnit("°");
+        paramEastLon2.getProperties().setMinValue(-180.0);
+        paramEastLon2.getProperties().setMaxValue(180.0);
+        pg.addParameter(paramEastLon2);
+
         if (this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.isHasGeoCoding()) {
-            ParamGroup pg = new ParamGroup();
-            // set GeoCoding coordinates
-            GeoPos geoPos1 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-            GeoPos geoPos2 = readerInspectorExposeParameters.getGeoCoding().getGeoPos(new PixelPos(this.readerInspectorExposeParameters.getProductWidth(), this.readerInspectorExposeParameters.getProductHeight()), null);
-            paramNorthLat1 = new Parameter("geo_lat1", MathUtils.crop(geoPos1.getLat(), -90.0, 90.0));
-            paramWestLon1 = new Parameter("geo_lon1", MathUtils.crop(geoPos1.getLon(), -180.0, 180.0));
-            paramSouthLat2 = new Parameter("geo_lat2", MathUtils.crop(geoPos2.getLat(), -90.0, 90.0));
-            paramEastLon2 = new Parameter("geo_lon2", MathUtils.crop(geoPos2.getLon(), -180.0, 180.0));
-            paramWestLon1.getProperties().setDescription("West bound longitude");
-            paramNorthLat1.getProperties().setDescription("North bound latitude");
-            paramSouthLat2.getProperties().setDescription("South bound latitude");
-            paramEastLon2.getProperties().setDescription("East bound longitude");
-            pg.addParameter(paramNorthLat1);
-            pg.addParameter(paramWestLon1);
-            pg.addParameter(paramSouthLat2);
-            pg.addParameter(paramEastLon2);
+            syncLatLonWithXYParams();
         }
     }
 
@@ -167,8 +184,10 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                 copyMasks.setSelected(false);
             }
         }
-        setPixelCoord();
-        setGeoCoord();
+        ParamGroup pg = new ParamGroup();
+        addPixelCoord(pg);
+        addGeoCoord(pg);
+        pg.addParamChangeListener(this);
         productHeight = (int) paramHeight.getValue();
         productWidth = (int) paramWidth.getValue();
 
@@ -276,7 +295,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
     }
 
     private JComponent createPanel() {
-        ParamGroup pg = new ParamGroup();
         JPanel contentPane = new JPanel(new GridBagLayout());
         JScrollPane scrollPaneMask = new JScrollPane(maskList);
         final GridBagConstraints gbc = createGridBagConstraints();
@@ -365,7 +383,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         addComponent(pixelPanel, pixgbc, "Scene width:", UIUtils.createSpinner(paramWidth, 25, "#0"), 0);
         pixgbc.gridy++;
         addComponent(pixelPanel, pixgbc, "Scene height:", UIUtils.createSpinner(paramHeight, 25, "#0"), 0);
-        pixelPanel.add(new JPanel(), pixgbc);
 
         final GridBagConstraints geobc = createGridBagConstraints();
         geobc.gridwidth = 1;
@@ -378,8 +395,10 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             addComponent(geoPanel, geobc, "South latitude bound:", UIUtils.createSpinner(paramSouthLat2, 1.0, FORMAT_PATTERN), 0);
             geobc.gridy++;
             addComponent(geoPanel, geobc, "East longitude bound:", UIUtils.createSpinner(paramEastLon2, 1.0, FORMAT_PATTERN), 0);
-            geoPanel.add(new JPanel(), geobc);
         }
+
+        pixelPanel.add(new JPanel(), pixgbc);
+        geoPanel.add(new JPanel(), geobc);
 
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -393,17 +412,7 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        pg.addParameter(paramX1);
-        pg.addParameter(paramY1);
-        pg.addParameter(paramWidth);
-        pg.addParameter(paramHeight);
-        pg.addParameter(paramEastLon2);
-        pg.addParameter(paramNorthLat1);
-        pg.addParameter(paramSouthLat2);
-        pg.addParameter(paramWestLon1);
-        pg.addParamChangeListener(this);
 
-        contentPane.add(new JPanel(), gbc);
         return contentPane;
     }
 
@@ -456,7 +465,6 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
                         pixelPanelChanged();
                         syncLatLonWithXYParams();
                     }
-
                 }
             } finally {
                 updatingUI.set(false);
@@ -611,6 +619,4 @@ public class ProductAdvancedDialog extends ModalDialog implements ParamChangeLis
             }
         }
     }
-
-
 }
