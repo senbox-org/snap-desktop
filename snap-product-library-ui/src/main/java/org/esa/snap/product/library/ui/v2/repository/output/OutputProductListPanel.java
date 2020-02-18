@@ -2,12 +2,12 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
-import org.esa.snap.ui.loading.VerticalScrollablePanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -202,10 +202,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
             }
         }
         return selectedProducts;
-    }
-
-    public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingProducts) {
-        return this.productListModel.addPendingDownloadProducts(pendingProducts);
     }
 
     public Path2D.Double[] getPolygonPaths() {

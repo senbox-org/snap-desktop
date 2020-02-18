@@ -2,19 +2,11 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
-import javax.swing.ImageIcon;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by jcoravu on 21/8/2019.
@@ -24,6 +16,7 @@ public class OutputProductListModel {
     private final OutputProductResultsCallback outputProductResultsCallback;
 
     private List<RepositoryProduct> products;
+    private DownloadingProductProgressCallback downloadingProductProgressCallback;
 
     public OutputProductListModel(OutputProductResultsCallback outputProductResultsCallback) {
         super();
@@ -49,7 +42,10 @@ public class OutputProductListModel {
         return this.products.get(index);
     }
 
-    //TODO Jean remove
+    public void setDownloadingProductProgressCallback(DownloadingProductProgressCallback downloadingProductProgressCallback) {
+        this.downloadingProductProgressCallback = downloadingProductProgressCallback;
+    }
+
     public OutputProductResults getOutputProductResults() {
         return this.outputProductResultsCallback.getOutputProductResults();
     }
@@ -113,10 +109,12 @@ public class OutputProductListModel {
         if (pendingOpenDownloadedProducts.length > 0) {
             int startIndex = pendingOpenDownloadedProducts.length - 1;
             int endIndex = 0;
-            OutputProductResults outputProductResults = this.outputProductResultsCallback.getOutputProductResults();
             for (int i=0; i<pendingOpenDownloadedProducts.length; i++) {
-                DownloadProgressStatus progressPercent = outputProductResults.getDownloadingProductsProgressValue(pendingOpenDownloadedProducts[i]);
+                DownloadProgressStatus progressPercent = getOutputProductResults().getDownloadedProductProgress(pendingOpenDownloadedProducts[i]);
                 if (progressPercent != null && progressPercent.canOpen()) {
+                    if (progressPercent.getDownloadedPath() == null) {
+                        throw new NullPointerException("The downloaded path is null for product '" + pendingOpenDownloadedProducts[i].getName()+"'.");
+                    }
                     progressPercent.setStatus(DownloadProgressStatus.PENDING_OPEN);
                     productsToOpen.put(pendingOpenDownloadedProducts[i], progressPercent.getDownloadedPath());
                     int index = findProductIndex(pendingOpenDownloadedProducts[i]);
@@ -137,36 +135,6 @@ public class OutputProductListModel {
         return productsToOpen;
     }
 
-    public List<RepositoryProduct> addPendingDownloadProducts(RepositoryProduct[] pendingDownloadProducts) {
-        List<RepositoryProduct> productsToDownload = new ArrayList<>(pendingDownloadProducts.length);
-        if (pendingDownloadProducts.length > 0) {
-            int startIndex = pendingDownloadProducts.length - 1;
-            int endIndex = 0;
-            OutputProductResults outputProductResults = this.outputProductResultsCallback.getOutputProductResults();
-            for (int i=0; i<pendingDownloadProducts.length; i++) {
-                DownloadProgressStatus progressPercent = outputProductResults.getDownloadingProductsProgressValue(pendingDownloadProducts[i]);
-                if (progressPercent == null || progressPercent.isStoppedDownload()) {
-                    productsToDownload.add(pendingDownloadProducts[i]);
-                    int index = findProductIndex(pendingDownloadProducts[i]);
-                    if (index >= 0) {
-                        // the product to download is visible in the current page
-                        if (startIndex > index) {
-                            startIndex = index;
-                        }
-                        if (endIndex < index) {
-                            endIndex = index;
-                        }
-                        outputProductResults.addDownloadingProductsProgressValue(pendingDownloadProducts[i], new DownloadProgressStatus());
-                    }
-                }
-            }
-            if (productsToDownload.size() > 0) {
-                fireIntervalChanged(startIndex, endIndex);
-            }
-        }
-        return productsToDownload;
-    }
-
     private Map<RepositoryProduct, LocalProgressStatus> getLocalProductsMap() {
         return this.outputProductResultsCallback.getOutputProductResults().getLocalProductsMap();
     }
@@ -180,7 +148,7 @@ public class OutputProductListModel {
     }
 
     public void setOpenDownloadedProductStatus(RepositoryProduct repositoryProduct, byte openStatus) {
-        DownloadProgressStatus progressPercent = this.outputProductResultsCallback.getOutputProductResults().getDownloadingProductsProgressValue(repositoryProduct);
+        DownloadProgressStatus progressPercent = getOutputProductResults().getDownloadedProductProgress(repositoryProduct);
         if (progressPercent != null) {
             progressPercent.setStatus(openStatus);
             int index = findProductIndex(repositoryProduct);
@@ -203,6 +171,12 @@ public class OutputProductListModel {
                     fireIntervalChanged(index, index);
                 }
             }
+        }
+    }
+
+    public void refreshProducts() {
+        if (this.products.size() > 0) {
+            fireIntervalChanged(0, this.products.size() - 1);
         }
     }
 

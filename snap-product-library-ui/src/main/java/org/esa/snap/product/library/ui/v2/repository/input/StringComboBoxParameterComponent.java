@@ -10,20 +10,20 @@ import javax.swing.*;
  */
 public class StringComboBoxParameterComponent extends AbstractParameterComponent<String> {
 
-    private final JComboBox<String> component;
+    private final JComboBox<String> readOnlyComboBox;
 
     public StringComboBoxParameterComponent(String parameterName, String defaultValue, String parameterLabelText,
                                             boolean required, String[] values, ComponentDimension componentDimension) {
 
         super(parameterName, parameterLabelText, required);
 
-        this.component = SwingUtils.buildComboBox(values, defaultValue, componentDimension.getTextFieldPreferredHeight(), false);
-        this.component.setBackground(componentDimension.getTextFieldBackgroundColor());
+        this.readOnlyComboBox = SwingUtils.buildComboBox(values, defaultValue, componentDimension.getTextFieldPreferredHeight(), false);
+        this.readOnlyComboBox.setBackground(componentDimension.getTextFieldBackgroundColor());
     }
 
     @Override
     public JComponent getComponent() {
-        return this.component;
+        return this.readOnlyComboBox;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
         if (value == null) {
             clearParameterValue();
         } else if (value instanceof String) {
-            this.component.setSelectedItem(value);
+            this.readOnlyComboBox.setSelectedItem(value);
         } else {
             throw new ClassCastException("The parameter value type '" + value + "' must be '" + String.class+"'.");
         }
@@ -39,11 +39,24 @@ public class StringComboBoxParameterComponent extends AbstractParameterComponent
 
     @Override
     public String getParameterValue() {
-        return (String)this.component.getModel().getSelectedItem();
+        return getSelectedItem();
     }
 
     @Override
     public void clearParameterValue() {
-        this.component.setSelectedItem(null);
+        this.readOnlyComboBox.setSelectedItem(null);
+    }
+
+    @Override
+    public Boolean hasValidValue() {
+        String value = getSelectedItem();
+        if (value == null) {
+            return null; // the value is not specified
+        }
+        return true; // the value is specified and it is valid
+    }
+
+    private String getSelectedItem() {
+        return (String)this.readOnlyComboBox.getModel().getSelectedItem();
     }
 }

@@ -34,6 +34,7 @@ public class ParametersPanel extends JPanel {
             RepositoryQueryParameter param = parameters.get(i);
             AbstractParameterComponent parameterComponent = null;
             if (param.getType() == String.class) {
+                // the parameter type is string
                 String defaultValue = (param.getDefaultValue() == null) ? null : (String)param.getDefaultValue();
                 if (param.getValueSet() == null) {
                     parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
@@ -46,8 +47,9 @@ public class ParametersPanel extends JPanel {
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
             } else if (param.getType() == Double.class || param.getType() == Integer.class || param.getType() == Short.class) {
-                String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                // the parameter type is number
+                Number defaultValue = (param.getDefaultValue() == null) ? null : (Number)param.getDefaultValue();
+                parameterComponent = new NumberParameterComponent(param.getName(), param.getType(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
             } else if (param.getType() == Date.class) {
                 parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
             } else if (param.getType() == String[].class) {

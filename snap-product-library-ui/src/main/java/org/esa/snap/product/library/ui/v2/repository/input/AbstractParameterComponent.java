@@ -23,6 +23,10 @@ public abstract class AbstractParameterComponent<ValueType> {
 
     public abstract void clearParameterValue();
 
+    public abstract void setParameterValue(Object value);
+
+    public abstract Boolean hasValidValue();
+
     public String getParameterName() {
         return parameterName;
     }
@@ -31,15 +35,14 @@ public abstract class AbstractParameterComponent<ValueType> {
         return label;
     }
 
-    //TODO jean make abstract
-    public void setParameterValue(Object value) {
-
-    }
-
-    public String getRequiredErrorDialogMessage() {
+    public String getRequiredValueErrorDialogMessage() {
         if (this.required) {
             return "The '" + this.label.getText()+"' parameter value is required.";
         }
+        return null;
+    }
+
+    public String getInvalidValueErrorDialogMessage() {
         return null;
     }
 }

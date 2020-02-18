@@ -3,7 +3,6 @@ package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductStatusLabel;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesProductProgress;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
 import org.esa.snap.remote.products.repository.RepositoryProduct;

@@ -25,18 +25,26 @@ public class OutputProductResults {
 
     private final Map<RepositoryProduct, ImageIcon> scaledQuickLookImages;
     private final Map<RepositoryProduct, LocalProgressStatus> localProductsMap;
-    private final Map<RepositoryProduct, DownloadProgressStatus> downloadingProductsProgressValue;
     private final List<RepositoryProduct> availableProducts;
+    private final Map<RepositoryProduct, DownloadProgressStatus> downloadedProductsProgress;
 
     private int currentPageNumber;
 
     public OutputProductResults() {
         this.scaledQuickLookImages = new HashMap<>();
-        this.downloadingProductsProgressValue = new HashMap<>();
         this.localProductsMap = new HashMap<>();
+        this.downloadedProductsProgress = new HashMap<>();
         this.availableProducts = new ArrayList<>();
 
         this.currentPageNumber = 0;
+    }
+
+    public DownloadProgressStatus getDownloadedProductProgress(RepositoryProduct repositoryProduct) {
+        return this.downloadedProductsProgress.get(repositoryProduct);
+    }
+
+    public void addDownloadedProductProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus) {
+        this.downloadedProductsProgress.put(repositoryProduct, downloadProgressStatus);
     }
 
     public LocalProgressStatus getOpeningProductStatus(RepositoryProduct repositoryProduct) {
@@ -45,18 +53,6 @@ public class OutputProductResults {
 
     public Map<RepositoryProduct, LocalProgressStatus> getLocalProductsMap() {
         return localProductsMap;
-    }
-
-    public DownloadProgressStatus getDownloadingProductsProgressValue(RepositoryProduct repositoryProduct) {
-        return this.downloadingProductsProgressValue.get(repositoryProduct);
-    }
-
-    public void addDownloadingProductsProgressValue(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus) {
-        this.downloadingProductsProgressValue.put(repositoryProduct, downloadProgressStatus);
-    }
-
-    public DownloadProgressStatus getDownloadingProductProgressValue(RepositoryProduct repositoryProduct) {
-        return this.downloadingProductsProgressValue.get(repositoryProduct);
     }
 
     public ImageIcon getProductQuickLookImage(RepositoryProduct repositoryProduct) {
@@ -71,11 +67,6 @@ public class OutputProductResults {
             }
         }
         return imageIcon;
-    }
-
-    public boolean removePendingDownloadProduct(RepositoryProduct repositoryProduct) {
-        DownloadProgressStatus previousProgressStatus = this.downloadingProductsProgressValue.remove(repositoryProduct);
-        return (previousProgressStatus != null);
     }
 
     public void setCurrentPageNumber(int currentPageNumber) {

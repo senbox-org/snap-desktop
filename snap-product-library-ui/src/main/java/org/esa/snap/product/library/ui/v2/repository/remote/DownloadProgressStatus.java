@@ -1,7 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
-import org.esa.snap.remote.products.repository.RepositoryProduct;
-
 import java.nio.file.Path;
 
 /**
@@ -9,10 +7,10 @@ import java.nio.file.Path;
  */
 public class DownloadProgressStatus {
 
-    public static final byte PENDING_DOWNLOAD = 1;
-    public static final byte DOWNLOADING = 2;
-    public static final byte STOP_DOWNLOADING = 3;
-    public static final byte DOWNLOADED = 4;
+    private static final byte PENDING_DOWNLOAD = 1;
+    private static final byte DOWNLOADING = 2;
+    public static final byte CANCEL_DOWNLOADING = 3;
+    private static final byte DOWNLOADED = 4;
     public static final byte FAILED_DOWNLOADING = 5;
     public static final byte NOT_AVAILABLE = 6;
     public static final byte PENDING_OPEN = 7;
@@ -20,6 +18,7 @@ public class DownloadProgressStatus {
     public static final byte OPENED = 9;
     public static final byte FAIL_OPENED = 10;
     public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 11;
+    public static final byte SAVED = 12;
 
     private short value;
     private byte status;
@@ -71,8 +70,8 @@ public class DownloadProgressStatus {
         return (this.status == PENDING_DOWNLOAD);
     }
 
-    public boolean isStoppedDownload() {
-        return (this.status == STOP_DOWNLOADING);
+    public boolean isCancelDownloading() {
+        return (this.status == CANCEL_DOWNLOADING);
     }
 
     public boolean isDownloading() {
@@ -97,6 +96,10 @@ public class DownloadProgressStatus {
 
     public boolean isNotAvailable() {
         return (this.status == NOT_AVAILABLE);
+    }
+
+    public boolean isSaved() {
+        return (this.status == SAVED);
     }
 
     public boolean canOpen() {

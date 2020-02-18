@@ -8,6 +8,7 @@ import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListMod
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
@@ -51,6 +52,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private ActionListener downloadProductListener;
     private ActionListener openDownloadedRemoteProductListener;
     private RemoteInputParameterValues remoteInputParameterValues;
+    private DownloadingProductProgressCallback downloadingProductProgressCallback;
 
     public RemoteProductsRepositoryPanel(RemoteProductsRepositoryProvider productsRepositoryProvider, ComponentDimension componentDimension,
                                          MissionParameterListener missionParameterListener, WorldMapPanelWrapper worlWindPanel) {
@@ -161,7 +163,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
         boolean canOpenSelectedProducts = true;
         for (int i=0; i<selectedProducts.length && canOpenSelectedProducts; i++) {
-            DownloadProgressStatus downloadProgressStatus = productListModel.getOutputProductResults().getDownloadingProductProgressValue(selectedProducts[i]);
+            DownloadProgressStatus downloadProgressStatus = getOutputProductResults().getDownloadedProductProgress(selectedProducts[i]);
             if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
                 canOpenSelectedProducts = false;
             }
@@ -183,7 +185,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                                                    ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
 
-        return new RemoteRepositoryProductPanel(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
+        return new RemoteRepositoryProductPanel(repositoryProductPanelBackground, this.downloadingProductProgressCallback, componentDimension, expandImageIcon, collapseImageIcon);
     }
 
     @Override
@@ -248,6 +250,14 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             return true;
         }
         return false;
+    }
+
+    public void addDownloadedProductProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus) {
+        getOutputProductResults().addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
+    }
+
+    public void setDownloadingProductProgressCallback(DownloadingProductProgressCallback downloadingProductProgressCallback) {
+        this.downloadingProductProgressCallback = downloadingProductProgressCallback;
     }
 
     public Credentials getSelectedAccount() {

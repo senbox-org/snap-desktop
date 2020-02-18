@@ -43,4 +43,13 @@ public class SelectionAreaParameterComponent extends AbstractParameterComponent<
             throw new ClassCastException("The parameter value type '" + value + "' must be '" + Rectangle2D.class+"'.");
         }
     }
+
+    @Override
+    public Boolean hasValidValue() {
+        Rectangle2D selectedArea = this.worldMapPanelWrapper.getSelectedArea();
+        if (selectedArea == null) {
+            return null; // the value is not specified
+        }
+        return true; // the value is specified
+    }
 }

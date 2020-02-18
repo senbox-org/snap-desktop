@@ -5,6 +5,7 @@ import org.jdesktop.swingx.JXDatePicker;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,31 +16,31 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
-    private final JXDatePicker component;
+    private final JXDatePicker datePicker;
 
     public DateParameterComponent(String parameterName, String parameterLabelText, boolean required, int textFieldPreferredHeight, Color backgroundColor) {
         super(parameterName, parameterLabelText, required);
 
-        this.component = new JXDatePicker();
-        this.component.setBackground(backgroundColor);
-        this.component.getEditor().setOpaque(false);
-        this.component.setOpaque(true);
-        this.component.setFormats(DATE_FORMAT);
+        this.datePicker = new JXDatePicker();
+        this.datePicker.setBackground(backgroundColor);
+        this.datePicker.getEditor().setOpaque(false);
+        this.datePicker.setOpaque(true);
+        this.datePicker.setFormats(DATE_FORMAT);
 
-        Dimension preferredSize = this.component.getPreferredSize();
+        Dimension preferredSize = this.datePicker.getPreferredSize();
         preferredSize.height = textFieldPreferredHeight;
-        this.component.setPreferredSize(preferredSize);
-        this.component.setMinimumSize(preferredSize);
+        this.datePicker.setPreferredSize(preferredSize);
+        this.datePicker.setMinimumSize(preferredSize);
     }
 
     @Override
     public JComponent getComponent() {
-        return this.component;
+        return this.datePicker;
     }
 
     @Override
     public Date getParameterValue() {
-        return this.component.getDate();
+        return this.datePicker.getDate();
     }
 
     @Override
@@ -47,7 +48,7 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
         if (value == null) {
             clearParameterValue();
         } else if (value instanceof Date) {
-            this.component.setDate((Date)value);
+            this.datePicker.setDate((Date)value);
         } else {
             throw new ClassCastException("The parameter value type '" + value + "' must be '" + Date.class+"'.");
         }
@@ -55,6 +56,29 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
 
     @Override
     public void clearParameterValue() {
-        this.component.setDate(null);
+        this.datePicker.setDate(null);
+    }
+
+    @Override
+    public Boolean hasValidValue() {
+        String dateAsString = getText();
+        if (dateAsString.length() > 0) {
+            try {
+                DATE_FORMAT.parse(dateAsString);
+                return true;
+            } catch (ParseException e) {
+                return false;
+            }
+        }
+        return null; // the value is not specified
+    }
+
+    @Override
+    public String getInvalidValueErrorDialogMessage() {
+        return "The '" + getLabel().getText()+"' parameter value '"+getText()+"' is invalid.";
+    }
+
+    private String getText() {
+        return this.datePicker.getEditor().getText().trim();
     }
 }

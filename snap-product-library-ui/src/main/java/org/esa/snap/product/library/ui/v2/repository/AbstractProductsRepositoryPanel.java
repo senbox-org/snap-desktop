@@ -112,22 +112,41 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     }
 
     protected final Map<String, Object> getParameterValues() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> parameterValues = new HashMap<>();
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent<?> parameterComponent = this.parameterComponents.get(i);
-            Object value = parameterComponent.getParameterValue();
-            if (value == null) {
-                String errorMessage = parameterComponent.getRequiredErrorDialogMessage();
+            Boolean result = parameterComponent.hasValidValue();
+            if (result == null) {
+                // the value is not specified
+                String errorMessage = parameterComponent.getRequiredValueErrorDialogMessage();
                 if (errorMessage != null) {
-                    showErrorMessageDialog(errorMessage, "Required parameter");
+                    // the value is required and show a message dialog
+                    showErrorMessageDialog(errorMessage, "Required parameter value");
                     parameterComponent.getComponent().requestFocus();
-                    return null;
+                    return null; // no parameters to return
+                }
+            } else if (result.booleanValue()) {
+                // the value is specified and it is valid
+                Object value = parameterComponent.getParameterValue();
+                if (value == null) {
+                    throw new NullPointerException("The parameter value is null.");
+                } else {
+                    parameterValues.put(parameterComponent.getParameterName(), value);
                 }
             } else {
-                result.put(parameterComponent.getParameterName(), value);
+                // the value is specified and it is invalid
+                String errorMessage = parameterComponent.getInvalidValueErrorDialogMessage();
+                if (errorMessage == null) {
+                    throw new NullPointerException("The error message for invalid value is null.");
+                } else {
+                    // the value is required and show a message dialog
+                    showErrorMessageDialog(errorMessage, "Invalid parameter value");
+                    parameterComponent.getComponent().requestFocus();
+                    return null; // no parameters to return
+                }
             }
         }
-        return result;
+        return parameterValues;
     }
 
     protected final void showErrorMessageDialog(String message, String title) {

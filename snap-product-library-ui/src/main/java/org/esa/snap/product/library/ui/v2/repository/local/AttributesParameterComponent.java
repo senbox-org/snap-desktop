@@ -16,6 +16,7 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -162,23 +163,12 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
     }
 
     @Override
-    public String getRequiredErrorDialogMessage() {
-        if (isInvalidFilter()) {
-            StringBuilder message = new StringBuilder();
-            message.append("The '" + getLabel().getText()+"' parameter has missing values.")
-                   .append("\n\n")
-                   .append("Specify the missing values or remove the existing values.");
-            return message.toString();
-        }
-        return null;
-    }
-
-    @Override
     public List<AttributeFilter> getParameterValue() {
         DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
         List<AttributeFilter> result = new ArrayList<>(model.getSize());
         AttributeFilter attributeFilter = buildAttributeFilter();
         if (attributeFilter == null) {
+            // the attribute filter is not specified
             if (isInvalidFilter()) {
                 return null;
             }
@@ -211,6 +201,36 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         } else {
             throw new ClassCastException("The parameter value type '" + value + "' must be '" + List.class+"'.");
         }
+    }
+
+    @Override
+    public Boolean hasValidValue() {
+        String selectedAttributeName = getSelectedAttributeName();
+        AttributeValueFilter selectedAttributeValueFilter = getSelectedAttributeValueFilter();
+        String attributeValue = getEnteredAttributeValue();
+        if (selectedAttributeName == null && selectedAttributeValueFilter == null && attributeValue.length() == 0) {
+            // no filter specified
+            DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
+            if (model.getSize() == 0) {
+                // no attributes added into the list
+                return null;
+            }
+            // the list contains at least one attribute
+            return true;
+        } else if (selectedAttributeName != null && selectedAttributeValueFilter != null && attributeValue.length() > 0) {
+            // the filter is specified
+            return true;
+        }
+        return false; // the value is invalid
+    }
+
+    @Override
+    public String getInvalidValueErrorDialogMessage() {
+        StringBuilder message = new StringBuilder();
+        message.append("The '" + getLabel().getText()+"' parameter has missing values.")
+                .append("\n\n")
+                .append("Specify the missing values or remove the existing values.");
+        return message.toString();
     }
 
     private void remoteAttributeButtonClicked() {

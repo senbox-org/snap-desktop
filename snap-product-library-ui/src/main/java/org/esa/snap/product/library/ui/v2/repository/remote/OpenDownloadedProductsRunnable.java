@@ -41,7 +41,7 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
             try {
                 updateProductProgressStatusLater(repositoryProduct, DownloadProgressStatus.OPENING);
 
-                File productFile = new File(repositoryProduct.getURL());
+                File productFile = entry.getValue().toFile();
                 ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                 if (productReader == null) {
                     // no product reader found in the application
@@ -50,7 +50,6 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
                     // there is a product reader in the application
                     Product product = productReader.readProductNodes(productFile, null);
                     if (product == null) {
-                        //updateProductProgressStatusLater(repositoryProduct, DownloadProgressStatus.FAIL_OPENED);
                         throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.getAbsolutePath()+"'.");
                     } else {
                         this.appContext.getProductManager().addProduct(product);

@@ -55,6 +55,10 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
 
+        if (repositoryProductPanelBackground == null) {
+            throw new NullPointerException("The repository product panel background is null.");
+        }
+
         this.repositoryProductPanelBackground = repositoryProductPanelBackground;
         this.componentDimension = componentDimension;
         this.expandImageIcon = expandImageIcon;

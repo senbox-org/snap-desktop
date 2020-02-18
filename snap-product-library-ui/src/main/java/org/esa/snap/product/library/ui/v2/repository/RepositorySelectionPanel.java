@@ -7,12 +7,15 @@ import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepos
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPaginationPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
+import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -140,19 +143,25 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    public void finishDownloadingProduct(SaveDownloadedProductData saveProductData) {
-        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
-        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
-        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
-        allLocalProductsRepositoryPanel.addAttributesIfMissing(saveProductData.getProductAttributeNames());
-    }
-
-    public int getProductsRepositoryCount() {
-        return this.repositoriesComboBox.getModel().getSize();
-    }
-
-    public AbstractProductsRepositoryPanel getProductsRepositoryPanelAt(int index) {
-        return this.repositoriesComboBox.getModel().getElementAt(index);
+    public void finishDownloadingProduct(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus, SaveDownloadedProductData saveProductData) {
+        if (downloadProgressStatus != null) {
+            ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+            for (int i=0; i<model.getSize(); i++) {
+                AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+                if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                    if (repositoryPanel.getName().equals(repositoryProduct.getRepositoryName())) {
+                        ((RemoteProductsRepositoryPanel)repositoryPanel).addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
+                    }
+                } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
+                    if (saveProductData != null) {
+                        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)repositoryPanel;
+                        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+                        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
+                        allLocalProductsRepositoryPanel.addAttributesIfMissing(saveProductData.getProductAttributeNames());
+                    }
+                }
+            }
+        }
     }
 
     public AllLocalProductsRepositoryPanel getAllLocalProductsRepositoryPanel() {
@@ -279,6 +288,16 @@ public class RepositorySelectionPanel extends JPanel {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
                 ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListeners(downloadRemoteProductListener, openDownloadedRemoteProductListener);
+            }
+        }
+    }
+
+    public void setDownloadingProductProgressCallback(DownloadingProductProgressCallback downloadingProductProgressCallback) {
+        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+        for (int i=0; i<model.getSize(); i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+            if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadingProductProgressCallback(downloadingProductProgressCallback);
             }
         }
     }

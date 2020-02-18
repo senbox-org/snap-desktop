@@ -38,6 +38,8 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     @Override
     public final void run() {
         SaveDownloadedProductData saveProductData = null;
+        byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
+        Path productPath = null;
         try {
             startRunning();
 
@@ -45,23 +47,32 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
                 return; // nothing to return
             }
 
-            saveProductData = downloadAndSaveProduct();
+            productPath = downloadProduct();
+
+            if (isFinished()) {
+                return; // nothing to return
+            }
+
+            saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
+                                                                                this.remoteProductDownloader.getRepositoryName(),
+                                                                                this.remoteProductDownloader.getLocalRepositoryFolderPath());
+
+            downloadStatus = DownloadProgressStatus.SAVED;
         } catch (java.lang.InterruptedException exception) {
+            downloadStatus = DownloadProgressStatus.CANCEL_DOWNLOADING;
             RepositoryProduct repositoryProduct = this.remoteProductDownloader.getProductToDownload();
             logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "', remote pository '" + repositoryProduct.getRepositoryName() + "'.");
-            updateDownloadingProductStatus(repositoryProduct, DownloadProgressStatus.STOP_DOWNLOADING);
         } catch (IOException exception) {
-            byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
+            downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
                 downloadStatus = DownloadProgressStatus.NOT_AVAILABLE; // the product to download is not online
             }
-            updateDownloadingProductStatus(this.remoteProductDownloader.getProductToDownload(), downloadStatus);
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } catch (Exception exception) {
-            updateDownloadingProductStatus(this.remoteProductDownloader.getProductToDownload(), DownloadProgressStatus.FAILED_DOWNLOADING);
+            downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } finally {
-            finishRunning(saveProductData);
+            finishRunning(saveProductData, downloadStatus, productPath);
         }
     }
 
@@ -72,10 +83,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         this.remoteProductDownloader.cancel();
     }
 
-    protected void updateDownloadingProductStatus(RepositoryProduct repositoryProduct, byte downloadStatus) {
-    }
-
-    protected void finishRunning(SaveDownloadedProductData saveProductData) {
+    protected void finishRunning(SaveDownloadedProductData saveProductData, byte downloadStatus, Path productPath) {
         setRunning(false);
     }
 
@@ -86,7 +94,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         return this.remoteProductDownloader.getProductToDownload();
     }
 
-    private SaveDownloadedProductData downloadAndSaveProduct() throws Exception {
+    private Path downloadProduct() throws Exception {
         RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
             @Override
             public void notifyProgress(short progressPercent) {
@@ -94,7 +102,6 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             }
         };
 
-        Path productPath = null;
         this.remoteRepositoriesSemaphore.acquirePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         try {
             if (isFinished()) {
@@ -103,23 +110,15 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
 
             updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0, null); // 0%
 
-            productPath = this.remoteProductDownloader.download(progressListener, this.uncompressedDownloadedProducts);
+            Path productPath = this.remoteProductDownloader.download(progressListener, this.uncompressedDownloadedProducts);
+
+            // successfully downloaded and saved the product
+            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100, productPath); // 100%
+
+            return productPath;
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         }
-
-        if (isFinished()) {
-            return null;
-        }
-
-        SaveDownloadedProductData saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
-                                                                                  this.remoteProductDownloader.getRepositoryName(),
-                                                                                  this.remoteProductDownloader.getLocalRepositoryFolderPath());
-
-        // successfully downloaded and saved the product
-        updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100, productPath); // 100%
-
-        return saveProductData;
     }
 
     private static abstract class RemoteProductProgressListener implements ProgressListener {

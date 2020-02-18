@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
 import javax.swing.*;
@@ -13,10 +14,18 @@ import javax.swing.*;
  */
 public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel {
 
-    public RemoteRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
+    private final DownloadingProductProgressCallback downloadingProductProgressCallback;
+
+    public RemoteRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground, DownloadingProductProgressCallback downloadingProductProgressCallback,
                                         ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
 
         super(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
+
+        if (downloadingProductProgressCallback == null) {
+            throw new NullPointerException("The downloading product callback is null.");
+        }
+
+        this.downloadingProductProgressCallback = downloadingProductProgressCallback;
     }
 
     @Override
@@ -29,7 +38,10 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
         super.refresh(outputProductResults);
 
         RepositoryProduct repositoryProduct = getRepositoryProduct();
-        DownloadProgressStatus progressPercent = outputProductResults.getDownloadingProductProgressValue(repositoryProduct);
-        ((RemoteProductStatusLabel)this.statusLabel).updateDownloadingPercent(progressPercent, getDefaultForegroundColor());
+        DownloadProgressStatus downloadProgressStatus = this.downloadingProductProgressCallback.getDownloadingProductsProgressValue(repositoryProduct);
+        if (downloadProgressStatus == null) {
+            downloadProgressStatus = outputProductResults.getDownloadedProductProgress(repositoryProduct);
+        }
+        ((RemoteProductStatusLabel)this.statusLabel).updateDownloadingPercent(downloadProgressStatus, getDefaultForegroundColor());
     }
 }

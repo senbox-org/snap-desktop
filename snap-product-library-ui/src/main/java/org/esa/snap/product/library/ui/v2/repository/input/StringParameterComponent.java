@@ -6,35 +6,20 @@ import java.awt.*;
 /**
  * Created by jcoravu on 7/8/2019.
  */
-public class StringParameterComponent extends AbstractParameterComponent<String> {
-
-    private final JTextField component;
+public class StringParameterComponent extends TextFieldParameterComponent<String> {
 
     public StringParameterComponent(String parameterName, String defaultValue, String parameterLabelText, boolean required, int textFieldPreferredHeight, Color backgroundColor) {
-        super(parameterName, parameterLabelText, required);
-
-        this.component = new JTextField();
-        this.component.setBackground(backgroundColor);
-
-        Dimension preferredSize = this.component.getPreferredSize();
-        preferredSize.height = textFieldPreferredHeight;
-        this.component.setPreferredSize(preferredSize);
-        this.component.setMinimumSize(preferredSize);
+        super(parameterName, parameterLabelText, required, textFieldPreferredHeight, backgroundColor);
 
         if (defaultValue != null) {
-            this.component.setText(defaultValue);
+            this.textField.setText(defaultValue);
         }
     }
 
     @Override
-    public JComponent getComponent() {
-        return this.component;
-    }
-
-    @Override
     public String getParameterValue() {
-        String value = this.component.getText().trim();
-        return (value.trim().equals("") ? null : value);
+        String value = getText();
+        return (value.length() > 0 ? value : null);
     }
 
     @Override
@@ -42,14 +27,18 @@ public class StringParameterComponent extends AbstractParameterComponent<String>
         if (value == null) {
             clearParameterValue();
         } else if (value instanceof String) {
-            this.component.setText((String) value);
+            this.textField.setText((String) value);
         } else {
             throw new ClassCastException("The parameter value type '" + value + "' must be '" + String.class + "'.");
         }
     }
 
     @Override
-    public void clearParameterValue() {
-        this.component.setText("");
+    public Boolean hasValidValue() {
+        String value = getText();
+        if (value.length() > 0) {
+            return true; // the value is specified and it is valid
+        }
+        return null; // the value is not specified
     }
 }

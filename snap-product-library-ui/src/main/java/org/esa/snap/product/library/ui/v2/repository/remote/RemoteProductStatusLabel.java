@@ -12,43 +12,46 @@ public class RemoteProductStatusLabel extends JLabel {
         super("");
     }
 
-    public void updateDownloadingPercent(DownloadProgressStatus progressPercent, Color defaultForegroundColor) {
+    public void updateDownloadingPercent(DownloadProgressStatus downloadProgressStatus, Color defaultForegroundColor) {
         Color foregroundColor = defaultForegroundColor;
         String percentText = " "; // set an empty space for the default text
-        if (progressPercent != null) {
+        if (downloadProgressStatus != null) {
             // the product is pending download or downloading
-            if (progressPercent.isDownloading()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "%";
-            } else if (progressPercent.isPendingDownload()) {
+            if (downloadProgressStatus.isDownloading()) {
+                percentText = "Downloading: " + Integer.toString(downloadProgressStatus.getValue()) + "%";
+            } else if (downloadProgressStatus.isPendingDownload()) {
                 percentText = "Pending download";
-            } else if (progressPercent.isStoppedDownload()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (stopped)";
-            } else if (progressPercent.isDownloaded()) {
+            } else if (downloadProgressStatus.isCancelDownloading()) {
+                percentText = "Downloading: " + Integer.toString(downloadProgressStatus.getValue()) + "% (stopped)";
+            } else if (downloadProgressStatus.isDownloaded()) {
                 percentText = "Downloaded";
                 foregroundColor = Color.GREEN;
-            } else if (progressPercent.isNotAvailable()) {
+            } else if (downloadProgressStatus.isSaved()) {
+                percentText = "Downloaded";
+                foregroundColor = Color.GREEN;
+            } else if (downloadProgressStatus.isNotAvailable()) {
                 percentText = "Not available to download";
                 foregroundColor = Color.RED;
-            } else if (progressPercent.isFailedDownload()) {
-                percentText = "Downloading: " + Integer.toString(progressPercent.getValue()) + "% (failed)";
+            } else if (downloadProgressStatus.isFailedDownload()) {
+                percentText = "Downloading: " + Integer.toString(downloadProgressStatus.getValue()) + "% (failed)";
                 foregroundColor = Color.RED;
-            } else if (progressPercent.isFailedOpen()) {
+            } else if (downloadProgressStatus.isFailedOpen()) {
                 percentText = "Downloaded (failed open)";
                 foregroundColor = Color.GREEN;
-            } else if (progressPercent.isFailOpenedBecauseNoProductReader()) {
+            } else if (downloadProgressStatus.isFailOpenedBecauseNoProductReader()) {
                 percentText = "Downloaded (failed open because no product reader found)";
                 foregroundColor = Color.GREEN;
-            } else if (progressPercent.isPendingOpen()) {
+            } else if (downloadProgressStatus.isPendingOpen()) {
                 percentText = "Downloaded (pending open)";
                 foregroundColor = Color.GREEN;
-            } else if (progressPercent.isOpening()) {
+            } else if (downloadProgressStatus.isOpening()) {
                 percentText = "Downloaded (opening)";
                 foregroundColor = Color.GREEN;
-            } else if (progressPercent.isOpened()) {
+            } else if (downloadProgressStatus.isOpened()) {
                 percentText = "Downloaded (opened)";
                 foregroundColor = Color.GREEN;
             } else {
-                throw new IllegalStateException("The percent progress status is unknown. The value is " + progressPercent.getValue()+".");
+                throw new IllegalStateException("The percent progress status is unknown. The value is " + downloadProgressStatus.getValue()+".");
             }
         }
         setForeground(foregroundColor);
