@@ -11,6 +11,9 @@ import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.subset.AbstractSubsetRegion;
+import org.esa.snap.core.subset.GeometrySubsetRegion;
+import org.esa.snap.core.subset.PixelSubsetRegion;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.UIUtils;
@@ -501,7 +504,7 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
     /**
      * @param geoRegion if <code>true</code>, the geoCoding parameters will be send
      */
-    private ProductSubsetDef updateSubsetDefNodeNameList(boolean geoRegion) {
+    private void updateSubsetDefNodeNameList(boolean geoRegion) {
         productSubsetDef = new ProductSubsetDef();
         //if the user specify the bands that want to be added in the product add only them, else mark the fact that the product must have all the bands
         if (!bandList.isSelectionEmpty()) {
@@ -523,20 +526,21 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
         if (!copyMetadata.isSelected()) {
             productSubsetDef.setIgnoreMetadata(true);
         }
+        AbstractSubsetRegion subsetRegion = null;
         if(geoRegion){
-            setGeometry(productSubsetDef);
+            subsetRegion = setGeometry();
         }else{
             if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
-                productSubsetDef.setRegion(new Rectangle(Integer.parseInt(paramX1.getValueAsText()),
-                                                         Integer.parseInt(paramY1.getValueAsText()),
-                                                         Integer.parseInt(paramWidth.getValueAsText()),
-                                                         Integer.parseInt(paramHeight.getValueAsText())));
+                subsetRegion = new PixelSubsetRegion(Integer.parseInt(paramX1.getValueAsText()),
+                                                     Integer.parseInt(paramY1.getValueAsText()),
+                                                     Integer.parseInt(paramWidth.getValueAsText()),
+                                                     Integer.parseInt(paramHeight.getValueAsText()), 0, false);
             }
         }
-        return productSubsetDef;
+        productSubsetDef.setSubsetRegion(subsetRegion);
     }
 
-    private void setGeometry(ProductSubsetDef productSubsetDef){
+    private AbstractSubsetRegion setGeometry(){
         if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
             final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
                                               (Double) paramWestLon1.getValue());
@@ -552,8 +556,9 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
             Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
             Geometry geometry = ProductUtils.computeGeometryUsingPixelRegion(geoCoding, productWidth, productHeight, bounds);
-            productSubsetDef.setGeoRegion(geometry);
+            return new GeometrySubsetRegion(geometry, 0, false);
         }
+        return null;
     }
 
     public ProductSubsetDef getProductSubsetDef() {

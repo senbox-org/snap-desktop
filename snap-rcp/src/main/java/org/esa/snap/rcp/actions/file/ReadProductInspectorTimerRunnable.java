@@ -4,7 +4,6 @@ import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
 import org.esa.snap.ui.loading.ILoadingIndicator;
 
-import java.io.File;
 import java.nio.file.Path;
 
 /**
