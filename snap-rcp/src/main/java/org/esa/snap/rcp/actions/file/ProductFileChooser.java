@@ -3,7 +3,6 @@ package org.esa.snap.rcp.actions.file;
 import org.apache.commons.math3.util.Pair;
 import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.dataio.ProductReaderExposedParams;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
@@ -158,12 +157,12 @@ public class ProductFileChooser extends SnapFileChooser {
         addPropertyChangeListener(e -> updateState());
     }
 
-    //TODO Jean new method
-    private void showAdvancedProductSubsetDialog() {
-        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-        AdvancedProductSubsetDialog dialog = new AdvancedProductSubsetDialog(parentWindow, "Product subset");
-        dialog.show();
-    }
+//    //TODO Jean new method
+//    private void showAdvancedProductSubsetDialog() {
+//        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+//        AdvancedProductSubsetDialog dialog = new AdvancedProductSubsetDialog(parentWindow, "Product subset");
+//        dialog.show();
+//    }
 
     private void updateState() {
         if (isSubsetEnabled()) {
@@ -286,26 +285,14 @@ public class ProductFileChooser extends SnapFileChooser {
 
         }
         boolean addUIComponents = true;
-        ProductReaderExposedParams readerExposedParams = null;
-        MetadataInspector.Metadata readerInspectorExposeParameters = null;
+        MetadataInspector metadataInspector = null;
         if (plugin != null) {
-            readerExposedParams = plugin.getExposedParams();
-            MetadataInspector metadatainsp = plugin.getMetadataInspector();
-            if (metadatainsp != null) {
-                Path input = convertInputToPath(inputFile);
-                try {
-                    readerInspectorExposeParameters = metadatainsp.getMetadata(input);
-                } catch (Exception ex) {
-                    addUIComponents = false;
-                    Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("Failed to read the metadata file! "));
-                    logger.log(Level.SEVERE, "Failed to read the metadata file! ", ex);
-                }
-            }
+            metadataInspector = plugin.getMetadataInspector();
         }else{
             addUIComponents = false;
         }
         //if the product does not support Advanced option action
-        if (addUIComponents && readerExposedParams == null && readerInspectorExposeParameters == null) {
+        if (addUIComponents && metadataInspector == null) {
             int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support Open with advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
             //if the user want to open the product normally the Advanced Options window will not be displayed
             if (confirm == JOptionPane.YES_OPTION) {
@@ -316,7 +303,7 @@ public class ProductFileChooser extends SnapFileChooser {
             }
         }
         if (addUIComponents) {
-            boolean approve = openAdvancedProduct(readerExposedParams, readerInspectorExposeParameters);
+            boolean approve = openAdvancedProduct(metadataInspector, inputFile);
             if (approve && getDialogType() == JFileChooser.OPEN_DIALOG) {
                 approveSelection();
             }
@@ -326,13 +313,13 @@ public class ProductFileChooser extends SnapFileChooser {
         }
     }
 
-    private boolean openAdvancedProduct(ProductReaderExposedParams readerExposedParams, MetadataInspector.Metadata readerInspectorExposeParameters) {
+    private boolean openAdvancedProduct(MetadataInspector metadataInspector, File file) {
         try {
-            ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", readerExposedParams,readerInspectorExposeParameters);
-            if(advancedDialog.show() == advancedDialog.ID_OK) {
-                productSubsetDef = advancedDialog.createSubsetDef();
+            AdvancedProductSubsetDialog advancedDialog = new AdvancedProductSubsetDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", metadataInspector, file);
+            advancedDialog.show();
+            if(productSubsetDef != null) {
                 return true;
-                }
+            }
         }catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to open the advanced option dialog.", e);
             Dialogs.showError("The file " + getSelectedFile() + " could not be opened with advanced options!");
@@ -410,5 +397,4 @@ public class ProductFileChooser extends SnapFileChooser {
         }
         return result;
     }
-
 }
