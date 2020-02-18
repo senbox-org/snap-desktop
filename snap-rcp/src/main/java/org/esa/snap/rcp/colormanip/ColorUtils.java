@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 
 /**
  * Utility class containing methods to the Color Manipulation Tool.
@@ -137,6 +138,16 @@ public class ColorUtils {
         return true;
     }
 
+
+    public static void showErrorDialog(final String message) {
+        if (message != null && message.trim().length() > 0) {
+            if (SnapApp.getDefault() != null) {
+                Dialogs.showError(message);
+            } else {
+                Dialogs.showError("Error", message);
+            }
+        }
+    }
 
 
     public static boolean checkRangeCompatibility(double min, double max, boolean isLogScaled) {
