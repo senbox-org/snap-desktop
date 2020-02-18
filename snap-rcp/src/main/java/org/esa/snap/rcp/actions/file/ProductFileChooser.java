@@ -42,7 +42,7 @@ public class ProductFileChooser extends SnapFileChooser {
     private JButton subsetButton;
     private JButton advancedButton;
     private Product subsetProduct;
-    private ProductSubsetDef productSubsetDef;
+    private transient ProductSubsetDef productSubsetDef;
     private ProductReaderPlugIn plugin;
 
     private JLabel sizeLabel;
@@ -317,6 +317,7 @@ public class ProductFileChooser extends SnapFileChooser {
         try {
             AdvancedProductSubsetDialog advancedDialog = new AdvancedProductSubsetDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", metadataInspector, file);
             advancedDialog.show();
+            productSubsetDef = advancedDialog.getProductSubsetDef();
             if(productSubsetDef != null) {
                 return true;
             }
