@@ -13,14 +13,13 @@ import java.nio.file.Path;
  */
 public class ReadProductInspectorTimerRunnable extends AbstractTimerRunnable<MetadataInspector.Metadata> {
 
-    private MetadataInspector metadataInspector;
-    private File file;
-    private Thread runThread;
+    private final MetadataInspector metadataInspector;
+    private final Path productFile;
 
-    public ReadProductInspectorTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, MetadataInspector metadataInspector, File file) {
+    public ReadProductInspectorTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, MetadataInspector metadataInspector, Path productFile) {
         super(loadingIndicator, threadId, 500);
         this.metadataInspector = metadataInspector;
-        this.file = file;
+        this.productFile = productFile;
     }
 
     @Override
@@ -30,19 +29,11 @@ public class ReadProductInspectorTimerRunnable extends AbstractTimerRunnable<Met
 
     @Override
     protected MetadataInspector.Metadata execute() throws Exception {
-        runThread = Thread.currentThread();
-        Path input = ProductFileChooser.convertInputToPath(file);
-        return metadataInspector.getMetadata(input);
+        return metadataInspector.getMetadata(this.productFile);
     }
 
     @Override
     protected String getExceptionLoggingMessage() {
         return "Failed to read the product metadata inspector.";
-    }
-
-    public void stopRequest() {
-        if (runThread != null) {
-            runThread.interrupt();
-        }
     }
 }

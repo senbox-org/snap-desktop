@@ -34,21 +34,24 @@ import java.util.logging.Logger;
  */
 public class AdvancedProductSubsetDialog extends AbstractModalDialog implements ParamChangeListener {
 
+    private static final Logger logger = Logger.getLogger(AdvancedProductSubsetDialog.class.getName());
+
     private static final int MIN_SCENE_VALUE = 0;
     private static final String FORMAT_PATTERN = "#0.00#";
 
-    private final JList bandList = new JList();
-    private final JList maskList = new JList();
+    private final JList bandList;
+    private final JList maskList;
 
-    private JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
-    private final JCheckBox copyMasks = new JCheckBox("Copy Masks", true);
+    private JCheckBox copyMetadata;
+    private final JCheckBox copyMasks;
 
-    private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
-    private final JRadioButton geoCoordRadio = new JRadioButton("Geographic Coordinates");
+    private final JRadioButton pixelCoordRadio;
+    private final JRadioButton geoCoordRadio;
 
-    private final JPanel pixelPanel = new JPanel(new GridBagLayout());
-    private final JPanel geoPanel = new JPanel(new GridBagLayout());
-    JScrollPane scrollPaneMask = new JScrollPane();
+    private final JPanel pixelPanel;
+    private final JPanel geoPanel;
+
+    private JScrollPane scrollPaneMask;
 
     private MetadataInspector.Metadata readerInspectorExposeParameters;
 
@@ -68,18 +71,26 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
 
     private MetadataInspector metadataInspector;
     private File file;
-
-    private ReadProductInspectorTimerRunnable runnable;
-
     private ProductSubsetDef productSubsetDef;
-
-    protected Logger logger = Logger.getLogger(getClass().getName());
 
     public AdvancedProductSubsetDialog(Window parent, String title, MetadataInspector metadataInspector, File file) {
         super(parent, title, true, null);
+
         updatingUI = new AtomicBoolean(false);
         this.metadataInspector = metadataInspector;
         this.file = file;
+
+        bandList = new JList();
+        maskList = new JList();
+
+        copyMetadata = new JCheckBox("Copy Metadata", true);
+        copyMasks = new JCheckBox("Copy Masks", true);
+
+        pixelCoordRadio = new JRadioButton("Pixel Coordinates");
+        geoCoordRadio = new JRadioButton("Geographic Coordinates");
+
+        pixelPanel = new JPanel(new GridBagLayout());
+        geoPanel = new JPanel(new GridBagLayout());
     }
 
     @Override
@@ -99,30 +110,11 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
     }
 
     @Override
-    protected void onCancel(){
-        super.onCancel();
-        runnable.stopRequest();
-    }
-
-    @Override
     protected JPanel buildContentPanel(int gapBetweenColumns, int gapBetweenRows) {
         ParamGroup pg = new ParamGroup();
         initPixelParameters(pg);
         initGeoCodingParameters(pg);
         pg.addParamChangeListener(this);
-
-        JPanel contentPanel = new JPanel(new GridBagLayout());
-
-        scrollPaneMask = new JScrollPane(maskList);
-
-        GridBagConstraints gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(new JLabel("Source Bands:"), gbc);
-        gbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(new JScrollPane(bandList), gbc);
-
-        gbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(copyMetadata, gbc);
-
         copyMasks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -138,15 +130,11 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
                 }
             }
         });
-        gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(copyMasks, gbc);
-        gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(scrollPaneMask, gbc);
 
-        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.CENTER, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(pixelCoordRadio, gbc);
-        gbc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.CENTER, GridBagConstraints.NORTHWEST, 1, 1, 1, 1);
-        contentPanel.add(geoCoordRadio, gbc);
+        scrollPaneMask = new JScrollPane(maskList);
+
+        createPixelPanel(gapBetweenColumns, gapBetweenRows);
+        createGeoCodingPanel(gapBetweenColumns, gapBetweenRows);
 
         pixelCoordRadio.setSelected(true);
         pixelCoordRadio.setActionCommand("pixelCoordRadio");
@@ -154,70 +142,95 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
         ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
-        RadioListener myListener = new RadioListener();
-        pixelCoordRadio.addActionListener(myListener);
-        geoCoordRadio.addActionListener(myListener);
+        pixelCoordRadio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pixelPanel.setVisible(true);
+                geoPanel.setVisible(false);
+            }
+        });
+        geoCoordRadio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pixelPanel.setVisible(false);
+                geoPanel.setVisible(true);
+            }
+        });
 
-        createPixelPanel();
-        createGeoCodingPanel();
+        JPanel contentPanel = new JPanel(new GridBagLayout());
 
-        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 1, 1);
-        gbc.gridwidth = 2;
+        GridBagConstraints gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, 0, 0);
+        contentPanel.add(new JLabel("Source Bands:"), gbc);
+        gbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 1, 1, 0, gapBetweenColumns);
+        contentPanel.add(new JScrollPane(bandList), gbc);
+
+        gbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, 0);
+        contentPanel.add(copyMetadata, gbc);
+
+        gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, 0);
+        contentPanel.add(copyMasks, gbc);
+        gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        contentPanel.add(scrollPaneMask, gbc);
+
+        JPanel regionTypePanel = new JPanel(new GridLayout(1, 2));
+        regionTypePanel.add(pixelCoordRadio);
+        regionTypePanel.add(geoCoordRadio);
+
+        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 2, 1, gapBetweenRows, 0);
+        contentPanel.add(regionTypePanel, gbc);
+
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 2, 1, gapBetweenRows, 0);
         contentPanel.add(pixelPanel, gbc);
 
-        geoPanel.setVisible(false);
+        gbc = SwingUtils.buildConstraints(0, 5, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 2, 1, gapBetweenRows, 0);
         contentPanel.add(geoPanel, gbc);
+        geoPanel.setVisible(false);
 
         return contentPanel;
     }
 
-    private void createPixelPanel(){
-        GridBagConstraints pixgbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 1, 1);
+    private void createPixelPanel(int gapBetweenColumns, int gapBetweenRows) {
+        GridBagConstraints pixgbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
         pixelPanel.add(new JLabel("SceneX:"), pixgbc);
-        pixgbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, gapBetweenColumns);
         pixelPanel.add(UIUtils.createSpinner(paramX1, 25, "#0"),pixgbc);
 
-        pixgbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("SceneY:"), pixgbc);
-        pixgbc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         pixelPanel.add(UIUtils.createSpinner(paramY1, 25, "#0"),pixgbc);
 
-        pixgbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("Scene width:"), pixgbc);
-        pixgbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         pixelPanel.add(UIUtils.createSpinner(paramWidth, 25, "#0"),pixgbc);
 
-        pixgbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("Scene height:"), pixgbc);
-        pixgbc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        pixgbc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         pixelPanel.add(UIUtils.createSpinner(paramHeight, 25, "#0"),pixgbc);
-
-        pixelPanel.add(new JPanel(), pixgbc);
     }
 
-    private void createGeoCodingPanel(){
-        GridBagConstraints geobc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 1, 1);
+    private void createGeoCodingPanel(int gapBetweenColumns, int gapBetweenRows) {
+        GridBagConstraints geobc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
         geoPanel.add(new JLabel("North latitude bound:"), geobc);
-        geobc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, gapBetweenColumns);
         geoPanel.add(UIUtils.createSpinner(paramNorthLat1, 1.0, FORMAT_PATTERN),geobc);
 
-        geobc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("West longitude bound:"), geobc);
-        geobc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         geoPanel.add(UIUtils.createSpinner(paramWestLon1, 1.0, FORMAT_PATTERN),geobc);
 
-        geobc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("South latitude bound:"), geobc);
-        geobc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         geoPanel.add(UIUtils.createSpinner(paramSouthLat2, 1.0, FORMAT_PATTERN),geobc);
 
-        geobc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("East longitude bound:"), geobc);
-        geobc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 1, 1);
+        geobc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         geoPanel.add(UIUtils.createSpinner(paramEastLon2, 1.0, FORMAT_PATTERN),geobc);
-
-        geobc.gridwidth = 2;
-        geoPanel.add(new JPanel(), geobc);
     }
 
     private void initPixelParameters(ParamGroup pg){
@@ -273,7 +286,7 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
     private void readProductMetadataAsync() {
         ILoadingIndicator loadingIndicator = getLoadingIndicator();
         int threadId = getNewCurrentThreadId();
-        runnable = new ReadProductInspectorTimerRunnable(loadingIndicator, threadId, metadataInspector, file) {
+        ReadProductInspectorTimerRunnable runnable = new ReadProductInspectorTimerRunnable(loadingIndicator, threadId, metadataInspector, file.toPath()) {
             @Override
             protected void onSuccessfullyFinish(MetadataInspector.Metadata result) {
                 onSuccessfullyLoadingProductMetadata(result);
@@ -319,7 +332,6 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
 
     private void onFailedLoadingProductMetadata(Exception exception) {
         showErrorDialog("Failed to load the product metadata", "Loading metadata");
-        logger.log(Level.SEVERE, "Failed to read the metadata file! ", exception);
     }
 
     @Override
@@ -478,14 +490,12 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
         return label;
     }
 
-    public ProductSubsetDef createSubsetDef (){
+    private void createSubsetDef() {
         if (pixelPanel.isVisible()) {
-            return updateSubsetDefNodeNameList(false);
+            updateSubsetDefNodeNameList(false);
+        } else if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
+            updateSubsetDefNodeNameList(true);
         }
-        if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
-            return updateSubsetDefNodeNameList(true);
-        }
-        return null;
     }
 
     /**
@@ -548,18 +558,5 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
 
     public ProductSubsetDef getProductSubsetDef() {
         return productSubsetDef;
-    }
-
-    private class RadioListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().contains("pixelCoordRadio")) {
-                pixelPanel.setVisible(true);
-                geoPanel.setVisible(false);
-            } else {
-                pixelPanel.setVisible(false);
-                geoPanel.setVisible(true);
-            }
-        }
     }
 }
