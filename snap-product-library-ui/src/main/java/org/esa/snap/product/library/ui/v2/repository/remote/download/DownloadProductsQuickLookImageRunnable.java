@@ -6,6 +6,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.remote.products.repository.HTTPServerException;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -94,10 +95,10 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
     }
 
     private void setProductQuickLookImageLater(RepositoryProduct product, BufferedImage quickLookImage) {
-        Runnable runnable = new DownloadRemoteProductsHelper.PairRunnable<RepositoryProduct, BufferedImage>(product, quickLookImage) {
+        Runnable runnable = new PairRunnable<RepositoryProduct, BufferedImage>(product, quickLookImage) {
             @Override
-            public void run() {
-                repositoryProductListPanel.setProductQuickLookImage(this.first, this.second);
+            protected void execute(RepositoryProduct repositoryProduct, BufferedImage bufferedImage) {
+                repositoryProductListPanel.setProductQuickLookImage(repositoryProduct, bufferedImage);
             }
         };
         SwingUtilities.invokeLater(runnable);
