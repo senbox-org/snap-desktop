@@ -90,17 +90,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private String currentMaxFieldValue = "";
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
-    //    private final JCheckBox loadPaletteOnlyCheckBox;
     private final ColorSchemeManager standardColorPaletteSchemes;
     private JLabel colorSchemeJLabel;
     private JButton paletteInversionButton;
 
-    DocumentListener documentListener;
 
 
-    final Boolean[] minFieldActivated = {new Boolean(false)};
-    final Boolean[] maxFieldActivated = {new Boolean(false)};
-    final Boolean[] listenToLogDisplayButtonEnabled = {true};
+    final Boolean[] minTextFieldListenerEnabled = {new Boolean(true)};
+    final Boolean[] maxTextFieldListenerEnabled = {new Boolean(true)};
+    final Boolean[] logButtonListenerEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
 
     PropertyMap configuration = null;
@@ -253,10 +251,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         logDisplayButton = LogDisplay.createButton();
         logDisplayButton.addActionListener(e -> {
-            if (listenToLogDisplayButtonEnabled[0]) {
-                listenToLogDisplayButtonEnabled[0] = false;
+            if (logButtonListenerEnabled[0]) {
+                logButtonListenerEnabled[0] = false;
                 applyChanges(RangeKey.FromLogButton);
-                listenToLogDisplayButtonEnabled[0] = true;
+                logButtonListenerEnabled[0] = true;
             }
         });
 
@@ -264,14 +262,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         standardColorPaletteSchemes.getjComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if (standardColorPaletteSchemes.getjComboBox().getSelectedIndex() != 0) {
                 if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
                     standardColorPaletteSchemes.setjComboBoxShouldFire(false);
                     ColorSchemeDefaults.debug("Inside standardColorPaletteSchemes listener");
                     handleColorPaletteInfoComboBoxSelection();
                     standardColorPaletteSchemes.setjComboBoxShouldFire(true);
                 }
-//                }
             }
         });
 
@@ -358,7 +354,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
     // returns true if this could be number if the user types more
-    private boolean incompleteNumber(String number) {
+    private boolean inCompleteNumber(String number) {
         if (number == null) {
             return true;
         }
@@ -376,24 +372,24 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void handleMaxTextfield() {
         if (!currentMaxFieldValue.equals(maxField.getText())) {
-            if (!maxFieldActivated[0] && !basicSwitcherIsActive[0]) {
-                maxFieldActivated[0] = true;
-                if (!incompleteNumber(maxField.getText())) {
+            if (maxTextFieldListenerEnabled[0] && !basicSwitcherIsActive[0]) {
+                maxTextFieldListenerEnabled[0] = false;
+                if (!inCompleteNumber(maxField.getText())) {
                     applyChanges(RangeKey.FromMaxField);
                 }
-                maxFieldActivated[0] = false;
+                maxTextFieldListenerEnabled[0] = true;
             }
         }
     }
 
     private void handleMinTextfield() {
         if (!currentMinFieldValue.equals(minField.getText().toString())) {
-            if (!minFieldActivated[0] && !basicSwitcherIsActive[0]) {
-                minFieldActivated[0] = true;
-                if (!incompleteNumber(minField.getText())) {
+            if (minTextFieldListenerEnabled[0] && !basicSwitcherIsActive[0]) {
+                minTextFieldListenerEnabled[0] = false;
+                if (!inCompleteNumber(minField.getText())) {
                     applyChanges(RangeKey.FromMinField);
                 }
-                minFieldActivated[0] = false;
+                minTextFieldListenerEnabled[0] = true;
             }
         }
     }
@@ -476,12 +472,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         parentForm.revalidateToolViewPaneControl();
 
-        if (!minFieldActivated[0]) {
+        if (minTextFieldListenerEnabled[0]) {
             minField.setValue(cpd.getMinDisplaySample());
             currentMinFieldValue = minField.getText().toString();
         }
 
-        if (!maxFieldActivated[0]) {
+        if (maxTextFieldListenerEnabled[0]) {
             maxField.setValue(cpd.getMaxDisplaySample());
             currentMaxFieldValue = maxField.getText().toString();
         }
