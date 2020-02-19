@@ -149,7 +149,7 @@ public class RepositorySelectionPanel extends JPanel {
             for (int i=0; i<model.getSize(); i++) {
                 AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
                 if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                    if (repositoryPanel.getName().equals(repositoryProduct.getRepositoryName())) {
+                    if (repositoryPanel.getRepositoryName().equals(repositoryProduct.getRepositoryName())) {
                         ((RemoteProductsRepositoryPanel)repositoryPanel).addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
                     }
                 } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
@@ -247,7 +247,7 @@ public class RepositorySelectionPanel extends JPanel {
         ItemRenderer<AbstractProductsRepositoryPanel> itemRenderer = new ItemRenderer<AbstractProductsRepositoryPanel>() {
             @Override
             public String getItemDisplayText(AbstractProductsRepositoryPanel panel) {
-                return (panel == null) ? "" : panel.getName();
+                return (panel == null) ? "" : panel.getRepositoryName();
             }
         };
         this.repositoriesComboBox = new CustomComboBox(itemRenderer, this.componentDimension.getTextFieldPreferredHeight(), false, this.componentDimension.getTextFieldBackgroundColor());

@@ -777,7 +777,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 if (productsWithoutQuickLookImage.size() > 0) {
                     if (logger.isLoggable(Level.FINE)) {
                         int currentPageNumber = selectedProductsRepositoryPanel.getOutputProductResults().getCurrentPageNumber();
-                        String repositoryName = selectedProductsRepositoryPanel.getName();
+                        String repositoryName = selectedProductsRepositoryPanel.getRepositoryName();
                         logger.log(Level.FINE, "Start downloading the quick look images for " + productsWithoutQuickLookImage.size()+" products from page number " + currentPageNumber + " using the '" +repositoryName+"' remote repository.");
                     }
 

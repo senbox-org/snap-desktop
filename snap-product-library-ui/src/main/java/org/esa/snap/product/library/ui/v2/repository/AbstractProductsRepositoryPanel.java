@@ -51,7 +51,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         resetOutputProducts();
     }
 
-    public abstract String getName();
+    public abstract String getRepositoryName();
 
     protected abstract void addInputParameterComponentsToPanel();
 

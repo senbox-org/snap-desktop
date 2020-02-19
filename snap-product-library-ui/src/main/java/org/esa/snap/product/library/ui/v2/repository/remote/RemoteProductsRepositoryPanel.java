@@ -59,6 +59,10 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
+        if (productsRepositoryProvider == null) {
+            throw new NullPointerException("The remote products repository provider is null.");
+        }
+
         this.productsRepositoryProvider = productsRepositoryProvider;
         this.missionParameterListener = missionParameterListener;
 
@@ -89,14 +93,14 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             };
             this.missionsComboBox.addItemListener(this.missionItemListener);
         } else {
-            throw new IllegalStateException("At least one supported mission must be defined.");
+            throw new IllegalStateException("At least one supported mission must be defined for '"+ getRepositoryName()+"' remote repository.");
         }
 
         this.parameterComponents = Collections.emptyList();
     }
 
     @Override
-    public String getName() {
+    public String getRepositoryName() {
         return this.productsRepositoryProvider.getRepositoryName();
     }
 
@@ -153,7 +157,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 }
                 this.remoteInputParameterValues = new RemoteInputParameterValues(parameterValues, selectedMission);
                 return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
-                                                             remoteRepositoriesSemaphore, productResultsPanel, getName(), selectedMission, parameterValues);
+                                                             remoteRepositoriesSemaphore, productResultsPanel, getRepositoryName(), selectedMission, parameterValues);
             }
         }
         return null;

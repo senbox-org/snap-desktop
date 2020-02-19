@@ -102,7 +102,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public String getName() {
+    public String getRepositoryName() {
         return "All Local Folders";
     }
 
