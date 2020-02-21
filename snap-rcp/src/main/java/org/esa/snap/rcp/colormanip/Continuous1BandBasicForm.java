@@ -72,7 +72,7 @@ import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RA
 //          - Color scheme will be red if it is a duplicate scheme
 //          - Popup window will notify a user why a color scheme is disabled (missing cpd file, etc.)
 //          - Modifications to how min and max textfield listen to user input to enable a warning prompt for bad entries
-//          - Reduced some event handling by checking if components have changed before updating them    
+//          - Reduced some event handling by checking if components have changed before updating them
 
 
 public class Continuous1BandBasicForm implements ColorManipulationChildForm {
