@@ -18,7 +18,6 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.binding.ValueRange;
 import org.esa.snap.core.datamodel.*;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -42,6 +41,7 @@ import java.awt.Component;
 //          - Added checks to ensure that value entries are numerically between the adjacent values.
 // FEB 2020 - Knowles
 //          - Added call to reset the color scheme to 'none'
+//          - Added log button
 
 
 
@@ -57,6 +57,11 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
     private TableModelListener tableModelListener;
     private final DiscreteCheckBox discreteCheckBox;
 
+    private final AbstractButton logButton;
+    final Boolean[] logButtonClicked = {false};
+
+
+
     public Continuous1BandTabularForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
         tableModel = new ImageInfoTableModel();
@@ -65,6 +70,19 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             parentForm.applyChanges();
             tableModel.addTableModelListener(tableModelListener);
         };
+
+
+
+        logButton = LogDisplay.createButton();
+        logButton.addActionListener(e -> {
+            if (!logButtonClicked[0]) {
+                logButtonClicked[0] = true;
+                applyChangesLogToggle();
+                logButtonClicked[0] = false;
+            }
+        });
+
+
         moreOptionsForm = new MoreOptionsForm(this, parentForm.getFormModel().canUseHistogramMatching());
         discreteCheckBox = new DiscreteCheckBox(parentForm);
         moreOptionsForm.addRow(discreteCheckBox);
@@ -94,6 +112,15 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         tableModel.addTableModelListener(tableModelListener);
     }
 
+
+    @Override
+    public AbstractButton[] getToolButtons() {
+        return new AbstractButton[]{
+                logButton
+        };
+    }
+
+
     @Override
     public void handleFormHidden(ColorFormModel formModel) {
         tableModel.removeTableModelListener(tableModelListener);
@@ -101,7 +128,20 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
     @Override
     public void updateFormModel(ColorFormModel formModel) {
-        tableModel.fireTableDataChanged();
+        final ImageInfo imageInfo = formModel.getOriginalImageInfo();
+        final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
+
+        final boolean logScaled = imageInfo.isLogScaled();
+        final boolean discrete = cpd.isDiscrete();
+
+        if (logScaled != logButton.isSelected()) {
+            logButton.setSelected(logScaled);
+        }
+
+        if (!logButtonClicked[0]) {
+            System.out.println("LOG BUTTON CLICKED");
+            tableModel.fireTableDataChanged();
+        }
         discreteCheckBox.setDiscreteColorsMode(parentForm.getFormModel().getModifiedImageInfo().getColorPaletteDef().isDiscrete());
     }
 
@@ -119,10 +159,7 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         return contentPanel;
     }
 
-    @Override
-    public AbstractButton[] getToolButtons() {
-        return new AbstractButton[0];
-    }
+
 
     @Override
     public MoreOptionsForm getMoreOptionsForm() {
@@ -218,5 +255,32 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             return columnIndex == 0 || columnIndex == 1;
         }
 
+    }
+
+
+
+
+    private void applyChangesLogToggle() {
+
+        final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+        final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+
+        final boolean sourceLogScaled = currentInfo.isLogScaled();
+        final boolean targetLogScaled = logButton.isSelected();
+        final double min = currentCPD.getMinDisplaySample();
+        final double max = currentCPD.getMaxDisplaySample();
+        final ColorPaletteDef cpd = currentCPD;
+        final boolean autoDistribute = true;
+
+        if (ColorUtils.checkRangeCompatibility(min, max, targetLogScaled)) {
+            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+            parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+
+            currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, sourceLogScaled, targetLogScaled);
+            parentForm.applyChanges();
+        } else {
+            logButton.setSelected(false);
+        }
     }
 }
