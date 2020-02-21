@@ -149,7 +149,9 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
             contentPanel.remove(oldForm.getContentPanel());
             contentPanel.add(childForm.getContentPanel(), BorderLayout.CENTER);
 
-            parentForm.installToolButtons();
+            boolean installAllButtons = (newForm instanceof Continuous1BandBasicForm || newForm instanceof Continuous1BandTabularForm);
+
+            parentForm.installToolButtons(installAllButtons);
             parentForm.installMoreOptions();
             parentForm.revalidateToolViewPaneControl();
         } else {

@@ -216,6 +216,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private void installChildForm() {
         final ColorManipulationChildForm oldForm = getChildForm();
         ColorManipulationChildForm newForm = emptyForm;
+
         if (getFormModel().isValid()) {
             if (getFormModel().isContinuous3BandImage()) {
                 if (oldForm instanceof Continuous3BandGraphicalForm) {
@@ -247,7 +248,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (newForm != oldForm) {
             setChildForm(newForm);
 
-            installToolButtons();
+            installToolButtons(true);
             installMoreOptions();
 
             editorPanel.removeAll();
@@ -375,10 +376,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
 
-    @Override
-    public void installToolButtons() {
 
-        int numColumns = 1; // 1 or 2
+    @Override
+    public void installToolButtons(boolean installAllButtons) {
+
         toolButtonsPanel.removeAll();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER;
@@ -388,43 +389,100 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         gbc.insets.bottom = 2;
         gbc.gridwidth = 1;
 
-        gbc.gridy++;
         toolButtonsPanel.add(resetButton, gbc);
-        if (numColumns == 1) {
-            gbc.gridy++;
-        }
-
-        toolButtonsPanel.add(multiApplyButton, gbc);
-        gbc.gridy++;
-        toolButtonsPanel.add(importButton, gbc);
-        if (numColumns == 1) {
-            gbc.gridy++;
-        }
-
-        toolButtonsPanel.add(exportButton, gbc);
-        gbc.gridy++;
+        gbc.gridy += 1;
 
         AbstractButton[] additionalButtons = getChildForm().getToolButtons();
         for (int i = 0; i < additionalButtons.length; i++) {
             AbstractButton button = additionalButtons[i];
             toolButtonsPanel.add(button, gbc);
-            if (i % numColumns == 1) {
-                gbc.gridy++;
-            }
+                gbc.gridy += 1;
         }
 
-        gbc.gridy++;
+        if (installAllButtons) {
+            toolButtonsPanel.add(multiApplyButton, gbc);
+            gbc.gridy += 1;
+
+            toolButtonsPanel.add(importButton, gbc);
+            gbc.gridy += 1;
+
+            toolButtonsPanel.add(exportButton, gbc);
+            gbc.gridy += 1;
+        }
+
+
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weighty = 1.0;
-        gbc.gridwidth = numColumns;
+
         toolButtonsPanel.add(new JLabel(" "), gbc); // filler
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.0;
         gbc.gridwidth = 1;
-        gbc.gridy++;
-        gbc.gridx = 0;
+        gbc.gridy += 1;
         toolButtonsPanel.add(helpButton, gbc);
     }
+
+
+
+
+//    @Override
+//    public void installToolButtons(boolean installAllButtons) {
+//
+//        boolean singleColumn = true;  // otherwise 2 columns
+//
+//        toolButtonsPanel.removeAll();
+//        GridBagConstraints gbc = new GridBagConstraints();
+//        gbc.anchor = GridBagConstraints.CENTER;
+//        gbc.fill = GridBagConstraints.NONE;
+//        gbc.weightx = 1.0;
+//        gbc.gridy = 0;
+//        gbc.insets.bottom = 2;
+//        gbc.gridwidth = 1;
+//
+//        toolButtonsPanel.add(resetButton, gbc);
+//
+//
+//        if (installAllButtons) {
+//            if (singleColumn) {
+//                gbc.gridy += 1;
+//            }
+//
+//            toolButtonsPanel.add(multiApplyButton, gbc);
+//            gbc.gridy += 1;
+//
+//            toolButtonsPanel.add(importButton, gbc);
+//            if (singleColumn) {
+//                gbc.gridy += 1;
+//            }
+//
+//            toolButtonsPanel.add(exportButton, gbc);
+//            gbc.gridy += 1;
+//        } else {
+//            gbc.gridy += 1;
+//        }
+//
+//        AbstractButton[] additionalButtons = getChildForm().getToolButtons();
+//        for (int i = 0; i < additionalButtons.length; i++) {
+//            AbstractButton button = additionalButtons[i];
+//            toolButtonsPanel.add(button, gbc);
+//            if (singleColumn || (i % 2 == 1)) {
+//                gbc.gridy += 1;
+//            }
+//        }
+//
+//        gbc.gridy += 1;
+//        gbc.fill = GridBagConstraints.VERTICAL;
+//        gbc.weighty = 1.0;
+//
+//        gbc.gridwidth = (singleColumn) ? 1 : 2;
+//        toolButtonsPanel.add(new JLabel(" "), gbc); // filler
+//        gbc.fill = GridBagConstraints.NONE;
+//        gbc.weighty = 0.0;
+//        gbc.gridwidth = 1;
+//        gbc.gridy += 1;
+//        gbc.gridx = 0;
+//        toolButtonsPanel.add(helpButton, gbc);
+//    }
 
 
     @Override

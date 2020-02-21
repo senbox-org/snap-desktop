@@ -96,7 +96,8 @@ public class ColorUtils {
             double d = Double.parseDouble(string);
         } catch (NumberFormatException nfe) {
             if (showMessage) {
-                SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + "=" + string + " is not a number");
+                ColorUtils.showErrorDialog("INPUT ERROR!!: \" + componentName + \"=\" + string + \" is not a number");
+//                SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + "=" + string + " is not a number");
             }
             return false;
         }
@@ -121,7 +122,6 @@ public class ColorUtils {
             return false;
         }
 
-        SnapApp.getDefault().setStatusBarMessage("");
         return true;
     }
 
@@ -130,11 +130,10 @@ public class ColorUtils {
     public static boolean checkRangeCompatibility(double min, double max) {
 
         if (min >= max) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Max must be greater than Min");
+            ColorUtils.showErrorDialog("INPUT ERROR!!: Max must be greater than Min");
             return false;
         }
 
-        SnapApp.getDefault().setStatusBarMessage("");
         return true;
     }
 
@@ -160,14 +159,14 @@ public class ColorUtils {
             return false;
         }
 
-        SnapApp.getDefault().setStatusBarMessage("");
         return true;
     }
 
 
     public static boolean checkSliderRangeCompatibility(double value, double min, double max) {
         if (value <= min || value >= max) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Slider outside range of adjacent sliders");
+            ColorUtils.showErrorDialog("INPUT ERROR!!: Slider outside range of adjacent sliders");
+
             return false;
         }
         return true;
@@ -178,18 +177,15 @@ public class ColorUtils {
     public static boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled) {
 
         if ((isLogScaled) && value <= 0) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + " must be greater than zero in log scaling mode");
+            ColorUtils.showErrorDialog("INPUT ERROR!!: \" + componentName + \" must be greater than zero in log scaling mode");
             return false;
         }
-
-        SnapApp.getDefault().setStatusBarMessage("");
-
         return true;
     }
 
     public static boolean checkTableRangeCompatibility(double value, double min, double max) {
         if (value <= min || value >= max) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Value outside range of adjacent Table Values");
+            ColorUtils.showErrorDialog("INPUT ERROR!!: Value outside range of adjacent Table Values");
             return false;
         }
         return true;
