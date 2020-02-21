@@ -138,10 +138,10 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             logButton.setSelected(logScaled);
         }
 
-        if (!logButtonClicked[0]) {
+//        if (!logButtonClicked[0]) {
             System.out.println("LOG BUTTON CLICKED");
             tableModel.fireTableDataChanged();
-        }
+//        }
         discreteCheckBox.setDiscreteColorsMode(parentForm.getFormModel().getModifiedImageInfo().getColorPaletteDef().isDiscrete());
     }
 

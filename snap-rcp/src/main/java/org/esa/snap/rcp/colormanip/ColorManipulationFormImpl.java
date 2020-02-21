@@ -75,6 +75,7 @@ import java.util.concurrent.Executors;
 //          - Minor color scheme revisions
 // FEB 2020 - Knowles
 //          - Wrapped this tool in a JScrollPane
+//          - Changed arrangement of tool buttons to single column
 
 
 @NbBundle.Messages({
