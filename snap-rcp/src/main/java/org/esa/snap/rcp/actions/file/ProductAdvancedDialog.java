@@ -35,9 +35,9 @@ import java.util.logging.Logger;
  * Created by jcoravu on 17/2/2020.
  * Updated by Denisa Stefanescu on 18/02/2020
  */
-public class AdvancedProductSubsetDialog extends AbstractModalDialog implements ParamChangeListener {
+public class ProductAdvancedDialog extends AbstractModalDialog implements ParamChangeListener {
 
-    private static final Logger logger = Logger.getLogger(AdvancedProductSubsetDialog.class.getName());
+    private static final Logger logger = Logger.getLogger(ProductAdvancedDialog.class.getName());
 
     private static final int MIN_SCENE_VALUE = 0;
     private static final String FORMAT_PATTERN = "#0.00#";
@@ -76,7 +76,7 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
     private File file;
     private ProductSubsetDef productSubsetDef;
 
-    public AdvancedProductSubsetDialog(Window parent, String title, MetadataInspector metadataInspector, File file) {
+    public ProductAdvancedDialog(Window parent, String title, MetadataInspector metadataInspector, File file) {
         super(parent, title, true, null);
 
         updatingUI = new AtomicBoolean(false);
@@ -318,8 +318,11 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
             paramHeight.getProperties().setMinValue((Integer) paramY1.getValue());
             paramHeight.getProperties().setMaxValue(result.getProductHeight());
             paramHeight.setValue(result.getProductHeight());
-
-            syncLatLonWithXYParams();
+            if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+                syncLatLonWithXYParams();
+            }else{
+                geoPanel.setEnabled(true);
+            }
         } catch (ParamValidateException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -534,7 +537,7 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
                 subsetRegion = new PixelSubsetRegion(Integer.parseInt(paramX1.getValueAsText()),
                                                      Integer.parseInt(paramY1.getValueAsText()),
                                                      Integer.parseInt(paramWidth.getValueAsText()),
-                                                     Integer.parseInt(paramHeight.getValueAsText()), 0, false);
+                                                     Integer.parseInt(paramHeight.getValueAsText()), 0);
             }
         }
         productSubsetDef.setSubsetRegion(subsetRegion);
@@ -556,7 +559,7 @@ public class AdvancedProductSubsetDialog extends AbstractModalDialog implements 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
             Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
             Geometry geometry = ProductUtils.computeGeometryUsingPixelRegion(geoCoding, productWidth, productHeight, bounds);
-            return new GeometrySubsetRegion(geometry, 0, false);
+            return new GeometrySubsetRegion(geometry, 0);
         }
         return null;
     }
