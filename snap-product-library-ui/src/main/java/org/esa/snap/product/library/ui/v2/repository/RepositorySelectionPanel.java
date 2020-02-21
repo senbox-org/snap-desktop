@@ -22,6 +22,8 @@ import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -63,9 +65,9 @@ public class RepositorySelectionPanel extends JPanel {
 
         createRepositoriesComboBox(productsRepositoryProviders, missionParameterListener);
 
-        Dimension comboBoxSize = this.repositoriesComboBox.getPreferredSize();
+        int preferredHeight = this.componentDimension.getTextFieldPreferredHeight();
 
-        Dimension buttonSize = new Dimension(comboBoxSize.height, comboBoxSize.height);
+        Dimension buttonSize = new Dimension(preferredHeight, preferredHeight);
 
         this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
         this.searchButton.setToolTipText("Search");

@@ -6,9 +6,7 @@ import gov.nasa.worldwind.SceneController;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
-import gov.nasa.worldwind.event.RenderingEvent;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.layers.CompassLayer;
@@ -23,15 +21,12 @@ import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
-import gov.nasa.worldwindx.examples.util.SectorSelector;
 
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * Created by jcoravu on 2/9/2019.
@@ -40,17 +35,17 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     private final Rectangle3DSelection selector;
 
-    public WorldMap3DPanel(boolean flatWorld, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
+    public WorldMap3DPanel(boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
         super(null, Configuration.getRequiredGLCapabilities(), new BasicGLCapabilitiesChooser());
 
         // create the default model as described in the current world wind properties
         Model model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
 
         setModel(model);
-        if (flatWorld) {
+        if (flatEarth) {
             setFlatEarth();
         } else {
-            setEarthGlobe();
+            setGlobeEarth();
         }
 
         this.selector = new Rectangle3DSelection(this.wwd) {
@@ -120,7 +115,7 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         return null;
     }
 
-    public void setEarthGlobe() {
+    public void setGlobeEarth() {
         getModel().setGlobe(new Earth());
         setView(new BasicOrbitView());
     }
@@ -130,7 +125,7 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         setView(new FlatOrbitView());
     }
 
-    public boolean isEarthGlobe() {
+    public boolean isGlobeEarth() {
         return (getModel().getGlobe() instanceof Earth);
     }
 

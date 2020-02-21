@@ -8,7 +8,6 @@ import org.esa.snap.ui.loading.GenericRunnable;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +23,7 @@ public class WorldMapPanelWrapper extends JPanel {
 
     private static final int WORLD_MAP_2D_FLAT_EARTH = 1;
     private static final int WORLD_MAP_3D_FLAT_EARTH = 2;
-    private static final int WORLD_MAP_3D_GLOBE = 3;
+    private static final int WORLD_MAP_3D_GLOBE_EARTH = 3;
 
     public static final float SELECTION_LINE_WIDTH = 1.5f;
     public final static Color SELECTION_FILL_COLOR = new Color(255, 255, 0, 70);
@@ -78,13 +77,8 @@ public class WorldMapPanelWrapper extends JPanel {
         }
     }
 
-    public void addWorldMapPanelAsync(boolean flatWorld, boolean removeExtraLayers) {
-        Integer lastWorldMapPanelId = this.persistencePreferences.getPropertyInt(PREFERENCES_KEY_LAST_WORLD_MAP_PANEL, null);
-        if (lastWorldMapPanelId != null) {
-
-        }
-
-        InitWorldMapPanelRunnable thread = new InitWorldMapPanelRunnable(this, flatWorld, removeExtraLayers, this.polygonsLayerModel);
+    public void addWorldMapPanelAsync(boolean flat3DEarth, boolean removeExtraLayers) {
+        InitWorldMap3DPanelRunnable thread = new InitWorldMap3DPanelRunnable(this, flat3DEarth, removeExtraLayers, this.polygonsLayerModel);
         thread.executeAsync(); // start the thread
     }
 
@@ -171,7 +165,7 @@ public class WorldMapPanelWrapper extends JPanel {
             viewMenu.add(buildView3DGlobe());
             viewMenu.add(buildView3DFlatEarth());
         } else if (worldMap == this.worldMap3DPanel) {
-            if (this.worldMap3DPanel.isEarthGlobe()) {
+            if (this.worldMap3DPanel.isGlobeEarth()) {
                 viewMenu.add(buildView3DFlatEarth());
             } else {
                 viewMenu.add(buildView3DGlobe());
@@ -180,7 +174,7 @@ public class WorldMapPanelWrapper extends JPanel {
             viewFlatEarthMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
-                    addWorldMapPanel(worldMap2DPanel);
+                    addWorldMapPanel(worldMap2DPanel, WORLD_MAP_2D_FLAT_EARTH);
                 }
             });
             viewMenu.add(viewFlatEarthMenuItem);
@@ -197,7 +191,7 @@ public class WorldMapPanelWrapper extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 worldMap3DPanel.setFlatEarth();
-                addWorldMapPanel(worldMap3DPanel);
+                addWorldMapPanel(worldMap3DPanel, WORLD_MAP_3D_FLAT_EARTH);
             }
         });
         return viewFlatEarthMenuItem;
@@ -208,17 +202,17 @@ public class WorldMapPanelWrapper extends JPanel {
         viewGlobeMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                worldMap3DPanel.setEarthGlobe();
-                addWorldMapPanel(worldMap3DPanel);
+                worldMap3DPanel.setGlobeEarth();
+                addWorldMapPanel(worldMap3DPanel, WORLD_MAP_3D_GLOBE_EARTH);
             }
         });
         return viewGlobeMenuItem;
     }
 
-    private void addWorldMapPanel(JPanel worldMapPanel) {
+    private void addWorldMapPanel(JPanel worldMapPanel, Integer worldMapPanelId) {
         Rectangle2D selectedArea = null;
         if (this.currentWorldMap != null) {
-            selectedArea = currentWorldMap.getSelectedArea();
+            selectedArea = this.currentWorldMap.getSelectedArea();
         }
         this.currentWorldMap = (WorldMap)worldMapPanel;
         this.currentWorldMap.setSelectedArea(selectedArea);
@@ -233,6 +227,9 @@ public class WorldMapPanelWrapper extends JPanel {
         }
 
         // save the world map panel to the preferences
+        if (worldMapPanelId != null) {
+            this.persistencePreferences.setPropertyInt(PREFERENCES_KEY_LAST_WORLD_MAP_PANEL, worldMapPanelId.intValue());
+        }
     }
 
     private void addWorldWindowPanel(WorldMap3DPanel worldMap3DPanel) {
@@ -251,33 +248,47 @@ public class WorldMapPanelWrapper extends JPanel {
         this.worldMap2DPanel.addMouseListener(mouseAdapter);
         JPanel worldMapPanel;
         if (worldMap3DPanel == null) {
+            // the world map 3D panel has not been loaded
             worldMapPanel = this.worldMap2DPanel;
         } else {
+            // the world map 3d panel has been loaded
             this.worldMap3DPanel = worldMap3DPanel;
             this.worldMap3DPanel.setOpaque(false);
             this.worldMap3DPanel.addMouseListener(mouseAdapter);
             worldMapPanel = this.worldMap3DPanel;
         }
-        addWorldMapPanel(worldMapPanel);
+        Integer lastWorldMapPanelId = this.persistencePreferences.getPropertyInt(PREFERENCES_KEY_LAST_WORLD_MAP_PANEL, null);
+        if (lastWorldMapPanelId != null) {
+            if (lastWorldMapPanelId.intValue() == WORLD_MAP_2D_FLAT_EARTH) {
+                worldMapPanel = this.worldMap2DPanel;
+            } else if (lastWorldMapPanelId.intValue() == WORLD_MAP_3D_FLAT_EARTH) {
+                this.worldMap3DPanel.setFlatEarth();
+                worldMapPanel = this.worldMap3DPanel;
+            } else if (lastWorldMapPanelId.intValue() == WORLD_MAP_3D_GLOBE_EARTH) {
+                this.worldMap3DPanel.setGlobeEarth();
+                worldMapPanel = this.worldMap3DPanel;
+            }
+        }
+        addWorldMapPanel(worldMapPanel, null);
     }
 
-    private static class InitWorldMapPanelRunnable extends AbstractRunnable<WorldMap3DPanel> {
+    private static class InitWorldMap3DPanelRunnable extends AbstractRunnable<WorldMap3DPanel> {
 
         private final WorldMapPanelWrapper worldWindowPanel;
-        private final boolean flatWorld;
+        private final boolean flatEarth;
         private final boolean removeExtraLayers;
         private final PolygonsLayerModel polygonsLayerModel;
 
-        public InitWorldMapPanelRunnable(WorldMapPanelWrapper worldWindowPanel, boolean flatWorld, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
+        public InitWorldMap3DPanelRunnable(WorldMapPanelWrapper worldWindowPanel, boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
             this.polygonsLayerModel = polygonsLayerModel;
             this.worldWindowPanel = worldWindowPanel;
-            this.flatWorld = flatWorld;
+            this.flatEarth = flatEarth;
             this.removeExtraLayers = removeExtraLayers;
         }
 
         @Override
         protected WorldMap3DPanel execute() throws Exception {
-            return new WorldMap3DPanel(this.flatWorld, this.removeExtraLayers, this.polygonsLayerModel);
+            return new WorldMap3DPanel(this.flatEarth, this.removeExtraLayers, this.polygonsLayerModel);
         }
 
         @Override

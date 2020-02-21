@@ -165,12 +165,13 @@ public class DatePickerComboBox extends JComboBox<Void> {
             if (component instanceof JButton) {
                 JButton arrowButton = (JButton)component;
                 MouseListener[] mouseListeners = arrowButton.getMouseListeners();
-                for (int k=0; k<mouseListeners.length; k++) {
-                    arrowButton.removeMouseListener(mouseListeners[k]);
+                if (mouseListeners.length >= 1) {
+                    // remove the second mouse listener to avoid showing the popup containing the list
+                    arrowButton.removeMouseListener(mouseListeners[1]);
                 }
                 arrowButton.addMouseListener(new MouseAdapter() {
                     @Override
-                    public void mouseClicked(MouseEvent e) {
+                    public void mousePressed(MouseEvent mouseEvent) {
                         toggleShowPopup();
                     }
                 });
