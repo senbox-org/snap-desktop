@@ -1,6 +1,7 @@
 package org.esa.snap.ui.loading;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,7 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
 
         this.preferredHeight = preferredHeight;
 
+        setBorder(SwingUtils.LINE_BORDER);
         setMaximumRowCount(5); // the maximum number of visible items in the popup
         setEditable(true); // set the combo box as editable
         ComboBoxEditorComponent<ItemType> comboBoxEditorComponent = new ComboBoxEditorComponent<ItemType>(itemRenderer);
@@ -93,7 +95,7 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
         private ComboBoxEditorComponent(ItemRenderer<ItemType> itemRenderer) {
             this.itemRenderer = itemRenderer;
             this.editorTextField = new JTextField("", 9);
-            this.editorTextField.setBorder(null);
+            this.editorTextField.setBorder(null); // no border for editor text field
         }
 
         @Override

@@ -13,7 +13,6 @@ import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
-import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -125,7 +124,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
             }
         }
 
-        onUpdateProgressBarDownloadedProducts();
+        updateProgressBarDownloadedProducts();
     }
 
     public boolean isRunning() {
@@ -144,6 +143,8 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                     runnable.cancelRunning();
                 }
             }
+
+            updateProgressBarDownloadedProducts();
         }
     }
 
@@ -167,7 +168,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         if (this.runningTasks != null && this.runningTasks.size() > 0) {
             downloadingProductRunnables = new ArrayList<>();
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
-                if (runnable instanceof DownloadProductRunnable) {
+                if (runnable instanceof DownloadProductRunnable && !runnable.isFinished()) {
                     DownloadProductRunnable downloadProductRunnable = (DownloadProductRunnable)runnable;
                     DownloadProgressStatus downloadProgressStatus = this.downloadingProductsProgressValue.get(downloadProductRunnable.getProductToDownload());
                     if (downloadProgressStatus != null) {
@@ -244,7 +245,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
     }
 
     private DownloadProgressStatus resetDownloadProgressStatus(RepositoryProduct repositoryProduct) {
-        return this.downloadingProductsProgressValue.put(repositoryProduct, null); // set 'null' to reset the value
+        return this.downloadingProductsProgressValue.remove(repositoryProduct);
     }
 
     private void onStartRunningDownloadProductThread() {
@@ -257,16 +258,23 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
     }
 
     private void onCancelRunningDownloadProductThread(DownloadProductRunnable parentRunnableItem) {
-        // reset the download progress item from the map
-        DownloadProgressStatus downloadProgressStatus = resetDownloadProgressStatus(parentRunnableItem.getProductToDownload());
-        if (downloadProgressStatus != null) {
-            if (downloadProgressStatus.isPendingDownload()) {
-                downloadProgressStatus = null; // reset the item
-            } else {
-                downloadProgressStatus.setStatus(DownloadProgressStatus.CANCEL_DOWNLOADING);
+        if (this.runningTasks.contains(parentRunnableItem)) {
+            // reset the download progress item from the map
+            DownloadProgressStatus downloadProgressStatus = resetDownloadProgressStatus(parentRunnableItem.getProductToDownload());
+            if (downloadProgressStatus != null) {
+                if (downloadProgressStatus.isPendingDownload()) {
+                    downloadProgressStatus = null; // reset the item
+                } else {
+                    downloadProgressStatus.setStatus(DownloadProgressStatus.CANCEL_DOWNLOADING);
+                }
             }
+
+            updateProgressBarDownloadedProducts();
+
+            this.downloadProductListener.onCancelDownloadingProduct(parentRunnableItem, downloadProgressStatus);
+        } else {
+            throw new IllegalArgumentException("The parent thread parameter is wrong.");
         }
-        this.downloadProductListener.onCancelDownloadingProduct(parentRunnableItem, downloadProgressStatus);
     }
 
     private void onFinishRunningDownloadProductThread(DownloadProductRunnable parentRunnable, SaveDownloadedProductData saveProductData,
@@ -280,7 +288,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                 downloadProgressStatus.setDownloadedPath(downloadedProductPath);
             }
 
-            onUpdateProgressBarDownloadedProducts();
+            updateProgressBarDownloadedProducts();
 
             boolean hasProductsToDownload = hasDownloadingProducts();
 
@@ -314,18 +322,22 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         }
     }
 
-    private void onUpdateProgressBarDownloadedProducts() {
+    private void updateProgressBarDownloadedProducts() {
         if (this.progressPanel.isCurrentThread(this.threadId)) {
             int downloadingProductCount = 0;
             for (AbstractBackgroundDownloadRunnable runnable : this.runningTasks) {
-                if (runnable instanceof DownloadProductRunnable) {
+                if (runnable instanceof DownloadProductRunnable && !runnable.isFinished()) {
                     downloadingProductCount++;
                 }
             }
-            int totalDownloadingProducts = this.downloadingProductsProgressValue.size();
-            int totalDownloadedProductCount = totalDownloadingProducts - downloadingProductCount;
-            String text = buildProgressBarDownloadingText(totalDownloadedProductCount, totalDownloadingProducts);
-            this.progressPanel.updateProgressBarText(this.threadId, text);
+            int totalProductCountToDownload = this.downloadingProductsProgressValue.size();
+            if (downloadingProductCount > totalProductCountToDownload) {
+                throw new IllegalStateException("The downloading product count " + downloadingProductCount+" is greater than the total product count to download" + totalProductCountToDownload+".");
+            } else {
+                int totalDownloadedProductCount = totalProductCountToDownload - downloadingProductCount;
+                String text = buildProgressBarDownloadingText(totalDownloadedProductCount, totalProductCountToDownload);
+                this.progressPanel.updateProgressBarText(this.threadId, text);
+            }
         }
     }
 

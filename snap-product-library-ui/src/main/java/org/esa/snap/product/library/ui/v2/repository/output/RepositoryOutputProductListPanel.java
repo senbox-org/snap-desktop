@@ -367,6 +367,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         JScrollPane scrollPane = new JScrollPane(this.productListPanel);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.getViewport().setBackground(this.productListPanel.getBackground());
+        scrollPane.setBorder(SwingUtils.LINE_BORDER);
 
         add(northPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);

@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -47,9 +48,10 @@ public class OutputProductListPaginationPanel extends JPanel {
         setComponentSize(this.nextPageButton, buttonPreferredSize);
         setComponentSize(this.lastPageButton, buttonPreferredSize);
 
-        this.totalPagesTextField = new JLabel("                    ");
-        this.totalPagesTextField.setHorizontalAlignment(JLabel.CENTER);
-        this.totalPagesTextField.setBorder(new EtchedBorder());
+        this.totalPagesTextField = new JLabel("                    ", JLabel.CENTER);
+        this.totalPagesTextField.setBorder(SwingUtils.LINE_BORDER);
+        this.totalPagesTextField.setBackground(componentDimension.getTextFieldBackgroundColor());
+        this.totalPagesTextField.setOpaque(true);
 
         Dimension labelPreferredSize = this.totalPagesTextField.getPreferredSize();
         labelPreferredSize.height = componentDimension.getTextFieldPreferredHeight();

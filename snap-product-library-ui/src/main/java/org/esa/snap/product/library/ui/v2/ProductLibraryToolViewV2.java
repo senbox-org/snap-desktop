@@ -17,6 +17,7 @@ package org.esa.snap.product.library.ui.v2;
 
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
@@ -27,7 +28,10 @@ import org.esa.snap.product.library.ui.v2.repository.local.*;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.*;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.OpenDownloadedProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
@@ -107,7 +111,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private static final String HELP_ID = "productLibraryTool";
 
-    public static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
+    private static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
 
     private Path lastLocalRepositoryFolderPath;
     private RepositoryOutputProductListPanel repositoryProductListPanel;
@@ -218,7 +222,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void initialize() {
         this.appContext = SnapApp.getDefault().getAppContext();
-        String lastFolderPath = this.appContext.getPreferences().getPropertyString(PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH, null);
+        PropertyMap persistencePreferences = this.appContext.getPreferences();
+
+        String lastFolderPath = persistencePreferences.getPropertyString(PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH, null);
         if (lastFolderPath != null) {
             this.lastLocalRepositoryFolderPath = Paths.get(lastFolderPath);
         }
@@ -230,7 +236,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
 
-        createWorldWindowPanel();
+        createWorldWindowPanel(persistencePreferences);
         createRepositorySelectionPanel(remoteRepositoryProductProviders);
         createProductListPanel();
 
@@ -407,14 +413,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.repositorySelectionPanel.setAllProductsRepositoryPanelBorder(new EmptyBorder(0, 0, 0, 1));
     }
 
-    private void createWorldWindowPanel() {
+    private void createWorldWindowPanel(PropertyMap persistencePreferences) {
         PolygonMouseListener worldWindowMouseListener = new PolygonMouseListener() {
             @Override
             public void leftMouseButtonClicked(List<Path2D.Double> polygonPaths) {
                 ProductLibraryToolViewV2.this.leftMouseButtonClicked(polygonPaths);
             }
         };
-        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener, getTextFieldBackgroundColor());
+        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener, getTextFieldBackgroundColor(), persistencePreferences);
         this.worldWindowPanel.setPreferredSize(new Dimension(400, 250));
         this.worldWindowPanel.addWorldMapPanelAsync(false, true);
     }

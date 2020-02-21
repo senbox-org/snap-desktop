@@ -1,5 +1,8 @@
 package org.esa.snap.product.library.ui.v2.repository.input;
 
+import org.esa.snap.ui.components.CustomTextField;
+import org.esa.snap.ui.loading.SwingUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,18 +11,12 @@ import java.awt.*;
  */
 public abstract class TextFieldParameterComponent<ValueType> extends AbstractParameterComponent<ValueType> {
 
-    protected final JTextField textField;
+    protected final CustomTextField textField;
 
     protected TextFieldParameterComponent(String parameterName, String parameterLabelText, boolean required, int textFieldPreferredHeight, Color backgroundColor) {
         super(parameterName, parameterLabelText, required);
 
-        this.textField = new JTextField();
-        this.textField.setBackground(backgroundColor);
-
-        Dimension preferredSize = this.textField.getPreferredSize();
-        preferredSize.height = textFieldPreferredHeight;
-        this.textField.setPreferredSize(preferredSize);
-        this.textField.setMinimumSize(preferredSize);
+        this.textField = new CustomTextField(textFieldPreferredHeight, backgroundColor);
     }
 
     @Override

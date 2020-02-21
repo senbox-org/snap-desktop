@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.worldwind;
 
 import gov.nasa.worldwind.geom.Position;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.ui.loading.CircularProgressIndicatorLabel;
 import org.esa.snap.ui.loading.GenericRunnable;
@@ -19,6 +20,12 @@ import java.util.List;
 
 public class WorldMapPanelWrapper extends JPanel {
 
+    private static final String PREFERENCES_KEY_LAST_WORLD_MAP_PANEL = "last_world_map_panel";
+
+    private static final int WORLD_MAP_2D_FLAT_EARTH = 1;
+    private static final int WORLD_MAP_3D_FLAT_EARTH = 2;
+    private static final int WORLD_MAP_3D_GLOBE = 3;
+
     public static final float SELECTION_LINE_WIDTH = 1.5f;
     public final static Color SELECTION_FILL_COLOR = new Color(255, 255, 0, 70);
     public final static Color SELECTION_BORDER_COLOR = new Color(255, 255, 0, 255);
@@ -36,15 +43,17 @@ public class WorldMapPanelWrapper extends JPanel {
     private WorldMap3DPanel worldMap3DPanel;
     private WorldMap currentWorldMap;
     private PolygonMouseListener mouseListener;
+    private final PropertyMap persistencePreferences;
 
-    public WorldMapPanelWrapper(PolygonMouseListener mouseListener, Color backgroundColor) {
+    public WorldMapPanelWrapper(PolygonMouseListener mouseListener, Color backgroundColor, PropertyMap persistencePreferences) {
         super(new GridBagLayout());
 
         this.mouseListener = mouseListener;
+        this.persistencePreferences = persistencePreferences;
 
         setBackground(backgroundColor);
         setOpaque(true);
-        setBorder(new EtchedBorder());
+        setBorder(SwingUtils.LINE_BORDER);
 
         this.polygonsLayerModel = new PolygonsLayerModel();
 
@@ -70,6 +79,11 @@ public class WorldMapPanelWrapper extends JPanel {
     }
 
     public void addWorldMapPanelAsync(boolean flatWorld, boolean removeExtraLayers) {
+        Integer lastWorldMapPanelId = this.persistencePreferences.getPropertyInt(PREFERENCES_KEY_LAST_WORLD_MAP_PANEL, null);
+        if (lastWorldMapPanelId != null) {
+
+        }
+
         InitWorldMapPanelRunnable thread = new InitWorldMapPanelRunnable(this, flatWorld, removeExtraLayers, this.polygonsLayerModel);
         thread.executeAsync(); // start the thread
     }
@@ -162,7 +176,7 @@ public class WorldMapPanelWrapper extends JPanel {
             } else {
                 viewMenu.add(buildView3DGlobe());
             }
-            JMenuItem viewFlatEarthMenuItem = new JMenuItem("2D Flat earth");
+            JMenuItem viewFlatEarthMenuItem = new JMenuItem("2D Flat Earth");
             viewFlatEarthMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
@@ -178,7 +192,7 @@ public class WorldMapPanelWrapper extends JPanel {
     }
 
     private JMenuItem buildView3DFlatEarth() {
-        JMenuItem viewFlatEarthMenuItem = new JMenuItem("3D Flat earth");
+        JMenuItem viewFlatEarthMenuItem = new JMenuItem("3D Flat Earth");
         viewFlatEarthMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -217,6 +231,8 @@ public class WorldMapPanelWrapper extends JPanel {
             parent.revalidate();
             parent.repaint();
         }
+
+        // save the world map panel to the preferences
     }
 
     private void addWorldWindowPanel(WorldMap3DPanel worldMap3DPanel) {
@@ -240,7 +256,7 @@ public class WorldMapPanelWrapper extends JPanel {
             this.worldMap3DPanel = worldMap3DPanel;
             this.worldMap3DPanel.setOpaque(false);
             this.worldMap3DPanel.addMouseListener(mouseAdapter);
-            worldMapPanel = worldMap3DPanel;
+            worldMapPanel = this.worldMap3DPanel;
         }
         addWorldMapPanel(worldMapPanel);
     }
