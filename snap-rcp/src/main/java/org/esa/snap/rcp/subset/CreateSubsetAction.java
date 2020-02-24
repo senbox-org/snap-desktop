@@ -21,6 +21,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.common.SubsetOp;
+import org.esa.snap.core.subset.PixelSubsetRegion;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -78,7 +79,7 @@ public class CreateSubsetAction extends AbstractAction {
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
 
-        initSubset.setRegion(bounds);
+        initSubset.setSubsetRegion(new PixelSubsetRegion(bounds, 0));
         if(sourceProduct.isMultiSize() && rdn != null) {
             initSubset.setRegionMap(SubsetOp.computeRegionMap(initSubset.getRegion(),rdn.getName(),sourceProduct,null));
         } else if(sourceProduct.isMultiSize()) {

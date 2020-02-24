@@ -47,6 +47,7 @@ import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.subset.PixelSubsetRegion;
 import org.esa.snap.core.util.BeamConstants;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.Guardian;
@@ -440,7 +441,7 @@ public class ProductSubsetDialog extends ModalDialog {
     }
 
     private void updateSubsetDefRegion(int x1, int y1, int x2, int y2, int sx, int sy) {
-        productSubsetDef.setRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0));
         productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(productSubsetDef.getRegion(),product,productSubsetDef.getNodeNames()));
         productSubsetDef.setSubSampling(sx, sy);
         updateMemDisplay();
@@ -1029,7 +1030,7 @@ public class ProductSubsetDialog extends ModalDialog {
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     } else {
-                        productSubsetDef.setRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0));
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     }
