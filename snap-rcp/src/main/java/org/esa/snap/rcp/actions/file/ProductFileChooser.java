@@ -157,13 +157,6 @@ public class ProductFileChooser extends SnapFileChooser {
         addPropertyChangeListener(e -> updateState());
     }
 
-//    //TODO Jean new method
-//    private void showAdvancedProductSubsetDialog() {
-//        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-//        AdvancedProductSubsetDialog dialog = new AdvancedProductSubsetDialog(parentWindow, "Product subset");
-//        dialog.show();
-//    }
-
     private void updateState() {
         if (isSubsetEnabled()) {
             subsetButton.setEnabled(getSelectedFile() != null || productToExport != null);
@@ -315,7 +308,7 @@ public class ProductFileChooser extends SnapFileChooser {
 
     private boolean openAdvancedProduct(MetadataInspector metadataInspector, File file) {
         try {
-            AdvancedProductSubsetDialog advancedDialog = new AdvancedProductSubsetDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", metadataInspector, file);
+            ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", metadataInspector, file);
             advancedDialog.show();
             productSubsetDef = advancedDialog.getProductSubsetDef();
             if(productSubsetDef != null) {
