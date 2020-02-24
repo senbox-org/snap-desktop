@@ -1092,18 +1092,18 @@ public class ProductSubsetDialog extends ModalDialog {
             if(geoPos1.isValid()) {
                 double lat = geoPos1.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramNorthLat1.setValue(lat, null);
+                paramNorthLat1.setValue(lat, ex -> true);
                 double lon = geoPos1.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramWestLon1.setValue(lon, null);
+                paramWestLon1.setValue(lon, ex -> true);
             }
             if (geoPos2.isValid()) {
                 double lat = geoPos2.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramSouthLat2.setValue(lat, null);
+                paramSouthLat2.setValue(lat, ex -> true);
                 double lon = geoPos2.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramEastLon2.setValue(lon, null);
+                paramEastLon2.setValue(lon, ex -> true);
             }
         }
 
@@ -1144,10 +1144,10 @@ public class ProductSubsetDialog extends ModalDialog {
 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
 
-            paramX1.setValue((int) finalRegion.getMinX(), null);
-            paramY1.setValue((int) finalRegion.getMinY(), null);
-            paramX2.setValue((int) finalRegion.getMaxX() - 1, null);
-            paramY2.setValue((int) finalRegion.getMaxY() - 1, null);
+            paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
+            paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
+            paramX2.setValue((int) finalRegion.getMaxX() - 1, ex -> true);
+            paramY2.setValue((int) finalRegion.getMaxY() - 1, ex -> true);
         }
 
         private Dimension getScaledImageSize() {
