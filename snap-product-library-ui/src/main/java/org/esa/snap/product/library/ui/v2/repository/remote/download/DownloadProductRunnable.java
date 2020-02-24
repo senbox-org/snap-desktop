@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 16/10/2019.
  */
-public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable {
+public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable implements ProgressListener {
 
     private static final Logger logger = Logger.getLogger(DownloadProductRunnable.class.getName());
 
@@ -83,11 +83,16 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         this.remoteProductDownloader.cancel();
     }
 
+    @Override
+    public final void notifyProgress(short progressPercent) {
+        updateDownloadingProgressPercent(progressPercent, null); // 'null' => no download local path
+    }
+
     protected void finishRunning(SaveDownloadedProductData saveProductData, byte downloadStatus, Path productPath) {
         setRunning(false);
     }
 
-    protected void updateDownloadingProgressPercent(RepositoryProduct repositoryProduct, short progressPercent, Path downloadedPath) {
+    protected void updateDownloadingProgressPercent(short progressPercent, Path downloadedPath) {
     }
 
     public RepositoryProduct getProductToDownload() {
@@ -95,42 +100,22 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
     }
 
     private Path downloadProduct() throws Exception {
-        RemoteProductProgressListener progressListener = new RemoteProductProgressListener(this.remoteProductDownloader.getProductToDownload()) {
-            @Override
-            public void notifyProgress(short progressPercent) {
-                updateDownloadingProgressPercent(getProductToDownload(), progressPercent, null); // 'null' => no download local path
-            }
-        };
-
         this.remoteRepositoriesSemaphore.acquirePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
         try {
             if (isFinished()) {
                 return null;
             }
 
-            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short) 0, null); // 0%
+            updateDownloadingProgressPercent((short) 0, null); // 0%
 
-            Path productPath = this.remoteProductDownloader.download(progressListener, this.uncompressedDownloadedProducts);
+            Path productPath = this.remoteProductDownloader.download(this, this.uncompressedDownloadedProducts);
 
             // successfully downloaded and saved the product
-            updateDownloadingProgressPercent(progressListener.getProductToDownload(), (short)100, productPath); // 100%
+            updateDownloadingProgressPercent((short)100, productPath); // 100%
 
             return productPath;
         } finally {
             this.remoteRepositoriesSemaphore.releasePermission(this.remoteProductDownloader.getRepositoryName(), this.remoteProductDownloader.getCredentials());
-        }
-    }
-
-    private static abstract class RemoteProductProgressListener implements ProgressListener {
-
-        private final RepositoryProduct productToDownload;
-
-        private RemoteProductProgressListener(RepositoryProduct productToDownload) {
-            this.productToDownload = productToDownload;
-        }
-
-        RepositoryProduct getProductToDownload() {
-            return productToDownload;
         }
     }
 }

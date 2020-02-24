@@ -94,17 +94,6 @@ public class DownloadingProductPanel extends JPanel {
         this.downloadStatusLabel.updateDownloadingPercent(this.downloadProgressStatus, this.sizeLabel.getForeground());
     }
 
-//    public boolean refreshDownloadStatus(RepositoryProduct repositoryProduct) {
-//        if (this.downloadProductRunnable.isFinished()) {
-//            disableComponents();
-//        }
-//        if (repositoryProduct == this.downloadProductRunnable.getProductToDownload()) {
-//            this.downloadStatusLabel.updateDownloadingPercent(this.downloadProgressStatus, this.sizeLabel.getForeground());
-//            return true;
-//        }
-//        return false;
-//    }
-
     public boolean stopDownloading(DownloadProductRunnable downloadProductRunnable) {
         if (this.downloadProductRunnable == downloadProductRunnable) {
             disablePanel();
