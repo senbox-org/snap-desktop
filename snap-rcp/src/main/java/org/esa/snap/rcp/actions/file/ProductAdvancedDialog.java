@@ -321,7 +321,8 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
                 syncLatLonWithXYParams();
             }else{
-                geoPanel.setEnabled(true);
+                geoCoordRadio.setEnabled(false);
+                geoPanel.setEnabled(false);
             }
         } catch (ParamValidateException e) {
             logger.log(Level.SEVERE, e.getMessage());
@@ -338,6 +339,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
 
     private void onFailedLoadingProductMetadata(Exception exception) {
         showErrorDialog("Failed to load the product metadata", "Loading metadata");
+        getJDialog().dispose();
     }
 
     @Override
