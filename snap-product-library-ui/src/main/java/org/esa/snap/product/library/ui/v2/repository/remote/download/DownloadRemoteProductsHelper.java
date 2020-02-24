@@ -353,7 +353,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         if (this.threadPoolExecutor == null) {
             this.runningTasks = new HashMap<>();
             this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
-            int maximumThreadCount = Runtime.getRuntime().availableProcessors() - 1;
+            int maximumThreadCount = Math.max(3, Runtime.getRuntime().availableProcessors());
             this.threadPoolExecutor = new ThreadNamePoolExecutor("product-library", maximumThreadCount);
         }
     }
