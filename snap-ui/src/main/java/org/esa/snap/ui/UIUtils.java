@@ -380,7 +380,7 @@ public class UIUtils {
         final Double bigStep = spinnerStep.doubleValue() * 10;
         final JSpinner spinner = createSpinner(v, min, max, spinnerStep, bigStep, formatPattern);
         spinner.setName(properties.getLabel());
-        spinner.addChangeListener(e -> param.setValue(spinner.getValue(), null));
+        spinner.addChangeListener(e -> param.setValue(spinner.getValue(), ex -> true));
         param.addParamChangeListener(event -> spinner.setValue(param.getValue()));
         param.getEditor().getEditorComponent().addPropertyChangeListener("enabled",
                                                                          evt -> spinner.setEnabled(((Boolean) evt.getNewValue()).booleanValue()));

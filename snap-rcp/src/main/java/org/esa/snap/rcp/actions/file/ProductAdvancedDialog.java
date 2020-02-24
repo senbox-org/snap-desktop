@@ -447,12 +447,12 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
 
-            paramX1.setValue((int) finalRegion.getMinX(), null);
-            paramY1.setValue((int) finalRegion.getMinY(), null);
+            paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
+            paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
             int width = (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1;
             int height = (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1;
-            paramWidth.setValue(width, null);
-            paramHeight.setValue(height, null);
+            paramWidth.setValue(width, ex -> true);
+            paramHeight.setValue(height, ex -> true);
         }
     }
 
@@ -469,18 +469,18 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             if (geoPos1.isValid()) {
                 double lat = geoPos1.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramNorthLat1.setValue(lat, null);
+                paramNorthLat1.setValue(lat, ex -> true);
                 double lon = geoPos1.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramWestLon1.setValue(lon, null);
+                paramWestLon1.setValue(lon, ex -> true);
             }
             if (geoPos2.isValid()) {
                 double lat = geoPos2.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramSouthLat2.setValue(lat, null);
+                paramSouthLat2.setValue(lat, ex -> true);
                 double lon = geoPos2.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramEastLon2.setValue(lon, null);
+                paramEastLon2.setValue(lon, ex -> true);
             }
         }
     }
