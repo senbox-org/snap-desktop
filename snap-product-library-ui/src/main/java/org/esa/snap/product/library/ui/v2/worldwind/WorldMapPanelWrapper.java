@@ -103,12 +103,24 @@ public class WorldMapPanelWrapper extends JPanel {
     }
 
     public void setEyePosition(Path2D.Double polygonPath) {
-        if (this.worldMap3DPanel != null) {
-            Rectangle2D rectangleBounds = polygonPath.getBounds2D();
-            Position eyePosition = this.worldMap3DPanel.getView().getEyePosition();
-            Position position = Position.fromDegrees(rectangleBounds.getCenterY(), rectangleBounds.getCenterX(), eyePosition.getElevation());
-            this.worldMap3DPanel.getView().setEyePosition(position);
-            this.worldMap3DPanel.redrawNow();
+        if (this.currentWorldMap != null) {
+            if (this.currentWorldMap == this.worldMap3DPanel) {
+                Rectangle2D rectangleBounds = polygonPath.getBounds2D();
+                if (rectangleBounds == null) {
+                    throw new NullPointerException("The rectangle bounds is null.");
+                }
+                Position eyePosition = this.worldMap3DPanel.getView().getEyePosition();
+                if (eyePosition == null) {
+                    throw new NullPointerException("The eye position is null.");
+                }
+                Position position = Position.fromDegrees(rectangleBounds.getCenterY(), rectangleBounds.getCenterX(), eyePosition.getElevation());
+                this.worldMap3DPanel.getView().setEyePosition(position);
+                this.worldMap3DPanel.redrawNow();
+            } else if (this.currentWorldMap == this.worldMap2DPanel) {
+                // do nothing
+            } else {
+                throw new IllegalStateException("The world map type '"+this.currentWorldMap + "' is unknown.");
+            }
         }
     }
 
