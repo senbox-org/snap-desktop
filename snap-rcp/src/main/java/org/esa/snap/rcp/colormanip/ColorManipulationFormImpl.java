@@ -357,7 +357,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         innerContentPanel = new JPanel(new BorderLayout(4, 4));
         innerContentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        innerContentPanel.setPreferredSize(new Dimension(280, 360));
+        innerContentPanel.setPreferredSize(new Dimension(280, 300));
         innerContentPanel.add(editorPanel, BorderLayout.CENTER);
         innerContentPanel.add(toolButtonsPanel, BorderLayout.EAST);
 

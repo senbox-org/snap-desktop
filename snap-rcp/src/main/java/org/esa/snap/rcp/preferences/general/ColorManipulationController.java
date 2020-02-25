@@ -102,6 +102,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_KEY, ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
@@ -432,6 +433,12 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY,
                 description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_TOOLTIP)
         boolean range90 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_TOOLTIP)
+        boolean sliderZoom = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_DEFAULT;
+
 
 
 

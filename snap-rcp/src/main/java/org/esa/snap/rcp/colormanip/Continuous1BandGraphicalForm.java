@@ -60,14 +60,21 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
 
 
     final Boolean[] listenToLogDisplayButtonEnabled = {true};
-    private boolean zoomToHistLimitsDefault = true; // this parameter could be used in future if desired in a preferences setting
+    private boolean zoomToHistLimitsDefault; // this stores the preferences value to check for preferences change during session
+    private boolean zoomToHistLimits;
 
 
     Continuous1BandGraphicalForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
 
+        System.out.println("TESTING");
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        zoomToHistLimitsDefault = configuration.getPropertyBool(PROPERTY_RANGE_ZOOM_IN_KEY, PROPERTY_RANGE_ZOOM_IN_DEFAULT);
+        zoomToHistLimits = zoomToHistLimitsDefault;
+
+
         imageInfoEditor = new ImageInfoEditor2(parentForm);
-        imageInfoEditorSupport = new ImageInfoEditorSupport(imageInfoEditor);
+        imageInfoEditorSupport = new ImageInfoEditorSupport(imageInfoEditor, zoomToHistLimitsDefault);
         contentPanel = new JPanel(new BorderLayout(2, 2));
         contentPanel.add(imageInfoEditor, BorderLayout.CENTER);
         moreOptionsForm = new MoreOptionsForm(this, parentForm.getFormModel().canUseHistogramMatching());
@@ -122,6 +129,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         final ImageInfoEditorModel newModel = new ImageInfoEditorModel1B(imageInfo);
         imageInfoEditor.setModel(newModel);
 
+        System.out.println("TESTING2");
 
         final RasterDataNode raster = formModel.getRaster();
         setLogarithmicDisplay(raster, newModel.getImageInfo().isLogScaled());
@@ -131,10 +139,29 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             newModel.setMaxHistogramViewSample(oldModel.getMaxHistogramViewSample());
         }
 
-        if (zoomToHistLimitsDefault ||
-                newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
-                newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
+        // do this just in case user changes preferences during current session
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        boolean zoomToHistLimitsDefaultNew = configuration.getPropertyBool(PROPERTY_RANGE_ZOOM_IN_KEY, PROPERTY_RANGE_ZOOM_IN_DEFAULT);
+        if (zoomToHistLimitsDefaultNew != zoomToHistLimitsDefault) {
+            zoomToHistLimitsDefault = zoomToHistLimitsDefaultNew;
+            zoomToHistLimits = zoomToHistLimitsDefaultNew;
+            imageInfoEditorSupport.setHorizontalButtonSelectedWithoutEvent(zoomToHistLimits);
+        } else {
+            zoomToHistLimits = imageInfoEditorSupport.zoomHorizontalButton.isSelected();
+        }
+
+//        if (zoomToHistLimitsDefault ||
+//                newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
+//                newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
+//            imageInfoEditor.computeZoomInToSliderLimits();
+//        } else {
+//            imageInfoEditor.computeZoomOutToFullHistogramm();
+//        }
+
+        if (zoomToHistLimits) {
             imageInfoEditor.computeZoomInToSliderLimits();
+        } else {
+            imageInfoEditor.computeZoomOutToFullHistogramm();
         }
 
         discreteCheckBox.setDiscreteColorsMode(imageInfo.getColorPaletteDef().isDiscrete());
@@ -146,7 +173,6 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     @Override
     public void resetFormModel(ColorFormModel formModel) {
         updateFormModel(formModel);
-        imageInfoEditor.computeZoomOutToFullHistogramm();
         parentForm.revalidateToolViewPaneControl();
     }
 
@@ -154,6 +180,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     public void handleRasterPropertyChange(ProductNodeEvent event, RasterDataNode raster) {
         final ImageInfoEditorModel model = imageInfoEditor.getModel();
         if (model != null) {
+            System.out.println("TESTING4");
+
             if (event.getPropertyName().equals(RasterDataNode.PROPERTY_NAME_STX)) {
                 updateFormModel(parentForm.getFormModel());
             } else {
@@ -228,10 +256,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
 
         abstractButtonArrayList.add(evenDistButton);
 
-        abstractButtonArrayList.add(imageInfoEditorSupport.zoomInVButton);
-        abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutVButton);
-        abstractButtonArrayList.add(imageInfoEditorSupport.zoomInHButton);
-        abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutHButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomVerticalButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomHorizontalButton);
         abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
 
 

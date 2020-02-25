@@ -35,11 +35,16 @@ class ImageInfoEditorSupport {
     final AbstractButton zoomOutHButton;
     final AbstractButton showExtraInfoButton;
 
+    final AbstractButton zoomHorizontalButton;
+    final AbstractButton zoomVerticalButton;
+
     final ImageInfoEditor2 imageInfoEditor;
     final ColorManipulationForm form;
 
+    final Boolean[] horizontalZoomButtonEnabled = {true};
 
-    protected ImageInfoEditorSupport(ImageInfoEditor2 imageInfoEditor) {
+
+    protected ImageInfoEditorSupport(ImageInfoEditor2 imageInfoEditor, boolean zoomDefault) {
         this.imageInfoEditor = imageInfoEditor;
         this.form = imageInfoEditor.getParentForm();
 
@@ -85,6 +90,19 @@ class ImageInfoEditorSupport {
         zoomOutHButton.setToolTipText("Shrink histogram horizontally");
         zoomOutHButton.addActionListener(e -> imageInfoEditor.computeZoomOutToFullHistogramm());
 
+
+        zoomHorizontalButton = createToggleButton("org/esa/snap/rcp/icons/ZoomHorizontal24.gif");
+        zoomHorizontalButton.setName("zoomHorizontalButton");
+        zoomHorizontalButton.setToolTipText("Expand and shrink histogram horizontally");
+        zoomHorizontalButton.setSelected(zoomDefault);
+        zoomHorizontalButton.addActionListener(e -> handleHorizontalZoom());
+
+        zoomVerticalButton = createToggleButton("org/esa/snap/rcp/icons/ZoomVertical24.gif");
+        zoomVerticalButton.setName("zoomVerticalButton");
+        zoomVerticalButton.setToolTipText("Expand and shrink histogram vertically");
+        zoomVerticalButton.addActionListener(e -> handleVerticalZoom());
+
+
         showExtraInfoButton = createToggleButton("org/esa/snap/rcp/icons/Information24.gif");
         showExtraInfoButton.setName("ShowExtraInfoButton");
         showExtraInfoButton.setToolTipText("Show extra information");
@@ -100,6 +118,32 @@ class ImageInfoEditorSupport {
     }
 
 
+
+    public void handleVerticalZoom() {
+        if (zoomVerticalButton.isSelected()) {
+            imageInfoEditor.computeZoomInVertical();
+        } else {
+            imageInfoEditor.computeZoomOutVertical();
+        }
+    }
+
+
+    public void setHorizontalButtonSelectedWithoutEvent(boolean selected) {
+        horizontalZoomButtonEnabled[0] = false;
+        zoomHorizontalButton.setSelected(selected);
+        horizontalZoomButtonEnabled[0] = true;
+
+    }
+
+    public void handleHorizontalZoom() {
+        if (horizontalZoomButtonEnabled[0]) {
+            if (zoomHorizontalButton.isSelected()) {
+                imageInfoEditor.computeZoomInToSliderLimits();
+            } else {
+                imageInfoEditor.computeZoomOutToFullHistogramm();
+            }
+        }
+    }
 
 
 
