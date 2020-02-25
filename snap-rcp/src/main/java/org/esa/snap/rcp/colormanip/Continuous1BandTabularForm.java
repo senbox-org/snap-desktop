@@ -138,10 +138,7 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             logButton.setSelected(logScaled);
         }
 
-//        if (!logButtonClicked[0]) {
-            System.out.println("LOG BUTTON CLICKED");
             tableModel.fireTableDataChanged();
-//        }
         discreteCheckBox.setDiscreteColorsMode(parentForm.getFormModel().getModifiedImageInfo().getColorPaletteDef().isDiscrete());
     }
 
@@ -216,12 +213,7 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
-            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
-            getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-
-
+            resetSchemeSelector();
 
             final ColorPaletteDef.Point point = getImageInfo().getColorPaletteDef().getPointAt(rowIndex);
             final ValueRange valueRange;
@@ -259,6 +251,12 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
 
 
+    private void resetSchemeSelector() {
+        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+    }
+
 
     private void applyChangesLogToggle() {
 
@@ -273,9 +271,8 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         final boolean autoDistribute = true;
 
         if (ColorUtils.checkRangeCompatibility(min, max, targetLogScaled)) {
-            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
-            parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+            resetSchemeSelector();
+
 
             currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, sourceLogScaled, targetLogScaled);
             parentForm.applyChanges();
@@ -283,4 +280,5 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             logButton.setSelected(false);
         }
     }
+
 }

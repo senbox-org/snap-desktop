@@ -28,7 +28,6 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.actions.file.export.ExportImageAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -249,7 +248,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (newForm != oldForm) {
             setChildForm(newForm);
 
-            installToolButtons(true);
+            boolean installAllButtons = (newForm instanceof Continuous1BandBasicForm || newForm instanceof Continuous1BandTabularForm);
+
+            installToolButtons(installAllButtons);
             installMoreOptions();
 
             editorPanel.removeAll();

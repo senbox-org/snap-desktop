@@ -18,16 +18,19 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
 import javax.swing.AbstractButton;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.ArrayList;
+
+import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
 
 
 /**
- *
  * @author Brockmann Consult
  * @author Daniel Knowles (NASA)
  * @author Bing Yang (NASA)
@@ -39,6 +42,7 @@ import java.awt.Component;
 //          - Set computeZoomInToSliderLimits() to be the default display behavior of the histogram display
 // FEB 2020 - Knowles
 //          - Added call to reset the color scheme to 'none'
+//          - Added optional tool buttons for retrieving 98%, and 90% of the histogram range
 
 
 public class Continuous1BandGraphicalForm implements ColorManipulationChildForm {
@@ -53,6 +57,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     private final AbstractButton evenDistButton;
     private final MoreOptionsForm moreOptionsForm;
     private final DiscreteCheckBox discreteCheckBox;
+
+
     final Boolean[] listenToLogDisplayButtonEnabled = {true};
     private boolean zoomToHistLimitsDefault = true; // this parameter could be used in future if desired in a preferences setting
 
@@ -116,10 +122,6 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         final ImageInfoEditorModel newModel = new ImageInfoEditorModel1B(imageInfo);
         imageInfoEditor.setModel(newModel);
 
-        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
-        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-
 
         final RasterDataNode raster = formModel.getRaster();
         setLogarithmicDisplay(raster, newModel.getImageInfo().isLogScaled());
@@ -131,7 +133,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
 
         if (zoomToHistLimitsDefault ||
                 newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
-            newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
+                newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
             imageInfoEditor.computeZoomInToSliderLimits();
         }
 
@@ -175,10 +177,10 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         if (logarithmicDisplay) {
             final StxFactory stxFactory = new StxFactory();
             final Stx stx = stxFactory
-                        .withHistogramBinCount(raster.getStx().getHistogramBinCount())
-                        .withLogHistogram(logarithmicDisplay)
-                        .withResolutionLevel(raster.getSourceImage().getModel().getLevelCount() - 1)
-                        .create(raster, ProgressMonitor.NULL);
+                    .withHistogramBinCount(raster.getStx().getHistogramBinCount())
+                    .withLogHistogram(logarithmicDisplay)
+                    .withResolutionLevel(raster.getSourceImage().getModel().getLevelCount() - 1)
+                    .create(raster, ProgressMonitor.NULL);
             model.setDisplayProperties(raster.getName(), raster.getUnit(), stx, POW10_SCALING);
         } else {
             model.setDisplayProperties(raster.getName(), raster.getUnit(), raster.getStx(), Scaling.IDENTITY);
@@ -187,27 +189,67 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     }
 
     private void distributeSlidersEvenly() {
+        resetSchemeSelector();
         imageInfoEditor.distributeSlidersEvenly();
     }
 
+
+    private void resetSchemeSelector() {
+        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+    }
+
+
     @Override
     public AbstractButton[] getToolButtons() {
-        return new AbstractButton[]{
-                logDisplayButton,
-                imageInfoEditorSupport.autoStretch95Button,
-                    imageInfoEditorSupport.autoStretch100Button,
-                    imageInfoEditorSupport.zoomInVButton,
-                    imageInfoEditorSupport.zoomOutVButton,
-                    imageInfoEditorSupport.zoomInHButton,
-                    imageInfoEditorSupport.zoomOutHButton,
-                    evenDistButton,
-                    imageInfoEditorSupport.showExtraInfoButton,
-        };
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+
+        boolean range98 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_98_KEY, PROPERTY_RANGE_BUTTON_98_DEFAULT);
+        boolean range95 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_95_KEY, PROPERTY_RANGE_BUTTON_95_DEFAULT);
+        boolean range90 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_90_KEY, PROPERTY_RANGE_BUTTON_90_DEFAULT);
+
+        ArrayList<AbstractButton> abstractButtonArrayList = new ArrayList<AbstractButton>();
+        abstractButtonArrayList.add(logDisplayButton);
+
+        abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch100Button);
+
+
+        if (range98) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch98Button);
+        }
+        if (range95) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch95Button);
+        }
+        if (range90) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch90Button);
+        }
+
+
+        abstractButtonArrayList.add(evenDistButton);
+
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomInVButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutVButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomInHButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutHButton);
+        abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+
+
+        final AbstractButton[] abstractButtonArray = new AbstractButton[abstractButtonArrayList.size()];
+
+        int i=0;
+        for (AbstractButton abstractButton : abstractButtonArrayList) {
+            abstractButtonArray[i] = abstractButton;
+            i++;
+        }
+
+        return  abstractButtonArray;
     }
+
 
     static void setDisplayProperties(ImageInfoEditorModel model, RasterDataNode raster) {
         model.setDisplayProperties(raster.getName(), raster.getUnit(), raster.getStx(),
-                                   raster.isLog10Scaled() ? POW10_SCALING : Scaling.IDENTITY);
+                raster.isLog10Scaled() ? POW10_SCALING : Scaling.IDENTITY);
     }
 
 
@@ -238,9 +280,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             return log10Scaling.scale(value);
         }
     }
+
     private void applyChangesLogToggle() {
-
-
         final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
         final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
 
@@ -259,11 +300,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         autoDistribute = true;
 
         if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
-
-            ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
-            parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-            parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
-
+            resetSchemeSelector();
 
             currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
             currentInfo.setLogScaled(isTargetLogScaled);

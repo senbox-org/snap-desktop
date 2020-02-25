@@ -98,6 +98,11 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
 
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT);
+
         restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
 
@@ -404,6 +409,30 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
                 description = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_TOOLTIP)
         String otherCpd = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT;
+
+
+        // Range Option Section
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_TOOLTIP)
+        boolean rangeOptionsSection = true;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_TOOLTIP)
+        boolean range98 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_TOOLTIP)
+        boolean range95 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY,
+                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_TOOLTIP)
+        boolean range90 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT;
+
 
 
         // Restore Defaults Section

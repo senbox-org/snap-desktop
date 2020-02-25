@@ -60,6 +60,7 @@ import java.awt.image.DataBufferInt;
 import java.text.DecimalFormat;
 
 
+
 /**
  * Unstable interface. Do not use.
  *
@@ -74,6 +75,8 @@ import java.text.DecimalFormat;
 //          - Added abstract method "checkSliderRangeCompatibility" to be used for slider value adjacency checks.
 //          - Added abstract method "checkLogCompatibility" to be used for log scaling illegal value checks.
 //          - Incorporated the above checks within the listener of the slider.
+// FEB 2020 - Knowles
+//          - Added computePercent() method to enable any percent range of the histogram to be calculated
 
 
 public abstract class ImageInfoEditor extends JPanel {
@@ -179,24 +182,47 @@ public abstract class ImageInfoEditor extends JPanel {
         }
     }
 
-    public void compute95Percent() {
+
+
+    public boolean computePercent(boolean logScaled, double threshhold) {
         final Histogram histogram = new Histogram(getModel().getHistogramBins(),
-                                                  scaleInverse(getModel().getMinSample()),
-                                                  scaleInverse(getModel().getMaxSample()));
-        final Range autoStretchRange = histogram.findRangeFor95Percent();
+                scaleInverse(getModel().getMinSample()),
+                scaleInverse(getModel().getMaxSample()));
+
+        Range autoStretchRange = histogram.findRangeForPercent(threshhold);
+        if (autoStretchRange == null) {
+            return false;
+        }
+
+        if (logScaled && scale(autoStretchRange.getMin()) <= 0) {
+            return false;
+        }
+
         computeFactors();
         setFirstSliderSample(scale(autoStretchRange.getMin()));
         setLastSliderSample(scale(autoStretchRange.getMax()));
         partitionSliders(false);
         computeZoomInToSliderLimits();
+
+        return true;
     }
 
-    public void compute100Percent() {
+
+
+
+    public boolean compute100Percent(boolean logScaled) {
+
+        if (logScaled && getModel().getMinSample() <= 0) {
+            return false;
+        }
+
         computeFactors();
         setFirstSliderSample(getModel().getMinSample());
         setLastSliderSample(getModel().getMaxSample());
         partitionSliders(false);
         computeZoomInToSliderLimits();
+
+        return true;
     }
 
     public void distributeSlidersEvenly() {
