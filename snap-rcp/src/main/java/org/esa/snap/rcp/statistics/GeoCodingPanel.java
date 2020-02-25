@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option)
@@ -9,7 +9,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
@@ -17,6 +17,8 @@
 package org.esa.snap.rcp.statistics;
 
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.dataio.geocoding.ComponentGeoCoding;
+import org.esa.snap.core.dataio.geocoding.GeoRaster;
 import org.esa.snap.core.datamodel.BasicPixelGeoCoding;
 import org.esa.snap.core.datamodel.CombinedFXYGeoCoding;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
@@ -211,6 +213,8 @@ class GeoCodingPanel extends PagePanel {
 
         if (geoCoding instanceof TiePointGeoCoding) {
             writeTiePointGeoCoding((TiePointGeoCoding) geoCoding, nodeType);
+        } else if (geoCoding instanceof ComponentGeoCoding) {
+            writeComponentGeoCoding((ComponentGeoCoding) geoCoding, nodeType);
         } else if (geoCoding instanceof BasicPixelGeoCoding) {
             writePixelGeoCoding((BasicPixelGeoCoding) geoCoding, nodeType);
         } else if (geoCoding instanceof MapGeoCoding) {
@@ -446,6 +450,42 @@ class GeoCodingPanel extends PagePanel {
         addEmptyRow();
         addRow("<html>Pixel coordinates (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
                        "by a search algorithm.</html>");
+        addEmptyRow();
+    }
+
+    private void writeComponentGeoCoding(ComponentGeoCoding gc, String nodeType) {
+        addHeaderRow("The " + nodeType + " uses a component composed geo-coding.");
+        addRow("Type:", gc.getClass().getSimpleName());
+
+        addEmptyRow();
+        addHeaderRow("The component geo-coding consists of:");
+        addRow("Forward coding:", gc.getForwardCoding().getKey());
+        addRow("Inverse coding:", gc.getInverseCoding().getKey());
+        addRow("A configured geo raster component");
+
+        final GeoRaster geoRaster = gc.getGeoRaster();
+        addEmptyRow();
+        addHeaderRow("The GeoRaster consists of:");
+        addRow("Name of latitude raster:", geoRaster.getLatVariableName());
+        addRow("Name of longitude raster:", geoRaster.getLonVariableName());
+        addRow("Raster resolution:", geoRaster.getRasterResolutionInKm() + " in km");
+        addRow("Number of longitude values:", "" + geoRaster.getLongitudes().length);
+        addRow("Number of latitude values:", "" + geoRaster.getLatitudes().length);
+        addRow("Raster width:", "" + geoRaster.getRasterWidth());
+        addRow("Raster height:", "" + geoRaster.getRasterHeight());
+        addRow("Scene width:", "" + geoRaster.getSceneWidth());
+        addRow("Scene height:", "" + geoRaster.getSceneHeight());
+        addRow("Offset X:", "" + geoRaster.getOffsetX());
+        addRow("Offset Y:", "" + geoRaster.getOffsetY());
+        addRow("Subsampling X:", "" + geoRaster.getSubsamplingX());
+        addRow("Subsampling Y:", "" + geoRaster.getSubsamplingY());
+
+        addEmptyRow();
+        addHeaderRow("Additional information:");
+        addRow("Can get geo position:", "" + gc.canGetGeoPos());
+        addRow("Can get pixel position:", "" + gc.canGetPixelPos());
+        addRow("Crossing 180 degree meridian", String.valueOf(gc.isCrossingMeridianAt180()));
+
         addEmptyRow();
     }
 
