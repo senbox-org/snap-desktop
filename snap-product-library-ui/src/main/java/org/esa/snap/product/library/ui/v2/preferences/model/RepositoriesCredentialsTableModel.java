@@ -120,9 +120,9 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case REPO_CRED_USER_COLUMN:
-                return credentialsTableData.get(rowIndex).getTextField();
+                return credentialsTableData.get(rowIndex).getUserCellData();
             case REPO_CRED_PASS_COLUMN:
-                return credentialsTableData.get(rowIndex).getPasswordField();
+                return credentialsTableData.get(rowIndex).getPasswordCellData();
             case REPO_CRED_PASS_SEE_COLUMN:
                 return credentialsTableData.get(rowIndex).getButton();
             default:
@@ -148,7 +148,7 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
             }
         }
         if (!exists) {
-            CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential);
+            CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential, credentialsTableData.size());
             credentialsTableData.add(credentialsTableRow);
             int row = credentialsTableData.indexOf(credentialsTableRow);
             fireTableRowsInserted(row, row);
@@ -170,11 +170,25 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         }
         if (credentialsList != null) {
             for (Credentials credential : credentialsList) {
-                CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential);
+                CredentialsTableRow credentialsTableRow = new CredentialsTableRow(credential, this.credentialsTableData.size());
                 this.credentialsTableData.add(credentialsTableRow);
             }
         }
         fireTableDataChanged();
+    }
+
+    public void updateCellData(int row, int column, String data) {
+        switch (column) {
+            case REPO_CRED_USER_COLUMN:
+                credentialsTableData.get(row).setUserCellData(data);
+                break;
+            case REPO_CRED_PASS_COLUMN:
+                credentialsTableData.get(row).setPasswordCellData(data);
+                break;
+            default:
+                break;
+        }
+
     }
 
     public List<Credentials> fetchData() {
@@ -186,36 +200,48 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     }
 
     private class CredentialsTableRow {
-        private JTextField textField;
-        private JPasswordField passwordField;
+        private String userCellData;
+        private String passwordCellData;
         private JButton button;
+        private boolean hidden = true;
 
-        CredentialsTableRow(Credentials credential) {
-            this.textField = new JTextField();
-            this.textField.setText(credential.getUserPrincipal().getName());
-            this.passwordField = new JPasswordField();
-            this.passwordField.setText(credential.getPassword());
+        CredentialsTableRow(Credentials credential, int rowIndex) {
+            this.userCellData = credential.getUserPrincipal().getName();
+            this.passwordCellData = credential.getPassword();
             this.button = new JButton(RepositoriesCredentialsControllerUI.getPasswordSeeIcon());
             this.button.addMouseListener(new MouseAdapter() {
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    passwordField.setEchoChar('\u0000');
+                    hidden = false;
+                    RepositoriesCredentialsTableModel.this.fireTableCellUpdated(rowIndex, REPO_CRED_PASS_COLUMN);
                 }
 
                 @Override
                 public void mouseReleased(MouseEvent e) {
-                    passwordField.setEchoChar('\u25cf');
+                    hidden = true;
+                    RepositoriesCredentialsTableModel.this.fireTableCellUpdated(rowIndex, REPO_CRED_PASS_COLUMN);
                 }
             });
         }
 
-        JTextField getTextField() {
-            return textField;
+        String getUserCellData() {
+            return userCellData;
         }
 
-        JPasswordField getPasswordField() {
-            return passwordField;
+        void setUserCellData(String userCellData) {
+            this.userCellData = userCellData;
+        }
+
+        String getPasswordCellData() {
+            if (hidden) {
+                return passwordCellData.replaceAll(".+?", "\u25cf");
+            }
+            return passwordCellData;
+        }
+
+        void setPasswordCellData(String passwordCellData) {
+            this.passwordCellData = passwordCellData;
         }
 
         JButton getButton() {
@@ -223,8 +249,8 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
         }
 
         Credentials getCredentials() {
-            String username = this.textField.getText();
-            String password = new String(this.passwordField.getPassword());
+            String username = this.userCellData;
+            String password = this.passwordCellData;
             return new UsernamePasswordCredentials(username, password);
         }
     }

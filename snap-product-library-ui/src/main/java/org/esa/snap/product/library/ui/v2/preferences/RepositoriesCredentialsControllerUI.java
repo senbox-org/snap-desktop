@@ -381,23 +381,6 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         return removeCredentialButton;
     }
 
-    private DefaultTableCellRenderer buildTextCellRenderer() {
-        return new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-                JTextField textField = (JTextField) value;
-                if (isSelected) {
-                    textField.setForeground(table.getSelectionForeground());
-                    textField.setBackground(table.getSelectionBackground());
-                } else {
-                    textField.setForeground(table.getForeground());
-                    textField.setBackground(table.getBackground());
-                }
-                return textField;
-            }
-        };
-    }
-
     private DefaultTableCellRenderer buildButtonCellRenderer() {
         return new DefaultTableCellRenderer() {
             @Override
@@ -407,18 +390,29 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         };
     }
 
-    private DefaultCellEditor buildTextCellEditor(JTextField textField) {
-        DefaultCellEditor textCellEditor = new DefaultCellEditor(textField) {
+    private DefaultCellEditor buildTextCellEditor(RepositoriesCredentialsTableModel repositoriesCredentialsTableModel) {
+        DefaultCellEditor textCellEditor = new DefaultCellEditor(new JTextField()) {
+            private JTextField textField;
+            private int row;
+            private int column;
+
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                JTextField textField = (JTextField) value;
-                textField.setForeground(table.getSelectionForeground());
-                textField.setBackground(table.getSelectionBackground());
+                Credentials credentials = repositoriesCredentialsTableModel.get(row);
+                if (column < 1) {
+                    textField = new JTextField(credentials.getUserPrincipal().getName());
+                } else {
+                    textField = new JPasswordField(credentials.getPassword());
+                    ((JPasswordField) textField).setEchoChar('\u25cf');
+                }
+                this.row = row;
+                this.column = column;
                 return textField;
             }
 
             @Override
             public boolean stopCellEditing() {
+                repositoriesCredentialsTableModel.updateCellData(this.row, this.column, this.textField.getText());
                 fireEditingStopped();
                 return true;
             }
@@ -453,11 +447,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         JTable newCredentialsListTable = new JTable();
         RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = new RepositoriesCredentialsTableModel();
         newCredentialsListTable.setModel(repositoriesCredentialsTableModel);
-        newCredentialsListTable.setDefaultRenderer(JTextField.class, buildTextCellRenderer());
-        newCredentialsListTable.setDefaultRenderer(JPasswordField.class, buildTextCellRenderer());
         newCredentialsListTable.setDefaultRenderer(JButton.class, buildButtonCellRenderer());
-        newCredentialsListTable.setDefaultEditor(JTextField.class, buildTextCellEditor(new JTextField()));
-        newCredentialsListTable.setDefaultEditor(JPasswordField.class, buildTextCellEditor(new JPasswordField()));
+        newCredentialsListTable.setDefaultEditor(JTextField.class, buildTextCellEditor(repositoriesCredentialsTableModel));
+        newCredentialsListTable.setDefaultEditor(JPasswordField.class, buildTextCellEditor(repositoriesCredentialsTableModel));
         newCredentialsListTable.setDefaultEditor(JButton.class, buildButtonCellEditor());
         newCredentialsListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         newCredentialsListTable.getColumnModel().getColumn(RepositoriesCredentialsTableModel.REPO_CRED_PASS_SEE_COLUMN).setMaxWidth(20);
