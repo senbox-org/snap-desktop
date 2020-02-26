@@ -111,9 +111,9 @@ public class ColorSchemeManager {
 
                 setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
                 setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), false, getjComboBoxNoneEntryName(), null, null, 0, 0, false, true, null, null, null, colorPaletteAuxDir));
-                colorSchemeInfos.add(getNoneColorSchemeInfo());
-                colorSchemeSortedInfos.add(getNoneColorSchemeInfo());
-                colorSchemeSortedVerboseInfos.add(getNoneColorSchemeInfo());
+                colorSchemeInfos.add(0,getNoneColorSchemeInfo());
+                colorSchemeSortedInfos.add(0, getNoneColorSchemeInfo());
+                colorSchemeSortedVerboseInfos.add(0, getNoneColorSchemeInfo());
 
 
                 initComboBox();
@@ -543,7 +543,7 @@ public class ColorSchemeManager {
             colorSchemeInfos.add(colorSchemeInfo);
         }
 
-        ColorSchemeInfo divider = new ColorSchemeInfo("-- Additional Schemes --", true, "-- Additional Scheme --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
+        ColorSchemeInfo divider = new ColorSchemeInfo("-- Additional Schemes --", true, "-- Additional Schemes --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
         colorSchemeInfos.add(divider);
 
         for (ColorSchemeInfo colorSchemeInfo : colorSchemeAdditionalInfos) {

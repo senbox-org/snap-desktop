@@ -26,7 +26,6 @@ import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.ui.SimpleDialog;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -35,7 +34,6 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
@@ -89,7 +87,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JButton fromData;
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
-    private final ColorSchemeManager standardColorPaletteSchemes;
+    private final ColorSchemeManager colorSchemeManager;
     private JLabel colorSchemeJLabel;
     private JButton paletteInversionButton;
 
@@ -125,7 +123,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         schemeInfoLabel = new JLabel("TEST");
 
 
-        standardColorPaletteSchemes = ColorSchemeManager.getDefault();
+        colorSchemeManager = ColorSchemeManager.getDefault();
 
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
@@ -255,14 +253,14 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
 
 
-        standardColorPaletteSchemes.getjComboBox().addActionListener(new ActionListener() {
+        colorSchemeManager.getjComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (standardColorPaletteSchemes.isjComboBoxShouldFire()) {
-                    standardColorPaletteSchemes.setjComboBoxShouldFire(false);
+                if (colorSchemeManager.isjComboBoxShouldFire()) {
+                    colorSchemeManager.setjComboBoxShouldFire(false);
                     ColorSchemeDefaults.debug("Inside standardColorPaletteSchemes listener");
-                    handleColorPaletteInfoComboBoxSelection();
-                    standardColorPaletteSchemes.setjComboBoxShouldFire(true);
+                    handleColorSchemeSelector();
+                    colorSchemeManager.setjComboBoxShouldFire(true);
                 }
             }
         });
@@ -430,8 +428,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
             colorPaletteChooser.reloadPalettes();
         }
-
-        ColorSchemeDefaults.debug("updateFormMode() in BasicForm");
 
         final ImageInfo imageInfo = formModel.getOriginalImageInfo();
         final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
@@ -718,8 +714,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     currentInfo.setColorPaletteDef(sourceCpd, targetMin, targetMax, targetAutoDistribute, sourceLogScaled, targetLogScaled);
                 }
 
-                standardColorPaletteSchemes.reset();
-                currentInfo.setColorSchemeInfo(standardColorPaletteSchemes.getNoneColorSchemeInfo());
+                colorSchemeManager.reset();
+                currentInfo.setColorSchemeInfo(colorSchemeManager.getNoneColorSchemeInfo());
 
                 parentForm.applyChanges();
             }
@@ -841,12 +837,13 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         }
     }
 
-    private void handleColorPaletteInfoComboBoxSelection() {
-        ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) standardColorPaletteSchemes.getjComboBox().getSelectedItem();
+
+    private void handleColorSchemeSelector() {
+        ColorSchemeInfo colorSchemeInfo = (ColorSchemeInfo) colorSchemeManager.getjComboBox().getSelectedItem();
 
         if (colorSchemeInfo != null) {
             if (colorSchemeInfo.isEnabled() && !colorSchemeInfo.isDivider()) {
-                if (standardColorPaletteSchemes.isNoneScheme(colorSchemeInfo)) {
+                if (colorSchemeManager.isNoneScheme(colorSchemeInfo)) {
                     ColorSchemeUtils.setImageInfoToGeneralColor(configuration, createDefaultImageInfo(), parentForm.getFormModel().getProductSceneView());
                 } else {
                     ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, parentForm.getFormModel().getProductSceneView());
@@ -856,12 +853,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             } else {
                 if (!colorSchemeInfo.isDivider()) {
                     ColorSchemeDefaults.debug("Add a notification message window");
-                    String message = standardColorPaletteSchemes.checkScheme(colorSchemeInfo);
+                    String message = colorSchemeManager.checkScheme(colorSchemeInfo);
                     ColorSchemeDefaults.debug(message);
 
-                    SimpleDialog dialog = new SimpleDialog("Color Manipulation: Color Scheme", message, standardColorPaletteSchemes.getjComboBox());
-                    dialog.setVisible(true);
-                    dialog.setEnabled(true);
+                    ColorUtils.showErrorDialog(message);
                 }
             }
         }
