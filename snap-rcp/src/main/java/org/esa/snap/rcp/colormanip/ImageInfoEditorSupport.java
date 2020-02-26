@@ -21,7 +21,16 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.AbstractButton;
-import java.awt.event.ActionListener;
+
+/**
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ */
+// FEB 2020 - Knowles
+//          - Added addition buttons: autoStretch98Button, autoStretch90Button
+//          - Modified handling of the horizontal zoom
+//          - Added method and call to resetSchemeSelector()
+
 
 class ImageInfoEditorSupport {
 
@@ -39,7 +48,7 @@ class ImageInfoEditorSupport {
     final AbstractButton zoomVerticalButton;
 
     final ImageInfoEditor2 imageInfoEditor;
-    final ColorManipulationForm form;
+    ColorManipulationForm form;
 
     final Boolean[] horizontalZoomButtonEnabled = {true};
 
@@ -95,7 +104,7 @@ class ImageInfoEditorSupport {
         zoomHorizontalButton.setName("zoomHorizontalButton");
         zoomHorizontalButton.setToolTipText("Expand and shrink histogram horizontally");
         zoomHorizontalButton.setSelected(zoomDefault);
-        zoomHorizontalButton.addActionListener(e -> handleHorizontalZoom());
+        zoomHorizontalButton.addActionListener(e -> handleHorizontalZoomButton());
 
         zoomVerticalButton = createToggleButton("org/esa/snap/rcp/icons/ZoomVertical24.gif");
         zoomVerticalButton.setName("zoomVerticalButton");
@@ -128,21 +137,32 @@ class ImageInfoEditorSupport {
     }
 
 
-    public void setHorizontalButtonSelectedWithoutEvent(boolean selected) {
-        horizontalZoomButtonEnabled[0] = false;
-        zoomHorizontalButton.setSelected(selected);
-        horizontalZoomButtonEnabled[0] = true;
+    public void setHorizontalZoomButtonAndCompute(boolean zoomToHistLimits) {
+        if (zoomToHistLimits != zoomHorizontalButton.isSelected()) {
+            boolean tmp = horizontalZoomButtonEnabled[0];
+            horizontalZoomButtonEnabled[0] = false;
+            zoomHorizontalButton.setSelected(zoomToHistLimits);
+            horizontalZoomButtonEnabled[0] = tmp;;
+        }
 
+        computeHorizontalZoom(zoomToHistLimits);
     }
 
-    public void handleHorizontalZoom() {
+    private void computeHorizontalZoom(boolean zoomToHistLimits) {
+        if (zoomToHistLimits) {
+            imageInfoEditor.computeZoomInToSliderLimits();
+        } else {
+            imageInfoEditor.computeZoomOutToFullHistogramm();
+        }
+    }
+
+
+    public void handleHorizontalZoomButton() {
         if (horizontalZoomButtonEnabled[0]) {
             form.getFormModel().getProductSceneView().getImageInfo().setZoomToHistLimits(zoomHorizontalButton.isSelected());
-            if (zoomHorizontalButton.isSelected()) {
-                imageInfoEditor.computeZoomInToSliderLimits();
-            } else {
-                imageInfoEditor.computeZoomOutToFullHistogramm();
-            }
+            form.getFormModel().getModifiedImageInfo().setZoomToHistLimits(zoomHorizontalButton.isSelected());
+
+            computeHorizontalZoom(zoomHorizontalButton.isSelected());
         }
     }
 
