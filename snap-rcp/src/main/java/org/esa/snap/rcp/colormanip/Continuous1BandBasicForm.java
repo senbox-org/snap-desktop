@@ -832,7 +832,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private ImageInfo createDefaultImageInfo() {
         try {
             return ProductUtils.createImageInfo(parentForm.getFormModel().getRasters(), false, ProgressMonitor.NULL);
-        } catch (IOException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
                     "Failed to create default image settings:\n" + e.getMessage(),
                     "I/O Error",
