@@ -66,9 +66,9 @@ public class ProductFileChooser extends SnapFileChooser {
     }
 
     /**
-     * File chooser only returns a product, if a product with advance options was created.
+     * File chooser only returns a product, if a product with advanced  options was created.
      *
-     * @return the product with advance options or null
+     * @return the product with advanced  options or null
      */
     public Product getSubsetProduct() {
         return subsetProduct;
@@ -144,7 +144,6 @@ public class ProductFileChooser extends SnapFileChooser {
         advancedButton = new JButton("Advanced");
         advancedButton.setMnemonic('A');
         advancedButton.addActionListener(e -> openAdvancedDialog());
-        //advancedButton.addActionListener(e -> showAdvancedProductSubsetDialog());
         advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
 
         JPanel panel = GridBagUtils.createPanel();
