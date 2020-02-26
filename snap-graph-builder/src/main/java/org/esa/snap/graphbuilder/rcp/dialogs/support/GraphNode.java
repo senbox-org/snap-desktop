@@ -38,7 +38,9 @@ import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -297,6 +299,19 @@ public class GraphNode {
 
     public Map<String, Object> getParameterMap() {
         return parameterMap;
+    }
+
+    public Map<String, Object> getOperatorUIParameterMap() {
+        this.operatorUI.updateParameters();
+        return this.operatorUI.getParameters();
+    }
+
+    public List<String> getSources() {
+        ArrayList<String> srcList = new ArrayList<>();
+        for (NodeSource src: this.node.getSources()) {
+            srcList.add(src.getSourceNodeId());
+        }
+        return srcList;
     }
 
     private boolean canConnect() {

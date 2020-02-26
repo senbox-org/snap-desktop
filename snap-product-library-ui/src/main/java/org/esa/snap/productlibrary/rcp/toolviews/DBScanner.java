@@ -19,10 +19,11 @@ import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.ThreadExecutor;
+import org.esa.snap.core.util.ThreadRunnable;
 import org.esa.snap.productlibrary.db.ProductDB;
 import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
-import org.esa.snap.engine_utilities.gpf.ThreadManager;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ZipUtils;
 
@@ -166,8 +167,7 @@ public final class DBScanner extends SwingWorker {
             if (options.generateQuicklooks) {
                 final int numQL = qlProducts.size();
                 pm.beginTask("Generating Quicklooks...", numQL);
-                final ThreadManager threadManager = new ThreadManager();
-                threadManager.setNumConsecutiveThreads(Math.min(threadManager.getNumConsecutiveThreads(), 4));
+                final ThreadExecutor executor = new ThreadExecutor();
 
                 for (int j = 0; j < numQL; ++j) {
                     pm.setTaskName("Generating Quicklook... " + (j + 1) + " of " + numQL);
@@ -180,10 +180,10 @@ public final class DBScanner extends SwingWorker {
                     final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
                     qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
 
-                    final Thread worker = new Thread() {
+                    final ThreadRunnable worker = new ThreadRunnable() {
 
                         @Override
-                        public void run() {
+                        public void process() {
                             try {
                                 product.getDefaultQuicklook().getImage(qlPM);
                             } catch (Throwable e) {
@@ -194,11 +194,11 @@ public final class DBScanner extends SwingWorker {
                             }
                         }
                     };
-                    threadManager.add(worker);
+                    executor.execute(worker);
 
                     notifyMSG(DBScannerListener.MSG.QUICK_LOOK_GENERATED);
                 }
-                threadManager.finish();
+                executor.complete();
             }
             pm.setTaskName("");
 
@@ -230,7 +230,7 @@ public final class DBScanner extends SwingWorker {
                 dirList.addAll(Arrays.asList(dirs));
             }
         }
-        return dirList.toArray(new File[dirList.size()]);
+        return dirList.toArray(new File[0]);
     }
 
     public List<ErrorFile> getErrorList() {

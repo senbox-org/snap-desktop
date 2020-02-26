@@ -44,4 +44,6 @@ public interface OperatorUI {
     boolean hasSourceProducts();
 
     void convertToDOM(XppDomElement parentElement) throws GraphException;
+
+    Map<String, Object> getParameters();
 }
