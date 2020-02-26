@@ -137,6 +137,7 @@ class ImageInfoEditorSupport {
 
     public void handleHorizontalZoom() {
         if (horizontalZoomButtonEnabled[0]) {
+            form.getFormModel().getProductSceneView().getImageInfo().setZoomToHistLimits(zoomHorizontalButton.isSelected());
             if (zoomHorizontalButton.isSelected()) {
                 imageInfoEditor.computeZoomInToSliderLimits();
             } else {
