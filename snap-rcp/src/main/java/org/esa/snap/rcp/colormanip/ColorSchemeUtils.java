@@ -288,6 +288,8 @@ public class ColorSchemeUtils {
 
     public static boolean setImageInfoToColorScheme(ColorSchemeInfo colorSchemeInfo, ProductSceneView productSceneView) {
 
+        ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme");
+
         if (colorSchemeInfo == null || productSceneView == null) {
             return false;
         }
@@ -298,6 +300,8 @@ public class ColorSchemeUtils {
 
         String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorSchemeInfo);
 
+        ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme: cpdFileName=" + cpdFileName);
+
 
         ColorPaletteDef colorPaletteDef = null;
 
@@ -306,9 +310,14 @@ public class ColorSchemeUtils {
         if (cpdFileName != null) {
             File cpdFile = new File(auxDir, cpdFileName);
             try {
-                colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
-
+                if (cpdFileName.endsWith("cpt")) {
+                    colorPaletteDef = ColorPaletteDef.loadCpt(cpdFile);
+                } else {
+                    colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
+                }
             } catch (IOException e) {
+                ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme: cpd read exception");
+                return false;
             }
         }
 

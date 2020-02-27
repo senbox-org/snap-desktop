@@ -69,7 +69,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         this.currProductNode = parentForm.getFormModel().getProductSceneView().getProductNode();
 
         PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-        zoomToHistLimits = configuration.getPropertyBool(PROPERTY_RANGE_ZOOM_IN_KEY, PROPERTY_RANGE_ZOOM_IN_DEFAULT);
+        zoomToHistLimits = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_IN_KEY, PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
         parentForm.getFormModel().getProductSceneView().getImageInfo().setZoomToHistLimits(zoomToHistLimits);
         parentForm.getFormModel().getModifiedImageInfo().setZoomToHistLimits(zoomToHistLimits);
 
@@ -141,7 +141,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         if (parentForm.getFormModel().getProductSceneView().getImageInfo().getZoomToHistLimits() == null) {
             // New product window opened so set zoomToHistLimits
             PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-            zoomToHistLimits = configuration.getPropertyBool(PROPERTY_RANGE_ZOOM_IN_KEY, PROPERTY_RANGE_ZOOM_IN_DEFAULT);
+            zoomToHistLimits = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_IN_KEY, PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
             parentForm.getFormModel().getProductSceneView().getImageInfo().setZoomToHistLimits(zoomToHistLimits);
             parentForm.getFormModel().getModifiedImageInfo().setZoomToHistLimits(zoomToHistLimits);
         } else {
@@ -218,30 +218,50 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     public AbstractButton[] getToolButtons() {
         PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-        boolean range98 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_98_KEY, PROPERTY_RANGE_BUTTON_98_DEFAULT);
-        boolean range95 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_95_KEY, PROPERTY_RANGE_BUTTON_95_DEFAULT);
-        boolean range90 = configuration.getPropertyBool(PROPERTY_RANGE_BUTTON_90_KEY, PROPERTY_RANGE_BUTTON_90_DEFAULT);
+        boolean range100 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_100_KEY, PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
+        boolean range98 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_98_KEY, PROPERTY_SLIDERS_BUTTON_98_DEFAULT);
+        boolean range95 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_95_KEY, PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
+        boolean range90 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_90_KEY, PROPERTY_SLIDERS_BUTTON_90_DEFAULT);
+        boolean range1Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
+        boolean range2Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
+        boolean range3Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
+        boolean showZoomVerticalButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
+
 
         ArrayList<AbstractButton> abstractButtonArrayList = new ArrayList<AbstractButton>();
         abstractButtonArrayList.add(logDisplayButton);
 
-        abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch100Button);
+        if (range1Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch1SigmaButton);
+        }
+        if (range2Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch2SigmaButton);
+        }
+        if (range3Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch3SigmaButton);
+        }
 
-
-        if (range98) {
-            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch98Button);
+        if (range90) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch90Button);
         }
         if (range95) {
             abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch95Button);
         }
-        if (range90) {
-            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch90Button);
+        if (range98) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch98Button);
+        }
+        if (range100) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch100Button);
         }
 
 
         abstractButtonArrayList.add(evenDistButton);
 
-        abstractButtonArrayList.add(imageInfoEditorSupport.zoomVerticalButton);
+        if (showZoomVerticalButtons) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.zoomInVButton);
+            abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutVButton);
+        }
+//        abstractButtonArrayList.add(imageInfoEditorSupport.zoomVerticalButton);
         abstractButtonArrayList.add(imageInfoEditorSupport.zoomHorizontalButton);
         abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
 

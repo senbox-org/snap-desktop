@@ -876,6 +876,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*.cpt", ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
 
                 colorPalettesAuxFilesInstalled = true;

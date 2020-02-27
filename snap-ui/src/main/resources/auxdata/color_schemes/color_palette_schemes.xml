@@ -1,5 +1,15 @@
 <schemeList>
 
+    <Scheme name="chlor_a_deep">
+        <DISPLAY_NAME>chlor_a_deep</DISPLAY_NAME>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <CPD_FILENAME>deep.cpt</CPD_FILENAME>
+        <CPD_FILENAME_COLORBLIND>deep.cpt</CPD_FILENAME_COLORBLIND>
+        <DESCRIPTION>Example of reading in a cpt format file within the color schemes</DESCRIPTION>
+    </Scheme>
+
     <Scheme name="chlor_a">
         <PRIMARY>true</PRIMARY>
         <DISPLAY_NAME>chlor_a (Chlorophyll)</DISPLAY_NAME>

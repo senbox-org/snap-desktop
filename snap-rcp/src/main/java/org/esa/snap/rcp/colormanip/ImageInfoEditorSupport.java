@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.colormanip;
 
+import org.esa.snap.core.datamodel.ColorSchemeDefaults;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
@@ -27,13 +28,16 @@ import javax.swing.AbstractButton;
  * @author Daniel Knowles (NASA)
  */
 // FEB 2020 - Knowles
-//          - Added addition buttons: autoStretch98Button, autoStretch90Button
-//          - Modified handling of the horizontal zoom
+//          - Added additional autoStretch buttons
+//          - Modified handling of the horizontal zoom with a single toggle button
 //          - Added method and call to resetSchemeSelector()
 
 
 class ImageInfoEditorSupport {
 
+    final AbstractButton autoStretch1SigmaButton;
+    final AbstractButton autoStretch2SigmaButton;
+    final AbstractButton autoStretch3SigmaButton;
     final AbstractButton autoStretch90Button;
     final AbstractButton autoStretch95Button;
     final AbstractButton autoStretch98Button;
@@ -56,6 +60,22 @@ class ImageInfoEditorSupport {
     protected ImageInfoEditorSupport(ImageInfoEditor2 imageInfoEditor, boolean zoomDefault) {
         this.imageInfoEditor = imageInfoEditor;
         this.form = imageInfoEditor.getParentForm();
+
+        autoStretch1SigmaButton = createButton("org/esa/snap/rcp/icons/Auto1SigmaPercent24.gif");
+        autoStretch1SigmaButton.setName("AutoStretch1SigmaButton");
+        autoStretch1SigmaButton.setToolTipText("Auto-adjust to 1 sigma (68.27%) of all pixels");
+        autoStretch1SigmaButton.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute1SigmaPercent()));
+
+        autoStretch2SigmaButton = createButton("org/esa/snap/rcp/icons/Auto2SigmaPercent24.gif");
+        autoStretch2SigmaButton.setName("AutoStretch2SigmaButton");
+        autoStretch2SigmaButton.setToolTipText("Auto-adjust to 2 sigma (95.45%) of all pixels");
+        autoStretch2SigmaButton.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute2SigmaPercent()));
+
+        autoStretch3SigmaButton = createButton("org/esa/snap/rcp/icons/Auto3SigmaPercent24.gif");
+        autoStretch3SigmaButton.setName("AutoStretch3SigmaButton");
+        autoStretch3SigmaButton.setToolTipText("Auto-adjust to 3 sigma (99.73%) of all pixels");
+        autoStretch3SigmaButton.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute3SigmaPercent()));
+
 
 
         autoStretch90Button = createButton("org/esa/snap/rcp/icons/Auto90Percent24.gif");
@@ -167,6 +187,15 @@ class ImageInfoEditorSupport {
     }
 
 
+    private void compute1SigmaPercent() {
+        computePercent(68.27);
+    }
+    private void compute2SigmaPercent() {
+        computePercent(95.45);
+    }
+    private void compute3SigmaPercent() {
+        computePercent(99.73);
+    }
 
     private void compute90Percent() {
         computePercent(90.0);

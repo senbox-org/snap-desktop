@@ -77,32 +77,46 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
-
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
-
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY, true);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
         initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
 
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY, ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT);
-        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_KEY, ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_DEFAULT);
+
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
+
+
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
+
+
+
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_DEFAULT);
+        initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY, ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
+
+
 
         restoreDefaults =  initPropertyDefaults(context, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorSchemeDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
@@ -286,6 +300,38 @@ public final class ColorManipulationController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_SECTION_TOOLTIP)
+        boolean defaultPaletteSection = true;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_TOOLTIP)
+        String grayScaleCpd = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_TOOLTIP)
+        String standardColorCpd = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT;
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_TOOLTIP)
+        String colorBlindCpd = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT;
+
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
+                description = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_TOOLTIP)
+        String otherCpd = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT;
+
+
+
+
+
         @Preference(label = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_KEY,
                 description = ColorSchemeDefaults.PROPERTY_GENERAL_SECTION_TOOLTIP)
@@ -367,77 +413,94 @@ public final class ColorManipulationController extends DefaultConfigController {
         String schemeLog = ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
 
 
+
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_TOOLTIP)
+        boolean schemeSelectorSection = true;
+
         @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_KEY,
                 description = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_TOOLTIP)
-        boolean schemeVerbose = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT;
+        boolean schemeSelectorVerbose = ColorSchemeDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT;
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY,
                 description = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_TOOLTIP)
-        boolean schemeShowDisabled = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
+        boolean schemeSelectorShowDisabled = ColorSchemeDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
 
         @Preference(label = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_LABEL,
                 key = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_KEY,
                 description = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_TOOLTIP)
-        boolean schemeSort = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
-
-
-        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_SECTION_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_CPD_SECTION_KEY,
-                description = ColorSchemeDefaults.PROPERTY_CPD_SECTION_TOOLTIP)
-        boolean defaultPaletteSection = true;
-
-        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
-                description = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_TOOLTIP)
-        String grayScaleCpd = ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT;
-
-        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY,
-                description = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_TOOLTIP)
-        String standardColorCpd = ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT;
-
-
-        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
-                description = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_TOOLTIP)
-        String colorBlindCpd = ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT;
+        boolean schemeSelectorSort = ColorSchemeDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
 
 
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
-                description = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_TOOLTIP)
-        String otherCpd = ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT;
 
 
         // Range Option Section
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_KEY,
-                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_SECTION_TOOLTIP)
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_SECTION_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_SECTION_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_SECTION_TOOLTIP)
         boolean rangeOptionsSection = true;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_KEY,
-                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_TOOLTIP)
-        boolean range98 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_98_DEFAULT;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_KEY,
-                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_TOOLTIP)
-        boolean range95 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_95_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_TOOLTIP)
+        boolean sliderZoom = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_KEY,
-                description = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_TOOLTIP)
-        boolean range90 = ColorSchemeDefaults.PROPERTY_RANGE_BUTTON_90_DEFAULT;
 
-        @Preference(label = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_LABEL,
-                key = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_KEY,
-                description = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_TOOLTIP)
-        boolean sliderZoom = ColorSchemeDefaults.PROPERTY_RANGE_ZOOM_IN_DEFAULT;
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_TOOLTIP)
+        boolean sliderZoomVertical = ColorSchemeDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_TOOLTIP)
+        boolean range1Sigma = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_TOOLTIP)
+        boolean range2Sigma = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_TOOLTIP)
+        boolean range3Sigma = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_TOOLTIP)
+        boolean range90 = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_90_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_TOOLTIP)
+        boolean range95 = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_TOOLTIP)
+        boolean range98 = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_98_DEFAULT;
+
+        @Preference(label = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_LABEL,
+                key = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY,
+                description = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_TOOLTIP)
+        boolean range100 = ColorSchemeDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT;
+
+
+
+
+
+
+
+
+
 
 
 

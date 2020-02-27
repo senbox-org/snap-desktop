@@ -1,4 +1,8 @@
 <colorSchemeLut>
+  <KEY REGEX="chlor_a_deep">
+    <SCHEME_ID>chlor_a_deep</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
   <KEY REGEX="adg_unc_*_giop">
     <SCHEME_ID>absorption</SCHEME_ID>
     <DESCRIPTION/>
@@ -332,23 +336,23 @@
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="absorption">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>absorption</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="adg">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>adg</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="adg_s">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>adg_s</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="anc_SSS">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>anc_SSS</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="angstrom">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>angstrom</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="aot">
@@ -356,51 +360,51 @@
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="aph">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>aph</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="aw">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>aw</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bbp">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bbp</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bbp_s">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bbp_s</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bbw">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bbw</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bb">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bb</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bbp_giop">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bbp_giop</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="BSi">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>BSi</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="BulkSST">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>BulkSST</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="calcite">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>calcite</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="cdom_index">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>cdom_index</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="chisqr_giop">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>chisqr_giop</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="chlor_a">
@@ -412,39 +416,39 @@
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="chlor_a_owterr">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>chlor_a_owterr</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="elev">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>elev</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="epsilon">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>epsilon</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="EVI">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>EVI</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="evi">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>evi</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="flag">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>flag</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="flh">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>flh</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="ipar">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>ipar</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Kd_lee">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Kd_lee</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Kd_490">
@@ -452,139 +456,139 @@
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="NDVI">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>NDVI</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="ndvi">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>ndvi</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nLw_lt_430">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nLw_lt_430</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nLw_430_479">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nLw_430_479</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nLw_480_529">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nLw_480_529</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nLw_530_599">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nLw_530_599</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nLw_ge_600">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nLw_ge_600</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="nw">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>nw</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="owtd">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>owtd</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="owt">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>owt</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="par">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>par</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="pic">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>pic</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="pixels">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>pixels</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="poc">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>poc</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="rad_sm">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>rad_sm</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="rhos">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>rhos</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Rrs_lt_430">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Rrs_lt_430</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Rrs_430_459">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Rrs_430_459</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Rrs_460_499">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Rrs_460_499</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Rrs_ge_500">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Rrs_ge_500</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="rrsdiff_giop">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>rrsdiff_giop</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="scat_wind_speed">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>scat_wind_speed</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="scenes">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>scenes</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="solz">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>solz</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="SSS">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>SSS</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="sst">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>sst</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Zeu">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Zeu</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Zhl_morel">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Zhl_morel</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Zp_10_lee">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Zp_10_lee</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Zp_50_lee">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Zp_50_lee</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="Zsd">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>Zsd</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="bathymetry">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>bathymetry</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="elevation">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>elevation</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
   <KEY REGEX="topography">
-    <SCHEME_ID></SCHEME_ID>
+    <SCHEME_ID>topography</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 </colorSchemeLut>
