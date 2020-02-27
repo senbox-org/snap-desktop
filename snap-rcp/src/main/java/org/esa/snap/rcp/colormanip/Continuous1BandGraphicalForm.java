@@ -27,7 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 
-import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 
 /**

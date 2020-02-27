@@ -36,8 +36,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.text.DecimalFormat;
 
-import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
-import static org.esa.snap.core.datamodel.ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
 
 /**
  * @author Brockmann Consult
@@ -179,7 +179,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (shouldFireChooserEvent) {
-                    ColorSchemeDefaults.debug("Inside maxField listener");
+                    ColorManipulationDefaults.debug("Inside maxField listener");
                     assist();
                 }
             }
@@ -206,7 +206,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (shouldFireChooserEvent) {
-                    ColorSchemeDefaults.debug("Inside minField listener");
+                    ColorManipulationDefaults.debug("Inside minField listener");
                     assist();
                 }
             }
@@ -258,7 +258,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             public void actionPerformed(ActionEvent e) {
                 if (colorSchemeManager.isjComboBoxShouldFire()) {
                     colorSchemeManager.setjComboBoxShouldFire(false);
-                    ColorSchemeDefaults.debug("Inside standardColorPaletteSchemes listener");
+                    ColorManipulationDefaults.debug("Inside standardColorPaletteSchemes listener");
                     handleColorSchemeSelector();
                     colorSchemeManager.setjComboBoxShouldFire(true);
                 }
@@ -389,11 +389,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void handleMinTextfield() {
         if (minTextFieldListenerEnabled[0] && !basicSwitcherIsActive[0]) {
-            ColorSchemeDefaults.debug("Inside handleMinTextfield 1");
+            ColorManipulationDefaults.debug("Inside handleMinTextfield 1");
 
             minTextFieldListenerEnabled[0] = false;
             if (!inCompleteNumber(minField.getText())) {
-                ColorSchemeDefaults.debug("Iside handleMinTextfield 2");
+                ColorManipulationDefaults.debug("Iside handleMinTextfield 2");
 
                 applyChanges(RangeKey.FromMinField);
             }
@@ -706,7 +706,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
             if (valid && valueChange) {
-                ColorSchemeDefaults.debug("Is valid");
+                ColorManipulationDefaults.debug("Is valid");
 
                 if (key == RangeKey.InvertPalette) {
                     currentInfo.setColorPaletteDefInvert(sourceCpd);
@@ -852,9 +852,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
             } else {
                 if (!colorSchemeInfo.isDivider()) {
-                    ColorSchemeDefaults.debug("Add a notification message window");
+                    ColorManipulationDefaults.debug("Add a notification message window");
                     String message = colorSchemeManager.checkScheme(colorSchemeInfo);
-                    ColorSchemeDefaults.debug(message);
+                    ColorManipulationDefaults.debug(message);
 
                     ColorUtils.showErrorDialog(message);
                 }

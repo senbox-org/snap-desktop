@@ -35,7 +35,7 @@ public class ColorSchemeUtils {
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
-        if (ColorSchemeDefaults.isPropertySchemeAutoApply(configuration)) {
+        if (ColorManipulationDefaults.isPropertySchemeAutoApply(configuration)) {
             ColorSchemeInfo colorSchemeInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
 
             if (colorSchemeInfo != null) {
@@ -56,9 +56,9 @@ public class ColorSchemeUtils {
 
 
     public static boolean isRangeFromDataNonScheme(PropertyMap configuration) {
-        String generalRange = ColorSchemeDefaults.getPropertyGeneralRange(configuration);
+        String generalRange = ColorManipulationDefaults.getPropertyGeneralRange(configuration);
 
-        if (generalRange != null && generalRange.equals(ColorSchemeDefaults.OPTION_RANGE_FROM_DATA)) {
+        if (generalRange != null && generalRange.equals(ColorManipulationDefaults.OPTION_RANGE_FROM_DATA)) {
             return true;
         } else {
             return false;
@@ -71,17 +71,17 @@ public class ColorSchemeUtils {
         boolean logScaled = false;
 
         PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
-        String logScaledOption = ColorSchemeDefaults.getPropertyLogScaledOption(configuration);
+        String logScaledOption = ColorManipulationDefaults.getPropertyLogScaledOption(configuration);
 
         if (logScaledOption != null) {
             switch (logScaledOption) {
-                case ColorSchemeDefaults.OPTION_LOG_TRUE:
+                case ColorManipulationDefaults.OPTION_LOG_TRUE:
                     logScaled = true;
                     break;
-                case ColorSchemeDefaults.OPTION_LOG_FALSE:
+                case ColorManipulationDefaults.OPTION_LOG_FALSE:
                     logScaled = false;
                     break;
-                case ColorSchemeDefaults.OPTION_LOG_FROM_CPD:
+                case ColorManipulationDefaults.OPTION_LOG_FROM_CPD:
                     if (colorPaletteDef != null) {
                         logScaled = colorPaletteDef.isLogScaled();
                     }
@@ -100,23 +100,23 @@ public class ColorSchemeUtils {
 
         String filename = null;
 
-        String fileCategory = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_GENERAL_CPD_KEY, ColorSchemeDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
+        String fileCategory = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_GENERAL_CPD_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
         if (fileCategory != null) {
             switch (fileCategory) {
-                case ColorSchemeDefaults.OPTION_COLOR_GRAY_SCALE:
-                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
+                case ColorManipulationDefaults.OPTION_COLOR_GRAY_SCALE:
+                    filename = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
                     break;
-                case ColorSchemeDefaults.OPTION_COLOR_STANDARD:
-                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY, ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
+                case ColorManipulationDefaults.OPTION_COLOR_STANDARD:
+                    filename = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_CPD_STANDARD_KEY, ColorManipulationDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
                     break;
-                case ColorSchemeDefaults.OPTION_COLOR_UNIVERSAL:
-                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
+                case ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL:
+                    filename = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
                     break;
-                case ColorSchemeDefaults.OPTION_COLOR_ANOMALIES:
-                    filename = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
+                case ColorManipulationDefaults.OPTION_COLOR_ANOMALIES:
+                    filename = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
                     break;
                 default:
-                    filename = ColorSchemeDefaults.CPD_DEFAULT;
+                    filename = ColorManipulationDefaults.CPD_DEFAULT;
             }
         }
 
@@ -218,21 +218,21 @@ public class ColorSchemeUtils {
     public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo, ColorPaletteDef colorPaletteDef) {
         boolean logScaled = false;
 
-        String schemeLogScaling = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_LOG_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
+        String schemeLogScaling = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_SCHEME_LOG_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
         if (schemeLogScaling != null) {
             switch (schemeLogScaling) {
-                case ColorSchemeDefaults.OPTION_LOG_TRUE:
+                case ColorManipulationDefaults.OPTION_LOG_TRUE:
                     logScaled = true;
                     break;
-                case ColorSchemeDefaults.OPTION_LOG_FALSE:
+                case ColorManipulationDefaults.OPTION_LOG_FALSE:
                     logScaled = false;
                     break;
-                case ColorSchemeDefaults.OPTION_LOG_FROM_CPD:
+                case ColorManipulationDefaults.OPTION_LOG_FROM_CPD:
                     if (colorPaletteDef != null) {
                         logScaled = colorPaletteDef.isLogScaled();
                     }
                     break;
-                case ColorSchemeDefaults.OPTION_LOG_FROM_SCHEME:
+                case ColorManipulationDefaults.OPTION_LOG_FROM_SCHEME:
                     logScaled = colorSchemeInfo.isLogScaled();
                     break;
                 default:
@@ -248,35 +248,35 @@ public class ColorSchemeUtils {
         String cpdFileName = null;
 
         String schemeCpdOption = configuration.getPropertyString(
-                ColorSchemeDefaults.PROPERTY_SCHEME_CPD_KEY,
-                ColorSchemeDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
+                ColorManipulationDefaults.PROPERTY_SCHEME_CPD_KEY,
+                ColorManipulationDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
 
         switch (schemeCpdOption) {
-            case ColorSchemeDefaults.OPTION_COLOR_STANDARD_SCHEME:
+            case ColorManipulationDefaults.OPTION_COLOR_STANDARD_SCHEME:
                 cpdFileName = colorSchemeInfo.getCpdFilename(false);
                 break;
-            case ColorSchemeDefaults.OPTION_COLOR_UNIVERSAL_SCHEME:
+            case ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL_SCHEME:
                 cpdFileName = colorSchemeInfo.getCpdFilename(true);
                 break;
-            case ColorSchemeDefaults.OPTION_COLOR_GRAY_SCALE:
+            case ColorManipulationDefaults.OPTION_COLOR_GRAY_SCALE:
                 cpdFileName = configuration.getPropertyString(
-                        ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
-                        ColorSchemeDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
+                        ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
+                        ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
                 break;
-            case ColorSchemeDefaults.OPTION_COLOR_STANDARD:
+            case ColorManipulationDefaults.OPTION_COLOR_STANDARD:
                 cpdFileName = configuration.getPropertyString(
-                        ColorSchemeDefaults.PROPERTY_CPD_STANDARD_KEY,
-                        ColorSchemeDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
+                        ColorManipulationDefaults.PROPERTY_CPD_STANDARD_KEY,
+                        ColorManipulationDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
                 break;
-            case ColorSchemeDefaults.OPTION_COLOR_UNIVERSAL:
+            case ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL:
                 cpdFileName = configuration.getPropertyString(
-                        ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
-                        ColorSchemeDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
+                        ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
+                        ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
                 break;
-            case ColorSchemeDefaults.OPTION_COLOR_ANOMALIES:
+            case ColorManipulationDefaults.OPTION_COLOR_ANOMALIES:
                 cpdFileName = configuration.getPropertyString(
-                        ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_KEY,
-                        ColorSchemeDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
+                        ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_KEY,
+                        ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
                 break;
             default:
                 break;
@@ -288,7 +288,7 @@ public class ColorSchemeUtils {
 
     public static boolean setImageInfoToColorScheme(ColorSchemeInfo colorSchemeInfo, ProductSceneView productSceneView) {
 
-        ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme");
+        ColorManipulationDefaults.debug("Inside setImageInfoToColorScheme");
 
         if (colorSchemeInfo == null || productSceneView == null) {
             return false;
@@ -300,7 +300,7 @@ public class ColorSchemeUtils {
 
         String cpdFileName = getCdpFileNameFromSchemeSelection(configuration, colorSchemeInfo);
 
-        ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme: cpdFileName=" + cpdFileName);
+        ColorManipulationDefaults.debug("Inside setImageInfoToColorScheme: cpdFileName=" + cpdFileName);
 
 
         ColorPaletteDef colorPaletteDef = null;
@@ -316,7 +316,7 @@ public class ColorSchemeUtils {
                     colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(cpdFile);
                 }
             } catch (IOException e) {
-                ColorSchemeDefaults.debug("Inside setImageInfoToColorScheme: cpd read exception");
+                ColorManipulationDefaults.debug("Inside setImageInfoToColorScheme: cpd read exception");
                 return false;
             }
         }
@@ -329,23 +329,23 @@ public class ColorSchemeUtils {
 
         Stx stx = productSceneView.getRaster().getStx();
 
-        String schemeRange = configuration.getPropertyString(ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorSchemeDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
+        String schemeRange = configuration.getPropertyString(ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         switch (schemeRange) {
-            case ColorSchemeDefaults.OPTION_RANGE_FROM_SCHEME:
+            case ColorManipulationDefaults.OPTION_RANGE_FROM_SCHEME:
                 min = colorSchemeInfo.getMinValue();
-                if (min == ColorSchemeDefaults.DOUBLE_NULL) {
+                if (min == ColorManipulationDefaults.DOUBLE_NULL) {
                     min = stx.getMinimum();
                 }
                 max = colorSchemeInfo.getMaxValue();
-                if (max == ColorSchemeDefaults.DOUBLE_NULL) {
+                if (max == ColorManipulationDefaults.DOUBLE_NULL) {
                     max = stx.getMaximum();
                 }
                 break;
-            case ColorSchemeDefaults.OPTION_RANGE_FROM_DATA:
+            case ColorManipulationDefaults.OPTION_RANGE_FROM_DATA:
                 min = stx.getMinimum();
                 max = stx.getMaximum();
                 break;
-            case ColorSchemeDefaults.OPTION_RANGE_FROM_CPD:
+            case ColorManipulationDefaults.OPTION_RANGE_FROM_CPD:
                 min = colorPaletteDef.getMinDisplaySample();
                 max = colorPaletteDef.getMaxDisplaySample();
                 break;
@@ -377,11 +377,11 @@ public class ColorSchemeUtils {
 
 
     public static Path getDirNameColorPalettes() {
-        return SystemUtils.getAuxDataPath().resolve(ColorSchemeDefaults.DIR_NAME_COLOR_PALETTES);
+        return SystemUtils.getAuxDataPath().resolve(ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES);
     }
 
     public static Path getDirNameColorSchemes() {
-        return SystemUtils.getAuxDataPath().resolve(ColorSchemeDefaults.DIR_NAME_COLOR_SCHEMES);
+        return SystemUtils.getAuxDataPath().resolve(ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES);
     }
 
 

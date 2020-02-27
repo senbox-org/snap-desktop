@@ -16,7 +16,6 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.core.datamodel.ColorSchemeDefaults;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;

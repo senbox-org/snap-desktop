@@ -187,15 +187,15 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
             if (productSceneView.getImageInfo().getColorSchemeInfo() == null) {
-                ColorSchemeDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
+                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
                 ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
             } else {
-                ColorSchemeDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
+                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
             }
 
-            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
+            ColorManipulationDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
             getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
-            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
+            ColorManipulationDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
         }
 
         installChildForm();
@@ -203,12 +203,12 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         updateTitle();
         updateToolButtons();
 
-        ColorSchemeDefaults.debug("In ColorManipulationFormImpl: about to do updateMultiApplyState ");
+        ColorManipulationDefaults.debug("In ColorManipulationFormImpl: about to do updateMultiApplyState ");
         updateMultiApplyState();
-        ColorSchemeDefaults.debug("In ColorManipulationFormImpl: finished updateMultiApplyState ");
+        ColorManipulationDefaults.debug("In ColorManipulationFormImpl: finished updateMultiApplyState ");
 
         if (getFormModel().isValid()) {
-            ColorSchemeDefaults.debug("In ColorManipulationFormImpl: apply changes");
+            ColorManipulationDefaults.debug("In ColorManipulationFormImpl: apply changes");
             applyChanges();
         }
     }
@@ -505,7 +505,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     @Override
     public void applyChanges() {
-        ColorSchemeDefaults.debug("Applying changes in ColorManipulationFormImpl");
+        ColorManipulationDefaults.debug("Applying changes in ColorManipulationFormImpl");
         updateMultiApplyState();
         if (getFormModel().isValid()) {
             try {
@@ -901,8 +901,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {
@@ -914,14 +914,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     public Path getColorPalettesSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
-        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.DIR_NAME_AUX_DATA);
-        return auxdirSource.resolve(ColorSchemeDefaults.DIR_NAME_COLOR_PALETTES);
+        Path auxdirSource = sourceBasePath.resolve(ColorManipulationDefaults.DIR_NAME_AUX_DATA);
+        return auxdirSource.resolve(ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES);
     }
 
     public Path getColorSchemesSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
-        Path auxdirSource = sourceBasePath.resolve(ColorSchemeDefaults.DIR_NAME_AUX_DATA);
-        return auxdirSource.resolve(ColorSchemeDefaults.DIR_NAME_COLOR_SCHEMES);
+        Path auxdirSource = sourceBasePath.resolve(ColorManipulationDefaults.DIR_NAME_AUX_DATA);
+        return auxdirSource.resolve(ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES);
     }
 
 

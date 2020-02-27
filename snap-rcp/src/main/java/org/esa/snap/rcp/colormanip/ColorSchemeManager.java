@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
-import org.esa.snap.core.datamodel.ColorSchemeDefaults;
+import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.util.PropertyMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static org.esa.snap.core.datamodel.ColorSchemeDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 /**
  * Manages all the color schemes
@@ -101,8 +101,8 @@ public class ColorSchemeManager {
                 return;
             }
 
-            colorSchemesFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEMES_FILENAME);
-            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorSchemeDefaults.COLOR_SCHEME_LUT_FILENAME);
+            colorSchemesFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEMES_FILENAME);
+            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME);
 
             if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
                 initColorSchemeInfos();
@@ -268,7 +268,7 @@ public class ColorSchemeManager {
         jComboBox.removeAllItems();
         populateComboBox();
         if (getCurrentSelection() != null) {
-            ColorSchemeDefaults.debug("Setting selected to stored value=" + getCurrentSelection());
+            ColorManipulationDefaults.debug("Setting selected to stored value=" + getCurrentSelection());
             setSelected(getCurrentSelection());
         }
         jComboBox.repaint();
@@ -278,22 +278,22 @@ public class ColorSchemeManager {
 
     // If user selects an invalid scheme then use the current selection, otherwise update to the selected scheme
     private void validateSelection() {
-        ColorSchemeDefaults.debug("Checking validation");
+        ColorManipulationDefaults.debug("Checking validation");
 
         if (jComboBox != null) {
             ColorSchemeInfo selectedColorSchemeInfo = (ColorSchemeInfo) jComboBox.getSelectedItem();
             if (selectedColorSchemeInfo != null && selectedColorSchemeInfo != getCurrentSelection()) {
                 if (selectedColorSchemeInfo.isEnabled()) {
-                    ColorSchemeDefaults.debug("Validated Selected");
+                    ColorManipulationDefaults.debug("Validated Selected");
                     setCurrentSelection(selectedColorSchemeInfo);
                 } else if (getCurrentSelection() != null) {
-                    ColorSchemeDefaults.debug("Setting to prior selection");
+                    ColorManipulationDefaults.debug("Setting to prior selection");
                     setSelected(getCurrentSelection());
                 }
             }
         }
 
-        ColorSchemeDefaults.debug("Finished Checking validation");
+        ColorManipulationDefaults.debug("Finished Checking validation");
     }
 
 
@@ -424,13 +424,13 @@ public class ColorSchemeManager {
                     if (minStr != null && minStr.length() > 0) {
                         min = Double.valueOf(minStr);
                     } else {
-                        min = ColorSchemeDefaults.DOUBLE_NULL;
+                        min = ColorManipulationDefaults.DOUBLE_NULL;
                     }
 
                     if (maxStr != null && maxStr.length() > 0) {
                         max = Double.valueOf(maxStr);
                     } else {
-                        max = ColorSchemeDefaults.DOUBLE_NULL;
+                        max = ColorManipulationDefaults.DOUBLE_NULL;
                     }
 
                     logScaled = false;
@@ -622,14 +622,14 @@ public class ColorSchemeManager {
     private boolean testMinMax(double min, double max, boolean isLogScaled) {
         boolean checksOut = true;
 
-        if (min != ColorSchemeDefaults.DOUBLE_NULL && max != ColorSchemeDefaults.DOUBLE_NULL) {
+        if (min != ColorManipulationDefaults.DOUBLE_NULL && max != ColorManipulationDefaults.DOUBLE_NULL) {
             if (min >= max) {
                 checksOut = false;
             }
         }
 
 
-        if (min != ColorSchemeDefaults.DOUBLE_NULL && max != ColorSchemeDefaults.DOUBLE_NULL) {
+        if (min != ColorManipulationDefaults.DOUBLE_NULL && max != ColorManipulationDefaults.DOUBLE_NULL) {
             if (isLogScaled && min == 0) {
                 checksOut = false;
             }
@@ -726,7 +726,7 @@ public class ColorSchemeManager {
             currentSelection = noneColorSchemeInfo;
         }
 
-        ColorSchemeDefaults.debug("Setting currentSelection=" + currentSelection.toString());
+        ColorManipulationDefaults.debug("Setting currentSelection=" + currentSelection.toString());
         this.currentSelection = currentSelection;
     }
 
