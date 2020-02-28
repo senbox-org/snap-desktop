@@ -17,7 +17,7 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ProgressMonitor;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;

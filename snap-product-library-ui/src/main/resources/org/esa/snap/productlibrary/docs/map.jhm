@@ -5,7 +5,7 @@
 
 <map version="2.0">
 
-    <mapID target="productLibrary" url="desktop/ProductLibrary.html"/>
+    <mapID target="productLibraryTool" url="ProductLibraryTool.html"/>
     <mapID target="AOIMonitoring" url="desktop/AOIMonitoring.html"/>
 
 </map>

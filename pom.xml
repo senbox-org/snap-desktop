@@ -19,6 +19,7 @@
         <netbeans.version>RELEASE82</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
+        <tao.version>1.0.1</tao.version>
     </properties>
 
     <modules>
@@ -33,10 +34,7 @@
         <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
-<!--
-TODO Jean uncomment 'snap-classification-ui' before transfer to the master branch
         <module>snap-classification-ui</module>
--->
         <module>snap-collocation-ui</module>
         <module>snap-dem-ui</module>
         <module>snap-gpf-ui</module>
@@ -239,6 +237,14 @@ TODO Jean uncomment 'snap-classification-ui' before transfer to the master branc
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
+
+            <!--TAO module -->
+            <dependency>
+                <groupId>ro.cs.tao</groupId>
+                <artifactId>tao-utils</artifactId>
+                <version>${tao.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -255,6 +261,11 @@ TODO Jean uncomment 'snap-classification-ui' before transfer to the master branc
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <id>tao-core</id>
+            <name>TAO Core</name>
+            <url>https://raw.githubusercontent.com/tao-org/tao-core/repository</url>
         </repository>
     </repositories>
 

@@ -3,7 +3,7 @@ package org.esa.snap.ui.loading;
 /**
  * Created by jcoravu on 7/1/2019.
  */
-public interface IMessageDialog {
+public interface MessageDialog {
 
     public void close();
 

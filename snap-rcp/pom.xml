@@ -37,6 +37,18 @@
                             <id>org.netbeans.api:org-openide-windows</id>
                             <type>impl</type>
                         </dependency>
+                        <dependency>
+                            <id>org.netbeans.modules:org-netbeans-core-startup</id>
+                            <type>impl</type>
+                        </dependency>
+                        <dependency>
+                            <id>org.netbeans.modules:org-netbeans-core</id>
+                            <type>impl</type>
+                        </dependency>
+                        <dependency>
+                            <id>org.netbeans.modules:org-netbeans-bootstrap</id>
+                            <type>impl</type>
+                        </dependency>
                     </moduleDependencies>
                     <publicPackages>
                         <publicPackage>org.esa.snap.rcp.*</publicPackage>
@@ -171,6 +183,21 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-core-startup</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-core</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-bootstrap</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- SNAP NetBeans Goodies -->

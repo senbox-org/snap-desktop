@@ -17,9 +17,9 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.rcp.SnapApp;

@@ -4,17 +4,17 @@ package org.esa.snap.remote.execution.local.folder;
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.remote.execution.utils.UnixMountLocalFolderResult;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 
 public class MountMacLocalFolderTimerRunnable extends AbstractTimerRunnable<UnixMountLocalFolderResult> {
 
-    private final IMessageDialog parentWindow;
+    private final MessageDialog parentWindow;
 
     protected final MacLocalSharedFolder macLocalSharedDrive;
     protected final IMountLocalSharedFolderCallback callback;
 
-    public MountMacLocalFolderTimerRunnable(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId,
+    public MountMacLocalFolderTimerRunnable(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId,
                                             MacLocalSharedFolder macLocalSharedDrive, IMountLocalSharedFolderCallback callback) {
 
         super(loadingIndicator, threadId, 500);

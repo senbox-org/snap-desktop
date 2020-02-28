@@ -34,6 +34,10 @@
     <dependencies>
         <dependency>
             <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
             <artifactId>ceres-core</artifactId>
         </dependency>
         <dependency>
@@ -51,6 +55,10 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-engine-utilities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-jai</artifactId>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -72,7 +80,42 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-graph-builder</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-remote-products-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>worldwind</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>worldwindx</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.1.5-01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.2</version>
+        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>

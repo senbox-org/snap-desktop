@@ -8,10 +8,10 @@ import java.awt.*;
 /**
  * Created by jcoravu on 28/12/2018.
  */
-public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
+public class LoadingIndicatorPanel extends JPanel implements LoadingIndicator {
 
     private final Object lockObject;
-    private final IComponentsEnabled componentsEnabled;
+    private final ComponentsEnabled componentsEnabled;
     private final CircularProgressIndicatorLabel circularProgressLabel;
     private final JLabel messageLabel;
 
@@ -22,7 +22,7 @@ public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
         this(null);
     }
 
-    public LoadingIndicatorPanel(IComponentsEnabled componentsEnabled) {
+    public LoadingIndicatorPanel(ComponentsEnabled componentsEnabled) {
         super(new GridBagLayout());
 
         this.componentsEnabled = componentsEnabled;
@@ -90,12 +90,7 @@ public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
     @Override
     public boolean onHide(int threadId) {
         if (isRunning(threadId)) {
-            setRunningAndIncreaseThreadId(false);
-            try {
-                setEnabledControls(true);
-            } finally {
-                stopAndHide();
-            }
+            stopRunningAndHide();
             return true;
         }
         return false;
@@ -103,6 +98,15 @@ public class LoadingIndicatorPanel extends JPanel implements ILoadingIndicator {
 
     public final int getNewCurrentThreadId() {
         return setRunningAndIncreaseThreadId(true);
+    }
+
+    public void stopRunningAndHide() {
+        setRunningAndIncreaseThreadId(false);
+        try {
+            setEnabledControls(true);
+        } finally {
+            stopAndHide();
+        }
     }
 
     private void showAndStart(int threadId, String messageToDisplay) {

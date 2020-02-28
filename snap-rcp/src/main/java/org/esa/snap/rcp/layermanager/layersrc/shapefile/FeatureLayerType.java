@@ -33,8 +33,8 @@ import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
 import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
 import com.thoughtworks.xstream.io.xml.XppDomWriter;
 import com.thoughtworks.xstream.io.xml.XppReader;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.esa.snap.core.util.FeatureUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -204,7 +204,7 @@ public class FeatureLayerType extends LayerType {
         @Override
         public Object convertDomToValue(DomElement parentElement, Object value) throws ConversionException,
                 ValidationException {
-            com.vividsolutions.jts.geom.GeometryFactory gf = new com.vividsolutions.jts.geom.GeometryFactory();
+            org.locationtech.jts.geom.GeometryFactory gf = new org.locationtech.jts.geom.GeometryFactory();
             final DefaultDomConverter domConverter = new DefaultDomConverter(Coordinate.class);
             final DomElement[] children = parentElement.getChildren("coordinate");
             List<Coordinate> coordList = new ArrayList<Coordinate>();

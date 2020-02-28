@@ -34,7 +34,7 @@ import java.util.Stack;
 /**
  * Created by jcoravu on 18/12/2018.
  */
-public abstract class AbstractModalDialog extends AbstractDialog implements IMessageDialog {
+public abstract class AbstractModalDialog extends AbstractDialog implements MessageDialog {
 
     private LoadingIndicatorPanel loadingIndicatorPanel;
     private java.util.List<JComponent> componentsAllwaysEnabled;
@@ -76,7 +76,7 @@ public abstract class AbstractModalDialog extends AbstractDialog implements IMes
             };
             registerEscapeKey(cancelActionListener);
 
-            IComponentsEnabled componentsEnabled = new IComponentsEnabled() {
+            ComponentsEnabled componentsEnabled = new ComponentsEnabled() {
                 @Override
                 public void setComponentsEnabled(boolean enabled) {
                     setEnabledComponentsWhileLoading(enabled);
@@ -192,7 +192,7 @@ public abstract class AbstractModalDialog extends AbstractDialog implements IMes
         }
     }
 
-    protected final ILoadingIndicator getLoadingIndicator() {
+    protected final LoadingIndicator getLoadingIndicator() {
         return this.loadingIndicatorPanel;
     }
 

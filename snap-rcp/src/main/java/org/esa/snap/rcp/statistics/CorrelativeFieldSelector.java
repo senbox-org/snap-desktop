@@ -91,7 +91,7 @@ class CorrelativeFieldSelector {
 
     public void updatePointDataSource(Product product) {
         if (product != null) {
-            final Class pointClass = com.vividsolutions.jts.geom.Point.class;
+            final Class pointClass = org.locationtech.jts.geom.Point.class;
             final ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
             final List<VectorDataNode> vectorDataNodes = new ArrayList<VectorDataNode>();
             for (VectorDataNode vectorDataNode : vectorDataGroup.toArray(new VectorDataNode[vectorDataGroup.getNodeCount()])) {

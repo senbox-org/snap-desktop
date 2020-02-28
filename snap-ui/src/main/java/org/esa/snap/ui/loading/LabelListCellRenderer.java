@@ -7,11 +7,33 @@ import java.awt.*;
 /**
  * Created by jcoravu on 19/12/2018.
  */
-public abstract class LabelListCellRenderer<ItemType> extends JLabel implements ListCellRenderer<ItemType> {
+public class LabelListCellRenderer<ItemType> extends JLabel implements ListCellRenderer<ItemType> {
+
+    private final ItemRenderer<ItemType> itemRenderer;
 
     public LabelListCellRenderer(Insets margins) {
+        this(margins, null);
+    }
+
+    public LabelListCellRenderer(Insets margins, ItemRenderer<ItemType> itemRenderer) {
+        this.itemRenderer = itemRenderer;
+
         setOpaque(true);
         setBorder(new EmptyBorder(margins));
+    }
+
+    public LabelListCellRenderer(int itemHeight) {
+        this(itemHeight, null);
+    }
+
+    public LabelListCellRenderer(int itemHeight, ItemRenderer<ItemType> itemRenderer) {
+        this.itemRenderer = itemRenderer;
+
+        setOpaque(true);
+
+        Dimension rendererSize = getPreferredSize();
+        rendererSize.height = itemHeight;
+        setPreferredSize(rendererSize);
     }
 
     @Override
@@ -36,5 +58,10 @@ public abstract class LabelListCellRenderer<ItemType> extends JLabel implements 
         return this;
     }
 
-    protected abstract String getItemDisplayText(ItemType value);
+    protected String getItemDisplayText(ItemType item) {
+        if (this.itemRenderer == null) {
+            return (item == null) ? null : item.toString();
+        }
+        return this.itemRenderer.getItemDisplayText(item);
+    }
 }
