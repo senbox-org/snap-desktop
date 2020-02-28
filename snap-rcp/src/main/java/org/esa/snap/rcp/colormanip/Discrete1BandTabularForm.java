@@ -17,13 +17,8 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.IndexCoding;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -40,7 +35,7 @@ import java.awt.Component;
 import java.text.NumberFormat;
 
 public class Discrete1BandTabularForm implements ColorManipulationChildForm {
-    private static final String[] COLUMN_NAMES = new String[]{"Label", "Colour", "Value", "Frequency", "Description"};
+    private static final String[] COLUMN_NAMES = new String[]{"Label", NamingConvention.COLOR_MIXED_CASE, "Value", "Frequency", "Description"};
     private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{String.class, Color.class, String.class, Double.class, String.class};
 
     private final ColorManipulationForm parentForm;

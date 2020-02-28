@@ -23,6 +23,7 @@ import com.jidesoft.popup.JidePopup;
 import com.jidesoft.swing.JidePopupMenu;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.core.util.math.Histogram;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.Range;
@@ -1041,7 +1042,7 @@ public abstract class ImageInfoEditor extends JPanel {
 
         private JMenuItem createMenuItemCenterColorValue(final int sliderIndex) {
             JMenuItem menuItem = new JMenuItem();
-            menuItem.setText("Center Slider Colour"); /* I18N */
+            menuItem.setText("Center Slider " + NamingConvention.COLOR_MIXED_CASE); /* I18N */
             menuItem.setMnemonic('c');
             menuItem.addActionListener(actionEvent -> {
                 final Color newColor = ColorPaletteDef.getCenterColor(getSliderColor(sliderIndex - 1),

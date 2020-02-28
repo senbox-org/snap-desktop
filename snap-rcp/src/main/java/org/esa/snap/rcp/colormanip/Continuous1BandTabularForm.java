@@ -18,6 +18,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.binding.ValueRange;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -47,7 +48,7 @@ import java.awt.Component;
 
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
-    private static final String[] COLUMN_NAMES = new String[]{"Colour", "Value"};
+    private static final String[] COLUMN_NAMES = new String[]{NamingConvention.COLOR_MIXED_CASE, "Value"};
     private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, String.class};
 
     private final ColorManipulationForm parentForm;

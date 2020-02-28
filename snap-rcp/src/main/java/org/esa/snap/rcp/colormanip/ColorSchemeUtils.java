@@ -120,7 +120,7 @@ public class ColorSchemeUtils {
             }
         }
 
-        File auxDir = ColorSchemeUtils.getDirNameColorPalettes().toFile();
+        File auxDir = ColorSchemeUtils.getColorPalettesDir().toFile();
 
         if (filename != null) {
             File defaultCpd = new File(auxDir, filename);
@@ -305,7 +305,7 @@ public class ColorSchemeUtils {
 
         ColorPaletteDef colorPaletteDef = null;
 
-        File auxDir = ColorSchemeUtils.getDirNameColorPalettes().toFile();
+        File auxDir = ColorSchemeUtils.getColorPalettesDir().toFile();
 
         if (cpdFileName != null) {
             File cpdFile = new File(auxDir, cpdFileName);
@@ -376,11 +376,11 @@ public class ColorSchemeUtils {
     }
 
 
-    public static Path getDirNameColorPalettes() {
+    public static Path getColorPalettesDir() {
         return SystemUtils.getAuxDataPath().resolve(ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES);
     }
 
-    public static Path getDirNameColorSchemes() {
+    public static Path getColorSchemesDir() {
         return SystemUtils.getAuxDataPath().resolve(ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES);
     }
 

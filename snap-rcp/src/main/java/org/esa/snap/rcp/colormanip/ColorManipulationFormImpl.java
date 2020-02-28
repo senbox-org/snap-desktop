@@ -21,6 +21,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import javax.swing.*;
 
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.ResourceInstaller;
@@ -54,9 +55,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.esa.snap.core.util.NamingConventionSnap.COLOR_LOWER_CASE;
+
 
 /**
- * The GUI for the colour manipulation tool window.
+ * The GUI for the color manipulation tool window.
  *
  * @author Brockmann Consult
  * @author Daniel Knowles (NASA)
@@ -78,7 +81,7 @@ import java.util.concurrent.Executors;
 
 
 @NbBundle.Messages({
-        "CTL_ColorManipulationForm_TitlePrefix=Colour Manipulation"
+        "CTL_ColorManipulationForm_TitlePrefix=" + ColorManipulationDefaults.TOOLNAME_COLOR_MANIPULATION
 })
 class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductSceneView>, ColorManipulationForm {
 
@@ -328,7 +331,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         importButton = createButton("tango/22x22/actions/document-open.png");
         importButton.setName("ImportButton");
-        importButton.setToolTipText("Import colour palette from text file."); /*I18N*/
+        importButton.setToolTipText("Import " + NamingConvention.COLOR_LOWER_CASE + " palette from text file."); /*I18N*/
         importButton.addActionListener(e -> {
             importColorPaletteDef();
             applyChanges();
@@ -337,7 +340,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         exportButton = createButton("tango/22x22/actions/document-save-as.png");
         exportButton.setName("ExportButton");
-        exportButton.setToolTipText("Save colour palette to text file."); /*I18N*/
+        exportButton.setToolTipText("Save " + NamingConvention.COLOR_LOWER_CASE + " palette to text file."); /*I18N*/
         exportButton.addActionListener(e -> {
             exportColorPaletteDef();
             getChildForm().updateFormModel(getFormModel());
@@ -615,7 +618,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreateCpdFileFilter() {
         if (snapFileFilter == null) {
             final String formatName = "COLOR_PALETTE_DEFINITION_FILE";
-            final String description = FILE_EXTENSION_CPD.toUpperCase() + " - Default color palette format (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
+            final String description = FILE_EXTENSION_CPD.toUpperCase() + " - Default " + COLOR_LOWER_CASE + " palette format (*" + FILE_EXTENSION_CPD + ")";  /*I18N*/
             snapFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_CPD, description);
         }
         return snapFileFilter;
@@ -624,7 +627,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter getOrCreatePalFileFilter() {
         if (palFileFilter == null) {
             final String formatName = "GENERIC_COLOR_PALETTE_FILE";
-            final String description = FILE_EXTENSION_PAL.toUpperCase() + " - Generic 256 point color palette format (*." + FILE_EXTENSION_PAL + ")";  /*I18N*/
+            final String description = FILE_EXTENSION_PAL.toUpperCase() + " - Generic 256 point " + COLOR_LOWER_CASE + " palette format (*." + FILE_EXTENSION_PAL + ")";  /*I18N*/
             palFileFilter = new SnapFileFilter(formatName, "." + FILE_EXTENSION_PAL, description);
         }
         return palFileFilter;
@@ -648,7 +651,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return;
         }
         final SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setDialogTitle("Import Colour Palette"); /*I18N*/
+        fileChooser.setDialogTitle("Import " + NamingConvention.COLOR_MIXED_CASE + " Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateCpdFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
@@ -755,7 +758,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                     getChildForm().updateFormModel(getFormModel());
                     updateMultiApplyState();
                 } catch (IOException e) {
-                    showErrorDialog("Failed to import colour palette:\n" + e.getMessage());
+                    showErrorDialog("Failed to import " + NamingConvention.COLOR_LOWER_CASE + " palette:\n" + e.getMessage());
                 }
             }
         }
@@ -785,8 +788,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
                 "Automatically distribute points of\n" +
-                        "colour palette between min/max?",
-                "Import Colour Palette",
+                        NamingConvention.COLOR_LOWER_CASE + " palette between min/max?",
+                "Import " + NamingConvention.COLOR_MIXED_CASE + " Palette",
                 JOptionPane.YES_NO_CANCEL_OPTION
         );
         if (answer == JOptionPane.YES_OPTION) {
@@ -810,7 +813,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return;
         }
         final SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setDialogTitle("Export Colour Palette"); /*I18N*/
+        fileChooser.setDialogTitle("Export " +  NamingConvention.COLOR_MIXED_CASE + " Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateCpdFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreatePalFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
@@ -837,7 +840,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                             ColorPaletteDef.storeColorPaletteDef(colorPaletteDef, file);
                         }
                     } catch (IOException e) {
-                        showErrorDialog("Failed to export colour palette:\n" + e.getMessage());  /*I18N*/
+                        showErrorDialog("Failed to export " + NamingConvention.COLOR_LOWER_CASE + " palette:\n" + e.getMessage());  /*I18N*/
                     }
                 }
             }
@@ -862,6 +865,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         this.childForm = childForm;
     }
 
+
+    // Installs the color palette files resources
     private class InstallColorPalettesAuxFiles implements Runnable {
 
         private InstallColorPalettesAuxFiles() {
@@ -875,18 +880,21 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*.cpd", ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*.cpt", ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*oceancolor_.*.cpd", ProgressMonitor.NULL, true);
+                resourceInstaller.install(".*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*." + FILE_EXTENSION_CPT, ProgressMonitor.NULL, false);
+
+                // these file get overwritten as we do not encourage that these standard files to be altered
+                resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL, true);
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to install color palettes", e);
+                SnapApp.getDefault().handleError("Unable to install " + COLOR_LOWER_CASE + " palettes", e);
             }
         }
     }
 
 
+    // Installs the color scheme xml files resources
     private class InstallColorSchemesAuxFiles implements Runnable {
 
         private InstallColorSchemesAuxFiles() {
@@ -900,16 +908,17 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
+//                resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to install color schemes files", e);
+                SnapApp.getDefault().handleError("Unable to install " + COLOR_LOWER_CASE + " schemes files", e);
             }
         }
     }
+
 
 
     public Path getColorPalettesSourceDir() {
@@ -926,11 +935,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
 
     private Path getColorPalettesDir() {
-        return ColorSchemeUtils.getDirNameColorPalettes();
+        return ColorSchemeUtils.getColorPalettesDir();
     }
 
     private Path getColorSchemesDir() {
-        return ColorSchemeUtils.getDirNameColorSchemes();
+        return ColorSchemeUtils.getColorSchemesDir();
     }
 
 

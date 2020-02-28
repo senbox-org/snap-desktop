@@ -118,7 +118,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         colorSchemeJLabel = new JLabel("");
-        colorSchemeJLabel.setToolTipText("The color data is stored in the band.  Astericks suffix (*) denotes that some parameters have been altered");
 
         schemeInfoLabel = new JLabel("TEST");
 
@@ -284,17 +283,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             } catch (NumberFormatException e) {
                 valid = false;
                 String errorMessage = e.getMessage();
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMax field is not a number\":\n" + errorMessage);
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field is not a number\":\n" + errorMessage);
             }
 
             if (valid && max <= min) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMax field must be greater than Min field\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field must be greater than Min field\"");
             }
 
             if (valid && logScaled && max <= 0) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMax field cannot be less than or equal to zero with log scaling\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field cannot be less than or equal to zero with log scaling\"");
             }
 
             if (valid) {
@@ -314,10 +313,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         if (logScaled && min <= 0) {
             valid = false;
-            ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMin field cannot be set to less than or equal to zero with log scaling\"");
+            ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field cannot be set to less than or equal to zero with log scaling\"");
         } else if (logScaled && max <= 0) {
             valid = false;
-            ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMax field cannot be set to less than or equal to zero with log scaling\"");
+            ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field cannot be set to less than or equal to zero with log scaling\"");
         }
 
         return valid;
@@ -339,17 +338,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             } catch (NumberFormatException e) {
                 valid = false;
                 String errorMessage = e.getMessage();
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMin field is not a number\":\n" + errorMessage);
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field is not a number\":\n" + errorMessage);
             }
 
             if (valid && max <= min) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMin field must be less than Max field\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field must be less than Max field\"");
             }
 
             if (valid && logScaled && min <= 0) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMin field cannot be less than or equal to zero with log scaling\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field cannot be less than or equal to zero with log scaling\"");
             }
 
             if (valid) {
@@ -548,10 +547,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
             if (min <= 0) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMin field cannot be less than or equal to zero with log scaling\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field cannot be less than or equal to zero with log scaling\"");
             } else if (max <= 0) {
                 valid = false;
-                ColorUtils.showErrorDialog("ERROR!: Color Manipulation: \nMax field cannot be less than or equal to zero with log scaling\"");
+                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field cannot be less than or equal to zero with log scaling\"");
             }
         }
 

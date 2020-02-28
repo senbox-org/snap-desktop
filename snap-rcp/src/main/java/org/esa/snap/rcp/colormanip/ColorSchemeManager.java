@@ -81,7 +81,7 @@ public class ColorSchemeManager {
         if (!initialized) {
             setjComboBoxShouldFire(false);
 
-            Path getColorSchemesAuxDir = ColorSchemeUtils.getDirNameColorSchemes();
+            Path getColorSchemesAuxDir = ColorSchemeUtils.getColorSchemesDir();
             if (getColorSchemesAuxDir != null) {
                 this.colorSchemesAuxDir = getColorSchemesAuxDir.toFile();
                 if (!colorSchemesAuxDir.exists()) {
@@ -91,7 +91,7 @@ public class ColorSchemeManager {
                 return;
             }
 
-            Path getColorPalettesAuxDir = ColorSchemeUtils.getDirNameColorPalettes();
+            Path getColorPalettesAuxDir = ColorSchemeUtils.getColorPalettesDir();
             if (getColorPalettesAuxDir != null) {
                 this.colorPaletteAuxDir = getColorPalettesAuxDir.toFile();
                 if (!colorPaletteAuxDir.exists()) {
