@@ -1,6 +1,5 @@
 package org.esa.snap.rcp.actions.file;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
@@ -18,8 +17,9 @@ import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.AbstractModalDialog;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -287,7 +287,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
     }
 
     private void readProductMetadataAsync() {
-        ILoadingIndicator loadingIndicator = getLoadingIndicator();
+        LoadingIndicator loadingIndicator = getLoadingIndicator();
         int threadId = getNewCurrentThreadId();
         ReadProductInspectorTimerRunnable runnable = new ReadProductInspectorTimerRunnable(loadingIndicator, threadId, metadataInspector, file.toPath()) {
             @Override

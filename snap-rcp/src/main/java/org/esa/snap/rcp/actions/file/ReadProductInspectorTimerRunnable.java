@@ -2,7 +2,7 @@ package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
+import org.esa.snap.ui.loading.LoadingIndicator;
 
 import java.nio.file.Path;
 
@@ -15,7 +15,7 @@ public class ReadProductInspectorTimerRunnable extends AbstractTimerRunnable<Met
     private final MetadataInspector metadataInspector;
     private final Path productFile;
 
-    public ReadProductInspectorTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, MetadataInspector metadataInspector, Path productFile) {
+    public ReadProductInspectorTimerRunnable(LoadingIndicator loadingIndicator, int threadId, MetadataInspector metadataInspector, Path productFile) {
         super(loadingIndicator, threadId, 500);
         this.metadataInspector = metadataInspector;
         this.productFile = productFile;

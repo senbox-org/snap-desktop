@@ -19,7 +19,6 @@
         <netbeans.version>RELEASE82</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
-        <tao.version>1.0.1</tao.version>
     </properties>
 
     <modules>
@@ -237,14 +236,6 @@
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
-
-            <!--TAO module -->
-            <dependency>
-                <groupId>ro.cs.tao</groupId>
-                <artifactId>tao-utils</artifactId>
-                <version>${tao.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -261,11 +252,6 @@
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
-        </repository>
-        <repository>
-            <id>tao-core</id>
-            <name>TAO Core</name>
-            <url>https://raw.githubusercontent.com/tao-org/tao-core/repository</url>
         </repository>
     </repositories>
 

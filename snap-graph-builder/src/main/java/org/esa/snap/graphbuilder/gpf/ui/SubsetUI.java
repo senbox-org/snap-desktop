@@ -15,6 +15,7 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
+import org.esa.snap.core.datamodel.Product;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
