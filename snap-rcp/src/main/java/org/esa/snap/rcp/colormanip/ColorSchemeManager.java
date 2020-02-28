@@ -32,13 +32,8 @@ import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 public class ColorSchemeManager {
 
-    private ArrayList<ColorSchemeInfo> colorSchemeInfos = new ArrayList<ColorSchemeInfo>();
-
-    private ArrayList<ColorSchemeInfo> colorSchemePrimaryInfos = new ArrayList<ColorSchemeInfo>();
-    private ArrayList<ColorSchemeInfo> colorSchemeAdditionalInfos = new ArrayList<ColorSchemeInfo>();
-
-    private ArrayList<ColorSchemeInfo> colorSchemeSortedInfos = new ArrayList<ColorSchemeInfo>();
-    private ArrayList<ColorSchemeInfo> colorSchemeSortedVerboseInfos = new ArrayList<ColorSchemeInfo>();
+    private ArrayList<ColorSchemeInfo> colorSchemeStoredInfos = new ArrayList<ColorSchemeInfo>();
+    private ArrayList<ColorSchemeInfo> colorSchemeOrganizedInfos = new ArrayList<ColorSchemeInfo>();
 
     private ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = new ArrayList<ColorSchemeLookupInfo>();
 
@@ -51,6 +46,9 @@ public class ColorSchemeManager {
     private final String COLOR_SCHEME_NONE_LABEL = "-- none --";
     private String jComboBoxNoneEntryName = null;
     private ColorSchemeInfo noneColorSchemeInfo = null;
+    private ColorSchemeInfo dividerPrimarySchemes = null;
+    private ColorSchemeInfo dividerAdditionalSchemes = null;
+
 
     private File colorPaletteAuxDir = null;
     private File colorSchemesAuxDir = null;
@@ -58,6 +56,7 @@ public class ColorSchemeManager {
     private boolean verbose = true;
     private boolean showDisabled = false;
     private boolean sortComboBox = false;
+    private boolean splitComboBox = false;
 
     private boolean initialized = false;
 
@@ -105,16 +104,13 @@ public class ColorSchemeManager {
             colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME);
 
             if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
-                initColorSchemeInfos();
-                createSortedVerboseInfos();
-                createSortedInfos();
+                createPrimaryAndAdditionalColorSchemeInfos();
 
                 setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
-                setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), false, getjComboBoxNoneEntryName(), null, null, 0, 0, false, true, null, null, null, colorPaletteAuxDir));
-                colorSchemeInfos.add(0,getNoneColorSchemeInfo());
-                colorSchemeSortedInfos.add(0, getNoneColorSchemeInfo());
-                colorSchemeSortedVerboseInfos.add(0, getNoneColorSchemeInfo());
+                setNoneColorSchemeInfo(new ColorSchemeInfo(getjComboBoxNoneEntryName(), false, false, getjComboBoxNoneEntryName(), null, null, 0, 0, false, true, null, null, null, colorPaletteAuxDir));
 
+                dividerPrimarySchemes = new ColorSchemeInfo("-- Primary Schemes --", true, true, "-- Primary Schemes --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
+                dividerAdditionalSchemes = new ColorSchemeInfo("-- Additional Schemes --", true, true, "-- Additional Schemes --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
 
                 initComboBox();
                 initColorSchemeLookup();
@@ -128,80 +124,59 @@ public class ColorSchemeManager {
     }
 
 
-//    private void numericalSort() {
-//        Collections.sort(colorSchemeInfos, new Comparator<ColorSchemeInfo>() {
-//            @Override
-//            public int compare(ColorSchemeInfo p1, ColorSchemeInfo p2) {
-//                return p1.getEntryNumber() - p2.getEntryNumber(); // Ascending
-//            }
-//        });
-//    }
 
-    private void createSortedInfos() {
 
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+    private void addSchemeOrganizedInfos(boolean useAll, boolean primary, boolean sort, boolean verbose) {
+
+        ArrayList<ColorSchemeInfo> tmpInfos = new ArrayList<ColorSchemeInfo>();
+
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeStoredInfos) {
             if (!colorSchemeInfo.isDivider()) {
-                colorSchemeSortedInfos.add(colorSchemeInfo);
+                if (useAll || primary == colorSchemeInfo.isPrimary()) {
+                    tmpInfos.add(colorSchemeInfo);
+                }
             }
         }
 
-        Collections.sort(colorSchemeSortedInfos, new Comparator<ColorSchemeInfo>() {
-            public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
-                return s1.toString().compareToIgnoreCase(s2.toString());
-            }
-        });
-    }
-
-
-    private void createSortedVerboseInfos() {
-
-//        String NULL_VALUE = "zzzzz";
-
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
-            if (!colorSchemeInfo.isDivider()) {
-                colorSchemeSortedVerboseInfos.add(colorSchemeInfo);
-            }
+        if (sort) {
+            Collections.sort(tmpInfos, new Comparator<ColorSchemeInfo>() {
+                public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
+                    return s1.toString(verbose).compareToIgnoreCase(s2.toString(verbose));
+                }
+            });
         }
 
-        Collections.sort(colorSchemeSortedVerboseInfos, new Comparator<ColorSchemeInfo>() {
-            public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
-                return s1.toString(true).compareToIgnoreCase(s2.toString(true));
-            }
-        });
-
-//
-//        Collections.sort(colorSchemeSortedVerboseInfos, new Comparator<ColorSchemeInfo>() {
-//
-//            public int compare(ColorSchemeInfo o1, ColorSchemeInfo o2) {
-//
-//                String x1 = o1.getDisplayName();
-//                String x2 = o2.getDisplayName();
-//
-//                if (x1 == null) {
-//                    x1 = NULL_VALUE;
-//                }
-//                if (x2 == null) {
-//                    x2 = NULL_VALUE;
-//                }
-//                int sComp = x1.compareToIgnoreCase(x2);
-//
-//                if (sComp != 0) {
-//                    return sComp;
-//                }
-//
-//                String y1 = o1.getName();
-//                String y2 = o2.getName();
-//                if (y1 == null) {
-//                    y1 = NULL_VALUE;
-//                }
-//                if (y1 == null) {
-//                    y1 = NULL_VALUE;
-//                }
-//
-//                return y1.compareToIgnoreCase(y2);
-//            }
-//        });
+        for (ColorSchemeInfo colorSchemeInfo : tmpInfos) {
+            colorSchemeOrganizedInfos.add(colorSchemeInfo);
+        }
     }
+
+
+
+
+    private void updateOrganizedColorSchemeInfo(boolean dual, boolean verbose, boolean sort) {
+
+        colorSchemeOrganizedInfos.clear();
+
+        colorSchemeOrganizedInfos.add(getNoneColorSchemeInfo());
+
+        if (dual) {
+            colorSchemeOrganizedInfos.add(dividerPrimarySchemes);
+
+            addSchemeOrganizedInfos(false, true, sort, verbose);
+
+            colorSchemeOrganizedInfos.add(dividerAdditionalSchemes);
+
+            addSchemeOrganizedInfos(false, false, sort, verbose);
+        } else {
+            addSchemeOrganizedInfos(true, false, sort, verbose);
+        }
+    }
+
+
+
+
+
 
 
     public void checkPreferences(PropertyMap configuration) {
@@ -219,6 +194,13 @@ public class ColorSchemeManager {
             setSortComboBox(sortComboBox);
             updateSchemeSelector = true;
         }
+
+        boolean splitComboBox = configuration.getPropertyBool(PROPERTY_SCHEME_SPLIT_DISPLAY_KEY, PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT);
+        if (isSplitComboBox() != splitComboBox) {
+            setSplitComboBox(splitComboBox);
+            updateSchemeSelector = true;
+        }
+
 
         boolean showDisabled = configuration.getPropertyBool(PROPERTY_SCHEME_SHOW_DISABLED_KEY, PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
         if (isShowDisabled() != showDisabled) {
@@ -299,26 +281,15 @@ public class ColorSchemeManager {
 
     private void populateComboBox() {
 
-        ArrayList<ColorSchemeInfo> colorSchemeCurrentInfos = null;
+        updateOrganizedColorSchemeInfo(isSplitComboBox(), isVerbose(), isSortComboBox());
 
-        if (isSortComboBox()) {
-            if (isVerbose()) {
-                colorSchemeCurrentInfos = colorSchemeSortedVerboseInfos;
-
-            } else {
-                colorSchemeCurrentInfos = colorSchemeSortedInfos;
-            }
-        } else {
-            colorSchemeCurrentInfos = colorSchemeInfos;
-        }
-
-        final String[] toolTipsArray = new String[colorSchemeCurrentInfos.size()];
-        final Boolean[] enabledArray = new Boolean[colorSchemeCurrentInfos.size()];
-        final Boolean[] dividerArray = new Boolean[colorSchemeCurrentInfos.size()];
-        final Boolean[] duplicateArray = new Boolean[colorSchemeCurrentInfos.size()];
+        final String[] toolTipsArray = new String[colorSchemeOrganizedInfos.size()];
+        final Boolean[] enabledArray = new Boolean[colorSchemeOrganizedInfos.size()];
+        final Boolean[] dividerArray = new Boolean[colorSchemeOrganizedInfos.size()];
+        final Boolean[] duplicateArray = new Boolean[colorSchemeOrganizedInfos.size()];
 
         int i = 0;
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeCurrentInfos) {
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeOrganizedInfos) {
             if (colorSchemeInfo.isEnabled() || (!colorSchemeInfo.isEnabled() && (showDisabled || colorSchemeInfo.isDivider()))) {
                 toolTipsArray[i] = colorSchemeInfo.getDescription();
                 enabledArray[i] = colorSchemeInfo.isEnabled();
@@ -370,7 +341,7 @@ public class ColorSchemeManager {
     }
 
 
-    private boolean initColorSchemeInfos() {
+    private boolean createPrimaryAndAdditionalColorSchemeInfos() {
 
         Document dom = getFileDocument(colorSchemesFile);
 
@@ -485,7 +456,7 @@ public class ColorSchemeManager {
 
                         enabled = validEntry;
 
-                        colorSchemeInfo = new ColorSchemeInfo(id, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                        colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
 
                         if (!colorSchemeInfo.isEnabled()) {
                             description = checkScheme(colorSchemeInfo);
@@ -495,14 +466,8 @@ public class ColorSchemeManager {
 
                         if (colorSchemeInfo != null) {
                             // determine if this is a duplicate entry
-                            for (ColorSchemeInfo storedColorSchemeInfo : colorSchemePrimaryInfos) {
-                                if (id.equals(storedColorSchemeInfo.getName())) {
-                                    colorSchemeInfo.setDuplicateEntry(true);
-                                    break;
-                                }
-                            }
                             if (!colorSchemeInfo.isDuplicateEntry()) {
-                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeAdditionalInfos) {
+                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeStoredInfos) {
                                     if (id.equals(storedColorSchemeInfo.getName())) {
                                         colorSchemeInfo.setDuplicateEntry(true);
                                         break;
@@ -514,42 +479,12 @@ public class ColorSchemeManager {
                                 colorSchemeInfo.setDescription("WARNING!: duplicate scheme entry");
                             }
 
-                            if (primaryScheme) {
-                                colorSchemePrimaryInfos.add(colorSchemeInfo);
-                            } else {
-                                colorSchemeAdditionalInfos.add(colorSchemeInfo);
-                            }
+                            colorSchemeStoredInfos.add(colorSchemeInfo);
                         }
                     }
                 }
             }
         }
-
-
-        Collections.sort(colorSchemePrimaryInfos, new Comparator<ColorSchemeInfo>() {
-            public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
-                return s1.toString().compareToIgnoreCase(s2.toString());
-            }
-        });
-
-        Collections.sort(colorSchemeAdditionalInfos, new Comparator<ColorSchemeInfo>() {
-            public int compare(ColorSchemeInfo s1, ColorSchemeInfo s2) {
-                return s1.toString().compareToIgnoreCase(s2.toString());
-            }
-        });
-
-
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemePrimaryInfos) {
-            colorSchemeInfos.add(colorSchemeInfo);
-        }
-
-        ColorSchemeInfo divider = new ColorSchemeInfo("-- Additional Schemes --", true, "-- Additional Schemes --", null, null, 0, 0, false, false, null, null, null, colorPaletteAuxDir);
-        colorSchemeInfos.add(divider);
-
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeAdditionalInfos) {
-            colorSchemeInfos.add(colorSchemeInfo);
-        }
-
 
         return true;
     }
@@ -606,7 +541,7 @@ public class ColorSchemeManager {
 
     public ColorSchemeInfo getColorSchemeInfoBySchemeId(String schemeId) {
         if (schemeId != null && schemeId.length() > 0) {
-            for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+            for (ColorSchemeInfo colorSchemeInfo : colorSchemeStoredInfos) {
                 if (colorSchemeInfo != null && colorSchemeInfo.getName() != null) {
                     if (schemeId.toLowerCase().equals(colorSchemeInfo.getName().toLowerCase())) {
                         return colorSchemeInfo;
@@ -703,7 +638,7 @@ public class ColorSchemeManager {
     private void setVerbose(boolean verbose) {
         this.verbose = verbose;
 
-        for (ColorSchemeInfo colorSchemeInfo : colorSchemeInfos) {
+        for (ColorSchemeInfo colorSchemeInfo : colorSchemeStoredInfos) {
             colorSchemeInfo.setUseDisplayName(verbose);
         }
     }
@@ -730,6 +665,13 @@ public class ColorSchemeManager {
         this.currentSelection = currentSelection;
     }
 
+    public boolean isSplitComboBox() {
+        return splitComboBox;
+    }
+
+    public void setSplitComboBox(boolean splitComboBox) {
+        this.splitComboBox = splitComboBox;
+    }
 
 
     class MyComboBoxRenderer extends BasicComboBoxRenderer {
@@ -831,18 +773,11 @@ public class ColorSchemeManager {
     }
 
 
-
     public String checkScheme(ColorSchemeInfo colorSchemeInfo) {
         String message = "";
 
 
         if (colorSchemeInfo != null) {
-//            String description = "";
-//
-//            if (colorSchemeInfo.getDescription() != null) {
-//                description = colorSchemeInfo.getDescription() + "<br>";
-//            }
-
             String standardFileMessage = "";
             String universalFileMessage = "";
 

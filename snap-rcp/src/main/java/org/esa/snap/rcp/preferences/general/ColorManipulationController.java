@@ -102,6 +102,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT);
 
 
 
@@ -435,6 +436,10 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_TOOLTIP)
         boolean schemeSelectorSort = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
 
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_TOOLTIP)
+        boolean schemeSelectorSplit = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT;
 
 
 
