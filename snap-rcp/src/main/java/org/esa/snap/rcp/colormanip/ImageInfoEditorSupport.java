@@ -37,9 +37,7 @@ class ImageInfoEditorSupport {
     final AbstractButton autoStretch1SigmaButton;
     final AbstractButton autoStretch2SigmaButton;
     final AbstractButton autoStretch3SigmaButton;
-    final AbstractButton autoStretch90Button;
     final AbstractButton autoStretch95Button;
-    final AbstractButton autoStretch98Button;
     final AbstractButton autoStretch100Button;
     final AbstractButton zoomInVButton;
     final AbstractButton zoomOutVButton;
@@ -75,28 +73,15 @@ class ImageInfoEditorSupport {
         autoStretch3SigmaButton.setToolTipText("Auto-adjust to 3 sigma (99.73%) of all pixels");
         autoStretch3SigmaButton.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute3SigmaPercent()));
 
-
-
-        autoStretch90Button = createButton("org/esa/snap/rcp/icons/Auto90Percent24.gif");
-        autoStretch90Button.setName("AutoStretch90Button");
-        autoStretch90Button.setToolTipText("Auto-adjust to 90% of all pixels");
-        autoStretch90Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute90Percent()));
-
         autoStretch95Button = createButton("org/esa/snap/rcp/icons/Auto95Percent24.gif");
         autoStretch95Button.setName("AutoStretch95Button");
         autoStretch95Button.setToolTipText("Auto-adjust to 95% of all pixels");
         autoStretch95Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute95Percent()));
 
-        autoStretch98Button = createButton("org/esa/snap/rcp/icons/Auto98Percent24.gif");
-        autoStretch98Button.setName("AutoStretch98Button");
-        autoStretch98Button.setToolTipText("Auto-adjust to 98% of all pixels");
-        autoStretch98Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute98Percent()));
-
         autoStretch100Button = createButton("org/esa/snap/rcp/icons/Auto100Percent24.gif");
         autoStretch100Button.setName("AutoStretch100Button");
         autoStretch100Button.setToolTipText("Auto-adjust to 100% of all pixels");
         autoStretch100Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute100Percent()));
-
 
         zoomInVButton = createButton("org/esa/snap/rcp/icons/ZoomIn24V.gif");
         zoomInVButton.setName("zoomInVButton");
@@ -196,18 +181,9 @@ class ImageInfoEditorSupport {
         computePercent(99.73);
     }
 
-    private void compute90Percent() {
-        computePercent(90.0);
-    }
-
     private void compute95Percent() {
         computePercent(95.0);
     }
-
-    private void compute98Percent() {
-        computePercent(98.0);
-    }
-
 
     private void computePercent(double threshold) {
         resetSchemeSelector();

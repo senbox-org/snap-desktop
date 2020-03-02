@@ -195,7 +195,7 @@ public class ColorSchemeManager {
             updateSchemeSelector = true;
         }
 
-        boolean splitComboBox = configuration.getPropertyBool(PROPERTY_SCHEME_SPLIT_DISPLAY_KEY, PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT);
+        boolean splitComboBox = configuration.getPropertyBool(PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY, PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT);
         if (isSplitComboBox() != splitComboBox) {
             setSplitComboBox(splitComboBox);
             updateSchemeSelector = true;
@@ -314,7 +314,7 @@ public class ColorSchemeManager {
         jComboBox = new JComboBox();
         jComboBox.setEditable(false);
         if (colorSchemeLutFile != null) {
-            jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemeLutFile.getName());
+            jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemesFile.getName());
         }
 
         jComboBox.setMaximumRowCount(15);
@@ -355,41 +355,30 @@ public class ColorSchemeManager {
                 Element schemeElement = (Element) schemeNodeList.item(i);
 
                 if (schemeElement != null) {
-                    boolean validEntry = true;
-                    boolean fieldsInitialized = false;
-
-                    String id = null;
-                    Double min = null;
-                    Double max = null;
-                    boolean logScaled = false;
-                    String standardCpdFilename = null;
-                    String universalCpdFilename = null;
-                    String colorBarTitle = null;
-                    String colorBarLabels = null;
-                    String description = null;
-                    String displayName = null;
-
-                    File standardCpdFile = null;
-                    File colorBlindCpdFile = null;
-
-                    boolean enabled = true;
-
-                    boolean divider = false;
-                    boolean primaryScheme = false;
-
-
-                    id = schemeElement.getAttribute("name");
-                    description = getTextValue(schemeElement, "DESCRIPTION");
-                    displayName = getTextValue(schemeElement, "DISPLAY_NAME");
-                    colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
-                    colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
+                    String id = schemeElement.getAttribute("name");
+                    String description = getTextValue(schemeElement, "DESCRIPTION");
+                    String displayName = getTextValue(schemeElement, "VERBOSE_NAME");
+                    String colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
+                    String colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
                     String minStr = getTextValue(schemeElement, "MIN");
                     String maxStr = getTextValue(schemeElement, "MAX");
                     String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
-                    standardCpdFilename = getTextValue(schemeElement, "CPD_FILENAME");
-                    universalCpdFilename = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
+                    String standardCpdFilename = getTextValue(schemeElement, "CPD_FILENAME");
+                    String universalCpdFilename = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
                     String dividerString = getTextValue(schemeElement, "DIVIDER");
                     String primarySchemeString = getTextValue(schemeElement, "PRIMARY");
+
+                    boolean validEntry = true;
+                    boolean fieldsInitialized = false;
+
+                    Double min;
+                    Double max;
+                    boolean logScaled;
+                    File standardCpdFile;
+                    File colorBlindCpdFile;
+                    boolean enabled;
+                    boolean divider;
+                    boolean primaryScheme;
 
 
                     if (minStr != null && minStr.length() > 0) {

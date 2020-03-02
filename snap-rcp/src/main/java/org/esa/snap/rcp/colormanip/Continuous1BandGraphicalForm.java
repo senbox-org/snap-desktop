@@ -219,9 +219,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
         boolean range100 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_100_KEY, PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
-        boolean range98 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_98_KEY, PROPERTY_SLIDERS_BUTTON_98_DEFAULT);
         boolean range95 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_95_KEY, PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
-        boolean range90 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_90_KEY, PROPERTY_SLIDERS_BUTTON_90_DEFAULT);
         boolean range1Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
         boolean range2Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
         boolean range3Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
@@ -241,14 +239,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch3SigmaButton);
         }
 
-        if (range90) {
-            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch90Button);
-        }
         if (range95) {
             abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch95Button);
-        }
-        if (range98) {
-            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch98Button);
         }
         if (range100) {
             abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch100Button);

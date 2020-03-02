@@ -77,34 +77,29 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_CPD_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_CPD_STANDARD_KEY, ColorManipulationDefaults.PROPERTY_CPD_STANDARD_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_KEY, ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_KEY, ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_KEY, ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT);
-
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT);
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_CPD_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_LOG_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RESTORE_SECTION_KEY, true);
 
-
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_CPD_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_CPD_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_LOG_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
 
-
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT);
-
-
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
@@ -112,12 +107,8 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
-
-
 
         restoreDefaults =  initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorManipulationDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
@@ -301,53 +292,52 @@ public final class ColorManipulationController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_CPD_SECTION_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_CPD_SECTION_KEY,
-                description = ColorManipulationDefaults.PROPERTY_CPD_SECTION_TOOLTIP)
+        // Default Palettes
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_SECTION_TOOLTIP)
         boolean defaultPaletteSection = true;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_KEY,
-                description = ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_TOOLTIP)
-        String grayScaleCpd = ColorManipulationDefaults.PROPERTY_CPD_GRAY_SCALE_DEFAULT;
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_TOOLTIP)
+        String grayScaleCpd = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_CPD_STANDARD_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_CPD_STANDARD_KEY,
-                description = ColorManipulationDefaults.PROPERTY_CPD_STANDARD_TOOLTIP)
-        String standardColorCpd = ColorManipulationDefaults.PROPERTY_CPD_STANDARD_DEFAULT;
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_TOOLTIP)
+        String standardColorCpd = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT;
 
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_TOOLTIP)
+        String colorBlindCpd = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_KEY,
-                description = ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_TOOLTIP)
-        String colorBlindCpd = ColorManipulationDefaults.PROPERTY_CPD_UNIVERSAL_DEFAULT;
-
-
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_KEY,
-                description = ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_TOOLTIP)
-        String otherCpd = ColorManipulationDefaults.PROPERTY_CPD_ANOMALIES_DEFAULT;
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_TOOLTIP)
+        String otherCpd = ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT;
 
 
 
 
+
+        // General Options
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_TOOLTIP)
         boolean generalBehaviorSection = true;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_CPD_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_GENERAL_CPD_KEY,
-                description = ColorManipulationDefaults.PROPERTY_GENERAL_CPD_TOOLTIP,
-                valueSet = {ColorManipulationDefaults.PROPERTY_GENERAL_CPD_OPTION1,
-                        ColorManipulationDefaults.PROPERTY_GENERAL_CPD_OPTION2,
-                        ColorManipulationDefaults.PROPERTY_GENERAL_CPD_OPTION3,
-                        ColorManipulationDefaults.PROPERTY_GENERAL_CPD_OPTION4})
-        String generalCpd = ColorManipulationDefaults.PROPERTY_GENERAL_CPD_DEFAULT;
-
-
+        @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_TOOLTIP,
+                valueSet = {ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_OPTION1,
+                        ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_OPTION2,
+                        ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_OPTION3,
+                        ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_OPTION4})
+        String generalCpd = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_KEY,
@@ -355,8 +345,6 @@ public final class ColorManipulationController extends DefaultConfigController {
                 valueSet = {ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_OPTION1,
                         ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_OPTION2})
         String generalRange = ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_DEFAULT;
-
-
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_LOG_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_GENERAL_LOG_KEY,
@@ -368,32 +356,28 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
+        // Scheme Options
+
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_SECTION_TOOLTIP)
-        boolean schemeBehaviorSection = true;
-
-
-
+        boolean schemeOptionsSection = true;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
         boolean autoApplySchemes = ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_CPD_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SCHEME_CPD_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SCHEME_CPD_TOOLTIP,
-                valueSet = {ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION1,
-                        ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION2,
-                        ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION3,
-                        ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION4,
-                        ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION5,
-                        ColorManipulationDefaults.PROPERTY_SCHEME_CPD_OPTION6})
-        String schemeCpd = ColorManipulationDefaults.PROPERTY_SCHEME_CPD_DEFAULT;
-
-
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_TOOLTIP,
+                valueSet = {ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION1,
+                        ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION2,
+                        ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION3,
+                        ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION4,
+                        ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION5,
+                        ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_OPTION6})
+        String schemeCpd = ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_KEY,
@@ -402,7 +386,6 @@ public final class ColorManipulationController extends DefaultConfigController {
                         ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_OPTION2,
                         ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_OPTION3})
         String schemeRange = ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
-
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_LOG_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_LOG_KEY,
@@ -416,6 +399,8 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
+        // Scheme Selector Options
+
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_TOOLTIP)
@@ -426,37 +411,35 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_TOOLTIP)
         boolean schemeSelectorVerbose = ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_TOOLTIP)
-        boolean schemeSelectorShowDisabled = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
-
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_TOOLTIP)
         boolean schemeSelectorSort = ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_TOOLTIP)
-        boolean schemeSelectorSplit = ColorManipulationDefaults.PROPERTY_SCHEME_SPLIT_DISPLAY_DEFAULT;
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_TOOLTIP)
+        boolean schemeSelectorSplit = ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_TOOLTIP)
+        boolean schemeSelectorShowDisabled = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
 
 
 
 
-        // Range Option Section
+        // Slider and Range Options
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_TOOLTIP)
-        boolean rangeOptionsSection = true;
-
+        boolean sliderOptionsSection = true;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_TOOLTIP)
         boolean sliderZoom = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT;
-
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY,
@@ -478,20 +461,10 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_TOOLTIP)
         boolean range3Sigma = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_TOOLTIP)
-        boolean range90 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_90_DEFAULT;
-
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_TOOLTIP)
         boolean range95 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_TOOLTIP)
-        boolean range98 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_98_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY,
@@ -501,16 +474,7 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
-
-
-
-
-
-
-
-
-
-        // Restore Defaults Section
+        // Restore Defaults
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_RESTORE_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_RESTORE_SECTION_KEY,

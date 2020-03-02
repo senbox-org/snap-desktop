@@ -119,7 +119,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         colorSchemeJLabel = new JLabel("");
 
-        schemeInfoLabel = new JLabel("TEST");
+        schemeInfoLabel = new JLabel("");
 
 
         colorSchemeManager = ColorSchemeManager.getDefault();
@@ -143,8 +143,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         minField = getNumberTextField(0.0000001);
         maxField = getNumberTextField(1.0000001);
 
-        fromFile = new JButton("Cpd Range");
-        fromData = new JButton("Data Range");
+        fromFile = new JButton("From Palette");
+        fromData = new JButton("From Data");
 
 
         final TableLayout layout = new TableLayout();
@@ -231,7 +231,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
         fromData.addActionListener(createListener(RangeKey.FromData));
         fromData.setToolTipText("Set range from data");
-        fromFile.setToolTipText("Set range from cpd file");
+        fromFile.setToolTipText("Set range from palette file");
 
         contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(editorPanel, BorderLayout.NORTH);
@@ -451,7 +451,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         boolean schemeApply = configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
-        String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_CPD_KEY, PROPERTY_SCHEME_CPD_DEFAULT);
+        String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_PALETTE_KEY, PROPERTY_SCHEME_PALETTE_DEFAULT);
 
 
         schemeInfoLabel.setText("<html>*Modified scheme");
@@ -465,7 +465,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         if (colorPaletteSchemes.isSchemeSet() &&
                 schemeApply &&
-                (!PROPERTY_SCHEME_CPD_DEFAULT.equals(schemeCpd) ||
+                (!PROPERTY_SCHEME_PALETTE_DEFAULT.equals(schemeCpd) ||
                         !PROPERTY_SCHEME_RANGE_DEFAULT.equals(schemeRange) ||
                         !PROPERTY_SCHEME_LOG_DEFAULT.equals(schemeLogScaling))
         ) {
