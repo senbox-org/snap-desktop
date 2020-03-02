@@ -14,15 +14,15 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     private static final Logger logger = Logger.getLogger(AbstractTimerRunnable.class.getName());
 
     private final Timer timer;
-    private final int timerDelayInMiliseconds;
+    private final int timerDelayInMilliseconds;
     private final int threadId;
-    private final ILoadingIndicator loadingIndicator;
+    private final LoadingIndicator loadingIndicator;
 
-    protected AbstractTimerRunnable(ILoadingIndicator loadingIndicator, int threadId, int timerDelayInMiliseconds) {
+    protected AbstractTimerRunnable(LoadingIndicator loadingIndicator, int threadId, int timerDelayInMilliseconds) {
         this.loadingIndicator = loadingIndicator;
         this.threadId = threadId;
-        this.timerDelayInMiliseconds = timerDelayInMiliseconds;
-        this.timer = (this.timerDelayInMiliseconds > 0) ? new Timer() : null;
+        this.timerDelayInMilliseconds = timerDelayInMilliseconds;
+        this.timer = (this.timerDelayInMilliseconds > 0) ? new Timer() : null;
     }
 
     protected abstract OutputType execute() throws Exception;
@@ -74,7 +74,7 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
     }
 
     private void startTimerIfDefined() {
-        if (this.timerDelayInMiliseconds > 0) {
+        if (this.timerDelayInMilliseconds > 0) {
             TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
@@ -83,7 +83,7 @@ public abstract class AbstractTimerRunnable<OutputType> implements Runnable {
                     }
                 }
             };
-            this.timer.schedule(timerTask, this.timerDelayInMiliseconds);
+            this.timer.schedule(timerTask, this.timerDelayInMilliseconds);
         }
     }
 

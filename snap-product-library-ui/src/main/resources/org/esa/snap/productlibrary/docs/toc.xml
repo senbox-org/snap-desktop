@@ -6,7 +6,7 @@
 
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Import and Export">
-            <tocitem text="Product Library" target="productLibrary"/>
+            <tocitem text="Product Library Tool" target="productLibraryTool"/>
         </tocitem>
         <tocitem text="Tools">
             <tocitem text="Graph Tools">

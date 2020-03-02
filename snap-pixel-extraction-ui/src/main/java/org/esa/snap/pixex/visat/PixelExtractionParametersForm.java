@@ -24,7 +24,7 @@ import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkDescriptor;

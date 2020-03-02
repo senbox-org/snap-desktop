@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
 import org.esa.snap.remote.execution.local.folder.WindowsLocalSharedDrive;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 import org.esa.snap.remote.execution.local.folder.MountWindowsLocalDriveTimerRunnable;
 import org.esa.snap.remote.execution.local.folder.WindowsLocalMachineMountDrive;
 
@@ -26,7 +26,7 @@ public class WindowsRemoteTopologyPanel extends RemoteTopologyPanel {
     }
 
     @Override
-    public void mountLocalSharedFolderAsync(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback) {
+    public void mountLocalSharedFolderAsync(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId, IMountLocalSharedFolderCallback callback) {
         WindowsLocalSharedDrive windowsLocalSharedDrive = buildLocalSharedFolder();
         if (canMountLocalSharedFolder(parentWindow, windowsLocalSharedDrive)) {
             if (StringUtils.isBlank(windowsLocalSharedDrive.getLocalSharedDrive())) {
@@ -40,7 +40,7 @@ public class WindowsRemoteTopologyPanel extends RemoteTopologyPanel {
     }
 
     @Override
-    protected boolean canMountLocalSharedFolder(IMessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
+    protected boolean canMountLocalSharedFolder(MessageDialog parentWindow, AbstractLocalSharedFolder localSharedFolder) {
         boolean canMount = super.canMountLocalSharedFolder(parentWindow, localSharedFolder);
 
         if (canMount) {

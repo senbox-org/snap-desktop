@@ -1,8 +1,8 @@
 package org.esa.snap.remote.execution.topology;
 
 import org.esa.snap.ui.loading.AbstractTimerRunnable;
-import org.esa.snap.ui.loading.ILoadingIndicator;
-import org.esa.snap.ui.loading.IMessageDialog;
+import org.esa.snap.ui.loading.LoadingIndicator;
+import org.esa.snap.ui.loading.MessageDialog;
 
 import java.nio.file.Path;
 
@@ -11,10 +11,10 @@ import java.nio.file.Path;
  */
 public class ReadRemoteTopologyTimerRunnable extends AbstractTimerRunnable<RemoteTopology> {
 
-    private final IMessageDialog parentWindow;
+    private final MessageDialog parentWindow;
     private final Path remoteTopologyFilePath;
 
-    public ReadRemoteTopologyTimerRunnable(IMessageDialog parentWindow, ILoadingIndicator loadingIndicator, int threadId, Path remoteTopologyFilePath) {
+    public ReadRemoteTopologyTimerRunnable(MessageDialog parentWindow, LoadingIndicator loadingIndicator, int threadId, Path remoteTopologyFilePath) {
         super(loadingIndicator, threadId, 500);
 
         this.parentWindow = parentWindow;

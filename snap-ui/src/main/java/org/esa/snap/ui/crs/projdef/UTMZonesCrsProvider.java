@@ -28,8 +28,7 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.GeodeticDatum;
-
-import javax.measure.unit.Unit;
+import tec.uom.se.AbstractUnit;
 
 class UTMZonesCrsProvider extends AbstractUTMCrsProvider {
 
@@ -42,7 +41,7 @@ class UTMZonesCrsProvider extends AbstractUTMCrsProvider {
 
     private static final ParameterDescriptor[] DESCRIPTORS = new ParameterDescriptor[]{
             new DefaultParameterDescriptor<Integer>(BEAM, ZONE_NAME, Integer.class, null, 1,
-                                                    MIN_UTM_ZONE, MAX_UTM_ZONE, Unit.ONE, true),
+                                                    MIN_UTM_ZONE, MAX_UTM_ZONE, AbstractUnit.ONE, true),
             new DefaultParameterDescriptor<String>(HEMISPHERE_NAME, String.class,
                                                    new String[]{NORTH_HEMISPHERE, SOUTH_HEMISPHERE},
                                                    NORTH_HEMISPHERE)

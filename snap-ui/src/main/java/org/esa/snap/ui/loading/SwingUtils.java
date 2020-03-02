@@ -1,15 +1,47 @@
 package org.esa.snap.ui.loading;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by jcoravu on 10/1/2019.
  */
 public class SwingUtils {
 
+    public static final Color TRANSPARENT_COLOR = new Color(255, 255, 255, 0);
+
+    public static LineBorder LINE_BORDER = new LineBorder(Color.GRAY, 1);
+
     private SwingUtils() {
+    }
+
+    public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, int textFieldPreferredHeight, boolean isEditable) {
+        ItemRenderer<String> itemRenderer = new ItemRenderer<String>() {
+            @Override
+            public String getItemDisplayText(String item) {
+                return (item == null) ? " " : item;
+            }
+        };
+        JComboBox<String> comboBox = new CustomComboBox(itemRenderer, textFieldPreferredHeight, isEditable);
+        if (values != null) {
+            for (int i = 0; i < values.length; i++) {
+                comboBox.addItem(values[i]);
+            }
+        }
+        if (valueToSelect != null) {
+            for (int i=0; i<values.length; i++) {
+                if (valueToSelect.equals(values[i])) {
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        return comboBox;
     }
 
     public static JButton buildBrowseButton(ActionListener actionListener, int textFieldPreferredHeight) {
