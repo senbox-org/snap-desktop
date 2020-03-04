@@ -386,8 +386,8 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
 
     public static final String COLOR_MANIPULATION_NAME = "Color Manager";
-    public static final String COLOR_MANIPULATION_MODE = "properties";
-    public static final int COLOR_MANIPULATION_POSITION = 10;
+    public static final String COLOR_MANIPULATION_MODE = "explorer";
+    public static final int COLOR_MANIPULATION_POSITION = 20;
     public static final boolean COLOR_MANIPULATION_OPEN = true;
 
     public static final String PRODUCT_EXPLORER_NAME = "File Manager";
@@ -397,17 +397,17 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     public static final String MASK_MANAGER_NAME = "Mask Manager";
     public static final String MASK_MANAGER_MODE = "properties";
-    public static final int MASK_MANAGER_POSITION = 20;
+    public static final int MASK_MANAGER_POSITION = 10;
     public static final boolean MASK_MANAGER_OPEN = true;
 
     public static final String LAYER_MANAGER_NAME = "Layer Manager";
     public static final String LAYER_MANAGER_MODE = "properties";
-    public static final int LAYER_MANAGER_POSITION = 30;
+    public static final int LAYER_MANAGER_POSITION = 20;
     public static final boolean LAYER_MANAGER_OPEN = true;
 
     public static final String PIXEL_INFO_NAME = "Pixel Info";
-    public static final String PIXEL_INFO_MODE = "explorer";
-    public static final int PIXEL_INFO_POSITION = 20;
+    public static final String PIXEL_INFO_MODE = "properties";
+    public static final int PIXEL_INFO_POSITION = 30;
     public static final boolean PIXEL_INFO_OPEN = true;
 
     public static final String WORLD_MAP_NAME = "World Map";
