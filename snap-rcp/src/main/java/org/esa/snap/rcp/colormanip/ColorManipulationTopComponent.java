@@ -45,7 +45,7 @@ import java.awt.BorderLayout;
         preferredID = "ColorManipulationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ColorManipulationTopComponent_Name=" + PackageDefaults.COLOR_MANIPULATION_NAME,
+        "CTL_ColorManipulationTopComponent_Name=Colour Manipulation",
         "CTL_ColorManipulationTopComponent_ComponentName=Colour_Manipulation"
 })
 /**

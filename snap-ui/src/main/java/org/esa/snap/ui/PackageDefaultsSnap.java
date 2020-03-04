@@ -9,7 +9,7 @@ public class PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Word Spellings
-    public static final String COLOR_SPELLING = "Colour";
+//    public static final String COLOR_SPELLING = "Colour";
 
 
     //---------------------------------------------------------------

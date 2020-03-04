@@ -94,7 +94,7 @@ class MaskTableModel extends AbstractTableModel {
             "Visibility",
             "Name",
             "Type",
-            PackageDefaults.COLOR_SPELLING,
+            "Colour",
             "Transparency",
             "Description",
     };
