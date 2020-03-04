@@ -59,11 +59,12 @@ public class DesktopVersionCheck {
                 JOptionPane.showMessageDialog(null, panel);
             } else {
                 final String message =
-                        "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
-                                "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
-                                "to get the best SNAP experience.\n\n" +
+//                        "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
+                        "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SeaDAS.\n" +
+                                "Please check regularly for new plugin updates (Help -> Check for Updates...). \n" +
+//                                "to get the best SNAP experience.\n\n" +
                                 "Press 'Yes', if you want to check for plugin updates now.\n\n";
-                Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
+                Dialogs.Answer decision = Dialogs.requestDecision(" Update", message, false, "optional.version.check.onstartup");
                 if (Dialogs.Answer.YES.equals(decision)) {
                     final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
                     assert checkForUpdatesProvider != null : "An instance of CheckForUpdatesProvider found in Lookup: " + Lookup.getDefault();

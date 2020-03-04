@@ -19,7 +19,7 @@ import java.awt.*;
  */
 public class SeadasAboutBox extends JPanel {
 
-    private final static String SEADAS_VERSION = "8.0-Beta";
+    private final static String SEADAS_VERSION = "8.0.0-Beta";
 
     private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/ReleaseNotes.md";
     private final static String RELEASE_NOTES_URL_NAME = "SeaDAS " + SEADAS_VERSION + " Release Notes";
@@ -58,8 +58,10 @@ public class SeadasAboutBox extends JPanel {
                 + "the <i>GNU General Public License</i> as published by the Free Software Foundation, either<br>"
                 + "version 3 of the License, or (at your option) any later version.<br>&nbsp;<br>"
                 + "<b>SeaDAS version: </b>" + SEADAS_VERSION + "<br>"
-                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
-                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
+                + "<b>SNAP Desktop implementation version: </b>8.0.0.20200226<br>"
+//                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
+                + "<b>SNAP Engine implementation version: </b>8.0.0.20200226<br>"
+//                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
                 + "<b>Resource directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
                 + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
                 + "<b>JVM: </b>" + System.getProperty("java.vm.name") + " by " + System.getProperty("java.vendor") + "<br>"
@@ -83,30 +85,35 @@ public class SeadasAboutBox extends JPanel {
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 1;
-        gbc.weighty = 1;
+        gbc.weighty = 0;
         gbc.insets.left = 5;
         gbc.insets.top = 5;
 
-        gbc.gridy = 1;
+        gbc.gridy = 0;
         infoText.setMinimumSize(infoText.getPreferredSize());
         jPanel.add(infoText, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         gbc.insets.left = 15;
         jPanel.add(getUrlJLabel(RELEASE_NOTES_URL, RELEASE_NOTES_URL_NAME), gbc);
 
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         jPanel.add(getUrlJLabel(SEADAS_WEB_URL, SEADAS_WEB_URL_NAME), gbc);
 
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         jPanel.add(getUrlJLabel(OCEAN_COLOR_WEB_URL, OCEAN_COLOR_WEB_URL_NAME), gbc);
 
-        gbc.gridy = 5;
+        gbc.gridy = 4;
         gbc.insets.left = 5;
         jPanel.add(infoText2, gbc);
 
-        gbc.gridy = 6;
+        gbc.gridy = 5;
         jPanel.add(banner, gbc);
+
+        gbc.gridy = 6;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        jPanel.add(new JLabel(), gbc);
 
         add(jPanel, BorderLayout.WEST);
 
