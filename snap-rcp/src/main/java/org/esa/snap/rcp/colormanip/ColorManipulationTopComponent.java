@@ -15,7 +15,6 @@
  */
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -31,9 +30,9 @@ import java.awt.BorderLayout;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = PackageDefaults.COLOR_MANIPULATION_MODE,
-        openAtStartup = PackageDefaults.COLOR_MANIPULATION_OPEN,
-        position = PackageDefaults.COLOR_MANIPULATION_POSITION
+        mode = "navigator",
+        openAtStartup = true,
+        position = 20
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.ColorManipulationTopComponent")
 @ActionReferences({

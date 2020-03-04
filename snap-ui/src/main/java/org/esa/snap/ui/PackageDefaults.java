@@ -385,10 +385,10 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final int GCP_MANAGER_TOOLBAR_POSITION = 0;
 
 
-    public static final String COLOR_MANIPULATION_NAME = "Color Manager";
-    public static final String COLOR_MANIPULATION_MODE = "navigator";
-    public static final int COLOR_MANIPULATION_POSITION = 20;
-    public static final boolean COLOR_MANIPULATION_OPEN = true;
+//    public static final String COLOR_MANIPULATION_NAME = "Color Manager";
+//    public static final String COLOR_MANIPULATION_MODE = "navigator";
+//    public static final int COLOR_MANIPULATION_POSITION = 20;
+//    public static final boolean COLOR_MANIPULATION_OPEN = true;
 
     public static final String PRODUCT_EXPLORER_NAME = "File Manager";
     public static final String PRODUCT_EXPLORER_MODE = "explorer";
