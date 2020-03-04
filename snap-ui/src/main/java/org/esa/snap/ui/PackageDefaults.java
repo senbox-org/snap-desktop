@@ -386,7 +386,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
 
     public static final String COLOR_MANIPULATION_NAME = "Color Manager";
-    public static final String COLOR_MANIPULATION_MODE = "explorer";
+    public static final String COLOR_MANIPULATION_MODE = "navigator";
     public static final int COLOR_MANIPULATION_POSITION = 20;
     public static final boolean COLOR_MANIPULATION_OPEN = true;
 
