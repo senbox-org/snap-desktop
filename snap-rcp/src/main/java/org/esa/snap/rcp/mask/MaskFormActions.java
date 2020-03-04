@@ -524,7 +524,7 @@ class MaskFormActions {
                 for (final Element child : children) {
                     final DimapPersistable persistable = DimapPersistence.getPersistable(child);
                     if (persistable != null) {
-                        final Mask mask = (Mask) persistable.createObjectFromXml(child, product);
+                        final Mask mask = (Mask) persistable.createObjectFromXml(child, product, null);
                         addMaskToProductIfPossible(mask, product);
                     }
                 }

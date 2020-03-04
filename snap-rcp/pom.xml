@@ -44,6 +44,7 @@
                         <publicPackage>org.esa.snap.rcp.about</publicPackage>
                         <publicPackage>org.esa.snap.rcp.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.util.*</publicPackage>
+						<publicPackage>org.jfree.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -163,11 +164,6 @@
             <groupId>org.netbeans.external</groupId>
             <artifactId>beansbinding-1.2.1</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.netbeans.modules</groupId>-->
-        <!--            <artifactId>org-netbeans-core-startup</artifactId>-->
-        <!--            <version>RELEASE82</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress-nb</artifactId>
@@ -255,6 +251,15 @@
             <version>${snap.version}</version>
         </dependency>
 
+		<dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+        </dependency>
+
         <!-- TODO: remove this dependency as soon as snap-statistics-op has been moved to snap-core
           (prerequisite: snap-gpf needs to be moved to snap-core before) -->
         <dependency>
@@ -271,10 +276,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+			<scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+			<scope>test</scope>
         </dependency>
 
     </dependencies>
