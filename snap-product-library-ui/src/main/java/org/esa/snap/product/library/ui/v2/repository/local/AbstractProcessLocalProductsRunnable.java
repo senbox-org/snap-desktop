@@ -2,25 +2,27 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.loading.PairRunnable;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.util.List;
 
 /**
  * Created by jcoravu on 27/9/2019.
  */
-public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunnable<Void> {
+public abstract class AbstractProcessLocalProductsRunnable extends AbstractProgressTimerRunnable<Void> {
 
-    protected final AppContext appContext;
     protected final List<RepositoryProduct> productsToProcess;
+    protected final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-    private final RepositoryOutputProductListPanel repositoryProductListPanel;
+    protected AbstractProcessLocalProductsRunnable(ProgressBarHelper progressPanel, int threadId, RepositoryOutputProductListPanel repositoryProductListPanel,
+                                                   List<RepositoryProduct> productsToProcess) {
 
-    protected AbstractProcessLocalProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToProcess) {
-        this.appContext = appContext;
+        super(progressPanel, threadId, 500);
+
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.productsToProcess = productsToProcess;
     }
@@ -32,12 +34,12 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
 
     private static class UpdateLocalProgressStatusRunnable implements Runnable {
 
-        private final RepositoryProduct productToOpen;
+        private final RepositoryProduct repositoryProduct;
         private final byte localStatus;
         private final RepositoryOutputProductListPanel repositoryProductListPanel;
 
-        private UpdateLocalProgressStatusRunnable(RepositoryProduct productToOpen, byte localStatus, RepositoryOutputProductListPanel repositoryProductListPanel) {
-            this.productToOpen = productToOpen;
+        private UpdateLocalProgressStatusRunnable(RepositoryProduct repositoryProduct, byte localStatus, RepositoryOutputProductListPanel repositoryProductListPanel) {
+            this.repositoryProduct = repositoryProduct;
             this.localStatus = localStatus;
             this.repositoryProductListPanel = repositoryProductListPanel;
         }
@@ -45,7 +47,7 @@ public abstract class AbstractProcessLocalProductsRunnable extends AbstractRunna
         @Override
         public void run() {
             OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
-            productListModel.setLocalProductStatus(this.productToOpen, this.localStatus);
+            productListModel.setLocalProductStatus(this.repositoryProduct, this.localStatus);
         }
     }
 }

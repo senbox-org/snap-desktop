@@ -57,8 +57,31 @@ public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel 
             } else if (localProgressStatus.isDeleted()) {
                 openText = "Deleted";
                 foregroundColor = Color.GREEN;
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.PENDING_COPY) {
+                openText = "Pending copy...";
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.COPYING) {
+                openText = "Copying...";
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.COPIED) {
+                openText = "Copied";
+                foregroundColor = Color.GREEN;
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.FAIL_COPIED) {
+                openText = "Failed copied";
+                foregroundColor = Color.RED;
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.PENDING_MOVE) {
+                openText = "Pending move...";
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.MOVING) {
+                openText = "Moving...";
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.MOVED) {
+                openText = "Moved";
+                foregroundColor = Color.GREEN;
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.FAIL_MOVED) {
+                openText = "Failed moved";
+                foregroundColor = Color.RED;
+            } else if (localProgressStatus.getStatus() == LocalProgressStatus.MISSING_PRODUCT_FROM_REPOSITORY) {
+                openText = "Missing product from repository";
+                foregroundColor = Color.RED;
             } else {
-                throw new IllegalStateException("Unknown status.");
+                throw new IllegalStateException("Unknown status " + localProgressStatus.getStatus() + ".");
             }
         }
         this.statusLabel.setForeground(foregroundColor);

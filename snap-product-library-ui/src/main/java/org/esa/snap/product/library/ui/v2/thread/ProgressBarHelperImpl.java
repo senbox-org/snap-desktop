@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
+import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 
 import javax.swing.JButton;
@@ -60,8 +61,14 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         if (EventQueue.isDispatchThread()) {
             if (this.currentThreadId == threadId) {
                 this.currentThreadId++;
+                this.messageLabel.setText(""); // reset the message text
+                boolean oldVisible = this.progressBar.isVisible();
+                // hide the progress bar
                 setProgressPanelVisible(false);
-                setParametersEnabledWhileDownloading(true);
+                if (oldVisible) {
+                    // the progress bar was visible
+                    setParametersEnabledWhileDownloading(true);
+                }
                 return true;
             }
             return false;
@@ -71,11 +78,19 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
     }
 
     @Override
-    public boolean showProgressPanel(int threadId) {
+    public boolean showProgressPanel(int threadId, String message) {
         if (EventQueue.isDispatchThread()) {
             if (this.currentThreadId == threadId) {
+                if (message != null) {
+                    this.messageLabel.setText(message); // the message may be null or empty
+                }
+                boolean oldVisible = this.progressBar.isVisible();
+                // show the progress bar
                 setProgressPanelVisible(true);
-                setParametersEnabledWhileDownloading(false);
+                if (!oldVisible) {
+                    // the progress bar was hidden
+                    setParametersEnabledWhileDownloading(false);
+                }
                 return true;
             }
             return false;
@@ -84,6 +99,12 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         }
     }
 
+    /**
+     * Update the visible text from the progress bar. The progress bar is not displayed if it is hidden.
+     * @param threadId
+     * @param message
+     * @return
+     */
     @Override
     public boolean updateProgressBarText(int threadId, String message) {
         if (EventQueue.isDispatchThread()) {

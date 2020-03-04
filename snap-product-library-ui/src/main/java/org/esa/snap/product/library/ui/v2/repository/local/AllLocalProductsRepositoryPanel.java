@@ -182,18 +182,36 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
+        JMenuItem selectAllMenuItem = new JMenuItem("Select All");
+        selectAllMenuItem.addActionListener(this.localProductsPopupListeners.getSelectAllListener());
+        JMenuItem selectNoneMenuItem = new JMenuItem("Select None");
+        selectNoneMenuItem.addActionListener(this.localProductsPopupListeners.getSelectNoneListener());
+        JMenuItem copyMenuItem = new JMenuItem("Copy");
+        copyMenuItem.addActionListener(this.localProductsPopupListeners.getCopyListener());
+        JMenuItem copyToMenuItem = new JMenuItem("Copy To...");
+        copyToMenuItem.addActionListener(this.localProductsPopupListeners.getCopyToListener());
+        JMenuItem moveToMenuItem = new JMenuItem("Move To...");
+        moveToMenuItem.addActionListener(this.localProductsPopupListeners.getMoveToListener());
+        JMenuItem exportListMenuItem = new JMenuItem("Export List...");
+        exportListMenuItem.addActionListener(this.localProductsPopupListeners.getExportListListener());
         JMenuItem openMenuItem = new JMenuItem("Open");
-        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
+        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenListener());
         JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteProductListener());
-        JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing");
+        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteListener());
+        JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing...");
         batchProcessingMenuItem.addActionListener(this.localProductsPopupListeners.getBatchProcessingListener());
         JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.add(selectAllMenuItem);
+        popupMenu.add(selectNoneMenuItem);
+        popupMenu.add(copyMenuItem);
+        popupMenu.add(copyToMenuItem);
+        popupMenu.add(moveToMenuItem);
+        popupMenu.add(exportListMenuItem);
         popupMenu.add(openMenuItem);
         popupMenu.add(deleteMenuItem);
         popupMenu.add(batchProcessingMenuItem);
         if (selectedProducts.length == 1) {
-            JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer");
+            JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer...");
             showInExplorerMenuItem.addActionListener(this.localProductsPopupListeners.getShowInExplorerListener());
             popupMenu.add(showInExplorerMenuItem);
         }

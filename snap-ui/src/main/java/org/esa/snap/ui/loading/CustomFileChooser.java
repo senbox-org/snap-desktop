@@ -147,31 +147,52 @@ public class CustomFileChooser extends JFileChooser {
         return comboBoxes;
     }
 
-    public static FileFilter buildXMLFileFilter() {
-        return new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                }
-                return StringUtils.endsWithIgnoreCase(file.getName(), ".xml");
-            }
-
-            @Override
-            public String getDescription() {
-                return "*.xml";
-            }
-        };
+    public static FileFilter buildFileFilter(String extension, String description) {
+        return new CustomFileFilter(extension, description);
     }
 
     public static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode) {
+        return buildFileChooser(dialogTitle, multiSelectionEnabled, fileSelectionMode, true);
+    }
+
+    public static CustomFileChooser buildFileChooser(String dialogTitle, boolean multiSelectionEnabled, int fileSelectionMode, boolean readOnly) {
         boolean previousReadOnlyFlag = UIManager.getDefaults().getBoolean(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY);
-        UIManager.getDefaults().put(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY, true);
+        UIManager.getDefaults().put(CustomFileChooser.FILE_CHOOSER_READ_ONLY_KEY, readOnly);
 
         CustomFileChooser fileChooser = new CustomFileChooser(previousReadOnlyFlag);
         fileChooser.setDialogTitle(dialogTitle);
         fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
         fileChooser.setFileSelectionMode(fileSelectionMode);
         return fileChooser;
+    }
+
+    private static class CustomFileFilter extends FileFilter {
+
+        private final String extension;
+        private final String description;
+
+        private CustomFileFilter(String extension, String description) {
+            if (StringUtils.isBlank(extension)) {
+                throw new NullPointerException("The extension is null or empty.");
+            }
+            if (StringUtils.isBlank(description)) {
+                throw new NullPointerException("The description is null or empty.");
+            }
+            this.extension = extension;
+            this.description = description;
+        }
+
+        @Override
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
+                return true;
+            }
+            return StringUtils.endsWithIgnoreCase(file.getName(), this.extension);
+        }
+
+        @Override
+        public String getDescription() {
+            return this.description;
+        }
     }
 }
