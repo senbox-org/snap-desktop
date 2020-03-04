@@ -75,6 +75,7 @@ public class NestWorldMapPane extends JPanel {
         try {
             layerCanvas = new LayerCanvas();
             layerCanvas.getModel().getViewport().setModelYAxisDown(false);
+            layerCanvas.setInitiallyZoomingAll(false);
             installLayerCanvasNavigation(layerCanvas, dataModel);
             layerCanvas.addOverlay(new BoundaryOverlay());
             final Layer rootLayer = layerCanvas.getLayer();
@@ -93,6 +94,10 @@ public class NestWorldMapPane extends JPanel {
             worldMapLayer = dataModel.getWorldMapLayer(new WorldMapLayerContext(rootLayer));
             layerCanvas.getLayer().getChildren().add(worldMapLayer);
             layerCanvas.getViewport().zoom(worldMapLayer.getModelBounds());
+
+            if(layerCanvas.getViewport().getZoomFactor() < 2) {
+                layerCanvas.getViewport().setZoomFactor(2.0f);
+            }
 
             setNavControlVisible(true);
         } catch (Exception e) {
@@ -261,6 +266,34 @@ public class NestWorldMapPane extends JPanel {
         layerCanvas.addMouseWheelListener(mouseHandler);
     }
 
+    private static boolean viewportIsInWorldMapBounds(double dx, double dy, LayerCanvas layerCanvas) {
+        AffineTransform transform = layerCanvas.getViewport().getModelToViewTransform();
+
+        double minX = layerCanvas.getMaxVisibleModelBounds().getMinX();
+        double minY = layerCanvas.getMaxVisibleModelBounds().getMinY();
+        double maxX = layerCanvas.getMaxVisibleModelBounds().getMaxX();
+        double maxY = layerCanvas.getMaxVisibleModelBounds().getMaxY();
+
+        final Point2D upperLeft = transform.transform(new Point2D.Double(minX, minY), null);
+        final Point2D lowerRight = transform.transform(new Point2D.Double(maxX, maxY), null);
+        /*
+         * We need to give the borders a minimum width/height of 1 because otherwise the intersection
+         * operation would not work
+         */
+        Rectangle2D northBorder = new Rectangle2D.Double(upperLeft.getX() + dx, upperLeft.getY() + dy,
+                lowerRight.getX() + dx - upperLeft.getX() + dx, 1);
+        Rectangle2D southBorder = new Rectangle2D.Double(upperLeft.getX() + dx, lowerRight.getY() + dy,
+                lowerRight.getX() + dx - upperLeft.getX() + dx, 1);
+        Rectangle2D westBorder = new Rectangle2D.Double(upperLeft.getX() + dx, lowerRight.getY() + dy, 1,
+                upperLeft.getY() + dy - lowerRight.getY() + dy);
+        Rectangle2D eastBorder = new Rectangle2D.Double(lowerRight.getX() + dx, lowerRight.getY() + dy, 1,
+                upperLeft.getY() + dy - lowerRight.getY() + dy);
+        return (!layerCanvas.getBounds().intersects(northBorder) &&
+                !layerCanvas.getBounds().intersects(southBorder) &&
+                !layerCanvas.getBounds().intersects(westBorder) &&
+                !layerCanvas.getBounds().intersects(eastBorder));
+    }
+
     private class ModelChangeListener implements PropertyChangeListener {
 
         @Override
@@ -315,7 +348,9 @@ public class NestWorldMapPane extends JPanel {
             } else if (p0 != null) {
                 final double dx = p.x - p0.x;
                 final double dy = p.y - p0.y;
-                layerCanvas.getViewport().moveViewDelta(dx, dy);
+                if (viewportIsInWorldMapBounds(dx, dy, layerCanvas)) {
+                    layerCanvas.getViewport().moveViewDelta(dx, dy);
+                }
                 p0 = p;
             }
         }
@@ -323,11 +358,20 @@ public class NestWorldMapPane extends JPanel {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             final int wheelRotation = e.getWheelRotation();
-            final double newZoomFactor = layerCanvas.getViewport().getZoomFactor() * FastMath.pow(1.1, wheelRotation);
+            double newZoomFactor = layerCanvas.getViewport().getZoomFactor() * FastMath.pow(1.1, wheelRotation);
+            newZoomFactor = capZoom(newZoomFactor);
             layerCanvas.getViewport().setZoomFactor(newZoomFactor);
         }
     }
 
+
+    private static double capZoom(double newZoomFactor) {
+        if(newZoomFactor < 2)
+            newZoomFactor = 2.0f;
+        if(newZoomFactor > 2000)
+            newZoomFactor = 2000.0f;
+        return newZoomFactor;
+    }
 
     private static class WorldMapLayerContext implements LayerContext {
 
@@ -478,6 +522,8 @@ public class NestWorldMapPane extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             layerCanvas.getViewport().zoom(worldMapLayer.getModelBounds());
+            double newZoomFactor = capZoom(layerCanvas.getViewport().getZoomFactor());
+            layerCanvas.getViewport().setZoomFactor(newZoomFactor);
         }
     }
 

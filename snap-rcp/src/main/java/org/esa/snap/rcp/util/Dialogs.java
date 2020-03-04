@@ -46,7 +46,7 @@ public class Dialogs {
         CANCELLED
     }
 
-    private static final String PREF_KEY_SUFFIX_DECISION = ".decision";
+    public static final String PREF_KEY_SUFFIX_DECISION = ".decision";
     private static final String PREF_VALUE_YES = "yes";
     private static final String PREF_VALUE_NO = "no";
     private static final String PREF_VALUE_TRUE = "true";
