@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.interactions.PanInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,11 +35,11 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 110
+        path = "Toolbars/" + PackageDefaults.PANNER_TOOL_TOOLBAR_NAME,
+        position = PackageDefaults.PANNER_TOOL_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_PannerToolActionText=Pan",
+                  "CTL_PannerToolActionText=" + PackageDefaults.PANNER_TOOL_NAME,
                   "CTL_PannerToolActionDescription=Panning tool"
           })
 public class PannerToolAction extends ToolAction {
@@ -52,7 +53,7 @@ public class PannerToolAction extends ToolAction {
         putValue(NAME, Bundle.CTL_PannerToolActionText());
         putValue(SELECTED_KEY, true);   //Set Image Panning Tool as default
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PannerToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PannerTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.PANNER_TOOL_ICON, false));
     }
 
     @Override

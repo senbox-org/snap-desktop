@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -22,10 +23,12 @@ import org.openide.util.NbBundle;
 @ActionRegistration(displayName = "#CTL_OverlayPinLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 30),
-        @ActionReference(path = "Toolbars/Overlay", position = 30)
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.OVERLAY_PINS_TOOLBAR_NAME,
+                position = PackageDefaults.OVERLAY_PINS_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
-        "CTL_OverlayPinLayerActionName=Pin Overlay",
+        "CTL_OverlayPinLayerActionName=" + PackageDefaults.OVERLAY_PINS_NAME,
         "CTL_OverlayPinLayerActionToolTip=Show/hide pin overlay for the selected image"
 })
 public final class OverlayPinLayerAction extends AbstractOverlayAction {
@@ -35,7 +38,7 @@ public final class OverlayPinLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayPinLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PinOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PinOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_PINS_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayPinLayerActionToolTip());
     }
 
