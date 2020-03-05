@@ -20,7 +20,6 @@ import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -34,7 +33,7 @@ import java.awt.Component;
 
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
-    private static final String[] COLUMN_NAMES = new String[]{PackageDefaults.COLOR_SPELLING, "Value"};
+    private static final String[] COLUMN_NAMES = new String[]{"Colour", "Value"};
     private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, Double.class};
 
     private final ColorManipulationForm parentForm;
