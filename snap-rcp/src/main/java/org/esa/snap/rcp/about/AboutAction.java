@@ -24,8 +24,8 @@ import java.awt.event.ActionListener;
 @ActionRegistration(displayName = "#CTL_AboutAction_Name" )
 @ActionReference(path = "Menu/Help", position = 1600, separatorBefore = 1550)
 @Messages({
-        "CTL_AboutAction_Name=About SNAP...",
-        "CTL_AboutAction_Title=About SNAP",
+        "CTL_AboutAction_Name=About SeaDAS...",
+        "CTL_AboutAction_Title=About SeaDAS",
 })
 public final class AboutAction implements ActionListener {
 
