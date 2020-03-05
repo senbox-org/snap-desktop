@@ -19,6 +19,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.ActionLabel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Scaling;
 import org.esa.snap.core.datamodel.Stx;
@@ -45,6 +46,19 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
+
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Added method to override abstract method "checkSliderRangeCompatibility".
+//          - Added method to override abstract method "checkLogCompatibility".
+// Feb 2020 - Knowles
+//          - Added calls to reset the color scheme selector
+
 
 class ImageInfoEditor2 extends ImageInfoEditor {
 
@@ -154,6 +168,7 @@ class ImageInfoEditor2 extends ImageInfoEditor {
 
     @Override
     protected void applyChanges() {
+        resetColorSchemeSelector();
         parentForm.applyChanges();
     }
 
@@ -211,5 +226,23 @@ class ImageInfoEditor2 extends ImageInfoEditor {
         protected void done() {
             UIUtils.setRootFrameDefaultCursor(ImageInfoEditor2.this);
         }
+    }
+
+
+    @Override
+    protected boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled) {
+        return ColorUtils.checkLogCompatibility(value, componentName, isLogScaled);
+    }
+
+    @Override
+    protected boolean checkSliderRangeCompatibility(double value, double min, double max) {
+        return ColorUtils.checkSliderRangeCompatibility (value, min, max);
+    }
+
+
+    private void resetColorSchemeSelector() {
+        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
     }
 }
