@@ -14,7 +14,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Word Spellings
-//    public static final String COLOR_SPELLING = "Color"; // differs from snap
+    public static final String COLOR_SPELLING = "Color"; // differs from snap
 
 
     //---------------------------------------------------------------
