@@ -37,27 +37,112 @@
 
 <p>If you are opening an Image View of a data product's band or tie-point grid, the image loads with the color settings
     stored within the product itself (BEAM-DIMAP format only) or uses default colour settings as defined in the
-    <b><a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation)</b>.  The <b>Colour Manipulation</b> tool
+    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation).  The "Colour Manipulation" tool
     window is used to modify the colours and color mapping used in the image. Depending on the type of the source data used for the images,
-    the colour manipulation window offers different editors:
+    the colour manipulation window offers different editors: Basic, Sliders and Table.
 </p>
 
+<p>To open the colour manipulation window, use the corresponding icon
+    <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
+     in the "Tool Windows" toolbar or select <i>/Tool Windows/Colour Manipulation</i>
+    from the main menu. Changes made within the colour manipulation tool window will directly become effective in the image.
+    This tool has 3 editors: Basic, Sliders, and Table to aid in adjusting the image color.
+</p>
+
+<br>
+<hr>
+<h4>Basic Editor</h4>
+
+<p> In the "Basic" mode you can select the color palette, the range (minimum and maximum), and whether the scaling
+    is logarithmic.  These 3 parameters (palette, range and scaling) define a color scheme.  You may either select
+    a pre-defined color scheme or individually adjust any of the parameters. Note that a color scheme can
+    automatically be applied when an image window is opened based on the band name (see <a href="ColorManipulationPreferences.html">Preferences</a>).
+</p>
+
+<br>
 <div align="center">
-    <table width="640px">
+    <table>
         <tr>
             <td align="center" style="border-width:0"><img src="images/Color_Basic.png"/></td>
-            <td align="center" style="border-width:0"><img src="images/Color_Sliders.png"/></td>
         </tr>
         <tr>
             <td align="center" style="border-width:0">
-                <b>A.1</b>: Editor for images of a single, spectral/geophysical band
-                in <b>Basic</b> mode
+                <b>A.1</b>: Basic mode editor<br> for images of a single, spectral/geophysical band
             </td>
+        </tr>
+    </table>
+</div>
+<br>
+
+
+<p> The <b>Scheme Selector</b> is used to specify a pre-defined color scheme.  Once you choose a color scheme, all components
+    and the image will be updated with the parameters (palette, range and scaling) of the color scheme.  These color
+    schemes are configured in an xml file which you can edit if you wish to add/modify color schemes
+    (~/.snap/auxdata/color_schemes/color_palette_schemes.xml).
+</p>
+
+<p> The <b>Palette Chooser</b> is used to select pre-defined color palettes.  These palettes are stored in (~/.snap/auxdata/color_palettes).
+    There are currently two supported formats of these palettes: cpd and cpt.  CPD is the native format (BEAM, SNAP and SeaDAS).
+    CPT is the format used in the Generic Mapping Tools software.  Each of these formats contain not only the color ramp,
+    but actual data values for each point in the ramp.  When you select the palette, those data values will automatically
+    be redistributed across the range (Min, Max) currently displayed in the Basic window.  If you wish to have the "exact
+    values" contained within the palette file loaded then select "Load exact values".
+</p>
+
+<p> The <b>Reverse</b> button enables you to reverse the direction of the color palette.
+</p>
+
+<p> The <b>Range</b> section enables you to adjust the min and max of the color palettes.  Any change to these fields
+    will cause the color palette to redistribute based on this range, while retaining any current distribution point
+    weighting factors contained within the load palette.  To alter the distribution see the <b>Sliders</b> mode or the <b>Table</b> mode.
+    <b>From Palette</b> loads in the range settings from the palette file which was originally loaded within the palette
+    chooser while maintaining any subsequent user alterations of the point distribution.  <b>From Data</b> loads in the
+    range obtained from the statistics of the data (min and max of 100% of the data).  If you wish to load other statistical
+    ranges of the data see the <b>Sliders</b> mode.
+</p>
+
+
+<p> The <b>Reset</b> button resets the color scheme to the original color scheme or default settings depending on
+    your preferences settings.
+</p>
+
+<p> The <b>Log Scaling</b> button toggles the log scaling and applies it to the image.
+</p>
+
+<p> The <b>Apply to Other Bands</b> button enables you to apply/load the color palette into any other band which is opened
+    in a vew window.  Note that this only applies the palette and retains the current range and log scaling of the other
+    bands.
+</p>
+
+<p> The <b>Image Palette</b> button enables you to import a palette file (cpd or cpt).  Essentially this functions identical
+    to the color palette chooser except that this is a dialog selector displaying the files.
+</p>
+
+<p> The <b>Export Palette</b> button enables you to export a "custom" palette file (cpd, cpt, or pal) from the current parameters.
+</p>
+
+
+<br>
+<hr>
+<h4>Slider Mode</h4>
+
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/Color_Sliders.png"/></td>
+        </tr>
+        <tr>
             <td align="center" style="border-width:0">
                 <b>A.2</b>: Editor for images of a single, spectral/geophysical band
                 in <b>Sliders</b> mode
             </td>
         </tr>
+    </table>
+</div>
+
+<div align="center">
+    <table>
         <tr>
             <td colspan="2" align="center" style="border-width:0; padding-top: 15px;"><img src="images/Color_Table.png"/></td>
         </tr>
@@ -67,22 +152,23 @@
                 in <b>Table</b> mode
             </td>
         </tr>
-        <tr>
-            <td style="border-width:0">
-                &nbsp;
-            </td>
-            <td style="border-width:0">
-                &nbsp;
-            </td>
-        </tr>
+    </table>
+</div>
+
+<div align="center">
+    <table width="640px">
         <tr>
             <td align="center" style="border-width:0"><img src="images/CM_indexCoding.png"/></td>
-            <td align="center" style="border-width:0"><img src="images/CM_rgb_blue.png"/></td>
         </tr>
         <tr align="center">
             <td align="center" style="border-width:0">
                 <b>B.</b>: Editor for images of a single, index-coded band
             </td>
+        </tr>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/CM_rgb_blue.png"/></td>
+        </tr>
+        <tr align="center">
             <td align="center" style="border-width:0">
                 <b>C.</b> Editor for images using separate R,G,B channels
             </td>
@@ -90,13 +176,7 @@
     </table>
 </div>
 
-<p>To open the colour manipulation window, use the corresponding icon
-    <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
-    icon in the main toolbar or select <b><a href="ViewMenu.html">View</a>/Tool Windows/Colour Manipulation</b>
-    from the main menu.
-</p>
 
-<p>Changes in the colour manipulation window will directly become effective.</p>
 
 <p>If the information <font color="red">Rough statistics!</font> is shown, the statistical information is computed on a
     sub-sampled level. You can click it in order to compute the accurate statistical data.
@@ -337,6 +417,8 @@
 
 <p> The help icon <img src="images/icons/Help22.png"> opens the Help for the current context.
 </p>
+
+
 
 
 <hr>
