@@ -891,10 +891,24 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void showSelectedLocalProductInExplorer() {
         RepositoryProduct[] selectedProducts = this.repositoryProductListPanel.getProductListPanel().getSelectedProducts();
         Path selectedProductPath = ((LocalRepositoryProduct) selectedProducts[0]).getPath();
-        try {
-            Desktop.getDesktop().open(selectedProductPath.toFile());
-        } catch (IOException exception) {
-            logger.log(Level.SEVERE, "Failed to open the product in the explorer.", exception);
+        String dialogTitle = "Show local product in explorer";
+        if (Files.exists(selectedProductPath)) {
+            try {
+                Desktop.getDesktop().open(selectedProductPath.toFile());
+            } catch (IOException exception) {
+                StringBuilder message = new StringBuilder();
+                message.append("The local product path '")
+                        .append(selectedProductPath.toString())
+                        .append("' can not be opened in the explorer.");
+                showMessageDialog(dialogTitle, message.toString(), JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // the product path does not exist
+            StringBuilder message = new StringBuilder();
+            message.append("The local product path '")
+                    .append(selectedProductPath.toString())
+                    .append("' does not exist.");
+            showMessageDialog(dialogTitle, message.toString(), JOptionPane.ERROR_MESSAGE);
         }
     }
 

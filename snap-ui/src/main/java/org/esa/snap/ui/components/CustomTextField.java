@@ -12,10 +12,38 @@ public class CustomTextField extends JTextField {
     public CustomTextField(int preferredHeight, Color backgroundColor) {
         super();
 
+        if (preferredHeight <= 0) {
+            throw new IllegalArgumentException("The preferred size " + preferredHeight + " must be > 0.");
+        }
+        if (backgroundColor == null) {
+            throw new NullPointerException("The background color is null.");
+        }
+
         this.preferredHeight = preferredHeight;
 
         setBackground(backgroundColor);
         setBorder(SwingUtils.LINE_BORDER);
+    }
+
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, this.preferredHeight);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getMinimumSize();
+
+        size.height = this.preferredHeight;
+        return size;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension size = super.getMaximumSize();
+
+        size.height = this.preferredHeight;
+        return size;
     }
 
     @Override

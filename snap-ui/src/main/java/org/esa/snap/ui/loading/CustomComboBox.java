@@ -17,11 +17,19 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
     public CustomComboBox(ItemRenderer<ItemType> itemRenderer, int preferredHeight, boolean isEditable, Color backgroundColor) {
         this(itemRenderer, preferredHeight, isEditable);
 
+        if (backgroundColor == null) {
+            throw new NullPointerException("The background color is null.");
+        }
+
         setBackground(backgroundColor);
     }
 
     public CustomComboBox(ItemRenderer<ItemType> itemRenderer, int preferredHeight, boolean isEditable) {
         super();
+
+        if (preferredHeight <= 0) {
+            throw new IllegalArgumentException("The preferred size " + preferredHeight + " must be > 0.");
+        }
 
         this.preferredHeight = preferredHeight;
 
@@ -75,6 +83,27 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
         if (getEditor() != null && getEditor().getEditorComponent() != null) {
             getEditor().getEditorComponent().setEnabled(enabled);
         }
+    }
+
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, this.preferredHeight);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getMinimumSize();
+
+        size.height = this.preferredHeight;
+        return size;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension size = super.getMaximumSize();
+
+        size.height = this.preferredHeight;
+        return size;
     }
 
     @Override
