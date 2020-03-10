@@ -36,17 +36,22 @@
 <h3>Overview</h3>
 
 <p>If you are opening an Image View of a data product's band or tie-point grid, the image loads with the color settings
-    stored within the product itself (BEAM-DIMAP format only) or uses default colour settings as defined in the
+    stored within the product itself (BEAM-DIMAP format only) or uses default color settings as defined in the
     <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation).  The "Colour Manipulation" tool
-    window is used to modify the colours and color mapping used in the image. Depending on the type of the source data used for the images,
-    the colour manipulation window offers different editors: Basic, Sliders and Table.
+    window is used to modify the colors and color mapping used in the image.
+</p>
+
+<p>Depending on the type of the source data used for the images,
+    the colour manipulation tool offers three editor modes: Basic, Sliders and Table.
+    If the source is a single spectral/geophysical band, then Basic, Sliders and Table mode editors are all used.  If
+    the source is an indexed band then only the Table editor is used.  If the source is 3 bands used to create a RGB
+    image then the Sliders editor is used.
 </p>
 
 <p>To open the colour manipulation window, use the corresponding icon
     <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
      in the "Tool Windows" toolbar or select <i>/Tool Windows/Colour Manipulation</i>
     from the main menu. Changes made within the colour manipulation tool window will directly become effective in the image.
-    This tool has 3 editors: Basic, Sliders, and Table to aid in adjusting the image color.
 </p>
 
 <br>
@@ -122,9 +127,16 @@
 </p>
 
 
+
+
 <br>
 <hr>
 <h4>Slider Mode</h4>
+
+<p> In the "Slider" mode you have control over how the individual points of the color palette are distributed.
+    You also have features associated with using the statistics and histogram of the data.  The histogram
+    is displayed over the applied color palette with adjustable sliders for each point of the palette.
+</p>
 
 
 <div align="center">
@@ -134,12 +146,50 @@
         </tr>
         <tr>
             <td align="center" style="border-width:0">
-                <b>A.2</b>: Editor for images of a single, spectral/geophysical band
-                in <b>Sliders</b> mode
+                <b>A.2</b>: Sliders mode editor<br> for images of a single, spectral/geophysical band
             </td>
         </tr>
     </table>
 </div>
+
+
+<p> The label below the slider indicates the sample value assigned to the position of the slider in the histogram.
+    By moving a slider with the mouse you can easily change its sample value. If you double-click the label,
+    a text field appears where you can enter a sample value.
+    By moving a slider, the colours in the palette will change accordingly.
+</p>
+
+<p>To add a new slider, right click anywhere on the color bar between two existing slider and select "Add new Slider".  A new slider will be inserted
+    beneath the location of the mouse-click with its value and its colors set automatically by a linear interpolation of the
+    adjacent sliders.
+</p>
+
+<p>To remove a slider, right click on the slider and select "Remove Slider".  The palette will then be updated by interpolating
+between the adjacent remaining sliders</p>
+
+<p>To center a slider spatially between two adjacent slider, right click on the slider </p>
+
+<p>Slider colours are changed by clicking a slider. A popup window appears, where you can select the new colour.
+    If you select <b>None</b>, a fully transparent slider results. In the <b>More Options</b> panels you can adjust the
+    <b><a href="#nodata">No-Data Colour</a></b> and apply a
+    <b><a href="#histomatch">Histogram Matching</a></b> to enhance the contrast of the final image.
+</p>
+
+<p> If you right-click on a slider, a context menu will pop up. The available actions are
+    <b>Add slider</b>, <b>Remove slider</b>, <b>Center slider sample</b> and <b>Center slider colour</b>.
+    Some actions may be disabled when the action cannot be performed.
+</p>
+
+<p>If the information <font color="red">Rough statistics!</font> is shown, the statistical information is computed on a
+    sub-sampled level. You can click it in order to compute the accurate statistical data.
+</p>
+
+
+
+
+<br>
+<hr>
+<h4>Table Mode</h4>
 
 <div align="center">
     <table>
@@ -178,70 +228,9 @@
 
 
 
-<p>If the information <font color="red">Rough statistics!</font> is shown, the statistical information is computed on a
-    sub-sampled level. You can click it in order to compute the accurate statistical data.
-</p>
 
 
-<h3>A. Editor for images of a single, spectral/geophysical band</h3>
 
-<p>Images of a single, spectral/geophysical band use a colour palette to assign a colour to a sample value in the source
-    band.
-    By default, the editor is in a mode where sliders are used to modify the colour palette.
-    Each slider assigns sample values to colours:
-</p>
-
-<h4>Slider Mode</h4>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_default.png"></td>
-            <td align="center" style="border-width:0"><img src="images/CM_colors.png"></td>
-        </tr>
-    </table>
-</div>
-
-
-<h5>Colour Palette Modifications</h5>
-
-<p> As the white diagonal line above the histogram indicates, the colour palette will
-    be linearly applied to the samples of the source band of the current <a href="ProductSceneView.html">Image View</a>.
-    The label below the slider indicates the sample value assigned to the position of the slider in the histogram.
-    By moving a slider with the mouse you can easily change its sample value. If you double-click the label,
-    a text field appears where you can enter a sample value.
-    By moving a slider, the colours in the palette will change accordingly. You can also click between two sliders
-    in order to move the nearest slider of both under the mouse cursor.
-</p>
-
-<p>Slider colours are changed by clicking a slider. A popup window appears, where you can select the new colour.
-    If you select <b>None</b>, a fully transparent slider results. In the <b>More Options</b> panels you can adjust the
-    <b><a href="#nodata">No-Data Colour</a></b> and apply a
-    <b><a href="#histomatch">Histogram Matching</a></b> to enhance the contrast of the final image.
-</p>
-
-<p> If you right-click on a slider, a context menu will pop up. The available actions are
-    <b>Add slider</b>, <b>Remove slider</b>, <b>Center slider sample</b> and <b>Center slider colour</b>.
-    Some actions may be disabled when the action cannot be performed.
-</p>
-
-<h4>Basic Mode</h4>
-
-<p> In the basic mode it is possible to select a colour ramp from a set of predefined colour palettes.
-    The selected colour ramp will be applied to the current display range.
-    You can change the bounds of the display range by editing the min/max values.
-    Also you can set the display bounds to min/max defined by the selected colour palette file, or set display
-    bounds to the minimum and maximum data values.
-</p>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_basic.png"></td>
-            <td align="center" style="border-width:0"><img src="images/CM_basic_dropdown.png"></td>
-        </tr>
-    </table>
-</div>
 
 <h4>Table Mode</h4>
 

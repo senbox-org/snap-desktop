@@ -187,18 +187,22 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
 
-            PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
-
-            if (productSceneView.getImageInfo().getColorSchemeInfo() == null) {
-                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
-                ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+            if (getFormModel().isContinuous3BandImage() || getFormModel().isDiscrete1BandImage()) {
+                getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
             } else {
-                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
-            }
+                PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
 
-            ColorManipulationDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
-            getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
-            ColorManipulationDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
+                if (productSceneView.getImageInfo().getColorSchemeInfo() == null) {
+                    ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
+                    ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView);
+                } else {
+                    ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
+                }
+
+                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
+                getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
+                ColorManipulationDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
+            }
         }
 
         installChildForm();
@@ -251,7 +255,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (newForm != oldForm) {
             setChildForm(newForm);
 
-            boolean installAllButtons = (newForm instanceof Continuous1BandBasicForm || newForm instanceof Continuous1BandTabularForm);
+            boolean installAllButtons = !(newForm instanceof Continuous1BandGraphicalForm || newForm instanceof Continuous3BandGraphicalForm);
 
             installToolButtons(installAllButtons);
             installMoreOptions();
