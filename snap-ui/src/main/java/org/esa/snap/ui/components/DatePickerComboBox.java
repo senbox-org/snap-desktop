@@ -25,6 +25,16 @@ public class DatePickerComboBox extends JComboBox<Void> {
     public DatePickerComboBox(int preferredHeight, Color backgroundColor, DateFormat dateFormat) {
         super();
 
+        if (preferredHeight <= 0) {
+            throw new IllegalArgumentException("The preferred size " + preferredHeight + " must be > 0.");
+        }
+        if (backgroundColor == null) {
+            throw new NullPointerException("The background color is null.");
+        }
+        if (dateFormat == null) {
+            throw new NullPointerException("The date format is null.");
+        }
+
         this.preferredHeight = preferredHeight;
         this.dateFormat = dateFormat;
 
@@ -87,6 +97,27 @@ public class DatePickerComboBox extends JComboBox<Void> {
         if (getEditor() != null && getEditor().getEditorComponent() != null) {
             getEditor().getEditorComponent().setEnabled(enabled);
         }
+    }
+
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, this.preferredHeight);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        Dimension size = super.getMinimumSize();
+
+        size.height = this.preferredHeight;
+        return size;
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        Dimension size = super.getMaximumSize();
+
+        size.height = this.preferredHeight;
+        return size;
     }
 
     @Override

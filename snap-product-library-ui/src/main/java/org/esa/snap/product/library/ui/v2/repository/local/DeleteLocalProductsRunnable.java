@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -19,12 +20,17 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
-    public DeleteLocalProductsRunnable(AppContext appContext, RepositoryOutputProductListPanel repositoryProductListPanel, List<RepositoryProduct> productsToDelete,
-                                       AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+    public DeleteLocalProductsRunnable(ProgressBarHelper progressPanel, int threadId, RepositoryOutputProductListPanel repositoryProductListPanel,
+                                       List<RepositoryProduct> productsToDelete, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
 
-        super(appContext, repositoryProductListPanel, productsToDelete);
+        super(progressPanel, threadId, repositoryProductListPanel, productsToDelete);
 
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
+    }
+
+    @Override
+    protected boolean onTimerWakeUp(String message) {
+        return super.onTimerWakeUp("Delete local products...");
     }
 
     @Override
@@ -37,6 +43,7 @@ public class DeleteLocalProductsRunnable extends AbstractProcessLocalProductsRun
                 //FileIOUtils.deleteFolder(repositoryProduct.getPath());
 
                 this.allLocalFolderProductsRepository.deleteProduct(repositoryProduct);
+
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.DELETED);
             } catch (Exception exception) {
                 updateProductProgressStatusLater(repositoryProduct, LocalProgressStatus.FAIL_DELETED);

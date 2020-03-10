@@ -270,7 +270,8 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                 if (!this.progressPanel.isCurrentThread(this.threadId)) {
                     this.threadId = this.progressPanel.incrementAndGetCurrentThreadId();
                 }
-                this.progressPanel.showProgressPanel(this.threadId); // show the progress panel
+                this.progressPanel.showProgressPanel(this.threadId, null); // 'null' => do not reset the progress bar message
+                updateProgressBarDownloadedProducts();
             }
         } else {
             throw new IllegalArgumentException("The parent thread parameter is wrong.");

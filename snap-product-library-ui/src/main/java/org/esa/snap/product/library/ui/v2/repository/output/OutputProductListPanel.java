@@ -241,8 +241,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
                 count++;
                 this.selectedProductPanels.add(foundRepositoryProductPanel);
                 scrollRectToVisible(foundRepositoryProductPanel.getBounds());
-                repaint();
-                firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+                fireProductsSelectionChanged();
             } else {
                 throw new IllegalArgumentException("The polygon path does not exist in the list.");
             }
@@ -256,8 +255,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
             this.selectedProductPanels.clear();
             //mark as selected the clicked panel product
             this.selectedProductPanels.add(repositoryProductPanel);
-            repaint();
-            firePropertyChange(LIST_SELECTION_CHANGED, null, null);
+            fireProductsSelectionChanged();
         }
         showProductsPopupMenu(repositoryProductPanel, mouseEvent.getX(), mouseEvent.getY());
     }
@@ -270,9 +268,28 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
                 this.selectedProductPanels.remove(repositoryProductPanel);
             }
         } else {
+            // clear already selected panels
             this.selectedProductPanels.clear();
+            // select the clicked panel
             this.selectedProductPanels.add(repositoryProductPanel);
         }
+        fireProductsSelectionChanged();
+    }
+
+    public void selectAllProducts() {
+        for (int i=0; i<getComponentCount(); i++) {
+            AbstractRepositoryProductPanel repositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
+            this.selectedProductPanels.add(repositoryProductPanel);
+        }
+        fireProductsSelectionChanged();
+    }
+
+    public void clearSelection() {
+        this.selectedProductPanels.clear();
+        fireProductsSelectionChanged();
+    }
+
+    private void fireProductsSelectionChanged() {
         repaint();
         firePropertyChange(LIST_SELECTION_CHANGED, null, null);
     }

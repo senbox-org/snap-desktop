@@ -92,8 +92,8 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
     protected void onSuccessfullyFinish(OutputType result) {
     }
 
-    protected boolean onTimerWakeUp() {
-        return this.progressPanel.showProgressPanel(this.threadId);
+    protected boolean onTimerWakeUp(String message) {
+        return this.progressPanel.showProgressPanel(this.threadId, message);
     }
 
     protected final boolean onUpdateProgressBarText(String message) {
@@ -112,17 +112,11 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         JOptionPane.showMessageDialog(parentDialogComponent, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    protected final void onShowInformationMessageDialog(JComponent parentDialogComponent, String message, String title) {
-        JOptionPane.showMessageDialog(parentDialogComponent, message, title, JOptionPane.INFORMATION_MESSAGE);
-    }
-
     protected final void updateProgressBarTextLater(String text) {
         GenericRunnable<String> runnable = new GenericRunnable<String>(text) {
             @Override
-            protected void execute(String textValue) {
-                if (isCurrentProgressPanelThread()) {
-                    progressPanel.updateProgressBarText(threadId, textValue);
-                }
+            protected void execute(String message) {
+                onUpdateProgressBarText(message);
             }
         };
         SwingUtilities.invokeLater(runnable);
@@ -153,7 +147,7 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
             @Override
             public void run() {
                 if (!isFinished()) {
-                    onTimerWakeUp();
+                    onTimerWakeUp(""); // set empty string for progress bar message
                 }
             }
         };
