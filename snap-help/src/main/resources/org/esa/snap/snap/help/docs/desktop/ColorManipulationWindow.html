@@ -36,15 +36,15 @@
 
 <h3>Overview</h3>
 
-<p>If you are opening an Image View of a band or tie-point grid, the image loads with the color settings of the band
+<p>The "Colour Manipulation" tool
+    window is used to modify the colors and color mapping used in the image.  If you are opening an Image View of a
+    band or tie-point grid, the image loads with the color settings of the band
     stored within the data file itself (BEAM-DIMAP format only) or applies default color settings as defined in the
-    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation). The "Colour
-    Manipulation" tool
-    window is used to modify the colors and color mapping used in the image.
+    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation).
 </p>
 
 <p>Depending on the type of the source data used for the images and the type of images to be created,
-    the Colour Manipulation tool offers three editor modes: Basic, Sliders and Table.
+    the this tool offers three editor modes: Basic, Sliders and Table.
     If the source data is a single spectral/geophysical band, then the Basic, Sliders and Table mode editors are all
     used. If
     the source data is an indexed band then only the Table editor is used. If the source data is 3 bands used to create
@@ -52,10 +52,10 @@
     image then only the Sliders editor is used.
 </p>
 
-<p>To open the colour manipulation window, use the corresponding icon
+<p>To open the Colour Manipulation tool window, use the corresponding icon
     <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
     in the "Tool Windows" toolbar or select <i>/Tool Windows/Colour Manipulation</i>
-    from the main menu. Changes made within the colour manipulation tool window will directly become effective in the
+    from the main menu. Changes made within the Colour Manipulation tool window will directly become effective in the
     image.
 </p>
 
@@ -63,6 +63,7 @@
 <br>
 <hr>
 <h4>Some Common Functions</h4>
+<b>Each editor in this tool has unique parameters but in general all editors share the follow functions:</b>
 
 <ul>
     <li> <img src="images/icons/Undo24.gif"> The "Reset" button resets to the default settings.  In the case of a
@@ -70,8 +71,8 @@
     </li>
 
     <li> <img src="images/icons/LogDisplay24.png"> The "Log Scaling" button toggles the log scaling and applies it to the image.  This option is not available in
-        the RGB image and for the index band source.  For the RGB image, any concept of log scaling needs to be contained
-        within the configuration profile.
+        the RGB image and for the index band source.  For the RGB image, any concept of log scaling needs to be either contained
+        within the configuration profile, or you can use the "Gamma non-linearity" feature within "More Options".
     </li>
 
     <li> <img src="images/icons/MultiAssign24.gif"> The "Apply to Other Bands" button enables you to apply/load the color palette
@@ -79,13 +80,13 @@
     </li>
 
 
-    <li> <img src="images/icons/document-open.png"> The "Import Palette" button enables you to import a palette file (cpd or cpt). Essentially this functions
-        identical
+    <li> <img src="images/icons/document-open.png"> The "Import Palette" button enables you to import a palette file (cpd or cpt).
+        Essentially this functions identical
         to the color palette chooser except that this is a dialog selector displaying the files.
     </li>
 
-    <li> <img src="images/icons/document-save.png"> The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal) from the current
-        parameters.
+    <li> <img src="images/icons/document-save.png"> The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal)
+        from the current parameters.
     </li>
 </ul>
 
@@ -94,7 +95,8 @@
 <hr>
 <h4>Basic Editor</h4>
 
-<p> In the "Basic" mode you can select the color palette, the range (minimum and maximum), and whether the scaling
+<p> The "Basic" editor is only used when the source data is a single spectral/geophysical band.
+    In this editor you can select the color palette, the range (minimum and maximum), and whether the scaling
     is logarithmic. These 3 parameters (palette, range and scaling) define a color scheme. You may either select
     a pre-defined color scheme or individually adjust any of the parameters. Note that a color scheme can
     automatically be applied when an image window is opened based on the band name (see <a
@@ -116,18 +118,21 @@
 </div>
 <br>
 
-<p><b><i>Scheme</i></b>: This section handles setting and display of the color scheme.
+<p><b><i>Scheme</i></b>: This section handles the setting and display of the color scheme.
 </p>
 <ul>
     <li><b>Scheme Selector</b>: This selector is used to specify a pre-defined color scheme. Once you choose a color
         scheme, all components
         and the image will be updated with the parameters (palette, range and scaling) of the color scheme. These color
         schemes are configured in an xml file which you can edit if you wish to add/modify color schemes
-        (~/.snap/auxdata/color_schemes/color_palette_schemes.xml).
+        (~/.snap/auxdata/color_schemes/color_palette_schemes.xml).  If a scheme was automatically applied via bandname-lookup
+        when you opened the view window of the band, then this selector should display the scheme which has been applied.
+        Any subsequent changes to scheme parameters will cause this selector to be set to "None" (indicating that the
+        scheme no longer is being used in the image).
     </li>
 </ul>
 
-<p><b><i>Palette</i></b>: This section enables you load in a color palette.
+<p><b><i>Palette</i></b>: This section enables you to load in a color palette.
 </p>
 <ul>
     <li><b>Color Palette Chooser</b>: used to select pre-defined color palettes. These palettes are stored in
@@ -140,14 +145,13 @@
         automatically
         be redistributed across the range (Min, Max) currently displayed in the Basic window. The palettes weighting
         between
-        points is preserved during this redistribution. If you instead want to have the exact data
-        values contained within the palette file loaded then select "Load exact values".
+        points is preserved during this redistribution.
     </li>
     <li><b>Load exact values</b>: This checkbox when checked affects the behavior of the Color Palette Chooser. If
         checked, then when a palette
-        is selected the points are not redistributed to the range but instead the data of the palette is used.
+        is selected the points are not redistributed to the range but instead the exact data of the palette is used.
     </li>
-    <li><b>Reverse</b>: this button enables you to reverse the direction of the color palette.
+    <li><b>Reverse</b>: This button enables you to reverse the direction of the color palette.
     </li>
 </ul>
 
@@ -322,10 +326,12 @@
 <div align="center">
     <table>
         <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_rgb_blue.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB1.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB2.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB3.png"/></td>
         </tr>
         <tr align="center">
-            <td align="center" style="border-width:0">
+            <td colspan="3" align="center" style="border-width:0">
                 <b>C.</b> Editor for images using separate R,G,B channels
             </td>
         </tr>
@@ -362,7 +368,7 @@
 <div align="center">
     <table>
         <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_indexCoding.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_IndexBand.png"/></td>
         </tr>
         <tr align="center">
             <td align="center" style="border-width:0">

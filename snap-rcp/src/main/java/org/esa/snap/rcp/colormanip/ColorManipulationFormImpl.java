@@ -78,7 +78,7 @@ import static org.esa.snap.core.util.NamingConventionSnap.COLOR_LOWER_CASE;
 // FEB 2020 - Knowles
 //          - Wrapped this tool in a JScrollPane
 //          - Changed arrangement of tool buttons to single column
-// MAR 2020 - Fixed bug where More Option would not update when changing between 3band, 1band, and 1DiscreteBand forms
+// MAR 2020 - Fixed bug where More Options would not update when changing between 3band, 1band, and 1DiscreteBand forms
 
 
 @NbBundle.Messages({
