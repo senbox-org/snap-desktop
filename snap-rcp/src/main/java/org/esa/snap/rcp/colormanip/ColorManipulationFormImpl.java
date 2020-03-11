@@ -78,6 +78,7 @@ import static org.esa.snap.core.util.NamingConventionSnap.COLOR_LOWER_CASE;
 // FEB 2020 - Knowles
 //          - Wrapped this tool in a JScrollPane
 //          - Changed arrangement of tool buttons to single column
+// MAR 2020 - Fixed bug where More Option would not update when changing between 3band, 1band, and 1DiscreteBand forms
 
 
 @NbBundle.Messages({
@@ -254,6 +255,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         if (newForm != oldForm) {
             setChildForm(newForm);
+            updateMoreOptions();
 
             boolean installAllButtons = !(newForm instanceof Continuous1BandGraphicalForm || newForm instanceof Continuous3BandGraphicalForm);
 
@@ -507,6 +509,17 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             }
 
             this.moreOptionsPane.setComponent(this.tabbedPane);
+        }
+    }
+
+
+    public void updateMoreOptions() {
+        final MoreOptionsForm moreOptionsForm = getChildForm().getMoreOptionsForm();
+        if (moreOptionsForm != null) {
+            if (this.tabbedPane != null) {
+                this.tabbedPane.setComponentAt(0, moreOptionsForm.getContentPanel());
+                this.tabbedPane.repaint();
+            }
         }
     }
 
