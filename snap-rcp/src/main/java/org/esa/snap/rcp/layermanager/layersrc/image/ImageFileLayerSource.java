@@ -85,7 +85,7 @@ public class ImageFileLayerSource implements LayerSource {
             configuration.setValue(ImageFileLayerType.PROPERTY_NAME_IMAGE_FILE, new File(imageFilePath));
             configuration.setValue(ImageFileLayerType.PROPERTY_NAME_WORLD_TRANSFORM, transform);
             Layer layer = type.createLayer(sceneView, configuration);
-            layer.setName(FileUtils.getFileNameFromPath(imageFilePath));
+            layer.setName(FileUtils.getFilenameFromPath(imageFilePath));
             Layer rootLayer = sceneView.getRootLayer();
             rootLayer.getChildren().add(sceneView.getFirstImageLayerIndex(), layer);
             return true;
