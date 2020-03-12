@@ -19,10 +19,8 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.ActionLabel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.ColorSchemeInfo;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Scaling;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.ImageInfoEditor;
 import org.esa.snap.ui.ImageInfoEditorModel;
@@ -68,7 +66,11 @@ class ImageInfoEditor2 extends ImageInfoEditor {
     ImageInfoEditor2(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
         setLayout(new BorderLayout());
-        setShowExtraInfo(true);
+
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        boolean showExtraInformation = configuration.getPropertyBool(ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
+
+        setShowExtraInfo(showExtraInformation);
         addPropertyChangeListener("model", new ModelChangeHandler());
     }
 
@@ -166,9 +168,19 @@ class ImageInfoEditor2 extends ImageInfoEditor {
         }
     }
 
+
+    public void updateShowExtraInformationFromPreferences() {
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        boolean showExtraInformation = configuration.getPropertyBool(ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
+        setShowExtraInfo(showExtraInformation);
+    }
+
+
     @Override
     protected void applyChanges() {
         resetColorSchemeSelector();
+        updateShowExtraInformationFromPreferences();
+
         parentForm.applyChanges();
     }
 

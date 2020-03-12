@@ -109,6 +109,17 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
+
+
+
+
 
         restoreDefaults =  initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RESTORE_DEFAULTS_NAME, ColorManipulationDefaults.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
@@ -470,6 +481,38 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_TOOLTIP)
         boolean range100 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_TOOLTIP)
+        boolean slidersShowExtraInfo = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_TOOLTIP)
+        boolean slidersShowExtraInfoButton = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT;
+
+
+
+
+        // RGB Options
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_TOOLTIP)
+        boolean rgbOptionsSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_TOOLTIP)
+        double rgbOptionsMin = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_TOOLTIP)
+        double rgbOptionsMax = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT;
+
+
 
 
 

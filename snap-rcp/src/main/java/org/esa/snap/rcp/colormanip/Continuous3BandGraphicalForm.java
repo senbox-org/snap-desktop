@@ -27,6 +27,7 @@ import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
@@ -45,6 +46,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT;
 
 public class Continuous3BandGraphicalForm implements ColorManipulationChildForm {
 
@@ -234,15 +238,59 @@ public class Continuous3BandGraphicalForm implements ColorManipulationChildForm 
 
     @Override
     public AbstractButton[] getToolButtons() {
-        return new AbstractButton[]{
-                imageInfoEditorSupport.autoStretch95Button,
-                imageInfoEditorSupport.autoStretch100Button,
-                imageInfoEditorSupport.zoomInVButton,
-                imageInfoEditorSupport.zoomOutVButton,
-                imageInfoEditorSupport.zoomInHButton,
-                imageInfoEditorSupport.zoomOutHButton,
-                imageInfoEditorSupport.showExtraInfoButton,
-        };
+        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+
+        boolean range100 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_100_KEY, PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
+        boolean range95 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_95_KEY, PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
+        boolean range1Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
+        boolean range2Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
+        boolean range3Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
+        boolean showZoomVerticalButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
+        boolean showExtraInformationButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY, PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT);
+
+
+        ArrayList<AbstractButton> abstractButtonArrayList = new ArrayList<AbstractButton>();
+
+        if (range1Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch1SigmaButton);
+        }
+        if (range2Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch2SigmaButton);
+        }
+        if (range3Sigma) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch3SigmaButton);
+        }
+
+        if (range95) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch95Button);
+        }
+        if (range100) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.autoStretch100Button);
+        }
+
+        abstractButtonArrayList.add(imageInfoEditorSupport.setRGBminmax);
+
+
+
+        if (showZoomVerticalButtons) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.zoomInVButton);
+            abstractButtonArrayList.add(imageInfoEditorSupport.zoomOutVButton);
+        }
+        abstractButtonArrayList.add(imageInfoEditorSupport.zoomHorizontalButton);
+
+        if (showExtraInformationButtons) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+        }
+
+        final AbstractButton[] abstractButtonArray = new AbstractButton[abstractButtonArrayList.size()];
+
+        int i = 0;
+        for (AbstractButton abstractButton : abstractButtonArrayList) {
+            abstractButtonArray[i] = abstractButton;
+            i++;
+        }
+
+        return abstractButtonArray;
     }
 
     private void acknowledgeChannel() {

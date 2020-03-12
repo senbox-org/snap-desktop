@@ -150,6 +150,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         }
         imageInfoEditorSupport.setHorizontalZoomButtonAndCompute(zoomToHistLimits);
 
+        imageInfoEditor.updateShowExtraInformationFromPreferences();
 
         discreteCheckBox.setDiscreteColorsMode(imageInfo.getColorPaletteDef().isDiscrete());
         logDisplayButton.setSelected(newModel.getImageInfo().isLogScaled());
@@ -224,6 +225,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         boolean range2Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
         boolean range3Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
         boolean showZoomVerticalButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
+        boolean showExtraInformationButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY, PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT);
 
 
         ArrayList<AbstractButton> abstractButtonArrayList = new ArrayList<AbstractButton>();
@@ -255,7 +257,10 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         }
 //        abstractButtonArrayList.add(imageInfoEditorSupport.zoomVerticalButton);
         abstractButtonArrayList.add(imageInfoEditorSupport.zoomHorizontalButton);
-        abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+
+        if (showExtraInformationButtons) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+        }
 
 
         final AbstractButton[] abstractButtonArray = new AbstractButton[abstractButtonArrayList.size()];

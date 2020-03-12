@@ -210,6 +210,15 @@ public abstract class ImageInfoEditor extends JPanel {
 
 
 
+    public boolean setRGBminmax(double min, double max) {
+        computeFactors();
+        setFirstSliderSample(min);
+        setLastSliderSample(max);
+        partitionSliders(false);
+        computeZoomInToSliderLimits();
+
+        return true;
+    }
 
     public boolean compute100Percent(boolean logScaled) {
 

@@ -66,26 +66,26 @@
 <b>Each editor in this tool has unique parameters but in general all editors share the follow functions:</b>
 
 <ul>
-    <li> <img src="images/icons/Undo24.gif"> The "Reset" button resets to the default settings.  In the case of a
+    <li> <img src="images/icons/Undo24.gif"> &nbsp; The "Reset" button resets to the default settings.  In the case of a
         single spectral/geophysical band it applies the default color scheme if applicable.
     </li>
 
-    <li> <img src="images/icons/LogDisplay24.png"> The "Log Scaling" button toggles the log scaling and applies it to the image.  This option is not available in
+    <li> <img src="images/icons/LogDisplay24.png"> &nbsp; The "Log Scaling" button toggles the log scaling and applies it to the image.  This option is not available in
         the RGB image and for the index band source.  For the RGB image, any concept of log scaling needs to be either contained
         within the configuration profile, or you can use the "Gamma non-linearity" feature within "More Options".
     </li>
 
-    <li> <img src="images/icons/MultiAssign24.gif"> The "Apply to Other Bands" button enables you to apply/load the color palette
+    <li> <img src="images/icons/MultiAssign24.gif"> &nbsp; The "Apply to Other Bands" button enables you to apply/load the color palette
         into any other band which is opened in a view window.
     </li>
 
 
-    <li> <img src="images/icons/document-open.png"> The "Import Palette" button enables you to import a palette file (cpd or cpt).
+    <li> <img src="images/icons/document-open.png"> &nbsp; The "Import Palette" button enables you to import a palette file (cpd or cpt).
         Essentially this functions identical
         to the color palette chooser except that this is a dialog selector displaying the files.
     </li>
 
-    <li> <img src="images/icons/document-save.png"> The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal)
+    <li> <img src="images/icons/document-save.png"> &nbsp; The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal)
         from the current parameters.
     </li>
 </ul>
@@ -268,27 +268,32 @@
 <ul>
     <li>
         <img src="images/icons/Auto1SigmaPercent24.gif">
-        adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
+        &nbsp; adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
     </li>
 
     <li>
         <img src="images/icons/Auto2SigmaPercent24.gif">
-        adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
+        &nbsp; adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
     </li>
 
     <li>
         <img src="images/icons/Auto3SigmaPercent24.gif">
-        adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
+        &nbsp; adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
     </li>
 
     <li>
         <img src="images/icons/Auto95Percent24.gif">
-        adjusts the palette range to cover 95% of all pixels in the band.
+        &nbsp; adjusts the palette range to cover 95% of all pixels in the band.
     </li>
 
     <li>
         <img src="images/icons/Auto100Percent24.gif">
-        adjusts the palette range to cover 100% (the full range) of all pixels in the band.
+        &nbsp; adjusts the palette range to cover 100% (the full range) of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/AutoPresetRange24.png">
+        &nbsp; adjusts the palette range to a specific pre-set value (RGB mode only - see preferences).
     </li>
 </ul>
 
@@ -298,16 +303,16 @@
 <ul>
     <li>
         <img src="images/icons/ZoomIn24V.gif">
-        Progressively zooms in to the histogram vertically
+        &nbsp; Progressively zooms in to the histogram vertically
     </li>
 
     <li>
         <img src="images/icons/ZoomOut24V.gif">
-        Progressively zooms out of the histogram vertically.
+        &nbsp; Progressively zooms out of the histogram vertically.
     </li>
 
     <li><img src="images/icons/ZoomHorizontal24.gif">
-        Toggles the horizontal zoom between the palette range bounds and the full data range.
+        &nbsp; Toggles the horizontal zoom between the palette range bounds and the full data range.
     </li>
 </ul>
 
@@ -316,7 +321,7 @@
 <ul>
     <li>
         <img src="images/icons/EvenDistribution.gif">
-        Distributes the inner sliders evenly between the first and the last slider.
+        &nbsp; Distributes the inner sliders evenly between the first and the last slider.
     </li>
 </ul>
 
@@ -337,6 +342,16 @@
         </tr>
     </table>
 </div>
+
+
+<p>In this mode the sliders are used for contrast stretching in each of the R,G,B channels.
+    In the <b>More Options</b> panels, you can adjust the <b><a href="#nodata">No-Data Colour</a></b> and
+    <b><a href="#histomatch">Histogram Matching</a></b> for the final image. The <b>Source Band</b> and <b>Gamma</b>
+    options
+    apply to each channel. The gamma value is used to adapt the transfer function which quantises the band's
+    sample values to colour values. A gamma value of <code>0.7</code> for the blue channel enhances most
+    RGB images.
+</p>
 
 
 <br>
@@ -379,39 +394,15 @@
 </div>
 
 
-
-<h3>B. Editor for images of a single, index-coded band</h3>
-
 <p>Images of a single, index-coded band, e.g. the output of a
     <a href="clusteranalysis/ClusterAnalysis.html">cluster analysis</a>, look-up discrete colours from a
-    fixed-size table:</p>
-
-<p align="center"><img src="images/CM_indexCoding_view.png"></p>
+    fixed-size table</p>
 
 <p>Labels and colours are simply changed by clicking into the corresponding table cell.
     In the <b>More Options</b> panels you can adjust the <b><a href="#nodata">No-Data Colour</a></b>.</p>
 
 
 
-
-
-<h3>Editor for images using separate R,G,B channels</h3>
-
-<p>Images using separate R,G,B channels obtain their colours from the samples of three arbitrary bands. In the
-    editor, users
-    can switch between the channels in order to edit the contrast stretch range and gamma value of each channel
-    separately.</p>
-
-<p align="center"><img src="images/CM_rgb.png"></p>
-
-<p>In this mode the sliders are used for contrast stretching in each of the R,G,B channels.
-    In the <b>More Options</b> panels, you can adjust the <b><a href="#nodata">No-Data Colour</a></b> and
-    <b><a href="#histomatch">Histogram Matching</a></b> for the final image. The <b>Source Band</b> and <b>Gamma</b>
-    options
-    apply to each channel. The gamma value is used to adapt the transfer function which quantises the band's
-    sample values to colour values. A gamma value of <code>0.7</code> for the blue channel enhances most
-    RGB images.
-</p>
 
 
 
@@ -460,7 +451,7 @@
 
 
 
-<h4>Import and Save of the Colour Palette</h4>
+<h4>Other Related Export Options</h4>
 
 
 <p>The colour palette information used for the current image can also be exported into an image file.

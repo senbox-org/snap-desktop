@@ -79,7 +79,7 @@ import static org.esa.snap.core.util.NamingConventionSnap.COLOR_LOWER_CASE;
 //          - Wrapped this tool in a JScrollPane
 //          - Changed arrangement of tool buttons to single column
 // MAR 2020 - Fixed bug where More Options would not update when changing between 3band, 1band, and 1DiscreteBand forms
-
+//          - Added installation of rgb_profiles auxdata
 
 @NbBundle.Messages({
         "CTL_ColorManipulationForm_TitlePrefix=" + ColorManipulationDefaults.TOOLNAME_COLOR_MANIPULATION
@@ -92,6 +92,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private final static String FILE_EXTENSION_CPD = "cpd";
     private final static String FILE_EXTENSION_PAL = "pal";
     private final static String FILE_EXTENSION_CPT = "cpt";
+    private final static String FILE_EXTENSION_RGB_PROFILES = "rgb";
 
     private AbstractButton resetButton;
     private AbstractButton multiApplyButton;
@@ -107,6 +108,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private final ProductNodeListener productNodeListener;
     private boolean colorPalettesAuxFilesInstalled;
     private boolean colorSchemesAuxFilesInstalled;
+    private boolean rgbProfilesFilesInstalled;
     private JPanel contentPanel;
     private JPanel innerContentPanel;
     private ColorManipulationChildForm childForm;
@@ -153,6 +155,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (!colorSchemesAuxFilesInstalled) {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(new InstallColorSchemesAuxFiles());
+        }
+
+        if (!rgbProfilesFilesInstalled) {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(new InstallRGBAuxFiles());
         }
 
         return contentPanel;
@@ -366,7 +373,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
         innerContentPanel = new JPanel(new BorderLayout(4, 4));
         innerContentPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        innerContentPanel.setPreferredSize(new Dimension(280, 300));
+        innerContentPanel.setPreferredSize(new Dimension(280, 275));
         innerContentPanel.add(editorPanel, BorderLayout.CENTER);
         innerContentPanel.add(toolButtonsPanel, BorderLayout.EAST);
 
@@ -627,7 +634,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     @Override
     public Path getIODir() {
         if (ioDir == null) {
-            ioDir = Paths.get(Config.instance().preferences().get(PREFERENCES_KEY_IO_DIR, getColorPalettesDir().toString()));
+            ioDir = Paths.get(Config.instance().preferences().get(PREFERENCES_KEY_IO_DIR, getColorPalettesAuxDataDir().toString()));
         }
         return ioDir;
     }
@@ -892,8 +899,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         @Override
         public void run() {
             try {
-                Path auxdataDir = getColorPalettesDir();
-                Path sourceDirPath = getColorPalettesSourceDir();
+                Path auxdataDir = getColorPalettesAuxDataDir();
+                Path sourceDirPath = getColorPalettesAuxDataSourceDir();
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
@@ -905,7 +912,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to install " + COLOR_LOWER_CASE + " palettes", e);
+                SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES, e);
             }
         }
     }
@@ -920,43 +927,77 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         @Override
         public void run() {
             try {
-                Path auxdataDir = getColorSchemesDir();
-                Path sourceDirPath = getColorSchemesSourceDir();
+                Path auxdataDir = getColorSchemesAuxDataDir();
+                Path sourceDirPath = getColorSchemesAuxDataSourceDir();
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-//                resourceInstaller.install(".*.py", ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
                 resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {
-                SnapApp.getDefault().handleError("Unable to install " + COLOR_LOWER_CASE + " schemes files", e);
+                SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES, e);
             }
         }
     }
 
 
 
-    public Path getColorPalettesSourceDir() {
+    // Installs the RGB profile resources
+    private class InstallRGBAuxFiles implements Runnable {
+
+        private InstallRGBAuxFiles() {
+        }
+
+        @Override
+        public void run() {
+            try {
+                Path auxdataDir = getRgbProfilesAuxDataDir();
+                Path sourceDirPath = getRgbProfilesAuxDataSourceDir();
+
+                final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
+
+                resourceInstaller.install(".*." + FILE_EXTENSION_RGB_PROFILES, ProgressMonitor.NULL, false);
+
+                rgbProfilesFilesInstalled = true;
+            } catch (IOException e) {
+                SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_RGB_PROFILES, e);
+            }
+        }
+    }
+
+
+
+    public Path getColorPalettesAuxDataSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
         Path auxdirSource = sourceBasePath.resolve(ColorManipulationDefaults.DIR_NAME_AUX_DATA);
         return auxdirSource.resolve(ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES);
     }
 
-    public Path getColorSchemesSourceDir() {
+    public Path getColorSchemesAuxDataSourceDir() {
         Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
         Path auxdirSource = sourceBasePath.resolve(ColorManipulationDefaults.DIR_NAME_AUX_DATA);
         return auxdirSource.resolve(ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES);
     }
 
-
-    private Path getColorPalettesDir() {
-        return ColorSchemeUtils.getColorPalettesDir();
+    public Path getRgbProfilesAuxDataSourceDir() {
+        Path sourceBasePath = ResourceInstaller.findModuleCodeBasePath(GridBagUtils.class);
+        Path auxdirSource = sourceBasePath.resolve(ColorManipulationDefaults.DIR_NAME_AUX_DATA);
+        return auxdirSource.resolve(ColorManipulationDefaults.DIR_NAME_RGB_PROFILES);
     }
 
-    private Path getColorSchemesDir() {
-        return ColorSchemeUtils.getColorSchemesDir();
+
+    private Path getColorPalettesAuxDataDir() {
+        return ColorSchemeUtils.getColorPalettesAuxDataDir();
+    }
+
+    private Path getColorSchemesAuxDataDir() {
+        return ColorSchemeUtils.getColorSchemesAuxDataDir();
+    }
+
+    private Path getRgbProfilesAuxDataDir() {
+        return ColorSchemeUtils.getRgbProfilesAuxDataDir();
     }
 
 
