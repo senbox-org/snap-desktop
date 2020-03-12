@@ -7,6 +7,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPa
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
 import javax.swing.*;
@@ -46,8 +47,8 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         this.repositorySelectionPanel = repositorySelectionPanel;
         this.componentDimension = componentDimension;
 
-        this.expandImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
-        this.collapseImageIcon = RepositorySelectionPanel.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
+        this.expandImageIcon = SwingUtils.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
+        this.collapseImageIcon = SwingUtils.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
 
         this.selectedProductPanels = new HashSet<>();
 

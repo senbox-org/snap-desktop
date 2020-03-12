@@ -3,7 +3,6 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.AttributeValueFilter;
 import org.esa.snap.ui.loading.CustomComboBox;
@@ -16,7 +15,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,14 +85,14 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.filtersComboBox.setSelectedItem(null);
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
-        this.addAttributeButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
+        this.addAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
         this.addAttributeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 addAttributeButtonClicked();
             }
         });
-        this.removeAttributeButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
+        this.removeAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
         this.removeAttributeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {

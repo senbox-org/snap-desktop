@@ -3,9 +3,8 @@ package org.esa.snap.product.library.ui.v2.worldwind;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import org.apache.commons.math3.util.FastMath;
 
-import javax.swing.SwingUtilities;
-import java.awt.Cursor;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;

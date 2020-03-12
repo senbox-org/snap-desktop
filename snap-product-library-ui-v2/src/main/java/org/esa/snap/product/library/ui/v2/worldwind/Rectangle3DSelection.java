@@ -5,7 +5,6 @@ import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwindx.examples.util.SectorSelector;
 
-import java.awt.Cursor;
 import java.awt.geom.Rectangle2D;
 
 /**

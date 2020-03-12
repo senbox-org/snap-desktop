@@ -4,7 +4,6 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 

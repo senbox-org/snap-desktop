@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.worldwind;
 
-import java.awt.Color;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Collection;

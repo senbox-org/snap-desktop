@@ -82,13 +82,13 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.attributesComboBox = SwingUtils.buildComboBox(null, null, componentDimension.getTextFieldPreferredHeight(), false);
         this.attributesComboBox.setBackground(componentDimension.getTextFieldBackgroundColor());
 
-        this.addFolderButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
+        this.addFolderButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
         this.addFolderButton.setToolTipText("Add new local folder");
 
-        this.scanFoldersButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/refresh24.png", null, buttonSize, 1);
+        this.scanFoldersButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/refresh24.png", null, buttonSize, 1);
         this.scanFoldersButton.setToolTipText("Scan all local folders");
 
-        this.removeFoldersButton = RepositorySelectionPanel.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
+        this.removeFoldersButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
         this.removeFoldersButton.setToolTipText("Remove all local folders");
 
         ItemRenderer<String> attributeValuesItemRenderer = new ItemRenderer<String>() {

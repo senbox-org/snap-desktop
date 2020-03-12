@@ -54,7 +54,7 @@ public class DownloadingProductPanel extends JPanel {
 
         int stopButtonSize = (int)(1.5f *  this.nameLabel.getPreferredSize().height);
         Dimension buttonSize = new Dimension(stopButtonSize, stopButtonSize);
-        this.stopButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
+        this.stopButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
         this.stopButton.setToolTipText("Stop downloading the product");
         this.stopButton.addActionListener(new ActionListener() {
             @Override

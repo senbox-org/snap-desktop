@@ -1,11 +1,10 @@
 package org.esa.snap.product.library.ui.v2.repository.input;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,14 +1,9 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
-import org.apache.commons.lang.StringUtils;
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -37,7 +32,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         this.progressBar.setMaximumSize(progressBarSize);
 
         Dimension buttonSize = new Dimension(progressBarHeight, progressBarHeight);
-        this.stopButton = RepositorySelectionPanel.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
+        this.stopButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
         this.stopButton.setToolTipText("Stop");
 
         this.currentThreadId = 0;

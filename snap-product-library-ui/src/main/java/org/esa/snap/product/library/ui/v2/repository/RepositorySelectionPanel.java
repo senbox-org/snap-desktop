@@ -22,17 +22,12 @@ import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -69,10 +64,10 @@ public class RepositorySelectionPanel extends JPanel {
 
         Dimension buttonSize = new Dimension(preferredHeight, preferredHeight);
 
-        this.searchButton = buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
+        this.searchButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
         this.searchButton.setToolTipText("Search");
 
-        this.helpButton = buildButton("/org/esa/snap/resources/images/icons/Help24.gif", null, buttonSize, 1);
+        this.helpButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Help24.gif", null, buttonSize, 1);
         this.helpButton.setToolTipText("Help");
 
         this.progressBarHelper = new ProgressBarHelperImpl(progressBarWidth, buttonSize.height) {
@@ -357,46 +352,5 @@ public class RepositorySelectionPanel extends JPanel {
 
         c = SwingUtils.buildConstraints(7, 0, GridBagConstraints.VERTICAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         add(this.progressBarHelper.getStopButton(), c);
-    }
-
-    //TODO Jean move to the ui module
-    public static ImageIcon loadImage(String resourceImagePath) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL imageURL = classLoader.getResource(resourceImagePath);
-        if (imageURL == null) {
-            throw new NullPointerException("The image '"+resourceImagePath+"' does not exist into the sources.");
-        }
-        return new ImageIcon(imageURL);
-    }
-
-    //TODO Jean move to the ui module
-    public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
-        ImageIcon icon = loadImage(resourceImagePath);
-        if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
-            Image scaledImage = getScaledImage(icon.getImage(), buttonSize.width, buttonSize.height, scaledImagePadding.intValue());
-            icon = new ImageIcon(scaledImage);
-        }
-        return icon;
-    }
-
-    //TODO Jean move to the ui module
-    public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
-        ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);
-        JButton button = new JButton(icon);
-        button.setFocusable(false);
-        button.addActionListener(buttonListener);
-        button.setPreferredSize(buttonSize);
-        button.setMinimumSize(buttonSize);
-        button.setMaximumSize(buttonSize);
-        return button;
-    }
-
-    private static Image getScaledImage(Image srcImg, int destinationImageWidth, int destinationImageHeight, int padding) {
-        BufferedImage resizedImg = new BufferedImage(destinationImageWidth, destinationImageHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = resizedImg.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(srcImg, padding, padding, destinationImageWidth-padding, destinationImageHeight-padding, 0, 0, srcImg.getWidth(null), srcImg.getHeight(null), null);
-        g2.dispose();
-        return resizedImg;
     }
 }

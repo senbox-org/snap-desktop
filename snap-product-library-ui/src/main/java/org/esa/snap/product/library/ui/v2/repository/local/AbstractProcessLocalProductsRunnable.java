@@ -5,7 +5,6 @@ import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProd
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
-import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
 import java.util.List;
