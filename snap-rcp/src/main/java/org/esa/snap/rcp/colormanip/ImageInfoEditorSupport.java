@@ -88,8 +88,8 @@ class ImageInfoEditorSupport {
         autoStretch100Button.setToolTipText("Auto-adjust to 100% of all pixels");
         autoStretch100Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute100Percent()));
 
-        setRGBminmax = createButton("org/esa/snap/rcp/icons/AutoRGBReflectanceRange.png");
-        setRGBminmax.setName("setRGBminmax0to1");
+        setRGBminmax = createButton("org/esa/snap/rcp/icons/AutoPresetRange24.png");
+        setRGBminmax.setName("setRGBminmax");
         setRGBminmax.setToolTipText("<html>Set channel range with pre-set values (see preferences)</html>"); /*I18N*/
         setRGBminmax.addActionListener(form.wrapWithAutoApplyActionListener(e -> setRGBminmax()));
 
