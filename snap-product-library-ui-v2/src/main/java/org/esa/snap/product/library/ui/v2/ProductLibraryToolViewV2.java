@@ -113,7 +113,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private static final Logger logger = Logger.getLogger(ProductLibraryToolViewV2.class.getName());
 
-    private static final String HELP_ID = "productLibraryTool";
+    private static final String HELP_ID = "productLibraryToolV2";
 
     private static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
 

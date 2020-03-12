@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download.popup;
 
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductStatusLabel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoryProductPanel;
