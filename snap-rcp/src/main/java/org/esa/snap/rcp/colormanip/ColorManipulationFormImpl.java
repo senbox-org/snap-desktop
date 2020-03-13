@@ -933,7 +933,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL, false);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {

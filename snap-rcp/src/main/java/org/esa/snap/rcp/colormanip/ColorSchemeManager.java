@@ -101,7 +101,7 @@ public class ColorSchemeManager {
             }
 
             colorSchemesFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEMES_FILENAME);
-            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LUT_FILENAME);
+            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME);
 
             if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
                 createPrimaryAndAdditionalColorSchemeInfos();
@@ -363,8 +363,8 @@ public class ColorSchemeManager {
                     String minStr = getTextValue(schemeElement, "MIN");
                     String maxStr = getTextValue(schemeElement, "MAX");
                     String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
-                    String standardCpdFilename = getTextValue(schemeElement, "CPD_FILENAME");
-                    String universalCpdFilename = getTextValue(schemeElement, "CPD_FILENAME_COLORBLIND");
+                    String standardCpdFilename = getTextValue(schemeElement, "STANDARD_FILENAME");
+                    String universalCpdFilename = getTextValue(schemeElement, "UNIVERSAL_FILENAME");
                     String dividerString = getTextValue(schemeElement, "DIVIDER");
                     String primarySchemeString = getTextValue(schemeElement, "PRIMARY");
 

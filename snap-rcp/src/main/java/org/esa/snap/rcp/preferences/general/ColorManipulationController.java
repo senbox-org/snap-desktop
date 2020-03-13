@@ -71,7 +71,7 @@ public final class ColorManipulationController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("colorManipulationPreferences");
     }
 
     @Override
@@ -103,14 +103,17 @@ public final class ColorManipulationController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_DEFAULT);
 
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY, true);
@@ -439,7 +442,6 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
-
         // Slider and Range Options
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_LABEL,
@@ -452,45 +454,56 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_TOOLTIP)
         boolean sliderZoom = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_TOOLTIP)
-        boolean sliderZoomVertical = ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_TOOLTIP)
-        boolean range1Sigma = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_TOOLTIP)
-        boolean range2Sigma = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_TOOLTIP)
-        boolean range3Sigma = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_TOOLTIP)
-        boolean range95 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_95_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_TOOLTIP)
-        boolean range100 = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_100_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_TOOLTIP)
         boolean slidersShowExtraInfo = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_KEY,
-                description = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_TOOLTIP)
-        boolean slidersShowExtraInfoButton = ColorManipulationDefaults.PROPERTY_SLIDERS_BUTTON_EXTRA_INFORMATION_DEFAULT;
+
+
+        // Button Options
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_TOOLTIP)
+        boolean buttonsSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY,
+                description = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_TOOLTIP)
+        boolean sliderZoomVertical = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_TOOLTIP)
+        boolean range1Sigma = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_TOOLTIP)
+        boolean range2Sigma = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_TOOLTIP)
+        boolean range3Sigma = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_TOOLTIP)
+        boolean range95 = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_TOOLTIP)
+        boolean range100 = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT;
+
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_TOOLTIP)
+        boolean slidersShowExtraInfoButton = ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_DEFAULT;
 
 
 
