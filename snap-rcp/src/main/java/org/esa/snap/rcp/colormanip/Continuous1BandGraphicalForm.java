@@ -150,6 +150,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         }
         imageInfoEditorSupport.setHorizontalZoomButtonAndCompute(zoomToHistLimits);
 
+        imageInfoEditor.updateShowExtraInformationFromPreferences();
 
         discreteCheckBox.setDiscreteColorsMode(imageInfo.getColorPaletteDef().isDiscrete());
         logDisplayButton.setSelected(newModel.getImageInfo().isLogScaled());
@@ -218,12 +219,13 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     public AbstractButton[] getToolButtons() {
         PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-        boolean range100 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_100_KEY, PROPERTY_SLIDERS_BUTTON_100_DEFAULT);
-        boolean range95 = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_95_KEY, PROPERTY_SLIDERS_BUTTON_95_DEFAULT);
-        boolean range1Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_1_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_1_SIGMA_DEFAULT);
-        boolean range2Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_2_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_2_SIGMA_DEFAULT);
-        boolean range3Sigma = configuration.getPropertyBool(PROPERTY_SLIDERS_BUTTON_3_SIGMA_KEY, PROPERTY_SLIDERS_BUTTON_3_SIGMA_DEFAULT);
-        boolean showZoomVerticalButtons = configuration.getPropertyBool(PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_KEY, PROPERTY_SLIDERS_ZOOM_VERTICAL_SHOW_IN_DEFAULT);
+        boolean range100 = configuration.getPropertyBool(PROPERTY_100_PERCENT_BUTTON_KEY, PROPERTY_100_PERCENT_BUTTON_DEFAULT);
+        boolean range95 = configuration.getPropertyBool(PROPERTY_95_PERCENT_BUTTON_KEY, PROPERTY_95_PERCENT_BUTTON_DEFAULT);
+        boolean range1Sigma = configuration.getPropertyBool(PROPERTY_1_SIGMA_BUTTON_KEY, PROPERTY_1_SIGMA_BUTTON_DEFAULT);
+        boolean range2Sigma = configuration.getPropertyBool(PROPERTY_2_SIGMA_BUTTON_KEY, PROPERTY_2_SIGMA_BUTTON_DEFAULT);
+        boolean range3Sigma = configuration.getPropertyBool(PROPERTY_3_SIGMA_BUTTON_KEY, PROPERTY_3_SIGMA_BUTTON_DEFAULT);
+        boolean showZoomVerticalButtons = configuration.getPropertyBool(PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY, PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT);
+        boolean showExtraInformationButtons = configuration.getPropertyBool(PROPERTY_INFORMATION_BUTTON_KEY, PROPERTY_INFORMATION_BUTTON_DEFAULT);
 
 
         ArrayList<AbstractButton> abstractButtonArrayList = new ArrayList<AbstractButton>();
@@ -255,7 +257,10 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         }
 //        abstractButtonArrayList.add(imageInfoEditorSupport.zoomVerticalButton);
         abstractButtonArrayList.add(imageInfoEditorSupport.zoomHorizontalButton);
-        abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+
+        if (showExtraInformationButtons) {
+            abstractButtonArrayList.add(imageInfoEditorSupport.showExtraInfoButton);
+        }
 
 
         final AbstractButton[] abstractButtonArray = new AbstractButton[abstractButtonArrayList.size()];

@@ -210,6 +210,15 @@ public abstract class ImageInfoEditor extends JPanel {
 
 
 
+    public boolean setRGBminmax(double min, double max) {
+        computeFactors();
+        setFirstSliderSample(min);
+        setLastSliderSample(max);
+        partitionSliders(false);
+        computeZoomInToSliderLimits();
+
+        return true;
+    }
 
     public boolean compute100Percent(boolean logScaled) {
 
@@ -843,7 +852,7 @@ public abstract class ImageInfoEditor extends JPanel {
         vc.getDescriptor("sample").setValueRange(valueRange);
 
         final BindingContext ctx = new BindingContext(vc);
-        final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("#0.0#"));
+        final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("#0.000000000#"));
         formatter.setValueClass(Double.class); // to ensure that double values are returned
         final JFormattedTextField field = new JFormattedTextField(formatter);
         field.setColumns(11);

@@ -16,7 +16,9 @@
 
 package org.esa.snap.rcp.colormanip;
 
+import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
 
@@ -30,6 +32,7 @@ import javax.swing.AbstractButton;
 //          - Added additional autoStretch buttons
 //          - Modified handling of the horizontal zoom with a single toggle button
 //          - Added method and call to resetSchemeSelector()
+//          - Added button for setting range (0,1) useful for in RGB window for reflectance bands
 
 
 class ImageInfoEditorSupport {
@@ -44,6 +47,8 @@ class ImageInfoEditorSupport {
     final AbstractButton zoomInHButton;
     final AbstractButton zoomOutHButton;
     final AbstractButton showExtraInfoButton;
+    final AbstractButton setRGBminmax;
+
 
     final AbstractButton zoomHorizontalButton;
     final AbstractButton zoomVerticalButton;
@@ -82,6 +87,13 @@ class ImageInfoEditorSupport {
         autoStretch100Button.setName("AutoStretch100Button");
         autoStretch100Button.setToolTipText("Auto-adjust to 100% of all pixels");
         autoStretch100Button.addActionListener(form.wrapWithAutoApplyActionListener(e -> compute100Percent()));
+
+        setRGBminmax = createButton("org/esa/snap/rcp/icons/AutoPresetRange24.png");
+        setRGBminmax.setName("setRGBminmax");
+        setRGBminmax.setToolTipText("<html>Set channel range with pre-set values (see preferences)</html>"); /*I18N*/
+        setRGBminmax.addActionListener(form.wrapWithAutoApplyActionListener(e -> setRGBminmax()));
+
+
 
         zoomInVButton = createButton("org/esa/snap/rcp/icons/ZoomIn24V.gif");
         zoomInVButton.setName("zoomInVButton");
@@ -191,6 +203,14 @@ class ImageInfoEditorSupport {
         if (!imageInfoEditor.computePercent(form.getFormModel().getProductSceneView().getImageInfo().isLogScaled(), threshold)) {
             ColorUtils.showErrorDialog("INPUT ERROR!!: Cannot set slider value below zero with log scaling");
         }
+    }
+
+    private void setRGBminmax() {
+        PropertyMap configuration = form.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+        double rgbMin = configuration.getPropertyDouble(ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
+        double rgbMax = configuration.getPropertyDouble(ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
+
+        imageInfoEditor.setRGBminmax(rgbMin, rgbMax);
     }
 
 
