@@ -1,5 +1,11 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
+import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.datamodel.MetadataAttribute;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
@@ -10,6 +16,8 @@ import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,9 +61,11 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
                 return; // nothing to return
             }
 
+            Product product = ProductIO.readProduct(productPath.toFile());
+
             saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
                                                                                 this.remoteProductDownloader.getRepositoryName(),
-                                                                                this.remoteProductDownloader.getLocalRepositoryFolderPath());
+                                                                                this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
 
             downloadStatus = DownloadProgressStatus.SAVED;
         } catch (java.lang.InterruptedException exception) {

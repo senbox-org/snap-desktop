@@ -10,7 +10,6 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
-import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
@@ -336,10 +335,12 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         List<LocalRepositoryFolder> localRepositoryFolders = null;
         List<String> remoteMissionNames = null;
         Map<Short, Set<String>> attributeNamesPerMission = null;
+        Set<String> localAttributeNames = null;
         if (localRepositoryParameterValues != null) {
             localRepositoryFolders = localRepositoryParameterValues.getLocalRepositoryFolders();
             remoteMissionNames = localRepositoryParameterValues.getRemoteMissionNames();
-            attributeNamesPerMission = localRepositoryParameterValues.getAttributes();
+            attributeNamesPerMission = localRepositoryParameterValues.getRemoteAttributeNamesPerMission();
+            localAttributeNames = localRepositoryParameterValues.getLocalAttributeNames();
         }
         this.foldersComboBox.removeAllItems();
         if (localRepositoryFolders != null && localRepositoryFolders.size() > 0) {
@@ -359,24 +360,29 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             this.remoteMissionsComboBox.setSelectedItem(null);
         }
 
+        Comparator<String> comparator = buildAttributeNamesComparator();
+        SortedSet<String> uniqueAttributeNames = new TreeSet<>(comparator);
         if (attributeNamesPerMission != null && attributeNamesPerMission.size() > 0) {
-            Comparator<String> comparator = buildAttributeNamesComparator();
-            SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
             for (Map.Entry<Short, Set<String>> entry : attributeNamesPerMission.entrySet()) {
-                uniqueAttributes.addAll(entry.getValue());
+                uniqueAttributeNames.addAll(entry.getValue());
             }
-            setAttributes(uniqueAttributes);
+        }
+        if (localAttributeNames != null && localAttributeNames.size() > 0) {
+            uniqueAttributeNames.addAll(localAttributeNames);
+        }
+        if (uniqueAttributeNames.size() > 0) {
+            setAttributes(uniqueAttributeNames);
             this.attributesComboBox.setSelectedItem(null);
         } else {
             this.attributesComboBox.removeAllItems();
         }
     }
 
-    private void setAttributes(SortedSet<String> uniqueAttributes) {
+    private void setAttributes(SortedSet<String> uniqueAttributeNames) {
         this.attributesComboBox.removeAllItems();
         // add an empty attribute on the first position
         this.attributesComboBox.addItem(null);
-        for (String attributeName : uniqueAttributes) {
+        for (String attributeName : uniqueAttributeNames) {
             this.attributesComboBox.addItem(attributeName);
         }
     }
