@@ -228,6 +228,12 @@ public class GraphExecuter extends Observable {
         xml.setValue(value);
     }
 
+    public String getOperatorParam(final String id, final String paramName) {
+        final Node node = graph.getNode(id);
+        DomElement xml = node.getConfiguration().getChild(paramName);
+        return xml == null ? null : xml.getValue();
+    }
+
     private void assignAllParameters() throws GraphException {
 
         final XppDom presentationXML = new XppDom("Presentation");

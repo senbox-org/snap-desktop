@@ -189,8 +189,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
         productSetPanel.onApply();
 
-        skipExistingTargetFiles = productSetPanel.isSkippingExistingTargetFiles();
-        replaceWritersWithUniqueTargetProduct = productSetPanel.isReplacingWritersWithUniqueTargetProduct();
+        skipExistingTargetFiles = false;
+        replaceWritersWithUniqueTargetProduct = true;
 
         try {
             doProcessing();
@@ -478,17 +478,17 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             final String name = FileUtils.getFilenameWithoutExtension(f);
 
             final File targetFolder = productSetPanel.getTargetFolder();
-            if (!targetFolder.exists()) {
+            if (targetFolder != null && !targetFolder.exists()) {
                 if (!targetFolder.mkdirs()) {
                     SystemUtils.LOG.severe("Unable to create folders in " + targetFolder);
                 }
             }
-            final File targetFile = new File(targetFolder, name);
+            final File targetFile = targetFolder == null ? null : new File(targetFolder, name);
             final String targetFormat = productSetPanel.getTargetFormat();
 
             setIO(graphExecutorList.get(graphIndex),
                   "Read", f,
-                  "Write", targetFile, targetFormat);
+                  "Write", targetFile, name, targetFormat);
             if (slaveFileMap != null) {
                 final File[] slaveFiles = slaveFileMap.get(f);
                 if (slaveFiles != null) {
@@ -502,19 +502,21 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     protected void setIO(final GraphExecuter graphEx,
                                 final String readID, final File readPath,
-                                final String writeID, final File writePath,
-                                final String format) {
+                                final String writeID, final File writePath, final String name, final String format) {
         final GraphNode readNode = graphEx.getGraphNodeList().findGraphNodeByOperator(readID);
         if (readNode != null) {
             graphEx.setOperatorParam(readNode.getID(), "file", readPath.getAbsolutePath());
         }
 
         if (replaceWritersWithUniqueTargetProduct && writeID != null) {
-            final GraphNode writeNode = graphEx.getGraphNodeList().findGraphNodeByOperator(writeID);
-            if (writeNode != null) {
-                if (format != null)
+            final GraphNode[] writeNodes = graphEx.getGraphNodeList().findAllGraphNodeByOperator(writeID);
+            for(GraphNode writeNode : writeNodes) {
+                if (format != null) {
                     graphEx.setOperatorParam(writeNode.getID(), "formatName", format);
-                graphEx.setOperatorParam(writeNode.getID(), "file", writePath.getAbsolutePath());
+                }
+                if(writePath != null) {
+                    graphEx.setOperatorParam(writeNode.getID(), "file", writePath.getAbsolutePath());
+                }
             }
         }
     }
@@ -602,7 +604,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 timeMonitor.start();
                 isProcessing = true;
 
-                final File[] existingFiles = productSetPanel.getTargetFolder().listFiles(File::isFile);
+                final File[] existingFiles = productSetPanel.getTargetFolder() != null ? productSetPanel.getTargetFolder().listFiles(File::isFile) : null;
 
                 final File[] fileList = productSetPanel.getFileList();
                 int graphIndex = 0;
