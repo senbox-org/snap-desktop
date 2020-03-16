@@ -13,7 +13,7 @@
   ~ You should have received a copy of the GNU General Public License along
   ~ with this program; if not, see http://www.gnu.org/licenses/
   -->
-
+<!-- HELP-TODO: text marked as "Explanatory text" shall be filled with content -->
 <html>
 <head>
     <title>Sentinel Toolbox Help - The Options Dialog</title>
@@ -30,32 +30,19 @@
                 border="0"></a></td>
     </tr>
 </table>
-<p> The Options dialog window contains several categories of settings you are able to change. In
-    the following examples two screen shots are shown where the settings for the user interface behavior can be
-    edited.<br>
-    Depending on the OS and the appearance settings, the
-    <br>
-
-<table border="0">
-    <tr>
-        <td>
-            <img src="images/OptionsDialog-General-1-UIBehaviour-Mac.png" alt="UI Behaviour Dialog Mac">
-        </td>
-        <td><br><br>
-            <img src="images/OptionsDialog-General-1-UIBehaviour-Win.png" alt="UI Behaviour Dialog Win">
-        </td>
-    </tr>
-    <!--        <tr>--><!-- 75% image sizes -->
-    <!--            <td><img src="images/OptionsDialog-General-1-UIBehaviour-Mac.png" alt="UI Behaviour Dialog Mac" width="647" height="578"</td>-->
-    <!--            <td><br><br><img src="images/OptionsDialog-General-1-UIBehaviour-Win.png" alt="UI Behaviour Dialog Win" width="549 "height="497"></td>-->
-    <!--        </tr>-->
-</table>
+<p> The Options dialog window contains several categories of settings you are able to change.
+    In the following sections screen shots are shown where the settings for the user interface behavior can be edited.
+    Depending on the number of Toolboxes installed in SNAP, the header area might contain different items.
+</p>
+<img src="images/OptionsDialog-FooterArea.png" alt="Options Dialog - Footer Area">
+<br>The buttons "Export" and "Import" in the footer area of the dialog window can be used to save or load all settings at once.
 
 
-<h4><a name="uibehavior">UI Behavior</a></h4>
-
+<h3>General Settings</h3>
+<h4><a name="uibehavior">UI Behaviour</a></h4>
 <p>This preferences page contains general user interface behavior and memory
-    management settings.</p>
+management settings.</p>
+<img src="images/OptionsDialog-General-1-UIBehaviour-Mac.png" alt="UI Behaviour Dialog Mac">
 <ul>
     <li><b>Show navigation window when image views are opened</b><br>
         If an image view is opened the <a href="NavigationWindow.html">Navigation Window</a>
@@ -63,7 +50,7 @@
     </li>
     <li><b>Open image view for new (virtual) bands</b><br>
         Currently, this option only affects the <a href="BandMaths.html">Band
-            Maths</a> tool. If this option is selected a new image view is automatically
+            Maths</a> tool. If this option is selected, a new image view is automatically
         created and opened for any new bands created in the band maths tool.
     </li>
     <li><b>Show only pixel values of displayed bands</b><br>
@@ -75,32 +62,96 @@
         location of the product file (e.g. CD-ROM, harddrive, network) this can have
         an impact on the runtime performance.
     </li>
-
-    <li><b>On low memory, warn if free RAM falls below</b><br>
-        Here you can enter a value in megabytes, which the Sentinel Toolbox uses to decide when to pop-up
-        a low memory message box. Set this value to zero, if you don't want to get
-        any warnings.
+    <li><b>Maximum recent file list</b><br>
+        Specify the number of recent files that appear in the <a href="FileMenu.html">File Menu</a> under "Reopen Product".
     </li>
-
-    <li><b>Check for new version on ESA S-3 Toolbox start</b><br>
-        Checks on application start, if a new version of the Sentinel Toolbox is available.
-    </li>
-    <li><b>Show all suppressed tips and messages again</b> <br>
+    <li><b>Show suppressed message dialogs again</b> <br>
         Some dialogs of the Sentinel Toolbox can be disabled by checking the option &quot;Don't show
         this message again&quot;. You can select this option to enable all message and tip dialog boxes again.
     </li>
 </ul>
 
 
-<h4><a name="uiappearance">UI Appearance</a></h4>
+<h4><a name="geolocation">Geo-Location</a></h4>
+<p>This preferences page enables settings related to the geo-location of pixels, pins, etc. </p>
+<img src="images/OptionsDialog-General-2-GeoLocation.png" alt="Geo-Location">
+
+<p><br>
+    The Sentinel Toolbox uses an image coordinate system whose origin (x=0, y=0) is the upper left corner of the
+    upper left pixel. Image X-coordinates increase to the right, Y-values increase downwards.
+    The center of the pixel in the origin is then located at (x=0.5, y=0.5).
+</p>
 <ul>
-    <li><b>UI Font:</b><br>
-        Sets the user interface font name and size the Sentinel Toolbox shall use.
+    <li><b>Snap pins to exact geo-location after import, transfer to another product, or geo-coding change</b><br>
+        Explanatory text.
     </li>
-    <li><b>UI Look and Feel:</b><br>
-        Lets you select the appearance (Look and Feel) of the user interface of the Sentinel Toolbox.
+    <li><b>Use sub-pixel fraction accuracy for pixel-based geo-coding</b><br>
+        Explanatory text.
+    </li>
+    <li><b>Show geographical coordinates in decimal degrees</b><br>
+        Use decimal degree values instead of minutes and seconds.
+    </li>
+    <li><b>Show pixel coordinates with fractional part</b><br>
+        Don't display integer coordinates.
+    </li>
+    <li><b>Show pixel coordinates starting at (1,1)</b><br>
+        In opposite to the default setting where the pixel coordinates start at (0,0), let them count from (1,1).
+    </li>
+
+</ul>
+
+
+<h4><a name="imageview">Image View</a></h4>
+<p>This preferences page enables settings related to the geo-location of pixels, pins, etc. </p>
+<img src="images/OptionsDialog-General-3-ImageView.png" alt="Geo-Location">
+<ul>
+    <li><b>Show a navigation control widget in image views</b><br>
+        For easier navigation in an image view, the navigation control widget can be displayed: <br><br>
+        <img src="images/NavigationControlWidget.png" alt="Navigation Control Widget">
+    </li>
+    <li><b>Show scroll bars in image views</b><br>
+        Display the window scroll bars in image views.
+    </li>
+    <li><b>Invert mouse wheel scrolling (zoom in/zoom out)</b><br>
+        For convenience, zoom in or out like e.g. in Google Earth.
     </li>
 </ul>
+
+<h4><a name="rgbprofiles">RGB Profiles</a></h4>
+<img src="images/OptionsDialog-General-4-RGB-ImageProfiles.png" alt="Geo-Location">
+<p>This preference page is used to edit the RGB profiles used for RGB image creation
+    from various product types. An RGB-Profile defines the band maths expressions
+    to be used for the red, green and blue components of an RGB image.
+    For detailed information about RGB-Profiles please refer to the chapter
+    <a href="RGBImageProfile.html">RGB-Image Profile</a> located at <i>Sentinel Toolbox Application/Tools/Imaging
+        Tools</i>
+</p>
+<B>Profile</b> Lets you Select on of the actual stored RGB-Profiles to use for creation of the new image view.
+<ul>
+    <li>Use the <img src="images/icons/Open24.gif" alt="Open" border="0"> to open a stored
+        <a href="RGBImageProfile.html#profileFile">RGB-Profile file</a>.
+    </li>
+    <li>Use the <img src="images/icons/Save24.gif" alt="Save" border="0"> to save the currently displayed RGB-Profile.</li>
+    <li>Use the <img src="images/icons/Remove24.gif" alt="Save" border="0"> to delete the currently displayed RGB-Profile.</li>
+</ul>
+<b>RGB Channels</b>
+<ul>
+    <li><b>Red</b> - Defines the mathematical expression for the red channel.<br></li>
+    <li><b>Green</b> - Defines the mathematical expression for the green channel.<br></li>
+    <li><b>Blue</b> - Defines the mathematical expression for the blue channel.<br></li>
+</ul>
+
+<p>Use the <img src="images/icons/NextDialogButton.gif" alt="Opens the Band Maths Expression Editor" border="0"> to
+    to edit the expression for the specific channel by using the <a href="ExpressionEditor.html">Maths Expression
+        Editor</a>.
+</p>
+
+
+<p class="inote"><b>Note: </b>
+    The expressions are not validated by the Sentinel Toolbox, keep care of using the correct syntax.<br>
+    Please refer to the <a href="ExpressionEditor.html">Maths Expression Editor</a>
+    documentation for the syntax and capablities of expressions. <br>
+</p>
 
 
 <h4><a name="modulerepository">Module Repository</a></h4>
@@ -141,27 +192,6 @@
         e.g. 0.0001 degrees, to perform a high accuracy check. This will ensure that products completely overlap
         each other in space.
     </li>
-</ul>
-
-<h4><a name="geolocationdisplay">Geo-location Display</a></h4>
-
-<p>
-    The Sentinel Toolbox uses an image coordinate system whose origin (x=0, y=0) is the upper left corner of the
-    upper left pixel. Image X-coordinates increase to the right, Y-values increase downwards.
-    The center of the pixel in the origin is then located at (x=0.5, y=0.5).
-</p>
-<ul>
-    <li><b>Relative pixel-X/Y offset</b><br>
-        Defines a relative offset used to display image coordinates and associated geo-location information.
-        Note that the offset is exclusively used for coordinate value display, it does not affect the geo-coding
-        information associated with a data product.
-    </li>
-    <li><b>Show floating-point image coordinates</b><br>
-        Select this option to display image coordinates as floating point values, e.g. in the
-        geo-location section of the <a href="ProductExplorer.html#pixelView">Pixel Info View</a>. If not selected,
-        image coordinates are displayed as integer values.
-    </li>
-
 </ul>
 
 
@@ -317,42 +347,6 @@
         Sets the world map to ESA GlobCover (default) or to NASA Blue Marble.
     </li>
 </ul>
-
-<h4><a name="rgbprofiles">RGB Profiles</a></h4>
-
-<p>This preference page is used to edit the RGB profiles used for RGB image creation
-    from various product types. An RGB-Profile defines the band maths expressions
-    to be used for the red, green and blue components of an RGB image.
-    For detailed information about RGB-Profiles please refer to the chapter
-    <a href="RGBImageProfile.html">RGB-Image Profile</a> located at <i>Sentinel Toolbox Application/Tools/Imaging
-        Tools</i>
-</p>
-<B>Profile</b> Lets you Select on of the actual stored RGB-Profiles to use for creation of the new image view.
-<ul>
-    <li>Use the <img src="images/icons/Open24.gif" alt="Open" border="0"> to open a stored
-        <a href="RGBImageProfile.html#profileFile">RGB-Profile file</a>.
-    </li>
-    <li>Use the <img src="images/icons/Save24.gif" alt="Save" border="0"> to save the currently displayed RGB-Profile.
-    </li>
-</ul>
-<b>RGB Channels</b>
-<ul>
-    <li><b>Red</b> - Defines the mathematical expression for the red channel.<br></li>
-    <li><b>Green</b> - Defines the mathematical expression for the green channel.<br></li>
-    <li><b>Blue</b> - Defines the mathematical expression for the blue channel.<br></li>
-</ul>
-
-<p>Use the <img src="images/icons/NextDialogButton.gif" alt="Opens the Band Maths Expression Editor" border="0"> to
-    to edit the expression for the specific channel by using the <a href="ExpressionEditor.html">Maths Expression
-        Editor</a>.
-</p>
-
-
-<p class="inote"><b>Note: </b>
-    The expressions are not validated by the Sentinel Toolbox, keep care of using the correct syntax.<br>
-    Please refer to the <a href="ExpressionEditor.html">Maths Expression Editor</a>
-    documentation for the syntax and capablities of expressions. <br>
-</p>
 
 <h4><a name="logging">Logging</a></h4>
 
