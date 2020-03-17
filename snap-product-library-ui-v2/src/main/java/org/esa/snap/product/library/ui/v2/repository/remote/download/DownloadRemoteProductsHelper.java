@@ -219,7 +219,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
     private void updateDownloadingProgressPercentLater(DownloadProductRunnable parentRunnableItem, short progressPercentValue, Path downloadedPath) {
         if (logger.isLoggable(Level.FINE)) {
             RepositoryProduct repositoryProduct = parentRunnableItem.getProductToDownload();
-            logger.log(Level.FINE, "Update the downloading progress percent " + progressPercentValue + "% of the product '" + repositoryProduct.getName()+"' using the '" + repositoryProduct.getMission()+"' mission.");
+            logger.log(Level.FINE, "Update the downloading progress percent " + progressPercentValue + "% of the product '" + repositoryProduct.getName()+"' using the '" + repositoryProduct.getRemoteMission().getName()+"' mission.");
         }
 
         Runnable runnable = new UpdateDownloadingProgressPercentRunnable(parentRunnableItem, progressPercentValue, downloadedPath) {

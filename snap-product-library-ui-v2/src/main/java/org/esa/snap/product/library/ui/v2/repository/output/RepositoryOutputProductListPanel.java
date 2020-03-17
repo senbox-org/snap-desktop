@@ -405,17 +405,10 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private static ComparatorItem buildMissionComparator() {
         return new ComparatorItem("Mission") {
             @Override
-            public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                if (o1.getMission() == null && o2.getMission() == null) {
-                    return 0; // both missions are null
-                }
-                if (o1.getMission() == null && o2.getMission() != null) {
-                    return -1; // the fist mission is null
-                }
-                if (o1.getMission() != null && o2.getMission() == null) {
-                    return 1; // the second mission is null
-                }
-                return o1.getMission().compareToIgnoreCase(o2.getMission());
+            public int compare(RepositoryProduct leftProduct, RepositoryProduct rigtProduct) {
+                String leftMissionName = (leftProduct.getRemoteMission() == null) ? "" : leftProduct.getRemoteMission().getName();
+                String rightMissionName = (rigtProduct.getRemoteMission() == null) ? "" : rigtProduct.getRemoteMission().getName();
+                return leftMissionName.compareToIgnoreCase(rightMissionName);
             }
         };
     }

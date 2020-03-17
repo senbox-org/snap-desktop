@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
  */
 public class LocalProductsPopupListeners {
 
-    private final ActionListener openListener;
-    private final ActionListener deleteListener;
+    private final ActionListener openProductListener;
+    private final ActionListener deleteProductListener;
     private final ActionListener batchProcessingListener;
     private final ActionListener showInExplorerListener;
 
@@ -18,24 +18,33 @@ public class LocalProductsPopupListeners {
     private ActionListener copyToListener;
     private ActionListener moveToListener;
     private ActionListener exportListListener;
+    private ActionListener jointSearchCriteriaListener;
 
     public LocalProductsPopupListeners(ActionListener openProductListener, ActionListener deleteProductListener, ActionListener batchProcessingListener, ActionListener showInExplorerListener) {
-        this.openListener = openProductListener;
-        this.deleteListener = deleteProductListener;
+        this.openProductListener = openProductListener;
+        this.deleteProductListener = deleteProductListener;
         this.batchProcessingListener = batchProcessingListener;
         this.showInExplorerListener = showInExplorerListener;
+    }
+
+    public void setJointSearchCriteriaListener(ActionListener jointSearchCriteriaListener) {
+        this.jointSearchCriteriaListener = jointSearchCriteriaListener;
+    }
+
+    public ActionListener getJointSearchCriteriaListener() {
+        return jointSearchCriteriaListener;
     }
 
     public ActionListener getBatchProcessingListener() {
         return batchProcessingListener;
     }
 
-    public ActionListener getDeleteListener() {
-        return deleteListener;
+    public ActionListener getDeleteProductListener() {
+        return deleteProductListener;
     }
 
-    public ActionListener getOpenListener() {
-        return openListener;
+    public ActionListener getOpenProductListener() {
+        return openProductListener;
     }
 
     public ActionListener getShowInExplorerListener() {

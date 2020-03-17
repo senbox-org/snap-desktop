@@ -30,10 +30,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.*;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
-import org.esa.snap.product.library.ui.v2.repository.remote.OpenDownloadedProductsRunnable;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
+import org.esa.snap.product.library.ui.v2.repository.remote.*;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
@@ -52,6 +49,7 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.AbstractGeometry2D;
+import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
@@ -73,6 +71,8 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -80,11 +80,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.round;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
@@ -434,6 +437,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void addListeners() {
+        ActionListener jointSearchCriteriaListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                jointSearchCriteriaOptionClicked();
+            }
+        };
         ActionListener openLocalProductListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -495,6 +504,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
         LocalProductsPopupListeners localProductsPopupListeners = new LocalProductsPopupListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
+        localProductsPopupListeners.setJointSearchCriteriaListener(jointSearchCriteriaListener);
         localProductsPopupListeners.setSelectAllListener(selectAllListener);
         localProductsPopupListeners.setSelectNoneListener(selectNoneListener);
         localProductsPopupListeners.setCopyListener(copyListener);
@@ -521,7 +531,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
         };
         this.repositorySelectionPanel.setLocalRepositoriesListeners(localProductsPopupListeners, scanLocalRepositoryFoldersListener,
-                                                                           addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
+                                                                    addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
 
         ActionListener downloadRemoteProductListener = new ActionListener() {
             @Override
@@ -535,7 +545,10 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 openDownloadedRemoteProductsButtonPressed();
             }
         };
-        this.repositorySelectionPanel.setDownloadRemoteProductListener(downloadRemoteProductListener, openDownloadedRemoteProductListener);
+
+        RemoteProductsPopupListeners remoteProductsPopupListeners = new RemoteProductsPopupListeners(downloadRemoteProductListener, openDownloadedRemoteProductListener, jointSearchCriteriaListener);
+
+        this.repositorySelectionPanel.setDownloadRemoteProductListener(remoteProductsPopupListeners);
     }
 
     private int showConfirmDialog(String title, String message, int buttonsOptionType) {
@@ -936,6 +949,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
         this.worldWindowPanel.highlightPolygons(polygonPaths);
         if (polygonPaths.length == 1) {
+            // the repository product has only one path
             this.worldWindowPanel.setEyePosition(polygonPaths[0]);
         }
     }
@@ -949,14 +963,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
     }
 
-    private void onSelectedNewProductsRepository() {
-        cancelSearchingProductList();
+    private void setHorizontalSplitPaneLeftComponent(AbstractProductsRepositoryPanel selectedProductsRepositoryPanel) {
         int dividerLocation = this.horizontalSplitPane.getDividerLocation();
-        AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
         this.horizontalSplitPane.setLeftComponent(selectedProductsRepositoryPanel);
         this.horizontalSplitPane.setDividerLocation(dividerLocation);
         this.horizontalSplitPane.revalidate();
         this.horizontalSplitPane.repaint();
+    }
+
+    private void onSelectedNewProductsRepository() {
+        cancelSearchingProductList();
+        AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
+        setHorizontalSplitPaneLeftComponent(selectedProductsRepositoryPanel);
         selectedProductsRepositoryPanel.addInputParameterComponents();
         boolean refreshed = selectedProductsRepositoryPanel.refreshInputParameterComponentValues();
         if (refreshed) {
@@ -1057,6 +1075,51 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
+    private void jointSearchCriteriaOptionClicked() {
+        OutputProductListPanel productListPanel = this.repositoryProductListPanel.getProductListPanel();
+        RepositoryProduct[] selectedProducts = productListPanel.getSelectedProducts();
+        if (selectedProducts.length > 0) {
+            // there are selected products into the output table
+            if (selectedProducts.length > 1) {
+                throw new IllegalStateException("Only one selected product is allowed.");
+            } else {
+                RemoteMission remoteMission = selectedProducts[0].getRemoteMission();
+                if (remoteMission == null) {
+                    throw new NullPointerException("The remote mission is null.");
+                }
+                Date acquisitionDate = selectedProducts[0].getAcquisitionDate();
+                if (acquisitionDate == null) {
+                    throw new NullPointerException("The product acquisition date is null.");
+                }
+
+                cancelSearchingProductList();
+
+                RemoteProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.selectRemoteProductsRepositoryPanelByName(remoteMission);
+                if (selectedProductsRepositoryPanel == null) {
+                    throw new IllegalStateException("The remote products repository '"+remoteMission.getRepositoryName()+"' is missing.");
+                } else {
+                    // the remote products repository exists and it is selected
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(acquisitionDate);
+                    calendar.add(Calendar.DAY_OF_MONTH, -7); // one week ago
+                    Date startDate = new Date(calendar.getTimeInMillis());
+                    calendar.add(Calendar.DAY_OF_MONTH, 14);
+                    Date endDate = new Date(calendar.getTimeInMillis());
+
+                    Path2D.Double productAreaPath = selectedProducts[0].getPolygon().getPathAt(0);
+                    Rectangle2D.Double areaOfInterestToSelect = convertProductAreaPathToRectangle(productAreaPath);
+
+                    setHorizontalSplitPaneLeftComponent(selectedProductsRepositoryPanel);
+                    selectedProductsRepositoryPanel.addInputParameterComponents();
+                    selectedProductsRepositoryPanel.updateInputParameterValues(remoteMission.getName(), startDate, endDate, areaOfInterestToSelect);
+                    this.repositoryProductListPanel.clearOutputList(true);
+
+                   searchProductListLater();
+                }
+            }
+        }
+    }
+
     private void downloadSelectedRemoteProductsButtonPressed() {
         OutputProductListPanel productListPanel = this.repositoryProductListPanel.getProductListPanel();
         RepositoryProduct[] selectedProducts = productListPanel.getSelectedProducts();
@@ -1121,5 +1184,28 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             this.searchProductListThread = thread;
             this.searchProductListThread.executeAsync(); // start the thread
         }
+    }
+
+    private static Rectangle2D.Double convertProductAreaPathToRectangle(Path2D.Double productAreaPath) {
+        double[] coordinates = new double[2];
+
+        PathIterator pathIterator = productAreaPath.getPathIterator(null);
+
+        pathIterator.currentSegment(coordinates);
+        double x1 = coordinates[0];
+        double x2 = coordinates[0];
+        double y1 = coordinates[1];
+        double y2 = coordinates[1];
+        pathIterator.next();
+
+        while (!pathIterator.isDone()) {
+            pathIterator.currentSegment(coordinates);
+            x1 = min(x1, coordinates[0]);
+            x2 = max(x2, coordinates[0]);
+            y1 = min(y1, coordinates[1]);
+            y2 = max(y2, coordinates[1]);
+            pathIterator.next();
+        }
+        return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
     }
 }

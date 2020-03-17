@@ -194,9 +194,9 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         JMenuItem exportListMenuItem = new JMenuItem("Export List...");
         exportListMenuItem.addActionListener(this.localProductsPopupListeners.getExportListListener());
         JMenuItem openMenuItem = new JMenuItem("Open");
-        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenListener());
-        JMenuItem deleteMenuItem = new JMenuItem("Delete");
-        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteListener());
+        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
+        JMenuItem deleteMenuItem = new JMenuItem("Delete...");
+        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteProductListener());
         JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing...");
         batchProcessingMenuItem.addActionListener(this.localProductsPopupListeners.getBatchProcessingListener());
         JPopupMenu popupMenu = new JPopupMenu();
@@ -213,6 +213,12 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer...");
             showInExplorerMenuItem.addActionListener(this.localProductsPopupListeners.getShowInExplorerListener());
             popupMenu.add(showInExplorerMenuItem);
+
+            if (selectedProducts[0].getRemoteMission() != null) {
+                JMenuItem jointSearchCriteriaMenuItem = new JMenuItem("Joint Search Criteria");
+                jointSearchCriteriaMenuItem.addActionListener(this.localProductsPopupListeners.getJointSearchCriteriaListener());
+                popupMenu.add(jointSearchCriteriaMenuItem);
+            }
         }
         return popupMenu;
     }

@@ -46,8 +46,8 @@ public class DownloadingProductPanel extends JPanel {
 
         this.nameLabel = new JLabel(productToDownload.getName());
         this.acquisitionDateLabel = new JLabel(RemoteRepositoryProductPanel.buildAcquisitionDateLabelText(productToDownload.getAcquisitionDate()));
-        this.repositoryLabel = new JLabel(RemoteRepositoryProductPanel.buildRepositoryLabelText(productToDownload.getRepositoryName()));
-        this.missionLabel = new JLabel(RemoteRepositoryProductPanel.buildMissionLabelText(productToDownload.getMission()));
+        this.repositoryLabel = new JLabel(RemoteRepositoryProductPanel.buildRepositoryLabelText(productToDownload.getRemoteMission().getRepositoryName()));
+        this.missionLabel = new JLabel(RemoteRepositoryProductPanel.buildMissionLabelText(productToDownload.getRemoteMission().getName()));
         this.sizeLabel = new JLabel(RemoteRepositoryProductPanel.buildSizeLabelText(productToDownload.getApproximateSize()));
         this.downloadStatusLabel = new RemoteProductStatusLabel();
 

@@ -8,12 +8,14 @@ import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPaginationPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
+import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomComboBox;
@@ -26,8 +28,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -48,6 +52,7 @@ public class RepositorySelectionPanel extends JPanel {
     private JComboBox<AbstractProductsRepositoryPanel> repositoriesComboBox;
     private JPanel topBarButtonsPanel;
     private ItemListener productsRepositoryListener;
+    private ItemListener localRepositoryListener;
 
     public RepositorySelectionPanel(RemoteProductsRepositoryProvider[] productsRepositoryProviders, ComponentDimension componentDimension,
                                     MissionParameterListener missionParameterListener, WorldMapPanelWrapper worldWindowPanel,
@@ -146,7 +151,7 @@ public class RepositorySelectionPanel extends JPanel {
             for (int i=0; i<model.getSize(); i++) {
                 AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
                 if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                    if (repositoryPanel.getRepositoryName().equals(repositoryProduct.getRepositoryName())) {
+                    if (repositoryPanel.getRepositoryName().equals(repositoryProduct.getRemoteMission().getRepositoryName())) {
                         ((RemoteProductsRepositoryPanel)repositoryPanel).addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
                     }
                 } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
@@ -253,12 +258,7 @@ public class RepositorySelectionPanel extends JPanel {
             remoteProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);
             this.repositoriesComboBox.addItem(remoteProductsRepositoryPanel);
         }
-        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = new AllLocalProductsRepositoryPanel(this.componentDimension, this.worldWindowPanel);
-        allLocalProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);
-        this.repositoriesComboBox.addItem(allLocalProductsRepositoryPanel);
-        this.repositoriesComboBox.setMaximumRowCount(7);
-        this.repositoriesComboBox.setSelectedIndex(0);
-        this.repositoriesComboBox.addItemListener(new ItemListener() {
+        this.localRepositoryListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
@@ -268,7 +268,13 @@ public class RepositorySelectionPanel extends JPanel {
                     }
                 }
             }
-        });
+        };
+        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = new AllLocalProductsRepositoryPanel(this.componentDimension, this.worldWindowPanel);
+        allLocalProductsRepositoryPanel.addInputParameterComponentsChangedListener(parameterComponentsChangedListener);
+        this.repositoriesComboBox.addItem(allLocalProductsRepositoryPanel);
+        this.repositoriesComboBox.setMaximumRowCount(7);
+        this.repositoriesComboBox.setSelectedIndex(0);
+        this.repositoriesComboBox.addItemListener(this.localRepositoryListener);
     }
 
     public void setLocalRepositoriesListeners(LocalProductsPopupListeners localProductsPopupListeners, ActionListener scanLocalRepositoryFoldersListener,
@@ -279,12 +285,32 @@ public class RepositorySelectionPanel extends JPanel {
         allLocalProductsRepositoryPanel.setLocalProductsPopupListeners(localProductsPopupListeners);
     }
 
-    public void setDownloadRemoteProductListener(ActionListener downloadRemoteProductListener, ActionListener openDownloadedRemoteProductListener) {
+    public RemoteProductsRepositoryPanel selectRemoteProductsRepositoryPanelByName(RemoteMission remoteMission) {
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
         for (int i=0; i<model.getSize(); i++) {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListeners(downloadRemoteProductListener, openDownloadedRemoteProductListener);
+                if (repositoryPanel.getRepositoryName().equalsIgnoreCase(remoteMission.getRepositoryName())) {
+                    this.repositoriesComboBox.removeItemListener(this.localRepositoryListener);
+                    try {
+                        this.repositoriesComboBox.setSelectedIndex(i);
+                    } finally {
+                        this.repositoriesComboBox.addItemListener(this.localRepositoryListener);
+                    }
+                    RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel)repositoryPanel;
+                    return remoteProductsRepositoryPanel;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void setDownloadRemoteProductListener(RemoteProductsPopupListeners remoteProductsPopupListeners) {
+        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+        for (int i=0; i<model.getSize(); i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+            if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListeners(remoteProductsPopupListeners);
             }
         }
     }

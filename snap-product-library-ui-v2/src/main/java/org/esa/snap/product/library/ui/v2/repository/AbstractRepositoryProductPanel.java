@@ -143,10 +143,11 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         this.nameLabel.setText(repositoryProduct.getName());
         this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
-        this.missionLabel.setText(buildMissionLabelText(repositoryProduct.getMission()));
+        String mission = (repositoryProduct.getRemoteMission() == null) ? null : repositoryProduct.getRemoteMission().getName();
+        this.missionLabel.setText(buildMissionLabelText(mission));
         this.acquisitionDateLabel.setText(buildAcquisitionDateLabelText(repositoryProduct.getAcquisitionDate()));
 
-        Map<String, String> visibleAttributes = this.repositoryProductPanelBackground.getRemoteMissionVisibleAttributes(repositoryProduct.getMission());
+        Map<String, String> visibleAttributes = this.repositoryProductPanelBackground.getRemoteMissionVisibleAttributes(mission);
         updateVisibleAttributes(repositoryProduct, visibleAttributes);
 
         ImageIcon imageIcon = outputProductResults.getProductQuickLookImage(repositoryProduct);

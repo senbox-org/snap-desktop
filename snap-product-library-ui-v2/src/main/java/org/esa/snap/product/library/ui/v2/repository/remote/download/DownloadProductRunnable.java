@@ -11,6 +11,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloa
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
+import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
@@ -71,7 +72,8 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         } catch (java.lang.InterruptedException exception) {
             downloadStatus = DownloadProgressStatus.CANCEL_DOWNLOADING;
             RepositoryProduct repositoryProduct = this.remoteProductDownloader.getProductToDownload();
-            logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + repositoryProduct.getMission() + "', remote pository '" + repositoryProduct.getRepositoryName() + "'.");
+            RemoteMission remoteMission = repositoryProduct.getRemoteMission();
+            logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + remoteMission.getName() + "', remote pository '" + remoteMission.getRepositoryName() + "'.");
         } catch (IOException exception) {
             downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {

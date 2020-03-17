@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
+import org.apache.abdera.i18n.templates.HashMapContext;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
@@ -34,9 +35,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jcoravu on 5/8/2019.
@@ -49,8 +49,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final JComboBox<Credentials> userAccountsComboBox;
 
     private ItemListener missionItemListener;
-    private ActionListener downloadProductListener;
-    private ActionListener openDownloadedRemoteProductListener;
+    private RemoteProductsPopupListeners remoteProductsPopupListeners;
     private RemoteInputParameterValues remoteInputParameterValues;
     private DownloadingProductProgressCallback downloadingProductProgressCallback;
 
@@ -175,13 +174,20 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         JMenuItem menuItem;
         if (canOpenSelectedProducts) {
             menuItem = new JMenuItem("Open");
-            menuItem.addActionListener(this.openDownloadedRemoteProductListener);
+            menuItem.addActionListener(this.remoteProductsPopupListeners.getOpenDownloadedRemoteProductListener());
         } else {
             menuItem = new JMenuItem("Download");
-            menuItem.addActionListener(this.downloadProductListener);
+            menuItem.addActionListener(this.remoteProductsPopupListeners.getDownloadRemoteProductListener());
         }
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.add(menuItem);
+        if (selectedProducts.length == 1) {
+            if (selectedProducts[0].getRemoteMission() != null) {
+                JMenuItem jointSearchCriteriaMenuItem = new JMenuItem("Joint Search Criteria");
+                jointSearchCriteriaMenuItem.addActionListener(this.remoteProductsPopupListeners.getJointSearchCriteriaListener());
+                popupMenu.add(jointSearchCriteriaMenuItem);
+            }
+        }
         return popupMenu;
     }
 
@@ -256,6 +262,25 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         return false;
     }
 
+    public void updateInputParameterValues(String missionName, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect) {
+        this.missionsComboBox.removeItemListener(this.missionItemListener);
+        try {
+            this.missionsComboBox.setSelectedItem(missionName);
+        } finally {
+            this.missionsComboBox.addItemListener(this.missionItemListener);
+        }
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
+            if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.FOOTPRINT)) {
+                inputParameterComponent.setParameterValue(areaOfInterestToSelect);
+            } else if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.START_DATE)) {
+                inputParameterComponent.setParameterValue(startDate);
+            } else if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.END_DATE)) {
+                inputParameterComponent.setParameterValue(endDate);
+            }
+        }
+    }
+
     public void addDownloadedProductProgress(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus) {
         getOutputProductResults().addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
     }
@@ -277,9 +302,8 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         return selectedCredentials;
     }
 
-    public void setDownloadProductListeners(ActionListener downloadProductListener, ActionListener openDownloadedRemoteProductListener) {
-        this.downloadProductListener = downloadProductListener;
-        this.openDownloadedRemoteProductListener = openDownloadedRemoteProductListener;
+    public void setDownloadProductListeners(RemoteProductsPopupListeners remoteProductsPopupListeners) {
+        this.remoteProductsPopupListeners = remoteProductsPopupListeners;
     }
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {
