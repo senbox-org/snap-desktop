@@ -1,24 +1,18 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.esa.snap.core.dataio.ProductIO;
-import org.esa.snap.core.datamodel.MetadataAttribute;
-import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloader;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
+import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +40,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
 
     @Override
     public final void run() {
-        SaveDownloadedProductData saveProductData = null;
+        SaveProductData saveProductData = null;
         byte downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
         Path productPath = null;
         try {
@@ -64,7 +58,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
 
             Product product = ProductIO.readProduct(productPath.toFile());
 
-            saveProductData = this.allLocalFolderProductsRepository.saveProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
+            saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
                                                                                 this.remoteProductDownloader.getRepositoryName(),
                                                                                 this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
 
@@ -100,7 +94,7 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
         updateDownloadingProgressPercent(progressPercent, null); // 'null' => no download local path
     }
 
-    protected void finishRunning(SaveDownloadedProductData saveProductData, byte downloadStatus, Path productPath) {
+    protected void finishRunning(SaveProductData saveProductData, byte downloadStatus, Path productPath) {
         setRunning(false);
     }
 

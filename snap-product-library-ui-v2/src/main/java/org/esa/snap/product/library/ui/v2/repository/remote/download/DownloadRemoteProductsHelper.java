@@ -9,11 +9,10 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductDownloa
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
-import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
+import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
-import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -128,7 +127,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                     }
 
                     @Override
-                    protected void finishRunning(SaveDownloadedProductData saveProductData, byte downloadStatus, Path productPath) {
+                    protected void finishRunning(SaveProductData saveProductData, byte downloadStatus, Path productPath) {
                         super.finishRunning(saveProductData, downloadStatus, productPath);
                         finishRunningDownloadProductThreadLater(this, saveProductData, downloadStatus, productPath);
                     }
@@ -233,7 +232,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         SwingUtilities.invokeLater(runnable);
     }
 
-    private void finishRunningDownloadProductThreadLater(DownloadProductRunnable parentRunnableItem, SaveDownloadedProductData saveProductDataItem,
+    private void finishRunningDownloadProductThreadLater(DownloadProductRunnable parentRunnableItem, SaveProductData saveProductDataItem,
                                                          byte downloadStatus, Path productPath) {
 
         FinishDownloadingProductStatusRunnable runnable = new FinishDownloadingProductStatusRunnable(parentRunnableItem, saveProductDataItem, downloadStatus, productPath) {
@@ -291,7 +290,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         }
     }
 
-    private void onFinishRunningDownloadProductThread(DownloadProductRunnable parentRunnable, SaveDownloadedProductData saveProductData,
+    private void onFinishRunningDownloadProductThread(DownloadProductRunnable parentRunnable, SaveProductData saveProductData,
                                                       byte saveDownloadStatus, Path downloadedProductPath) {
 
         Pair<DownloadProgressStatus, Boolean> value = this.runningTasks.get(parentRunnable);
@@ -307,6 +306,11 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
             updateProgressBarDownloadedProducts();
 
             boolean hasProductsToDownload = hasDownloadingProducts();
+
+            if (saveProductData != null) {
+                RepositoryProduct repositoryProduct = parentRunnable.getProductToDownload();
+                repositoryProduct.setLocalAttributes(saveProductData.getLocalAttributes());
+            }
 
             this.downloadProductListener.onFinishDownloadingProduct(parentRunnable, downloadProgressStatus, saveProductData, hasProductsToDownload);
 
@@ -395,11 +399,11 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
     private static abstract class FinishDownloadingProductStatusRunnable implements Runnable {
 
         final DownloadProductRunnable downloadProductRunnable;
-        final SaveDownloadedProductData saveDownloadedProductData;
+        final SaveProductData saveDownloadedProductData;
         final byte saveDownloadStatus;
         final Path downloadedProductPath;
 
-        private FinishDownloadingProductStatusRunnable(DownloadProductRunnable parentRunnableItem, SaveDownloadedProductData saveProductDataItem,
+        private FinishDownloadingProductStatusRunnable(DownloadProductRunnable parentRunnableItem, SaveProductData saveProductDataItem,
                                                        byte downloadStatus, Path productPath) {
             this.downloadProductRunnable = parentRunnableItem;
             this.saveDownloadedProductData = saveProductDataItem;

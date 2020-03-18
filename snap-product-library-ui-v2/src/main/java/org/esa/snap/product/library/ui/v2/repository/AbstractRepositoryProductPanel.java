@@ -221,7 +221,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     private void updateVisibleAttributes(RepositoryProduct repositoryProduct, Map<String, String> visibleAttributes) {
         String firstLabelText = " ";
         String secondLabelText = " ";
-        List<Attribute> attributes = repositoryProduct.getAttributes();
+        List<Attribute> attributes = repositoryProduct.getRemoteAttributes();
         if (visibleAttributes != null && visibleAttributes.size() > 0 && attributes != null && attributes.size() > 0) {
             for (Map.Entry<String, String> entry : visibleAttributes.entrySet()) {
                 String attributeName = entry.getKey();

@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.remote.products.repository.HTTPServerException;
@@ -98,9 +99,15 @@ public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDo
         Runnable runnable = new PairRunnable<RepositoryProduct, BufferedImage>(product, quickLookImage) {
             @Override
             protected void execute(RepositoryProduct repositoryProduct, BufferedImage bufferedImage) {
-                repositoryProductListPanel.setProductQuickLookImage(repositoryProduct, bufferedImage);
+                onSetProductQuickLookImage(repositoryProduct, bufferedImage);
             }
         };
         SwingUtilities.invokeLater(runnable);
+    }
+
+    private void onSetProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
+        repositoryProduct.setQuickLookImage(quickLookImage);
+        OutputProductListModel productListModel = this.repositoryProductListPanel.getProductListPanel().getProductListModel();
+        productListModel.refreshProduct(repositoryProduct);
     }
 }

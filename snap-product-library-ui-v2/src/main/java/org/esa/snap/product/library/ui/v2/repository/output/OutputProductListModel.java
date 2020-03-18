@@ -50,13 +50,6 @@ public class OutputProductListModel {
         return this.outputProductResultsCallback.getOutputProductResults();
     }
 
-    public void updateProductQuickLookImage(RepositoryProduct repositoryProduct) {
-        int index = findProductIndex(repositoryProduct);
-        if (index >= 0) {
-            fireIntervalChanged(index, index);
-        }
-    }
-
     public List<RepositoryProduct> findProductsWithoutQuickLookImage() {
         List<RepositoryProduct> result = new ArrayList<>();
         for (int i=0; i<this.products.size(); i++) {
@@ -188,7 +181,7 @@ public class OutputProductListModel {
         }
     }
 
-    public void refreshProductDownloadPercent(RepositoryProduct repositoryProduct) {
+    public void refreshProduct(RepositoryProduct repositoryProduct) {
         int index = findProductIndex(repositoryProduct);
         if (index >= 0) {
             fireIntervalChanged(index, index); // the downloading product is visible in the current page
@@ -208,22 +201,6 @@ public class OutputProductListModel {
         if (pendingLocalProducts.length > 0) {
             int startIndex = pendingLocalProducts.length - 1;
             int endIndex = 0;
-//            for (int i=0; i<pendingLocalProducts.length; i++) {
-//                LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
-//                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailOpenedBecauseNoProductReader() || openProgressStatus.isFailDeleted()) {
-//                    productsToProcess.add(pendingLocalProducts[i]);
-//                    int index = findProductIndex(pendingLocalProducts[i]);
-//                    if (index >= 0) {
-//                        if (startIndex > index) {
-//                            startIndex = index;
-//                        }
-//                        if (endIndex < index) {
-//                            endIndex = index;
-//                        }
-//                        getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
-//                    }
-//                }
-//            }
             for (int i=0; i<pendingLocalProducts.length; i++) {
                 LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
                 if (openProgressStatus == null ) {

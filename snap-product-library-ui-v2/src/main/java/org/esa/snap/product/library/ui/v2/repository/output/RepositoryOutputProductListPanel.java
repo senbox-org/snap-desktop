@@ -189,18 +189,6 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         }
     }
 
-    public void setProductQuickLookImage(RepositoryProduct repositoryProduct, BufferedImage quickLookImage) {
-        OutputProductResults outputProductResults = getOutputProductResults();
-        for (int i=0; i<outputProductResults.getAvailableProductCount(); i++) {
-            RepositoryProduct existingProduct = outputProductResults.getProductAt(i);
-            if (existingProduct == repositoryProduct) {
-                existingProduct.setQuickLookImage(quickLookImage);
-                this.productListPanel.getProductListModel().updateProductQuickLookImage(repositoryProduct);
-                return;
-            }
-        }
-    }
-
     public void addProducts(List<RepositoryProduct> products) {
         if (products.size() > 0) {
             OutputProductResults outputProductResults = getOutputProductResults();

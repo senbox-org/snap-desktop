@@ -13,8 +13,8 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsReposi
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.product.library.v2.database.SaveDownloadedProductData;
 import org.esa.snap.product.library.v2.database.SaveProductData;
+import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -28,13 +28,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Created by jcoravu on 22/8/2019.
@@ -137,7 +134,7 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    public void finishSavingProduct(SaveProductData saveProductData) {
+    public void finishSavingLocalProduct(SaveProductData saveProductData) {
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
         allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
         if (saveProductData.getRemoteMission() != null) {
@@ -145,23 +142,23 @@ public class RepositorySelectionPanel extends JPanel {
         }
     }
 
-    public void finishDownloadingProduct(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus, SaveDownloadedProductData saveProductData) {
-        if (downloadProgressStatus != null) {
-            ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
-            for (int i=0; i<model.getSize(); i++) {
-                AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
-                if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                    if (repositoryPanel.getRepositoryName().equals(repositoryProduct.getRemoteMission().getRepositoryName())) {
-                        ((RemoteProductsRepositoryPanel)repositoryPanel).addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
-                    }
-                } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
-                    if (saveProductData != null) {
-                        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)repositoryPanel;
-                        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
-                        allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
-                        allLocalProductsRepositoryPanel.addAttributesIfMissing(saveProductData.getProductAttributeNames());
-                    }
+    public void finishDownloadingProduct(RepositoryProduct repositoryProduct, DownloadProgressStatus downloadProgressStatus, SaveProductData saveProductData) {
+        ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
+            if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
+                if (repositoryPanel.getRepositoryName().equals(repositoryProduct.getRemoteMission().getRepositoryName())) {
+                    ((RemoteProductsRepositoryPanel) repositoryPanel).addDownloadedProductProgress(repositoryProduct, downloadProgressStatus);
                 }
+            } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
+                if (saveProductData != null) {
+                    AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel) repositoryPanel;
+                    allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+                    allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
+                    allLocalProductsRepositoryPanel.addAttributesIfMissing(repositoryProduct);
+                }
+            } else {
+                throw new IllegalStateException("Unknown repository panel type '" + repositoryPanel + "'.");
             }
         }
     }

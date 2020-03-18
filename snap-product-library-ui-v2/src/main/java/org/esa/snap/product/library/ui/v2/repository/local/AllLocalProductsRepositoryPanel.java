@@ -393,7 +393,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    public void addAttributesIfMissing(Set<String> productAttributeNames) {
+    public void addAttributesIfMissing(RepositoryProduct repositoryProduct) {
         Comparator<String> comparator = buildAttributeNamesComparator();
         SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
         ComboBoxModel<String> attributesModel = this.attributesComboBox.getModel();
@@ -404,9 +404,22 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
         }
         boolean newAttribute = false;
-        for (String attributeName : productAttributeNames) {
-            if (uniqueAttributes.add(attributeName)) {
-                newAttribute = true;
+        List<Attribute> remoteAttributes = repositoryProduct.getRemoteAttributes();
+        if (remoteAttributes != null && remoteAttributes.size() > 0) {
+            for (int k = 0; k < remoteAttributes.size(); k++) {
+                Attribute attribute = remoteAttributes.get(k);
+                if (uniqueAttributes.add(attribute.getName())) {
+                    newAttribute = true;
+                }
+            }
+        }
+        List<Attribute> localAttributes = repositoryProduct.getLocalAttributes();
+        if (localAttributes != null && localAttributes.size() > 0) {
+            for (int k = 0; k < localAttributes.size(); k++) {
+                Attribute attribute = localAttributes.get(k);
+                if (uniqueAttributes.add(attribute.getName())) {
+                    newAttribute = true;
+                }
             }
         }
         if (newAttribute) {
