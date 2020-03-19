@@ -5,7 +5,7 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.remote.products.repository.AbstractGeometry2D;
+import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;

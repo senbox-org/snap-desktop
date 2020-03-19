@@ -7,8 +7,7 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.grender.Rendering;
-import org.esa.snap.remote.products.repository.GeometryUtils;
-import org.esa.snap.remote.products.repository.Polygon2D;
+import org.esa.snap.remote.products.repository.geometry.GeometryUtils;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 import java.awt.*;
