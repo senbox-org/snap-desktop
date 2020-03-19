@@ -57,10 +57,15 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
             }
 
             Product product = ProductIO.readProduct(productPath.toFile());
-
-            saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
-                                                                                this.remoteProductDownloader.getRepositoryName(),
-                                                                                this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
+            try {
+                saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
+                        this.remoteProductDownloader.getRepositoryName(),
+                        this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
+            } finally {
+                if (product != null) {
+                    product.dispose();
+                }
+            }
 
             downloadStatus = DownloadProgressStatus.SAVED;
         } catch (java.lang.InterruptedException exception) {

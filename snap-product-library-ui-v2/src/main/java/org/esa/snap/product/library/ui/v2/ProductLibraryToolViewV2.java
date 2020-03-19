@@ -29,6 +29,7 @@ import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.*;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPanel;
+import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.*;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
@@ -566,8 +567,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository) {
                 @Override
                 protected void onFinishRunning() {
-                    ProductLibraryToolViewV2.this.localRepositoryProductsThread = null; // reset
-                    searchProductListLater();
+                    onFinishRunningLocalProductsThread(this, true);
                 }
 
                 @Override
@@ -625,6 +625,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             // there are local repositories into the application
             String dialogTitle = "Delete local products";
             if (this.localRepositoryProductsThread != null || this.downloadRemoteProductsHelper.isRunning()) {
+                // there is a running action
                 StringBuilder message = new StringBuilder();
                 message.append("The local repositories cannot be deleted.")
                         .append("\n\n")
@@ -663,12 +664,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void onFinishRunningLocalProductsThread(Runnable invokerThread, boolean startSearchProducts) {
         if (invokerThread == this.localRepositoryProductsThread) {
             this.localRepositoryProductsThread = null; // reset
-            this.repositoryOutputProductListPanel.updateProductListCountTitle();
-            // refresh the products in the output panel
-            OutputProductListPanel productListPanel = this.repositoryOutputProductListPanel.getProductListPanel();
-            productListPanel.getProductListModel().refreshProducts();
-            if (startSearchProducts) {
-                searchProductListLater();
+            if (this.repositorySelectionPanel.getSelectedProductsRepositoryPanel() instanceof AllLocalProductsRepositoryPanel) {
+                this.repositoryOutputProductListPanel.updateProductListCountTitle();
+                // refresh the products in the output panel
+                OutputProductListPanel productListPanel = this.repositoryOutputProductListPanel.getProductListPanel();
+                productListPanel.getProductListModel().refreshProducts();
+                if (startSearchProducts) {
+                    searchProductListLater();
+                }
             }
         }
     }
@@ -1107,7 +1110,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     selectedProductsRepositoryPanel.updateInputParameterValues(remoteMission.getName(), startDate, endDate, areaOfInterestToSelect);
                     this.repositoryOutputProductListPanel.clearOutputList(true);
 
-                   searchProductListLater();
+                    searchProductListLater();
                 }
             }
         }

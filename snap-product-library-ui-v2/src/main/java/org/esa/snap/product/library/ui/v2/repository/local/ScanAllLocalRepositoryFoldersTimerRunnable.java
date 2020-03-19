@@ -29,25 +29,34 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
     }
 
     @Override
+    protected boolean onTimerWakeUp(String message) {
+        return super.onTimerWakeUp("Scan all local repository folders...");
+    }
+
+    @Override
     protected Void execute() throws Exception {
-        updateProgressBarTextLater("");
-
         List<LocalRepositoryFolder> localRepositoryFolders = this.allLocalFolderProductsRepository.loadRepositoryFolders();
-
-        ScanLocalRepositoryFolderHelper scanLocalProductsHelper = new ScanLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository);
-
-        for (int i=0; i<localRepositoryFolders.size(); i++) {
-            LocalRepositoryFolder localRepositoryFolder = localRepositoryFolders.get(i);
-            try {
-                List<SaveProductData> savedProducts = scanLocalProductsHelper.scanValidProductsFromFolder(localRepositoryFolder);
-                if (savedProducts == null) {
-                    updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
+        if (!isFinished()) {
+            ScanLocalRepositoryFolderHelper scanLocalProductsHelper = new ScanLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository);
+            for (int i = 0; i < localRepositoryFolders.size(); i++) {
+                if (isFinished()) {
+                    break;
+                } else {
+                    LocalRepositoryFolder localRepositoryFolder = localRepositoryFolders.get(i);
+                    try {
+                        List<SaveProductData> savedProducts = scanLocalProductsHelper.scanValidProductsFromFolder(localRepositoryFolder, this);
+                        if (savedProducts == null) {
+                            updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
+                        }
+                    } catch (java.lang.InterruptedException exception) {
+                        logger.log(Level.FINE, "Stop scanning the local repository folders.");
+                        break;
+                    } catch (Exception exception) {
+                        logger.log(Level.SEVERE, "Failed to save the local product from the path '" + localRepositoryFolder.getPath().toString() + "'.", exception);
+                    }
                 }
-            } catch (Exception exception) {
-                logger.log(Level.SEVERE, "Failed to save the local product from the path '" + localRepositoryFolder.getPath().toString() + "'.", exception);
             }
         }
-
         return null;
     }
 

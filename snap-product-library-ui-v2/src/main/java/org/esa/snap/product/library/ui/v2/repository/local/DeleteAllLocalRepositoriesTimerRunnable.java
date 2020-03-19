@@ -30,25 +30,34 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
     }
 
     @Override
-    protected Void execute() throws Exception {
-        for (int i=0; i<this.localRepositoryFolders.size(); i++) {
-            LocalRepositoryFolder localRepositoryFolder = this.localRepositoryFolders.get(i);
-            boolean folderDeletedFromDatabase = false;
-            try {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Delete the local repository folder '" + localRepositoryFolder.getPath().toString()+"'.");
-                }
+    protected final boolean onTimerWakeUp(String message) {
+        return super.onTimerWakeUp("Delete all local repositories...");
+    }
 
-                this.allLocalFolderProductsRepository.deleteRepositoryFolder(localRepositoryFolder);
-                folderDeletedFromDatabase = true;
-                //if (Files.exists(localRepositoryFolder.getPath())) {
-                //    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());
-                //}
-            } catch (Exception exception) {
-                logger.log(Level.SEVERE, "Failed to delete the local repository folder '" + localRepositoryFolder.getPath().toString() + "'.", exception);
-            } finally {
-                if (folderDeletedFromDatabase) {
-                    updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
+    @Override
+    protected final Void execute() throws Exception {
+        for (int i=0; i<this.localRepositoryFolders.size(); i++) {
+            if (isFinished()) {
+                break;
+            } else {
+                LocalRepositoryFolder localRepositoryFolder = this.localRepositoryFolders.get(i);
+                boolean folderDeletedFromDatabase = false;
+                try {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "Delete the local repository folder '" + localRepositoryFolder.getPath().toString()+"'.");
+                    }
+
+                    this.allLocalFolderProductsRepository.deleteRepositoryFolder(localRepositoryFolder);
+                    folderDeletedFromDatabase = true;
+                    //if (Files.exists(localRepositoryFolder.getPath())) {
+                    //    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());
+                    //}
+                } catch (Exception exception) {
+                    logger.log(Level.SEVERE, "Failed to delete the local repository folder '" + localRepositoryFolder.getPath().toString() + "'.", exception);
+                } finally {
+                    if (folderDeletedFromDatabase) {
+                        updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
+                    }
                 }
             }
         }
@@ -56,7 +65,7 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
     }
 
     @Override
-    protected String getExceptionLoggingMessage() {
+    protected final String getExceptionLoggingMessage() {
         return "Failed to delete the local repository folders from the disk and the product from the database.";
     }
 

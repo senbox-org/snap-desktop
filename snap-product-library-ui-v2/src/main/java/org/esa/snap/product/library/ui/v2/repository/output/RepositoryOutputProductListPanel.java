@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.repository.timeline.RepositoryProductsTimelinePanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomComboBox;
@@ -15,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -38,6 +38,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private final OutputProductListPanel productListPanel;
     private final OutputProductListPaginationPanel productListPaginationPanel;
     private final CustomComboBox<ComparatorItem> comparatorsComboBox;
+    private RepositoryProductsTimelinePanel productsTimelinePanel;
 
     private int visibleProductsPerPage;
 
@@ -58,6 +59,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 refreshPaginationButtons();
             }
         });
+
+        this.productsTimelinePanel = new RepositoryProductsTimelinePanel();
 
         ItemRenderer<ComparatorItem> itemRenderer = new ItemRenderer<ComparatorItem>() {
             @Override
@@ -170,6 +173,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             // no products to display
             clearPageProducts();
         }
+        this.productsTimelinePanel.refresh(getOutputProductResults());
     }
 
     public void clearOutputList(boolean canResetProductListCountTitle) {
@@ -178,6 +182,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         if (canResetProductListCountTitle) {
             resetProductListCountTitle(); // remove the product count from the title
         }
+        this.productsTimelinePanel.refresh(getOutputProductResults());
     }
 
     public void refreshOutputList() {
@@ -187,6 +192,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         } else {
             clearPageProducts();
         }
+        this.productsTimelinePanel.refresh(outputProductResults);
     }
 
     public void addProducts(List<RepositoryProduct> products) {
@@ -210,6 +216,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
             } else {
                 refreshPaginationButtons(); // refresh the pagination button after received the products
             }
+            this.productsTimelinePanel.refresh(outputProductResults);
         }
     }
 
@@ -359,6 +366,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
         add(northPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
+        add(this.productsTimelinePanel, BorderLayout.SOUTH);
     }
 
     private static ComparatorItem buildProductNameComparator() {
