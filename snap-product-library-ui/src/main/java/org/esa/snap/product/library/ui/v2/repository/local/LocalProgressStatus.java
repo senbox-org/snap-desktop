@@ -15,6 +15,18 @@ public class LocalProgressStatus {
     public static final byte FAIL_DELETED = 8;
     public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 9;
 
+    public static final byte PENDING_COPY = 10;
+    public static final byte COPYING = 11;
+    public static final byte FAIL_COPIED = 12;
+    public static final byte COPIED = 13;
+
+    public static final byte PENDING_MOVE = 14;
+    public static final byte MOVING = 15;
+    public static final byte FAIL_MOVED = 16;
+    public static final byte MOVED = 17;
+
+    public static final byte MISSING_PRODUCT_FROM_REPOSITORY = 18;
+
     private byte status;
 
     public LocalProgressStatus(byte status) {
@@ -39,6 +51,10 @@ public class LocalProgressStatus {
 
     public boolean isFailOpenedBecauseNoProductReader() {
         return (this.status == FAIL_OPENED_MISSING_PRODUCT_READER);
+    }
+
+    public byte getStatus() {
+        return status;
     }
 
     public void setStatus(byte status) {

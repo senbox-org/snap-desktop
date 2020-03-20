@@ -139,11 +139,19 @@ public class OutputProductListModel {
         return this.outputProductResultsCallback.getOutputProductResults().getLocalProductsMap();
     }
 
-    public List<RepositoryProduct> addPendingOpenProducts(RepositoryProduct[] pendingOpenProducts) {
+    public List<RepositoryProduct> addPendingOpenLocalProducts(RepositoryProduct[] pendingOpenProducts) {
         return addPendingLocalProgressProducts(pendingOpenProducts, LocalProgressStatus.PENDING_OPEN);
     }
 
-    public List<RepositoryProduct> addPendingDeleteProducts(RepositoryProduct[] pendingDeleteProducts) {
+    public List<RepositoryProduct> addPendingCopyLocalProducts(RepositoryProduct[] pendingCopyProducts) {
+        return addPendingLocalProgressProducts(pendingCopyProducts, LocalProgressStatus.PENDING_COPY);
+    }
+
+    public List<RepositoryProduct> addPendingMoveLocalProducts(RepositoryProduct[] pendingMoveProducts) {
+        return addPendingLocalProgressProducts(pendingMoveProducts, LocalProgressStatus.PENDING_MOVE);
+    }
+
+    public List<RepositoryProduct> addPendingDeleteLocalProducts(RepositoryProduct[] pendingDeleteProducts) {
         return addPendingLocalProgressProducts(pendingDeleteProducts, LocalProgressStatus.PENDING_DELETE);
     }
 
@@ -200,20 +208,39 @@ public class OutputProductListModel {
         if (pendingLocalProducts.length > 0) {
             int startIndex = pendingLocalProducts.length - 1;
             int endIndex = 0;
+//            for (int i=0; i<pendingLocalProducts.length; i++) {
+//                LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
+//                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailOpenedBecauseNoProductReader() || openProgressStatus.isFailDeleted()) {
+//                    productsToProcess.add(pendingLocalProducts[i]);
+//                    int index = findProductIndex(pendingLocalProducts[i]);
+//                    if (index >= 0) {
+//                        if (startIndex > index) {
+//                            startIndex = index;
+//                        }
+//                        if (endIndex < index) {
+//                            endIndex = index;
+//                        }
+//                        getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
+//                    }
+//                }
+//            }
             for (int i=0; i<pendingLocalProducts.length; i++) {
                 LocalProgressStatus openProgressStatus = getLocalProductsMap().get(pendingLocalProducts[i]);
-                if (openProgressStatus == null || openProgressStatus.isFailOpened() || openProgressStatus.isFailOpenedBecauseNoProductReader() || openProgressStatus.isFailDeleted()) {
-                    productsToProcess.add(pendingLocalProducts[i]);
-                    int index = findProductIndex(pendingLocalProducts[i]);
-                    if (index >= 0) {
-                        if (startIndex > index) {
-                            startIndex = index;
-                        }
-                        if (endIndex < index) {
-                            endIndex = index;
-                        }
-                        getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
+                if (openProgressStatus == null ) {
+                    getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
+                } else {
+                    openProgressStatus.setStatus(status);
+                }
+                productsToProcess.add(pendingLocalProducts[i]);
+                int index = findProductIndex(pendingLocalProducts[i]);
+                if (index >= 0) {
+                    if (startIndex > index) {
+                        startIndex = index;
                     }
+                    if (endIndex < index) {
+                        endIndex = index;
+                    }
+                    getLocalProductsMap().put(pendingLocalProducts[i], new LocalProgressStatus(status));
                 }
             }
             if (productsToProcess.size() > 0) {

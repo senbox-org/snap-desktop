@@ -178,17 +178,18 @@ public class RepositoriesCredentialsTableModel extends AbstractTableModel {
     }
 
     public void updateCellData(int row, int column, String data) {
-        switch (column) {
-            case REPO_CRED_USER_COLUMN:
-                credentialsTableData.get(row).setUserCellData(data);
-                break;
-            case REPO_CRED_PASS_COLUMN:
-                credentialsTableData.get(row).setPasswordCellData(data);
-                break;
-            default:
-                break;
+        if (credentialsTableData.size() > row) {
+            switch (column) {
+                case REPO_CRED_USER_COLUMN:
+                    credentialsTableData.get(row).setUserCellData(data);
+                    break;
+                case REPO_CRED_PASS_COLUMN:
+                    credentialsTableData.get(row).setPasswordCellData(data);
+                    break;
+                default:
+                    break;
+            }
         }
-
     }
 
     public List<Credentials> fetchData() {

@@ -907,7 +907,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
 
     private void showDialogToSelectGraphFile(String dialogTitle, String bidingPropertyName, String graphFilePath) {
         CustomFileChooser fileChooser = CustomFileChooser.buildFileChooser(dialogTitle, false, JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(CustomFileChooser.buildXMLFileFilter());
+        fileChooser.setFileFilter(CustomFileChooser.buildFileFilter(".xml", "*.xml"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         Path graphPath;
         Path currentDirectoryPath;

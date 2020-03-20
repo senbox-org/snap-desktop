@@ -69,6 +69,16 @@ public class GraphNodeList {
         return null;
     }
 
+    public GraphNode[] findAllGraphNodeByOperator(String operatorName) {
+        final List<GraphNode> resultList = new ArrayList<>();
+        for (GraphNode n : nodeList) {
+            if (n.getOperatorName().equals(operatorName)) {
+                resultList.add(n);
+            }
+        }
+        return resultList.toArray(new GraphNode[0]);
+    }
+
     boolean isGraphComplete() {
         int nodesWithoutSources = 0;
         for (GraphNode n : nodeList) {

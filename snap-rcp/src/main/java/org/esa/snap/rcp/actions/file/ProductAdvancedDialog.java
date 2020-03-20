@@ -13,6 +13,7 @@ import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.subset.AbstractSubsetRegion;
 import org.esa.snap.core.subset.GeometrySubsetRegion;
 import org.esa.snap.core.subset.PixelSubsetRegion;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.UIUtils;
@@ -560,7 +561,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             final Rectangle.Float productBounds = new Rectangle.Float(0, 0, productWidth, productHeight);
             Rectangle2D finalRegion = productBounds.createIntersection(region);
             Rectangle bounds = new Rectangle((int)finalRegion.getMinX(), (int)finalRegion.getMinY(), (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1, (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1);
-            Geometry geometry = ProductUtils.computeGeometryUsingPixelRegion(geoCoding, productWidth, productHeight, bounds);
+            Geometry geometry = GeoUtils.computeGeometryUsingPixelRegion(geoCoding, bounds);
             return new GeometrySubsetRegion(geometry, 0);
         }
         return null;

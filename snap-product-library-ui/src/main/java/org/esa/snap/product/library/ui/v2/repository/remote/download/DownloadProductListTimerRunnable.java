@@ -110,6 +110,11 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         this.threadListener.onStopExecuting(this);
     }
 
+    @Override
+    protected boolean onTimerWakeUp(String message) {
+        return super.onTimerWakeUp(getSearchingProductListMessage() + "...");
+    }
+
     private void updateProductListSizeLater(long totalProductCount) {
         GenericRunnable<Long> runnable = new GenericRunnable<Long>(totalProductCount) {
             @Override
@@ -158,6 +163,10 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     public static String buildProgressBarDownloadingText(long totalDownloaded, long totalProducts) {
-        return ProductLibraryToolViewV2.getSearchingProductListMessage() + ": " + Long.toString(totalDownloaded) + " out of " + Long.toString(totalProducts);
+        return getSearchingProductListMessage() + ": " + Long.toString(totalDownloaded) + " out of " + Long.toString(totalProducts);
+    }
+
+    private static String getSearchingProductListMessage() {
+        return "Searching product list";
     }
 }

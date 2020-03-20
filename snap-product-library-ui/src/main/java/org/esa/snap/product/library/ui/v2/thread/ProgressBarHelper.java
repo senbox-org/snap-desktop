@@ -7,7 +7,7 @@ public interface ProgressBarHelper {
 
     public boolean hideProgressPanel(int threadId);
 
-    public boolean showProgressPanel(int threadId);
+    public boolean showProgressPanel(int threadId, String message);
 
     public boolean isCurrentThread(int threadId);
 
