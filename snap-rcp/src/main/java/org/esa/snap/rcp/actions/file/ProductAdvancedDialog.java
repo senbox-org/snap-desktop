@@ -5,43 +5,34 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.metadata.MetadataInspector;
-import org.esa.snap.core.param.ParamChangeEvent;
-import org.esa.snap.core.param.ParamChangeListener;
-import org.esa.snap.core.param.ParamGroup;
-import org.esa.snap.core.param.ParamValidateException;
-import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.subset.AbstractSubsetRegion;
 import org.esa.snap.core.subset.GeometrySubsetRegion;
 import org.esa.snap.core.subset.PixelSubsetRegion;
 import org.esa.snap.core.util.GeoUtils;
-import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.MathUtils;
-import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.AbstractModalDialog;
 import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by jcoravu on 17/2/2020.
  * Updated by Denisa Stefanescu on 18/02/2020
+ * Updated by Oana H. on 18/03/2020 in order to replace the deprecated Parameter API
  */
-public class ProductAdvancedDialog extends AbstractModalDialog implements ParamChangeListener {
-
-    private static final Logger logger = Logger.getLogger(ProductAdvancedDialog.class.getName());
+public class ProductAdvancedDialog extends AbstractModalDialog {
 
     private static final int MIN_SCENE_VALUE = 0;
-    private static final String FORMAT_PATTERN = "#0.00#";
 
     private final JList bandList;
     private final JList maskList;
@@ -64,14 +55,14 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
     private int productWidth;
     private int productHeight;
 
-    private Parameter paramX1;
-    private Parameter paramY1;
-    private Parameter paramWidth;
-    private Parameter paramHeight;
-    private Parameter paramWestLon1;
-    private Parameter paramEastLon2;
-    private Parameter paramNorthLat1;
-    private Parameter paramSouthLat2;
+    private JSpinner pixelCoordXSpinner;
+    private JSpinner pixelCoordYSpinner;
+    private JSpinner pixelCoordWidthSpinner;
+    private JSpinner pixelCoordHeightSpinner;
+    private JSpinner geoCoordWestLongSpinner;
+    private JSpinner geoCoordEastLongSpinner;
+    private JSpinner geoCoordNorthLatSpinner;
+    private JSpinner geoCoordSouthLatSpinner;
 
     private MetadataInspector metadataInspector;
     private File file;
@@ -115,10 +106,8 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
 
     @Override
     protected JPanel buildContentPanel(int gapBetweenColumns, int gapBetweenRows) {
-        ParamGroup pg = new ParamGroup();
-        initPixelParameters(pg);
-        initGeoCodingParameters(pg);
-        pg.addParamChangeListener(this);
+        initPixelCoordUIComponents();
+        initGeoCoordUIComponents();
         copyMasks.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -197,89 +186,134 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
         GridBagConstraints pixgbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
         pixelPanel.add(new JLabel("SceneX:"), pixgbc);
         pixgbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, gapBetweenColumns);
-        pixelPanel.add(UIUtils.createSpinner(paramX1, 25, "#0"),pixgbc);
+        pixelPanel.add(pixelCoordXSpinner, pixgbc);
 
         pixgbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("SceneY:"), pixgbc);
         pixgbc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        pixelPanel.add(UIUtils.createSpinner(paramY1, 25, "#0"),pixgbc);
+        pixelPanel.add(pixelCoordYSpinner, pixgbc);
 
         pixgbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("Scene width:"), pixgbc);
         pixgbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        pixelPanel.add(UIUtils.createSpinner(paramWidth, 25, "#0"),pixgbc);
+        pixelPanel.add(pixelCoordWidthSpinner, pixgbc);
 
         pixgbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         pixelPanel.add(new JLabel("Scene height:"), pixgbc);
         pixgbc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        pixelPanel.add(UIUtils.createSpinner(paramHeight, 25, "#0"),pixgbc);
+        pixelPanel.add(pixelCoordHeightSpinner, pixgbc);
     }
 
     private void createGeoCodingPanel(int gapBetweenColumns, int gapBetweenRows) {
         GridBagConstraints geobc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, 0, 0);
         geoPanel.add(new JLabel("North latitude bound:"), geobc);
         geobc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, gapBetweenColumns);
-        geoPanel.add(UIUtils.createSpinner(paramNorthLat1, 1.0, FORMAT_PATTERN),geobc);
+        geoPanel.add(geoCoordNorthLatSpinner, geobc);
 
         geobc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("West longitude bound:"), geobc);
         geobc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        geoPanel.add(UIUtils.createSpinner(paramWestLon1, 1.0, FORMAT_PATTERN),geobc);
+        geoPanel.add(geoCoordWestLongSpinner, geobc);
 
         geobc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("South latitude bound:"), geobc);
         geobc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        geoPanel.add(UIUtils.createSpinner(paramSouthLat2, 1.0, FORMAT_PATTERN),geobc);
+        geoPanel.add(geoCoordSouthLatSpinner, geobc);
 
         geobc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         geoPanel.add(new JLabel("East longitude bound:"), geobc);
         geobc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        geoPanel.add(UIUtils.createSpinner(paramEastLon2, 1.0, FORMAT_PATTERN),geobc);
+        geoPanel.add(geoCoordEastLongSpinner, geobc);
     }
 
-    private void initPixelParameters(ParamGroup pg){
-        paramX1 = new Parameter("source_x1", MIN_SCENE_VALUE);
-        paramX1.getProperties().setDescription("Start X co-ordinate given in pixels");
-        paramY1 = new Parameter("source_y1", MIN_SCENE_VALUE);
-        paramY1.getProperties().setDescription("Start Y co-ordinate given in pixels");
-        paramWidth = new Parameter("source_width", Integer.MAX_VALUE);
-        paramWidth.getProperties().setDescription("Product width");
-        paramHeight = new Parameter("source_height", Integer.MAX_VALUE);
-        paramHeight.getProperties().setDescription("Product height");
-        pg.addParameter(paramX1);
-        pg.addParameter(paramY1);
-        pg.addParameter(paramWidth);
-        pg.addParameter(paramHeight);
+    /**
+     * Creates the UI components for the Pixel Coordinates panel
+     */
+    private void initPixelCoordUIComponents(){
+        pixelCoordXSpinner = new JSpinner(new SpinnerNumberModel(0,0, Integer.MAX_VALUE, 25));
+        pixelCoordXSpinner.getModel().setValue(MIN_SCENE_VALUE);
+        pixelCoordXSpinner.setToolTipText("Start X co-ordinate given in pixels");
+        pixelCoordXSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStatePixelCoordsChanged(event);
+            }
+        });
+
+        pixelCoordYSpinner = new JSpinner(new SpinnerNumberModel(0,0, Integer.MAX_VALUE, 25));
+        pixelCoordYSpinner.getModel().setValue(MIN_SCENE_VALUE);
+        pixelCoordYSpinner.setToolTipText("Start Y co-ordinate given in pixels");
+        pixelCoordYSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStatePixelCoordsChanged(event);
+            }
+        });
+
+        pixelCoordWidthSpinner = new JSpinner(new SpinnerNumberModel(0,0, Integer.MAX_VALUE, 25));
+        pixelCoordWidthSpinner.getModel().setValue(Integer.MAX_VALUE);
+        pixelCoordWidthSpinner.setToolTipText("Product width");
+        pixelCoordWidthSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStatePixelCoordsChanged(event);
+            }
+        });
+
+        pixelCoordHeightSpinner = new JSpinner(new SpinnerNumberModel(0,0, Integer.MAX_VALUE, 25));
+        pixelCoordHeightSpinner.getModel().setValue(Integer.MAX_VALUE);
+        pixelCoordHeightSpinner.setToolTipText("Product height");
+        pixelCoordHeightSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStatePixelCoordsChanged(event);
+            }
+        });
     }
 
-    private void initGeoCodingParameters(ParamGroup pg){
-        paramNorthLat1 = new Parameter("geo_lat1", 90.0);
-        paramNorthLat1.getProperties().setDescription("North bound latitude");
-        paramNorthLat1.getProperties().setPhysicalUnit("°");
-        paramNorthLat1.getProperties().setMinValue(-90.0);
-        paramNorthLat1.getProperties().setMaxValue(90.0);
-        pg.addParameter(paramNorthLat1);
+    /**
+     * Creates the UI components for the Geographical Coordinates panel
+     */
+    private void initGeoCoordUIComponents(){
+        geoCoordNorthLatSpinner = new JSpinner(new SpinnerNumberModel(0.0,-90.0, 90.0, 1.0));
+        geoCoordNorthLatSpinner.getModel().setValue(90.0);
+        geoCoordNorthLatSpinner.setToolTipText("North bound latitude (°)");
+        geoCoordNorthLatSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStateGeoCoordsChanged(event);
+            }
+        });
 
-        paramWestLon1 = new Parameter("geo_lon1", -180.0);
-        paramWestLon1.getProperties().setDescription("West bound longitude");
-        paramWestLon1.getProperties().setPhysicalUnit("°");
-        paramWestLon1.getProperties().setMinValue(-180.0);
-        paramWestLon1.getProperties().setMaxValue(180.0);
-        pg.addParameter(paramWestLon1);
+        geoCoordWestLongSpinner = new JSpinner(new SpinnerNumberModel(0.0,-180.0, 180.0, 1.0));
+        geoCoordWestLongSpinner.getModel().setValue(-180.0);
+        geoCoordWestLongSpinner.setToolTipText("West bound longitude (°)");
+        geoCoordWestLongSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStateGeoCoordsChanged(event);
+            }
+        });
 
-        paramSouthLat2 = new Parameter("geo_lat2", -90.0);
-        paramSouthLat2.getProperties().setDescription("South bound latitude");
-        paramSouthLat2.getProperties().setPhysicalUnit("°");
-        paramSouthLat2.getProperties().setMinValue(-90.0);
-        paramSouthLat2.getProperties().setMaxValue(90.0);
-        pg.addParameter(paramSouthLat2);
+        geoCoordSouthLatSpinner = new JSpinner(new SpinnerNumberModel(0.0,-90.0, 90.0, 1.0));
+        geoCoordSouthLatSpinner.getModel().setValue(-90.0);
+        geoCoordSouthLatSpinner.setToolTipText("South bound latitude (°)");
+        geoCoordSouthLatSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStateGeoCoordsChanged(event);
+            }
+        });
 
-        paramEastLon2 = new Parameter("geo_lon2", 180.0);
-        paramEastLon2.getProperties().setDescription("East bound longitude");
-        paramEastLon2.getProperties().setPhysicalUnit("°");
-        paramEastLon2.getProperties().setMinValue(-180.0);
-        paramEastLon2.getProperties().setMaxValue(180.0);
-        pg.addParameter(paramEastLon2);
+        geoCoordEastLongSpinner = new JSpinner(new SpinnerNumberModel(0.0,-180.0, 180.0, 1.0));
+        geoCoordEastLongSpinner.getModel().setValue(180.0);
+        geoCoordEastLongSpinner.setToolTipText("East bound longitude (°)");
+        geoCoordEastLongSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                updateUIStateGeoCoordsChanged(event);
+            }
+        });
     }
 
     private void okButtonPressed() {
@@ -308,25 +342,24 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
         this.readerInspectorExposeParameters = result;
         productWidth = result.getProductWidth();
         productHeight = result.getProductHeight();
-        try {
-            paramX1.getProperties().setMaxValue(result.getProductWidth() - 1 > 0 ? result.getProductWidth() - 1 : 0);
-            paramY1.getProperties().setMaxValue(result.getProductHeight() - 1 > 0 ? result.getProductHeight() - 1 : 0);
 
-            paramWidth.getProperties().setMinValue((Integer) paramX1.getValue());
-            paramWidth.getProperties().setMaxValue(result.getProductWidth());
-            paramWidth.setValue(result.getProductWidth());
+        ((SpinnerNumberModel)pixelCoordXSpinner.getModel()).setMaximum(result.getProductWidth() - 1 > 0 ? result.getProductWidth() - 1 : 0);
 
-            paramHeight.getProperties().setMinValue((Integer) paramY1.getValue());
-            paramHeight.getProperties().setMaxValue(result.getProductHeight());
-            paramHeight.setValue(result.getProductHeight());
-            if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
-                syncLatLonWithXYParams();
-            }else{
-                geoCoordRadio.setEnabled(false);
-                geoPanel.setEnabled(false);
-            }
-        } catch (ParamValidateException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+        ((SpinnerNumberModel)pixelCoordYSpinner.getModel()).setMaximum(result.getProductHeight() - 1 > 0 ? result.getProductHeight() - 1 : 0);
+
+        ((SpinnerNumberModel)pixelCoordWidthSpinner.getModel()).setMinimum((Integer) pixelCoordXSpinner.getValue());
+        ((SpinnerNumberModel)pixelCoordWidthSpinner.getModel()).setMaximum(result.getProductWidth());
+        pixelCoordWidthSpinner.setValue(result.getProductWidth());
+
+        ((SpinnerNumberModel)pixelCoordHeightSpinner.getModel()).setMinimum((Integer) pixelCoordYSpinner.getValue());
+        ((SpinnerNumberModel)pixelCoordHeightSpinner.getModel()).setMaximum(result.getProductHeight());
+        pixelCoordHeightSpinner.setValue(result.getProductHeight());
+
+        if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
+            syncLatLonWithXYParams();
+        }else{
+            geoCoordRadio.setEnabled(false);
+            geoPanel.setEnabled(false);
         }
 
         this.bandList.setListData(result.getBandList().toArray());
@@ -343,22 +376,24 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
         getJDialog().dispose();
     }
 
-    @Override
-    public void parameterValueChanged(ParamChangeEvent event) {
-        updateUIState(event);
-    }
-
-    private void updateUIState(ParamChangeEvent event) {
+    private void updateUIStatePixelCoordsChanged(ChangeEvent event) {
         if (updatingUI.compareAndSet(false, true)) {
             try {
-                if (event != null) {
-                    final String paramName = event.getParameter().getName();
-                    if (paramName.startsWith("geo_") && geoCoordRadio.isEnabled()) {
-                        geoCodingChange();
-                    } else if (paramName.startsWith("pixel_") || paramName.startsWith("source_")) {
-                        pixelPanelChanged();
-                        syncLatLonWithXYParams();
-                    }
+                if (event != null && pixelCoordRadio.isEnabled()) {
+                    pixelPanelChanged();
+                    syncLatLonWithXYParams();
+                }
+            } finally {
+                updatingUI.set(false);
+            }
+        }
+    }
+
+    private void updateUIStateGeoCoordsChanged(ChangeEvent event) {
+        if (updatingUI.compareAndSet(false, true)) {
+            try {
+                if (event != null && geoCoordRadio.isEnabled()) {
+                    geoCodingChange();
                 }
             } finally {
                 updatingUI.set(false);
@@ -367,10 +402,10 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
     }
 
     public void pixelPanelChanged() {
-        int x1 = ((Number) paramX1.getValue()).intValue();
-        int y1 = ((Number) paramY1.getValue()).intValue();
-        int w = ((Number) paramWidth.getValue()).intValue();
-        int h = ((Number) paramHeight.getValue()).intValue();
+        int x1 = ((Number) pixelCoordXSpinner.getValue()).intValue();
+        int y1 = ((Number) pixelCoordYSpinner.getValue()).intValue();
+        int w = ((Number) pixelCoordWidthSpinner.getValue()).intValue();
+        int h = ((Number) pixelCoordHeightSpinner.getValue()).intValue();
 
         if (x1 < 0) {
             x1 = 0;
@@ -403,23 +438,18 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             }
         }
 
-        //reset filed values when the user writes wrong values
-        paramX1.setValue(0, null);
-        paramY1.setValue(0, null);
-        paramWidth.setValue(w, null);
-        paramHeight.setValue(h, null);
-
-        paramX1.setValue(x1, null);
-        paramY1.setValue(y1, null);
-        paramWidth.setValue(w, null);
-        paramHeight.setValue(h, null);
+        //reset fields values when the user writes wrong values
+        pixelCoordXSpinner.setValue(x1);
+        pixelCoordYSpinner.setValue(y1);
+        pixelCoordWidthSpinner.setValue(w);
+        pixelCoordHeightSpinner.setValue(h);
     }
 
     private void geoCodingChange() {
-        final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
-                                          (Double) paramWestLon1.getValue());
-        final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
-                                          (Double) paramEastLon2.getValue());
+        final GeoPos geoPos1 = new GeoPos((Double) geoCoordNorthLatSpinner.getValue(),
+                (Double) geoCoordWestLongSpinner.getValue());
+        final GeoPos geoPos2 = new GeoPos((Double) geoCoordSouthLatSpinner.getValue(),
+                (Double) geoCoordEastLongSpinner.getValue());
 
         updateXYParams(geoPos1, geoPos2);
     }
@@ -435,7 +465,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
             if (!pixelPos2.isValid()) {
                 pixelPos2.setLocation(this.readerInspectorExposeParameters.getProductWidth(),
-                                      this.readerInspectorExposeParameters.getProductHeight());
+                        this.readerInspectorExposeParameters.getProductHeight());
             }
 
             final Rectangle.Float region = new Rectangle.Float();
@@ -443,25 +473,33 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             final Rectangle.Float productBounds;
 
             productBounds = new Rectangle.Float(0, 0,
-                                                this.readerInspectorExposeParameters.getProductWidth(),
-                                                this.readerInspectorExposeParameters.getProductHeight());
+                    this.readerInspectorExposeParameters.getProductWidth(),
+                    this.readerInspectorExposeParameters.getProductHeight());
 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
 
-            paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
-            paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
+            if(isValueInNumericSpinnerRange(pixelCoordXSpinner, (int) finalRegion.getMinX())){
+                pixelCoordXSpinner.setValue((int) finalRegion.getMinX());
+            }
+            if(isValueInNumericSpinnerRange(pixelCoordYSpinner, (int) finalRegion.getMinY())){
+                pixelCoordYSpinner.setValue((int) finalRegion.getMinY());
+            }
             int width = (int)(finalRegion.getMaxX() - finalRegion.getMinX()) + 1;
             int height = (int)(finalRegion.getMaxY() - finalRegion.getMinY()) + 1;
-            paramWidth.setValue(width, ex -> true);
-            paramHeight.setValue(height, ex -> true);
+            if(isValueInNumericSpinnerRange(pixelCoordWidthSpinner, width)){
+                pixelCoordWidthSpinner.setValue(width);
+            }
+            if(isValueInNumericSpinnerRange(pixelCoordHeightSpinner, height)){
+                pixelCoordHeightSpinner.setValue(height);
+            }
         }
     }
 
     private void syncLatLonWithXYParams() {
         if (this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getGeoCoding() != null) {
-            final PixelPos pixelPos1 = new PixelPos((Integer) paramX1.getValue(), (Integer) paramY1.getValue());
-            int paramX2 = (Integer)paramWidth.getValue() + (Integer)paramX1.getValue() - 1;
-            int paramY2 = (Integer)paramHeight.getValue() + (Integer)paramY1.getValue() - 1;
+            final PixelPos pixelPos1 = new PixelPos((Integer) pixelCoordXSpinner.getValue(), (Integer) pixelCoordYSpinner.getValue());
+            int paramX2 = (Integer)pixelCoordWidthSpinner.getValue() + (Integer)pixelCoordXSpinner.getValue() - 1;
+            int paramY2 = (Integer)pixelCoordHeightSpinner.getValue() + (Integer)pixelCoordYSpinner.getValue() - 1;
             final PixelPos pixelPos2 = new PixelPos(paramX2, paramY2);
             GeoCoding geoCoding = this.readerInspectorExposeParameters.getGeoCoding();
 
@@ -470,20 +508,30 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
             if (geoPos1.isValid()) {
                 double lat = geoPos1.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramNorthLat1.setValue(lat, ex -> true);
+                geoCoordNorthLatSpinner.setValue(lat);
                 double lon = geoPos1.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramWestLon1.setValue(lon, ex -> true);
+                geoCoordWestLongSpinner.setValue(lon);
             }
             if (geoPos2.isValid()) {
                 double lat = geoPos2.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
-                paramSouthLat2.setValue(lat, ex -> true);
+                geoCoordSouthLatSpinner.setValue(lat);
                 double lon = geoPos2.getLon();
                 lon = MathUtils.crop(lon, -180.0, 180.0);
-                paramEastLon2.setValue(lon, ex -> true);
+                geoCoordEastLongSpinner.setValue(lon);
             }
         }
+    }
+
+    private boolean isValueInNumericSpinnerRange(JSpinner spinner, Integer value){
+        final Integer min = (Integer)((SpinnerNumberModel)spinner.getModel()).getMinimum();
+        final Integer max = (Integer)((SpinnerNumberModel)spinner.getModel()).getMaximum();
+        if (value >= min && value <= max){
+            return true;
+        }
+
+        return false;
     }
 
     public static JLabel addComponent(JPanel contentPane, GridBagConstraints gbc, String text, JComponent component, int pos) {
@@ -536,11 +584,12 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
         if(geoRegion){
             subsetRegion = setGeometry();
         }else{
-            if (paramX1 != null && paramY1 != null && paramWidth != null && paramHeight != null) {
-                subsetRegion = new PixelSubsetRegion(Integer.parseInt(paramX1.getValueAsText()),
-                                                     Integer.parseInt(paramY1.getValueAsText()),
-                                                     Integer.parseInt(paramWidth.getValueAsText()),
-                                                     Integer.parseInt(paramHeight.getValueAsText()), 0);
+            if (pixelCoordXSpinner.getValue() != null && pixelCoordYSpinner.getValue() != null &&
+                    pixelCoordWidthSpinner.getValue() != null && pixelCoordHeightSpinner.getValue() != null) {
+                subsetRegion = new PixelSubsetRegion(((Integer)pixelCoordXSpinner.getValue()),
+                        ((Integer)pixelCoordYSpinner.getValue()),
+                        ((Integer)pixelCoordWidthSpinner.getValue()),
+                        ((Integer)pixelCoordHeightSpinner.getValue()), 0);
             }
         }
         productSubsetDef.setSubsetRegion(subsetRegion);
@@ -548,10 +597,10 @@ public class ProductAdvancedDialog extends AbstractModalDialog implements ParamC
 
     private AbstractSubsetRegion setGeometry(){
         if(this.readerInspectorExposeParameters != null  && this.readerInspectorExposeParameters.isHasGeoCoding()) {
-            final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
-                                              (Double) paramWestLon1.getValue());
-            final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
-                                              (Double) paramEastLon2.getValue());
+            final GeoPos geoPos1 = new GeoPos((Double) geoCoordNorthLatSpinner.getValue(),
+                    (Double) geoCoordWestLongSpinner.getValue());
+            final GeoPos geoPos2 = new GeoPos((Double) geoCoordSouthLatSpinner.getValue(),
+                    (Double) geoCoordEastLongSpinner.getValue());
             GeoCoding geoCoding = this.readerInspectorExposeParameters.getGeoCoding();
             final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
             final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
