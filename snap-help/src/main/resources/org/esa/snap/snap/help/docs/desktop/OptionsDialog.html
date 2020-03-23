@@ -275,7 +275,7 @@ management settings.</p>
 
 <h3>Performance Settings</h3>
 
-<h4><a name="performancesettings">Performance Settings</a></h4>
+<!--<p>&nbsp;</p>-->
 <img src="images/OptionsDialog-Performance-1.png" alt="Performance Settings">
 <p>This preferences page contains settings for the Java VM and processing parameters.
     Both settings might be computed by SNAP or being reset to default values.</p>
@@ -295,25 +295,33 @@ management settings.</p>
 </ul>
 
 
+<h3><a name="www">WWW Settings</a></h3>
+<img src="images/OptionsDialog-WWW-1-Overview.png" alt="WWW">
 
-<!------------------------>
-<!--Legacy content below-->
-<!------------------------>
-
-<h4><a name="modulerepository">Module Repository</a></h4>
 <ul>
-    <li><b>Module Repository URL:</b><br>
-        This is the URL to the modules repository. The <a href="ModuleManager.html">Module Manager</a>
-        searches this loaction for new and updated modules.
+    <li><b>Web Browser</b> - Select your preferred web browser for displaying content.
+        Choose between either the system default or a specific browser app. <br></li>
+    <li><b>Proxy settings</b> - Specify your proxy settings if needed..<br></li>
+    <ul>
+        <li><b>No Proxy</b> - Disable proxies</li>
+        <li><b>Use System Proxy Settings</b> - Reload proxy settings defined in your system configuration.</li>
+        <li><b>Manual Proxy Settings</b> - Enter manual proxy settings.
+            Clicking on <a href="#advancedproxy"><img src="images/icons/More....png"></a>
+        brings up the <a href="#advancedproxy">Advanced Proxy Settings</a> dialog below. </li>
+    </ul>
+    <li><b>Test connection</b> - Checks whether the proxy settings are valid.</li>
+</ul>
+
+<h4><a name="advancedproxy">Advanced Proxy Settings</a></h4>
+<img src="images/OptionsDialog-WWW-2-AdvancedProxySettings.png" alt="Advanced Proxy Settings">
+<p>If you are behind a proxy you should configure your settings here.<br>
+    You are able to configure the settings for different protocols or <u>check the box to use the same settings for all protocols.</u></p>
+<ul>
+    <li><b>HTTP Proxy</b> - Enter the proxy server address and the port.
     </li>
-    <li><b>Use HTTP Proxy</b>
-        If you are behind a proxy you should enable this option.
+    <li><b>HTTPS Proxy</b> - Enter the proxy server address and the port.
     </li>
-    <li><b>Proxy Host:</b><br>
-        The host address of your proxy.
-    </li>
-    <li><b>Proxy Port:</b><br>
-        The port number of your proxy.
+    <li><b>SOCKS Proxy</b> - Enter the proxy server address and the port.
     </li>
     <li><b>Use HTTP proxy authentication</b><br>
         If your proxy requires authentication enable this option.
@@ -326,6 +334,22 @@ management settings.</p>
     </li>
 
 </ul>
+
+
+<h3><a name="keymap">Keymap Settings</a></h3>
+<img src="images/OptionsDialog-Keymap-1.png" alt="Keymap">
+In this preference page you are able to change or create keystrokes for actions within SNAP
+<ul>
+    <li><b>Web Browser</b> - Select your preferred web browser for displaying content.
+        Choose between either the system default or a specific browser app. <br></li>
+    <li><b>Proxy settings</b> - Specify your proxy settings if needed.<br></li>
+
+</ul>
+
+
+<!------------------------>
+<!--Legacy content below-->
+<!------------------------>
 
 
 <h4><a name="productsettings">Product Settings</a></h4>
