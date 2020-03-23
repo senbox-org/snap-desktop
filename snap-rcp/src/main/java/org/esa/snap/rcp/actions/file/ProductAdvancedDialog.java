@@ -425,7 +425,12 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
                 w = productWidth;
             }
             if (x1 + w > productWidth) {
-                w = w - x1;
+                if( (w - x1) >= 2) {
+                    w = w - x1;
+                }
+                else {
+                    w = productWidth - x1;
+                }
             }
         }
 
@@ -434,11 +439,22 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
                 h = productHeight;
             }
             if (y1 + h > productHeight) {
-                h = h - y1;
+                if (h - y1 >= 2) {
+                    h = h - y1;
+                }
+                else {
+                    h = productHeight - y1;
+                }
+
             }
         }
 
         //reset fields values when the user writes wrong values
+        pixelCoordXSpinner.setValue(0);
+        pixelCoordYSpinner.setValue(0);
+        pixelCoordWidthSpinner.setValue(w);
+        pixelCoordHeightSpinner.setValue(h);
+
         pixelCoordXSpinner.setValue(x1);
         pixelCoordYSpinner.setValue(y1);
         pixelCoordWidthSpinner.setValue(w);
