@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 
 /**
  * Created by jcoravu on 10/1/2019.
@@ -18,6 +20,44 @@ public class SwingUtils {
     public static LineBorder LINE_BORDER = new LineBorder(Color.GRAY, 1);
 
     private SwingUtils() {
+    }
+
+    public static ImageIcon loadImage(String resourceImagePath) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL imageURL = classLoader.getResource(resourceImagePath);
+        if (imageURL == null) {
+            throw new NullPointerException("The image '"+resourceImagePath+"' does not exist into the sources.");
+        }
+        return new ImageIcon(imageURL);
+    }
+
+    public static ImageIcon loadImage(String resourceImagePath, Dimension buttonSize, Integer scaledImagePadding) {
+        ImageIcon icon = loadImage(resourceImagePath);
+        if (scaledImagePadding != null && scaledImagePadding.intValue() >= 0) {
+            Image scaledImage = getScaledImage(icon.getImage(), buttonSize.width, buttonSize.height, scaledImagePadding.intValue());
+            icon = new ImageIcon(scaledImage);
+        }
+        return icon;
+    }
+
+    public static JButton buildButton(String resourceImagePath, ActionListener buttonListener, Dimension buttonSize, Integer scaledImagePadding) {
+        ImageIcon icon = loadImage(resourceImagePath, buttonSize, scaledImagePadding);
+        JButton button = new JButton(icon);
+        button.setFocusable(false);
+        button.addActionListener(buttonListener);
+        button.setPreferredSize(buttonSize);
+        button.setMinimumSize(buttonSize);
+        button.setMaximumSize(buttonSize);
+        return button;
+    }
+
+    private static Image getScaledImage(Image srcImg, int destinationImageWidth, int destinationImageHeight, int padding) {
+        BufferedImage resizedImg = new BufferedImage(destinationImageWidth, destinationImageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, padding, padding, destinationImageWidth-padding, destinationImageHeight-padding, 0, 0, srcImg.getWidth(null), srcImg.getHeight(null), null);
+        g2.dispose();
+        return resizedImg;
     }
 
     public static JComboBox<String> buildComboBox(String[] values, String valueToSelect, int textFieldPreferredHeight, boolean isEditable) {

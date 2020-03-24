@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='ISO-8859-1'  ?>
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+
 <!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
         "http://java.sun.com/products/javahelp/toc_2_0.dtd">
 
@@ -6,12 +7,7 @@
 
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Import and Export">
-            <tocitem text="Product Library" target="productLibrary"/>
-        </tocitem>
-        <tocitem text="Tools">
-            <tocitem text="Graph Tools">
-                <tocitem text="AOI Monitoring" target="AOIMonitoring"/>
-            </tocitem>
+            <tocitem text="Product Library Tool" target="productLibraryToolV2"/>
         </tocitem>
     </tocitem>
 
