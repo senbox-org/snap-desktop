@@ -28,7 +28,6 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -113,16 +112,16 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME, ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME, ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
@@ -262,13 +261,13 @@ public final class ColorBarLayerController extends DefaultConfigController {
      */
     private void configureTickmarksEnablement(BindingContext context) {
         enablementTickmarksInside = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, true);
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
 
-        enablementTickmarksLength = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, true);
+        enablementTickmarksLength = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, true,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
 
-        enablementTickmarksColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, true);
+        enablementTickmarksColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, true,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
 
 
         // handle it the first time so bound properties get properly enabled
@@ -332,11 +331,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
      */
     private void configureBorderEnablement(BindingContext context) {
 
-        enablementBorderWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME, true,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, true);
+        enablementBorderWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, true,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, true);
 
-        enablementBorderColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME, true,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, true);
+        enablementBorderColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, true,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, true);
 
 
         // handle it the first time so bound properties get properly enabled
@@ -544,22 +543,22 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // Border Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_SECTION_NAME,
+                key = ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP)
         boolean borderSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME,
+                key = ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
                 description = ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP)
         boolean borderShow = ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME,
+                key = ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
                 description = ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP)
         double borderWidth = ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME,
+                key = ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP)
         Color borderColor = ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT;
 
@@ -567,12 +566,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // Tickmarks Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_NAME,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP)
         boolean tickmarksSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
                 description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
         boolean tickmarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
 
@@ -582,12 +581,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         boolean tickmarkInside = ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
                 description = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP)
-        double tickmarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
+        int tickmarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP)
         Color tickmarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
 

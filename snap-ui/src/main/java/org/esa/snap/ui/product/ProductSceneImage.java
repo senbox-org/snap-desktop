@@ -650,6 +650,27 @@ public class ProductSceneImage implements ProductLayerContext {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
 
+        // Formatting Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
+                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT,
+                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_TYPE);
+
+
+
+
+
+
+
         // Color Bar Location Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
@@ -696,23 +717,80 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_NAME);
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_DEFAULT,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_DEFAULT,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_DEFAULT,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
+
+        // Tickmarks Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
+//
+//        addPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
+//
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TYPE);
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
+
+
+
+        // Border Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_BORDER_COLOR_TYPE);
 
 
 
@@ -860,51 +938,33 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_TYPE);
 
 
-        // Border Section
 
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_NAME);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_TYPE);
 
 
         // Tickmarks Section
 
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
+//        addSectionPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
+//        addPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
                 ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
                 ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME,
-                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
+//        addPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME,
-                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
+//        addPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
 
 
         // Corner Labels Section

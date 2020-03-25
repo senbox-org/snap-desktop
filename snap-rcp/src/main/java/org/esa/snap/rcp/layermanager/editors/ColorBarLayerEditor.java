@@ -42,6 +42,35 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     protected void addEditablePropertyDescriptors() {
 
 
+        // Formatting Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_FORMATTING_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_FORMATTING_SECTION_TOOLTIP);
+
+
+        PropertyDescriptor orientationPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY, String.class);
+        orientationPD.setDefaultValue(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
+        orientationPD.setDisplayName(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_LABEL);
+        orientationPD.setDescription(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TOOLTIP);
+        orientationPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_VALUE_SET));
+        orientationPD.setDefaultConverter();
+        addPropertyDescriptor(orientationPD);
+
+
+        PropertyDescriptor labelsColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_KEY, Color.class);
+        labelsColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_DEFAULT);
+        labelsColorPD.setDisplayName(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_LABEL);
+        labelsColorPD.setDescription(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_TOOLTIP);
+        labelsColorPD.setDefaultConverter();
+        addPropertyDescriptor(labelsColorPD);
+
+
+
+
+
+
+
 
         // Color Bar Location Section
 
@@ -117,11 +146,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Color Bar Title Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_NAME,
+        addSectionBreak(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_TOOLTIP);
 
-        PropertyDescriptor titleShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME,
+        PropertyDescriptor titleShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TYPE);
         titleShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_DEFAULT);
         titleShowPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_LABEL);
@@ -129,7 +158,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleShowPD.setDefaultConverter();
         addPropertyDescriptor(titleShowPD);
 
-        PropertyDescriptor titleValuePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME,
+        PropertyDescriptor titleValuePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TYPE);
         titleValuePD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_DEFAULT);
         titleValuePD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_LABEL);
@@ -137,7 +166,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleValuePD.setDefaultConverter();
         addPropertyDescriptor(titleValuePD);
 
-        PropertyDescriptor titleUnitsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME,
+        PropertyDescriptor titleUnitsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_KEY,
                 ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TYPE);
         titleUnitsPD.setDefaultValue(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_DEFAULT);
         titleUnitsPD.setDisplayName(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_LABEL);
@@ -147,7 +176,78 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        PropertyDescriptor titleColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY, Color.class);
+        titleColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT);
+        titleColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
+        titleColorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
+        titleColorPD.setDefaultConverter();
+        addPropertyDescriptor(titleColorPD);
 
+
+
+        // Tickmarks Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP);
+
+
+        PropertyDescriptor tickmarksShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, Boolean.class);
+        tickmarksShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+        tickmarksShowPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL);
+        tickmarksShowPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
+        tickmarksShowPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksShowPD);
+
+        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, Color.class);
+        tickmarksColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        tickmarksColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
+        tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
+        tickmarksColorPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksColorPD);
+
+        PropertyDescriptor tickmarksLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, Integer.class);
+        tickmarksLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+        tickmarksLengthPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL);
+        tickmarksLengthPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
+        tickmarksLengthPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksLengthPD);
+
+        PropertyDescriptor tickmarksWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, Integer.class);
+        tickmarksWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT);
+        tickmarksWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_LABEL);
+        tickmarksWidthPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP);
+        tickmarksWidthPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksWidthPD);
+
+
+
+        // Border Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP);
+
+        PropertyDescriptor borderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, Boolean.class);
+        borderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
+        borderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL);
+        borderShowPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP);
+        borderShowPD.setDefaultConverter();
+        addPropertyDescriptor(borderShowPD);
+
+        PropertyDescriptor borderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
+        borderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
+        borderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL);
+        borderWidthPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP);
+        borderWidthPD.setDefaultConverter();
+        addPropertyDescriptor(borderWidthPD);
+
+        PropertyDescriptor borderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, Color.class);
+        borderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
+        borderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL);
+        borderColorPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP);
+        borderColorPD.setDefaultConverter();
+        addPropertyDescriptor(borderColorPD);
 
 
 
@@ -331,46 +431,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(gridlinesColorPD);
 
 
-        // Border Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_BORDER_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP);
-
-        PropertyDescriptor borderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, Boolean.class);
-        borderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
-        borderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL);
-        borderShowPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP);
-        borderShowPD.setDefaultConverter();
-        addPropertyDescriptor(borderShowPD);
-
-        PropertyDescriptor borderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME, Double.class);
-        borderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
-        borderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL);
-        borderWidthPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP);
-        borderWidthPD.setDefaultConverter();
-        addPropertyDescriptor(borderWidthPD);
-
-        PropertyDescriptor borderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME, Color.class);
-        borderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
-        borderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL);
-        borderColorPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP);
-        borderColorPD.setDefaultConverter();
-        addPropertyDescriptor(borderColorPD);
 
 
         // Tickmark Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP);
 
-        PropertyDescriptor tickmarksShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, Boolean.class);
-        tickmarksShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
-        tickmarksShowPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL);
-        tickmarksShowPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
-        tickmarksShowPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksShowPD);
+
+
+
+
 
         PropertyDescriptor tickmarksInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, Boolean.class);
         tickmarksInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT);
@@ -379,19 +449,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         tickmarksInsidePD.setDefaultConverter();
         addPropertyDescriptor(tickmarksInsidePD);
 
-        PropertyDescriptor tickmarksLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, Double.class);
-        tickmarksLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
-        tickmarksLengthPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL);
-        tickmarksLengthPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
-        tickmarksLengthPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksLengthPD);
 
-        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME, Color.class);
-        tickmarksColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
-        tickmarksColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
-        tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
-        tickmarksColorPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksColorPD);
+
 
 
         // Corner Label Section
@@ -466,15 +525,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         boolean showTitle = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME);
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_NAME, showTitle,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME, showTitle);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_KEY, showTitle,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY, showTitle);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_NAME, showTitle,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_NAME, showTitle);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_KEY, showTitle,
+                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY, showTitle);
 
 
 
@@ -506,14 +565,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         boolean borderEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME);
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_NAME, borderEnabled,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, borderEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, borderEnabled,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, borderEnabled);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_NAME, borderEnabled,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_NAME, borderEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, borderEnabled,
+                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, borderEnabled);
 
 
         // Set enablement associated with "Labels Inside" checkbox
@@ -547,16 +606,19 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         boolean tickMarkEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
 
         bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_NAME, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, tickMarkEnabled,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_NAME, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, tickMarkEnabled,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, tickMarkEnabled,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
 
 
     }
