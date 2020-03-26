@@ -58,13 +58,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(orientationPD);
 
 
-        PropertyDescriptor labelsColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_KEY, Color.class);
-        labelsColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_DEFAULT);
-        labelsColorPD.setDisplayName(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_LABEL);
-        labelsColorPD.setDescription(ColorBarLayerType.PROPERTY_FORMATTING_TEXT_COLOR_TOOLTIP);
-        labelsColorPD.setDefaultConverter();
-        addPropertyDescriptor(labelsColorPD);
-
 
 
 
