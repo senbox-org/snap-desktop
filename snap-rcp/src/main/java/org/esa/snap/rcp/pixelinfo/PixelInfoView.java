@@ -87,11 +87,11 @@ public class PixelInfoView extends JPanel {
     private static final int UNIT_COLUMN = 2;
     private boolean showGeoPosDecimals;
 
-    public static final int POSITION_INDEX = 0;
-    public static final int TIME_INDEX = 1;
-    public static final int BANDS_INDEX = 2;
-    public static final int TIE_POINT_GRIDS_INDEX = 3;
-    public static final int FLAGS_INDEX = 4;
+     static final int POSITION_INDEX = 0;
+     static final int TIME_INDEX = 1;
+     static final int BANDS_INDEX = 2;
+     static final int TIE_POINT_GRIDS_INDEX = 3;
+     static final int FLAGS_INDEX = 4;
 
     private final PropertyChangeListener displayFilterListener;
     private final ProductNodeListener productNodeListener;
@@ -154,6 +154,10 @@ public class PixelInfoView extends JPanel {
         createUI();
     }
 
+    public void reset() {
+        modelUpdater.resetTableModels();
+    }
+
     ProductNodeListener getProductNodeListener() {
         return productNodeListener;
     }
@@ -200,7 +204,7 @@ public class PixelInfoView extends JPanel {
      *
      * @param displayFilter the filter, can be null
      */
-    public void setDisplayFilter(DisplayFilter displayFilter) {
+    private void setDisplayFilter(DisplayFilter displayFilter) {
         if (this.displayFilter != displayFilter) {
             if (this.displayFilter != null) {
                 this.displayFilter.removePropertyChangeListener(displayFilterListener);
@@ -215,7 +219,7 @@ public class PixelInfoView extends JPanel {
      *
      * @return the display filter, can be null
      */
-    public DisplayFilter getDisplayFilter() {
+    DisplayFilter getDisplayFilter() {
         return displayFilter;
     }
 
@@ -248,7 +252,7 @@ public class PixelInfoView extends JPanel {
         }
     }
 
-    public boolean getShowPixelPosOffset1() {
+    boolean getShowPixelPosOffset1() {
         return showPixelPosOffset1;
     }
 
@@ -428,7 +432,7 @@ public class PixelInfoView extends JPanel {
         }
 
         public void removePropertyChangeListener(PropertyChangeListener displayFilterListener) {
-            if (displayFilterListener != null && propertyChangeListeners.contains(displayFilterListener)) {
+            if (displayFilterListener != null) {
                 propertyChangeListeners.remove(displayFilterListener);
             }
         }
@@ -440,7 +444,7 @@ public class PixelInfoView extends JPanel {
             }
         }
 
-        public void setShowOnlyLoadedOrDisplayedBands(boolean v) {
+        void setShowOnlyLoadedOrDisplayedBands(boolean v) {
             if (showOnlyLoadedOrDisplayedBands != v) {
                 final boolean oldValue = showOnlyLoadedOrDisplayedBands;
                 showOnlyLoadedOrDisplayedBands = v;

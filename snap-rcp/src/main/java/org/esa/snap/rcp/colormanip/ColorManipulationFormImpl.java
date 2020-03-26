@@ -17,25 +17,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.ResourceInstaller;
 import org.esa.snap.core.util.SystemUtils;
@@ -55,11 +37,8 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -330,7 +309,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler(this);
     }
 
-    public void updateMultiApplyState() {
+    private void updateMultiApplyState() {
         multiApplyButton.setEnabled(getFormModel().isValid() && !getFormModel().isContinuous3BandImage());
     }
 
@@ -452,10 +431,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
 
         final BandChooser bandChooser = new BandChooser(SwingUtilities.getWindowAncestor(toolView),
-                                                        "Apply to other bands",
-                                                        toolView.getHelpCtx().getHelpID(),
-                                                        availableBands,
-                                                        bandsToBeModified, false);
+                "Apply to other bands",
+                toolView.getHelpCtx().getHelpID(),
+                availableBands,
+                bandsToBeModified, false);
 
         final Set<RasterDataNode> modifiedRasters = new HashSet<>(availableBands.length);
         if (bandChooser.show() == BandChooser.ID_OK) {
@@ -545,9 +524,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 return;
             }
             targetImageInfo.setColorPaletteDef(colorPaletteDef,
-                                               stx.getMinimum(),
-                                               stx.getMaximum(),
-                                               autoDistribute);
+                    stx.getMinimum(),
+                    stx.getMaximum(),
+                    autoDistribute);
         }
     }
 
@@ -556,10 +535,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return Boolean.TRUE;
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
-                                                   "Automatically distribute points of\n" +
-                                                           "colour palette between min/max?",
-                                                   "Import Colour Palette",
-                                                   JOptionPane.YES_NO_CANCEL_OPTION
+                "Automatically distribute points of\n" +
+                        "colour palette between min/max?",
+                "Import Colour Palette",
+                JOptionPane.YES_NO_CANCEL_OPTION
         );
         if (answer == JOptionPane.YES_OPTION) {
             return Boolean.TRUE;
@@ -645,9 +624,9 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return ProductUtils.createImageInfo(getFormModel().getRasters(), false, ProgressMonitor.NULL);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
-                                          "Failed to create default image settings:\n" + e.getMessage(),
-                                          "I/O Error",
-                                          JOptionPane.ERROR_MESSAGE);
+                    "Failed to create default image settings:\n" + e.getMessage(),
+                    "I/O Error",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -705,9 +684,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
     private class SceneViewImageInfoChangeListener implements PropertyChangeListener {
-
-        public SceneViewImageInfoChangeListener() {
-        }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
