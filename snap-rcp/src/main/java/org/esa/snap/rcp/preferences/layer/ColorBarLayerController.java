@@ -40,7 +40,6 @@ import java.awt.*;
  * @author thomas
  * @author Daniel Knowles
  */
-//JAN2018 - Daniel Knowles - updated with SeaDAS gridline revisions
 
 
 @OptionsPanelController.SubRegistration(location = "LayerPreferences",
@@ -56,10 +55,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
     Property restoreDefaults;
 
-    Enablement enablementGridlinesWidth;
-    Enablement enablementGridlinesDashedPhase;
-    Enablement enablementGridlinesTransparency;
-    Enablement enablementGridlinesColor;
 
     Enablement enablementTickmarksInside;
     Enablement enablementTickmarksLength;
@@ -85,32 +80,14 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // This is done so subsequently the restoreDefaults actions can be performed
         //
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_NAME, ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRID_SPACING_LON_NAME, ColorBarLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_NORTH_NAME, ColorBarLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SOUTH_NAME, ColorBarLayerType.PROPERTY_LABELS_SOUTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_WEST_NAME, ColorBarLayerType.PROPERTY_LABELS_WEST_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_EAST_NAME, ColorBarLayerType.PROPERTY_LABELS_EAST_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME, ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, ColorBarLayerType.PROPERTY_LABELS_INSIDE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME, ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_BOLD_NAME, ColorBarLayerType.PROPERTY_LABELS_BOLD_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME, ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME, ColorBarLayerType.PROPERTY_LABELS_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME, ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME, ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
@@ -119,15 +96,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
@@ -172,7 +143,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @Override
     protected void configure(BindingContext context) {
 
-        configureGridlinesEnablement(context);
         configureTickmarksEnablement(context);
         configureBorderEnablement(context);
 
@@ -260,8 +230,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
      * @author Daniel Knowles
      */
     private void configureTickmarksEnablement(BindingContext context) {
-        enablementTickmarksInside = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
+
 
         enablementTickmarksLength = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, true,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
@@ -287,40 +256,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
     }
 
 
-    /**
-     * Configure enablement of the gridlines components
-     *
-     * @param context
-     * @author Daniel Knowles
-     */
-    private void configureGridlinesEnablement(BindingContext context) {
-        enablementGridlinesWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, true,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, true);
 
-        enablementGridlinesDashedPhase = context.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, true,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, true);
 
-        enablementGridlinesTransparency = context.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, true,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, true);
 
-        enablementGridlinesColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME, true,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, true);
-
-        // handle it the first time so bound properties get properly enabled
-        handleGridlinesEnablement();
-    }
-
-    /**
-     * Handles enablement of the gridlines components
-     *
-     * @author Daniel Knowles
-     */
-    private void handleGridlinesEnablement() {
-        enablementGridlinesWidth.apply();
-        enablementGridlinesDashedPhase.apply();
-        enablementGridlinesTransparency.apply();
-        enablementGridlinesColor.apply();
-    }
 
 
     /**
@@ -350,8 +288,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
     private void handleBorderEnablement() {
         enablementBorderWidth.apply();
         enablementBorderColor.apply();
-        enablementGridlinesTransparency.apply();
-        enablementGridlinesColor.apply();
     }
 
 
@@ -401,24 +337,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class ColorBarBean {
 
-        // Grid Spacing Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
-                description = ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_TOOLTIP)
-        boolean gridSpacingSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
-                description = ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double gridSpacingLat = ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRID_SPACING_LON_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRID_SPACING_LON_NAME,
-                description = ColorBarLayerType.PROPERTY_GRID_SPACING_LON_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double gridSpacingLon = ColorBarLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT;
 
 
         // Labels Section
@@ -428,40 +346,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP)
         boolean labelsSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_NORTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_NORTH_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_NORTH_TOOLTIP)
-        boolean labelsNorth = ColorBarLayerType.PROPERTY_LABELS_NORTH_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SOUTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_SOUTH_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_SOUTH_TOOLTIP)
-        boolean labelsSouth = ColorBarLayerType.PROPERTY_LABELS_SOUTH_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_WEST_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_WEST_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_WEST_TOOLTIP)
-        boolean labelsWest = ColorBarLayerType.PROPERTY_LABELS_WEST_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_EAST_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_EAST_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_EAST_TOOLTIP)
-        boolean labelsEast = ColorBarLayerType.PROPERTY_LABELS_EAST_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP)
-        boolean labelsSuffix = ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP)
-        boolean labelsDecimal = ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_INSIDE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP)
-        boolean labelsInside = ColorBarLayerType.PROPERTY_LABELS_INSIDE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_ITALIC_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME,
@@ -482,17 +368,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
                         ColorBarLayerType.PROPERTY_LABELS_FONT_VALUE_4})
         String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLon = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLat = ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SIZE_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME,
@@ -506,38 +382,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT;
 
 
-        // Gridlines Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_TOOLTIP)
-        boolean gridlinesSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_TOOLTIP)
-        boolean gridlinesShow = ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_TOOLTIP)
-        double gridlinesWidth = ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TOOLTIP)
-        double gridlinesDashed = ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TOOLTIP,
-                interval = "[0.0,1.0]")
-        double gridlinesTransparency = ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME,
-                description = ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_TOOLTIP)
-        Color gridlinesColor = ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT;
 
 
         // Border Section
@@ -575,10 +420,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
         boolean tickmarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
-                description = ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TOOLTIP)
-        boolean tickmarkInside = ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
                 key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
@@ -591,32 +433,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         Color tickmarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
 
 
-        // Corner Labels Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                description = ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP)
-        boolean cornerLabelsSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
-                description = ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP)
-        boolean cornerLabelsNorth = ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
-                description = ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP)
-        boolean cornerLabelsSouth = ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL,
-                key = ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
-                description = ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP)
-        boolean cornerLabelsWest = ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL,
-                key = ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
-                description = ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP)
-        boolean cornerLabelsEast = ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT;
 
 
         // Inside Labels Section

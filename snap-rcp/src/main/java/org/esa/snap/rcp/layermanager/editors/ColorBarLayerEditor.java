@@ -290,27 +290,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        // Grid Spacing Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_TOOLTIP);
-
-        PropertyDescriptor gridSpacingLatPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_NAME, Double.class);
-        gridSpacingLatPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
-        gridSpacingLatPD.setValueRange(new ValueRange(0.0, 90.00));
-        gridSpacingLatPD.setDisplayName(ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_LABEL);
-        gridSpacingLatPD.setDescription(ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_TOOLTIP);
-        gridSpacingLatPD.setDefaultConverter();
-        addPropertyDescriptor(gridSpacingLatPD);
-
-        PropertyDescriptor gridSpacingLonPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRID_SPACING_LON_NAME, Double.class);
-        gridSpacingLonPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT);
-        gridSpacingLonPD.setValueRange(new ValueRange(0.0, 180.00));
-        gridSpacingLonPD.setDisplayName(ColorBarLayerType.PROPERTY_GRID_SPACING_LON_LABEL);
-        gridSpacingLonPD.setDescription(ColorBarLayerType.PROPERTY_GRID_SPACING_LON_TOOLTIP);
-        gridSpacingLonPD.setDefaultConverter();
-        addPropertyDescriptor(gridSpacingLonPD);
 
 
         // Labels Section
@@ -319,54 +299,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
                 ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
 
-        PropertyDescriptor labelsNorthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_NORTH_NAME, Boolean.class);
-        labelsNorthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
-        labelsNorthPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_NORTH_LABEL);
-        labelsNorthPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_NORTH_TOOLTIP);
-        labelsNorthPD.setDefaultConverter();
-        addPropertyDescriptor(labelsNorthPD);
 
-        PropertyDescriptor labelsSouthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SOUTH_NAME, Boolean.class);
-        labelsSouthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_SOUTH_DEFAULT);
-        labelsSouthPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_SOUTH_LABEL);
-        labelsSouthPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SOUTH_TOOLTIP);
-        labelsSouthPD.setDefaultConverter();
-        addPropertyDescriptor(labelsSouthPD);
 
-        PropertyDescriptor labelsWestPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_WEST_NAME, Boolean.class);
-        labelsWestPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_WEST_DEFAULT);
-        labelsWestPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_WEST_LABEL);
-        labelsWestPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_WEST_TOOLTIP);
-        labelsWestPD.setDefaultConverter();
-        addPropertyDescriptor(labelsWestPD);
 
-        PropertyDescriptor labelsEastPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_EAST_NAME, Boolean.class);
-        labelsEastPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_EAST_DEFAULT);
-        labelsEastPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_EAST_LABEL);
-        labelsEastPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_EAST_TOOLTIP);
-        labelsEastPD.setDefaultConverter();
-        addPropertyDescriptor(labelsEastPD);
-
-        PropertyDescriptor labelsSuffixPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, Boolean.class);
-        labelsSuffixPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
-        labelsSuffixPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL);
-        labelsSuffixPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP);
-        labelsSuffixPD.setDefaultConverter();
-        addPropertyDescriptor(labelsSuffixPD);
-
-        PropertyDescriptor labelsDecimalPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME, Boolean.class);
-        labelsDecimalPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT);
-        labelsDecimalPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL);
-        labelsDecimalPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP);
-        labelsDecimalPD.setDefaultConverter();
-        addPropertyDescriptor(labelsDecimalPD);
-
-        PropertyDescriptor labelsInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, Boolean.class);
-        labelsInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_INSIDE_DEFAULT);
-        labelsInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_INSIDE_LABEL);
-        labelsInsidePD.setDescription(ColorBarLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP);
-        labelsInsidePD.setDefaultConverter();
-        addPropertyDescriptor(labelsInsidePD);
 
         PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME, Boolean.class);
         labelsItalicsPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
@@ -382,21 +317,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelsBoldPD.setDefaultConverter();
         addPropertyDescriptor(labelsBoldPD);
 
-        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
-        labelsRotationLatPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
-        labelsRotationLatPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
-        labelsRotationLatPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
-        labelsRotationLatPD.setDefaultConverter();
-        labelsRotationLatPD.setValueRange(new ValueRange(0, 900));
-        addPropertyDescriptor(labelsRotationLatPD);
-
-        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
-        labelsRotationLonPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
-        labelsRotationLonPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
-        labelsRotationLonPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
-        labelsRotationLonPD.setDefaultConverter();
-        labelsRotationLonPD.setValueRange(new ValueRange(0, 900));
-        addPropertyDescriptor(labelsRotationLonPD);
 
         PropertyDescriptor labelsFontPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
         labelsFontPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT);
@@ -422,54 +342,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(labelColorPD);
 
 
-        // Gridlines Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_TOOLTIP);
-
-
-        PropertyDescriptor gridlinesShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, Boolean.class);
-        gridlinesShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT);
-        gridlinesShowPD.setDisplayName(ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_LABEL);
-        gridlinesShowPD.setDescription(ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_TOOLTIP);
-        gridlinesShowPD.setDefaultConverter();
-        addPropertyDescriptor(gridlinesShowPD);
-
-        PropertyDescriptor girdlinesWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, Double.class);
-        girdlinesWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT);
-        girdlinesWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_LABEL);
-        girdlinesWidthPD.setDescription(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_TOOLTIP);
-        girdlinesWidthPD.setDefaultConverter();
-        addPropertyDescriptor(girdlinesWidthPD);
-
-        PropertyDescriptor gridlinesDashedPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, Double.class);
-        gridlinesDashedPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT);
-        gridlinesDashedPD.setDisplayName(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_LABEL);
-        gridlinesDashedPD.setDescription(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TOOLTIP);
-        gridlinesDashedPD.setDefaultConverter();
-        addPropertyDescriptor(gridlinesDashedPD);
-
-        PropertyDescriptor gridlinesTransparencyPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, Double.class);
-        gridlinesTransparencyPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT);
-        gridlinesTransparencyPD.setValueRange(new ValueRange(0, 1));
-        gridlinesTransparencyPD.setDisplayName(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_LABEL);
-        gridlinesTransparencyPD.setDescription(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TOOLTIP);
-        gridlinesTransparencyPD.setDefaultConverter();
-        addPropertyDescriptor(gridlinesTransparencyPD);
-
-        PropertyDescriptor gridlinesColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME, Color.class);
-        gridlinesColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT);
-        gridlinesColorPD.setDisplayName(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_LABEL);
-        gridlinesColorPD.setDescription(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_TOOLTIP);
-        gridlinesColorPD.setDefaultConverter();
-        addPropertyDescriptor(gridlinesColorPD);
-
-
-
-
-
-        // Tickmark Section
 
 
 
@@ -477,50 +349,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        PropertyDescriptor tickmarksInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, Boolean.class);
-        tickmarksInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT);
-        tickmarksInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_LABEL);
-        tickmarksInsidePD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TOOLTIP);
-        tickmarksInsidePD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksInsidePD);
 
 
 
 
-
-        // Corner Label Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
-
-        PropertyDescriptor cornerLabelsNorthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, Boolean.class);
-        cornerLabelsNorthPD.setDefaultValue(ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
-        cornerLabelsNorthPD.setDisplayName(ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL);
-        cornerLabelsNorthPD.setDescription(ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP);
-        cornerLabelsNorthPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsNorthPD);
-
-        PropertyDescriptor cornerLabelsSouthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, Boolean.class);
-        cornerLabelsSouthPD.setDefaultValue(ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT);
-        cornerLabelsSouthPD.setDisplayName(ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL);
-        cornerLabelsSouthPD.setDescription(ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP);
-        cornerLabelsSouthPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsSouthPD);
-
-        PropertyDescriptor cornerLabelsWestPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, Boolean.class);
-        cornerLabelsWestPD.setDefaultValue(ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
-        cornerLabelsWestPD.setDisplayName(ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL);
-        cornerLabelsWestPD.setDescription(ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP);
-        cornerLabelsWestPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsWestPD);
-
-        PropertyDescriptor cornerLabelsEastPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, Boolean.class);
-        cornerLabelsEastPD.setDefaultValue(ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
-        cornerLabelsEastPD.setDisplayName(ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL);
-        cornerLabelsEastPD.setDescription(ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP);
-        cornerLabelsEastPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsEastPD);
 
 
 
@@ -558,25 +390,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        boolean lineEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, lineEnabled,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME, lineEnabled,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME, lineEnabled,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME, lineEnabled,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME, lineEnabled,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME, lineEnabled);
-
 
         boolean borderEnabled = (Boolean) bindingContext.getPropertySet().getValue(
                 ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY);
@@ -597,8 +410,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         boolean tickMarkEnabled = (Boolean) bindingContext.getPropertySet().getValue(
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
 
         bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, tickMarkEnabled,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);

@@ -739,6 +739,8 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
 
+
+
         // Tickmarks Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
@@ -748,12 +750,8 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
-//
-//        addPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
-//
+
+
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
                 ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
@@ -821,36 +819,6 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
-        // Added multiple new properties here
-        // Daniel Knowles - Sept 2018
-
-        // Added section break properties
-
-//        layerConfiguration.setValue(ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                        ColorBarLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT));
-
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
-                ColorBarLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
-
-
-        // Grid Spacing Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_SECTION_NAME);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LAT_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_NAME,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRID_SPACING_LON_TYPE);
 
 
         // Labels Section
@@ -858,40 +826,7 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_NORTH_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_NORTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_NORTH_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_SOUTH_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_SOUTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_SOUTH_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_WEST_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_WEST_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_WEST_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_EAST_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_EAST_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_EAST_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME,
@@ -908,15 +843,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT,
                 ColorBarLayerType.PROPERTY_LABELS_FONT_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME,
@@ -929,90 +855,8 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABELS_COLOR_TYPE);
 
 
-        // Gridlines Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SECTION_NAME);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRIDLINES_SHOW_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRIDLINES_WIDTH_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_NAME,
-                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_GRIDLINES_COLOR_TYPE);
 
 
-
-
-
-        // Tickmarks Section
-
-//        addSectionPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
-
-//        addPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
-                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
-                ColorBarLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
-
-//        addPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
-
-//        addPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
-//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
-
-
-        // Corner Labels Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_TYPE);
 
 
 
