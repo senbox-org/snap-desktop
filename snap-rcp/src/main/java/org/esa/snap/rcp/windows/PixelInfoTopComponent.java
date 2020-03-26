@@ -6,12 +6,8 @@
 package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
+import org.esa.snap.core.datamodel.*;
 import org.locationtech.jts.geom.Point;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.pixelinfo.PixelInfoView;
@@ -81,7 +77,9 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
         add(pixelInfoView, BorderLayout.CENTER);
         add(pinCheckbox, BorderLayout.SOUTH);
 
-        setCurrentView(SnapApp.getDefault().getSelectedProductSceneView());
+        final SnapApp snapApp = SnapApp.getDefault();
+        snapApp.getProductManager().addListener(new PxInfoProductManagerListener());
+        setCurrentView(snapApp.getSelectedProductSceneView());
     }
 
     @Override
@@ -124,6 +122,8 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
             if (product != null) {
                 product.addProductNodeListener(pinChangedListener);
             }
+        } else {
+            pixelInfoView.reset();
         }
     }
 
@@ -167,7 +167,6 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
                 updatePixelInfo();
             }
         }
-
     }
 
     private class PinChangedListener implements ProductNodeListener {
@@ -217,6 +216,18 @@ public final class PixelInfoTopComponent extends ToolTopComponent {
 
         private boolean isActive() {
             return isVisible() && !isSnapToSelectedPin();
+        }
+    }
+
+    private class PxInfoProductManagerListener implements ProductManager.Listener {
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            // nothing to do here
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            pixelInfoView.reset();
         }
     }
 }
