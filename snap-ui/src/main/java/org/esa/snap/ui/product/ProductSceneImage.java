@@ -794,6 +794,28 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        // Inside Labels Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TYPE);
+
+
+
 
 
 
@@ -993,20 +1015,7 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_TYPE);
 
 
-        // Inside Labels Section
 
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
 
     }
 

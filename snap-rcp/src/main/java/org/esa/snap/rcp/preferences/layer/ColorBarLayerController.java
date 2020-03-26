@@ -129,9 +129,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
 
@@ -621,21 +621,21 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         // Inside Labels Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME,
-                description = ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_TOOLTIP)
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
         boolean insideLabelsSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_LABEL,
-                key = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME,
-                description = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TOOLTIP,
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP,
                 interval = "[0.0,1.0]")
-        double insideLabelsBgTransparency = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT;
+        double insideLabelsBgTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
-                description = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TOOLTIP)
-        Color insideLabelsBgColor = ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
+        Color insideLabelsBgColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
 
 
         // Restore Defaults Section

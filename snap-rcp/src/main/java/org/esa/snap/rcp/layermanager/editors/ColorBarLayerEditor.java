@@ -251,6 +251,41 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        // Backdrop Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
+
+        PropertyDescriptor backdropShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, Boolean.class);
+        backdropShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
+        backdropShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL);
+        backdropShowPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
+        backdropShowPD.setDefaultConverter();
+        addPropertyDescriptor(backdropShowPD);
+
+        PropertyDescriptor backdropTransparencyPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, Double.class);
+        backdropTransparencyPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+        backdropTransparencyPD.setValueRange(new ValueRange(0, 1));
+        backdropTransparencyPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL);
+        backdropTransparencyPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
+        backdropTransparencyPD.setDefaultConverter();
+        addPropertyDescriptor(backdropTransparencyPD);
+
+        PropertyDescriptor backdropColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, Color.class);
+        backdropColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
+        backdropColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL);
+        backdropColorPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
+        backdropColorPD.setDefaultConverter();
+        addPropertyDescriptor(backdropColorPD);
+
+
+
+
+
+
+
+
 
 
 
@@ -488,27 +523,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(cornerLabelsEastPD);
 
 
-        // Inner Labels Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_INSIDE_LABELS_SECTION_TOOLTIP);
-
-        PropertyDescriptor innerLabelsBgTransparencyPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, Double.class);
-        innerLabelsBgTransparencyPD.setDefaultValue(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT);
-        innerLabelsBgTransparencyPD.setValueRange(new ValueRange(0, 1));
-        innerLabelsBgTransparencyPD.setDisplayName(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_LABEL);
-        innerLabelsBgTransparencyPD.setDescription(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TOOLTIP);
-        innerLabelsBgTransparencyPD.setDefaultConverter();
-        addPropertyDescriptor(innerLabelsBgTransparencyPD);
-
-
-        PropertyDescriptor innerLabelsBgColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, Color.class);
-        innerLabelsBgColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT);
-        innerLabelsBgColorPD.setDisplayName(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_LABEL);
-        innerLabelsBgColorPD.setDescription(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TOOLTIP);
-        innerLabelsBgColorPD.setDefaultConverter();
-        addPropertyDescriptor(innerLabelsBgColorPD);
 
 
         BindingContext bindingContext = getBindingContext();
@@ -577,32 +591,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Set enablement associated with "Labels Inside" checkbox
 
-        boolean textInsideEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, !textInsideEnabled,
-                ColorBarLayerType.PROPERTY_LABELS_INSIDE_NAME, textInsideEnabled);
 
 
         boolean tickMarkEnabled = (Boolean) bindingContext.getPropertySet().getValue(
