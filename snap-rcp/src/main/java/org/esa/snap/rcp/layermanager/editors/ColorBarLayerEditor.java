@@ -42,6 +42,41 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     protected void addEditablePropertyDescriptors() {
 
 
+
+        // Label Values
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
+
+
+
+        PropertyDescriptor labelValuesModePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, String.class);
+        labelValuesModePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        labelValuesModePD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);
+        labelValuesModePD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
+        labelValuesModePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
+        labelValuesModePD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesModePD);
+
+        PropertyDescriptor labelValuesCountPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, Integer.class);
+        labelValuesCountPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
+        labelValuesCountPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
+        labelValuesCountPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
+        labelValuesCountPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MAX));
+        labelValuesCountPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesCountPD);
+
+        PropertyDescriptor labelValuesActualPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, String.class);
+        labelValuesActualPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+        labelValuesActualPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
+        labelValuesActualPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
+        labelValuesActualPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesActualPD);
+
+
+
+
         // Formatting Section
 
         addSectionBreak(ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY,
@@ -56,6 +91,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         orientationPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_VALUE_SET));
         orientationPD.setDefaultConverter();
         addPropertyDescriptor(orientationPD);
+
+
 
 
 
@@ -350,7 +387,25 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+
+
         BindingContext bindingContext = getBindingContext();
+
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, true,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_EVEN_STR);
+
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_MANUAL_STR);
+
+        // Initial value
+//        bindingContext.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, false);
+
+
+
+
+
+
 
 
         boolean applySizeScaling = (Boolean) bindingContext.getPropertySet().getValue(

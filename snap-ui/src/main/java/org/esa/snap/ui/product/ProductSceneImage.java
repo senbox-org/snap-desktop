@@ -650,6 +650,32 @@ public class ProductSceneImage implements ProductLayerContext {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
 
+
+
+        // Label Values
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
+
+
+
+
+
         // Formatting Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
@@ -659,8 +685,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
                 ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT,
                 ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TYPE);
-
-
 
 
 
@@ -848,6 +872,7 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME,
                 ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_LABELS_COLOR_TYPE);
+
 
 
 

@@ -80,6 +80,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // This is done so subsequently the restoreDefaults actions can be performed
         //
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME, ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
@@ -337,6 +339,20 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class ColorBarBean {
 
+        // Label Values
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
+        boolean labelValuesSection = true;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
+        int labelValuesCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
+
 
 
         // Labels Section
@@ -380,7 +396,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME,
                 description = ColorBarLayerType.PROPERTY_LABELS_COLOR_TOOLTIP)
         Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT;
-
 
 
 
