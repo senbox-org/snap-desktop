@@ -63,6 +63,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelValuesCountPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         labelValuesCountPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
         labelValuesCountPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
+        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_ENABLED);
         labelValuesCountPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MAX));
         labelValuesCountPD.setDefaultConverter();
         addPropertyDescriptor(labelValuesCountPD);
@@ -397,9 +398,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_MANUAL_STR);
-
-        // Initial value
-//        bindingContext.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, false);
 
 
 
