@@ -735,28 +735,96 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        // Title Parameter Section
+
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_KEY,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_DEFAULT,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_SHOW_TITLE_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_KEY,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_DEFAULT,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_TITLE_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_KEY,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_DEFAULT,
-                ColorBarLayerType.PROPERTY_COLORBAR_TITLE_UNITS_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_BOLD_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TYPE);
+
+
+
+
+
+
+        // Title Units Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_COLOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TYPE);
+
+
+
+
+
+
 
 
 

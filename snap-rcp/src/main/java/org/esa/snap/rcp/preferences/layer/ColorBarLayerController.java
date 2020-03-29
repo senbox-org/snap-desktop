@@ -378,10 +378,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME,
                 description = ColorBarLayerType.PROPERTY_LABELS_FONT_TOOLTIP,
-                valueSet = {ColorBarLayerType.PROPERTY_LABELS_FONT_VALUE_1,
-                        ColorBarLayerType.PROPERTY_LABELS_FONT_VALUE_2,
-                        ColorBarLayerType.PROPERTY_LABELS_FONT_VALUE_3,
-                        ColorBarLayerType.PROPERTY_LABELS_FONT_VALUE_4})
+                valueSet = {ColorBarLayerType.FONT_VALUE_1,
+                        ColorBarLayerType.FONT_VALUE_2,
+                        ColorBarLayerType.FONT_VALUE_3,
+                        ColorBarLayerType.FONT_VALUE_4})
         String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT;
 
 
