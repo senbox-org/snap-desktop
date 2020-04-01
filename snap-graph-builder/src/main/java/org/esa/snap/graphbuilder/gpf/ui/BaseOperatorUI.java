@@ -211,8 +211,20 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 config.addChild(xml);
             }
 
-            xml.setValue(value.toString());
+            Converter itemConverter = getItemConverter(value);
+            if(itemConverter != null) {
+                final String text = itemConverter.format(value);
+                if (text != null && !text.isEmpty()) {
+                    xml.setValue(text);
+                }
+            } else {
+                xml.setValue(value.toString());
+            }
         }
+    }
+
+    private static Converter getItemConverter(final Object obj) {
+         return ConverterRegistry.getInstance().getConverter(obj.getClass());
     }
 
     private static Converter getItemConverter(final PropertyDescriptor descriptor) {
