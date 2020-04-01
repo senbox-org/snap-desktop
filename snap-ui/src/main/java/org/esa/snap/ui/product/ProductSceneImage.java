@@ -673,7 +673,20 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
 
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TYPE);
 
 
         // Formatting Section
@@ -723,10 +736,10 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+//        addPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
+//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_NAME,

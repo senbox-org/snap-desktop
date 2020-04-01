@@ -333,7 +333,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("colorBarLegendPreferences");
     }
 
     @SuppressWarnings("UnusedDeclaration")

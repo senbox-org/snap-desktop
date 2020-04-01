@@ -11,6 +11,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
@@ -33,8 +34,8 @@ public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayColorBarLayerActionName());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/Colorbar24.png", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/Colorbar24.png", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ColorbarVertical24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ColorbarVertical24.png", false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayColorBarLayerActionToolTip());
     }
 
