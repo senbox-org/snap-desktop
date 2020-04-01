@@ -83,12 +83,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME, ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_BOLD_NAME, ColorBarLayerType.PROPERTY_LABELS_BOLD_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME, ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME, ColorBarLayerType.PROPERTY_LABELS_SIZE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME, ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
@@ -358,44 +358,44 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // Labels Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_SECTION_NAME,
+                key = ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP)
         boolean labelsSection = true;
 
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_ITALIC_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_ITALIC_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP)
-        boolean labelsItalic = ColorBarLayerType.PROPERTY_LABELS_ITALIC_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP)
+        boolean labelsItalic = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_BOLD_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_BOLD_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_BOLD_TOOLTIP)
-        boolean labelsBold = ColorBarLayerType.PROPERTY_LABELS_BOLD_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP)
+        boolean labelsBold = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_TOOLTIP,
-                valueSet = {ColorBarLayerType.FONT_VALUE_1,
-                        ColorBarLayerType.FONT_VALUE_2,
-                        ColorBarLayerType.FONT_VALUE_3,
-                        ColorBarLayerType.FONT_VALUE_4})
-        String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP,
+                valueSet = {ColorBarLayerType.FONT_NAME_VALUE_1,
+                        ColorBarLayerType.FONT_NAME_VALUE_2,
+                        ColorBarLayerType.FONT_NAME_VALUE_3,
+                        ColorBarLayerType.FONT_NAME_VALUE_4})
+        String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT;
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_SIZE_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABELS_SIZE_INTERVAL)
-        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_SIZE_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
+        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_COLOR_NAME,
-                description = ColorBarLayerType.PROPERTY_LABELS_COLOR_TOOLTIP)
-        Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_COLOR_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP)
+        Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT;
 
 
 
