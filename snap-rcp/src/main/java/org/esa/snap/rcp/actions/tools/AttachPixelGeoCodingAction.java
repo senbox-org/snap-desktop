@@ -16,53 +16,31 @@
 
 package org.esa.snap.rcp.actions.tools;
 
-import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.BasicPixelGeoCoding;
-import org.esa.snap.core.datamodel.GeoCodingFactory;
-import org.esa.snap.core.datamodel.PixelGeoCoding;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.dataio.geocoding.*;
+import org.esa.snap.core.dataio.geocoding.forward.PixelForward;
+import org.esa.snap.core.dataio.geocoding.inverse.PixelQuadTreeInverse;
+import org.esa.snap.core.dataio.geocoding.util.RasterUtils;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.ui.ExpressionPane;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.ui.product.ProductExpressionPane;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
+import org.openide.util.*;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -91,6 +69,7 @@ import java.util.logging.Level;
 public class AttachPixelGeoCodingAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private static final String HELP_ID = "pixelGeoCodingSetup";
+    private static final int ONE_MB = 1024 * 1024;
 
     private final Lookup lkp;
 
@@ -98,7 +77,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         this(Utilities.actionsGlobalContext());
     }
 
-    public AttachPixelGeoCodingAction(Lookup lkp) {
+    private AttachPixelGeoCodingAction(Lookup lkp) {
         super(Bundle.CTL_AttachPixelGeoCodingActionText());
         this.lkp = lkp;
         Lookup.Result<ProductNode> lkpContext = lkp.lookupResult(ProductNode.class);
@@ -119,22 +98,37 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        Product selectedProduct = lkp.lookup(ProductNode.class).getProduct();
-        final Band[] bands = selectedProduct.getBands();
+        final Product selectedProduct = lkp.lookup(ProductNode.class).getProduct();
+        final int validBandCount = getValidBandCount(selectedProduct);
+        if (validBandCount < 2) {
+            Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
+            return;
+        }
+
+        attachPixelGeoCoding(selectedProduct);
+    }
+
+    static int getValidBandCount(Product product) {
+        final Band[] bands = product.getBands();
         int validBandsCount = 0;
         for (Band band : bands) {
-            if (band.getRasterSize().equals(selectedProduct.getSceneRasterSize())) {
+            if (band.getRasterSize().equals(product.getSceneRasterSize())) {
                 validBandsCount++;
                 if (validBandsCount == 2) {
                     break;
                 }
             }
         }
-        if (validBandsCount < 2) {
-            Dialogs.showError("Pixel Geo-Coding cannot be attached: Too few bands of product scene size");
-            return;
-        }
-        attachPixelGeoCoding(selectedProduct);
+
+        return validBandsCount;
+    }
+
+    static long getRequiredMemory(Product product) {
+        final int width = product.getSceneRasterWidth();
+        final int height = product.getSceneRasterHeight();
+        final int sizeOfDouble = 8;
+
+        return width * height * 2 * sizeOfDouble;
     }
 
     private void setEnableState() {
@@ -143,45 +137,41 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         if (productNode != null) {
             Product product = productNode.getProduct();
             if (product != null) {
-                final boolean hasPixelGeoCoding = product.getSceneGeoCoding() instanceof BasicPixelGeoCoding;
-                final boolean hasSomeBands = product.getNumBands() >= 2;
-                state = !hasPixelGeoCoding && hasSomeBands;
+                state = product.getNumBands() >= 2;
             }
         }
         setEnabled(state);
     }
 
-
     private static void attachPixelGeoCoding(final Product product) {
-
         final SnapApp snapApp = SnapApp.getDefault();
         final Window mainFrame = snapApp.getMainFrame();
-        String dialogTitle = Bundle.CTL_AttachPixelGeoCodingDialogTitle();
+        final String dialogTitle = Bundle.CTL_AttachPixelGeoCodingDialogTitle();
         final PixelGeoCodingSetupDialog setupDialog = new PixelGeoCodingSetupDialog(mainFrame,
-                                                                                    dialogTitle,
-                                                                                    HELP_ID,
-                                                                                    product);
+                dialogTitle,
+                HELP_ID,
+                product);
         if (setupDialog.show() != ModalDialog.ID_OK) {
             return;
         }
+
         final Band lonBand = setupDialog.getSelectedLonBand();
         final Band latBand = setupDialog.getSelectedLatBand();
-        final int searchRadius = setupDialog.getSearchRadius();
-        final String validMask = setupDialog.getValidMask();
-        final String msgPattern = "New Pixel Geo-Coding: lon = ''{0}'' ; lat = ''{1}'' ; radius=''{2}'' ; mask=''{3}''";
+        final String groundResString = setupDialog.getGroundResString();
+        final double groundResInKm = Double.parseDouble(groundResString);
+        final String msgPattern = "New Pixel Geo-Coding: lon = ''{0}'' ; lat = ''{1}'' ; ground resolution=''{2}''";
         snapApp.getLogger().log(Level.INFO, MessageFormat.format(msgPattern,
-                                                                 lonBand.getName(), latBand.getName(),
-                                                                 searchRadius, validMask));
+                lonBand.getName(), latBand.getName(),
+                groundResString));
 
-
-        final long requiredBytes = PixelGeoCoding.getRequiredMemory(product, validMask != null);
-        final long requiredMegas = requiredBytes / (1024 * 1024);
-        final long freeMegas = Runtime.getRuntime().freeMemory() / (1024 * 1024);
+        final long requiredBytes = getRequiredMemory(product);
+        final long requiredMegas = requiredBytes / ONE_MB;
+        final long freeMegas = Runtime.getRuntime().freeMemory() / ONE_MB;
         if (freeMegas < requiredMegas) {
             final String message = MessageFormat.format("This operation requires to load at least {0} M\n" +
-                                                                "of additional data into memory.\n\n" +
-                                                                "Do you really want to continue?",
-                                                        requiredMegas);
+                            "of additional data into memory.\n\n" +
+                            "Do you really want to continue?",
+                    requiredMegas);
             final Dialogs.Answer answer = Dialogs.requestDecision(dialogTitle, message, false, "load_latlon_band_data");
             if (answer != Dialogs.Answer.YES) {
                 return;
@@ -193,11 +183,21 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
             @Override
             protected Void doInBackground(ProgressMonitor pm) throws Exception {
-                final BasicPixelGeoCoding pixelGeoCoding = GeoCodingFactory.createPixelGeoCoding(latBand, lonBand, validMask, searchRadius, pm);
-                product.setSceneGeoCoding(pixelGeoCoding);
+                final double[] longitudes = RasterUtils.loadDataScaled(lonBand);
+                final double[] latitudes = RasterUtils.loadDataScaled(latBand);
+                final GeoRaster geoRaster = new GeoRaster(longitudes, latitudes, lonBand.getName(), latBand.getName(),
+                        product.getSceneRasterWidth(), product.getSceneRasterHeight(), groundResInKm);
+                final ForwardCoding forward = ComponentFactory.getForward(PixelForward.KEY);
+                final InverseCoding inverse = ComponentFactory.getInverse(PixelQuadTreeInverse.KEY);
+
+                final ComponentGeoCoding geoCoding = new ComponentGeoCoding(geoRaster, forward, inverse, GeoChecks.POLES);
+                geoCoding.initialize();
+
+                final GeoCoding oldGeoCoding = product.getSceneGeoCoding();
+                product.setSceneGeoCoding(geoCoding);
                 UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
                 if (undoManager != null) {
-                    undoManager.addEdit(new UndoableAttachGeoCoding<>(product, pixelGeoCoding));
+                    undoManager.addEdit(new UndoableAttachGeoCoding(product, geoCoding, oldGeoCoding));
                 }
 
                 return null;
@@ -235,16 +235,11 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         private String[] bandNames;
         private JComboBox<String> lonBox;
         private JComboBox<String> latBox;
-        private JTextField validMaskField;
-        private JSpinner radiusSpinner;
-        private final int defaultRadius = 6;
-        private final int minRadius = 0;
-        private final int maxRadius = 99;
-        private final int bigRadiusStep = 0;
-        private final int smallRadiusStep = 1;
+        private JTextField groundResField;
+        private final double defaultResolution = 1.0;
 
-        public PixelGeoCodingSetupDialog(final Window parent, final String title,
-                                         final String helpID, final Product product) {
+        PixelGeoCodingSetupDialog(final Window parent, final String title,
+                                  final String helpID, final Product product) {
             super(parent, title, ModalDialog.ID_OK_CANCEL_HELP, helpID);
             this.product = product;
             final Band[] bands = product.getBands();
@@ -255,7 +250,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                         bandNameList.add(band.getName());
                     }
                 }
-                bandNames = bandNameList.toArray(new String[bandNameList.size()]);
+                bandNames = bandNameList.toArray(new String[0]);
             } else {
                 bandNames = Arrays.stream(bands).map(Band::getName).toArray(String[]::new);
             }
@@ -268,20 +263,16 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         }
 
 
-        public Band getSelectedLonBand() {
+        Band getSelectedLonBand() {
             return product.getBand(selectedLonBand);
         }
 
-        public Band getSelectedLatBand() {
+        Band getSelectedLatBand() {
             return product.getBand(selectedLatBand);
         }
 
-        public int getSearchRadius() {
-            return ((Number) radiusSpinner.getValue()).intValue();
-        }
-
-        public String getValidMask() {
-            return validMaskField.getText();
+        String getGroundResString() {
+            return groundResField.getText();
         }
 
         @Override
@@ -293,8 +284,8 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
 
             if (selectedLatBand == null || selectedLonBand == null || Objects.equals(selectedLatBand, selectedLonBand)) {
                 Dialogs.showWarning(Bundle.CTL_AttachPixelGeoCodingDialogTitle(),
-                                    "You have to select two different bands for the pixel geo-coding.",
-                                    null);
+                        "You have to select two different bands for the pixel geo-coding.",
+                        null);
             } else {
                 super.onOK();
             }
@@ -307,29 +298,18 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             super.onCancel();
         }
 
-
         private void createUI() {
             final JPanel panel = new JPanel(new GridBagLayout());
             final GridBagConstraints gbc = GridBagUtils.createDefaultConstraints();
             final JLabel lonLabel = new JLabel("Longitude band:");
             final JLabel latLabel = new JLabel("Latitude band:");
-            final JLabel radiusLabel = new JLabel("Search radius:");
-            final JLabel maskLabel = new JLabel("Valid mask:");
+            final JLabel groundResLabel = new JLabel("Ground Resolution in km:");
             lonBox = new JComboBox<>(bandNames);
             latBox = new JComboBox<>(bandNames);
             doPreSelection(lonBox, "lon");
             doPreSelection(latBox, "lat");
-            radiusSpinner = UIUtils.createSpinner(defaultRadius, minRadius, maxRadius,
-                                                  smallRadiusStep, bigRadiusStep, "#0");
-            validMaskField = new JTextField(createDefaultValidMask(product));
-            validMaskField.setCaretPosition(0);
-            final JButton exprDialogButton = new JButton("...");
-            exprDialogButton.addActionListener(e -> {
-                invokeExpressionEditor();
-            });
-            final int preferredSize = validMaskField.getPreferredSize().height;
-            exprDialogButton.setPreferredSize(new Dimension(preferredSize, preferredSize));
-            radiusSpinner.setPreferredSize(new Dimension(60, preferredSize));
+            groundResField = new JTextField(Double.toString(defaultResolution));
+            groundResField.setCaretPosition(0);
 
             gbc.insets = new Insets(3, 2, 3, 2);
             gbc.anchor = GridBagConstraints.WEST;
@@ -358,43 +338,12 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
             gbc.gridx = 0;
             gbc.gridy++;
             gbc.gridwidth = 1;
-            panel.add(maskLabel, gbc);
+            panel.add(groundResLabel, gbc);
             gbc.weightx = 1;
             gbc.gridx++;
-            panel.add(validMaskField, gbc);
-            gbc.weightx = 0;
-            gbc.gridx++;
-            panel.add(exprDialogButton, gbc);
+            panel.add(groundResField, gbc);
 
-            gbc.weightx = 0.0;
-            gbc.gridx = 0;
-            gbc.gridy++;
-            gbc.gridwidth = 1;
-            panel.add(radiusLabel, gbc);
-            gbc.weightx = 1;
-            gbc.gridx++;
-            gbc.gridwidth = 1;
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.anchor = GridBagConstraints.EAST;
-            panel.add(radiusSpinner, gbc);
-            gbc.weightx = 0;
-            gbc.gridx++;
-            panel.add(new JLabel("pixels"), gbc);
             setContent(panel);
-        }
-
-        private void invokeExpressionEditor() {
-            SnapApp snapApp = SnapApp.getDefault();
-            final Window window = SwingUtilities.getWindowAncestor(snapApp.getMainFrame());
-            final ExpressionPane pane = ProductExpressionPane.createBooleanExpressionPane(new Product[]{product},
-                                                                                          product,
-                                                                                          snapApp.getPreferencesPropertyMap());
-            pane.setCode(validMaskField.getText());
-            final int status = pane.showModalDialog(window, "Edit Valid Mask Expression");
-            if (status == ID_OK) {
-                validMaskField.setText(pane.getCode());
-                validMaskField.setCaretPosition(0);
-            }
         }
 
         private void doPreSelection(final JComboBox comboBox, final String toFind) {
@@ -406,37 +355,25 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         }
 
         private String getBandNameContaining(final String toFind) {
-            return Arrays.stream(bandNames).filter(s -> s.contains(toFind)).findFirst().orElseGet(() -> null);
+            return Arrays.stream(bandNames).filter(s -> s.contains(toFind)).findFirst().orElse(null);
         }
 
         private String findBandName(final String bandName) {
             return Arrays.stream(bandNames).filter(s -> s.equals(bandName)).findFirst().orElseGet(() -> null);
         }
-
-        private static String createDefaultValidMask(final Product product) {
-            String validMask = null;
-            final String[] flagNames = product.getAllFlagNames();
-            final String invalidFlagName = "l1_flags.INVALID";
-            if (ArrayUtils.isMemberOf(invalidFlagName, flagNames)) {
-                validMask = "NOT " + invalidFlagName;
-            }
-            return validMask;
-        }
-
     }
 
-    private static class UndoableAttachGeoCoding<T extends BasicPixelGeoCoding> extends AbstractUndoableEdit {
+    private static class UndoableAttachGeoCoding extends AbstractUndoableEdit {
 
         private Product product;
-        private T pixelGeoCoding;
+        private GeoCoding oldGeoCoding;
+        private GeoCoding currentGeoCoding;
 
-        public UndoableAttachGeoCoding(Product product, T pixelGeoCoding) {
-            Assert.notNull(product, "product");
-            Assert.notNull(pixelGeoCoding, "pixelGeoCoding");
+        UndoableAttachGeoCoding(Product product, GeoCoding currentGeoCoding, GeoCoding oldGeoCoding) {
             this.product = product;
-            this.pixelGeoCoding = pixelGeoCoding;
+            this.currentGeoCoding = currentGeoCoding;
+            this.oldGeoCoding = oldGeoCoding;
         }
-
 
         @Override
         public String getPresentationName() {
@@ -446,20 +383,19 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         @Override
         public void undo() throws CannotUndoException {
             super.undo();
-            if (product.getSceneGeoCoding() == pixelGeoCoding) {
-                product.setSceneGeoCoding(pixelGeoCoding.getPixelPosEstimator());
-            }
+            product.setSceneGeoCoding(oldGeoCoding);
         }
 
         @Override
         public void redo() throws CannotRedoException {
             super.redo();
-            product.setSceneGeoCoding(pixelGeoCoding);
+            product.setSceneGeoCoding(currentGeoCoding);
         }
 
         @Override
         public void die() {
-            pixelGeoCoding = null;
+            oldGeoCoding = null;
+            currentGeoCoding = null;
             product = null;
         }
     }

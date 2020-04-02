@@ -44,6 +44,20 @@
     file, each quantity by one column. An additional column with the 'featureId' (which is just an ascending pixel
     counter) is put in front. Also, the file contains a header line with the names and data types for each column
     (name and data type separated by ':'). The column separator is the 'tab' character. See example below.
+    <br>
+    Two additional header metadata fields are stored with the CSV file to facilitate reconstruction of the CSV data
+    to a full operational SNAP product:
+    <ul>
+    <li>
+        sceneRasterWidth: this field contains the original raster width of the scene. If not present, SNAP assumes
+        a quadratic scene geometry.
+    </li>
+    <li>
+        rasterResolutionInKm: contains the average pixel ground resolution. If present, a pixel based ComponentGeoCoding
+        is constructed. If not present, SNAP tries to create a standard PixelGeoCoding.
+    </li>
+    </ul>
+
 </p>
 
 <p align="center"><img src="images/ExportCsvDialog.png">

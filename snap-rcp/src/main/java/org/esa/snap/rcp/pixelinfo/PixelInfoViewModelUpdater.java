@@ -18,19 +18,7 @@ package org.esa.snap.rcp.pixelinfo;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.FlagCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.MapGeoCoding;
-import org.esa.snap.core.datamodel.MetadataAttribute;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.maptransf.MapTransform;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.Guardian;
@@ -43,7 +31,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import javax.media.jai.PlanarImage;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.Raster;
@@ -56,7 +44,7 @@ import java.util.Vector;
  * @version $Revision$ $Date$
  * @since BEAM 4.5.2
  */
-public class PixelInfoViewModelUpdater {
+class PixelInfoViewModelUpdater {
 
     private static final String INVALID_POS_TEXT = "Invalid pos.";
 
@@ -110,7 +98,7 @@ public class PixelInfoViewModelUpdater {
         update(state.view, state.pixelX, state.pixelY, state.level, state.pixelPosValid);
     }
 
-    void update(ProductSceneView view, int pixelX, int pixelY, int level, boolean pixelPosValid) {
+    private void update(ProductSceneView view, int pixelX, int pixelY, int level, boolean pixelPosValid) {
         Guardian.assertNotNull("view", view);
         boolean clearRasterTableSelection = false;
         RasterDataNode raster = view.getRaster();
@@ -182,7 +170,7 @@ public class PixelInfoViewModelUpdater {
         updateDataDisplay(clearRasterTableSelection);
     }
 
-    private void resetTableModels() {
+    void resetTableModels() {
         resetPositionTableModel();
         resetTimeTableModel();
         resetBandTableModel();
@@ -347,13 +335,13 @@ public class PixelInfoViewModelUpdater {
         final ProductData.UTC utcStartTime = currentProduct.getStartTime();
         final ProductData.UTC utcEndTime = currentProduct.getEndTime();
 
-        boolean isAvailable = currentProduct.isMultiSize() ? isSampleValueAvailableInScene() : isSampleValueAvailableInRaster() ;
+        boolean isAvailable = currentProduct.isMultiSize() ? isSampleValueAvailableInScene() : isSampleValueAvailableInRaster();
         if (utcStartTime == null || utcEndTime == null || !isAvailable) {
             timeModel.updateValue("No date information", 0);
             timeModel.updateValue("No time information", 1);
         } else {
             final ProductData.UTC utcCurrentLine;
-            if(currentProduct.isMultiSize()) {
+            if (currentProduct.isMultiSize()) {
                 utcCurrentLine = ProductUtils.getPixelScanTime(currentProduct, levelZeroSceneX + 0.5, levelZeroSceneY + 0.5);
             } else {
                 utcCurrentLine = ProductUtils.getPixelScanTime(currentRaster, levelZeroRasterX + 0.5, levelZeroRasterY + 0.5);
@@ -368,7 +356,6 @@ public class PixelInfoViewModelUpdater {
             timeModel.updateValue(timeString, 1);
         }
     }
-
 
     private void resetBandTableModel() {
         bandModel.clear();
