@@ -699,7 +699,10 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT,
                 ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TYPE);
 
-
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_KEY,
+                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_DEFAULT,
+                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_TYPE);
 
 
 

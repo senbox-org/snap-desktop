@@ -63,6 +63,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         orientationPD.setDefaultConverter();
         addPropertyDescriptor(orientationPD);
 
+        PropertyDescriptor reversePalettePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_KEY,
+                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_TYPE);
+        reversePalettePD.setDefaultValue(ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_DEFAULT);
+        reversePalettePD.setDisplayName(ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_LABEL);
+        reversePalettePD.setDescription(ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_TOOLTIP);
+        reversePalettePD.setDefaultConverter();
+        addPropertyDescriptor(reversePalettePD);
+
+
 
 
 
