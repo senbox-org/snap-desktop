@@ -15,12 +15,15 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import com.bc.ceres.binding.ConverterRegistry;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.common.ReadOp;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.converters.JtsGeometryConverter;
+import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
@@ -52,6 +55,10 @@ import java.util.List;
  * Provides the User Interface for creating, loading and saving Graphs
  */
 public class GraphBuilderDialog extends ModelessDialog implements Observer, GraphDialog, LabelBarProgressMonitor.ProgressBarListener, HelpCtx.Provider {
+
+    static {
+        registerConverters();
+    }
 
     private static final ImageIcon processIcon = TangoIcons.actions_media_playback_start(TangoIcons.Res.R22);
     private static final ImageIcon saveIcon = TangoIcons.actions_document_save_as(TangoIcons.Res.R22);
@@ -738,5 +745,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         void notifyMSG(final MSG msg, final File[] fileList);
 
         void notifyMSG(final MSG msg, final String text);
+    }
+
+    private static void registerConverters() {
+        final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
+        JtsGeometryConverter.registerConverter();
+
+        RectangleConverter rectConverter = new RectangleConverter();
+        converterRegistry.setConverter(Rectangle.class, rectConverter);
     }
 }
