@@ -125,15 +125,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
 //                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
 
-//        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
-//        locationApplySizeScalingPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
-//        locationApplySizeScalingPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
-//        locationApplySizeScalingPlacementPD.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP);
-//        locationApplySizeScalingPlacementPD.setDefaultConverter();
-//        addPropertyDescriptor(locationApplySizeScalingPlacementPD);
+        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+        locationApplySizeScalingPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        locationApplySizeScalingPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
+        locationApplySizeScalingPlacementPD.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP);
+        locationApplySizeScalingPlacementPD.setDefaultConverter();
+        addPropertyDescriptor(locationApplySizeScalingPlacementPD);
 
-        PropertyDescriptor locationSizeScalingPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_NAME,
+        PropertyDescriptor locationSizeScalingPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
         locationSizeScalingPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
         locationSizeScalingPD.setValueRange(new ValueRange(0.0, 100.00));
@@ -141,6 +141,26 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         locationSizeScalingPD.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP);
         locationSizeScalingPD.setDefaultConverter();
         addPropertyDescriptor(locationSizeScalingPD);
+
+
+        PropertyDescriptor legendLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TYPE);
+        legendLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
+        legendLengthPD.setValueRange(new ValueRange(100, 4000));
+        legendLengthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_LABEL);
+        legendLengthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TOOLTIP);
+        legendLengthPD.setDefaultConverter();
+        addPropertyDescriptor(legendLengthPD);
+
+
+        PropertyDescriptor legendWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TYPE);
+        legendWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
+        legendWidthPD.setValueRange(new ValueRange(10, 500));
+        legendWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_LABEL );
+        legendWidthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TOOLTIP);
+        legendWidthPD.setDefaultConverter();
+        addPropertyDescriptor(legendWidthPD);
 
 
 

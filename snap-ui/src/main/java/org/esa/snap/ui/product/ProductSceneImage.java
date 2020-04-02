@@ -736,17 +736,25 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME);
 
-//        addPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_NAME,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TYPE);
 
         // Title Parameter Section
 
