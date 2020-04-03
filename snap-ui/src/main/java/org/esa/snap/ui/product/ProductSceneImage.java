@@ -732,6 +732,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
 
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
+
 
 
 

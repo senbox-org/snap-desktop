@@ -105,6 +105,21 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         locationPlacementPD.setDefaultConverter();
         addPropertyDescriptor(locationPlacementPD);
 
+        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
+        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT);
+        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_VALUE_SET));
+        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_LABEL);
+        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TOOLTIP);
+        titleVerticalAnchorPD.setDefaultConverter();
+        addPropertyDescriptor(titleVerticalAnchorPD);
+
+
+
+
+
+
+
 
         PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
