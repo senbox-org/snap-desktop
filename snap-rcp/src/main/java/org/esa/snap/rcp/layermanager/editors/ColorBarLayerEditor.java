@@ -106,7 +106,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelValuesActualPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         labelValuesActualPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         labelValuesActualPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
-        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        labelValuesActualPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
         labelValuesActualPD.setDefaultConverter();
         addPropertyDescriptor(labelValuesActualPD);
 
@@ -519,12 +519,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         tickmarksShowPD.setDefaultConverter();
         addPropertyDescriptor(tickmarksShowPD);
 
-        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, Color.class);
-        tickmarksColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
-        tickmarksColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
-        tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
-        tickmarksColorPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksColorPD);
 
         PropertyDescriptor tickmarksLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, Integer.class);
         tickmarksLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
@@ -541,6 +535,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(tickmarksWidthPD);
 
 
+
+
+        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, Color.class);
+        tickmarksColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        tickmarksColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
+        tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
+        tickmarksColorPD.setDefaultConverter();
+        addPropertyDescriptor(tickmarksColorPD);
 
 
 
