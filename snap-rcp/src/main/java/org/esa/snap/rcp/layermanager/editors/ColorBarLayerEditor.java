@@ -84,9 +84,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Color Bar Location Section
 
-//        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
+        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
 
         PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
@@ -105,14 +105,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         locationPlacementPD.setDefaultConverter();
         addPropertyDescriptor(locationPlacementPD);
 
-        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
-        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT);
-        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_VALUE_SET));
-        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_LABEL);
-        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TOOLTIP);
-        titleVerticalAnchorPD.setDefaultConverter();
-        addPropertyDescriptor(titleVerticalAnchorPD);
+
 
 
 
@@ -145,9 +138,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Color Bar Scaling Section
 
-//        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
+        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
 
         PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
@@ -185,6 +178,40 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         legendWidthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TOOLTIP);
         legendWidthPD.setDefaultConverter();
         addPropertyDescriptor(legendWidthPD);
+
+
+        PropertyDescriptor titleParameterFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TYPE);
+        titleParameterFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT);
+        titleParameterFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_LABEL);
+        titleParameterFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TOOLTIP);
+        titleParameterFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_VALUE_MIN,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_VALUE_MAX));
+        titleParameterFontSizePD.setDefaultConverter();
+        addPropertyDescriptor(titleParameterFontSizePD);
+
+
+        PropertyDescriptor titleUnitsFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TYPE);
+        titleUnitsFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
+        titleUnitsFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL);
+        titleUnitsFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TOOLTIP);
+        titleUnitsFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MIN,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MAX));
+        titleUnitsFontSizePD.setDefaultConverter();
+        addPropertyDescriptor(titleUnitsFontSizePD);
+
+
+        PropertyDescriptor labelSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, Integer.class);
+        labelSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
+        labelSizePD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL);
+        labelSizePD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
+        labelSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MIN, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MAX));
+        labelSizePD.setDefaultConverter();
+        addPropertyDescriptor(labelSizePD);
+
+
+
 
 
 
@@ -290,13 +317,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelsFontPD.setDefaultConverter();
         addPropertyDescriptor(labelsFontPD);
 
-        PropertyDescriptor labelSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, Integer.class);
-        labelSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
-        labelSizePD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL);
-        labelSizePD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
-        labelSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MIN, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MAX));
-        labelSizePD.setDefaultConverter();
-        addPropertyDescriptor(labelSizePD);
+
 
         PropertyDescriptor labelColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, Color.class);
         labelColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
@@ -335,7 +356,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleParameterTextPD.setDefaultConverter();
         addPropertyDescriptor(titleParameterTextPD);
 
-
+        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
+        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT);
+        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_VALUE_SET));
+        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_LABEL);
+        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TOOLTIP);
+        titleVerticalAnchorPD.setDefaultConverter();
+        addPropertyDescriptor(titleVerticalAnchorPD);
 
         PropertyDescriptor titleParameterFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_TYPE);
@@ -363,15 +391,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleParameterFontNamePD.setDefaultConverter();
         addPropertyDescriptor(titleParameterFontNamePD);
 
-        PropertyDescriptor titleParameterFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TYPE);
-        titleParameterFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT);
-        titleParameterFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_LABEL);
-        titleParameterFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TOOLTIP);
-        titleParameterFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_VALUE_MIN,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_VALUE_MAX));
-        titleParameterFontSizePD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontSizePD);
 
 
 
@@ -439,15 +458,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleUnitsFontNamePD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontNamePD);
 
-        PropertyDescriptor titleUnitsFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TYPE);
-        titleUnitsFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
-        titleUnitsFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL);
-        titleUnitsFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TOOLTIP);
-        titleUnitsFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MIN,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MAX));
-        titleUnitsFontSizePD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontSizePD);
+
 
         PropertyDescriptor titleUnitsFontColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_TYPE);
