@@ -689,6 +689,18 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TYPE);
 
 
+
+
+
+        // Title Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY);
+
+
+
+
+
         // Formatting Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,

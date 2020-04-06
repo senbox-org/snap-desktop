@@ -48,6 +48,101 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+
+        // Title Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
+
+
+
+        PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TYPE);
+        titleParameterTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_DEFAULT);
+        titleParameterTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_LABEL);
+        titleParameterTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TOOLTIP);
+        titleParameterTextPD.setDefaultConverter();
+        addPropertyDescriptor(titleParameterTextPD);
+
+
+        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TYPE);
+        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_DEFAULT);
+        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_LABEL);
+        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TOOLTIP);
+        titleUnitsTextPD.setDefaultConverter();
+        addPropertyDescriptor(titleUnitsTextPD);
+
+
+
+        // Label Values
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
+
+
+
+
+        PropertyDescriptor labelValuesModePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, String.class);
+        labelValuesModePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        labelValuesModePD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);
+        labelValuesModePD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
+        labelValuesModePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
+        labelValuesModePD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesModePD);
+
+        PropertyDescriptor labelValuesCountPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, Integer.class);
+        labelValuesCountPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
+        labelValuesCountPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
+        labelValuesCountPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
+        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+        labelValuesCountPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MAX));
+        labelValuesCountPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesCountPD);
+
+        PropertyDescriptor labelValuesActualPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, String.class);
+        labelValuesActualPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+        labelValuesActualPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
+        labelValuesActualPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
+        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        labelValuesActualPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesActualPD);
+
+        PropertyDescriptor labelValuesScalingFactorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, Double.class);
+        labelValuesScalingFactorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
+        labelValuesScalingFactorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL);
+        labelValuesScalingFactorPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
+        labelValuesScalingFactorPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MAX));
+        labelValuesScalingFactorPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesScalingFactorPD);
+
+
+        PropertyDescriptor labelValuesDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, Integer.class);
+        labelValuesDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY);
+        labelValuesDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL);
+        labelValuesDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
+        labelValuesDecimalPlacesPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MIN,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX));
+        labelValuesDecimalPlacesPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesDecimalPlacesPD);
+
+
+        PropertyDescriptor labelValuesForceDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, Boolean.class);
+        labelValuesForceDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
+        labelValuesForceDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
+        labelValuesForceDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
+        labelValuesForceDecimalPlacesPD.setDefaultConverter();
+        addPropertyDescriptor(labelValuesForceDecimalPlacesPD);
+
+
+
+
+
+
+
+
         // Formatting Section
 
         addSectionBreak(ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY,
@@ -83,10 +178,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Color Bar Location Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
+//
+//        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
+//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
 
         PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
@@ -131,6 +226,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(locationShiftPD);
 
 
+
+        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
+        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT);
+        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_VALUE_SET));
+        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_LABEL);
+        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TOOLTIP);
+        titleVerticalAnchorPD.setDefaultConverter();
+        addPropertyDescriptor(titleVerticalAnchorPD);
 
 
 
@@ -215,11 +319,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        // Label Values
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
+
+
+        // Labels Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
+
+
 
 
         PropertyDescriptor labelsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, Boolean.class);
@@ -228,71 +337,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         labelsShowPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP);
         labelsShowPD.setDefaultConverter();
         addPropertyDescriptor(labelsShowPD);
-
-
-        PropertyDescriptor labelValuesModePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, String.class);
-        labelValuesModePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
-        labelValuesModePD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);
-        labelValuesModePD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
-        labelValuesModePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
-        labelValuesModePD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesModePD);
-
-        PropertyDescriptor labelValuesCountPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, Integer.class);
-        labelValuesCountPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
-        labelValuesCountPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
-        labelValuesCountPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
-        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_ENABLED);
-        labelValuesCountPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MAX));
-        labelValuesCountPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesCountPD);
-
-        PropertyDescriptor labelValuesActualPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, String.class);
-        labelValuesActualPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
-        labelValuesActualPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
-        labelValuesActualPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
-        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
-        labelValuesActualPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesActualPD);
-
-        PropertyDescriptor labelValuesScalingFactorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, Double.class);
-        labelValuesScalingFactorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
-        labelValuesScalingFactorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL);
-        labelValuesScalingFactorPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
-        labelValuesScalingFactorPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MAX));
-        labelValuesScalingFactorPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesScalingFactorPD);
-
-
-        PropertyDescriptor labelValuesDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, Integer.class);
-        labelValuesDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY);
-        labelValuesDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL);
-        labelValuesDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
-        labelValuesDecimalPlacesPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MIN,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX));
-        labelValuesDecimalPlacesPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesDecimalPlacesPD);
-
-
-        PropertyDescriptor labelValuesForceDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, Boolean.class);
-        labelValuesForceDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
-        labelValuesForceDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
-        labelValuesForceDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
-        labelValuesForceDecimalPlacesPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesForceDecimalPlacesPD);
-
-
-
-
-        // Labels Section
-
-//        addSectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
-//                ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
-
-
-
-
 
         PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, Boolean.class);
         labelsItalicsPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
@@ -340,6 +384,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
                 ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SECTION_TOOLTIP);
 
+
+
         PropertyDescriptor titleParameterShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_TYPE);
         titleParameterShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_DEFAULT);
@@ -348,22 +394,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleParameterShowPD.setDefaultConverter();
         addPropertyDescriptor(titleParameterShowPD);
 
-        PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TYPE);
-        titleParameterTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_DEFAULT);
-        titleParameterTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_LABEL);
-        titleParameterTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TOOLTIP);
-        titleParameterTextPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterTextPD);
 
-        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
-        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT);
-        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_VALUE_SET));
-        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_LABEL);
-        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TOOLTIP);
-        titleVerticalAnchorPD.setDefaultConverter();
-        addPropertyDescriptor(titleVerticalAnchorPD);
 
         PropertyDescriptor titleParameterFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_TYPE);
@@ -413,6 +444,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
                 ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_TOOLTIP);
 
+
+
+
         PropertyDescriptor titleUnitsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TYPE);
         titleUnitsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_DEFAULT);
@@ -420,17 +454,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleUnitsShowPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TOOLTIP);
         titleUnitsShowPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsShowPD);
-
-        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TYPE);
-        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_DEFAULT);
-        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_LABEL);
-        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TOOLTIP);
-        titleUnitsTextPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsTextPD);
-
-
-
 
         PropertyDescriptor titleUnitsFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_TYPE);
