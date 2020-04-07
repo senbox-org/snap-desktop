@@ -127,9 +127,6 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <publicPackages>
-                        <!-- should actually be deleted. jidesoft is already exported in ceres-ui -->
-                        <publicPackage>javax.measure.*</publicPackage>
-                        <publicPackage>com.jidesoft.*</publicPackage>
                         <publicPackage>com.bc.ceres.swing</publicPackage>
                         <publicPackage>com.bc.ceres.swing.actions</publicPackage>
                         <publicPackage>com.bc.ceres.swing.binding</publicPackage>
