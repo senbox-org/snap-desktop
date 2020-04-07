@@ -42,7 +42,6 @@ import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-import javax.measure.Unit;
 import javax.media.jai.PlanarImage;
 import javax.swing.SwingUtilities;
 import java.awt.geom.AffineTransform;
@@ -247,8 +246,7 @@ class PixelInfoViewModelUpdater {
                     positionModel.addRow("Map-X", "", mapUnit);
                     positionModel.addRow("Map-Y", "", mapUnit);
                 } else if (geoCoding instanceof CrsGeoCoding) {
-                    Unit<?> xUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(0).getUnit();
-                    String xAxisUnit = xUnit.toString();
+                    String xAxisUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(0).getUnit().toString();
                     String yAxisUnit = geoCoding.getMapCRS().getCoordinateSystem().getAxis(1).getUnit().toString();
                     positionModel.addRow("Map-X", "", xAxisUnit);
                     positionModel.addRow("Map-Y", "", yAxisUnit);
