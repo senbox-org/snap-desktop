@@ -1,14 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<!-- Style sheets used in the current web pages -->
-<!--  1. Mostly generic Drupal code which may (or may not) be needed -->
-<style>
+<head>
+    <!-- Style sheets used in the current web pages -->
+    <!--  1. Mostly generic Drupal code which may (or may not) be needed -->
+    <style>
 @import url("http://eo4sd-marine.eu/modules/system/system.base.css?q2yqzo");
 
 
 
-</style>
-<style>
+    </style>
+    <style>
 @import url("http://eo4sd-marine.eu/sites/all/modules/contrib/date/date_api/date.css?q2yqzo");
 @import url("http://eo4sd-marine.eu/modules/field/theme/field.css?q2yqzo");
 @import url("http://eo4sd-marine.eu/modules/node/node.css?q2yqzo");
@@ -18,29 +19,26 @@
 
 
 
-</style>
-<style>
+    </style>
+    <style>
 @import url("http://eo4sd-marine.eu/sites/all/modules/contrib/colorbox/styles/default/colorbox_style.css?q2yqzo");
 @import url("http://eo4sd-marine.eu/sites/all/modules/contrib/ctools/css/ctools.css?q2yqzo");
 @import url("http://eo4sd-marine.eu/sites/all/modules/contrib/addtoany/addtoany.css?q2yqzo");
 @import url("http://eo4sd-marine.eu/sites/all/libraries/fontawesome/css/font-awesome.css?q2yqzo");
 
 
+    </style>
 
-</style>
 
-
-<!-- 2.  Style sheets containing the ESA specific styles -->
-<style>
+    <!-- 2.  Style sheets containing the ESA specific styles -->
+    <style>
 @import url("http://eo4sd-marine.eu/sites/all/themes/contrib/eo4sdbtsp/css/style.css?q2yqzo");
 
+    </style>
+</head>
 
-
-</style>
-
-
+<body>
 <!-- The html code below produces the  top menu bar and banner immediately below this, and should be  common to all the pages -->
-
 <header id="navbar" role="banner" class="navbar navbar-fixed-top navbar-default">
     <div class="header-top row">
         <div class="container">
@@ -83,9 +81,11 @@
                 </nav>
                 <div class="networks">
                     <a href="https://twitter.com/eo_intdev" target="_blank"><img
-                            src="/sites/all/themes/contrib/eo4sdbtsp/img/icon-twitter.jpg"></a>
+                            src="https://eo4sd-marine.eu/sites/all/themes/contrib/eo4sdbtsp/img/icon-twitter.jpg"
+                            alt="Twitter"></a>
                     <a href="https://www.youtube.com/watch?v=9zZfSCRoUb4" target="_blank"><img
-                            src="/sites/all/themes/contrib/eo4sdbtsp/img/icon-youtube.jpg"></a>
+                            src="https://eo4sd-marine.eu/sites/all/themes/contrib/eo4sdbtsp/img/icon-youtube.jpg"
+                            alt="Youtube"></a>
                 </div>
             </div>
         </div>
@@ -101,9 +101,65 @@
         <a class="name navbar-brand" href="/" title="Home">marine and coastal resources</a>
       </span>
             <br><span class="baseline">earth observation for sustainable development</span>
-            <div><img src="images/logo-esa-h.png"></div>
+            <div><img src="https://eo4sd-marine.eu/sites/all/themes/contrib/eo4sdbtsp/img/logo-esa-h.png"></div>
         </div>
     </div>
 </header>
+<!--
+<table width="100%" border="0">
+    <tbody>
+        <tr>
+            <td valign="top" width="10%"><img src="../images/logo-eo4sd.png" width="144" height="101" alt=""/></td>
+            <td valign="top" width="45%"><center><h2 style="color:#345C9A">EO4SD dissemination platform</h2>
+            </center></td>
+            <td valign="top" width="45%">
+                <h2 style="color:#345C9A">marine and coastal resources</h2>
+                <h3 style="color:#345C9A">earth observation for sustainable development</h3>
 
+            </td>
+        </tr>
+    </tbody>
+</table>
+-->
+<div style="width:100%; height:200px; z-index:1">
+    <p>&nbsp;</p>
+</div>
+<div style="width:100%; z-index:2">
+    <!--
+    <table width="100%" border="0">
+        <tbody>
+        <tr>
+            <td valign="top" width="10%"><img src="images/logo-eo4sd.png" width="144" height="101" alt=""/></td>
+            <td valign="top" width="45%">
+                <center><h2 style="color:#345C9A">EO4SD dissemination platform</h2>
+                </center>
+            </td>
+            <td valign="top" width="45%">
+                <h2 style="color:#345C9A">marine and coastal resources</h2>
+                <h3 style="color:#345C9A">earth observation for sustainable development</h3>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+     -->
+
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+
+    <img src="images/EO4SD-marine-worldmap.png" alt="Worldmap" width="1222" usemap="#worldmap" align="absmiddle">
+
+    <map name="worldmap">
+        <area shape="circle" coords="239,329,44" alt="Caribbean" href="areas/caribbean.html">
+        <area shape="circle" coords="494,379,61" alt="West Africa" href="areas/west_africa.html">
+        <area shape="circle" coords="667,477,61" alt="Western Indian Ocean" href="areas/western_indian_ocean.html">
+        <area shape="circle" coords="745,305,16" alt="Pakistan" href="areas/pakistan.html">
+        <area shape="circle" coords="828,339,34" alt="Bay Of Bengal" href="areas/bay_of_bengal.html">
+        <area shape="circle" coords="955,358,36" alt="Philippines" href="areas/philippines.html">
+        <area shape="circle" coords="1165,506,32" alt="Pacific Islands" href="areas/pacific_islands.html">
+    </map>
+
+</div>
+</body>
 </html>
