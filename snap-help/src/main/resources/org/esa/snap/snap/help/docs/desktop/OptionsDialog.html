@@ -87,10 +87,10 @@ at once.
 </p>
 <ul>
     <li><b>Snap pins to exact geo-location after import, transfer to another product, or geo-coding change</b><br>
-        Explanatory text.
+        Enables pins to be displayed at exact location on the image.
     </li>
     <li><b>Use sub-pixel fraction accuracy for pixel-based geo-coding</b><br>
-        Explanatory text.
+        When geo-coding is pixel-based, a sub-pixel fraction accuracy shall be used (see also "Show pixel coordinates with fractional part" below).
     </li>
     <li><b>Show geographical coordinates in decimal degrees</b><br>
         Use decimal degree values instead of minutes and seconds.
@@ -236,7 +236,7 @@ at once.
 <img src="images/OptionsDialog-General-A-GPF.png" alt="GPF">
 
 <ul>
-    <li><b>Beep when processing has finished</b> - Explanatory text.<br></li>
+    <li><b>Beep when processing has finished</b> - Generate a system feedback after processing.<br></li>
 </ul>
 
 <h4><a name="remotefilerepos">Remote File Repositories</a></h4>
@@ -360,11 +360,11 @@ at once.
     You are able to configure the settings for different protocols or <u>check the box to use the same settings for all
         protocols.</u></p>
 <ul>
-    <li><b>HTTP Proxy</b> - Enter the proxy server address and the port.
+    <li><b>HTTP Proxy</b> - Enter the HTTP proxy server address and the port.
     </li>
-    <li><b>HTTPS Proxy</b> - Enter the proxy server address and the port.
+    <li><b>HTTPS Proxy</b> - Enter the HTTPS proxy server address and the port.
     </li>
-    <li><b>SOCKS Proxy</b> - Enter the proxy server address and the port.
+    <li><b>SOCKS Proxy</b> - Enter the SOCKS proxy server address and the port.
     </li>
     <li><b>Use HTTP proxy authentication</b><br>
         If your proxy requires authentication enable this option.
@@ -373,7 +373,7 @@ at once.
         Your user name.
     </li>
     <li><b>Password:</b><br>
-        Your password
+        Your password.
     </li>
 
 </ul>
@@ -401,8 +401,29 @@ at once.
     <li><b>Show parent folder name in tab title</b> - Display parent folder name in tab.<br></li>
     <li><b>Show full file path</b> - Specify the full path in tab.<br></li>
 </ul>
-<a name="#multirowtabs"></a> <img src="images/OptionsDialog-Appearance-1a-Multi-row-tabs.png" alt="Multi-row tabs">
+<a name="multirowtabs"></a> <img src="images/OptionsDialog-Appearance-1a-Multi-row-tabs.png" alt="Multi-row tabs">
 
+
+<h4><a name="windows">Windows</a></h4>
+<img src="images/OptionsDialog-Appearance-2-Windows.png" alt="No-Data Layer">
+
+<ul>
+    <li><b>Drag window image</b> - Enables "ghost" window image during drag and drop of a window.<br></li>
+    <li><b>Transparent drag window image</b> - Enables transparency in drag window image.<br></li>
+    <li><b>Snapping floating windows</b> - Enables automatic snapping of floating windows for easier layout handling.<br></li>
+    <li><b>Snap to screen edges</b> - Enables snapping of floating windows to screen edges.<br></li>
+    <li><b>Transparent floating windows</b> - Makes unfocused floating windows semi-transparent after a few seconds.<br></li>
+</ul>
+
+
+<h4><a name="lookandfeel">Look and Feel</a></h4>
+<img src="images/OptionsDialog-Appearance-3-LookAndFeel.png" alt="Look and Feel">
+
+<ul>
+    <li><b>Preferred look and feel</b> - Select your favourite look-and-feel from a list. Note that the activation requires a restart of SNAP.<br></li>
+    <li><b>Maximize use of native look and feel</b> - NetBeans uses native UI components when those offer sufficient functionality.
+        Select this option to force the use of native components, even when that may limit functionality (e.g. macOS file chooser).<br></li>
+</ul>
 
 <hr>
 </body>
