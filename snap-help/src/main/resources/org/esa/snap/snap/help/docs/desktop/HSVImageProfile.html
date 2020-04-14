@@ -1,0 +1,76 @@
+<!--
+  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - HSV-Image Profile</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            RGB-Image Profile
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg"
+                                                                                     border="0"></a></td>
+    </tr>
+</table>
+
+<h3>HSV-Image Profile</h3>
+
+<p>In this window you are asked to define the HSV channels for a new
+    <a href="ProductSceneView.html#rgbSupport">RGB Image View</a>. You are able to load defined HSV-Profiles, to create
+    and store new or define only temporarily new profiles.</p>
+
+<p align="left"><img src="images/HSVProfileSelect.png"></p>
+
+
+<h4>Profile</h4> Selects on of the actual stored HSV-Profiles to use for creation of the new image view.
+<ul>
+    <li>Use the <img src="images/icons/Open24.gif" alt="Open" border="0"> to open a stored profile file.</li>
+    <li>Use the <img src="images/icons/Save24.gif" alt="Save" border="0"> to save the currently displayed profile.</li>
+    <li>Use the <img src="images/icons/Remove24.gif" alt="Remove" border="0"> to delete the currently displayed profile.</li>
+</ul>
+
+<h4>HSV Channels</h4>
+<p>
+    <b>Hue</b> - Defines the mathematical expression for the <em> Hue </em>channel.<br>
+    <b>Saturation</b> - Defines the mathematical expression for the <em> Saturation </em> channel.<br>
+    <b>Value</b> - Defines the mathematical expression for the <em> Value </em> channel.<br>
+</p>
+
+<p>Use the <img src="images/icons/NextDialogButton.gif" alt="Opens the Band Maths Expression Editor" border="0"> to
+    to edit the expression for the specific channel by using the <a href="ExpressionEditor.html">Maths Expression Editor</a>.
+</p>
+
+<h4>Store HSV Channels</h4>
+Stores the HSV channels into the current product as virtual bands.
+
+<br><br>
+
+<h3><a name="profileFile">HSV-Profile File</a></h3>
+HSV-Profile files contain similar content as the RGB-Profile files. They also must have the extension ".rgb".
+Multiple default profiles provided by the Sentinel Toolbox in the <i>$S3TBX_INSTALL_DIR$</i>/auxdata/rgb_profiles.<br>
+For the file structure please refer to <a href="RGBImageProfile.html#profileFile">RGB-Profile file</a>.
+<hr>
+</body>
+</html>
+
+<!--page visited by UK-->
