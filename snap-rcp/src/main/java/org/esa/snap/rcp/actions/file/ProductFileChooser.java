@@ -47,6 +47,7 @@ public class ProductFileChooser extends SnapFileChooser {
 
     private JLabel sizeLabel;
     private boolean useSubset;
+    private boolean useAdvanced;
     private Product productToExport;
 
     public ProductFileChooser(File currentDirectory) {
@@ -83,6 +84,14 @@ public class ProductFileChooser extends SnapFileChooser {
         this.useSubset = useSubset;
     }
 
+    public boolean isAdvancedEnabled() {
+        return useAdvanced;
+    }
+
+    public void setAdvancedEnabled(boolean useAdvanced) {
+        this.useAdvanced = useAdvanced;
+    }
+
     @Override
     public int showDialog(Component parent, String approveButtonText) {
         initUI();
@@ -116,7 +125,9 @@ public class ProductFileChooser extends SnapFileChooser {
         if (isSubsetEnabled()) {
             addSubsetAcessory();
         } else {
-            addAdvancedAcessory();
+            if (isAdvancedEnabled()) {
+                addAdvancedAcessory();
+            }
         }
     }
 
@@ -144,7 +155,7 @@ public class ProductFileChooser extends SnapFileChooser {
         advancedButton = new JButton("Advanced");
         advancedButton.setMnemonic('A');
         advancedButton.addActionListener(e -> openAdvancedDialog());
-        advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
+        advancedButton.setEnabled(getSelectedFile() != null);
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints(
@@ -172,7 +183,9 @@ public class ProductFileChooser extends SnapFileChooser {
                 sizeLabel.setText("");
             }
         } else {
-            advancedButton.setEnabled(getSelectedFile() != null || productToExport != null);
+            if (isAdvancedEnabled()) {
+                advancedButton.setEnabled(getSelectedFile() != null);
+            }
         }
     }
 

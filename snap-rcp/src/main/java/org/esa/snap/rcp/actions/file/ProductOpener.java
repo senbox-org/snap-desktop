@@ -138,6 +138,7 @@ public class ProductOpener {
         ProductFileChooser fc = new ProductFileChooser(recentPath.toFile());
 
         fc.setSubsetEnabled(isSubsetImportEnabled());
+        fc.setAdvancedEnabled(true);
         fc.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - " + Bundle.CTL_OpenProductActionName());
         fc.setAcceptAllFileFilterUsed(isUseAllFileFilter());
         filters.forEach((filter) -> {
