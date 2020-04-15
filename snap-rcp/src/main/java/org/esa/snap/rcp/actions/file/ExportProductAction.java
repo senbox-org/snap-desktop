@@ -153,6 +153,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
         ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setSubsetEnabled(true);
+        fc.setAdvancedEnabled(false);
         fc.addChoosableFileFilter(getFileFilter(formatName));
         fc.setProductToExport(product);
         int returnVal = fc.showSaveDialog(SnapApp.getDefault().getMainFrame());
