@@ -189,9 +189,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
             }
         });
 
-        OperatorDescriptor baseOperatorDescriptor = operatorSpi.getOperatorDescriptor();
-        OperatorDescriptor operatorDescriptor = new OperatorEmptyDescriptorImpl(baseOperatorDescriptor);
-
+        OperatorDescriptor operatorDescriptor = new OperatorEmptyDescriptorImpl();// operatorSpi.getOperatorDescriptor();
         this.parameterSupport = new OperatorParameterSupport(operatorDescriptor, propertySet, parameterMap, parameterUpdater) {
             @Override
             public void fromDomElement(DomElement parametersElement) throws ValidationException, ConversionException {
