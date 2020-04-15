@@ -11,59 +11,61 @@ import org.esa.snap.core.gpf.descriptor.TargetPropertyDescriptor;
 /**
  * Created by jcoravu on 11/3/2019.
  */
-public class OperatorEmptyDescriptorImpl implements OperatorDescriptor {
+class OperatorDescriptorWrapperImpl implements OperatorDescriptor {
 
-    private ParameterDescriptor[] params;
-    private SourceProductDescriptor[] sourceProducts;
+    private final OperatorDescriptor baseOperatorDescriptor;
+    private final ParameterDescriptor[] params;
+    private final SourceProductDescriptor[] sourceProducts;
 
-    public OperatorEmptyDescriptorImpl() {
+    OperatorDescriptorWrapperImpl(OperatorDescriptor baseOperatorDescriptor) {
+        this.baseOperatorDescriptor = baseOperatorDescriptor;
         this.params = new ParameterDescriptor[0];
         this.sourceProducts = new SourceProductDescriptor[0];
     }
 
     @Override
     public String getName() {
-        return null;
+        return this.baseOperatorDescriptor.getName();
     }
 
     @Override
     public String getAlias() {
-        return null;
+        return this.baseOperatorDescriptor.getAlias();
     }
 
     @Override
     public String getLabel() {
-        return null;
+        return this.baseOperatorDescriptor.getLabel();
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return this.baseOperatorDescriptor.getDescription();
     }
 
     @Override
     public String getVersion() {
-        return null;
+        return this.baseOperatorDescriptor.getVersion();
     }
 
     @Override
     public String getAuthors() {
-        return null;
+        return this.baseOperatorDescriptor.getAuthors();
     }
 
     @Override
     public String getCopyright() {
-        return null;
+        return this.baseOperatorDescriptor.getCopyright();
     }
 
     @Override
     public boolean isInternal() {
-        return false;
+        return this.baseOperatorDescriptor.isInternal();
     }
 
     @Override
     public boolean isAutoWriteDisabled() {
-        return false;
+        return this.baseOperatorDescriptor.isAutoWriteDisabled();
     }
 
     @Override
