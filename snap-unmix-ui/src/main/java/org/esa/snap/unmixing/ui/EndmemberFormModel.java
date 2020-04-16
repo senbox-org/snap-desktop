@@ -50,23 +50,23 @@ import java.util.prefs.Preferences;
 
 class EndmemberFormModel {
 
-    private DefaultListModel<Endmember> endmemberListModel;
-    private DefaultListSelectionModel endmemberListSelectionModel;
+    private final DefaultListModel<Endmember> endmemberListModel;
+    private final DefaultListSelectionModel endmemberListSelectionModel;
     private int selectedEndmemberIndex;
 
-    private Diagram endmemberDiagram;
+    private final Diagram endmemberDiagram;
 
-    private Action addAction = new AddAction();
-    private Action removeAction = new RemoveAction();
-    private Action clearAction = new ClearAction();
-    private Action exportAction = new ExportAction();
+    private final Action addAction;
+    private final Action removeAction;
+    private final Action clearAction;
+    private final Action exportAction;
 
-    private AppContext appContext;
+    private final AppContext appContext;
 
-    private PropertyChangeSupport propertyChangeSupport;
+    private final PropertyChangeSupport propertyChangeSupport;
 
-    private Color[] defaultColors = new Color[]{Color.BLACK, Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker(), Color.YELLOW};
-    private static Path defaultEndmemberDir = SystemUtils.getAuxDataPath().resolve("unmix");
+    private final Color[] defaultColors = new Color[]{Color.BLACK, Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker(), Color.YELLOW};
+    private static final Path defaultEndmemberDir = SystemUtils.getAuxDataPath().resolve("unmix");
 
     public EndmemberFormModel(AppContext appContext) {
         this.appContext = appContext;
@@ -75,6 +75,10 @@ class EndmemberFormModel {
         endmemberListSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         endmemberListModel.addListDataListener(new EndmemberListDataListener());
         endmemberListSelectionModel.addListSelectionListener(new EndmemberListSelectionListener());
+        addAction = new AddAction();
+        removeAction = new RemoveAction();
+        clearAction = new ClearAction();
+        exportAction = new ExportAction();
         endmemberDiagram = new Diagram();
         endmemberDiagram.setXAxis(new DiagramAxis("Wavelength", ""));
         endmemberDiagram.setYAxis(new DiagramAxis("Radiation", ""));

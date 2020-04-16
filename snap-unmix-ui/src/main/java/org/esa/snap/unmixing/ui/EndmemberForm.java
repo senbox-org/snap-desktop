@@ -22,7 +22,6 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -36,16 +35,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 class EndmemberForm extends JPanel {
     EndmemberFormModel formModel;
-    JList endmemberList;
+    JList<org.esa.snap.unmixing.Endmember> endmemberList;
     DiagramCanvas diagramCanvas;
-    JButton addButton;
-    JButton removeButton;
-    JButton exportButton;
 
     public EndmemberForm(AppContext appContext) {
         this.formModel = new EndmemberFormModel(appContext);
@@ -58,18 +52,15 @@ class EndmemberForm extends JPanel {
 
     private void initComponents() {
 
-        endmemberList = new JList();
+        endmemberList = new JList<>();
         endmemberList.setModel(formModel.getEndmemberListModel());
         endmemberList.setSelectionModel(formModel.getEndmemberListSelectionModel());
         endmemberList.setPreferredSize(new Dimension(80, 160));
 
         diagramCanvas = new DiagramCanvas();
         diagramCanvas.setDiagram(formModel.getEndmemberDiagram());
-        formModel.getPropertyChangeSupport().addPropertyChangeListener("selectedEndmemberIndex", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                diagramCanvas.repaint();
-            }
-        });
+        formModel.getPropertyChangeSupport().addPropertyChangeListener("selectedEndmemberIndex",
+                                                                       evt -> diagramCanvas.repaint());
 
         AbstractButton addButton = ToolButtonFactory.createButton(formModel.getAddAction(), false);
         AbstractButton removeButton = ToolButtonFactory.createButton(formModel.getRemoveAction(), false);
