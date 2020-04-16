@@ -92,6 +92,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -518,7 +519,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         } catch (IOException e) {
             e.printStackTrace();
             Dialogs.showError(MessageFormat.format("I/O error, failed to import {0}s:\n{1}",  /*I18N*/
-                                                       placemarkDescriptor.getRoleLabel(), e.getMessage()));
+                                                   placemarkDescriptor.getRoleLabel(), e.getMessage()));
             return;
         }
         if (placemarks.isEmpty()) {
@@ -693,17 +694,17 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                                 final List<Placemark> placemarkList = getPlacemarksForExport();
                                 PlacemarkIO.writePlacemarksFile(writer, placemarkList);
                             }
-                        } else if(formatName.equals(PlacemarkIO.createTextFileFilter().getFormatName())) {
+                        } else if (formatName.equals(PlacemarkIO.createTextFileFilter().getFormatName())) {
                             try (Writer writer = new FileWriter(file)) {
                                 writePlacemarkDataTableText(writer);
                             }
-                        } else if(formatName.equals(PlacemarkIO.createKmzFileFilter().getFormatName())) {
+                        } else if (formatName.equals(PlacemarkIO.createKmzFileFilter().getFormatName())) {
                             try (OutputStream outStream = new FileOutputStream(file)) {
                                 final List<Placemark> placemarkList = getPlacemarksForExport();
                                 List<PlacemarkData> placemarkData = getExtraDataFromTable(placemarkList);
                                 PlacemarkIO.writePlacemarkKmzFile(outStream, placemarkData, ProgressMonitor.NULL);
                             }
-                        }else {
+                        } else {
                             Dialogs.showError(String.format("Unknown export format '%s'. Nothing has been exported.", formatName));
                         }
                     } catch (IOException ioe) {
@@ -719,7 +720,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
     private List<PlacemarkData> getExtraDataFromTable(List<Placemark> placemarkList) {
         List<PlacemarkData> list = new ArrayList<>();
         String[] additionalColumnNames = placemarkTableModel.getAdditionalColumnNames();
-        for (int rowIndex= 0; rowIndex < placemarkTableModel.getRowCount(); rowIndex++) {
+        for (int rowIndex = 0; rowIndex < placemarkTableModel.getRowCount(); rowIndex++) {
             Placemark placemark = placemarkTableModel.getPlacemarkAt(rowIndex);
             if (placemarkList.contains(placemark)) {
                 Map<String, Object> extraData = new LinkedHashMap<>();
@@ -858,30 +859,12 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
     }
 
-//    private void removePlacemarksFromRemovedProducts(Product removedProduct) {
-//        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
-//            for (Placemark placemark : relatedPlacemarkList) {
-//                if (placemark.getProduct() == removedProduct) {
-//                    relatedPlacemarkList.remove(placemark);
-//                    if (relatedPlacemarkList.size() == 1) {
-//                        relatedPlacemarks.remove(relatedPlacemarkList);
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private void removePlacemarksFromRelatedPlacemarks(Placemark placemark) {
-        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
-            for (Placemark relatedPlacemark : relatedPlacemarkList) {
-                if (placemark == relatedPlacemark) {
-                    relatedPlacemarkList.remove(placemark);
-                    if (relatedPlacemarkList.size() == 1) {
-                        relatedPlacemarks.remove(relatedPlacemarkList);
-                    }
-                }
-            }
+        // two times iteration and remove to prevent ConcurrentModifacationException
+        for (List<Placemark> placemarks : relatedPlacemarks) {
+            placemarks.removeIf(p -> p == placemark);
         }
+        relatedPlacemarks.removeIf(placemarks -> placemarks.size() == 1);
     }
 
     private void setComponentName(JComponent component, String name) {
@@ -911,7 +894,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                         }
                     } catch (IOException ignored) {
                         Dialogs.showError(MessageFormat.format("I/O Error.\nFailed to export {0} data table.",  /*I18N*/
-                                                                   placemarkDescriptor.getRoleLabel()));
+                                                               placemarkDescriptor.getRoleLabel()));
                     }
                 }
             }
@@ -1209,7 +1192,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 if (layer instanceof VectorDataLayer) {
                     VectorDataLayer vectorDataLayer = (VectorDataLayer) layer;
                     if (vectorDataLayer.getVectorDataNode() == getProduct().getPinGroup().getVectorDataNode() ||
-                            vectorDataLayer.getVectorDataNode() == getProduct().getGcpGroup().getVectorDataNode()) {
+                        vectorDataLayer.getVectorDataNode() == getProduct().getGcpGroup().getVectorDataNode()) {
                         updateUIState();
                     }
                 }

@@ -101,6 +101,9 @@ class LayerTreeModel implements TreeModel {
 
     protected void fireTreeNodeChanged(Layer layer) {
         TreeModelEvent event = createTreeModelEvent(layer);
+        if (event == null) {
+            return;
+        }
         for (TreeModelListener treeModelListener : treeModelListeners.keySet()) {
             treeModelListener.treeNodesChanged(event);
         }
@@ -108,6 +111,9 @@ class LayerTreeModel implements TreeModel {
 
     protected void fireTreeStructureChanged(Layer parentLayer) {
         TreeModelEvent event = createTreeModelEvent(parentLayer);
+        if (event == null) {
+            return;
+        }
         for (TreeModelListener treeModelListener : treeModelListeners.keySet()) {
             treeModelListener.treeStructureChanged(event);
         }
@@ -115,6 +121,9 @@ class LayerTreeModel implements TreeModel {
 
     protected void fireTreeNodesInserted(Layer parentLayer) {
         TreeModelEvent event = createTreeModelEvent(parentLayer);
+        if (event == null) {
+            return;
+        }
         for (TreeModelListener treeModelListener : treeModelListeners.keySet()) {
             treeModelListener.treeNodesInserted(event);
         }
@@ -122,6 +131,9 @@ class LayerTreeModel implements TreeModel {
 
     protected void fireTreeNodesRemoved(Layer parentLayer) {
         TreeModelEvent event = createTreeModelEvent(parentLayer);
+        if (event == null) {
+            return;
+        }
         for (TreeModelListener treeModelListener : treeModelListeners.keySet()) {
             treeModelListener.treeNodesRemoved(event);
         }
@@ -129,7 +141,11 @@ class LayerTreeModel implements TreeModel {
 
     private TreeModelEvent createTreeModelEvent(Layer layer) {
         Layer[] parentPath = LayerUtils.getLayerPath(rootLayer, layer);
-        return new TreeModelEvent(this, parentPath);
+        if (parentPath.length > 0) {
+            return new TreeModelEvent(this, parentPath);
+        } else {
+            return null;
+        }
     }
 
     private class LayerListener extends AbstractLayerListener {
