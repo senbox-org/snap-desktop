@@ -16,7 +16,6 @@
 
 package org.esa.snap.binning.operator.ui;
 
-import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
@@ -196,6 +195,7 @@ public class BinningDialog extends SingleTargetProductDialog {
         parameters.put("aggregatorConfigs", formModel.getAggregatorConfigs());
 
         parameters.put("outputFile", getTargetProductSelector().getModel().getProductFile().getPath());
+        parameters.put("outputFormat", getTargetProductSelector().getModel().getFormatName());
 
         parameters.put("maskExpr", formModel.getMaskExpr());
         parameters.put("region", formModel.getRegion());
@@ -235,6 +235,10 @@ public class BinningDialog extends SingleTargetProductDialog {
             getTargetProductSelector().getModel().setProductName(FileUtils.getFilenameWithoutExtension(outputFile));
 
         }
+        if (parameterMap.containsKey("outputFormat")) {
+            String outputFormat = (String) parameterMap.get("outputFormat");
+            getTargetProductSelector().getModel().setFormatName(outputFormat);
+        }
 
         BinningConfigurationPanel configurationPanel = form.getBinningConfigurationPanel();
 
@@ -260,7 +264,7 @@ public class BinningDialog extends SingleTargetProductDialog {
         }
 
         @Override
-        protected Product doInBackground(ProgressMonitor pm) throws Exception {
+        protected Product doInBackground(ProgressMonitor pm) {
             pm.beginTask("Binning...", 100);
             final Map<String, Object> parameters = new HashMap<>();
             updateParameterMap(parameters);
@@ -273,13 +277,13 @@ public class BinningDialog extends SingleTargetProductDialog {
     private class BinningParameterUpdater implements ParameterUpdater {
 
         @Override
-        public void handleParameterSaveRequest(Map<String, Object> parameterMap) throws ValidationException, ConversionException {
+        public void handleParameterSaveRequest(Map<String, Object> parameterMap) {
             formModel.getBindingContext().adjustComponents();
             updateParameterMap(parameterMap);
         }
 
         @Override
-        public void handleParameterLoadRequest(Map<String, Object> parameterMap) throws ValidationException, ConversionException {
+        public void handleParameterLoadRequest(Map<String, Object> parameterMap) throws ValidationException {
             updateFormModel(parameterMap);
             formModel.getBindingContext().adjustComponents();
         }
