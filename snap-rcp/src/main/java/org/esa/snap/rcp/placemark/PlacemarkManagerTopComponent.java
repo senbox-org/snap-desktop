@@ -858,26 +858,11 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         }
     }
 
-//    private void removePlacemarksFromRemovedProducts(Product removedProduct) {
-//        for (List<Placemark> relatedPlacemarkList : relatedPlacemarks) {
-//            for (Placemark placemark : relatedPlacemarkList) {
-//                if (placemark.getProduct() == removedProduct) {
-//                    relatedPlacemarkList.remove(placemark);
-//                    if (relatedPlacemarkList.size() == 1) {
-//                        relatedPlacemarks.remove(relatedPlacemarkList);
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private void removePlacemarksFromRelatedPlacemarks(Placemark placemark) {
-        // reverse direction iteration ... otherwise we get an ConcurrentModifacationException
+        // two times reverse direction iteration ... otherwise we get an ConcurrentModifacationException
         // because we change the list while we iterate over it.
         for (int i = relatedPlacemarks.size() - 1; i >= 0; i--) {
             List<Placemark> relatedPlacemarkList = relatedPlacemarks.get(i);
-            // reverse direction iteration ... otherwise we get an ConcurrentModifacationException
-            // because we change the list while we iterate over it.
             for (int i1 = relatedPlacemarkList.size() - 1; i1 >= 0; i1--) {
                 Placemark relatedPlacemark = relatedPlacemarkList.get(i1);
                 if (placemark == relatedPlacemark) {
