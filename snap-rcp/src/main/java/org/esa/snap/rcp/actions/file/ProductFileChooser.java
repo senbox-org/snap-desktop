@@ -16,9 +16,15 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -298,7 +304,7 @@ public class ProductFileChooser extends SnapFileChooser {
         }
         //if the product does not support Advanced option action
         if (addUIComponents && metadataInspector == null) {
-            int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support Open with advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null, "The reader does not support the advanced options!\nDo you want to open the product normally?", null, JOptionPane.YES_NO_OPTION);
             //if the user want to open the product normally the Advanced Options window will not be displayed
             if (confirm == JOptionPane.YES_OPTION) {
                 addUIComponents = false;
