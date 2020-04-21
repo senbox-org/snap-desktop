@@ -300,9 +300,22 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         Dialogs.showInformation(getTitle(), infoMessage, getQualifiedPropertyName(propertyName));
     }
 
+    /**
+     * Creates the desired target product.
+     * Usually, this method will be implemented by invoking one of the multiple {@link GPF GPF}
+     * {@code createProduct} methods.
+     * <p>
+     * The method should throw a {@link OperatorException} in order to signal "nominal" processing errors,
+     * other exeption types are treated as internal errors.
+     *
+     * @return The target product.
+     * @throws Exception if an error occurs, an {@link OperatorException} is signaling "nominal" processing errors.
+     */
+    protected abstract Product createTargetProduct() throws Exception;
+
     private class ProductWriterSwingWorker extends ProgressMonitorSwingWorker<Product, Object> {
 
-        private final Product targetProduct;
+        private Product targetProduct;
         private long saveTime;
 
         private ProductWriterSwingWorker(Product targetProduct) {
@@ -343,19 +356,19 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                     if (!targetFile.exists())
                         targetFile = targetProduct.getFileLocation();
                     if (targetFile.exists()) {
+                        targetProduct.dispose();
+                        targetProduct = null;
                         product = ProductIO.readProduct(targetFile);
-                        if (product == null) {
-                            product = targetProduct; // todo - check - this cannot be ok!!! (nf)
-                        }
                     }
                     pm.worked(5);
                 }
             } finally {
                 pm.done();
-                if (product != targetProduct) {
+                if (targetProduct != null) {
                     targetProduct.dispose();
+                    targetProduct = null;
                 }
-                Preferences preferences = SnapApp.getDefault().getPreferences();
+                final Preferences preferences = SnapApp.getDefault().getPreferences();
                 if (preferences.getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
@@ -384,17 +397,4 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             }
         }
     }
-
-    /**
-     * Creates the desired target product.
-     * Usually, this method will be implemented by invoking one of the multiple {@link GPF GPF}
-     * {@code createProduct} methods.
-     * <p>
-     * The method should throw a {@link OperatorException} in order to signal "nominal" processing errors,
-     * other exeption types are treated as internal errors.
-     *
-     * @return The target product.
-     * @throws Exception if an error occurs, an {@link OperatorException} is signaling "nominal" processing errors.
-     */
-    protected abstract Product createTargetProduct() throws Exception;
 }
