@@ -6,7 +6,7 @@
 
     <tocitem text="Sentinel Toolbox Application">
         <tocitem text="Raster">
-            <tocitem text="Geometric Operations">
+            <tocitem text="Geometric">
                 <tocitem text="Level 3 Binning Operator" target="binning_overview">
                     <tocitem text="User Interface" target="binning_user_interface"/>
                 </tocitem>

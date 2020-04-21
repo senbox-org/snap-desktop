@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
-@ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000)
+@ActionReference(path = "Menu/Raster/Geometric", position = 10000)
 @NbBundle.Messages({
         "CTL_CollocationAction_Text=Collocation",
         "CTL_CollocationAction_Description=Geographic collocation of two data products."

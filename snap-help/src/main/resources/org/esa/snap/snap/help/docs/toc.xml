@@ -128,7 +128,7 @@
             <tocitem text="Filtered Band" target="createFilteredBand"/>
             <tocitem text="Convert Band" target="convertBand"/>
             <tocitem text="Geo-Coding Displacement Bands" target="displacementBands"/>
-            <tocitem text="Geometric Operations">
+            <tocitem text="Geometric">
                 <tocitem text="Mosaic" target="mosaicAction">
                     <tocitem text="Mosaic Dialog" target="mosaicAction"/>
                     <tocitem text="Mosaic Algorithm Description" target="mosaicAlgo"/>

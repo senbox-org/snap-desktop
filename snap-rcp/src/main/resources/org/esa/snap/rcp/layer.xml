@@ -88,7 +88,7 @@
 
         <folder name="Raster">
             <attr name="position" intvalue="470"/>
-            <folder name="Geometric Operations">
+            <folder name="Geometric">
                 <attr name="position" intvalue="100"/>
             </folder>
             <folder name="Masks">

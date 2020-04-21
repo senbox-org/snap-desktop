@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Processors", id = "org.esa.snap.binning.operator.ui.BinningOperatorAction")
 @ActionRegistration(displayName = "#CTL_BinningOperatorAction_Text", lazy = false)
-@ActionReference(path = "Menu/Raster/Geometric Operations")
+@ActionReference(path = "Menu/Raster/Geometric")
 @NbBundle.Messages({
         "CTL_BinningOperatorAction_Text=Level-3 Binning",
         "CTL_BinningOperatorAction_Description=Spatial and temporal aggregation of input products."
