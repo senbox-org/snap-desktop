@@ -59,12 +59,10 @@ import java.util.stream.Collectors;
 @ActionID(category = "View", id = "OpenImageViewAction")
 @ActionRegistration(
         displayName = "#CTL_OpenImageViewActionName",
-        iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif"
-)
+        iconBase = "org/esa/snap/rcp/icons/RsBandAsSwath.gif")
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 100),
-        @ActionReference(path = "Context/Product/RasterDataNode", position = 100),
-})
+        @ActionReference(path = "Context/Product/RasterDataNode", position = 100),})
 @NbBundle.Messages("CTL_OpenImageViewActionName=Open Image Window")
 public class OpenImageViewAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
@@ -94,6 +92,9 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         return new OpenImageViewAction(rasterDataNode);
     }
 
+    /**
+     * @deprecated since v8.0.0, no replacement
+     */
     public static void showImageView(RasterDataNode rasterDataNode) {
         new OpenImageViewAction().openRasterDataNode(rasterDataNode);
     }
@@ -131,10 +132,16 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         return component != null ? component.getView() : null;
     }
 
+    /**
+     * @deprecated since v8.0.0, no replacement
+     */
     public static void updateProductSceneViewImage(final ProductSceneView view) {
         SwingUtilities.invokeLater(view::updateImage);
     }
 
+    /**
+     * @deprecated since v8.0.0, no replacement
+     */
     public static void updateProductSceneViewImages(final RasterDataNode[] rasters) {
         updateProductSceneViewImages(rasters, ProductSceneViewImageUpdater.DEFAULT);
     }
@@ -210,7 +217,7 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         String progressMonitorTitle = MessageFormat.format("Creating image for ''{0}''", rasterDataNode.getName());
 
         ProductSceneView existingView = getProductSceneView(rasterDataNode);
-        SwingWorker worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(snapApp.getMainFrame(), progressMonitorTitle) {
+        SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(snapApp.getMainFrame(), progressMonitorTitle) {
 
             @Override
             public void done() {
@@ -221,8 +228,6 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
                     ProductSceneImage sceneImage = get();
                     UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(sceneImage.getProduct());
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
-                    // get the preferences: SnapApp.getInstance().getPreferences()
-                    // add the view (as listener) to it
                     openDocumentWindow(view);
 
                 } catch (Exception e) {
@@ -231,7 +236,7 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
             }
 
             @Override
-            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+            protected ProductSceneImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) {
                 try {
                     return createProductSceneImage(rasterDataNode, existingView, pm);
                 } finally {
@@ -244,15 +249,13 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         worker.execute();
     }
 
-    private ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
+    private void openDocumentWindow(final ProductSceneView view) {
 
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
         productSceneViewWindow.requestSelected();
-
-        return productSceneViewWindow;
     }
 
     private ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, com.bc.ceres.core.ProgressMonitor pm) {
