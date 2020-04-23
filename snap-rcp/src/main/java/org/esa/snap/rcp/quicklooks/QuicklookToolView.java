@@ -189,8 +189,10 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
         openBtn = createButton("Open", "Open RGB", sidePanel, actionListener, openIcon);
         sidePanel.add(openBtn);
+
+// todo why is this here?
         closeBtn = createButton("Close", "Close Product", sidePanel, actionListener, closeIcon);
-        sidePanel.add(closeBtn);
+//        sidePanel.add(closeBtn);
 
         return sidePanel;
     }
@@ -244,8 +246,6 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         prevBtn.setEnabled(hasPrevProd);
         nextBtn.setEnabled(hasNextProd);
         endBtn.setEnabled(hasNextProd);
-        openBtn.setEnabled(hasProducts);
-        closeBtn.setEnabled(hasProducts);
         refreshBtn.setEnabled(hasProducts);
 
         if(!hasProducts) {
@@ -253,6 +253,9 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
             nameLabel.setText("");
             currentProduct = null;
         }
+
+        openBtn.setEnabled(currentProduct != null);
+        closeBtn.setEnabled(currentProduct != null);
     }
 
     private static BufferedImage createNoDataImage() {
@@ -542,8 +545,10 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
     }
 
     private void openProduct() {
-        final OpenRGBImageViewAction rgbAction = new OpenRGBImageViewAction(currentProduct);
-        rgbAction.openProductSceneViewRGB(currentProduct, "");
+        if(currentProduct != null) {
+            final OpenRGBImageViewAction rgbAction = new OpenRGBImageViewAction(currentProduct);
+            rgbAction.openProductSceneViewRGB(currentProduct, "");
+        }
     }
 
     private void closeProduct() {
