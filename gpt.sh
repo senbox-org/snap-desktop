@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # VARIABLES
 JAVA=/usr/lib/jvm/java-1.8.0-zulu-amd64/bin/java
