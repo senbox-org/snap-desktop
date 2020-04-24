@@ -25,3 +25,6 @@ userdir/
 .factorypath
 .vscode
 launch.sh
+snap-desktop.sh
+gpt.sh
+*~
