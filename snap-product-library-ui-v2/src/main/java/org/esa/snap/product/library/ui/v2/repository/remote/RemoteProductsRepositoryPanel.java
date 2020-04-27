@@ -1,6 +1,5 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
-import org.apache.abdera.i18n.templates.HashMapContext;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
