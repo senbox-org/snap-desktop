@@ -63,6 +63,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
     Enablement enablementBorderWidth;
     Enablement enablementBorderColor;
 
+    Enablement enablementLabelsFontItalic;
+    Enablement enablementLabelsFontBold;
+    Enablement enablementLabelsFontName;
+    Enablement enablementLabelsFontColor;
+
     boolean propertyValueChangeEventsEnabled = true;
 
 
@@ -80,31 +85,54 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // This is done so subsequently the restoreDefaults actions can be performed
         //
 
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
+
+
+
+
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
+
+
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
+
+
+
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
 
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
-
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
 
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
+//
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
+//
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+//
+//
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
 
@@ -145,8 +173,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @Override
     protected void configure(BindingContext context) {
 
-        configureTickmarksEnablement(context);
-        configureBorderEnablement(context);
+//        configureTickmarksEnablement(context);
+//        configureBorderEnablement(context);
+        configureLabelsEnablement(context);
 
 
         // Handle resetDefaults events - set all other components to defaults
@@ -252,11 +281,55 @@ public final class ColorBarLayerController extends DefaultConfigController {
      * @author Daniel Knowles
      */
     private void handleTickmarksEnablement() {
-        enablementTickmarksInside.apply();
+//        enablementTickmarksInside.apply();
         enablementTickmarksLength.apply();
         enablementTickmarksColor.apply();
     }
 
+
+
+
+
+
+
+    /**
+     * Configure enablement of the labels components
+     *
+     * @param context
+     * @author Daniel Knowles
+     */
+    private void configureLabelsEnablement(BindingContext context) {
+
+
+        enablementLabelsFontItalic = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, true,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
+
+        enablementLabelsFontBold = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, true,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
+
+        enablementLabelsFontName = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, true,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
+
+        enablementLabelsFontColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, true,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
+
+        // handle it the first time so bound properties get properly enabled
+        handleLabelsEnablement();
+    }
+
+
+
+    /**
+     * Handles enablement of the labels components
+     *
+     * @author Daniel Knowles
+     */
+    private void handleLabelsEnablement() {
+        enablementLabelsFontBold.apply();
+        enablementLabelsFontItalic.apply();
+        enablementLabelsFontName.apply();
+        enablementLabelsFontColor.apply();
+    }
 
 
 
@@ -340,18 +413,88 @@ public final class ColorBarLayerController extends DefaultConfigController {
     static class ColorBarBean {
 
         // Label Values
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
+//        boolean labelValuesSection = true;
+//
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL,
+//                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
+//                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
+//                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
+//        int labelValuesCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
+
+
+
+
+
+
+
+        // Labels Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
         boolean labelValuesSection = true;
 
-
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
                 interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
-        int labelValuesCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
+        int labelsCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
+
+
+
+
+        // Size & Scaling Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
+        boolean sizeScalingSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP)
+        boolean applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP)
+        double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_VALUE_INTERVAL)
+        int legendLength = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_INTERVAL)
+        int legendWidth = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_INTERVAL)
+        int titleSize = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_INTERVAL)
+        int unitsSize = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
+        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
+
 
 
 
@@ -360,10 +503,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP)
-        boolean labelsSection = true;
+        boolean labelsFormattingSection = true;
 
-
-
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP)
+        boolean labelsShow = ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
@@ -378,19 +523,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
                 description = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP,
-                valueSet = {ColorBarLayerType.FONT_NAME_VALUE_1,
-                        ColorBarLayerType.FONT_NAME_VALUE_2,
-                        ColorBarLayerType.FONT_NAME_VALUE_3,
-                        ColorBarLayerType.FONT_NAME_VALUE_4})
+                valueSet = {ColorBarLayerType.FONT_NAME_SANSERIF,
+                        ColorBarLayerType.FONT_NAME_SERIF,
+                        ColorBarLayerType.FONT_NAME_COURIER,
+                        ColorBarLayerType.FONT_NAME_MONOSPACED})
         String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT;
 
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
-        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
@@ -400,75 +538,81 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        // Border Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP)
-        boolean borderSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP)
-        boolean borderShow = ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP)
-        double borderWidth = ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP)
-        Color borderColor = ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT;
-
-
-        // Tickmarks Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP)
-        boolean tickmarksSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
-        boolean tickmarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
-
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
-                description = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP)
-        int tickmarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP)
-        Color tickmarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
 
 
 
 
-
-        // Inside Labels Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
-        boolean insideLabelsSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP,
-                interval = "[0.0,1.0]")
-        double insideLabelsBgTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
-        Color insideLabelsBgColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
-
+//
+//
+//        // Border Section
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP)
+//        boolean borderSection = true;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
+//                description = ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP)
+//        boolean borderShow = ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
+//                description = ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP)
+//        double borderWidth = ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
+//                description = ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP)
+//        Color borderColor = ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT;
+//
+//
+//        // Tickmarks Section
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP)
+//        boolean tickmarksSection = true;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+//                description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
+//        boolean tickmarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
+//
+//
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+//                description = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP)
+//        int tickmarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+//                description = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP)
+//        Color tickmarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
+//
+//
+//
+//
+//
+//        // Inside Labels Section
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
+//        boolean insideLabelsSection = true;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+//                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP,
+//                interval = "[0.0,1.0]")
+//        double insideLabelsBgTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
+//                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+//                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
+//        Color insideLabelsBgColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
+//
 
         // Restore Defaults Section
 
