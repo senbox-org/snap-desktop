@@ -85,15 +85,14 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // This is done so subsequently the restoreDefaults actions can be performed
         //
 
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
-
-
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
 
 
 
@@ -412,22 +411,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class ColorBarBean {
 
-        // Label Values
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
-//                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
-//                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
-//        boolean labelValuesSection = true;
-//
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL,
-//                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
-//                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
-//                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
-//        int labelValuesCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
-
-
-
 
 
 
@@ -444,6 +427,23 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
                 interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
         int labelsCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
+
+
+
+        // Orientation and Location Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_TOOLTIP)
+        boolean orientationSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_LABEL,
+                key = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
+                description = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TOOLTIP,
+                valueSet = {ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION1,
+                        ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION2})
+        String orientation = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT;
+
 
 
 

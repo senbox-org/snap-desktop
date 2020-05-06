@@ -641,7 +641,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final ColorBarLayer colorBarLayer = (ColorBarLayer) layerType.createLayer(null, template);
         colorBarLayer.setId(ProductSceneView.COLORBAR_LAYER_ID);
         colorBarLayer.setVisible(false);
-        colorBarLayer.setName("ColorBar");
+        colorBarLayer.setName(ColorBarLayerType.COLOR_BAR_LAYER_NAME);
         applyColorBarLayerStyle(configuration, colorBarLayer);
         return colorBarLayer;
     }

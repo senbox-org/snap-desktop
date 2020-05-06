@@ -15,11 +15,19 @@
  */
 package org.esa.snap.rcp.actions.file.export;
 
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.accessors.DefaultPropertyAccessor;
+import com.bc.ceres.glayer.Layer;
+import com.jidesoft.plaf.windows.TMSchema;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ImageLegend;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.layer.ColorBarLayer;
+import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
@@ -56,6 +64,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.util.List;
+
+import static org.esa.snap.core.layer.ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY;
 
 @ActionID(
         category = "File",
@@ -114,7 +125,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String CENTER_ON_LAYER_PARAM_STR = "legend.centerOnLayer";
 
 
-
     private static final String HELP_ID = "exportLegendImageFile";
     private static final String HORIZONTAL_STR = "Horizontal";
     private static final String VERTICAL_STR = "Vertical";
@@ -133,7 +143,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     public ExportLegendImageAction(Lookup lookup) {
         super(Bundle.CTL_ExportLegendImageAction_MenuText(), HELP_ID);
-        putValue("popupText",Bundle.CTL_ExportLegendImageAction_PopupText());
+        putValue("popupText", Bundle.CTL_ExportLegendImageAction_PopupText());
         imageFileFilters = new SnapFileFilter[IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
             imageFileFilters[i] = createFileFilter(IMAGE_FORMAT_DESCRIPTIONS[i]);
@@ -142,6 +152,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
+
+
     }
 
 
@@ -149,10 +161,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     public Action createContextAwareInstance(Lookup lookup) {
         return new ExportLegendImageAction(lookup);
     }
-
-
-
-
 
 
     @Override
@@ -186,16 +194,36 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     @Override
     protected void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view, String imageBaseName) {
-        legendParamGroup = createLegendParamGroup();
-        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
+
+        List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
+
+        for (Layer layer : layers) {
+            System.out.println("layerName=" + layer.getName());
+
+            if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
+                imageLegend = ((ColorBarLayer) layer).getImageLegend();
+                System.out.println("Found ColorBar layer");
+            }
+        }
+
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+
+        legendParamGroup = createLegendParamGroup(configuration, imageLegend);
+//        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 
         modifyHeaderText(legendParamGroup, view.getRaster());
         fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - export Colour Legend Image"); /*I18N*/
 
 
         fileChooser.setCurrentFilename(imageBaseName + "_legend");
-        final RasterDataNode raster = view.getRaster();
-        imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+
+        //
+        if (imageLegend == null) {
+            final RasterDataNode raster = view.getRaster();
+            imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+        }
+
         fileChooser.setAccessory(createImageLegendAccessory(
                 fileChooser,
                 legendParamGroup,
@@ -205,6 +233,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     @Override
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         transferParamsToImageLegend(legendParamGroup, imageLegend);
+//        imageLegend.setTitleParameterColor(Color.white);
         imageLegend.setBackgroundTransparencyEnabled(isTransparencySupportedByFormat(imageFormat));
         return imageLegend.createImage();
     }
@@ -214,10 +243,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         return true;
     }
 
-    private static ParamGroup createLegendParamGroup() {
+    private static ParamGroup createLegendParamGroup(PropertyMap configuration, ImageLegend imageLegend) {
         ParamGroup paramGroup = new ParamGroup();
-
-
 
 
         Parameter param = new Parameter("legend.usingHeader", Boolean.TRUE);
@@ -232,25 +259,59 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
         param = new Parameter("legend.headerText", "");
         param.getProperties().setLabel("Header text");
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
 
-        param = new Parameter("legend.orientation", HORIZONTAL_STR);
-        param.getProperties().setLabel("Orientation");
-        param.getProperties().setValueSet(new String[]{HORIZONTAL_STR, VERTICAL_STR});
+
+//        param = new Parameter("legend.orientation", HORIZONTAL_STR);
+//        param.getProperties().setLabel("Orientation");
+//        param.getProperties().setValueSet(new String[]{HORIZONTAL_STR, VERTICAL_STR});
+//        param.getProperties().setValueSetBound(true);
+//        paramGroup.addParameter(param);
+
+
+        String orientation = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT;
+        if (imageLegend != null) {
+            System.out.println("obtaining orientation from imageLegend");
+            int orientationInt = imageLegend.getOrientation();
+            orientation = (orientationInt == ImageLegend.VERTICAL) ? ColorBarLayerType.OPTION_VERTICAL : ColorBarLayerType.OPTION_HORIZONTAL;
+        } else if (configuration != null) {
+            System.out.println("obtaining orientation from configuration");
+            orientation = configuration.getPropertyString(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
+                    ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
+        }
+
+        System.out.println("orientation1=" + orientation);
+
+        param = new Parameter("legend.orientation", orientation);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_LABEL);
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION1,
+                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION2});
         param.getProperties().setValueSetBound(true);
         paramGroup.addParameter(param);
 
-        param = new Parameter("legend.fontSize", 14);
-        param.getProperties().setLabel("Font size");
+
+
+        int titleFontSize = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT;
+        if (imageLegend != null) {
+            titleFontSize = imageLegend.getTitleFontSize();
+        } else if (configuration != null) {
+            titleFontSize = configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
+                    ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT);
+        }
+
+        param = new Parameter("legend.fontSize",   titleFontSize);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_LABEL);
         param.getProperties().setMinValue(4);
         param.getProperties().setMaxValue(100);
         paramGroup.addParameter(param);
+
+
+
+
 
         param = new Parameter("legend.foregroundColor", Color.black);
         param.getProperties().setLabel("Foreground colour");
@@ -272,6 +333,17 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         return paramGroup;
     }
+
+
+    static private int getTitleParameterFontSize() {
+        PropertyMap configuration = SnapApp.getDefault().getSelectedProductSceneView().getSceneImage().getConfiguration();
+
+        int value = configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY);
+        System.out.println("fontSize=" + value);
+
+        return value;
+    }
+
 
     private static void modifyHeaderText(ParamGroup legendParamGroup, RasterDataNode raster) {
         String name = raster.getName();
@@ -310,9 +382,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setHeaderText((String) value);
 
         value = legendParamGroup.getParameter("legend.orientation").getValue();
-        imageLegend.setOrientation(HORIZONTAL_STR.equals(value) ? ImageLegend.HORIZONTAL : ImageLegend.VERTICAL);
 
-//        value = legendParamGroup.getParameter("legend.fontSize").getValue();
+
+        System.out.println("orientation (value)=" + value);
+        if (ColorBarLayerType.OPTION_VERTICAL.equals(value)) {
+            imageLegend.setOrientation(ImageLegend.VERTICAL);
+            System.out.println("setting to vertical");
+        } else {
+            imageLegend.setOrientation(ImageLegend.HORIZONTAL);
+            System.out.println("setting to horizontal");
+        }
+
+
+        value = legendParamGroup.getParameter("legend.fontSize").getValue();
+        imageLegend.setTitleFontSize((Integer) value);
+
+
+
 //        imageLegend.setFont(imageLegend.getFont().deriveFont(((Number) value).floatValue()));
 
         value = legendParamGroup.getParameter("legend.backgroundColor").getValue();
@@ -328,7 +414,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setAntialiasing((Boolean) value);
 
 
-
         value = legendParamGroup.getParameter(NUM_TICKS_PARAM_STR).getValue();
         imageLegend.setNumberOfTicks((Integer) value);
 
@@ -336,7 +421,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         // todo Danny just to get it working
         imageLegend.setColorBarLength((Integer) 1200);
         imageLegend.setColorBarThickness((Integer) 60);
-        imageLegend.setTitleFontSize((Integer) 12);
+//        imageLegend.setTitleFontSize((Integer) 12);
         imageLegend.setTitleUnitsFontSize((Integer) 12);
         imageLegend.setLabelsFontSize((Integer) 12);
         imageLegend.setShowTitle((Boolean) true);
@@ -481,6 +566,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             usingHeaderParam = paramGroup.getParameter("legend.usingHeader");
             numberOfTicksParam = paramGroup.getParameter(NUM_TICKS_PARAM_STR);
             headerTextParam = paramGroup.getParameter("legend.headerText");
+            System.out.println("Initializing orientation");
             orientationParam = paramGroup.getParameter("legend.orientation");
             fontSizeParam = paramGroup.getParameter("legend.fontSize");
             foregroundColorParam = paramGroup.getParameter("legend.foregroundColor");
@@ -520,9 +606,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
             });
             final ModalDialog dialog = new ModalDialog(getParent(),
-                                                       SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
-                                                       imageDisplay,
-                                                       ID_OK, null);
+                    SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
+                    imageDisplay,
+                    ID_OK, null);
             dialog.getJDialog().setResizable(false);
             dialog.show();
         }
