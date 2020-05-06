@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.PairRunnable;
@@ -13,6 +14,7 @@ import org.esa.snap.ui.loading.PairRunnable;
 import javax.swing.*;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +51,14 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
                 // check if the local product exists on the disk
                 if (Files.exists(repositoryProduct.getPath())) {
                     // the product exists on the local disk
-                    File productFile = repositoryProduct.getPath().toFile();
+
+                    //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
+                    Path productPath = RemoteProductsRepositoryProvider.prepareProductPathToOpen(repositoryProduct.getPath(), repositoryProduct);
+                    File productFile = productPath.toFile();
+
+                    //TODO Jean old code to get the product path to open
+                    //File productFile = repositoryProduct.getPath().toFile();
+
                     ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                     if (productReader == null) {
                         // no product reader found in the application

@@ -8,9 +8,11 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteMission;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -56,11 +58,18 @@ public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable 
                 return; // nothing to return
             }
 
-            Product product = ProductIO.readProduct(productPath.toFile());
+            //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
+            Path productPathToOpen = RemoteProductsRepositoryProvider.prepareProductPathToOpen(productPath, this.remoteProductDownloader.getProductToDownload());
+            File productFileToOpen = productPathToOpen.toFile();
+
+            //TODO Jean old code to get the product path to open
+            //File productFileToOpen = productPath.toFile();
+
+            Product product = ProductIO.readProduct(productFileToOpen);
             try {
                 saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
-                        this.remoteProductDownloader.getRepositoryName(),
-                        this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
+                                                                                          this.remoteProductDownloader.getRepositoryName(),
+                                                                                          this.remoteProductDownloader.getLocalRepositoryFolderPath(), product);
             } finally {
                 if (product != null) {
                     product.dispose();

@@ -7,6 +7,7 @@ import org.esa.snap.product.library.ui.v2.repository.local.LocalProgressStatus;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
+import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 
@@ -41,7 +42,13 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
             try {
                 updateProductProgressStatusLater(repositoryProduct, DownloadProgressStatus.OPENING);
 
-                File productFile = entry.getValue().toFile();
+                //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
+                Path productPath = RemoteProductsRepositoryProvider.prepareProductPathToOpen(entry.getValue(), repositoryProduct);
+                File productFile = productPath.toFile();
+
+                //TODO Jean old code to get the product path to open
+                //File productFile = entry.getValue().toFile();
+
                 ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                 if (productReader == null) {
                     // no product reader found in the application
