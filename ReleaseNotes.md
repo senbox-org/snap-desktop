@@ -1,7 +1,114 @@
-SNAP Release Notes
-==================
+Release Notes - Sentinel Application Platform
+=============================================
+
+# New in SNAP 8.0.0 
+
+[SNAP-356] Products with PixelGeoCoding extremely slow to open
+[SNAP-494] BigGeoTiff writer should use compression by default.
+[SNAP-791] Write operator writes data more efficiently then ProductIO
+[SNAP-884] AbstractNetCdfReaderPlugIn leaves files open
+[SNAP-964] Switching between tabs in graph builder is slow
+[SNAP-979] Make the "Transfer Mask" action compatible with multi-size products.
+[SNAP-981] Improve resampling operator
+[SNAP-985] Help content needs review
+[SNAP-993] Revise initialise method in operator implementations
+[SNAP-999] Improve pixel-based GeoCoding
+[SNAP-1098]  NetCDF writer should ensure that file has file extension
+[SNAP-1139]  Writing in WriteOp is inefficient in certain case
+[SNAP-1140]  Suppressed update-pop-up-windows on startup cannot be reactivated
+[SNAP-1046]  Solve single core processing issue
+[SNAP-1057]  Make land/sea mask compatible with multi-size products
+[SNAP-1072]  Update SVVP wiki page
+[SNAP-1076]  doExecute() not working correctly in all scenarios
+[SNAP-1129]  The output directory is not considered when loading parameters into the GUI of PixEx
+[SNAP-1148]  2 vulnerabilities found in jackson-databind - update to latest
+[SNAP-1152]  Subsetting in graph does not consider tie-point grids correctly
+[SNAP-1153]  Empty radiation_wavelength attribute causes exception
+[SNAP-1154]  Flag is added twice if flag_mask and flag_value are different
+[SNAP-1155]  Typo in mosaicing
+[SNAP-1158]  Selection of predefined CRS does not work correctly
+[SNAP-1161]  Product Library GUI Enhancements
+[SNAP-1162]  SciHub Search UI Enhancement in Product Library
+[SNAP-1163]  Support for New External Data Access Sources via Product Library
+[SNAP-1164]  L3 AggregatorAveraging weights default is inappropriate
+[SNAP-1165]  L3 Binning using two aggregators on the same input variable creates incorrect results
+[SNAP-1166]  Subset operator should update scenegeocoding if output is a single size product
+[SNAP-1168]  In SubsetUI it is required a reference band although it is not needed (single size inputs) and it writes it to the graph 
+[SNAP-1169]  Subset not working if input is multi-resolution
+[SNAP-1173]  Allow exchanging the L3 Binning formatter
+[SNAP-1174]  More options for geo-position format
+[SNAP-1175]  Make panner tool the default tool
+[SNAP-1176]  Fixed-ratio for the width and height of exported image
+[SNAP-1177]  Enhance graticule layer with more options
+[SNAP-1180]  GeoTiffReader has too high priority
+[SNAP-1182]  Reading in BandOpImage consumes too much memory
+[SNAP-1195]  Operators should be shown in the same menu position for the GraphBuilder and the main menu.
+[SNAP-1196]  Writing NetCDF-BEAM products with "lon" and "lat" bands fails
+[SNAP-1201]  Make TileCacheOp available to users
+[SNAP-1204]  Switch to OpenJDK 8
+[SNAP-1207]  FAQ shall be made public
+[SNAP-1208]  All help material shall be revised
+[SNAP-1213]  Provide BETA version of new SNAP IO format for SNAP 8
+[SNAP-1221]  Add zoom buttons to 2D worldmap
+[SNAP-1225]  Implement different validation of graphs in GraphBuilder
+[SNAP-1229]  Xmx computed by the smart configurator is not having into account the available memory.
+[SNAP-1231]  Export to CSV file not working
+[SNAP-1232]  Masks not correctly copied by ProductUtils.copyProductNodes method
+[SNAP-1238]  Writing to NetCDF file does not always work if product has (x,y) dimensions
+[SNAP-1240]  Allow setting intermediate writing mode via method
+[SNAP-1243]  PixelGeoCoding incorrect product-boundary detection
+[SNAP-1246]  IndexOutOfBoundsException when using DEM
+[SNAP-1247]  NetCDF library logs a lot of useless warnings
+[SNAP-1249]  Data not correctly read if data shifted by 180° 
+[SNAP-1257]  Improve the error message in case of out of range for operator parameter
+[SNAP-1263]  Support time attribute in NetCDF
+[SNAP-1264]  Binning should be graceful if overlap region cannot be created
+[SNAP-1265]  Dimensions 'rows' and 'columns' are swapped in NetCDF
+[SNAP-1269]  snap-classification module does not build
+[SNAP-1270]  PixelGeoCoding not correctly working if product width or height is <= 2 pixels
+[SNAP-1271]  Reduce default log level for users' convenience
+[SNAP-1275]  Update netcdf library to latest version
+[SNAP-1279]  Access to preferences file leads to hanging binning process
+[SNAP-1282]  AverageOutlier aggregator skips values if they are equal.
+[SNAP-1283]  NullPointerException when running a graph in the Batch Processing dialog
+[SNAP-1285]  ConversionException generated when opening a Beam Dimap product (Unknown type in attribute descriptor 'geometry:Point')
+[SNAP-1293]  Band_Index tag is not written for BEAM-DIMAP when PixelGeoCoding is used for multiple bands
+[SNAP-1300]  Binning fails when writing to netcdf
+[SNAP-1301]  Error creating product subset using Subset operator
+[SNAP-1302]  Result of spectral unmixing has no GeoCoding in certain cases
+[SNAP-1303]  Display format names in sorted order
+[SNAP-1304]  Quicklooks Open RGB NPE when no band is opened
+[SNAP-1306]  Created tie point grid for GeoTiff files is too sparse
+[SNAP-1307]  Created band names for some netcdf files cause issues
+[SNAP-1310]  Ensure correct update of an old SNAP installation
+[SNAP-1311]  Snappy init script not fully compatible with Python3
+[SNAP-1312]  PixelGeoCoding skips boundary pixels in getPixelPosUsingEstimator()
+[SNAP-1313]  Allow cloning of GeoCodings
+
+
+# New in SNAP 7.0.3
+
+[SNAP-1169] Subset not working if input is multi-resolution
     
+
+# New in SNAP 7.2
+
+No issues fied in this release.
+
+# New in SNAP 7.1
+[SNAP-1129] The output directory is not considered when loading parameters into the GUI of PixEx
+[SNAP-1152] Subsetting in graph does not consider tie-point grids correctly
+[SNAP-1153] Empty radiation_wavelength attribute causes exception
+[SNAP-1154] Flag is added twice if flag_mask and flag_value are different
+[SNAP-1158] Selection of predefined CRS does not work correctly
+[SNAP-1168] In SubsetUI it is required a reference band although it is not needed (single size inputs) and it writes it to the graph
+[SNAP-1098] NetCDF writer should ensure that file has file extension
+[SNAP-1159] Immprove reading of level image data
+[SNAP-1160] Allow custom S3 VFS parameters for AWS headers
+[SNAP-1166] Subset operator should update scenegeocoding if output is a single size product
+
 # New in SNAP 7.0
+
 The naming of attribute features of ESRI shapefiles has changed: 
 Threshold variable names are shortened by getting rid of the threshold name part 
 altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not 
