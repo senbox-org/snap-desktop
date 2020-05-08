@@ -35,15 +35,10 @@
 
 <h3>Statistics Display</h3>
 
-<p>This dialog, opened via <img src="images/icons/Statistics24.gif">, displays statistical information about the currently
-    selected band. See the screenshot for an example.
+<p>This dialog, opened via <img src="images/icons/Statistics24.gif"> or Analysis/Statistics, displays statistical
+    information about bands. The band must be selected first in order for the statistics to be computed.
+    The set of statistical information displayed comprises:
 </p>
-
-<blockquote>
-    <img src="images/StatisticsDialog.png">
-</blockquote>
-
-The set of statistical information displayed comprises:
 <ul>
     <li>the total number of pixels</li>
     <li>the minimum/maximum geophysical value</li>
@@ -55,13 +50,17 @@ The set of statistical information displayed comprises:
 
 <p>
     Additionally, two diagrams are displayed: the left one is a histogram, the right one shows the thresholds for all
-    percentiles.<br>
+    percentiles.
+</p>
+<p>
     The statistics can be computed for a whole band, or the considered pixels can be restricted to those matching a
     single or multiple ROI masks. The list of masks can be narrowed down by typing a pattern into the text field. For
     convenience, there is also the <img src="images/icons/MaskManager24.png">-icon which allows the user to open the
     <a href="MaskManagement.html">Mask Manager</a> tool window.
 </p>
-
+<blockquote>
+    <img src="images/StatisticsDialog.png">
+</blockquote>
 <p>
     The section "Statistical accuracy" allows the user to specify the accuracy with which the histogram shall be
     computed.
