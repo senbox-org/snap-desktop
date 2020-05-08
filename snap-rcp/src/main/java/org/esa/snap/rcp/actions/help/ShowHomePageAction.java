@@ -38,7 +38,7 @@ import java.awt.event.ActionEvent;
 })
 public class ShowHomePageAction extends AbstractAction {
 
-    private static final String DEFAULT_PAGE_URL = "http://step.esa.int";
+    private static final String DEFAULT_PAGE_URL = "https://step.esa.int";
 
     /**
      * Launches the default browser to display the web site.
