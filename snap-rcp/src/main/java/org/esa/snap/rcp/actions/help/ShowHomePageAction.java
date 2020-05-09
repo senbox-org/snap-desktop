@@ -33,12 +33,12 @@ import java.awt.event.ActionEvent;
         popupText = "#CTL_ShowHomePageAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 300)
 @NbBundle.Messages({
-        "CTL_ShowHomePageAction_MenuText=SNAP Home Page",
-        "CTL_ShowHomePageAction_ShortDescription=Browse the SNAP Toolboxes home page"
+        "CTL_ShowHomePageAction_MenuText=STEP Home Page",
+        "CTL_ShowHomePageAction_ShortDescription=Browse the STEP home page"
 })
 public class ShowHomePageAction extends AbstractAction {
 
-    private static final String DEFAULT_PAGE_URL = "http://step.esa.int";
+    private static final String DEFAULT_PAGE_URL = "https://step.esa.int";
 
     /**
      * Launches the default browser to display the web site.
