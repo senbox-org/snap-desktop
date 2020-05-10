@@ -1,7 +1,60 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+
 # New in SNAP 8.0.0 
+
+In this release the development teams worked on general features like remote access of data, the processing and 
+IO perforemance and the memory management. But also sensor specific improvements and features have been implemented. 
+Here we just hightlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
+database: https://senbox.atlassian.net/issues/?jql=project%20in%20(SNAP%2C%20SITBX%2C%20SIITBX%2C%20SIIITBX%2C%20SMOSTBX)%20AND%20fixVersion%20in%20(8.0.0%2C%208.0.0.0)%20AND%20resolution%20in%20(Fixed%2C%20Done)%20ORDER%20BY%20priority%20DESC
+
+## Reworked Product Library 
+The Product Library is upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
+In addition, the display / interaction of / with product frames or quicklooks can be done on a 3D visualisation of Earth (NASA WorldWind).
+The possibility to access (and search for) remote data was introduced by regarding remote data sources as independent SNAP plugins.
+Besides, the parametrized search (with parameters in the form of values), it also handles the selection of the area of 
+interest on the 3D visualisation of Earth.
+New remote data repositories were added:
+    * Copernicus Scientific Data Hub (SciHub): for Sentinel-1, Sentinel-2 and Sentinel-3 data
+    * Amazon Web Services (AWS): for Sentinel-2 and Landsat-8 data
+    * Alaska Satellite Facility (ASF): for Sentinel-1 and ALOS data
+    * US Geological Survey (USGS): for Landsat-8 data
+
+## Windowed Reading of Products
+Allows specifying a window (spatial subset) of either pixel coordinates or geographical coordinates, so that,
+instead of first opening a full product and then subsetting it to a region of interest,
+the reader will open directly the region of interest as a full-fledged product.
+
+## New NetCDF Library Version
+We now use version 5.3 of the NetCDF library. If you use the NetCDF API directly exposed through SNAP you might be 
+interested in the changes of the library.
+You can check the documentation provided by unidata at https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html. 
+A specific migration guide is also provided (https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/upgrade_to_50.html).
+  
+## New Reimplemented GeoCoding
+The pixel-based GeoCoding had some issues in the past. It was slow, and in some situations it just didn't work and 
+produced artifacts. Especially Sentinel-3 data was affected by these problems. With SNAP 8 we now use a new implementation. 
+While it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
+
+## New Internal Default Data Format.
+With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just provide a 
+BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system or for 
+operational services. But we would like to get your feedback on it, to further improve it. More information will be 
+provided in with the release of the plugin.
+
+## Experimental Tile Cache Operator
+To further improve the memory management, especially during data processing, we introduced a special operator which can 
+be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general cache 
+is disabled the amount of used memory can be reduced. The idea is that the cache memory is done automatically in the 
+long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback too. 
+More information can be found in the wiki. https://senbox.atlassian.net/wiki/spaces/SNAP/pages/798163029/How+to+use+TileCache+operator+to+improve+memory+consumption 
+
+# Sensor specific improvements by Toolboxes
+Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
+Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
+
+
 
 [SNAP-356] Products with PixelGeoCoding extremely slow to open
 [SNAP-494] BigGeoTiff writer should use compression by default.
