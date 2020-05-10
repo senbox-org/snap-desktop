@@ -55,7 +55,7 @@ Capella and SAOCOM are now supported, and the support for RCM has been updated. 
 Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
 
 
-
+# Issues
 [SNAP-356] Products with PixelGeoCoding extremely slow to open
 [SNAP-494] BigGeoTiff writer should use compression by default.
 [SNAP-791] Write operator writes data more efficiently then ProductIO
@@ -63,7 +63,6 @@ Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP
 [SNAP-964] Switching between tabs in graph builder is slow
 [SNAP-979] Make the "Transfer Mask" action compatible with multi-size products.
 [SNAP-981] Improve resampling operator
-[SNAP-985] Help content needs review
 [SNAP-993] Revise initialise method in operator implementations
 [SNAP-999] Improve pixel-based GeoCoding
 [SNAP-1098]  NetCDF writer should ensure that file has file extension
@@ -71,14 +70,12 @@ Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP
 [SNAP-1140]  Suppressed update-pop-up-windows on startup cannot be reactivated
 [SNAP-1046]  Solve single core processing issue
 [SNAP-1057]  Make land/sea mask compatible with multi-size products
-[SNAP-1072]  Update SVVP wiki page
 [SNAP-1076]  doExecute() not working correctly in all scenarios
 [SNAP-1129]  The output directory is not considered when loading parameters into the GUI of PixEx
 [SNAP-1148]  2 vulnerabilities found in jackson-databind - update to latest
 [SNAP-1152]  Subsetting in graph does not consider tie-point grids correctly
 [SNAP-1153]  Empty radiation_wavelength attribute causes exception
 [SNAP-1154]  Flag is added twice if flag_mask and flag_value are different
-[SNAP-1155]  Typo in mosaicing
 [SNAP-1158]  Selection of predefined CRS does not work correctly
 [SNAP-1161]  Product Library GUI Enhancements
 [SNAP-1162]  SciHub Search UI Enhancement in Product Library
@@ -86,7 +83,6 @@ Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP
 [SNAP-1164]  L3 AggregatorAveraging weights default is inappropriate
 [SNAP-1165]  L3 Binning using two aggregators on the same input variable creates incorrect results
 [SNAP-1166]  Subset operator should update scenegeocoding if output is a single size product
-[SNAP-1168]  In SubsetUI it is required a reference band although it is not needed (single size inputs) and it writes it to the graph 
 [SNAP-1169]  Subset not working if input is multi-resolution
 [SNAP-1173]  Allow exchanging the L3 Binning formatter
 [SNAP-1174]  More options for geo-position format
@@ -124,7 +120,6 @@ Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP
 [SNAP-1279]  Access to preferences file leads to hanging binning process
 [SNAP-1282]  AverageOutlier aggregator skips values if they are equal.
 [SNAP-1283]  NullPointerException when running a graph in the Batch Processing dialog
-[SNAP-1285]  ConversionException generated when opening a Beam Dimap product (Unknown type in attribute descriptor 'geometry:Point')
 [SNAP-1293]  Band_Index tag is not written for BEAM-DIMAP when PixelGeoCoding is used for multiple bands
 [SNAP-1300]  Binning fails when writing to netcdf
 [SNAP-1301]  Error creating product subset using Subset operator
@@ -137,6 +132,9 @@ Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP
 [SNAP-1311]  Snappy init script not fully compatible with Python3
 [SNAP-1312]  PixelGeoCoding skips boundary pixels in getPixelPosUsingEstimator()
 [SNAP-1313]  Allow cloning of GeoCodings
+
+A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+[issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12702)
 
 
 # New in SNAP 7.0.3
