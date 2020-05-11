@@ -22,7 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -78,7 +78,7 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        setIconImage(new ImageIcon(getClass().getResource("SnapSmall.gif")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("SNAP_icon_16.jpg")).getImage());
         setTitle("SNAP Performance Configuration Optimisation");
 
         pack();
