@@ -16,11 +16,10 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * @author Norman
@@ -28,14 +27,14 @@ import java.net.URISyntaxException;
 public class SnapAboutBox extends JPanel {
 
     private final static String releaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20";
-    private JLabel versionText;
+    private final JLabel versionText;
     private final ModuleInfo engineModuleInfo;
 
     public SnapAboutBox() {
         super(new BorderLayout(4, 4));
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
-        ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.png"));
+        ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.jpg"));
         JLabel banner = new JLabel(image);
         versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
 
@@ -63,10 +62,14 @@ public class SnapAboutBox extends JPanel {
         }
 
         JPanel innerPanel = new JPanel(new BorderLayout(4, 4));
+        innerPanel.setBorder(new EmptyBorder(8, 4, 8, 4));
         innerPanel.add(createVersionPanel(), BorderLayout.NORTH);
         innerPanel.add(infoText, BorderLayout.SOUTH);
 
-        add(banner, BorderLayout.WEST);
+        JPanel bannerPanel = new JPanel(new BorderLayout(4, 4));
+        bannerPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+        bannerPanel.add(banner);
+        add(bannerPanel, BorderLayout.WEST);
         add(innerPanel, BorderLayout.CENTER);
 /*
         final Properties properties = System.getProperties();
@@ -90,13 +93,5 @@ public class SnapAboutBox extends JPanel {
         releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
         panel.add(releaseNoteLabel);
         return panel;
-    }
-
-    private URI getReleaseNotesURI() {
-        try {
-            return new URI(releaseNotesUrlString);
-        } catch (URISyntaxException e) {
-            return null;
-        }
     }
 }
