@@ -115,6 +115,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
+
+
+
+
+
 
 
 //
@@ -395,7 +404,16 @@ public final class ColorBarLayerController extends DefaultConfigController {
      */
     private Property initPropertyDefaults(BindingContext context, String propertyName, Object propertyDefault) {
 
+        System.out.println("propertyName=" + propertyName);
+
+        if (context == null) {
+            System.out.println("WARNING: context is null");
+        }
+
         Property property = context.getPropertySet().getProperty(propertyName);
+        if (property == null) {
+            System.out.println("WARNING: property is null");
+        }
 
         property.getDescriptor().setDefaultValue(propertyDefault);
 
@@ -535,6 +553,32 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP)
         Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT;
 
+
+
+
+        // Backdrop Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
+        boolean backdropSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP)
+        boolean backdropShow = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP)
+        double backdropTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
+        Color backdropColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
+
+//
 
 
 

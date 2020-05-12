@@ -942,6 +942,24 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_TYPE);
+
 
 
 

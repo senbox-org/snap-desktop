@@ -51,9 +51,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Title Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
+//        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
+//                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
+//                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
 
 
 
@@ -178,10 +178,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Color Bar Location Section
-//
-//        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
 
         PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
@@ -320,64 +320,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
-
-        // Labels Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
-
-
-
-
-        PropertyDescriptor labelsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, Boolean.class);
-        labelsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT);
-        labelsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL);
-        labelsShowPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP);
-        labelsShowPD.setDefaultConverter();
-        addPropertyDescriptor(labelsShowPD);
-
-        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, Boolean.class);
-        labelsItalicsPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
-        labelsItalicsPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL);
-        labelsItalicsPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP);
-        labelsItalicsPD.setDefaultConverter();
-        addPropertyDescriptor(labelsItalicsPD);
-
-        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, Boolean.class);
-        labelsBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
-        labelsBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL);
-        labelsBoldPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP);
-        labelsBoldPD.setDefaultConverter();
-        addPropertyDescriptor(labelsBoldPD);
-
-
-        PropertyDescriptor labelsFontPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, String.class);
-        labelsFontPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
-        labelsFontPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL);
-        labelsFontPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP);
-        labelsFontPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_VALUE_SET));
-        labelsFontPD.setDefaultConverter();
-        addPropertyDescriptor(labelsFontPD);
-
-
-
-        PropertyDescriptor labelColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, Color.class);
-        labelColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
-        labelColorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL);
-        labelColorPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
-        labelColorPD.setDefaultConverter();
-        addPropertyDescriptor(labelColorPD);
-
-
-
-
-
-
-
-
-
         // Color Bar Title Section
 
         addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SECTION_KEY,
@@ -502,6 +444,64 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        // Labels Section
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
+
+
+
+
+        PropertyDescriptor labelsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, Boolean.class);
+        labelsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT);
+        labelsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL);
+        labelsShowPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP);
+        labelsShowPD.setDefaultConverter();
+        addPropertyDescriptor(labelsShowPD);
+
+        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, Boolean.class);
+        labelsItalicsPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
+        labelsItalicsPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL);
+        labelsItalicsPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP);
+        labelsItalicsPD.setDefaultConverter();
+        addPropertyDescriptor(labelsItalicsPD);
+
+        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, Boolean.class);
+        labelsBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
+        labelsBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL);
+        labelsBoldPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP);
+        labelsBoldPD.setDefaultConverter();
+        addPropertyDescriptor(labelsBoldPD);
+
+
+        PropertyDescriptor labelsFontPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, String.class);
+        labelsFontPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
+        labelsFontPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL);
+        labelsFontPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP);
+        labelsFontPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_VALUE_SET));
+        labelsFontPD.setDefaultConverter();
+        addPropertyDescriptor(labelsFontPD);
+
+
+
+        PropertyDescriptor labelColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, Color.class);
+        labelColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
+        labelColorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL);
+        labelColorPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
+        labelColorPD.setDefaultConverter();
+        addPropertyDescriptor(labelColorPD);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -543,7 +543,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
         tickmarksColorPD.setDefaultConverter();
         addPropertyDescriptor(tickmarksColorPD);
-
 
 
 
@@ -610,6 +609,32 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(borderColorPD);
 
 
+
+        addSectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_TOOLTIP);
+
+
+        PropertyDescriptor backdropBorderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_KEY, Boolean.class);
+        backdropBorderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_DEFAULT);
+        backdropBorderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_LABEL);
+        backdropBorderShowPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_TOOLTIP);
+        backdropBorderShowPD.setDefaultConverter();
+        addPropertyDescriptor(backdropBorderShowPD);
+
+        PropertyDescriptor backdropBorderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TYPE);
+        backdropBorderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_DEFAULT);
+        backdropBorderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_LABEL);
+        backdropBorderWidthPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TOOLTIP);
+        backdropBorderWidthPD.setDefaultConverter();
+        addPropertyDescriptor(backdropBorderWidthPD);
+
+        PropertyDescriptor backdropBorderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_KEY, Color.class);
+        backdropBorderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_DEFAULT);
+        backdropBorderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_LABEL);
+        backdropBorderColorPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_TOOLTIP);
+        backdropBorderColorPD.setDefaultConverter();
+        addPropertyDescriptor(backdropBorderColorPD);
 
 
 
