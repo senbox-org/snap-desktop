@@ -37,12 +37,6 @@ The pixel-based GeoCoding had some issues in the past. It was slow, and in some 
 produced artifacts. Especially Sentinel-3 data was affected by these problems. With SNAP 8 we now use a new implementation. 
 While it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
 
-## New Internal Default Data Format.
-With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just provide a 
-BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system or for 
-operational services. But we would like to get your feedback on it, to further improve it. More information will be 
-provided in with the release of the plugin.
-
 ## Experimental Tile Cache Operator
 To further improve the memory management, especially during data processing, we introduced a special operator which can 
 be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general cache 
@@ -53,6 +47,12 @@ More information can be found in the wiki. https://senbox.atlassian.net/wiki/spa
 # Sensor specific improvements by Toolboxes
 Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
 Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
+
+## New Internal Default Data Format.
+With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just 
+provide a BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system 
+or for operational services. But we would like to get your feedback on this new development, to further improve it. 
+More information will be provided with the release of the plugin.
 
 
 # Issues
