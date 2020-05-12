@@ -22,7 +22,6 @@ import com.bc.ceres.swing.binding.BindingProblem;
 import com.bc.ceres.swing.binding.BindingProblemListener;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.CoordinateSystem;
-import tec.uom.se.unit.Units;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -57,7 +56,7 @@ public class BoundsInputPanel {
     private JLabel pixelYUnit;
     private JFormattedTextField pixelSizeXField;
     private JFormattedTextField pixelSizeYField;
-    private Map<String, Double> unitMap;
+    private final Map<String, Double> unitMap;
 
     /**
      * Default constructor.
@@ -104,8 +103,9 @@ public class BoundsInputPanel {
         layout.setColumnPadding(2, new Insets(3, 0, 3, 12));
         layout.setColumnPadding(5, new Insets(3, 0, 3, 12));
         final JPanel panel = new JPanel(layout);
-        pixelXUnit = new JLabel(Units.DEGREE_ANGLE.toString());
-        pixelYUnit = new JLabel(Units.DEGREE_ANGLE.toString());
+        String degreeSymbol = "°";
+        pixelXUnit = new JLabel(degreeSymbol);
+        pixelYUnit = new JLabel(degreeSymbol);
 
         panel.add(new JLabel("West:"));
         final JFormattedTextField westLonField = new JFormattedTextField(DECIMAL_FORMATTER);
@@ -113,17 +113,18 @@ public class BoundsInputPanel {
         bindingContext.bind(PROPERTY_WEST_BOUND, westLonField);
         bindingContext.bindEnabledState(PROPERTY_WEST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(westLonField);
-        panel.add(new JLabel(Units.DEGREE_ANGLE.toString()));
+        panel.add(new JLabel(degreeSymbol));
         panel.add(new JLabel("East:"));
         final JFormattedTextField eastLonField = new JFormattedTextField(DECIMAL_FORMATTER);
         eastLonField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_EAST_BOUND, eastLonField);
         bindingContext.bindEnabledState(PROPERTY_EAST_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(eastLonField);
-        panel.add(new JLabel(Units.DEGREE_ANGLE.toString()));
+        panel.add(new JLabel(degreeSymbol));
         panel.add(new JLabel("Pixel size X:"));
         pixelSizeXField = new JFormattedTextField(DECIMAL_FORMATTER);
         pixelSizeXField.setHorizontalAlignment(JTextField.RIGHT);
+        pixelSizeXField.setValue(unitMap.get(degreeSymbol));
         bindingContext.bind(PROPERTY_PIXEL_SIZE_X, pixelSizeXField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_X, false, enablePropertyKey, disableUIProperty);
         panel.add(pixelSizeXField);
@@ -135,17 +136,18 @@ public class BoundsInputPanel {
         bindingContext.bind(PROPERTY_NORTH_BOUND, northLatField);
         bindingContext.bindEnabledState(PROPERTY_NORTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(northLatField);
-        panel.add(new JLabel(Units.DEGREE_ANGLE.toString()));
+        panel.add(new JLabel(degreeSymbol));
         panel.add(new JLabel("South:"));
         final JFormattedTextField southLatField = new JFormattedTextField(DECIMAL_FORMATTER);
         southLatField.setHorizontalAlignment(JTextField.RIGHT);
         bindingContext.bind(PROPERTY_SOUTH_BOUND, southLatField);
         bindingContext.bindEnabledState(PROPERTY_SOUTH_BOUND, false, enablePropertyKey, disableUIProperty);
         panel.add(southLatField);
-        panel.add(new JLabel(Units.DEGREE_ANGLE.toString()));
+        panel.add(new JLabel(degreeSymbol));
         panel.add(new JLabel("Pixel size Y:"));
         pixelSizeYField = new JFormattedTextField(DECIMAL_FORMATTER);
         pixelSizeYField.setHorizontalAlignment(JTextField.RIGHT);
+        pixelSizeYField.setValue(unitMap.get(degreeSymbol));
         bindingContext.bind(PROPERTY_PIXEL_SIZE_Y, pixelSizeYField);
         bindingContext.bindEnabledState(PROPERTY_PIXEL_SIZE_Y, false, enablePropertyKey, disableUIProperty);
         panel.add(pixelSizeYField);
