@@ -246,11 +246,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Color Bar Scaling Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME,
+        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
 
-        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
         locationApplySizeScalingPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
         locationApplySizeScalingPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
@@ -587,56 +587,56 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Border Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP);
+        addSectionBreak(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_TOOLTIP);
 
-        PropertyDescriptor borderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, Boolean.class);
-        borderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
-        borderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL);
-        borderShowPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP);
+        PropertyDescriptor borderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, Boolean.class);
+        borderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
+        borderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_LABEL);
+        borderShowPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TOOLTIP);
         borderShowPD.setDefaultConverter();
         addPropertyDescriptor(borderShowPD);
 
-        PropertyDescriptor borderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
-        borderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
-        borderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL);
-        borderWidthPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP);
+        PropertyDescriptor borderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
+        borderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT);
+        borderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_LABEL);
+        borderWidthPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP);
         borderWidthPD.setDefaultConverter();
         addPropertyDescriptor(borderWidthPD);
 
-        PropertyDescriptor borderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, Color.class);
-        borderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
-        borderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL);
-        borderColorPD.setDescription(ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP);
+        PropertyDescriptor borderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, Color.class);
+        borderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT);
+        borderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_LABEL);
+        borderColorPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
         borderColorPD.setDefaultConverter();
         addPropertyDescriptor(borderColorPD);
 
 
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_TOOLTIP);
+        addSectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_TOOLTIP);
 
 
-        PropertyDescriptor backdropBorderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_KEY, Boolean.class);
-        backdropBorderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_DEFAULT);
-        backdropBorderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_LABEL);
-        backdropBorderShowPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_TOOLTIP);
+        PropertyDescriptor backdropBorderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY, Boolean.class);
+        backdropBorderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
+        backdropBorderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_LABEL);
+        backdropBorderShowPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TOOLTIP);
         backdropBorderShowPD.setDefaultConverter();
         addPropertyDescriptor(backdropBorderShowPD);
 
-        PropertyDescriptor backdropBorderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TYPE);
-        backdropBorderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_DEFAULT);
-        backdropBorderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_LABEL);
-        backdropBorderWidthPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TOOLTIP);
+        PropertyDescriptor backdropBorderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TYPE);
+        backdropBorderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
+        backdropBorderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_LABEL);
+        backdropBorderWidthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP);
         backdropBorderWidthPD.setDefaultConverter();
         addPropertyDescriptor(backdropBorderWidthPD);
 
-        PropertyDescriptor backdropBorderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_KEY, Color.class);
-        backdropBorderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_DEFAULT);
-        backdropBorderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_LABEL);
-        backdropBorderColorPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_TOOLTIP);
+        PropertyDescriptor backdropBorderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, Color.class);
+        backdropBorderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
+        backdropBorderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_LABEL);
+        backdropBorderColorPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP);
         backdropBorderColorPD.setDefaultConverter();
         addPropertyDescriptor(backdropBorderColorPD);
 
@@ -778,14 +778,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         boolean borderEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY);
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY);
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, borderEnabled,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, borderEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, borderEnabled,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, borderEnabled);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, borderEnabled,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, borderEnabled);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, borderEnabled,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, borderEnabled);
 
 
         // Set enablement associated with "Labels Inside" checkbox

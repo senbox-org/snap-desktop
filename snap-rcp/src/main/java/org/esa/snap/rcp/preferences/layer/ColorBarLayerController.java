@@ -96,8 +96,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
@@ -121,6 +121,21 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
+
+
+
+
+
 
 
 
@@ -142,7 +157,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
-        restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_SECTION_KEY, true);
+        restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
+
+
 
 
         //
@@ -257,7 +275,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
             }
             propertyValueChangeEventsEnabled = true;
 
-            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, false);
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY, false);
         }
     }
 
@@ -352,11 +370,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
      */
     private void configureBorderEnablement(BindingContext context) {
 
-        enablementBorderWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, true,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, true);
+        enablementBorderWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, true,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, true);
 
-        enablementBorderColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, true);
+        enablementBorderColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, true,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, true);
 
 
         // handle it the first time so bound properties get properly enabled
@@ -384,7 +402,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
             propertyValueChangeEventsEnabled = false;
             try {
                 restoreDefaults.setValue(isDefaults(context));
-                context.setComponentsEnabled(ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, !isDefaults(context));
+                context.setComponentsEnabled(ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY, !isDefaults(context));
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
@@ -469,12 +487,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // Size & Scaling Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
         boolean sizeScalingSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
                 description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP)
         boolean applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
 
@@ -578,7 +596,55 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
         Color backdropColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
 
-//
+
+
+
+        // Palette Border
+
+        @Preference(label = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_TOOLTIP)
+        boolean paletteBorderSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TOOLTIP)
+        boolean paletteBorderShow = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP)
+        int paletteBorderWidth = ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP)
+        Color paletteBorderColor = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT;
+
+
+
+
+        // Legend Border
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_TOOLTIP)
+        boolean legendBorderSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TOOLTIP)
+        boolean legendBorderShow = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP)
+        int legendBorderWidth = ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP)
+        Color legendBorderColor = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT;
 
 
 
@@ -586,30 +652,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-//
-//
-//        // Border Section
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SECTION_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY,
-//                description = ColorBarLayerType.PROPERTY_BORDER_SECTION_TOOLTIP)
-//        boolean borderSection = true;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_SHOW_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
-//                description = ColorBarLayerType.PROPERTY_BORDER_SHOW_TOOLTIP)
-//        boolean borderShow = ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_WIDTH_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
-//                description = ColorBarLayerType.PROPERTY_BORDER_WIDTH_TOOLTIP)
-//        double borderWidth = ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BORDER_COLOR_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
-//                description = ColorBarLayerType.PROPERTY_BORDER_COLOR_TOOLTIP)
-//        Color borderColor = ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT;
-//
+
+
 //
 //        // Tickmarks Section
 //
@@ -660,10 +704,18 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         // Restore Defaults Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_LABEL,
-                key = ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_NAME,
-                description = ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_TOOLTIP)
-        boolean restoreDefaults = ColorBarLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_RESTORE_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_RESTORE_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_RESTORE_SECTION_TOOLTIP)
+        boolean restoreDefaultsSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_LABEL,
+                key = ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY,
+                description = ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_TOOLTIP)
+        boolean restoreDefaults = ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_DEFAULT;
 
     }
 

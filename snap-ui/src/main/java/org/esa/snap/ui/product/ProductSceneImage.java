@@ -754,10 +754,10 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_NAME);
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
 
@@ -901,22 +901,22 @@ public class ProductSceneImage implements ProductLayerContext {
         // Border Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_SHOW_TYPE);
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_WIDTH_TYPE);
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_BORDER_COLOR_TYPE);
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TYPE);
 
 
 
@@ -943,22 +943,22 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_SHOW_TYPE);
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_WIDTH_TYPE);
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_BACKDROP_BORDER_COLOR_TYPE);
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TYPE);
 
 
 
