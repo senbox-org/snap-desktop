@@ -90,7 +90,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             TIFF_FORMAT_DESCRIPTION,
     };
 
-    public static final String PARAM_ORIENTATION_KEY = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY + ".export";
+    public static final String PARAM_ORIENTATION_KEY = ColorBarLayerType.PROPERTY_ORIENTATION_KEY + ".export";
     private static final String DISTRIBUTION_TYPE_PARAM_STR = "legend.label.distribution.type";
 
     private static final String NUM_TICKS_PARAM_STR = "legend.numberOfTicks";
@@ -315,7 +315,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //        paramGroup.addParameter(param);
 
 
-        String orientation = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT;
+        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
         if (imageLegend != null) {
             System.out.println("obtaining orientation from imageLegend");
             int orientationInt = imageLegend.getOrientation();
@@ -330,9 +330,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         System.out.println("orientation1=" + orientation);
 
         param = new Parameter(PARAM_ORIENTATION_KEY, orientation);
-        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_LABEL);
-        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION1,
-                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION2});
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_ORIENTATION_LABEL);
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
+                ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2});
         param.getProperties().setValueSetBound(true);
         paramGroup.addParameter(param);
 
@@ -450,7 +450,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setBackgroundColor((Color) value);
 
         value = legendParamGroup.getParameter("legend.foregroundColor").getValue();
-        imageLegend.setForegroundColor((Color) value);
+        imageLegend.setTitleColor((Color) value);
 
         value = legendParamGroup.getParameter("legend.backgroundTransparency").getValue();
         imageLegend.setBackgroundTransparency(((Number) value).floatValue());

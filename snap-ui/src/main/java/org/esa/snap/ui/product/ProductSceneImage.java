@@ -695,7 +695,7 @@ public class ProductSceneImage implements ProductLayerContext {
         // Title Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY);
 
 
 
@@ -704,17 +704,17 @@ public class ProductSceneImage implements ProductLayerContext {
         // Formatting Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
-                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT,
-                ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TYPE);
+                ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_KEY,
-                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_DEFAULT,
-                ColorBarLayerType.PROPERTY_FORMATTING_REVERSE_PALETTE_TYPE);
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
 
 
 
@@ -745,9 +745,9 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_VERTICAL_LOCATION_TYPE);
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
 
 
 
@@ -779,42 +779,42 @@ public class ProductSceneImage implements ProductLayerContext {
         // Title Parameter Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_BOLD_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_ITALIC_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_ITALIC_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_NAME_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_NAME_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_COLOR_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TYPE);
 
 
 

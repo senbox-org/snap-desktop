@@ -91,8 +91,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
 
 
 
@@ -101,7 +101,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
 
@@ -450,17 +450,17 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         // Orientation and Location Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_FORMATTING_SECTION_TOOLTIP)
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP)
         boolean orientationSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_LABEL,
-                key = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
-                description = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_TOOLTIP,
-                valueSet = {ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION1,
-                        ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_OPTION2})
-        String orientation = ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
+                valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2})
+        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
 
 
 
@@ -495,11 +495,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 interval = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_INTERVAL)
         int legendWidth = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_INTERVAL)
-        int titleSize = ColorBarLayerType.PROPERTY_TITLE_PARAMETER_FONT_SIZE_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
+        int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL,
                 key = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
