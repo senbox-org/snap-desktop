@@ -87,12 +87,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
-
-
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
+
+
+
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
 
 
 
@@ -107,6 +110,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+
+
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
@@ -114,48 +119,26 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
-
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT);
 
-
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
-
-
-
-
-
-
-
-
-
-
-//
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SECTION_KEY, true);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_SHOW_KEY, ColorBarLayerType.PROPERTY_BORDER_SHOW_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_BORDER_WIDTH_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_BORDER_COLOR_DEFAULT);
-//
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY, true);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
-//
-//
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY, true);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_SECTION_KEY, true);
         restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
@@ -451,6 +434,30 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+        // Orientation and Location Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP)
+        boolean orientationSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
+                valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2})
+        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP)
+        boolean reversePalette = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT;
+
+
+
+
+
         // Labels Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
@@ -465,20 +472,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         int labelsCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
 
 
-
-        // Orientation and Location Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP)
-        boolean orientationSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_LABEL,
-                key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
-                description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
-                valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
-                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2})
-        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
 
 
 
@@ -534,7 +527,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        // Labels Section
+
+
+
+        // Tick Labels Section
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
@@ -570,6 +566,39 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP)
         Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT;
+
+
+
+
+
+        // Tick Marks Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP)
+        boolean tickMarksSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
+        boolean tickMarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP)
+        Color tickMarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+                description = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP)
+        int tickMarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP)
+        int tickMarksWidth = ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT;
+
+
 
 
 
@@ -653,54 +682,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-
-//
-//        // Tickmarks Section
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
-//                description = ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP)
-//        boolean tickmarksSection = true;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
-//                description = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP)
-//        boolean tickmarksShow = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT;
-//
-//
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
-//                description = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP)
-//        int tickmarksLength = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
-//                description = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP)
-//        Color tickmarksColor = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
-//
-//
-//
-//
-//
-//        // Inside Labels Section
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
-//                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
-//        boolean insideLabelsSection = true;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
-//                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP,
-//                interval = "[0.0,1.0]")
-//        double insideLabelsBgTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
-//                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
-//                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
-//        Color insideLabelsBgColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
-//
 
         // Restore Defaults Section
 

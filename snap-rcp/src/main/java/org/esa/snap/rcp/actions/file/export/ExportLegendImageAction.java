@@ -286,21 +286,26 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         Parameter param = new Parameter("legend.usingHeader", imageLegend.isShowTitle());
-        param.getProperties().setLabel("Show header text");
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL);
         paramGroup.addParameter(param);
 
 
-
         param = new Parameter("legend.headerText", imageLegend.getTitleText());
-        param.getProperties().setLabel("Header text");
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_TEXT_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
 
 
+        param = new Parameter("legend.foregroundColor", imageLegend.getTitleColor());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
+        paramGroup.addParameter(param);
+
+
+
 
         param = new Parameter("legend.unitsText", imageLegend.getTitleUnitsText());
-        param.getProperties().setLabel("Units text");
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
@@ -363,16 +368,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-        param = new Parameter("legend.foregroundColor", Color.black);
-        param.getProperties().setLabel("Foreground colour");
-        paramGroup.addParameter(param);
 
         param = new Parameter(PARAM_BACKDROP_COLOR_KEY, imageLegend.getBackgroundColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL);
         paramGroup.addParameter(param);
 
-        param = new Parameter("legend.backgroundTransparency", 0.0f);
-        param.getProperties().setLabel("Background transparency");
+        param = new Parameter("legend.backgroundTransparency", imageLegend.getBackgroundTransparency());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL);
         param.getProperties().setMinValue(0.0f);
         param.getProperties().setMaxValue(1.0f);
         paramGroup.addParameter(param);
@@ -468,7 +470,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setColorBarThickness((Integer) 60);
 //        imageLegend.setTitleFontSize((Integer) 12);
 //        imageLegend.setTitleUnitsFontSize((Integer) 12);
-        imageLegend.setLabelsFontSize((Integer) 12);
+//        imageLegend.setLabelsFontSize((Integer) 12);
 //        imageLegend.setShowTitle((Boolean) true);
 //        imageLegend.setDistributionType((String) ImageLegend.DISTRIB_EVEN_STR);
 //        imageLegend.setNumberOfTicks((Integer) 5);
