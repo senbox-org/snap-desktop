@@ -238,6 +238,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         if (imageLegend != null) {
+            // it's not a layer so no scaling
+            imageLegend.setLayerScaling(1.0);
+
 
             legendParamGroup = createLegendParamGroup(imageLegend);
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
@@ -320,21 +323,21 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //        paramGroup.addParameter(param);
 
 
-        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
-        if (imageLegend != null) {
-            System.out.println("obtaining orientation from imageLegend");
-            int orientationInt = imageLegend.getOrientation();
-            orientation = (orientationInt == ImageLegend.VERTICAL) ? ColorBarLayerType.OPTION_VERTICAL : ColorBarLayerType.OPTION_HORIZONTAL;
-        }
-//        else if (configuration != null) {
-//            System.out.println("obtaining orientation from configuration");
-//            orientation = configuration.getPropertyString(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
-//                    ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
+//        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
+//        if (imageLegend != null) {
+//            System.out.println("obtaining orientation from imageLegend");
+//            int orientationInt = imageLegend.getOrientation();
+//            orientation = (orientationInt == ImageLegend.VERTICAL) ? ColorBarLayerType.OPTION_VERTICAL : ColorBarLayerType.OPTION_HORIZONTAL;
 //        }
+////        else if (configuration != null) {
+////            System.out.println("obtaining orientation from configuration");
+////            orientation = configuration.getPropertyString(ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_KEY,
+////                    ColorBarLayerType.PROPERTY_FORMATTING_ORIENTATION_DEFAULT);
+////        }
+//
+//        System.out.println("orientation1=" + orientation);
 
-        System.out.println("orientation1=" + orientation);
-
-        param = new Parameter(PARAM_ORIENTATION_KEY, orientation);
+        param = new Parameter(PARAM_ORIENTATION_KEY, imageLegend.getOrientation());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_ORIENTATION_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
                 ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2});
@@ -343,7 +346,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-        param = new Parameter(NUM_TICKS_PARAM_STR, NUM_TICKS_PARAM_DEFAULT);
+        param = new Parameter(NUM_TICKS_PARAM_STR, imageLegend.getNumberOfTicks());
         param.getProperties().setLabel("Tick Mark Count");
         param.getProperties().setMinValue(0);
         param.getProperties().setMaxValue(40);
@@ -379,7 +382,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.getProperties().setMaxValue(1.0f);
         paramGroup.addParameter(param);
 
-        param = new Parameter("legend.antialiasing", Boolean.TRUE);
+        param = new Parameter("legend.antialiasing", imageLegend.isAntialiasing());
         param.getProperties().setLabel("Perform anti-aliasing");
         paramGroup.addParameter(param);
 
@@ -466,15 +469,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         // todo Danny just to get it working
-        imageLegend.setColorBarLength((Integer) 1200);
-        imageLegend.setColorBarThickness((Integer) 60);
+//        imageLegend.setColorBarLength((Integer) 1200);
+//        imageLegend.setColorBarThickness((Integer) 60);
 //        imageLegend.setTitleFontSize((Integer) 12);
 //        imageLegend.setTitleUnitsFontSize((Integer) 12);
 //        imageLegend.setLabelsFontSize((Integer) 12);
 //        imageLegend.setShowTitle((Boolean) true);
 //        imageLegend.setDistributionType((String) ImageLegend.DISTRIB_EVEN_STR);
 //        imageLegend.setNumberOfTicks((Integer) 5);
-        imageLegend.setScalingFactor((Double) 1.0);
+//        imageLegend.setScalingFactor((Double) 1.0);
 
 
     }
