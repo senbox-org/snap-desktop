@@ -5,7 +5,7 @@ Release Notes - Sentinel Application Platform
 # New in SNAP 8.0.0 
 
 In this release the development teams worked on general features like remote access of data, the processing and 
-IO perforemance and the memory management. But also sensor specific improvements and features have been implemented. 
+IO performance and the memory management. But also sensor specific improvements and features have been implemented. 
 Here we just hightlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
 database: https://senbox.atlassian.net/issues/?jql=project%20in%20(SNAP%2C%20SITBX%2C%20SIITBX%2C%20SIIITBX%2C%20SMOSTBX)%20AND%20fixVersion%20in%20(8.0.0%2C%208.0.0.0)%20AND%20resolution%20in%20(Fixed%2C%20Done)%20ORDER%20BY%20priority%20DESC
 
@@ -30,11 +30,14 @@ the reader will open directly the region of interest as a full-fledged product.
 We now use version 5.3 of the NetCDF library. If you use the NetCDF API directly exposed through SNAP you might be 
 interested in the changes of the library.
 You can check the documentation provided by unidata at https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html. 
-A specific migration guide is also provided (https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/upgrade_to_50.html).
+A specific migration guide is provided (https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/upgrade_to_50.html).
+We also removed the support for writing NetCDF3. They can still be read but not written anymore. If you still used the 
+old format names 'NetCDF-CF' or 'NetCDF-BEAM' you should switch to NetCDF-CF or NetCDF-BEAM. You will benefit from 
+smaller file sizes. 
   
 ## New Reimplemented GeoCoding
 The pixel-based GeoCoding had some issues in the past. It was slow, and in some situations it just didn't work and 
-produced artifacts. Especially Sentinel-3 data was affected by these problems. With SNAP 8 we now use a new implementation. 
+produced artifacts. These problems affect especially Sentinel-3 data. With SNAP 8 we now use a new implementation. 
 While it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
 
 ## Experimental Tile Cache Operator
@@ -53,6 +56,11 @@ With SNAP 8, we also want to introduce a new data format which will replace the 
 provide a BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system 
 or for operational services. But we would like to get your feedback on this new development, to further improve it. 
 More information will be provided with the release of the plugin.
+
+# Known Issues
+When closing SNAP on Mac OS we observe crashes. It seems to happen after stating and closing SNAP for 4-5 times.
+This issue will be further investigated. https://senbox.atlassian.net/browse/SNAP-1320
+
 
 
 # Issues
