@@ -20,6 +20,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
+import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
@@ -125,6 +126,8 @@ public final class WriteOptionsController extends DefaultConfigController {
 
         @Preference(label = "Use incremental save (only save modified items)", key = PREFERENCE_KEY_SAVE_INCREMENTAL)
         boolean saveIncremental = DEFAULT_VALUE_SAVE_INCREMENTAL;
-    }
 
+        @Preference(config = "snap", label = "Write raster data concurrently", key = ProductIO.SYSTEM_PROPERTY_CONCURRENT)
+        boolean writeConcurrent = ProductIO.DEFAULT_WRITE_RASTER_CONCURRENT;
+    }
 }
