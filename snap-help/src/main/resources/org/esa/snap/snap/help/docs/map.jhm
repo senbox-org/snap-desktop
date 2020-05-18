@@ -112,6 +112,8 @@
     <mapID target="bandArithmetic" url="desktop/BandMaths.html"/>
     <mapID target="vectorDataManagement" url="desktop/VectorDataManagement.html"/>
 
+    <mapID target="options" url="desktop/OptionsDialog.html"/>
+    <mapID target="write-options" url="desktop/OptionsDialog.html#writeoptions"/>
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
     <mapID target="resampleAction" url="desktop/Resample.html"/>
