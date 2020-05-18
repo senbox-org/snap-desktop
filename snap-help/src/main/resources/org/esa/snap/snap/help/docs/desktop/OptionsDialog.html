@@ -164,9 +164,10 @@ at once.
 
 <h4><a name="writeoptions">Write Options</a></h4>
 <img src="images/OptionsDialog-General-5-WriteOptions.png" alt="Write Options">
-<p>This preference page is used to edit the writing behaviour of SNAP. This is only relevant when products are saved in
-    <a href="../general/overview/BeamDimapFormat.html">BEAM-DIMAP format</a>.</p>
+<p>This preference page is used to edit the writing behaviour of SNAP.</p>
 
+<p>The first four entries is only relevant when products are saved in
+    <a href="../general/overview/BeamDimapFormat.html">BEAM-DIMAP format</a>.</p>
 <ul>
     <li><b>Save product header (MPH, SPH)</b><br>
         This options allows you to include/exclude the main product header (MPH) and
@@ -192,6 +193,15 @@ at once.
         If this option is selected (recommended), the Sentinel Toolbox will only save the modifications
         applied to a product, such as band modified or created with band maths
         tool or the removal of bands.
+    </li>
+</ul>
+<p>The last element generally concerns the writing process and with thus also all formats that can be written.</p>
+<ul>
+    <li><b>Write raster data concurrently</b><br>
+        If this option is selected (recommended), the write operation uses the processor cores in parallel
+        to write raster data. This can dramatically speed up the write process. However, it can also cause
+        problems if the writer is not implemented thread save.<br>
+        If the data cannot be written in parallel, please disable this option.
     </li>
 </ul>
 
