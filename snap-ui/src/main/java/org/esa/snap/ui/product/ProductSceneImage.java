@@ -824,42 +824,42 @@ public class ProductSceneImage implements ProductLayerContext {
         // Title Units Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_KEY);
+                ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
 
 
 

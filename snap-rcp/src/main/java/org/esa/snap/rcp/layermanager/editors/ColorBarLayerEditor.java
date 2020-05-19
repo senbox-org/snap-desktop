@@ -66,11 +66,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(titleParameterTextPD);
 
 
-        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TYPE);
-        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_DEFAULT);
-        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_LABEL);
-        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_TOOLTIP);
+        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
+        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
+        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_TEXT_LABEL);
+        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
         titleUnitsTextPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsTextPD);
 
@@ -299,13 +299,13 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(titleParameterFontSizePD);
 
 
-        PropertyDescriptor titleUnitsFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TYPE);
-        titleUnitsFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
-        titleUnitsFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL);
-        titleUnitsFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TOOLTIP);
-        titleUnitsFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MIN,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_VALUE_MAX));
+        PropertyDescriptor titleUnitsFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
+        titleUnitsFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT);
+        titleUnitsFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL);
+        titleUnitsFontSizePD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP);
+        titleUnitsFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_VALUE_MIN,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_VALUE_MAX));
         titleUnitsFontSizePD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontSizePD);
 
@@ -386,54 +386,54 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Title Units Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SECTION_TOOLTIP);
+        addSectionBreak(ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_UNITS_SECTION_TOOLTIP);
 
 
 
 
-        PropertyDescriptor titleUnitsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TYPE);
-        titleUnitsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_DEFAULT);
-        titleUnitsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_LABEL);
-        titleUnitsShowPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_TOOLTIP);
+        PropertyDescriptor titleUnitsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_TYPE);
+        titleUnitsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT);
+        titleUnitsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL);
+        titleUnitsShowPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP);
         titleUnitsShowPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsShowPD);
 
-        PropertyDescriptor titleUnitsFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_TYPE);
-        titleUnitsFontBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_DEFAULT);
-        titleUnitsFontBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_LABEL);
-        titleUnitsFontBoldPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_TOOLTIP);
+        PropertyDescriptor titleUnitsFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TYPE);
+        titleUnitsFontBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT);
+        titleUnitsFontBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_LABEL);
+        titleUnitsFontBoldPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP);
         titleUnitsFontBoldPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontBoldPD);
 
-        PropertyDescriptor titleUnitsFontItalicPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_TYPE);
-        titleUnitsFontItalicPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_DEFAULT);
-        titleUnitsFontItalicPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_LABEL);
-        titleUnitsFontItalicPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_TOOLTIP);
+        PropertyDescriptor titleUnitsFontItalicPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TYPE);
+        titleUnitsFontItalicPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
+        titleUnitsFontItalicPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_LABEL);
+        titleUnitsFontItalicPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP);
         titleUnitsFontItalicPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontItalicPD);
 
 
-        PropertyDescriptor titleUnitsFontNamePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_TYPE);
-        titleUnitsFontNamePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_DEFAULT);
-        titleUnitsFontNamePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_LABEL);
-        titleUnitsFontNamePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_TOOLTIP);
-        titleUnitsFontNamePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_VALUE_SET));
+        PropertyDescriptor titleUnitsFontNamePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TYPE);
+        titleUnitsFontNamePD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT);
+        titleUnitsFontNamePD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_LABEL);
+        titleUnitsFontNamePD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TOOLTIP);
+        titleUnitsFontNamePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_VALUE_SET));
         titleUnitsFontNamePD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontNamePD);
 
 
 
-        PropertyDescriptor titleUnitsFontColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_TYPE);
-        titleUnitsFontColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_DEFAULT);
-        titleUnitsFontColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_LABEL);
-        titleUnitsFontColorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_TOOLTIP);
+        PropertyDescriptor titleUnitsFontColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TYPE);
+        titleUnitsFontColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT);
+        titleUnitsFontColorPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL);
+        titleUnitsFontColorPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
         titleUnitsFontColorPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsFontColorPD);
 
@@ -714,28 +714,28 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_BOLD_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_ITALIC_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_NAME_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_UNITS_SHOW_KEY, true);
+        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY, true,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
 

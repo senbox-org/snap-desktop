@@ -113,7 +113,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
 
 
@@ -547,11 +547,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
         int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_INTERVAL)
-        int unitsSize = ColorBarLayerType.PROPERTY_TITLE_UNITS_FONT_SIZE_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_INTERVAL)
+        int unitsSize = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
