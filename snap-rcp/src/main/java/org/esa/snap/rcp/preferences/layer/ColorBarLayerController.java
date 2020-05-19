@@ -95,7 +95,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
+
+
+
 
 
 
@@ -465,14 +473,41 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
         boolean labelValuesSection = true;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP,
+                valueSet = {ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION1,
+                        ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION2,
+                        ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION3})
+        String labelValuesMode = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT;
+
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP,
                 interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_INTERVAL)
         int labelsCount = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP)
+        String labelValuesActual = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_INTERVAL)
+        double labelScaling = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_INTERVAL)
+        int decimalPlaces = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP)
+        boolean decimalPlacesForce = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT;
 
 
 
