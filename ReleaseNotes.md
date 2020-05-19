@@ -7,7 +7,7 @@ Release Notes - Sentinel Application Platform
 In this release the development teams worked on general features like remote access of data, the processing and 
 IO performance and the memory management. But also sensor specific improvements and features have been implemented. 
 Here we just hightlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
-database: https://senbox.atlassian.net/issues/?jql=project%20in%20(SNAP%2C%20SITBX%2C%20SIITBX%2C%20SIIITBX%2C%20SMOSTBX)%20AND%20fixVersion%20in%20(8.0.0%2C%208.0.0.0)%20AND%20resolution%20in%20(Fixed%2C%20Done)%20ORDER%20BY%20priority%20DESC
+database: https://bit.ly/SNAP8_changelog
 
 ## Reworked Product Library 
 The Product Library is upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
@@ -45,7 +45,7 @@ To further improve the memory management, especially during data processing, we 
 be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general cache 
 is disabled the amount of used memory can be reduced. The idea is that the cache memory is done automatically in the 
 long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback too. 
-More information can be found in the wiki. https://senbox.atlassian.net/wiki/spaces/SNAP/pages/798163029/How+to+use+TileCache+operator+to+improve+memory+consumption 
+More information can be found in the wiki. https://senbox.atlassian.net/wiki/x/VQCTLw 
 
 # Sensor specific improvements by Toolboxes
 Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
