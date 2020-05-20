@@ -1187,6 +1187,8 @@ public class ProductSceneView extends BasicView
         private void deriveRasterPropertiesFromExpression(String expression, Product... products) {
             if (products != null) {
                 try {
+                    String validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, 0, null);
+                    setValidPixelExpression(validMaskExpression);
                     final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
                     if (refRasters.length > 0) {
                         setGeoCoding(refRasters[0].getGeoCoding());
