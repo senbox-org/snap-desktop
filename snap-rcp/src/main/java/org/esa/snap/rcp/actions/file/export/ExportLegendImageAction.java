@@ -21,6 +21,8 @@ import org.esa.snap.core.datamodel.ImageLegend;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.ColorBarLayerType;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.util.PropertyMap;
@@ -111,6 +113,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private ParamGroup legendParamGroup;
     private ImageLegend imageLegend;
 
+    private ParamChangeListener paramChangeListener;
+
     @SuppressWarnings("FieldCanBeLocal")
     private Lookup.Result<ProductSceneView> result;
 
@@ -134,6 +138,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
+
+        paramChangeListener = createParamChangeListener();
 
 
     }
@@ -287,7 +293,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-            legendParamGroup = createLegendParamGroup(imageLegend);
+            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener);
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 
 //        modifyHeaderText(legendParamGroup, view.getRaster());
@@ -541,7 +547,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         return true;
     }
 
-    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend) {
+    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener) {
+
         ParamGroup paramGroup = new ParamGroup();
 
 
@@ -591,6 +598,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION3
         });
         param.getProperties().setValueSetBound(true);
+        param.addParamChangeListener(paramChangeListener);
+
         paramGroup.addParameter(param);
 
 
@@ -634,6 +643,44 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         return paramGroup;
     }
+
+
+    private ParamChangeListener createParamChangeListener() {
+        return new ParamChangeListener() {
+
+            public void parameterValueChanged(ParamChangeEvent event) {
+                updateUIState(event.getParameter().getName());
+            }
+        };
+    }
+
+    private void updateUIState(String parameterName) {
+        Object value;
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
+        imageLegend.setTickMarkCount((Integer) value);
+
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
+        if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(value)) {
+            imageLegend.setDistributionType((String) value);
+            System.out.println("setDistributionType=" + (String) value);
+
+
+            if (!ColorBarLayerType.DISTRIB_MANUAL_STR.equals(value)) {
+                // update custom labels
+                imageLegend.createImage();
+                System.out.println("custom=" + imageLegend.getCustomLabelValues());
+                legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
+            }
+
+        }
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
+        imageLegend.setCustomLabelValues((String) value);
+
+    }
+
 
 
 //    private static void modifyHeaderText(ParamGroup legendParamGroup, RasterDataNode raster) {
@@ -704,19 +751,37 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2).getValue();
         imageLegend.setBackdropTransparency(((Number) value).floatValue());
 
+
+
+        // Set this prior to set distributionType in order to update custom labels if needed
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
+        imageLegend.setTickMarkCount((Integer) value);
+
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
+        if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(value)) {
+            imageLegend.setDistributionType((String) value);
+            System.out.println("setDistributionType=" + (String) value);
+
+
+            if (!ColorBarLayerType.DISTRIB_MANUAL_STR.equals(value)) {
+                // update custom labels
+                imageLegend.createImage();
+                System.out.println("custom=" + imageLegend.getCustomLabelValues());
+                legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
+            }
+
+        }
+
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
         imageLegend.setCustomLabelValues((String) value);
 
-        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
-        imageLegend.setDistributionType((String) value);
-        System.out.println("setDistributionType=" + (String) value);
+
 
         value = legendParamGroup.getParameter("legend.antialiasing").getValue();
         imageLegend.setAntialiasing((Boolean) value);
 
 
-        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
-        imageLegend.setTickMarkCount((Integer) value);
 
 
     }
