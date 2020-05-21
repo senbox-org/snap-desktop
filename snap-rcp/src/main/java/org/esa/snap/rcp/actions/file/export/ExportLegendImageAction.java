@@ -77,9 +77,9 @@ import java.util.List;
         @ActionReference(path = "Context/ProductSceneView", position = 90)
 })
 @NbBundle.Messages({
-        "CTL_ExportLegendImageAction_MenuText=Colour Legend as Image",
-        "CTL_ExportLegendImageAction_PopupText=Export Colour Bar Legend",
-        "CTL_ExportLegendImageAction_ShortDescription=Export the colour legend of the current view as an image."
+        "CTL_ExportLegendImageAction_MenuText=" + ColorBarLayerType.COLOR_BAR_LEGEND_NAME,
+        "CTL_ExportLegendImageAction_PopupText=Export " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME,
+        "CTL_ExportLegendImageAction_ShortDescription=Export the " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME_LOWER_CASE + " of the current view as an image."
 })
 
 public class ExportLegendImageAction extends AbstractExportImageAction {
@@ -99,7 +99,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_TITLE_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY + ".export";
     private static final String PROPERTY_BACKDROP_COLOR_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY + ".export";
     private static final String PROPERTY_BACKDROP_TRANSPARENCY_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY + ".export";
-
+    private static final String PROPERTY_LABEL_VALUES_ACTUAL_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY + ".export";
+    private static final String PROPERTY_LABEL_VALUES_MODE_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY + ".export";
 
 
     private static final String HELP_ID = "exportLegendImageFile";
@@ -148,10 +149,56 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     public void actionPerformed(ActionEvent e) {
 
 //        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-//        final RasterDataNode raster = view.getRaster();
-//        imageLegend = new ImageLegend(raster.getImageInfo(), raster);
 //
-//        legendParamGroup = createLegendParamGroup();
+//        imageLegend = null;
+//
+////        SystemUtils.LOG.severe("Test severe message Danny");
+////        SystemUtils.LOG.info("Test info message Danny");
+////        SystemUtils.LOG.warning("Test warning message Danny");
+//
+//
+//        // Look for the existence of the ColorBar Layer and get a copy of its imageLegend
+//
+//        List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
+//        for (Layer layer : layers) {
+////            System.out.println("layerName=" + layer.getName());
+//
+//            if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
+////                System.out.println("Found ColorBar layer");
+//
+//                ColorBarLayer colorBarLayer = (ColorBarLayer) layer;
+//                if (colorBarLayer != null) {
+//                    ImageLegend imageLegendFromLayer = colorBarLayer.getImageLegend();
+//                    if (imageLegendFromLayer != null) {
+//                        imageLegend = imageLegendFromLayer.getCopyOfImageLegend();
+//                    }
+//                }
+//                break;
+//            }
+//        }
+//
+//
+//
+//
+//        // If null then set imageLegend based on the preferences defaults
+//
+//        if (imageLegend == null) {
+//
+//            final RasterDataNode raster = view.getRaster();
+//            PropertyMap configuration = view.getSceneImage().getConfiguration();
+//
+//            if (configuration != null) {
+//                System.out.println("Making new imageLegend");
+//
+//                imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+//                initLegendWithPreferences(view);
+////                imageLegend.updateWithProperties(configuration, raster);
+//            }
+//        }
+//
+//
+//
+//        legendParamGroup = createLegendParamGroup(imageLegend);
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 //
 //        final ImageLegendDialog dialog = new ImageLegendDialog(legendParamGroup,
@@ -204,8 +251,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-
-
         // If null then set imageLegend based on the preferences defaults
 
         if (imageLegend == null) {
@@ -223,17 +268,32 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-
         if (imageLegend != null) {
             // it's not a layer so no scaling
             imageLegend.setLayerScaling(1.0);
+
+
+            // this will initialize the custom label values
+            String distributionTypeOriginal = imageLegend.getDistributionType();
+            if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
+                if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
+                    imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
+                }
+            }
+            imageLegend.createImage();
+//            imageLegend.createColorBarInfos();
+            imageLegend.setDistributionType(distributionTypeOriginal);
+            //
+
 
 
             legendParamGroup = createLegendParamGroup(imageLegend);
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 
 //        modifyHeaderText(legendParamGroup, view.getRaster());
-            fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - export Colour Legend Image"); /*I18N*/
+
+
+            fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - export " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME); /*I18N*/
 
 
             fileChooser.setCurrentFilename(imageBaseName + "_legend");
@@ -249,7 +309,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
     }
-
 
 
     private void initLegendWithPreferences(ProductSceneView view) {
@@ -273,8 +332,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT));
 
 
-
-
         // Label Distribution and Values
 
         imageLegend.setTickMarkCount(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
@@ -296,9 +353,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT));
 
 
-
-
-
         // Sizing and Location
         imageLegend.setColorBarLength(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
                 ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT));
@@ -308,8 +362,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         imageLegend.setTitleVerticalAnchor(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT));
-
-
 
 
         // Title parameters
@@ -349,16 +401,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         int titleFontType = ColorBarLayer.getFontType(titleParameterItalic, titleParameterBold);
 
         imageLegend.setTitleFontType(titleFontType);
-
-
-
-
-
-
-
-
-
-
 
 
         // Units parameters
@@ -401,12 +443,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setUnitsFontType(unitsFontType);
 
 
-
-
-
-
-
-
         // Labels Parameters
 
         imageLegend.setLabelsShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
@@ -430,10 +466,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT));
 
 
-
-
-
-
         // Tick Marks Section
 
         imageLegend.setTickmarkShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
@@ -447,9 +479,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         imageLegend.setTickmarkColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT));
-
-
-
 
 
         // Backdrop Section
@@ -466,9 +495,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setBackdropTransparency(((Number) backdropTrans).floatValue());
 
 
-
-
-
         // Palette Border Section
 
         imageLegend.setBorderShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
@@ -479,9 +505,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         imageLegend.setBorderColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT));
-
-
-
 
 
         // Legend Border Section
@@ -496,21 +519,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT));
 
 
-
-
-
         imageLegend.setLayerScaling(1.0);
         imageLegend.setAntialiasing((Boolean) true);
 
         //            imageLegend.setBackgroundTransparencyEnabled(true);
 
 
-
     }
-
-
-
-
 
 
     @Override
@@ -547,8 +562,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
         param = new Parameter(PROPERTY_UNITS_TEXT_KEY2, imageLegend.getUnitsText());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_TEXT_LABEL);
         param.getProperties().setNumCols(24);
@@ -556,8 +569,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        int orientationInt = imageLegend.getOrientation();
+        String orientationString = (orientationInt == ImageLegend.VERTICAL) ? ColorBarLayerType.OPTION_VERTICAL : ColorBarLayerType.OPTION_HORIZONTAL;
 
-        param = new Parameter(PROPERTY_ORIENTATION_KEY2, imageLegend.getOrientation());
+        param = new Parameter(PROPERTY_ORIENTATION_KEY2, orientationString);
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_ORIENTATION_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
                 ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2});
@@ -565,9 +580,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        param = new Parameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2, imageLegend.getCustomLabelValues());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
+        paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_LABEL_VALUES_MODE_KEY2, imageLegend.getDistributionType());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION1,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION2,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_OPTION3
+        });
+        param.getProperties().setValueSetBound(true);
+        paramGroup.addParameter(param);
+
+
 
         param = new Parameter(PROPERTY_LABEL_VALUES_COUNT_KEY2, imageLegend.getTickMarkCount());
-        param.getProperties().setLabel("Tick Mark Count");
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
         param.getProperties().setMinValue(0);
         param.getProperties().setMaxValue(40);
         paramGroup.addParameter(param);
@@ -589,9 +618,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //
 
 
-
-
-
         param = new Parameter(PROPERTY_BACKDROP_COLOR_KEY2, imageLegend.getBackdropColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL);
         paramGroup.addParameter(param);
@@ -608,8 +634,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         return paramGroup;
     }
-
-
 
 
 //    private static void modifyHeaderText(ParamGroup legendParamGroup, RasterDataNode raster) {
@@ -680,14 +704,19 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2).getValue();
         imageLegend.setBackdropTransparency(((Number) value).floatValue());
 
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
+        imageLegend.setCustomLabelValues((String) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
+        imageLegend.setDistributionType((String) value);
+        System.out.println("setDistributionType=" + (String) value);
+
         value = legendParamGroup.getParameter("legend.antialiasing").getValue();
         imageLegend.setAntialiasing((Boolean) value);
 
 
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
         imageLegend.setTickMarkCount((Integer) value);
-
-
 
 
     }
@@ -716,11 +745,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter foregroundColorParam;
         private Parameter antialiasingParam;
         private Parameter backgroundTransparencyParam;
+        private Parameter labelValuesActualParam;
+        private Parameter distributionTypeParam;
 
 
         public ImageLegendDialog(ParamGroup paramGroup, ImageLegend imageLegend,
                                  boolean transparencyEnabled, String helpId) {
-            super(SnapApp.getDefault().getMainFrame(), SnapApp.getDefault().getInstanceName() + " - Colour Legend Properties", ID_OK_CANCEL_HELP, helpId);
+            super(SnapApp.getDefault().getMainFrame(), SnapApp.getDefault().getInstanceName() + " - " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME, ID_OK_CANCEL_HELP, helpId);
             System.out.println("helpId=" + helpId);
             this.imageInfo = imageLegend.getImageInfo();
             this.raster = imageLegend.getRaster();
@@ -804,12 +835,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //            p.add(backgroundColorParam.getEditor().getLabelComponent(), gbc);
 //            p.add(backgroundColorParam.getEditor().getEditorComponent(), gbc);
 
+            gbc.gridy++;
+            gbc.insets.top = 5;
+            p.add(distributionTypeParam.getEditor().getLabelComponent(), gbc);
+            p.add(distributionTypeParam.getEditor().getEditorComponent(), gbc);
+
 
 
             gbc.gridy++;
             gbc.insets.top = 5;
             p.add(numberOfTicksParam.getEditor().getLabelComponent(), gbc);
             p.add(numberOfTicksParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.insets.top = 5;
+            p.add(labelValuesActualParam.getEditor().getLabelComponent(), gbc);
+            p.add(labelValuesActualParam.getEditor().getEditorComponent(), gbc);
+
 
             gbc.gridy++;
             gbc.insets.top = 5;
@@ -849,6 +891,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             foregroundColorParam = paramGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2);
             backgroundColorParam = paramGroup.getParameter(PROPERTY_BACKDROP_COLOR_KEY2);
             backgroundTransparencyParam = paramGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2);
+            labelValuesActualParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2);
+            distributionTypeParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2);
             antialiasingParam = paramGroup.getParameter("legend.antialiasing");
         }
 
@@ -883,7 +927,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
             });
             final ModalDialog dialog = new ModalDialog(getParent(),
-                    SnapApp.getDefault().getInstanceName() + " - Colour Legend Preview",
+                    SnapApp.getDefault().getInstanceName() + " - " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME,
                     imageDisplay,
                     ID_OK, null);
             dialog.getJDialog().setResizable(false);
