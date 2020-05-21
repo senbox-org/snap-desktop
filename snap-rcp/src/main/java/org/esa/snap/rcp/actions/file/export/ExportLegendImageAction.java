@@ -54,9 +54,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -214,7 +212,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //        dialog.show();
 
 
-        // todo Danny
         exportImage(imageFileFilters);
     }
 
@@ -276,6 +273,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         if (imageLegend != null) {
             // it's not a layer so no scaling
+            // todo this is not correct
             imageLegend.setLayerScaling(1.0);
 
 
@@ -969,7 +967,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private void showPreview() {
 //            final ImageLegend imageLegend = new ImageLegend(getImageInfo(), raster);
             getImageLegend(imageLegend);
-            final BufferedImage image = imageLegend.createImage();
+            double scalingOriginal = imageLegend.getLayerScaling();
+
+            // todo set this based on legend size or color bar length
+            imageLegend.setLayerScaling(70.0);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+            final BufferedImage image = imageLegend.createImage(screenSize, true);
+            imageLegend.setLayerScaling(scalingOriginal);
+
             final JLabel imageDisplay = new JLabel(new ImageIcon(image));
             imageDisplay.setOpaque(true);
             imageDisplay.addMouseListener(new MouseAdapter() {
