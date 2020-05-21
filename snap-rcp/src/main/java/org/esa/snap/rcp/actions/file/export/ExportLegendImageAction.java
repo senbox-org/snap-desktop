@@ -292,8 +292,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             //
 
 
-
             legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener);
+
+            updateEnablement();
+
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 
 //        modifyHeaderText(legendParamGroup, view.getRaster());
@@ -603,11 +605,11 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
         param = new Parameter(PROPERTY_LABEL_VALUES_COUNT_KEY2, imageLegend.getTickMarkCount());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
         param.getProperties().setMinValue(0);
         param.getProperties().setMaxValue(40);
+        param.addParamChangeListener(paramChangeListener);
         paramGroup.addParameter(param);
 
 
@@ -655,32 +657,51 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     }
 
     private void updateUIState(String parameterName) {
-        Object value;
 
-        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
-        imageLegend.setTickMarkCount((Integer) value);
+        System.out.println("parameterName=" + parameterName);
+        if (PROPERTY_LABEL_VALUES_MODE_KEY2.equals(parameterName) || PROPERTY_LABEL_VALUES_COUNT_KEY2.equals(parameterName)) {
+            System.out.println("test1");
+            Object distributionType = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
+
+            if (!ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionType)) {
+                if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(distributionType)) {
+                    imageLegend.setDistributionType((String) distributionType);
+                    System.out.println("setDistributionType=" + (String) distributionType);
+                }
 
 
-        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
-        if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(value)) {
-            imageLegend.setDistributionType((String) value);
-            System.out.println("setDistributionType=" + (String) value);
-
-
-            if (!ColorBarLayerType.DISTRIB_MANUAL_STR.equals(value)) {
+                if (ColorBarLayerType.DISTRIB_EVEN_STR.equals(distributionType)) {
+                    Object tickMarkCount = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
+                    imageLegend.setTickMarkCount((Integer) tickMarkCount);
+                }
                 // update custom labels
                 imageLegend.createImage();
                 System.out.println("custom=" + imageLegend.getCustomLabelValues());
                 legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
             }
 
-        }
 
-        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
-        imageLegend.setCustomLabelValues((String) value);
+            updateEnablement();
+
+        }
 
     }
 
+    private void updateEnablement() {
+
+        Object distributionType = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
+
+        if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionType)) {
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(false);
+        } else if (ColorBarLayerType.DISTRIB_EXACT_STR.equals(distributionType)) {
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(false);
+        } else {
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(true);
+        }
+    }
 
 
 //    private static void modifyHeaderText(ParamGroup legendParamGroup, RasterDataNode raster) {
@@ -752,36 +773,21 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setBackdropTransparency(((Number) value).floatValue());
 
 
-
         // Set this prior to set distributionType in order to update custom labels if needed
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
         imageLegend.setTickMarkCount((Integer) value);
 
 
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2).getValue();
-        if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(value)) {
-            imageLegend.setDistributionType((String) value);
-            System.out.println("setDistributionType=" + (String) value);
+        imageLegend.setDistributionType((String) value);
 
-
-            if (!ColorBarLayerType.DISTRIB_MANUAL_STR.equals(value)) {
-                // update custom labels
-                imageLegend.createImage();
-                System.out.println("custom=" + imageLegend.getCustomLabelValues());
-                legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
-            }
-
-        }
 
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
         imageLegend.setCustomLabelValues((String) value);
 
 
-
         value = legendParamGroup.getParameter("legend.antialiasing").getValue();
         imageLegend.setAntialiasing((Boolean) value);
-
-
 
 
     }
@@ -904,7 +910,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.insets.top = 5;
             p.add(distributionTypeParam.getEditor().getLabelComponent(), gbc);
             p.add(distributionTypeParam.getEditor().getEditorComponent(), gbc);
-
 
 
             gbc.gridy++;
