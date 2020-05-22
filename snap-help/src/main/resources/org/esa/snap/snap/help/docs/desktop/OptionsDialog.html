@@ -45,7 +45,7 @@ at once.
 <h4><a name="uibehavior">UI Behaviour</a></h4>
 <p>This preferences page contains general user interface behavior and memory
     management settings.</p>
-<img src="images/OptionsDialog-General-1-UIBehaviour-Mac.png" alt="UI Behaviour Dialog">
+<img src="images/OptionsDialog-General-1-UIBehaviour.png" alt="UI Behaviour Dialog">
 <ul>
     <li><b>Show navigation window when image views are opened</b><br>
         If an image view is opened the <a href="NavigationWindow.html">Navigation Window</a>
@@ -166,7 +166,7 @@ at once.
 <img src="images/OptionsDialog-General-5-WriteOptions.png" alt="Write Options">
 <p>This preference page is used to edit the writing behaviour of SNAP.</p>
 
-<p>The first four entries is only relevant when products are saved in
+<p>The first four entries are only relevant when products are saved in
     <a href="../general/overview/BeamDimapFormat.html">BEAM-DIMAP format</a>.</p>
 <ul>
     <li><b>Save product header (MPH, SPH)</b><br>
@@ -195,7 +195,7 @@ at once.
         tool or the removal of bands.
     </li>
 </ul>
-<p>The last element generally concerns the writing process and with thus also all formats that can be written.</p>
+<p>The last element generally concerns the writing process and thus also all writeable formats.</p>
 <ul>
     <li><b>Write raster data concurrently</b><br>
         If this option is selected (recommended), the write operation uses the processor cores in parallel
@@ -250,11 +250,17 @@ at once.
 </ul>
 
 <h4><a name="remotefilerepos">Remote File Repositories</a></h4>
-<b>Put content here.</b>
+<img src="images/OptionsDialog-General-B-Remote-File-Repos.png" alt="Remote File Repositories"/>
+<p><b>Put content here.</b></p>
+
+
+<h4><a name="remotefilerepos">Product Library</a></h4>
+<img src="images/OptionsDialog-General-C-Product-Library.png" alt="Product Library"/>
+<p><b>Put content here.</b></p>
 
 
 <h4><a name="other">Other</a></h4>
-<img src="images/OptionsDialog-General-C-Other.png" alt="Other">
+<img src="images/OptionsDialog-General-D-Other.png" alt="Other">
 
 <ul>
     <li><b>Release check interval</b> - Specify when a check for a new SNAP release shall be performed.
@@ -269,25 +275,9 @@ at once.
 <h4><a name="graticulelayer">Graticule Layer</a></h4>
 <img src="images/OptionsDialog-Layer-1-GraticuleLayer.png" alt="Graticule Layer">
 
-<ul>
-    <li><b>Compute latitude and longitude steps</b> - The step size of the grid lines will be computed
-        automatically.<br></li>
-    <li><b>Average grid size in pixels</b> - Defines the size in pixels of the grid cells.<br></li>
-    <li><b>Latitude step (dec. degree)</b> - Sets the grid latitude step in decimal degree.<br></li>
-    <li><b>Longitude step (dec. degree)</b> - Sets the grid longitude step in decimal degree.<br></li>
-    <li><b>Line colour</b> - Sets the colour of the grid lines. Select a colour from a pre-defined list or customize it.<br>
-    </li>
-    <li><b>Line width</b> - Sets the width of the grid lines. Specify the overlay line width in pixels.<br></li>
-    <li><b>Line transparency</b> - Sets the transparency of the grid lines. Enter a value between 0 and 1. 0 means
-        opaque, 1 means transparent.<br></li>
-    <li><b>Show text labels</b> - Sets the visibility of the text labels.<br></li>
-    <li><b>Text foreground colour</b> - Sets the colour of the graticule text (latitude and longitude values). Select a
-        colour from a pre-defined list or customize it.<br></li>
-    <li><b>Text background colour</b> - Sets the background colour of the graticule text (latitude and longitude
-        values). Select a colour from a pre-defined list or customize it.<br></li>
-    <li><b>Text background transparency</b> - Sets the transparency of the background colour of the graticule text.
-        Enter a value between 0 and 1. 0 means opaque, 1 means transparent.<br></li>
-</ul>
+<p>This preferences page provides options to customize the <b>Graticule Overlay</b>.</p>
+
+<p>You can find a detailed description <a href="ShowGraticuleOverlay.html">here</a>.</p>
 
 <h4><a name="imagelayer">Image Layer</a></h4>
 <img src="images/OptionsDialog-Layer-2-ImageLayer.png" alt="Image Layer">
