@@ -103,6 +103,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
 
 
 
@@ -508,6 +514,54 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP)
         boolean decimalPlacesForce = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT;
+
+
+
+        // Location Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP)
+        boolean placementLocationSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TOOLTIP)
+        boolean placementInside = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TOOLTIP,
+                valueSet = {ColorBarLayerType.LOCATION_UPPER_LEFT,
+                        ColorBarLayerType.LOCATION_UPPER_CENTER,
+                        ColorBarLayerType.LOCATION_UPPER_RIGHT,
+                        ColorBarLayerType.LOCATION_LOWER_LEFT,
+                        ColorBarLayerType.LOCATION_LOWER_CENTER,
+                        ColorBarLayerType.LOCATION_LOWER_RIGHT,
+                        ColorBarLayerType.LOCATION_LEFT_CENTER,
+                        ColorBarLayerType.LOCATION_RIGHT_CENTER})
+        String placementMode = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP)
+        double locationOffset = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
+        double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP,
+                valueSet = {ColorBarLayerType.VERTICAL_TITLE_LEFT,
+                        ColorBarLayerType.VERTICAL_TITLE_RIGHT,
+                        ColorBarLayerType.VERTICAL_TITLE_TOP,
+                        ColorBarLayerType.VERTICAL_TITLE_BOTTOM})
+        String titleVerticalLocation = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT;
 
 
 
