@@ -124,6 +124,22 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY, ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT);
+
+
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY, true);
@@ -612,6 +628,105 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
                 interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
         int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
+
+
+
+
+
+
+
+        // Title Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP)
+        boolean titleSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_SHOW_TOOLTIP)
+        boolean titleShow = ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TOOLTIP)
+        boolean titleItalic = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TOOLTIP)
+        boolean titleBold = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TOOLTIP,
+                valueSet = {ColorBarLayerType.FONT_NAME_SANSERIF,
+                        ColorBarLayerType.FONT_NAME_SERIF,
+                        ColorBarLayerType.FONT_NAME_COURIER,
+                        ColorBarLayerType.FONT_NAME_MONOSPACED})
+        String titleFont = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP)
+        Color titleColor = ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT;
+
+
+
+
+
+
+
+
+
+
+
+        // Units Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_SECTION_TOOLTIP)
+        boolean unitsSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP)
+        boolean unitsShow = ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP)
+        boolean unitsItalic = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP)
+        boolean unitsBold = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TOOLTIP,
+                valueSet = {ColorBarLayerType.FONT_NAME_SANSERIF,
+                        ColorBarLayerType.FONT_NAME_SERIF,
+                        ColorBarLayerType.FONT_NAME_COURIER,
+                        ColorBarLayerType.FONT_NAME_MONOSPACED})
+        String unitsFont = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP)
+        Color unitsColor = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT;
+
+
+
+
+
 
 
 
