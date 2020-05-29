@@ -6,7 +6,9 @@ import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -31,6 +33,9 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
 
+    private static ImageIcon[] ICONS;
+    private static ImageIcon[] ROLLOVER_ICONS;
+
     private final JLabel nameLabel;
     private final JLabel quickLookImageLabel;
     private final JLabel firstAttributeLabel;
@@ -39,9 +44,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     private final JLabel urlLabel;
     private final JLabel secondAttributeLabel;
     private final JLabel missionLabel;
-    private final JButton expandOrCollapseButton;
-    private final ImageIcon expandImageIcon;
-    private final ImageIcon collapseImageIcon;
+    private final AbstractButton expandOrCollapseButton;
     private final ComponentDimension componentDimension;
     private final RepositoryProductPanelBackground repositoryProductPanelBackground;
 
@@ -50,7 +53,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
     private RepositoryProductAttributesPanel attributesPanel;
 
     protected AbstractRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                             ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+                                             ComponentDimension componentDimension) {
 
         super(new BorderLayout(componentDimension.getGapBetweenColumns(), componentDimension.getGapBetweenRows()));
 
@@ -58,10 +61,19 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
             throw new NullPointerException("The repository product panel background is null.");
         }
 
+        if (ICONS == null) {
+            ICONS = new ImageIcon[] {
+                    SwingUtils.loadImage(UIUtils.IMAGE_RESOURCE_PATH+"icons/PanelUp12.png"),
+                    SwingUtils.loadImage(UIUtils.IMAGE_RESOURCE_PATH+"icons/PanelDown12.png")
+            };
+            ROLLOVER_ICONS = new ImageIcon[] {
+                    ToolButtonFactory.createRolloverIcon(ICONS[0]),
+                    ToolButtonFactory.createRolloverIcon(ICONS[1]),
+            };
+        }
+
         this.repositoryProductPanelBackground = repositoryProductPanelBackground;
         this.componentDimension = componentDimension;
-        this.expandImageIcon = expandImageIcon;
-        this.collapseImageIcon = collapseImageIcon;
 
         this.nameLabel = new JLabel("");
         this.quickLookImageLabel = new JLabel(OutputProductResults.EMPTY_ICON);
@@ -73,14 +85,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.missionLabel = new JLabel("");
         this.statusLabel = buildStatusLabel();
 
-        Dimension buttonSize = new Dimension(this.expandImageIcon.getIconWidth() + 2, this.expandImageIcon.getIconHeight() + 2);
-
-        this.expandOrCollapseButton = new JButton(this.expandImageIcon);
-        this.expandOrCollapseButton.setBackground(SwingUtils.TRANSPARENT_COLOR);
-        this.expandOrCollapseButton.setOpaque(false);
-        this.expandOrCollapseButton.setPreferredSize(buttonSize);
-        this.expandOrCollapseButton.setMinimumSize(buttonSize);
-        this.expandOrCollapseButton.setMaximumSize(buttonSize);
+        this.expandOrCollapseButton = ToolButtonFactory.createButton(ICONS[1], false);
         this.expandOrCollapseButton.setFocusable(false);
         this.expandOrCollapseButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -89,7 +94,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
                 if (attributesPanel == null) {
                     addAttributesPanel(repositoryProduct);
                 } else {
-                    remoteAttributesPanel();
+                    removeAttributesPanel();
                 }
             }
         });
@@ -137,7 +142,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         if (this.attributesPanel != null) {
             if (this.attributesPanel.getRepositoryProduct() != repositoryProduct) {
-                remoteAttributesPanel();
+                removeAttributesPanel();
             }
         }
 
@@ -205,15 +210,18 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         this.attributesPanel = new RepositoryProductAttributesPanel(this.componentDimension, repositoryProduct);
         this.attributesPanel.setOpaque(false);
         add(this.attributesPanel, BorderLayout.SOUTH);
-        this.expandOrCollapseButton.setIcon(this.collapseImageIcon);
-        revalidate();
-        repaint();
+        refreshExpandOrCollapseButton(0);
     }
 
-    private void remoteAttributesPanel() {
+    private void removeAttributesPanel() {
         remove(this.attributesPanel);
-        this.expandOrCollapseButton.setIcon(this.expandImageIcon);
         this.attributesPanel = null;
+        refreshExpandOrCollapseButton(1);
+    }
+
+    private void refreshExpandOrCollapseButton(int index) {
+        this.expandOrCollapseButton.setIcon(ICONS[index]);
+        this.expandOrCollapseButton.setRolloverIcon(ROLLOVER_ICONS[index]);
         revalidate();
         repaint();
     }

@@ -62,7 +62,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public abstract void resetInputParameterValues();
 
     public abstract AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                                            ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon);
+                                                                            ComponentDimension componentDimension);
 
     public abstract AbstractProgressTimerRunnable<?> buildSearchProductListThread(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                   RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel);

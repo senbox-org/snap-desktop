@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.ui.loading.CustomButton;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
@@ -24,28 +25,23 @@ public class OutputProductListPaginationPanel extends JPanel {
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        this.firstPageButton = new JButton("<<");
+        int preferredButtonHeight = componentDimension.getTextFieldPreferredHeight();
+
+        this.firstPageButton = new CustomButton("<<", preferredButtonHeight);
         this.firstPageButton.setFocusable(false);
         this.firstPageButton.addActionListener(firstPageButtonListener);
 
-        this.previousPageButton = new JButton("<");
+        this.previousPageButton = new CustomButton("<", preferredButtonHeight);
         this.previousPageButton.setFocusable(false);
         this.previousPageButton.addActionListener(previousPageButtonListener);
 
-        this.nextPageButton = new JButton(">");
+        this.nextPageButton = new CustomButton(">", preferredButtonHeight);
         this.nextPageButton.setFocusable(false);
         this.nextPageButton.addActionListener(nextPageButtonListener);
 
-        this.lastPageButton = new JButton(">>");
+        this.lastPageButton = new CustomButton(">>", preferredButtonHeight);
         this.lastPageButton.setFocusable(false);
         this.lastPageButton.addActionListener(lastPageButtonListener);
-
-        Dimension buttonPreferredSize = this.lastPageButton.getPreferredSize();
-        buttonPreferredSize.height = componentDimension.getTextFieldPreferredHeight();
-        setComponentSize(this.firstPageButton, buttonPreferredSize);
-        setComponentSize(this.previousPageButton, buttonPreferredSize);
-        setComponentSize(this.nextPageButton, buttonPreferredSize);
-        setComponentSize(this.lastPageButton, buttonPreferredSize);
 
         this.totalPagesTextField = new JLabel("                    ", JLabel.CENTER);
         this.totalPagesTextField.setBorder(SwingUtils.LINE_BORDER);
@@ -53,7 +49,7 @@ public class OutputProductListPaginationPanel extends JPanel {
         this.totalPagesTextField.setOpaque(true);
 
         Dimension labelPreferredSize = this.totalPagesTextField.getPreferredSize();
-        labelPreferredSize.height = componentDimension.getTextFieldPreferredHeight();
+        labelPreferredSize.height = preferredButtonHeight;
         setComponentSize(this.totalPagesTextField, labelPreferredSize);
 
         add(this.firstPageButton);

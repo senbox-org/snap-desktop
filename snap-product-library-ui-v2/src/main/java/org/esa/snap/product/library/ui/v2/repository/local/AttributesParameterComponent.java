@@ -15,6 +15,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,7 +59,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.attributeValuesEditableComboBox = attributeValuesEditableComboBox;
 
         this.atributeFiltersMap = new LinkedHashMap<>();
-        this.atributeFiltersMap.put(EQUAL_VALUE_FILTER, "Equal");
+        this.atributeFiltersMap.put(EQUAL_VALUE_FILTER, "Equals");
         this.atributeFiltersMap.put(CONTAINS_VALUE_FILTER, "Contains");
 
         ItemRenderer<AttributeValueFilter> filtersItemRenderer = new ItemRenderer<AttributeValueFilter>() {
@@ -80,9 +82,9 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
             }
         }
         Dimension filtersComboBoxSize = this.filtersComboBox.getPreferredSize();
-        filtersComboBoxSize.width += maximumWidth;
+        filtersComboBoxSize.width = (int)(1.8f * maximumWidth);
         this.filtersComboBox.setPreferredSize(filtersComboBoxSize);
-        this.filtersComboBox.setSelectedItem(null);
+        this.filtersComboBox.setSelectedItem(null); // no selected filter by default
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
         this.addAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
@@ -105,13 +107,21 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.attributesList.setVisibleRowCount(5);
         this.attributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         int cellItemHeight = this.attributeNamesComboBox.getPreferredSize().height;
-        this.attributesList.setCellRenderer(new LabelListCellRenderer<AttributeFilter>(cellItemHeight) {
+        LabelListCellRenderer<AttributeFilter> listCellRenderer = new LabelListCellRenderer<AttributeFilter>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(AttributeFilter attribute) {
                 if (attribute == null) {
                     return " ";
                 }
                 return attribute.getName() + " " + getFilterDisplayName(attribute.getValueFilter()) + " " + attribute.getValue();
+            }
+        };
+        listCellRenderer.setBorder(SwingUtils.EDIT_TEXT_BORDER);
+        this.attributesList.setCellRenderer(listCellRenderer);
+        this.attributesList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                onAttributesListMouseCicked(mouseEvent);
             }
         });
 
@@ -130,10 +140,13 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         };
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, 0);
         this.component.add(this.attributeNamesComboBox, c);
+
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         this.component.add(this.filtersComboBox, c);
+
         c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 1, 1, 0, gapBetweenColumns);
         this.component.add(this.attributeValuesEditableComboBox, c);
+
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.NORTH, 1, 1, 0, gapBetweenColumns);
         this.component.add(this.addAttributeButton, c);
 
@@ -142,10 +155,6 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.component.add(scrollPane, c);
         c = SwingUtils.buildConstraints(3, 1, GridBagConstraints.NONE, GridBagConstraints.NORTH, 1, 1, gapBetweenRows, gapBetweenColumns);
         this.component.add(this.removeAttributeButton, c);
-    }
-
-    private String getFilterDisplayName(AttributeValueFilter filter) {
-        return this.atributeFiltersMap.get(filter);
     }
 
     @Override
@@ -188,9 +197,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
             clearParameterValue();
             if (result.size() > 0) {
                 AttributeFilter firstAttribute = result.get(0);
-                this.attributeNamesComboBox.setSelectedItem(firstAttribute.getName());
-                this.filtersComboBox.setSelectedItem(firstAttribute.getValueFilter());
-                this.attributeValuesEditableComboBox.setSelectedItem(firstAttribute.getValue());
+                setAttributeFilterToEdit(firstAttribute);
                 DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
                 for (int i=1; i<result.size(); i++) {
                     model.addElement(result.get(i));
@@ -229,6 +236,30 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
                 .append("\n\n")
                 .append("Specify the missing values or remove the existing values.");
         return message.toString();
+    }
+
+    private void setAttributeFilterToEdit(AttributeFilter firstAttribute) {
+        this.attributeNamesComboBox.setSelectedItem(firstAttribute.getName());
+        this.filtersComboBox.setSelectedItem(firstAttribute.getValueFilter());
+        this.attributeValuesEditableComboBox.setSelectedItem(firstAttribute.getValue());
+    }
+
+    private void onAttributesListMouseCicked(MouseEvent mouseEvent) {
+        if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() >= 2) {
+            int clickedItemIndex = this.attributesList.locationToIndex(mouseEvent.getPoint());
+            if (clickedItemIndex >= 0) {
+                Rectangle cellBounds = this.attributesList.getCellBounds(clickedItemIndex, clickedItemIndex);
+                if (cellBounds != null && cellBounds.contains(mouseEvent.getPoint())) {
+                    DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
+                    AttributeFilter attributeFilterToEdit = model.remove(clickedItemIndex);
+                    setAttributeFilterToEdit(attributeFilterToEdit);
+                }
+            }
+        }
+    }
+
+    private String getFilterDisplayName(AttributeValueFilter filter) {
+        return this.atributeFiltersMap.get(filter);
     }
 
     private void remoteAttributeButtonClicked() {

@@ -2,6 +2,7 @@ package org.esa.snap.ui.loading;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -17,7 +18,9 @@ public class SwingUtils {
 
     public static final Color TRANSPARENT_COLOR = new Color(255, 255, 255, 0);
 
-    public static LineBorder LINE_BORDER = new LineBorder(Color.GRAY, 1);
+    public static final LineBorder LINE_BORDER = new LineBorder(Color.GRAY, 1);
+
+    public static final EmptyBorder EDIT_TEXT_BORDER = new EmptyBorder(0, 2, 0, 0);
 
     private SwingUtils() {
     }

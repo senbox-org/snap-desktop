@@ -7,6 +7,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPa
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
@@ -36,8 +37,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     private final MouseListener mouseListener;
     private final RepositorySelectionPanel repositorySelectionPanel;
     private final OutputProductListModel productListModel;
-    private final ImageIcon expandImageIcon;
-    private final ImageIcon collapseImageIcon;
 
     private Set<AbstractRepositoryProductPanel> selectedProductPanels;
 
@@ -46,9 +45,6 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
 
         this.repositorySelectionPanel = repositorySelectionPanel;
         this.componentDimension = componentDimension;
-
-        this.expandImageIcon = SwingUtils.loadImage("/org/esa/snap/product/library/ui/v2/icons/expand-arrow-18.png");
-        this.collapseImageIcon = SwingUtils.loadImage("/org/esa/snap/product/library/ui/v2/icons/collapse-arrow-18.png");
 
         this.selectedProductPanels = new HashSet<>();
 
@@ -153,7 +149,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
     private void performProductsAdded(int startIndex, int endIndex) {
         AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
         for (int i=startIndex; i<=endIndex; i++) {
-            AbstractRepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension, this.expandImageIcon, this.collapseImageIcon);
+            AbstractRepositoryProductPanel repositoryProductPanel = selectedProductsRepositoryPanel.buildProductProductPanel(this, this.componentDimension);
             repositoryProductPanel.setOpaque(true);
             repositoryProductPanel.setBackground(this.backgroundColor);
             repositoryProductPanel.addMouseListener(this.mouseListener);

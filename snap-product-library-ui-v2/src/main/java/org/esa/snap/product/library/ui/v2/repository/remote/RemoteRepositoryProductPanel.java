@@ -17,9 +17,9 @@ public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel
     private final DownloadingProductProgressCallback downloadingProductProgressCallback;
 
     public RemoteRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground, DownloadingProductProgressCallback downloadingProductProgressCallback,
-                                        ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+                                        ComponentDimension componentDimension) {
 
-        super(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
+        super(repositoryProductPanelBackground, componentDimension);
 
         if (downloadingProductProgressCallback == null) {
             throw new NullPointerException("The downloading product callback is null.");

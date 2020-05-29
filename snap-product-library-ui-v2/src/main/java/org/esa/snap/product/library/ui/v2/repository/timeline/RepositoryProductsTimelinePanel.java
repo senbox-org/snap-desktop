@@ -35,6 +35,8 @@ public class RepositoryProductsTimelinePanel extends JPanel {
         this.monthOfYear[9] = "October";
         this.monthOfYear[10] = "November";
         this.monthOfYear[11] = "December";
+
+        setVisible(false); // hide the time line by default
     }
 
     @Override
@@ -135,6 +137,8 @@ public class RepositoryProductsTimelinePanel extends JPanel {
             parent.revalidate();
             parent.repaint();
         }
+        boolean timelineVisible = (monthBars.size() > 0);
+        setVisible(timelineVisible);
     }
 
     private static class MonthBarComponent extends JLabel {

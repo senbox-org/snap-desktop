@@ -44,15 +44,16 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
                 } else {
                     LocalRepositoryFolder localRepositoryFolder = localRepositoryFolders.get(i);
                     try {
-                        List<SaveProductData> savedProducts = scanLocalProductsHelper.scanValidProductsFromFolder(localRepositoryFolder, this);
-                        if (savedProducts == null) {
+                        boolean deleteLocalFolderRepository = scanLocalProductsHelper.scanValidProductsFromFolder(localRepositoryFolder, this);
+                        if (deleteLocalFolderRepository) {
+                            // no products saved and delete the local repository folder from the application
                             updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
                         }
                     } catch (java.lang.InterruptedException exception) {
                         logger.log(Level.FINE, "Stop scanning the local repository folders.");
                         break;
                     } catch (Exception exception) {
-                        logger.log(Level.SEVERE, "Failed to save the local product from the path '" + localRepositoryFolder.getPath().toString() + "'.", exception);
+                        logger.log(Level.SEVERE, "Failed to scan the local repository folder '" + localRepositoryFolder.getPath().toString() + "'.", exception);
                     }
                 }
             }

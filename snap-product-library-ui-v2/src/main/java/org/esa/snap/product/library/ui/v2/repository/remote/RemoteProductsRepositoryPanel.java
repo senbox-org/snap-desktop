@@ -192,9 +192,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
 
     @Override
     public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                                   ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+                                                                   ComponentDimension componentDimension) {
 
-        return new RemoteRepositoryProductPanel(repositoryProductPanelBackground, this.downloadingProductProgressCallback, componentDimension, expandImageIcon, collapseImageIcon);
+        return new RemoteRepositoryProductPanel(repositoryProductPanelBackground, this.downloadingProductProgressCallback, componentDimension);
     }
 
     @Override
