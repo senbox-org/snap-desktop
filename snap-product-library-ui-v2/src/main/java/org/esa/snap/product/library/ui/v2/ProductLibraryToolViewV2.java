@@ -211,6 +211,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         productListModel.refreshProduct(repositoryProduct);
     }
 
+    @Override
+    public void onRefreshProduct(RepositoryProduct repositoryProduct) {
+        OutputProductListModel productListModel = this.repositoryOutputProductListPanel.getProductListPanel().getProductListModel();
+        productListModel.refreshProduct(repositoryProduct);
+    }
+
     private void onFinishLoadingInputData(LocalParameterValues parameterValues) {
         this.repositorySelectionPanel.setInputData(parameterValues);
         this.repositoryOutputProductListPanel.setVisibleProductsPerPage(parameterValues.getVisibleProductsPerPage());

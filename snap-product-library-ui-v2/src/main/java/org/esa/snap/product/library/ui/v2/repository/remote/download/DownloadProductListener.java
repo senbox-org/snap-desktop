@@ -12,4 +12,6 @@ public interface DownloadProductListener {
     public void onFinishDownloadingProduct(DownloadProductRunnable downloadProductRunnable, DownloadProgressStatus downloadProgressStatus, SaveProductData saveProductData, boolean hasProductsToDownload);
 
     public void onUpdateProductDownloadProgress(RepositoryProduct repositoryProduct);
+
+    public void onRefreshProduct(RepositoryProduct repositoryProduct);
 }

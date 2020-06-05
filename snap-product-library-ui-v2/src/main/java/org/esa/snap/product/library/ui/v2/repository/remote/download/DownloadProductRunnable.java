@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 /**
  * Created by jcoravu on 16/10/2019.
  */
-public class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable implements ProgressListener {
+public abstract class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable implements ProgressListener {
 
     private static final Logger logger = Logger.getLogger(DownloadProductRunnable.class.getName());
 
