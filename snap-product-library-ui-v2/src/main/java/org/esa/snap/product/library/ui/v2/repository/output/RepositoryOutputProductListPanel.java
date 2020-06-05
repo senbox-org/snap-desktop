@@ -65,6 +65,14 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         });
 
         this.productsTimelinePanel = new RepositoryProductsTimelinePanel();
+        this.productsTimelinePanel.setItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    productsTimelinePanel.refresh(getOutputProductResults());
+                }
+            }
+        });
 
         ItemListener sortProductsListener = new ItemListener() {
             @Override
