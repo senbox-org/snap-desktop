@@ -25,7 +25,7 @@ class SpectralUnmixingFormModel {
     private Product sourceProduct;
     private final PropertySet propertySet;
 
-    public SpectralUnmixingFormModel(Product sourceProduct, PropertySet propertySet) {
+    SpectralUnmixingFormModel(Product sourceProduct, PropertySet propertySet) {
         this.sourceProduct = sourceProduct;
         this.propertySet = propertySet;
 
@@ -37,15 +37,15 @@ class SpectralUnmixingFormModel {
         }
     }
 
-    public PropertySet getOperatorValueContainer() {
+    PropertySet getOperatorValueContainer() {
         return propertySet;
     }
 
-    public Product getSourceProduct() {
+    Product getSourceProduct() {
         return sourceProduct;
     }
 
-    public void setSourceProduct(Product product) {
+    void setSourceProduct(Product product) {
         sourceProduct = product;
     }
 }

@@ -67,11 +67,11 @@ class SpectralUnmixingForm extends JPanel {
         bindComponents();
     }
 
-    public SpectralUnmixingFormModel getFormModel() {
+    SpectralUnmixingFormModel getFormModel() {
         return formModel;
     }
 
-    public EndmemberForm getEndmemberForm() {
+    EndmemberForm getEndmemberForm() {
         return endmemberForm;
     }
 
@@ -124,7 +124,7 @@ class SpectralUnmixingForm extends JPanel {
                             names.add(bandName);
                         }
                     }
-                    validNames = names.toArray(new String[names.size()]);
+                    validNames = names.toArray(new String[0]);
                 } else {
                     validNames = new String[0];
                 }

@@ -72,72 +72,6 @@ public class SpectralUnmixingDialog extends SingleTargetProductDialog {
         getJDialog().setJMenuBar(operatorMenu.createDefaultMenu());
     }
 
-    private void updateEndmemberFormModel(Map<String, Object> parameterMap) {
-        Object endmembers = parameterMap.get("endmembers");
-        if (endmembers instanceof Endmember[]) {
-            EndmemberFormModel endmemberFormModel = form.getEndmemberForm().getFormModel();
-            endmemberFormModel.setEndmembers((Endmember[]) endmembers);
-        }
-    }
-
-    private void updateParameterMap(Map<String, Object> parameterMap) {
-        parameterMap.put("endmembers", form.getEndmemberForm().getFormModel().getEndmembers());
-    }
-
-    @Override
-    protected Product createTargetProduct() throws Exception {
-        final SpectralUnmixingFormModel formModel = form.getFormModel();
-        Map<String, Object> parameterMap = parameterSupport.getParameterMap();
-        updateParameterMap(parameterMap);
-        return GPF.createProduct(OperatorSpi.getOperatorAlias(SpectralUnmixingOp.class),
-                                 parameterMap,
-                                 formModel.getSourceProduct());
-    }
-
-    @Override
-    public int show() {
-        form.prepareShow();
-        setContent(form);
-        return super.show();
-    }
-
-    @Override
-    public void hide() {
-        form.prepareHide();
-        super.hide();
-    }
-
-    @Override
-    protected boolean verifyUserInput() {
-        final SpectralUnmixingFormModel formModel = form.getFormModel();
-        if (formModel.getSourceProduct() == null) {
-            showErrorDialog("No source product selected.");
-            return false;
-        }
-        final Map<String, Object> parameterMap = parameterSupport.getParameterMap();
-        updateParameterMap(parameterMap);
-
-        final Endmember[] endmembers = (Endmember[]) parameterMap.get("endmembers");
-        final String[] sourceBandNames = (String[]) parameterMap.get("sourceBandNames");
-        final double minBandwidth = (Double) parameterMap.get("minBandwidth");
-
-        double[] sourceWavelengths = new double[sourceBandNames.length];
-        double[] sourceBandwidths = new double[sourceBandNames.length];
-        for (int i = 0; i < sourceBandNames.length; i++) {
-            final Band sourceBand = formModel.getSourceProduct().getBand(sourceBandNames[i]);
-            sourceWavelengths[i] = sourceBand.getSpectralWavelength();
-            sourceBandwidths[i] = sourceBand.getSpectralBandwidth();
-        }
-        if (!matchingWavelength(endmembers, sourceWavelengths, sourceBandwidths, minBandwidth)) {
-            showErrorDialog("One or more source wavelengths do not fit\n" +
-                                    "to one or more endmember spectra.\n\n" +
-                                    "Consider increasing the maximum wavelength deviation.");
-            return false;
-        }
-
-        return true;
-    }
-
     private static boolean matchingWavelength(Endmember[] endmembers,
                                               double[] sourceWavelengths,
                                               double[] sourceBandwidths,
@@ -193,5 +127,73 @@ public class SpectralUnmixingDialog extends SingleTargetProductDialog {
         dialog.show();
     }
 
+    private void updateEndmemberFormModel(Map<String, Object> parameterMap) {
+        Object endmembers = parameterMap.get("endmembers");
+        if (endmembers instanceof Endmember[]) {
+            EndmemberFormModel endmemberFormModel = form.getEndmemberForm().getFormModel();
+            endmemberFormModel.setEndmembers((Endmember[]) endmembers);
+        }
+    }
 
+    private void updateParameterMap(Map<String, Object> parameterMap) {
+        parameterMap.put("endmembers", form.getEndmemberForm().getFormModel().getEndmembers());
+    }
+
+    @Override
+    protected Product createTargetProduct() {
+        final SpectralUnmixingFormModel formModel = form.getFormModel();
+        Map<String, Object> parameterMap = parameterSupport.getParameterMap();
+        updateParameterMap(parameterMap);
+        return GPF.createProduct(OperatorSpi.getOperatorAlias(SpectralUnmixingOp.class),
+                                 parameterMap,
+                                 formModel.getSourceProduct());
+    }
+
+    @Override
+    public int show() {
+        form.prepareShow();
+        setContent(form);
+        return super.show();
+    }
+
+    @Override
+    public void hide() {
+        form.prepareHide();
+        super.hide();
+    }
+
+    @Override
+    protected boolean verifyUserInput() {
+        final SpectralUnmixingFormModel formModel = form.getFormModel();
+        if (formModel.getSourceProduct() == null) {
+            showErrorDialog("No source product selected.");
+            return false;
+        }
+        final Map<String, Object> parameterMap = parameterSupport.getParameterMap();
+        updateParameterMap(parameterMap);
+
+        final Endmember[] endmembers = (Endmember[]) parameterMap.get("endmembers");
+        final String[] sourceBandNames = (String[]) parameterMap.get("sourceBandNames");
+        if (sourceBandNames.length == 0) {
+            showErrorDialog("Input product does not contains spectral wavelength information.");
+            return false;
+        }
+        final double minBandwidth = (Double) parameterMap.get("minBandwidth");
+
+        final double[] sourceWavelengths = new double[sourceBandNames.length];
+        final double[] sourceBandwidths = new double[sourceBandNames.length];
+        for (int i = 0; i < sourceBandNames.length; i++) {
+            final Band sourceBand = formModel.getSourceProduct().getBand(sourceBandNames[i]);
+            sourceWavelengths[i] = sourceBand.getSpectralWavelength();
+            sourceBandwidths[i] = sourceBand.getSpectralBandwidth();
+        }
+        if (!matchingWavelength(endmembers, sourceWavelengths, sourceBandwidths, minBandwidth)) {
+            showErrorDialog("One or more source wavelengths do not fit\n" +
+                                    "to one or more endmember spectra.\n\n" +
+                                    "Consider increasing the maximum wavelength deviation.");
+            return false;
+        }
+
+        return true;
+    }
 }
