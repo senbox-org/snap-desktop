@@ -20,14 +20,17 @@ import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.layer.ColorBarLayerType;
+import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
 import java.awt.*;
 
+import static org.esa.snap.core.layer.ColorBarLayerType.*;
+
 /**
  * Editor for colorbar layer.
  *
- * @author Marco Zuehlke
  * @author Daniel Knowles
  * @version $Revision$ $Date$
  * @since BEAM 4.6
@@ -37,16 +40,17 @@ import java.awt.*;
 
 public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
+    BindingContext context;
+    PropertyMap configuration;
+
 
     @Override
     protected void addEditablePropertyDescriptors() {
 
 
+        configuration = SnapApp.getDefault().getSelectedProductSceneView().getSceneImage().getConfiguration();
 
-
-
-
-
+        context = getBindingContext();
 
 
         // Title Section
@@ -54,7 +58,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
 //                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
 //                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
-
 
 
         PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
@@ -73,7 +76,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
         titleUnitsTextPD.setDefaultConverter();
         addPropertyDescriptor(titleUnitsTextPD);
-
 
 
         // Orientation Section
@@ -101,82 +103,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
-
-
         // Label Values
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
-
-
-
-
-        PropertyDescriptor labelValuesModePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, String.class);
-        labelValuesModePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
-        labelValuesModePD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);
-        labelValuesModePD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
-        labelValuesModePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
-        labelValuesModePD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesModePD);
-
-        PropertyDescriptor labelValuesCountPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, Integer.class);
-        labelValuesCountPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
-        labelValuesCountPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_LABEL);
-        labelValuesCountPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
-        labelValuesCountPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_ENABLED);
-        labelValuesCountPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_MAX));
-        labelValuesCountPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesCountPD);
-
-        PropertyDescriptor labelValuesActualPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, String.class);
-        labelValuesActualPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
-        labelValuesActualPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
-        labelValuesActualPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
-        labelValuesActualPD.setEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
-        labelValuesActualPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesActualPD);
-
-        PropertyDescriptor labelValuesScalingFactorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, Double.class);
-        labelValuesScalingFactorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
-        labelValuesScalingFactorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL);
-        labelValuesScalingFactorPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
-        labelValuesScalingFactorPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MIN, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_MAX));
-        labelValuesScalingFactorPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesScalingFactorPD);
-
-
-        PropertyDescriptor labelValuesDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, Integer.class);
-        labelValuesDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY);
-        labelValuesDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL);
-        labelValuesDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
-        labelValuesDecimalPlacesPD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MIN,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX));
-        labelValuesDecimalPlacesPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesDecimalPlacesPD);
-
-
-        PropertyDescriptor labelValuesForceDecimalPlacesPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, Boolean.class);
-        labelValuesForceDecimalPlacesPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
-        labelValuesForceDecimalPlacesPD.setDisplayName(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
-        labelValuesForceDecimalPlacesPD.setDescription(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
-        labelValuesForceDecimalPlacesPD.setDefaultConverter();
-        addPropertyDescriptor(labelValuesForceDecimalPlacesPD);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        addLabelValuesSectionBreak();
+        addLabelValuesMode();
+        addLabelValuesCount();
+        addLabelValuesActual();
+        addLabelValuesScalingFactor();
+        addLabelValuesDecimalPlaces();
+        addLabelValuesForceDecimalPlaces();
 
 
 
@@ -205,14 +140,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(locationPlacementPD);
 
 
-
-
-
-
-
-
-
-
         PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
         locationOffsetPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
@@ -230,7 +157,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(locationShiftPD);
 
 
-
         PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
         titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
@@ -243,310 +169,53 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
         // Color Bar Scaling Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
-
-        PropertyDescriptor locationApplySizeScalingPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
-        locationApplySizeScalingPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
-        locationApplySizeScalingPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
-        locationApplySizeScalingPlacementPD.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP);
-        locationApplySizeScalingPlacementPD.setDefaultConverter();
-        addPropertyDescriptor(locationApplySizeScalingPlacementPD);
-
-        PropertyDescriptor locationSizeScalingPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
-        locationSizeScalingPD.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
-        locationSizeScalingPD.setValueRange(new ValueRange(0.0, 100.00));
-        locationSizeScalingPD.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL);
-        locationSizeScalingPD.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP);
-        locationSizeScalingPD.setDefaultConverter();
-        addPropertyDescriptor(locationSizeScalingPD);
+        addSizeScalingSectionBreak();
+        addImageScaling();
+        addImageScalingPercent();
+        addColorBarLength();
+        addColorBarWidth();
 
 
-        PropertyDescriptor legendLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TYPE);
-        legendLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
-        legendLengthPD.setValueRange(new ValueRange(100, 4000));
-        legendLengthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_LABEL);
-        legendLengthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TOOLTIP);
-        legendLengthPD.setDefaultConverter();
-        addPropertyDescriptor(legendLengthPD);
+        // Title Section
+        addTitleSectionBreak();
+        addTitleShow();
+        addTitleFontSize();
+        addTitleFontBold();
+        addTitleFontItalic();
+        addTitleFontName();
+        addTitleFontColor();
 
 
-        PropertyDescriptor legendWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TYPE);
-        legendWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
-        legendWidthPD.setValueRange(new ValueRange(10, 500));
-        legendWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_LABEL );
-        legendWidthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TOOLTIP);
-        legendWidthPD.setDefaultConverter();
-        addPropertyDescriptor(legendWidthPD);
-
-
-        PropertyDescriptor titleParameterFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TYPE);
-        titleParameterFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT);
-        titleParameterFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL);
-        titleParameterFontSizePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP);
-        titleParameterFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_VALUE_MIN,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_VALUE_MAX));
-        titleParameterFontSizePD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontSizePD);
-
-
-        PropertyDescriptor titleUnitsFontSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
-        titleUnitsFontSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT);
-        titleUnitsFontSizePD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL);
-        titleUnitsFontSizePD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP);
-        titleUnitsFontSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_VALUE_MIN,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_VALUE_MAX));
-        titleUnitsFontSizePD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontSizePD);
-
-
-        PropertyDescriptor labelSizePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, Integer.class);
-        labelSizePD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT);
-        labelSizePD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL);
-        labelSizePD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
-        labelSizePD.setValueRange(new ValueRange(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MIN, ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MAX));
-        labelSizePD.setDefaultConverter();
-        addPropertyDescriptor(labelSizePD);
-
-
-
-
-
-
-
-        // Color Bar Title Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
-
-
-
-        PropertyDescriptor titleParameterShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_TYPE);
-        titleParameterShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT);
-        titleParameterShowPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL);
-        titleParameterShowPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_SHOW_TOOLTIP);
-        titleParameterShowPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterShowPD);
-
-
-
-        PropertyDescriptor titleParameterFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TYPE);
-        titleParameterFontBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT);
-        titleParameterFontBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_LABEL);
-        titleParameterFontBoldPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TOOLTIP);
-        titleParameterFontBoldPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontBoldPD);
-
-        PropertyDescriptor titleParameterFontItalicPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TYPE);
-        titleParameterFontItalicPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT);
-        titleParameterFontItalicPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_LABEL);
-        titleParameterFontItalicPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TOOLTIP);
-        titleParameterFontItalicPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontItalicPD);
-
-
-        PropertyDescriptor titleParameterFontNamePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TYPE);
-        titleParameterFontNamePD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT);
-        titleParameterFontNamePD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_LABEL);
-        titleParameterFontNamePD.setDescription(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TOOLTIP);
-        titleParameterFontNamePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_VALUE_SET));
-        titleParameterFontNamePD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontNamePD);
-
-
-
-
-
-
-        PropertyDescriptor titleParameterFontColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
-        titleParameterFontColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT);
-        titleParameterFontColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
-        titleParameterFontColorPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
-        titleParameterFontColorPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterFontColorPD);
-
-
-
-
-        // Title Units Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_UNITS_SECTION_TOOLTIP);
-
-
-
-
-        PropertyDescriptor titleUnitsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_TYPE);
-        titleUnitsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT);
-        titleUnitsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL);
-        titleUnitsShowPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP);
-        titleUnitsShowPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsShowPD);
-
-        PropertyDescriptor titleUnitsFontBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TYPE);
-        titleUnitsFontBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT);
-        titleUnitsFontBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_LABEL);
-        titleUnitsFontBoldPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP);
-        titleUnitsFontBoldPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontBoldPD);
-
-        PropertyDescriptor titleUnitsFontItalicPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TYPE);
-        titleUnitsFontItalicPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
-        titleUnitsFontItalicPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_LABEL);
-        titleUnitsFontItalicPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP);
-        titleUnitsFontItalicPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontItalicPD);
-
-
-        PropertyDescriptor titleUnitsFontNamePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TYPE);
-        titleUnitsFontNamePD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT);
-        titleUnitsFontNamePD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_LABEL);
-        titleUnitsFontNamePD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TOOLTIP);
-        titleUnitsFontNamePD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_VALUE_SET));
-        titleUnitsFontNamePD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontNamePD);
-
-
-
-        PropertyDescriptor titleUnitsFontColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TYPE);
-        titleUnitsFontColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT);
-        titleUnitsFontColorPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL);
-        titleUnitsFontColorPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
-        titleUnitsFontColorPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsFontColorPD);
-
-
-
-
-
-
-
-
-
-
+        // Units Section
+        addUnitsSectionBreak();
+        addUnitsShow();
+        addUnitsFontSize();
+        addUnitsFontBold();
+        addUnitsFontItalic();
+        addUnitsFontName();
+        addUnitsFontColor();
 
 
         // Labels Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
-
-
-
-
-        PropertyDescriptor labelsShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, Boolean.class);
-        labelsShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT);
-        labelsShowPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL);
-        labelsShowPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP);
-        labelsShowPD.setDefaultConverter();
-        addPropertyDescriptor(labelsShowPD);
-
-        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, Boolean.class);
-        labelsItalicsPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
-        labelsItalicsPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL);
-        labelsItalicsPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP);
-        labelsItalicsPD.setDefaultConverter();
-        addPropertyDescriptor(labelsItalicsPD);
-
-        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, Boolean.class);
-        labelsBoldPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
-        labelsBoldPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL);
-        labelsBoldPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP);
-        labelsBoldPD.setDefaultConverter();
-        addPropertyDescriptor(labelsBoldPD);
-
-
-        PropertyDescriptor labelsFontPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, String.class);
-        labelsFontPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT);
-        labelsFontPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL);
-        labelsFontPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP);
-        labelsFontPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_VALUE_SET));
-        labelsFontPD.setDefaultConverter();
-        addPropertyDescriptor(labelsFontPD);
-
-
-
-        PropertyDescriptor labelColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, Color.class);
-        labelColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT);
-        labelColorPD.setDisplayName(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL);
-        labelColorPD.setDescription(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
-        labelColorPD.setDefaultConverter();
-        addPropertyDescriptor(labelColorPD);
-
-
-
-
-
-
-
-
-
-
-
-
+        addLabelsSectionBreak();
+        addLabelsShow();
+        addLabelsFontSize();
+        addLabelsFontBold();
+        addLabelsFontItalic();
+        addLabelsFontName();
+        addLabelsFontColor();
 
 
         // Tickmarks Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP);
-
-
-        PropertyDescriptor tickmarksShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, Boolean.class);
-        tickmarksShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
-        tickmarksShowPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL);
-        tickmarksShowPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
-        tickmarksShowPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksShowPD);
-
-
-        PropertyDescriptor tickmarksLengthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, Integer.class);
-        tickmarksLengthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
-        tickmarksLengthPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL);
-        tickmarksLengthPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
-        tickmarksLengthPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksLengthPD);
-
-        PropertyDescriptor tickmarksWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, Integer.class);
-        tickmarksWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT);
-        tickmarksWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_LABEL);
-        tickmarksWidthPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP);
-        tickmarksWidthPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksWidthPD);
+        addTickMarksSectionBreak();
+        addTickMarksShow();
+        addTickMarksLength();
+        addTickMarksWidth();
+        addTickMarksColor();
 
 
 
-
-        PropertyDescriptor tickmarksColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, Color.class);
-        tickmarksColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
-        tickmarksColorPD.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
-        tickmarksColorPD.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
-        tickmarksColorPD.setDefaultConverter();
-        addPropertyDescriptor(tickmarksColorPD);
 
 
 
@@ -581,230 +250,32 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        // Palette Border Section
+        addPaletteBorderSectionBreak();
+        addPaletteBorderShow();
+        addPaletteBorderWidth();
+        addPaletteBorderColor();
 
 
+        // Legend Border Section
+        addLegendBorderSectionBreak();
+        addLegendBorderShow();
+        addLegendBorderWidth();
+        addLegendBorderColor();
 
 
-        // Border Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_TOOLTIP);
 
-        PropertyDescriptor borderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, Boolean.class);
-        borderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
-        borderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_LABEL);
-        borderShowPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TOOLTIP);
-        borderShowPD.setDefaultConverter();
-        addPropertyDescriptor(borderShowPD);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, true,
+                PROPERTY_TITLE_SHOW_KEY, true);
 
-        PropertyDescriptor borderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
-        borderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT);
-        borderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_LABEL);
-        borderWidthPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP);
-        borderWidthPD.setDefaultConverter();
-        addPropertyDescriptor(borderWidthPD);
 
-        PropertyDescriptor borderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, Color.class);
-        borderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT);
-        borderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_LABEL);
-        borderColorPD.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
-        borderColorPD.setDefaultConverter();
-        addPropertyDescriptor(borderColorPD);
-
-
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_TOOLTIP);
-
-
-        PropertyDescriptor backdropBorderShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY, Boolean.class);
-        backdropBorderShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
-        backdropBorderShowPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_LABEL);
-        backdropBorderShowPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TOOLTIP);
-        backdropBorderShowPD.setDefaultConverter();
-        addPropertyDescriptor(backdropBorderShowPD);
-
-        PropertyDescriptor backdropBorderWidthPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TYPE);
-        backdropBorderWidthPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
-        backdropBorderWidthPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_LABEL);
-        backdropBorderWidthPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP);
-        backdropBorderWidthPD.setDefaultConverter();
-        addPropertyDescriptor(backdropBorderWidthPD);
-
-        PropertyDescriptor backdropBorderColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, Color.class);
-        backdropBorderColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
-        backdropBorderColorPD.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_LABEL);
-        backdropBorderColorPD.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP);
-        backdropBorderColorPD.setDefaultConverter();
-        addPropertyDescriptor(backdropBorderColorPD);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        BindingContext bindingContext = getBindingContext();
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, true,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_EVEN_STR);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_MANUAL_STR);
-
-
-
-
-
-
-
-//
-//        boolean applySizeScaling = (Boolean) bindingContext.getPropertySet().getValue(
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME);
-//
-//
-//        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_NAME, applySizeScaling,
-//                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_NAME, applySizeScaling);
-
-
-
-
-
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY, true,
-                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY, true);
-
-
-
-
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY, true,
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
                 ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
 
 
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-
-
-//
-//        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_UNITS_TEXT_KEY, showTitle,
-//                ColorBarLayerType.PROPERTY_TITLE_PARAMETER_SHOW_KEY, showTitle);
-
-
-
-
-
-
-
-
-
-
-
-        boolean borderEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, borderEnabled,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, borderEnabled);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, borderEnabled,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, borderEnabled);
-
-
-        // Set enablement associated with "Labels Inside" checkbox
-
-
-
-
-        boolean tickMarkEnabled = (Boolean) bindingContext.getPropertySet().getValue(
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
-
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
-
-        bindingContext.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, tickMarkEnabled,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, tickMarkEnabled);
 
 
     }
@@ -818,4 +289,720 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
 
+
+
+
+    private void addLabelValuesSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
+    }
+
+
+    private void addLabelValuesMode() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_MODE_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
+        pd.setValueSet(new ValueSet(PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+    private void addLabelValuesCount() {
+        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+
+        boolean enabled = (DISTRIB_EVEN_STR.equals(labelsMode)) ? true : false;
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_COUNT_KEY, PROPERTY_LABEL_VALUES_COUNT_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_COUNT_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
+        pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+        pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_COUNT_MIN, PROPERTY_LABEL_VALUES_COUNT_MAX));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABEL_VALUES_COUNT_KEY, true,
+                PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_EVEN_STR);
+    }
+
+
+
+
+
+    private void addLabelValuesActual() {
+        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+
+        boolean enabled = (DISTRIB_MANUAL_STR.equals(labelsMode)) ? true : false;
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_ACTUAL_KEY,
+                PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
+        pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
+                PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);
+
+    }
+
+
+
+
+    private void addLabelValuesScalingFactor() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_SCALING_KEY,
+                PROPERTY_LABEL_VALUES_SCALING_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_SCALING_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
+        pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_SCALING_MIN, PROPERTY_LABEL_VALUES_SCALING_MAX));
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+    private void addLabelValuesDecimalPlaces() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+                PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
+        pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MIN,
+                PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX));
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+    private void addLabelValuesForceDecimalPlaces() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+                PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TYPE);
+        pd.setDefaultValue(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
+        pd.setDescription(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+
+
+    // Size and Scaling Section
+
+    private void addSizeScalingSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
+    }
+
+
+    private void  addImageScaling() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+    }
+
+
+    private void  addImageScalingPercent() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
+        pd.setValueRange(new ValueRange(0.0, 100.00));
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP);
+        pd.setEnabled(enabled);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_IMAGE_SCALING_SIZE_KEY, PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY);
+    }
+
+
+
+    private void  addColorBarLength() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_LENGTH_KEY, PROPERTY_LEGEND_LENGTH_TYPE);
+        pd.setDefaultValue(PROPERTY_LEGEND_LENGTH_DEFAULT);
+        pd.setValueRange(new ValueRange(100, 4000));
+        pd.setDisplayName(PROPERTY_LEGEND_LENGTH_LABEL);
+        pd.setDescription(PROPERTY_LEGEND_LENGTH_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addColorBarWidth() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_WIDTH_KEY, PROPERTY_LEGEND_WIDTH_TYPE);
+        pd.setDefaultValue(PROPERTY_LEGEND_WIDTH_DEFAULT);
+        pd.setValueRange(new ValueRange(10, 500));
+        pd.setDisplayName(PROPERTY_LEGEND_WIDTH_LABEL);
+        pd.setDescription(PROPERTY_LEGEND_WIDTH_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Title Section
+
+
+    private void  addTitleSectionBreak() {
+        addSectionBreak(PROPERTY_TITLE_SECTION_KEY, PROPERTY_TITLE_SECTION_LABEL, PROPERTY_TITLE_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addTitleShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_SHOW_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_SHOW_LABEL);
+        pd.setDescription(PROPERTY_TITLE_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+
+    private void  addTitleFontSize() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_SIZE_KEY, PROPERTY_TITLE_FONT_SIZE_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_FONT_SIZE_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_FONT_SIZE_LABEL);
+        pd.setDescription(PROPERTY_TITLE_FONT_SIZE_TOOLTIP);
+        pd.setValueRange(new ValueRange(PROPERTY_TITLE_FONT_SIZE_VALUE_MIN, PROPERTY_TITLE_FONT_SIZE_VALUE_MAX));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_FONT_SIZE_KEY, PROPERTY_TITLE_SHOW_KEY);
+
+    }
+
+
+
+    private void  addTitleFontBold() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_BOLD_KEY, PROPERTY_TITLE_FONT_BOLD_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_FONT_BOLD_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_FONT_BOLD_LABEL);
+        pd.setDescription(PROPERTY_TITLE_FONT_BOLD_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_FONT_BOLD_KEY, PROPERTY_TITLE_SHOW_KEY);
+    }
+
+
+
+
+    private void  addTitleFontItalic() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_ITALIC_KEY, PROPERTY_TITLE_FONT_ITALIC_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_FONT_ITALIC_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_FONT_ITALIC_LABEL);
+        pd.setDescription(PROPERTY_TITLE_FONT_ITALIC_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_FONT_ITALIC_KEY, PROPERTY_TITLE_SHOW_KEY);
+    }
+
+
+
+    private void  addTitleFontName() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_NAME_KEY, PROPERTY_TITLE_FONT_NAME_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_FONT_NAME_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_FONT_NAME_LABEL);
+        pd.setDescription(PROPERTY_TITLE_FONT_NAME_TOOLTIP);
+        pd.setValueSet(new ValueSet(PROPERTY_TITLE_FONT_NAME_VALUE_SET));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_FONT_NAME_KEY, PROPERTY_TITLE_SHOW_KEY);
+    }
+
+
+    private void  addTitleFontColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_COLOR_KEY, PROPERTY_TITLE_COLOR_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_COLOR_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_COLOR_LABEL);
+        pd.setDescription(PROPERTY_TITLE_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_COLOR_KEY, PROPERTY_TITLE_SHOW_KEY);
+    }
+
+
+
+
+
+
+    // Units Section
+
+    private void  addUnitsSectionBreak() {
+        addSectionBreak(PROPERTY_UNITS_SECTION_KEY, PROPERTY_UNITS_SECTION_LABEL, PROPERTY_UNITS_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addUnitsShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_SHOW_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_SHOW_LABEL);
+        pd.setDescription(PROPERTY_UNITS_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+    private void  addUnitsFontSize() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_SIZE_KEY, PROPERTY_UNITS_FONT_SIZE_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_FONT_SIZE_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_FONT_SIZE_LABEL);
+        pd.setDescription(PROPERTY_UNITS_FONT_SIZE_TOOLTIP);
+        pd.setValueRange(new ValueRange(PROPERTY_UNITS_FONT_SIZE_VALUE_MIN, PROPERTY_UNITS_FONT_SIZE_VALUE_MAX));
+        pd.setEnabled(enabled);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_FONT_SIZE_KEY, PROPERTY_UNITS_SHOW_KEY);
+    }
+
+
+
+
+    private void  addUnitsFontBold() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_BOLD_KEY, PROPERTY_UNITS_FONT_BOLD_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_FONT_BOLD_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_FONT_BOLD_LABEL);
+        pd.setDescription(PROPERTY_UNITS_FONT_BOLD_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_FONT_BOLD_KEY, PROPERTY_UNITS_SHOW_KEY);
+    }
+
+
+
+    private void  addUnitsFontItalic() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_ITALIC_KEY, PROPERTY_UNITS_FONT_ITALIC_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_FONT_ITALIC_LABEL);
+        pd.setDescription(PROPERTY_UNITS_FONT_ITALIC_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_FONT_ITALIC_KEY, PROPERTY_UNITS_SHOW_KEY);
+    }
+
+
+
+    private void  addUnitsFontName() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_NAME_KEY, PROPERTY_UNITS_FONT_NAME_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_FONT_NAME_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_FONT_NAME_LABEL);
+        pd.setDescription(PROPERTY_UNITS_FONT_NAME_TOOLTIP);
+        pd.setValueSet(new ValueSet(PROPERTY_UNITS_FONT_NAME_VALUE_SET));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_FONT_NAME_KEY, PROPERTY_UNITS_SHOW_KEY);
+    }
+
+
+
+    private void  addUnitsFontColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_COLOR_KEY, PROPERTY_UNITS_FONT_COLOR_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_FONT_COLOR_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_FONT_COLOR_LABEL);
+        pd.setDescription(PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_FONT_COLOR_KEY, PROPERTY_UNITS_SHOW_KEY);
+    }
+
+
+
+
+    // Labels Section
+
+    private void  addLabelsSectionBreak() {
+        addSectionBreak(PROPERTY_LABELS_SECTION_KEY, PROPERTY_LABELS_SECTION_LABEL, PROPERTY_LABELS_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addLabelsShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_SHOW_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_SHOW_LABEL);
+        pd.setDescription(PROPERTY_LABELS_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+    private void  addLabelsFontSize() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_SIZE_KEY, PROPERTY_LABELS_FONT_SIZE_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_FONT_SIZE_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_FONT_SIZE_LABEL);
+        pd.setDescription(PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
+        pd.setValueRange(new ValueRange(PROPERTY_LABELS_FONT_SIZE_VALUE_MIN, PROPERTY_LABELS_FONT_SIZE_VALUE_MAX));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABELS_FONT_SIZE_KEY, PROPERTY_LABELS_SHOW_KEY);
+    }
+
+
+
+
+    private void  addLabelsFontBold() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_BOLD_KEY, PROPERTY_LABELS_FONT_BOLD_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_FONT_BOLD_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_FONT_BOLD_LABEL);
+        pd.setDescription(PROPERTY_LABELS_FONT_BOLD_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABELS_FONT_BOLD_KEY, PROPERTY_LABELS_SHOW_KEY);
+    }
+
+
+
+
+
+
+
+    private void  addLabelsFontItalic() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_ITALIC_KEY, PROPERTY_LABELS_FONT_ITALIC_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_FONT_ITALIC_LABEL);
+        pd.setDescription(PROPERTY_LABELS_FONT_ITALIC_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABELS_FONT_ITALIC_KEY, PROPERTY_LABELS_SHOW_KEY);
+    }
+
+
+
+    private void  addLabelsFontName() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_NAME_KEY, PROPERTY_LABELS_FONT_NAME_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_FONT_NAME_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_FONT_NAME_LABEL);
+        pd.setDescription(PROPERTY_LABELS_FONT_NAME_TOOLTIP);
+        pd.setValueSet(new ValueSet(PROPERTY_LABELS_FONT_NAME_VALUE_SET));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABELS_FONT_NAME_KEY, PROPERTY_LABELS_SHOW_KEY);
+    }
+
+
+    private void  addLabelsFontColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_COLOR_KEY, PROPERTY_LABELS_FONT_COLOR_TYPE);
+        pd.setDefaultValue(PROPERTY_LABELS_FONT_COLOR_DEFAULT);
+        pd.setDisplayName(PROPERTY_LABELS_FONT_COLOR_LABEL);
+        pd.setDescription(PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABELS_FONT_COLOR_KEY, PROPERTY_LABELS_SHOW_KEY);
+    }
+
+
+
+
+    // Tickmarks Section
+
+    private void  addTickMarksSectionBreak() {
+        addSectionBreak(PROPERTY_TICKMARKS_SECTION_KEY, PROPERTY_TICKMARKS_SECTION_LABEL, PROPERTY_TICKMARKS_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addTickMarksShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, PROPERTY_TICKMARKS_SHOW_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addTickMarksLength() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TICKMARKS_SHOW_KEY, PROPERTY_TICKMARKS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, PROPERTY_TICKMARKS_LENGTH_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TICKMARKS_LENGTH_KEY, PROPERTY_TICKMARKS_SHOW_KEY);
+    }
+
+
+    private void  addTickMarksWidth() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TICKMARKS_SHOW_KEY, PROPERTY_TICKMARKS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, PROPERTY_TICKMARKS_WIDTH_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP);
+        pd.setEnabled(enabled);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TICKMARKS_WIDTH_KEY, PROPERTY_TICKMARKS_SHOW_KEY);
+    }
+
+
+    private void  addTickMarksColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_TICKMARKS_SHOW_KEY, PROPERTY_TICKMARKS_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, PROPERTY_TICKMARKS_COLOR_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TICKMARKS_COLOR_KEY, PROPERTY_TICKMARKS_SHOW_KEY);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Palette Border Section
+
+    private void  addPaletteBorderSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY,
+                PROPERTY_PALETTE_BORDER_SECTION_LABEL,
+                PROPERTY_PALETTE_BORDER_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addPaletteBorderShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_PALETTE_BORDER_SHOW_KEY, PROPERTY_PALETTE_BORDER_SHOW_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addPaletteBorderWidth() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_PALETTE_BORDER_SHOW_KEY, PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_PALETTE_BORDER_WIDTH_KEY, PROPERTY_PALETTE_BORDER_SHOW_KEY);
+    }
+
+
+
+    private void  addPaletteBorderColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_PALETTE_BORDER_SHOW_KEY, PROPERTY_PALETTE_BORDER_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, PROPERTY_PALETTE_BORDER_COLOR_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+
+        context.bindEnabledState(PROPERTY_PALETTE_BORDER_COLOR_KEY, PROPERTY_PALETTE_BORDER_SHOW_KEY);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Legend Border Section
+
+    private void  addLegendBorderSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_TOOLTIP);
+    }
+
+
+
+    private void  addLegendBorderShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY, PROPERTY_LEGEND_BORDER_SHOW_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addLegendBorderWidth() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LEGEND_BORDER_SHOW_KEY, PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LEGEND_BORDER_WIDTH_KEY, PROPERTY_LEGEND_BORDER_SHOW_KEY);
+    }
+
+
+
+    private void  addLegendBorderColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_LEGEND_BORDER_SHOW_KEY, PROPERTY_LEGEND_BORDER_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, PROPERTY_LEGEND_BORDER_COLOR_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LEGEND_BORDER_COLOR_KEY, PROPERTY_LEGEND_BORDER_SHOW_KEY);
+    }
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

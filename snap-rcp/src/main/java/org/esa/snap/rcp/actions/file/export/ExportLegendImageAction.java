@@ -420,7 +420,17 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
 
 
-        String unitsText = (ColorBarLayerType.NULL_SPECIAL.equals(unitsTextDefault)) ? "(" + raster.getUnit() + ")" : unitsTextDefault;
+
+        String unitsText = "";
+        if (ColorBarLayerType.NULL_SPECIAL.equals(unitsTextDefault)) {
+            String unit = raster.getUnit();
+            if (unit != null && unit.length() > 0) {
+                unitsText = "(" + raster.getUnit() + ")";
+            }
+        } else {
+            unitsText = unitsTextDefault;
+        }
+
 
         imageLegend.setUnitsText(unitsText);
 
