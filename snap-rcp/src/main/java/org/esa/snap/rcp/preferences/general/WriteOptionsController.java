@@ -109,7 +109,7 @@ public final class WriteOptionsController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("write-options");
+        return new HelpCtx("options-write");
     }
 
     @SuppressWarnings("UnusedDeclaration")

@@ -47,7 +47,7 @@ public final class OtherOptionsController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("other");
+        return new HelpCtx("options-other");
     }
 
     static class OtherBean {

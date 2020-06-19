@@ -31,7 +31,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.*;
+import static com.bc.ceres.swing.TableLayout.Anchor;
+import static com.bc.ceres.swing.TableLayout.Fill;
 
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
@@ -57,7 +58,7 @@ public final class ImageViewController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-imageview");
     }
 
     @Override

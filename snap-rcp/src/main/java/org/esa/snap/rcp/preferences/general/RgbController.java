@@ -58,6 +58,6 @@ public final class RgbController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("rgb");
+        return new HelpCtx("options-rgb");
     }
 }

@@ -116,7 +116,7 @@ public final class UiBehaviorController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("ui-behavior");
+        return new HelpCtx("options-uibehavior");
     }
 
     static class UiBehaviorBean {

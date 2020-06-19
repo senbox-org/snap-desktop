@@ -113,7 +113,14 @@
     <mapID target="vectorDataManagement" url="desktop/VectorDataManagement.html"/>
 
     <mapID target="options" url="desktop/OptionsDialog.html"/>
-    <mapID target="write-options" url="desktop/OptionsDialog.html#writeoptions"/>
+    <mapID target="options-write" url="desktop/OptionsDialog.html#writeoptions"/>
+    <mapID target="options-geolocation" url="desktop/OptionsDialog.html#geolocation"/>
+    <mapID target="options-other" url="desktop/OptionsDialog.html#other"/>
+    <mapID target="options-imageview" url="desktop/OptionsDialog.html#imageview"/>
+    <mapID target="options-masks" url="desktop/OptionsDialog.html#newmasks"/>
+    <mapID target="options-quicklook" url="desktop/OptionsDialog.html#quicklooks"/>
+    <mapID target="options-rgb" url="desktop/OptionsDialog.html#rgbprofiles"/>
+    <mapID target="options-uibehavior" url="desktop/OptionsDialog.html#uibehavior"/>
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
     <mapID target="resampleAction" url="desktop/Resample.html"/>

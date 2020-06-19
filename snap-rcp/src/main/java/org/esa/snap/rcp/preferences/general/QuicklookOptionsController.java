@@ -45,7 +45,7 @@ public final class QuicklookOptionsController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("Quicklook-options");
+        return new HelpCtx("options-quicklook");
     }
 
     @SuppressWarnings("UnusedDeclaration")

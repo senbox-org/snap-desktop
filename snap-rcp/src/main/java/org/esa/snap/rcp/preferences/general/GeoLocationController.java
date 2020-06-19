@@ -23,7 +23,6 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.rcp.pixelinfo.PixelInfoView;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;
@@ -37,8 +36,14 @@ import javax.swing.JPanel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.*;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
+import static com.bc.ceres.swing.TableLayout.Anchor;
+import static com.bc.ceres.swing.TableLayout.Fill;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_OFFSET_1;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE;
 
 /**
  * The preferences panel handling geo-location details. Sub-level panel to the "Miscellaneous"-panel.
@@ -68,7 +73,7 @@ public final class GeoLocationController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx(PixelInfoView.HELP_ID);
+        return new HelpCtx("options-geolocation");
     }
 
     @Override

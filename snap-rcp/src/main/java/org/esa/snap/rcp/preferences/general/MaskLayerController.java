@@ -96,7 +96,7 @@ public final class MaskLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-masks");
     }
 
     @SuppressWarnings("UnusedDeclaration")
