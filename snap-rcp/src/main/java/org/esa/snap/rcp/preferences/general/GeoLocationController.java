@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.preferences.general;
 
 import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
@@ -58,6 +59,7 @@ public final class GeoLocationController extends DefaultConfigController {
 
     private static final String PREFERENCE_KEY_ADJUST_PIN_GEO_POS = Placemark.PREFERENCE_KEY_ADJUST_PIN_GEO_POS;
     private static final String PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY = "snap.pixelGeoCoding.fractionAccuracy";
+    private static final String PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION = "snap.tiePointGeoCoding.maxPrecision";
 
 
     protected PropertySet createPropertySet() {
@@ -73,17 +75,31 @@ public final class GeoLocationController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
         final PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
-        Property snapToExactGeolocationProperty = context.getPropertySet().getProperty(PREFERENCE_KEY_ADJUST_PIN_GEO_POS);
-        Property pixelGeocodingFractionAccuracyProperty = context.getPropertySet().getProperty(PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY);
-        Property showGeoPosAsDecimals = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS);
-        Property showPixelPosAsDecimals = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS);
-        Property showPixelPosOffset1 = context.getPropertySet().getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
+        final PropertySet propertySet = context.getPropertySet();
+        final Property snapToExactGeolocationProperty = propertySet.getProperty(PREFERENCE_KEY_ADJUST_PIN_GEO_POS);
+        final Property pixelGeocodingFractionAccuracyProperty = propertySet.getProperty(PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY);
+        final Property tiePointInverseHighPrecisionProperty = propertySet.getProperty(PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION);
+        final Property showGeoPosAsDecimals = propertySet.getProperty(PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS);
+        final Property showPixelPosAsDecimals = propertySet.getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS);
+        final Property showPixelPosOffset = propertySet.getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_OFFSET_ONE);
 
-        JComponent[] snapToExactGeolocationComponents = registry.findPropertyEditor(snapToExactGeolocationProperty.getDescriptor()).createComponents(snapToExactGeolocationProperty.getDescriptor(), context);
-        JComponent[] pixelGeocodingfractionAccuracyComponents = registry.findPropertyEditor(pixelGeocodingFractionAccuracyProperty.getDescriptor()).createComponents(pixelGeocodingFractionAccuracyProperty.getDescriptor(), context);
-        JComponent[] showGeoPosAsDecimalsComponents = registry.findPropertyEditor(showGeoPosAsDecimals.getDescriptor()).createComponents(showGeoPosAsDecimals.getDescriptor(), context);
-        JComponent[] showPixelPosAsDecimalsComponents = registry.findPropertyEditor(showPixelPosAsDecimals.getDescriptor()).createComponents(showPixelPosAsDecimals.getDescriptor(), context);
-        JComponent[] showPixelPosOffset1Components = registry.findPropertyEditor(showPixelPosAsDecimals.getDescriptor()).createComponents(showPixelPosOffset1.getDescriptor(), context);
+        PropertyDescriptor descriptor = snapToExactGeolocationProperty.getDescriptor();
+        final JComponent[] snapToExactGeolocationComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = pixelGeocodingFractionAccuracyProperty.getDescriptor();
+        final JComponent[] pixelGeocodingfractionAccuracyComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = tiePointInverseHighPrecisionProperty.getDescriptor();
+        JComponent[] tiePointInverseHighPrecisionComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = showGeoPosAsDecimals.getDescriptor();
+        JComponent[] showGeoPosAsDecimalsComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = showPixelPosAsDecimals.getDescriptor();
+        JComponent[] showPixelPosAsDecimalsComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = showPixelPosOffset.getDescriptor();
+        JComponent[] showPixelPosOffsetComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
 
         TableLayout tableLayout = new TableLayout(1);
         tableLayout.setTableAnchor(Anchor.NORTHWEST);
@@ -98,12 +114,13 @@ public final class GeoLocationController extends DefaultConfigController {
         pageUI.add(PreferenceUtils.createTitleLabel("General Settings"));
         pageUI.add(snapToExactGeolocationComponents[0]);
         pageUI.add(pixelGeocodingfractionAccuracyComponents[0]);
+        pageUI.add(tiePointInverseHighPrecisionComponents[0]);
         tableLayout.createHorizontalSpacer();
 
         pageUI.add(PreferenceUtils.createTitleLabel("Display Settings"));
         pageUI.add(showGeoPosAsDecimalsComponents[0]);
         pageUI.add(showPixelPosAsDecimalsComponents[0]);
-        pageUI.add(showPixelPosOffset1Components[0]);
+        pageUI.add(showPixelPosOffsetComponents[0]);
         pageUI.add(tableLayout.createVerticalSpacer());
         return createPageUIContentPane(pageUI);
     }
@@ -124,6 +141,10 @@ public final class GeoLocationController extends DefaultConfigController {
         @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
                 key = PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY, config = "snap")
         boolean getPixelPosWithFractionAccuracy = false;
+
+        @Preference(label = "Use high precision approximations for inverse tie point geo-coding",
+                key = PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION, config = "snap")
+        boolean getTiePointInverseHighPrecision = false;
 
         @Preference(label = "Snap pins to exact geo-location after import, transfer to another product, or geo-coding change",
                 key = PREFERENCE_KEY_ADJUST_PIN_GEO_POS, config = "snap")
