@@ -143,7 +143,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
 
-        if (true){//allowGraphBuilding) {
+        if (allowGraphBuilding) {
             graphPanel = new GraphPanel(graphEx);
             graphPanel.setBackground(Color.WHITE);
             graphPanel.setPreferredSize(new Dimension(1500, 1000));
