@@ -119,7 +119,7 @@ public class SnapApp {
     private final static Logger LOG = Logger.getLogger(SnapApp.class.getName());
 
     private final ProductManager productManager;
-    private Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
+    private final Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
     private Engine engine;
 
     /**
@@ -200,7 +200,6 @@ public class SnapApp {
 
     /**
      * @return The (display) name of this application.
-     *
      * @deprecated use {@link #getInstanceName()}
      */
     @Deprecated
@@ -233,7 +232,6 @@ public class SnapApp {
      * the {@link PropertyMap} interface.
      *
      * @return The user's application preferences as {@link PropertyMap} instance.
-     *
      * @deprecated Use {@link #getPreferences()} or {@link Config#preferences()} instead.
      */
     @Deprecated
@@ -649,6 +647,7 @@ public class SnapApp {
             return "not saved";
         }
     }
+
     private void disposeProducts() {
         Product[] products = getProductManager().getProducts();
         getProductManager().removeAllProducts();
@@ -664,13 +663,14 @@ public class SnapApp {
     }
 
     private String getEmptyTitle() {
-        String title;
-        if (Utilities.isMac()) {
-            title = String.format("[%s]", "Empty");
+        String instanceName = getInstanceName();
+
+        if (instanceName != null && instanceName.length() > 0) {
+            return String.format("%s", instanceName);
         } else {
-            title = String.format("%s", getInstanceName());
+            return String.format("[%s]", "Empty");
         }
-        return title;
+
     }
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
