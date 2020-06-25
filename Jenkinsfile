@@ -109,11 +109,6 @@ pipeline {
         }
         stage('Create docker image') {
             agent { label 'snap-test' }
-            when {
-                expression {
-                    return "${params.launchTests}" == "true";
-                }
-            }
             steps {
                 echo "Launch snap-installer"
                 build job: "create-snap-docker-image", parameters: [
@@ -132,6 +127,11 @@ pipeline {
             parallel {
                 stage ('Starting GPT Tests') {
                     agent { label 'snap-test' }
+                    when {
+                        expression {
+                            return "${params.launchTests}" == "true";
+                        }
+                    }
                     steps {
                         echo "Launch snap-gpt-tests using docker image snap:${branchVersion} and scope REGULAR"
                         build job: "snap-gpt-tests/${branchVersion}", parameters: [
