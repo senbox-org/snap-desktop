@@ -7,6 +7,7 @@ package org.esa.snap.rcp.about;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.BrowserUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
@@ -19,10 +20,12 @@ import java.awt.*;
  */
 public class SeadasAboutBox extends JPanel {
 
-    private final static String SEADAS_VERSION = "8.0.0-Beta";
+//    private static String SEADAS_VERSION = "8.0.0-Beta";
+    private static String seadasVersion;
 
     private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/ReleaseNotes.md";
-    private final static String RELEASE_NOTES_URL_NAME = "SeaDAS " + SEADAS_VERSION + " Release Notes";
+//    private  String RELEASE_NOTES_URL_NAME = "SeaDAS " + seadasVersion + " Release Notes";
+    private  String releaseNotesUrlName;
 
     private final static String OCEAN_COLOR_WEB_URL = "https://oceancolor.gsfc.nasa.gov/";
     private final static String OCEAN_COLOR_WEB_URL_NAME = "NASA Ocean Color Web";
@@ -37,6 +40,15 @@ public class SeadasAboutBox extends JPanel {
         super(new BorderLayout());
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
+
+        SnapApp app = SnapApp.getDefault();
+
+        // Get SeaDAS version from here ... unless better location is determined
+        seadasVersion = app.getInstanceName();
+
+        releaseNotesUrlName = seadasVersion + " Release Notes";
+
+
         ImageIcon image = new ImageIcon(SeadasAboutBox.class.getResource("about_seadas.png"));
         JLabel banner = new JLabel(image);
 
@@ -48,7 +60,9 @@ public class SeadasAboutBox extends JPanel {
                 + "integration with the <i>SNAP Sentinel Application Platform</i>, the primary difference being the <br>"
                 + "GUI layout and some minor default behavior.  The <i>SeaDAS-Toolbox</i> contains all the NASA <br>"
                 + "Ocean Biology science processing science tools as well as some additional GUI tools <br>"
-                + "related to ocean sciences.<br>"
+                + "related to ocean sciences.<br><br>"
+                + "Alert!  This is a Beta version and is built using an unreleased SNAP development version.  This does not <br>"
+                + "represent what will be in SNAP 8.0.0."
                 + "</html>"
         );
 
@@ -57,10 +71,12 @@ public class SeadasAboutBox extends JPanel {
                 + "This program is free software: you can redistribute it and/or modify it under the terms of<br>"
                 + "the <i>GNU General Public License</i> as published by the Free Software Foundation, either<br>"
                 + "version 3 of the License, or (at your option) any later version.<br>&nbsp;<br>"
-                + "<b>SeaDAS version: </b>" + SEADAS_VERSION + "<br>"
-                + "<b>SNAP Desktop implementation version: </b>8.0.0.20200226<br>"
+                + "<b>SeaDAS version: </b>" + seadasVersion + "<br>"
+//                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
+//                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
+                + "<b>SNAP Desktop implementation version: </b>8.0.0.20200226-Development*<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
-                + "<b>SNAP Engine implementation version: </b>8.0.0.20200226<br>"
+                + "<b>SNAP Engine implementation version: </b>8.0.0.20200226-Development*<br>"
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
                 + "<b>Resource directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
                 + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
@@ -95,7 +111,7 @@ public class SeadasAboutBox extends JPanel {
 
         gbc.gridy = 1;
         gbc.insets.left = 15;
-        jPanel.add(getUrlJLabel(RELEASE_NOTES_URL, RELEASE_NOTES_URL_NAME), gbc);
+        jPanel.add(getUrlJLabel(RELEASE_NOTES_URL, releaseNotesUrlName), gbc);
 
         gbc.gridy = 2;
         jPanel.add(getUrlJLabel(SEADAS_WEB_URL, SEADAS_WEB_URL_NAME), gbc);

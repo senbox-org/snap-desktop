@@ -212,12 +212,12 @@ public class SnapApp {
      * @return The SNAP application's name. The default is {@code "SNAP"}.
      */
     public String getInstanceName() {
-        try {
-            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
-        } catch (Exception e) {
-            return "SNAP";
+            try {
+                return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
+            } catch (Exception e) {
+                return "SNAP";
+            }
         }
-    }
 
     /**
      * @return The user's application preferences.
@@ -664,14 +664,15 @@ public class SnapApp {
     }
 
     private String getEmptyTitle() {
-        String title;
-        if (Utilities.isMac()) {
-            title = String.format("[%s]", "Empty");
+        String instanceName = getInstanceName();
+
+        if (instanceName != null && instanceName.length() > 0) {
+            return String.format("%s", getInstanceName());
         } else {
-            title = String.format("%s", getInstanceName());
+            return  String.format("[%s]", "Empty");
         }
-        return title;
     }
+
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
         switch (hint) {
