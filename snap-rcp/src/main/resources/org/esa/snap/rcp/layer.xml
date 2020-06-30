@@ -202,12 +202,6 @@
         <folder name="Interactors">
             <attr name="position" intvalue="501"/>
         </folder>
-        <folder name="Geometry">
-            <attr name="position" intvalue="502"/>
-        </folder>
-        <folder name="Pins">
-            <attr name="position" intvalue="503"/>
-        </folder>
 
 
         <folder name="Processing">
@@ -217,6 +211,12 @@
 
         <folder name="Image">
             <attr name="position" intvalue="601"/>
+        </folder>
+        <folder name="Geometry">
+            <attr name="position" intvalue="602"/>
+        </folder>
+        <folder name="Pins">
+            <attr name="position" intvalue="603"/>
         </folder>
 
         <!--<folder name="Tools">-->

@@ -16,15 +16,16 @@
 
     <Toolbar name="Overlay" visible="true" />
     <Toolbar name="Interactors" visible="true"/>
-    <Toolbar name="Geometry" visible="true"/>
-    <Toolbar name="Pins" visible="true"/>
+
 
     <Toolbar name="Processing" visible="true" />
 
 
     <Toolbar name="Miscellaneous" visible="false"/>
     <Toolbar name="Image" visible="true"/>
-    <Toolbar name="Analysis" visible="false"/>
+    <Toolbar name="Geometry" visible="true"/>
+    <Toolbar name="Pins" visible="true"/>
+    <Toolbar name="Analysis" visible="true"/>
 
     
     <Toolbar name="Info" visible="false"/>
