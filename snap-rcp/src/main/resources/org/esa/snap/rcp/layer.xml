@@ -197,9 +197,9 @@
         <folder name="Processing">
             <attr name="position" intvalue="600"/>
         </folder>
-        <folder name="Tools">
-            <attr name="position" intvalue="700"/>
-        </folder>
+        <!--<folder name="Tools">-->
+            <!--<attr name="position" intvalue="700"/>-->
+        <!--</folder>-->
         <folder name="Tool Windows">
             <attr name="position" intvalue="800"/>
         </folder>
