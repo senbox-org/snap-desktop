@@ -4,7 +4,9 @@
 
 
 <Configuration>
+
 <Row>
+
     <Toolbar name="File" visible="true" />
     <Toolbar name="Clipboard" visible="false" />
     <Toolbar name="UndoRedo" visible="false" />
@@ -22,8 +24,10 @@
 
 
     <Toolbar name="Miscellaneous" visible="false"/>
-    <Toolbar name="Image" visible="true"/>
+    <Toolbar name="Image" visible="false"/>
     <Toolbar name="Geometry" visible="true"/>
+    <Toolbar name="Geometry Lines" visible="false"/>
+
     <Toolbar name="Pins" visible="true"/>
     <Toolbar name="Analysis" visible="true"/>
 

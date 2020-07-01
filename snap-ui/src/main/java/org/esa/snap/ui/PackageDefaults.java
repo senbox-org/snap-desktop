@@ -254,7 +254,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String DRAW_LINE_DESCRIPTION = "Line drawing tool";
     public static final String DRAW_LINE_ICON = "seadas/DrawLineTool24.png"; // differs from snap
     // Toolbar
-    public static final String DRAW_LINE_TOOLBAR_NAME = "Geometry";
+    public static final String DRAW_LINE_TOOLBAR_NAME = "Geometry Lines";
     public static final int DRAW_LINE_TOOLBAR_POSITION = 40;
 
 
@@ -265,7 +265,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String DRAW_POLYLINE_DESCRIPTION = "Polyline drawing tool";
     public static final String DRAW_POLYLINE_ICON = "seadas/DrawPolylineTool24.png"; // differs from snap
     // Toolbar
-    public static final String DRAW_POLYLINE_TOOLBAR_NAME = "Geometry";
+    public static final String DRAW_POLYLINE_TOOLBAR_NAME = "Geometry Lines";
     public static final int DRAW_POLYLINE_TOOLBAR_POSITION = 50;
 
 

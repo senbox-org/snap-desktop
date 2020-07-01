@@ -215,6 +215,10 @@
         <folder name="Geometry">
             <attr name="position" intvalue="602"/>
         </folder>
+        <folder name="Geometry Lines">
+            <attr name="position" intvalue="602"/>
+        </folder>
+
         <folder name="Pins">
             <attr name="position" intvalue="603"/>
         </folder>
