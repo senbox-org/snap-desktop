@@ -23,7 +23,7 @@ public class SeadasAboutBox extends JPanel {
 //    private static String SEADAS_VERSION = "8.0.0-Beta";
     private static String seadasVersion;
 
-    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/ReleaseNotes.md";
+    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/ReleaseNotes-8.0.0-Beta.md";
 //    private  String RELEASE_NOTES_URL_NAME = "SeaDAS " + seadasVersion + " Release Notes";
     private  String releaseNotesUrlName;
 
