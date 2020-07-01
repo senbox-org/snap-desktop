@@ -1,0 +1,9 @@
+LocalStatisticExtraction
+-in
+$sourceProductFile.AbsolutePath
+-channel
+$channelIndex
+-radius
+$windowRadius
+-out
+$targetProductFile.AbsolutePath
