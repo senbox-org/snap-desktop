@@ -42,7 +42,7 @@ import java.beans.PropertyChangeListener;
         position = 5)
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_WriteOptions=Write Options",
-        "Options_Keywords_WriteOptions=write, writing, save, header, MPH, SPH, history, annotation, incremental"
+        "Options_Keywords_WriteOptions=write, writing, save, header, MPH, SPH, history, annotation, incremental, caching"
 })
 public final class WriteOptionsController extends DefaultConfigController {
 
@@ -64,6 +64,11 @@ public final class WriteOptionsController extends DefaultConfigController {
     public static final String PREFERENCE_KEY_SAVE_INCREMENTAL = "save.incremental";
 
     /**
+     * Preferences key to switch dimap product writer caching
+     */
+    public static final String PREFERENCE_KEY_DIMAP_WRITE_CACHE = "snap.dataio.writer.dimap.useCache";
+
+    /**
      * default value for preference save product headers (MPH, SPH) or not
      */
     public static final boolean DEFAULT_VALUE_SAVE_PRODUCT_HEADERS = true;
@@ -79,6 +84,11 @@ public final class WriteOptionsController extends DefaultConfigController {
      * default value for preference incremental mode at save
      */
     public static final boolean DEFAULT_VALUE_SAVE_INCREMENTAL = true;
+
+    /**
+     * default value for preference for dimap caching
+     */
+    public static final boolean DEFAULT_VALUE_DIMAP_WRITE_CACHE = true;
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new WriteOptionsBean());
@@ -126,6 +136,9 @@ public final class WriteOptionsController extends DefaultConfigController {
 
         @Preference(label = "Use incremental save (only save modified items)", key = PREFERENCE_KEY_SAVE_INCREMENTAL)
         boolean saveIncremental = DEFAULT_VALUE_SAVE_INCREMENTAL;
+
+        @Preference(config = "snap", label = "Enable DIMAP write cache", key = PREFERENCE_KEY_DIMAP_WRITE_CACHE)
+        boolean useDimapCache = DEFAULT_VALUE_DIMAP_WRITE_CACHE;
 
         @Preference(config = "snap", label = "Write raster data concurrently", key = ProductIO.SYSTEM_PROPERTY_CONCURRENT)
         boolean writeConcurrent = ProductIO.DEFAULT_WRITE_RASTER_CONCURRENT;
