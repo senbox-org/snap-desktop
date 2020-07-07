@@ -1,6 +1,7 @@
 package org.esa.snap.ui.loading;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -38,6 +39,7 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
         setEditable(true); // set the combo box as editable
         ComboBoxEditorComponent<ItemType> comboBoxEditorComponent = new ComboBoxEditorComponent<ItemType>(itemRenderer);
         JTextField editorTextField = comboBoxEditorComponent.getEditorComponent();
+        editorTextField.setBorder(SwingUtils.EDIT_TEXT_BORDER);
         editorTextField.setOpaque(false); // set the editor text transparent
         if (!isEditable) {
             comboBoxEditorComponent.getEditorComponent().setEditable(false); // set the editor component read only
@@ -55,7 +57,8 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
                 }
             }
         });
-        setRenderer(new LabelListCellRenderer<ItemType>(this.preferredHeight, itemRenderer) {
+
+        LabelListCellRenderer<ItemType> listCellRenderer = new LabelListCellRenderer<ItemType>(this.preferredHeight, itemRenderer) {
             @Override
             public JLabel getListCellRendererComponent(JList<? extends ItemType> list, ItemType value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -65,7 +68,9 @@ public class CustomComboBox<ItemType> extends JComboBox<ItemType> {
                 }
                 return label;
             }
-        });
+        };
+        listCellRenderer.setBorder(SwingUtils.EDIT_TEXT_BORDER);
+        setRenderer(listCellRenderer);
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
+import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -122,6 +123,11 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                     }
 
                     @Override
+                    public void notifyApproximateSize(long approximateSize) {
+                        updateApproximateSizeLater(this, approximateSize);
+                    }
+
+                    @Override
                     protected void updateDownloadingProgressPercent(short progressPercent, Path downloadedPath) {
                         updateDownloadingProgressPercentLater(this, progressPercent, downloadedPath);
                     }
@@ -210,6 +216,16 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
             @Override
             protected void execute(DownloadProductRunnable item) {
                 onCancelRunningDownloadProductThread(item);
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    private void updateApproximateSizeLater(DownloadProductRunnable parentRunnableItem, long approximateSize) {
+        Runnable runnable = new PairRunnable<DownloadProductRunnable, Long>(parentRunnableItem, approximateSize) {
+            @Override
+            protected void execute(DownloadProductRunnable downloadProductRunnable, Long productSizeInBytes) {
+                onUpdateApproximateSize(downloadProductRunnable, productSizeInBytes.longValue());
             }
         };
         SwingUtilities.invokeLater(runnable);
@@ -381,6 +397,17 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                 String text = buildProgressBarDownloadingText(totalDownloadedProductCount, totalProductCountToDownload);
                 this.progressPanel.updateProgressBarText(this.threadId, text);
             }
+        }
+    }
+
+    private void onUpdateApproximateSize(DownloadProductRunnable parentRunnable, long approximateSize) {
+        Pair<DownloadProgressStatus, Boolean> value = this.runningTasks.get(parentRunnable);
+        if (value == null) {
+            throw new NullPointerException("The value is null.");
+        } else {
+            RepositoryProduct repositoryProduct = parentRunnable.getProductToDownload();
+            repositoryProduct.setApproximateSize(approximateSize);
+            this.downloadProductListener.onRefreshProduct(repositoryProduct);
         }
     }
 

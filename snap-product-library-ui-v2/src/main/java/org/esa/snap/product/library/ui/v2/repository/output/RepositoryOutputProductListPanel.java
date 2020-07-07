@@ -30,6 +30,9 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     private static final String PAGE_PRODUCTS_CHANGED = "pageProductsChanged";
 
+    public static final byte ASCENDING_SORTING_TYPE = 1;
+    public static final byte DESCENDING_SORTING_TYPE = 2;
+
     public static final byte VISIBLE_PRODUCTS_PER_PAGE = 20;
 
     private final JLabel titleLabel;
@@ -38,8 +41,9 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private final OutputProductListPanel productListPanel;
     private final OutputProductListPaginationPanel productListPaginationPanel;
     private final CustomComboBox<ComparatorItem> comparatorsComboBox;
-    private RepositoryProductsTimelinePanel productsTimelinePanel;
+    private final CustomComboBox<Byte> sortingTypeComboBox;
 
+    private RepositoryProductsTimelinePanel productsTimelinePanel;
     private int visibleProductsPerPage;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
@@ -61,11 +65,28 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         });
 
         this.productsTimelinePanel = new RepositoryProductsTimelinePanel();
+        this.productsTimelinePanel.setItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    productsTimelinePanel.refresh(getOutputProductResults());
+                }
+            }
+        });
+
+        ItemListener sortProductsListener = new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    productListPanel.getProductListModel().sortProducts();
+                }
+            }
+        };
 
         ItemRenderer<ComparatorItem> itemRenderer = new ItemRenderer<ComparatorItem>() {
             @Override
             public String getItemDisplayText(ComparatorItem item) {
-                return (item == null) ? " " : " " + item.getDisplayName();
+                return (item == null) ? " " : item.getDisplayName();
             }
         };
         this.comparatorsComboBox = new CustomComboBox<>(itemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
@@ -73,14 +94,28 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         this.comparatorsComboBox.addItem(buildMissionComparator());
         this.comparatorsComboBox.addItem(buildAcquisitionDateComparator());
         this.comparatorsComboBox.addItem(buildFileSizeComparator());
-        this.comparatorsComboBox.addItemListener(new ItemListener() {
+        this.comparatorsComboBox.addItemListener(sortProductsListener);
+
+        ItemRenderer<Byte> sortingTypeRenderer = new ItemRenderer<Byte>() {
             @Override
-            public void itemStateChanged(ItemEvent itemEvent) {
-                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                    productListPanel.getProductListModel().sortProducts();
+            public String getItemDisplayText(Byte item) {
+                if (item == null) {
+                    return " ";
                 }
+                if (item.byteValue() == ASCENDING_SORTING_TYPE) {
+                    return "Ascending";
+                }
+                if (item.byteValue() == DESCENDING_SORTING_TYPE) {
+                    return "Descending";
+                }
+                throw new IllegalArgumentException("Unknown sorting type " + item.byteValue()+".");
             }
-        });
+        };
+        this.sortingTypeComboBox = new CustomComboBox<>(sortingTypeRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
+        this.sortingTypeComboBox.addItem(ASCENDING_SORTING_TYPE);
+        this.sortingTypeComboBox.addItem(DESCENDING_SORTING_TYPE);
+        this.sortingTypeComboBox.addItemListener(sortProductsListener);
+
         int maximumPreferredWidth = 0;
         JLabel label = new JLabel();
         for (int i=0; i<this.comparatorsComboBox.getItemCount(); i++) {
@@ -135,7 +170,17 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     @Override
     public Comparator<RepositoryProduct> getProductsComparator() {
-        return (ComparatorItem)this.comparatorsComboBox.getSelectedItem();
+        ComparatorItem comparator = (ComparatorItem)this.comparatorsComboBox.getSelectedItem();
+        Byte sortingType = (Byte)this.sortingTypeComboBox.getSelectedItem();
+        boolean sortAscending;
+        if (sortingType.byteValue() == ASCENDING_SORTING_TYPE) {
+            sortAscending = true;
+        } else if (sortingType.byteValue() == DESCENDING_SORTING_TYPE) {
+            sortAscending = false;
+        } else {
+            throw new IllegalStateException("unknown sorting type " + sortingType.byteValue() + ".");
+        }
+        return new ProductsComparator(comparator, sortAscending);
     }
 
     @Override
@@ -276,11 +321,15 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         }
         outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
         this.productListPanel.setProducts(pageProducts);
-        firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
+        firePageProductChanged();
     }
 
     private void clearPageProducts() {
         this.productListPanel.getProductListModel().clear();
+        firePageProductChanged();
+    }
+
+    private void firePageProductChanged() {
         firePropertyChange(PAGE_PRODUCTS_CHANGED, null, null);
     }
 
@@ -348,14 +397,21 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         JPanel northPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         northPanel.add(this.titleLabel, c);
+
         c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.sortByLabel, c);
+
         c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.comparatorsComboBox, c);
+
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+        northPanel.add(this.sortingTypeComboBox, c);
+
+        c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         northPanel.add(this.progressBarHelper.getProgressBar(), c);
+
         if (showStopDownloadButton) {
-            c = SwingUtils.buildConstraints(4, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
+            c = SwingUtils.buildConstraints(5, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
             northPanel.add(this.progressBarHelper.getStopButton(), c);
         }
 
@@ -436,6 +492,23 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
         public String getDisplayName() {
             return displayName;
+        }
+    }
+
+    private static class ProductsComparator implements Comparator<RepositoryProduct> {
+
+        private final Comparator<RepositoryProduct> comparator;
+        private final boolean sortAscending;
+
+        public ProductsComparator(Comparator<RepositoryProduct> comparator, boolean sortAscending) {
+            this.comparator = comparator;
+            this.sortAscending = sortAscending;
+        }
+
+        @Override
+        public int compare(RepositoryProduct leftProduct, RepositoryProduct rightProduct) {
+            int result = this.comparator.compare(leftProduct, rightProduct);
+            return this.sortAscending ? result : -result;
         }
     }
 }

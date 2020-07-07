@@ -225,9 +225,9 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
 
     @Override
     public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                                                   ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+                                                                   ComponentDimension componentDimension) {
 
-        return new LocalRepositoryProductPanel(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
+        return new LocalRepositoryProductPanel(repositoryProductPanelBackground, componentDimension);
     }
 
     @Override

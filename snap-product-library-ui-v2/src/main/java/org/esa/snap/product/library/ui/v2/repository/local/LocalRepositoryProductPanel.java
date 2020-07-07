@@ -16,9 +16,9 @@ import java.awt.Color;
 public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel {
 
     public LocalRepositoryProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
-                                       ComponentDimension componentDimension, ImageIcon expandImageIcon, ImageIcon collapseImageIcon) {
+                                       ComponentDimension componentDimension) {
 
-        super(repositoryProductPanelBackground, componentDimension, expandImageIcon, collapseImageIcon);
+        super(repositoryProductPanelBackground, componentDimension);
     }
 
     @Override
