@@ -6,13 +6,7 @@ import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.Range;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
+import javax.swing.*;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,6 +17,20 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.List;
 import java.util.Vector;
+
+
+/**
+ * This class creates the color palette chooser JComboBox contained within the color manipulation tool.
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @version $Revision$ $Date$
+ */
+// DEC 2019 - Knowles
+//          - Fixed bug where log scaled color palette would appear crunched in the selector
+//          - Added tooltips to show which color palette is being hovered over and selected
+//          - Added blue highlights within the renderer to show which color palette is being hovered over selected
+
 
 class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrapper> {
 
@@ -76,7 +84,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         final String suffix = userPalette.getFirstPoint().getLabel();
         final String name;
         if (suffix != null && suffix.trim().length() > 0) {
-            name = DERIVED_FROM + " " + suffix.trim();
+                name = DERIVED_FROM + " " + suffix.trim();
         } else {
             name = UNNAMED;
         }
@@ -119,7 +127,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     @Override
                     public void paint(Graphics g) {
                         super.paint(g);
-                        drawPalette((Graphics2D) g, cpd, g.getClipBounds().getSize());
+                        drawPalette((Graphics2D) g, cpd, g.getClipBounds().getSize(), index, isSelected);
                     }
                 };
 
@@ -127,12 +135,16 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 palettePanel.add(nameComp, BorderLayout.NORTH);
                 palettePanel.add(rampComp, BorderLayout.CENTER);
 
+                if (isSelected) {
+                    list.setToolTipText(value.name);
+                }
+
                 return palettePanel;
             }
         };
     }
 
-    private void drawPalette(Graphics2D g2, ColorPaletteDef colorPaletteDef, Dimension paletteDim) {
+    private void drawPalette(Graphics2D g2, ColorPaletteDef colorPaletteDef, Dimension paletteDim, int index, boolean isSelected) {
         final int width = paletteDim.width;
         final int height = paletteDim.height;
 
@@ -141,14 +153,25 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         cpdCopy.setNumColors(width);
         final ImageInfo imageInfo = new ImageInfo(cpdCopy);
         imageInfo.setLogScaled(log10Display);
+        imageInfo.setLogScaled(colorPaletteDef.isLogScaled());
+
 
         Color[] colorPalette = ImageManager.createColorPalette(imageInfo);
 
         g2.setStroke(new BasicStroke(1.0f));
 
         for (int x = 0; x < width; x++) {
-            g2.setColor(colorPalette[x]);
-            g2.drawLine(x, 0, x, height);
+            if (isSelected && index != 0) {
+                int edgeThickness = 1;
+                g2.setColor(colorPalette[x]);
+                g2.drawLine(x, (edgeThickness + 1), x, height - (edgeThickness + 1));
+                g2.setColor(Color.blue);
+                g2.drawLine(x, 0, x, edgeThickness);
+                g2.drawLine(x, height - edgeThickness, x, height);
+            } else {
+                g2.setColor(colorPalette[x]);
+                g2.drawLine(x, 0, x, height);
+            }
         }
     }
 
