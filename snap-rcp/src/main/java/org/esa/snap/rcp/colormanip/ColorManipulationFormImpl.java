@@ -904,11 +904,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*." + FILE_EXTENSION_CPT, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstaller.install(".*." + FILE_EXTENSION_CPT, ProgressMonitor.NULL);
 
                 // these file get overwritten as we do not encourage that these standard files to be altered
-                resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL, true);
+                resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
@@ -932,8 +932,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL, false);
-                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL);
+                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {
@@ -958,7 +958,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
-                resourceInstaller.install(".*." + FILE_EXTENSION_RGB_PROFILES, ProgressMonitor.NULL, false);
+                resourceInstaller.install(".*." + FILE_EXTENSION_RGB_PROFILES, ProgressMonitor.NULL);
 
                 rgbProfilesFilesInstalled = true;
             } catch (IOException e) {
