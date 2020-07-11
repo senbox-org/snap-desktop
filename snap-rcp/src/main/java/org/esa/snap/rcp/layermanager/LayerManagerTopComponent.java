@@ -19,6 +19,7 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.AbstractSelectionContext;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.support.DefaultSelection;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -35,9 +36,9 @@ import java.util.WeakHashMap;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "rightSlidingSide",
-        openAtStartup = true,
-        position = 10
+        mode = PackageDefaults.LAYER_MANAGER_MODE,
+        openAtStartup = PackageDefaults.LAYER_MANAGER_OPEN,
+        position = PackageDefaults.LAYER_MANAGER_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerManagerTopComponent")
 @ActionReferences({
@@ -50,7 +51,7 @@ import java.util.WeakHashMap;
         preferredID = "LayerManagerTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_LayerManagerTopComponent_Name=Layer Manager",
+        "CTL_LayerManagerTopComponent_Name=" + PackageDefaults.LAYER_MANAGER_NAME,
         "CTL_LayerManagerTopComponent_HelpId=showLayerManagerWnd"
 })
 /**
