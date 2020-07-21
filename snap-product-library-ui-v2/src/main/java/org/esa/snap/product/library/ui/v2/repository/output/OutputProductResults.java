@@ -39,6 +39,18 @@ public class OutputProductResults {
         this.currentPageNumber = 0;
     }
 
+    public boolean canOpenDownloadedProducts(RepositoryProduct[] productsToCheck) {
+        boolean canOpenProducts = true;
+        for (int i=0; i<productsToCheck.length && canOpenProducts; i++) {
+            DownloadProgressStatus downloadProgressStatus = getDownloadedProductProgress(productsToCheck[i]);
+            if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
+                // there is at leat one selected product which is not downloaded
+                canOpenProducts = false;
+            }
+        }
+        return canOpenProducts;
+    }
+
     public DownloadProgressStatus getDownloadedProductProgress(RepositoryProduct repositoryProduct) {
         return this.downloadedProductsProgress.get(repositoryProduct);
     }

@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class AttributesParameterComponent extends AbstractParameterComponent<List<AttributeFilter>> {
 
-    private static final AttributeValueFilter EQUAL_VALUE_FILTER = new AttributeValueFilter() {
+    public static final AttributeValueFilter EQUAL_VALUE_FILTER = new AttributeValueFilter() {
         @Override
         public boolean matches(String attributeValue, String valueToCheck) {
             return attributeValue.equalsIgnoreCase(valueToCheck);

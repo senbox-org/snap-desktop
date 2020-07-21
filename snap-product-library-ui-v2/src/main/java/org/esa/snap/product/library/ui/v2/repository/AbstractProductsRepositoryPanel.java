@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.input.SelectionAreaParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
@@ -41,6 +42,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     protected List<AbstractParameterComponent<?>> parameterComponents;
 
     private OutputProductResults outputProductResults;
+    private List<ProductLibraryV2Action> popupMenuActions;
 
     protected AbstractProductsRepositoryPanel(WorldMapPanelWrapper worlWindPanel, ComponentDimension componentDimension, LayoutManager layoutManager) {
         super(layoutManager);
@@ -54,8 +56,6 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     public abstract String getRepositoryName();
 
     protected abstract void addInputParameterComponentsToPanel();
-
-    public abstract JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel);
 
     public abstract boolean refreshInputParameterComponentValues();
 
@@ -77,6 +77,21 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     public final OutputProductResults getOutputProductResults() {
         return outputProductResults;
+    }
+
+    public void setPopupMenuActions(List<ProductLibraryV2Action> remoteActions) {
+        this.popupMenuActions = remoteActions;
+    }
+
+    public final JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        for (int i = 0; i<this.popupMenuActions.size(); i++) {
+            ProductLibraryV2Action action = this.popupMenuActions.get(i);
+            if (action.canAddItemToPopupMenu(this, selectedProducts)) {
+                popupMenu.add(action);
+            }
+        }
+        return popupMenu;
     }
 
     public final void addInputParameterComponents() {

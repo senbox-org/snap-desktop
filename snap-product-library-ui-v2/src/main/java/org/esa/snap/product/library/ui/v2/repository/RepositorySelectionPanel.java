@@ -2,19 +2,17 @@ package org.esa.snap.product.library.ui.v2.repository;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
 import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
-import org.esa.snap.product.library.ui.v2.repository.local.LocalProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPaginationPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
-import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsPopupListeners;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveProductData;
-import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -30,8 +28,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by jcoravu on 22/8/2019.
@@ -274,12 +273,12 @@ public class RepositorySelectionPanel extends JPanel {
         this.repositoriesComboBox.addItemListener(this.localRepositoryListener);
     }
 
-    public void setLocalRepositoriesListeners(LocalProductsPopupListeners localProductsPopupListeners, ActionListener scanLocalRepositoryFoldersListener,
-                                                     ActionListener addLocalRepositoryFolderListener, ActionListener deleteLocalRepositoryFolderListener) {
+    public void setLocalRepositoriesListeners(ActionListener scanLocalRepositoryFoldersListener,
+                                              ActionListener addLocalRepositoryFolderListener, ActionListener deleteLocalRepositoryFolderListener, List<ProductLibraryV2Action> localActions) {
 
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
         allLocalProductsRepositoryPanel.setTopBarButtonListeners(scanLocalRepositoryFoldersListener, addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
-        allLocalProductsRepositoryPanel.setLocalProductsPopupListeners(localProductsPopupListeners);
+        allLocalProductsRepositoryPanel.setPopupMenuActions(localActions);
     }
 
     public RemoteProductsRepositoryPanel selectRemoteProductsRepositoryPanelByName(RemoteMission remoteMission) {
@@ -302,12 +301,12 @@ public class RepositorySelectionPanel extends JPanel {
         return null;
     }
 
-    public void setDownloadRemoteProductListener(RemoteProductsPopupListeners remoteProductsPopupListeners) {
+    public void setDownloadRemoteProductListener(List<ProductLibraryV2Action> remoteActions) {
         ComboBoxModel<AbstractProductsRepositoryPanel> model = this.repositoriesComboBox.getModel();
         for (int i=0; i<model.getSize(); i++) {
             AbstractProductsRepositoryPanel repositoryPanel = model.getElementAt(i);
             if (repositoryPanel instanceof RemoteProductsRepositoryPanel) {
-                ((RemoteProductsRepositoryPanel)repositoryPanel).setDownloadProductListeners(remoteProductsPopupListeners);
+                ((RemoteProductsRepositoryPanel)repositoryPanel).setPopupMenuActions(remoteActions);
             }
         }
     }

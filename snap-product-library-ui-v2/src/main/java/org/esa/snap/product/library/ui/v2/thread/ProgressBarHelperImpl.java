@@ -60,6 +60,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
                 boolean oldVisible = this.progressBar.isVisible();
                 // hide the progress bar
                 setProgressPanelVisible(false);
+                this.progressBar.setIndeterminate(true);
                 if (oldVisible) {
                     // the progress bar was visible
                     setParametersEnabledWhileDownloading(true);
@@ -166,6 +167,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         if (EventQueue.isDispatchThread()) {
             this.currentThreadId++;
             setProgressPanelVisible(false);
+            this.progressBar.setIndeterminate(true);
             setParametersEnabledWhileDownloading(true);
         } else {
             throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
