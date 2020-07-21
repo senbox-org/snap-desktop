@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
@@ -46,6 +48,7 @@ import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.remote.products.repository.RemoteMission;
@@ -75,7 +78,9 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -117,6 +122,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private static final String HELP_ID = "productLibraryToolV2";
 
     private static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
+
+    private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
     private Path lastLocalRepositoryFolderPath;
     private RepositoryOutputProductListPanel repositoryOutputProductListPanel;
@@ -566,22 +573,38 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     .append("There is a running action.");
             showMessageDialog("Scan all local repositories", message.toString(), JOptionPane.ERROR_MESSAGE);
         } else {
-            ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
-            int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-            AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
-            this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository) {
+            ScanLocalRepositoryOptionsDialog dialog = new ScanLocalRepositoryOptionsDialog(null) {
                 @Override
-                protected void onFinishRunning() {
-                    onFinishRunningLocalProductsThread(this, true);
-                }
-
-                @Override
-                protected void onLocalRepositoryFolderDeleted(LocalRepositoryFolder localRepositoryFolder) {
-                    ProductLibraryToolViewV2.this.deleteLocalRepositoryFolder(localRepositoryFolder);
+                protected void okButtonPressed(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+                    super.okButtonPressed(scanRecursively, generateQuickLookImages, testZipFileForErrors);
+                    scanAllLocalRepositories(scanRecursively, generateQuickLookImages, testZipFileForErrors);
                 }
             };
-            this.localRepositoryProductsThread.executeAsync(); // start the thread
+            dialog.show();
         }
+    }
+
+    private void scanAllLocalRepositories(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+        ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+        int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+        AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
+        this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository, scanRecursively, generateQuickLookImages, testZipFileForErrors) {
+            @Override
+            protected void onFinishRunning() {
+                onFinishRunningLocalProductsThread(this, true);
+            }
+
+            @Override
+            protected void onLocalRepositoryFolderDeleted(LocalRepositoryFolder localRepositoryFolder) {
+                ProductLibraryToolViewV2.this.deleteLocalRepositoryFolder(localRepositoryFolder);
+            }
+
+            @Override
+            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+                processErrorFiles(errorFiles);
+            }
+        };
+        this.localRepositoryProductsThread.executeAsync(); // start the thread
     }
 
     private void searchProductListLater() {
@@ -604,21 +627,79 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to add the products", true);
             if (selectedLocalRepositoryFolder != null) {
                 // a local folder has been selected
-                ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
-                int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-                AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
-                this.localRepositoryProductsThread = new AddLocalRepositoryFolderTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder, allLocalFolderProductsRepository) {
+                ScanLocalRepositoryOptionsDialog dialog = new ScanLocalRepositoryOptionsDialog(null) {
                     @Override
-                    protected void onFinishRunning() {
-                        onFinishRunningLocalProductsThread(this, true);
-                    }
-
-                    @Override
-                    protected void onFinishSavingProduct(SaveProductData saveProductData) {
-                        ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingLocalProduct(saveProductData);
+                    protected void okButtonPressed(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+                        super.okButtonPressed(scanRecursively, generateQuickLookImages, testZipFileForErrors);
+                        addLocalRepository(selectedLocalRepositoryFolder, scanRecursively, generateQuickLookImages, testZipFileForErrors);
                     }
                 };
-                this.localRepositoryProductsThread.executeAsync(); // start the thread
+                dialog.show();
+            }
+        }
+    }
+
+    private void addLocalRepository(Path selectedLocalRepositoryFolder, boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+        ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+        int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+        AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
+        this.localRepositoryProductsThread = new AddLocalRepositoryFolderTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder, allLocalFolderProductsRepository,
+                                                                                       scanRecursively, generateQuickLookImages, testZipFileForErrors) {
+            @Override
+            protected void onFinishRunning() {
+                onFinishRunningLocalProductsThread(this, true);
+            }
+
+            @Override
+            protected void onFinishSavingProduct(SaveProductData saveProductData) {
+                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingLocalProduct(saveProductData);
+            }
+
+            @Override
+            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+                processErrorFiles(errorFiles);
+            }
+        };
+        this.localRepositoryProductsThread.executeAsync(); // start the thread
+    }
+
+    private void processErrorFiles(Map<File, String> errorFiles) {
+        if (errorFiles != null && errorFiles.size() > 0) {
+            final StringBuilder str = new StringBuilder();
+            int cnt = 1;
+            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
+                str.append(entry.getValue()); // the message
+                str.append("   ");
+                str.append(entry.getKey().getAbsolutePath());
+                str.append('\n');
+                if (cnt >= 20) {
+                    str.append("plus " + (errorFiles.size() - 20) + " other errors...\n");
+                    break;
+                }
+                ++cnt;
+            }
+            final String question = "\nWould you like to save the list to a text file?";
+            Dialogs.Answer answer = Dialogs.requestDecision("Product Errors",
+                    "The follow files have errors:\n" + str.toString() + question,
+                    false, null);
+            if (answer == Dialogs.Answer.YES) {
+                final File file = Dialogs.requestFileForSave("Save as...", false,
+                        new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
+                        ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
+                if (file != null) {
+                    try {
+                        writeErrors(errorFiles, file);
+                    } catch (Exception e) {
+                        Dialogs.showError("Unable to save to " + file.getAbsolutePath());
+                    }
+                    if (Desktop.isDesktopSupported() && file.exists()) {
+                        try {
+                            Desktop.getDesktop().open(file);
+                        } catch (Exception e) {
+                            SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
+                        }
+                    }
+                }
             }
         }
     }
@@ -1208,5 +1289,21 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             pathIterator.next();
         }
         return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    private static void writeErrors(final Map<File, String> errorFiles, final File file) throws Exception {
+        PrintStream p = null; // declare a print stream object
+        try {
+            final FileOutputStream out = new FileOutputStream(file.getAbsolutePath());
+            // Connect print stream to the output stream
+            p = new PrintStream(out);
+            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
+                p.println(entry.getValue() + "   " + entry.getKey().getAbsolutePath());
+            }
+        } finally {
+            if (p != null) {
+                p.close();
+            }
+        }
     }
 }

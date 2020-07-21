@@ -12,4 +12,8 @@ public interface ProgressBarHelper {
     public boolean isCurrentThread(int threadId);
 
     public boolean updateProgressBarText(int threadId, String message);
+
+    public boolean beginProgressBarTask(int threadId, String message, int totalWork);
+
+    public boolean updateProgressBarValue(int threadId, int valueToAdd);
 }

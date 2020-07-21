@@ -1,16 +1,16 @@
 package org.esa.snap.product.library.ui.v2.thread;
 
+import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.ui.loading.GenericRunnable;
+import org.esa.snap.ui.loading.PairRunnable;
 
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.EventQueue;
 
 /**
  * Created by jcoravu on 23/8/2019.
  */
-public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> {
+public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> implements ProgressMonitor {
 
     private final ProgressBarHelper progressPanel;
     private final java.util.Timer timer;
@@ -77,6 +77,58 @@ public abstract class AbstractProgressTimerRunnable<OutputType> extends Abstract
         startTimerIfDefined();
 
         super.executeAsync();
+    }
+
+    @Override
+    public final void beginTask(String taskName, int totalWork) {
+        PairRunnable<String, Integer> runnable = new PairRunnable<String, Integer>(taskName, totalWork) {
+            @Override
+            protected void execute(String message, Integer maximumValue) {
+                progressPanel.beginProgressBarTask(threadId, message, maximumValue.intValue());
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    @Override
+    public final void worked(int valueToAdd) {
+        GenericRunnable<Integer> runnable = new GenericRunnable<Integer>(valueToAdd) {
+            @Override
+            protected void execute(Integer value) {
+                progressPanel.updateProgressBarValue(threadId, value.intValue());
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    @Override
+    public final void setTaskName(String taskName) {
+        updateProgressBarTextLater(taskName);
+    }
+
+    @Override
+    public final void setSubTaskName(String subTaskName) {
+        updateProgressBarTextLater(subTaskName);
+    }
+
+    @Override
+    public final void done() {
+        // do nothing
+    }
+
+    @Override
+    public final void internalWorked(double work) {
+        // do nothing
+    }
+
+    @Override
+    public final boolean isCanceled() {
+        return isFinished();
+    }
+
+    @Override
+    public final void setCanceled(boolean canceled) {
+        // do nothing
     }
 
     protected boolean onHideProgressPanelLater() {
