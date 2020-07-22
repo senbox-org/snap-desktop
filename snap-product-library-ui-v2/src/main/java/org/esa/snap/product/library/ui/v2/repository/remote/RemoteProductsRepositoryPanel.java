@@ -36,6 +36,8 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * The panel containing the query parameters of a remote repository.
+ *
  * Created by jcoravu on 5/8/2019.
  */
 public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPanel {

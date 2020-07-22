@@ -7,6 +7,8 @@ import java.awt.*;
 import java.beans.PropertyChangeListener;
 
 /**
+ * The class implementation to manage the progress bar panel visible when running long time operations.
+ *
  * Created by jcoravu on 12/9/2019.
  */
 public abstract class ProgressBarHelperImpl implements ProgressBarHelper {

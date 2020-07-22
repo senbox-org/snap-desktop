@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 /**
+ * A counting semaphore which allows a fixed number of connections to query a certain remote repository in the same time.
+ *
  * Created by jcoravu on 16/10/2019.
  */
 public class RemoteRepositoriesSemaphore {

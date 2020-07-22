@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
+ * The action class containing information about the option from the popup menu.
+ *
  * Created by jcoravu on 21/7/2020.
  */
 public abstract class ProductLibraryV2Action extends JMenuItem implements ActionListener {

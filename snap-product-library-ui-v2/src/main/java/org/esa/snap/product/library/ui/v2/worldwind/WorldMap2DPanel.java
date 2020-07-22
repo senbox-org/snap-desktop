@@ -16,6 +16,8 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * The panel containing the 2D earth globe.
+ *
  * Created by jcoravu on 21/10/2019.
  */
 public class WorldMap2DPanel extends LayerCanvas implements WorldMap {

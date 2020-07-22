@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
+ * The class represents the top bar panel which contains the combox box with the available repositories,
+ * the search product list button, the progress bar panel.
+ *
  * Created by jcoravu on 22/8/2019.
  */
 public class RepositorySelectionPanel extends JPanel {

@@ -5,6 +5,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * The class computes the product count for several years.
+ */
 public abstract class AbstractMultipleYearsTimelineHelper extends AbstractTimelineHelper {
 
     protected static final String SEPARATOR_LABEL_KEY = "SeparatorLabelKey";

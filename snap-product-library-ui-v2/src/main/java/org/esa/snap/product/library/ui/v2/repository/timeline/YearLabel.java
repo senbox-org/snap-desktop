@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * The label to represent an year on the time axis.
+ */
 public class YearLabel extends JLabel {
 
     private final int year;

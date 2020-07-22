@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to load the initial data when showing for the first time the Product Library Tool.
+ *
  * Created by jcoravu on 16/9/2019.
  */
 public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues> {

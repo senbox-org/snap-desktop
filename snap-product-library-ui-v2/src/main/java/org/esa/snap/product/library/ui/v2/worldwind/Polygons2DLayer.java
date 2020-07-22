@@ -10,6 +10,8 @@ import java.awt.geom.Path2D;
 import java.util.Iterator;
 
 /**
+ * The polygons layer for 3D earth globe.
+ *
  * Created by jcoravu on 10/9/2019.
  */
 public class Polygons2DLayer implements LayerCanvas.Overlay {

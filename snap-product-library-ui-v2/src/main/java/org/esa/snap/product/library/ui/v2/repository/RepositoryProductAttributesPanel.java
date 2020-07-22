@@ -11,6 +11,8 @@ import java.awt.*;
 import java.util.*;
 
 /**
+ * The class contains the repository product attributes.
+ *
  * Created by jcoravu on 3/2/2020.
  */
 public class RepositoryProductAttributesPanel extends JPanel {

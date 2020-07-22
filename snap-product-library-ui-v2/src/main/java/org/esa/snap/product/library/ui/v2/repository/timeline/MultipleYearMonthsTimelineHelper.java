@@ -2,6 +2,9 @@ package org.esa.snap.product.library.ui.v2.repository.timeline;
 
 import java.util.List;
 
+/**
+ * The class computes the product count by month for several years.
+ */
 public abstract class MultipleYearMonthsTimelineHelper extends AbstractMultipleYearsTimelineHelper {
 
     public MultipleYearMonthsTimelineHelper(List<YearLabel> monthBarsByYear, String monthsOfYear[]) {

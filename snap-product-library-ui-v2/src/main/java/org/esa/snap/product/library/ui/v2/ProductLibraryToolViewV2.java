@@ -103,6 +103,9 @@ import java.util.logging.Logger;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * The Product Library Tool view representing the main panel.
+ */
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
         iconBase = "org/esa/snap/productlibrary/icons/search.png",

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The class stores the coordinate of a polyline.
+ *
  * Created by jcoravu on 11/9/2019.
  */
 public class CustomPolyline extends Polyline {

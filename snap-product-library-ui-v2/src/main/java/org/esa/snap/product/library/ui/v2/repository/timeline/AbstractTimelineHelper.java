@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The base class to layout the bar components of a timeline.
+ */
 public abstract class AbstractTimelineHelper {
 
     protected final List<YearLabel> yearLabels;
@@ -127,7 +130,6 @@ public abstract class AbstractTimelineHelper {
 
     protected void beforeMoveLayoutBarToLeft(int panelX, int monthBarId, int fromBarSegmentIndex, int toBarSegmentIndex, int[] barSegmentsX) {
     }
-
 
     protected int computeMaximumBarCountPerYear() {
         int maximumBarCount = 0;

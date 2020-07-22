@@ -6,6 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The <code>AbstractRunnable</code> class should be extended by any
+ * class whose instances are intended to be executed by a thread.
+ *
  * Created by jcoravu on 23/8/2019.
  */
 public abstract class AbstractRunnable<OutputType> implements Runnable, ThreadStatus {

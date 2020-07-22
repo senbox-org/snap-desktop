@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The panel containing the query parameters of a repository.
+ *
  * Created by jcoravu on 5/8/2019.
  */
 public abstract class AbstractProductsRepositoryPanel extends JPanel {

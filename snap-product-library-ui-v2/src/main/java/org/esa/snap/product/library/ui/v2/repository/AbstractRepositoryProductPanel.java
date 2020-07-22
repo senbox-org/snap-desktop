@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The base panel to show the data of a repository product.
+ *
  * Created by jcoravu on 23/9/2019.
  */
 public abstract class AbstractRepositoryProductPanel extends JPanel {

@@ -8,6 +8,10 @@ import javax.swing.*;
 import java.awt.EventQueue;
 
 /**
+ * The <code>AbstractProgressTimerRunnable</code> class should be extended by any
+ * class whose instances are intended to be executed by a thread. The class contains a timer
+ * started when the thread is started to show after a predefinesd period the progress bar panel.
+ *
  * Created by jcoravu on 23/8/2019.
  */
 public abstract class AbstractProgressTimerRunnable<OutputType> extends AbstractRunnable<OutputType> implements ProgressMonitor {

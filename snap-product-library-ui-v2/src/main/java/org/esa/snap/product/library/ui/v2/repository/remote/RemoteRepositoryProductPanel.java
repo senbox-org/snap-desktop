@@ -10,6 +10,8 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import javax.swing.*;
 
 /**
+ * The panel to show the data of a remote repository product.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class RemoteRepositoryProductPanel extends AbstractRepositoryProductPanel {

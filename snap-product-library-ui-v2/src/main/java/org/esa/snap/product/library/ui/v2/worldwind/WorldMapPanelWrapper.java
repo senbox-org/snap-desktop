@@ -17,6 +17,9 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+/**
+ * The panel containing the earth globe.
+ */
 public class WorldMapPanelWrapper extends JPanel {
 
     private static final String PREFERENCES_KEY_LAST_WORLD_MAP_PANEL = "last_world_map_panel";

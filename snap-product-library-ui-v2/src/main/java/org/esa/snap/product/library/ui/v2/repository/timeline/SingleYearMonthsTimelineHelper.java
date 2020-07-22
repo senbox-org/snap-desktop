@@ -5,6 +5,9 @@ import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * The class computes the product count by month for an year.
+ */
 public abstract class SingleYearMonthsTimelineHelper extends AbstractTimelineHelper {
 
     private final JLabel monthNameLabels[];
