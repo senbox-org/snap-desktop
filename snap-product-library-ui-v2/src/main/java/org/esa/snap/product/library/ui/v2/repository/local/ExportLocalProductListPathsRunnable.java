@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * The thread to write in a text file the paths of the product list.
+ *
  * Created by jcoravu on 4/3/2020.
  */
 public class ExportLocalProductListPathsRunnable extends AbstractRunnable<Void> {

@@ -6,6 +6,8 @@ import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCred
 import java.util.List;
 
 /**
+ * The initial data to configure the local and remote repositories when the application is started.
+ *
  * Created by jcoravu on 18/9/2019.
  */
 public class LocalParameterValues {

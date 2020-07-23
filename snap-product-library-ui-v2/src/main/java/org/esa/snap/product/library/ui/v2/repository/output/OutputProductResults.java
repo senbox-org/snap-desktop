@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The class contains the data about the available repository products to be displayed by pagination.
+ *
  * Created by jcoravu on 30/1/2020.
  */
 public class OutputProductResults {

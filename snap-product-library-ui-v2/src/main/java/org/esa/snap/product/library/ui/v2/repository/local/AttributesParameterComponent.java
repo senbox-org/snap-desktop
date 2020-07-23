@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The panel shows the attributes of a local product to be selected by the user when searching the products in
+ * the local repositories.
+ *
  * Created by jcoravu on 18/9/2019.
  */
 public class AttributesParameterComponent extends AbstractParameterComponent<List<AttributeFilter>> {

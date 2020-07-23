@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to download the quick look images of the products from the search list.
+ *
  * Created by jcoravu on 29/1/2020.
  */
 public class DownloadProductsQuickLookImageRunnable extends AbstractBackgroundDownloadRunnable {

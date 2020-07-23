@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * The dialog window to allow the user to select the options for scanning a local repository.
+ *
  * Created by jcoravu on 20/7/2020.
  */
 public class ScanLocalRepositoryOptionsDialog extends AbstractModalDialog {

@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to add a local folder as a repository.
+ *
  * Created by jcoravu on 3/10/2019.
  */
 public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {

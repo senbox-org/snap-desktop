@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to scan all the local repository folders.
+ *
  * Created by jcoravu on 4/10/2019.
  */
 public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {

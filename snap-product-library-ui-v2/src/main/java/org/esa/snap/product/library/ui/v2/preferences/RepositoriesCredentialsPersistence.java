@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * Save the repository credentials in a file from the local disk.
+ */
 public final class RepositoriesCredentialsPersistence {
 
     /**

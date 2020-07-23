@@ -20,6 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to open in the application a list with local products.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunnable {

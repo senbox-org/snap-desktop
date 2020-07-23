@@ -5,6 +5,9 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+/**
+ * The model of the table containing the available remote repositories.
+ */
 public class RepositoriesTableModel extends AbstractTableModel {
 
     /**

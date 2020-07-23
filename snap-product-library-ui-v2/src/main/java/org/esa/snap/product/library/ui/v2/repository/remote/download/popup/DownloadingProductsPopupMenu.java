@@ -11,6 +11,8 @@ import java.awt.*;
 import java.util.List;
 
 /**
+ * The popup menu to display the panel containing the downloading products.
+ *
  * Created by jcoravu on 11/2/2020.
  */
 public class DownloadingProductsPopupMenu extends JPopupMenu implements PopupDownloadProductsListener {

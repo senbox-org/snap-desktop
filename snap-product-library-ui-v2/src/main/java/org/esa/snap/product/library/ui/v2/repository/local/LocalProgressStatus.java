@@ -1,6 +1,8 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 /**
+ * The status of a local repository product.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class LocalProgressStatus {

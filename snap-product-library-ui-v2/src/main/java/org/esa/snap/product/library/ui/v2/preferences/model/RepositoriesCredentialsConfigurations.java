@@ -2,6 +2,9 @@ package org.esa.snap.product.library.ui.v2.preferences.model;
 
 import java.util.List;
 
+/**
+ * The configuration data of a remote repository.
+ */
 public class RepositoriesCredentialsConfigurations {
 
     private List<RemoteRepositoryCredentials> repositoriesCredentials;

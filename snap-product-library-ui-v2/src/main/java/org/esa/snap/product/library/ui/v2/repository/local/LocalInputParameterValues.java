@@ -5,6 +5,8 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import java.util.Map;
 
 /**
+ * The data of the search parameters for a local repository.
+ *
  * Created by jcoravu on 6/2/2020.
  */
 public class LocalInputParameterValues {

@@ -6,6 +6,8 @@ import org.esa.snap.ui.loading.SwingUtils;
 import javax.swing.*;
 
 /**
+ * The parameter component allows the user to select a value from a combo box for the search parameter.
+ *
  * Created by jcoravu on 7/8/2019.
  */
 public class StringComboBoxParameterComponent extends AbstractParameterComponent<String> {

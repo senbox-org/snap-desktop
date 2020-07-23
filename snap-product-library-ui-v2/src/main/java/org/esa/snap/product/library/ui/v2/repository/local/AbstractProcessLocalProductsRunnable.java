@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.util.List;
 
 /**
+ * The base thread to process the local products.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public abstract class AbstractProcessLocalProductsRunnable extends AbstractProgressTimerRunnable<Void> {

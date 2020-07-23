@@ -16,6 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * The thread to read a product list.
+ *
  * Created by jcoravu on 21/7/2020.
  */
 public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnable<ProductEntry[]> {
