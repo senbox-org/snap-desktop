@@ -5,11 +5,13 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveProductData;
+import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.*;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,6 +73,10 @@ public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimer
     }
 
     protected void onFinishSavingProduct(SaveProductData saveProductData) {
+    }
+
+    public Path getLocalRepositoryFolderPath() {
+        return localRepositoryFolderPath;
     }
 
     private void updateFinishSavingProductDataLater(SaveProductData saveProductData) {

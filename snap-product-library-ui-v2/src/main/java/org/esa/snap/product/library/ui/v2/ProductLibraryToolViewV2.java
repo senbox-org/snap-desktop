@@ -655,7 +655,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository, scanRecursively, generateQuickLookImages, testZipFileForErrors) {
             @Override
             protected void onFinishRunning() {
-                onFinishRunningLocalProductsThread(this, true);
+                onFinishProcessingLocalRepoitoryThread(this, null); // 'null' => no local repository folder to select
             }
 
             @Override
@@ -711,7 +711,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                                                                                        scanRecursively, generateQuickLookImages, testZipFileForErrors) {
             @Override
             protected void onFinishRunning() {
-                onFinishRunningLocalProductsThread(this, true);
+                onFinishProcessingLocalRepoitoryThread(this, getLocalRepositoryFolderPath());
             }
 
             @Override
@@ -817,6 +817,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             return true;
         }
         return false;
+    }
+
+    private void onFinishProcessingLocalRepoitoryThread(Runnable invokerThread, Path localRepositoryFolderPathToSelect) {
+        if (resetLocalRepositoryProductsThread(invokerThread)) {
+            if (this.repositorySelectionPanel.getSelectedProductsRepositoryPanel() instanceof AllLocalProductsRepositoryPanel) {
+                // the local repository is selected
+                AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
+                allLocalProductsRepositoryPanel.updateInputParameterValues(localRepositoryFolderPathToSelect, null, null, null, null);
+                this.repositoryOutputProductListPanel.clearOutputList(true);
+                searchProductListLater();
+            }
+        }
     }
 
     private void onFinishRunningLocalProductsThread(Runnable invokerThread, boolean startSearchProducts) {
@@ -1270,7 +1282,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         AttributeFilter attributeFilter = new AttributeFilter(AbstractMetadata.data_take_id, dataTakeId.toString(), AttributesParameterComponent.EQUAL_VALUE_FILTER);
                         List<AttributeFilter> attributes = new ArrayList<>(1);
                         attributes.add(attributeFilter);
-                        allLocalProductsRepositoryPanel.updateInputParameterValues(null, null, null, attributes);
+                        allLocalProductsRepositoryPanel.updateInputParameterValues(null, null,null, null, null, attributes);
 
                         this.repositoryOutputProductListPanel.clearOutputList(true);
 

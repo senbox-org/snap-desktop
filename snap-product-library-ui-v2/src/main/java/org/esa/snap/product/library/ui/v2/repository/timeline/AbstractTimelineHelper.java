@@ -131,7 +131,7 @@ public abstract class AbstractTimelineHelper {
     protected void beforeMoveLayoutBarToLeft(int panelX, int monthBarId, int fromBarSegmentIndex, int toBarSegmentIndex, int[] barSegmentsX) {
     }
 
-    protected int computeMaximumBarCountPerYear() {
+    private int computeMaximumBarCountPerYear() {
         int maximumBarCount = 0;
         for (int i = 0; i < this.yearLabels.size(); i++) {
             YearLabel yearLabel = this.yearLabels.get(i);
@@ -142,9 +142,9 @@ public abstract class AbstractTimelineHelper {
         return maximumBarCount;
     }
 
-    protected int computeMaximumProductCountPerBar() {
-        int maximumProductCountPerBar = this.yearLabels.get(0).computeMaximumProductCount();
-        for (int i = 1; i<this.yearLabels.size(); i++) {
+    private int computeMaximumProductCountPerBar() {
+        int maximumProductCountPerBar = 0;
+        for (int i = 0; i<this.yearLabels.size(); i++) {
             int productCountPerMonth = this.yearLabels.get(i).computeMaximumProductCount();
             if (maximumProductCountPerBar < productCountPerMonth) {
                 maximumProductCountPerBar = productCountPerMonth;
@@ -154,7 +154,19 @@ public abstract class AbstractTimelineHelper {
     }
 
     protected static int computeBarHeight(int barProductCount, int maximumProductCountPerBar, int maximumMonthBarHeight) {
-        float barHeightPercent = (float) barProductCount / (float) maximumProductCountPerBar;
-        return (int) (barHeightPercent * maximumMonthBarHeight);
+        if (barProductCount < 0) {
+            throw new IllegalArgumentException("The bar product count is negative: " + barProductCount + ".");
+        }
+        if (maximumProductCountPerBar < 0) {
+            throw new IllegalArgumentException("The maximum product count per bar is negative: " + maximumProductCountPerBar + ".");
+        }
+        if (maximumMonthBarHeight < 0) {
+            throw new IllegalArgumentException("The maximum month bar height is negative: " + maximumMonthBarHeight + ".");
+        }
+        if (maximumProductCountPerBar > 0) {
+            float barHeightPercent = (float) barProductCount / (float) maximumProductCountPerBar;
+            return (int) (barHeightPercent * maximumMonthBarHeight);
+        }
+        return 0;
     }
 }

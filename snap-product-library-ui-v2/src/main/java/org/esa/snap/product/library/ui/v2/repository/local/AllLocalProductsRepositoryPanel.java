@@ -215,9 +215,23 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return false;
     }
 
-    public void updateInputParameterValues(Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
-        this.foldersComboBox.setSelectedItem(null);
-        this.remoteMissionsComboBox.setSelectedItem(null);
+    public void updateInputParameterValues(Path localRepositoryFolderPath, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+        LocalRepositoryFolder localRepositoryFolderToSelect = null;
+        int size = this.foldersComboBox.getModel().getSize();
+        for (int i=0; i<size && localRepositoryFolderToSelect == null; i++) {
+            LocalRepositoryFolder localRepositoryFolder = this.foldersComboBox.getModel().getElementAt(i);
+            if (localRepositoryFolder != null && localRepositoryFolder.getPath().equals(localRepositoryFolderPath)) {
+                localRepositoryFolderToSelect = localRepositoryFolder;
+            }
+        }
+        updateInputParameterValues(localRepositoryFolderToSelect, null, startDate, endDate, areaOfInterestToSelect, attributes);
+    }
+
+    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, Date startDate, Date endDate,
+                                           Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+
+        this.foldersComboBox.setSelectedItem(localRepositoryFolder);
+        this.remoteMissionsComboBox.setSelectedItem(remoteMission);
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
             if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.FOOT_PRINT_PARAMETER)) {

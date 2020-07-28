@@ -53,8 +53,8 @@ public class YearLabel extends JLabel {
     }
 
     public int computeMaximumProductCount() {
-        int maximumProductCount = this.timelineBars.get(0).getProductCount();
-        for (int i = 1; i < this.timelineBars.size(); i++) {
+        int maximumProductCount = 0;
+        for (int i = 0; i < this.timelineBars.size(); i++) {
             int productCount = this.timelineBars.get(i).getProductCount();
             if (maximumProductCount < productCount) {
                 maximumProductCount = productCount;

@@ -24,6 +24,14 @@ public class ScanLocalRepositoryOptionsDialog extends AbstractModalDialog {
     }
 
     @Override
+    protected void onAboutToShow() {
+        JDialog dialog = getJDialog();
+        Dimension dialogSize = dialog.getSize();
+        dialogSize.width = (int)(1.5f * dialogSize.width);
+        dialog.setSize(dialogSize);
+    }
+
+    @Override
     protected JPanel buildContentPanel(int gapBetweenColumns, int gapBetweenRows) {
         this.scanFolderRecursivelyCheckBox = new JCheckBox("Search folder recursively");
         this.generateQuickLookImagesCheckBox = new JCheckBox("Generate quick look images");

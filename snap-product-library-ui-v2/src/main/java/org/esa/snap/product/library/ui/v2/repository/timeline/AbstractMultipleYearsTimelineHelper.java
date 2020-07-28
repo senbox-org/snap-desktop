@@ -36,7 +36,7 @@ public abstract class AbstractMultipleYearsTimelineHelper extends AbstractTimeli
         for (int year = miminumYear; year<=maximumYear; year++) {
             YearLabel foundYear = null;
             for (int k=0; k<this.yearLabels.size() && foundYear==null; k++) {
-                YearLabel existingYearLabel = monthBarsByYear.get(k);
+                YearLabel existingYearLabel = this.yearLabels.get(k);
                 if (year == existingYearLabel.getYear()) {
                     foundYear = existingYearLabel;
                 }
