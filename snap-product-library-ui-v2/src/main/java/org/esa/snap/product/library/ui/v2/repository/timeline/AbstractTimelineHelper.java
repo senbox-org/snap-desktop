@@ -1,10 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.timeline;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The base class to layout the bar components of a timeline.
@@ -29,33 +26,35 @@ public abstract class AbstractTimelineHelper {
 
         int barCountPerYear = defaultBarCountPerYear;
         int minimumGapBetweenBars = 2; // the gap between bars should be an even number
-        int barWidth = yearLabelsHeight;
+        int barWidth = yearLabelsHeight; // the default bar width value
 
         int maximumBarWidth = (yearLabelsWidth / barCountPerYear) - minimumGapBetweenBars;
         if (maximumBarWidth < barWidth) {
-            barCountPerYear = computeMaximumBarCountPerYear();
-            if (barCountPerYear > defaultBarCountPerYear) {
-                throw new IllegalStateException("Wrong barCountPerYear="+barCountPerYear+".");
+            // recompute the values
+            barCountPerYear = computeMaximumBarCountPerYear(); // recompute the bar count per year
+            if (barCountPerYear <= 0 || barCountPerYear > defaultBarCountPerYear) {
+                throw new IllegalStateException("Invalid values: barCountPerYear="+barCountPerYear+", defaultBarCountPerYear=" + defaultBarCountPerYear + ".");
             }
             maximumBarWidth = (yearLabelsWidth / barCountPerYear) - minimumGapBetweenBars;
             if (maximumBarWidth < barWidth) {
-                barWidth = maximumBarWidth;
+                barWidth = maximumBarWidth; // update the bar width
             }
         }
 
         int monthBarSegmentWidth = yearLabelsWidth / barCountPerYear;
         int monthBarSegmentRemainingWidth = yearLabelsWidth % barCountPerYear;
         int barSegmentsX[] = new int[barCountPerYear];
-        barSegmentsX[0] = 0;
+        barSegmentsX[0] = 0; // the first bar has x = 0
         for (int i=1; i<barCountPerYear; i++) {
             barSegmentsX[i] = barSegmentsX[i - 1] + monthBarSegmentWidth;
             if (i > 0 && monthBarSegmentRemainingWidth > 0) {
                 monthBarSegmentRemainingWidth--;
-                barSegmentsX[i]++;
+                barSegmentsX[i]++; // add one pixel from the remaining width to each bar left offset
             }
         }
         int monthBarOffsetX = (monthBarSegmentWidth - barWidth) / 2;
 
+        // iterate the years
         for (int i = 0; i < this.yearLabels.size(); i++) {
             YearLabel yearLabel = this.yearLabels.get(i);
             doYearBarsLayout(panelX, panelY, panelWidth, yearLabel, defaultBarCountPerYear, barCountPerYear, maximumProductCountPerBar,
@@ -68,61 +67,70 @@ public abstract class AbstractTimelineHelper {
                                     int maximumBarHeight, int[] barSegmentsX, int barWidth, int monthBarOffsetX) {
 
         if (yearLabel.getTimelineBarCount() > barCountPerYear) {
-            throw new IllegalStateException("The month bar count " + yearLabel.getTimelineBarCount() + " is greater than the bar count per year " + barCountPerYear + ".");
+            throw new IllegalStateException("The bar count " + yearLabel.getTimelineBarCount() + " is greater than the bar count per year " + barCountPerYear + ".");
         } else {
-            LinkedHashMap<TimelineBarComponent, Integer> monthBarIndecesMap = new LinkedHashMap<>();
+            Map<TimelineBarComponent, Integer> visibleBarIndicesMap = (yearLabel.getTimelineBarCount() > 0) ? new LinkedHashMap<>() : Collections.emptyMap();
             for (int k = 0; k < yearLabel.getTimelineBarCount(); k++) {
-                TimelineBarComponent monthBarComponent = yearLabel.getTimelineBarAt(k);
-                if (monthBarComponent.getId() >= defaultBarCountPerYear) {
-                    throw new IllegalStateException("The month bar id " + monthBarComponent.getId() +" is greater or equal than " + defaultBarCountPerYear + ".");
+                TimelineBarComponent barComponent = yearLabel.getTimelineBarAt(k);
+                if (barComponent.getId() < 0) {
+                    throw new IllegalStateException("The bar component id " + barComponent.getId() +" is negative.");
+                } else if (barComponent.getId() >= defaultBarCountPerYear) {
+                    throw new IllegalStateException("The bar component id " + barComponent.getId() +" is greater or equal than " + defaultBarCountPerYear + ".");
                 } else {
-                    int monthBarHeight = computeBarHeight(monthBarComponent.getProductCount(), maximumProductCountPerBar, maximumBarHeight);
+                    int monthBarHeight = computeBarHeight(barComponent.getProductCount(), maximumProductCountPerBar, maximumBarHeight);
                     int barY = maximumBarHeight - monthBarHeight;
                     int barX;
                     int segmentBarIndex;
                     if (barCountPerYear == defaultBarCountPerYear) {
-                        segmentBarIndex = monthBarComponent.getId();
-                        barX = yearLabel.getX() + barSegmentsX[monthBarComponent.getId()] + monthBarOffsetX;
+                        segmentBarIndex = barComponent.getId();
+                        barX = yearLabel.getX() + barSegmentsX[barComponent.getId()] + monthBarOffsetX;
                     } else {
-                        segmentBarIndex = (monthBarComponent.getId() * barCountPerYear) / defaultBarCountPerYear;
+                        segmentBarIndex = (barComponent.getId() * barCountPerYear) / defaultBarCountPerYear;
                         barX = yearLabel.getX() + barSegmentsX[segmentBarIndex] + monthBarOffsetX;
                         if (k > 0) {
-                            TimelineBarComponent previousMonthBarComponent = yearLabel.getTimelineBarAt(k - 1);
-                            while (segmentBarIndex < barCountPerYear && previousMonthBarComponent.getX() >= barX) {
+                            // recompute the bar position on the X axis
+                            TimelineBarComponent previousBarComponent = yearLabel.getTimelineBarAt(k - 1);
+                            while (segmentBarIndex < barCountPerYear && previousBarComponent.getX() >= barX) {
                                 segmentBarIndex++;
                                 if (segmentBarIndex < barCountPerYear) {
                                     barX = yearLabel.getX() + barSegmentsX[segmentBarIndex] + monthBarOffsetX;
                                 }
                             }
+                            // check if the bar to display is the last last
                             if (segmentBarIndex == barCountPerYear) {
                                 // move the bars one position to the left
-                                for (Map.Entry<TimelineBarComponent, Integer> entry : monthBarIndecesMap.entrySet()) {
-                                    TimelineBarComponent addedMonthBarComponent = entry.getKey();
+                                for (Map.Entry<TimelineBarComponent, Integer> entry : visibleBarIndicesMap.entrySet()) {
+                                    TimelineBarComponent addedBarComponent = entry.getKey();
                                     int fromBarSegmentIndex = entry.getValue().intValue();
-                                    int toBarSegmentIndex = fromBarSegmentIndex - 1; // decrement by one the index
-                                    int addedBarX = yearLabel.getX() + barSegmentsX[toBarSegmentIndex] + monthBarOffsetX;
-                                    beforeMoveLayoutBarToLeft(panelX, addedMonthBarComponent.getId(), fromBarSegmentIndex, toBarSegmentIndex, barSegmentsX);
-                                    addedMonthBarComponent.setLocation(addedBarX, addedMonthBarComponent.getY());
-                                    entry.setValue(toBarSegmentIndex);
+                                    if (fromBarSegmentIndex < 0) {
+                                        throw new IllegalStateException("Invalid value: fromBarSegmentIndex="+fromBarSegmentIndex+".");
+                                    } else if (fromBarSegmentIndex > 0) {
+                                        int toBarSegmentIndex = fromBarSegmentIndex - 1; // decrement by one the index
+                                        int addedBarX = yearLabel.getX() + barSegmentsX[toBarSegmentIndex] + monthBarOffsetX;
+                                        beforeMoveLayoutBarToLeft(panelX, addedBarComponent.getId(), fromBarSegmentIndex, toBarSegmentIndex, barSegmentsX);
+                                        addedBarComponent.setLocation(addedBarX, addedBarComponent.getY());
+                                        entry.setValue(toBarSegmentIndex);
+                                    }
                                 }
                                 segmentBarIndex = barCountPerYear - 1; // the last bar index
                                 barX = yearLabel.getX() + barSegmentsX[segmentBarIndex] + monthBarOffsetX;
                             }
                         }
                     }
-                    monthBarIndecesMap.put(monthBarComponent, segmentBarIndex);
 
-                    beforeLayoutBar(panelX, panelY, panelWidth, maximumBarHeight, monthBarComponent.getId(), segmentBarIndex, barSegmentsX);
-                    monthBarComponent.setBounds(barX, barY, barWidth, monthBarHeight);
+                    visibleBarIndicesMap.put(barComponent, segmentBarIndex);
+
+                    beforeLayoutBar(panelX, panelY, panelWidth, maximumBarHeight, barComponent.getId(), segmentBarIndex, barSegmentsX);
+                    barComponent.setBounds(barX, barY, barWidth, monthBarHeight);
                 }
             }
 
-            afterLayoutBars(panelX, panelY, panelWidth, maximumBarHeight, defaultBarCountPerYear, barCountPerYear, barSegmentsX, monthBarIndecesMap);
+            afterLayoutBars(panelX, panelY, panelWidth, maximumBarHeight, defaultBarCountPerYear, barCountPerYear, barSegmentsX, visibleBarIndicesMap);
         }
     }
 
     protected void afterLayoutBars(int panelX, int panelY, int panelWidth, int maximumBarHeight, int defaultBarCountPerYear, int barCountPerYear,
-                                   int[] barSegmentsX, LinkedHashMap<TimelineBarComponent, Integer> monthBarIndecesMap) {
+                                   int[] barSegmentsX, Map<TimelineBarComponent, Integer> visibleBarIndicesMap) {
     }
 
     protected void beforeLayoutBar(int panelX, int panelY, int panelWidth, int maximumBarHeight, int monthBarId, int barIndex, int[] barSegmentsX) {
@@ -153,7 +161,7 @@ public abstract class AbstractTimelineHelper {
         return maximumProductCountPerBar;
     }
 
-    protected static int computeBarHeight(int barProductCount, int maximumProductCountPerBar, int maximumMonthBarHeight) {
+    private static int computeBarHeight(int barProductCount, int maximumProductCountPerBar, int maximumMonthBarHeight) {
         if (barProductCount < 0) {
             throw new IllegalArgumentException("The bar product count is negative: " + barProductCount + ".");
         }

@@ -47,7 +47,7 @@ public abstract class SingleYearMonthsTimelineHelper extends AbstractTimelineHel
 
     @Override
     protected void afterLayoutBars(int panelX, int panelY, int panelWidth, int maximumBarHeight, int defaultBarCountPerYear, int barCountPerYear,
-                                   int[] barSegmentsX, LinkedHashMap<TimelineBarComponent, Integer> monthBarIndecesMap) {
+                                   int[] barSegmentsX, Map<TimelineBarComponent, Integer> visibleBarIndicesMap) {
 
         for (int i=0; i<this.monthsOfYear.length; i++) {
             JLabel monthNameLabel = this.monthNameLabels[i];
@@ -55,7 +55,7 @@ public abstract class SingleYearMonthsTimelineHelper extends AbstractTimelineHel
             if (barCountPerYear == defaultBarCountPerYear) {
                 visible = true;
                 boolean foundMonthBar = false;
-                for (Map.Entry<TimelineBarComponent, Integer> entry : monthBarIndecesMap.entrySet()) {
+                for (Map.Entry<TimelineBarComponent, Integer> entry : visibleBarIndicesMap.entrySet()) {
                     TimelineBarComponent monthBarComponent = entry.getKey();
                     if (monthBarComponent.getId() == i) {
                         foundMonthBar = true;
