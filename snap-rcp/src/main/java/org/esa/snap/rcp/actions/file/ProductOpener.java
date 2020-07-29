@@ -221,7 +221,7 @@ public class ProductOpener {
             PluginEntry entry;
             if (formatName == null && plugin == null) {
                 final Map<DecodeQualification, List<PluginEntry>> plugins = getPluginsForFile(file);
-                if (plugins.isEmpty()) {
+                if (plugins.isEmpty() || (plugins.get(DecodeQualification.INTENDED).size() == 0 && plugins.get(DecodeQualification.SUITABLE).size() == 0)) {
                     Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
                     continue;
                 } else if (plugins.get(DecodeQualification.INTENDED).size() == 1) {
