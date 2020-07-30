@@ -16,22 +16,16 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -370,13 +364,10 @@ public class ProductFileChooser extends SnapFileChooser {
 
     private Pair<ProductReaderPlugIn, Boolean> findPlugins(File file){
         Pair<ProductReaderPlugIn, Boolean> result = null;
-        final List<ProductOpener.PluginEntry> intendedPlugIns = ProductOpener.getPluginsForFile(file, DecodeQualification.INTENDED);
-        List<ProductOpener.PluginEntry> suitablePlugIns = new ArrayList<>();
-        if (intendedPlugIns.isEmpty()) { // check for suitable readers only if no intended reader was found
-            suitablePlugIns.addAll(ProductOpener.getPluginsForFile(file, DecodeQualification.SUITABLE));
-        }
-
+        final Map<DecodeQualification, List<ProductOpener.PluginEntry>> plugins = ProductOpener.getPluginsForFile(file);
         final String fileFormatName;
+        final List<ProductOpener.PluginEntry> intendedPlugIns = plugins.get(DecodeQualification.INTENDED);
+        final List<ProductOpener.PluginEntry> suitablePlugIns = plugins.get(DecodeQualification.SUITABLE);
         if (intendedPlugIns.size() == 1) {
             ProductOpener.PluginEntry entry = intendedPlugIns.get(0);
             result = new Pair<>(entry.plugin, null);

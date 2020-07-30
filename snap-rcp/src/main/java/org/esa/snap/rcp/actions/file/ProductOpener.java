@@ -16,24 +16,13 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.RequestProcessor;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 /**
@@ -229,23 +218,21 @@ public class ProductOpener {
         RequestProcessor rp = new RequestProcessor("Opening Products", 4, true, true);
         for (File file : fileList) {
             String fileFormatName;
+            PluginEntry entry;
             if (formatName == null && plugin == null) {
-                final List<PluginEntry> intendedPlugIns = getPluginsForFile(file, DecodeQualification.INTENDED);
-                List<PluginEntry> suitablePlugIns = new ArrayList<>();
-                if (intendedPlugIns.size() == 0) { // check for suitable readers only if no intended reader was found
-                    suitablePlugIns.addAll(getPluginsForFile(file, DecodeQualification.SUITABLE));
-                }
-
-                if (intendedPlugIns.isEmpty() && suitablePlugIns.isEmpty()) {
+                final Map<DecodeQualification, List<PluginEntry>> plugins = getPluginsForFile(file);
+                if (plugins.isEmpty() || (plugins.get(DecodeQualification.INTENDED).size() == 0 && plugins.get(DecodeQualification.SUITABLE).size() == 0)) {
                     Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
                     continue;
-                } else if (intendedPlugIns.size() == 1) {
-                    PluginEntry entry = intendedPlugIns.get(0);
+                } else if (plugins.get(DecodeQualification.INTENDED).size() == 1) {
+                    entry = plugins.get(DecodeQualification.INTENDED).get(0);
                     fileFormatName = entry.plugin.getFormatNames()[0];
-                } else if (intendedPlugIns.size() == 0 && suitablePlugIns.size() == 1) {
-                    PluginEntry entry = suitablePlugIns.get(0);
+                } else if (plugins.get(DecodeQualification.INTENDED).size() == 0 && plugins.get(DecodeQualification.SUITABLE).size() == 1) {
+                    entry = plugins.get(DecodeQualification.SUITABLE).get(0);
                     fileFormatName = entry.plugin.getFormatNames()[0];
                 } else {
+                    final List<PluginEntry> intendedPlugIns = plugins.get(DecodeQualification.INTENDED);
+                    final List<PluginEntry> suitablePlugIns = plugins.get(DecodeQualification.SUITABLE);
                     Collections.sort(intendedPlugIns);
                     Collections.sort(suitablePlugIns);
                     fileFormatName = getUserSelection(intendedPlugIns, suitablePlugIns);
@@ -273,13 +260,15 @@ public class ProductOpener {
         return true;
     }
 
-    static List<PluginEntry> getPluginsForFile(File file, DecodeQualification desiredQualification) {
+    static Map<DecodeQualification, List<PluginEntry>> getPluginsForFile(File file) {
         final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
-        final List<PluginEntry> possiblePlugIns = new ArrayList<>();
+        final Map<DecodeQualification, List<PluginEntry>> possiblePlugIns = new HashMap<>();
+        possiblePlugIns.put(DecodeQualification.INTENDED, new ArrayList<>());
+        possiblePlugIns.put(DecodeQualification.SUITABLE, new ArrayList<>());
         allReaderPlugIns.forEachRemaining(plugIn -> {
             final DecodeQualification qualification = plugIn.getDecodeQualification(file);
-            if (qualification == desiredQualification) {
-                possiblePlugIns.add(new PluginEntry(plugIn, qualification));
+            if (qualification != DecodeQualification.UNABLE) {
+                possiblePlugIns.get(qualification).add(new PluginEntry(plugIn, qualification));
             }
         });
         return possiblePlugIns;
