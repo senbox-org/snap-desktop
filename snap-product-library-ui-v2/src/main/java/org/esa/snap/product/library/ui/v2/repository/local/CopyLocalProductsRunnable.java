@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to copy local products from one local repository to other local repository.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class CopyLocalProductsRunnable extends AbstractProcessLocalProductsRunnable {

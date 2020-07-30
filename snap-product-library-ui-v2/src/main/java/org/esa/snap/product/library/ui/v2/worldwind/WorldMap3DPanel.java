@@ -29,6 +29,8 @@ import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
 
 /**
+ * The panel containing the 3D earth globe.
+ *
  * Created by jcoravu on 2/9/2019.
  */
 public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {

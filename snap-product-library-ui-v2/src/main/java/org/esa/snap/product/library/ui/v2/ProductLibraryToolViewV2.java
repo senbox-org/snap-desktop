@@ -19,7 +19,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.util.Pair;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
@@ -30,7 +34,10 @@ import org.esa.snap.product.library.ui.v2.repository.local.*;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.*;
+import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStatus;
+import org.esa.snap.product.library.ui.v2.repository.remote.OpenDownloadedProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductRunnable;
@@ -38,19 +45,24 @@ import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadRem
 import org.esa.snap.product.library.ui.v2.repository.remote.download.popup.DownloadingProductsPopupMenu;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
+import org.esa.snap.product.library.ui.v2.thread.ThreadCallback;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
+import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
+import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
+import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
@@ -58,6 +70,8 @@ import org.esa.snap.ui.loading.SwingUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -75,7 +89,9 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,6 +103,9 @@ import java.util.logging.Logger;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * The Product Library Tool view representing the main panel.
+ */
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
         iconBase = "org/esa/snap/productlibrary/icons/search.png",
@@ -117,6 +136,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private static final String HELP_ID = "productLibraryToolV2";
 
     private static final String PREFERENCES_KEY_LAST_LOCAL_REPOSITORY_FOLDER_PATH = "last_local_repository_folder_path";
+
+    private final static String LAST_ERROR_OUTPUT_DIR_KEY = "snap.lastErrorOutputDir";
 
     private Path lastLocalRepositoryFolderPath;
     private RepositoryOutputProductListPanel repositoryOutputProductListPanel;
@@ -435,81 +456,118 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.worldWindowPanel.addWorldMapPanelAsync(false, true);
     }
 
+    private List<ProductLibraryV2Action> readLocalRepositoryActions() {
+        FileObject fileObj = FileUtil.getConfigFile("ProductLibraryV2LocalRepositoryActions");
+        List<ProductLibraryV2Action> localActions = new ArrayList<>();
+        if (fileObj == null) {
+            logger.log(Level.WARNING, "No ProductLibrary Action found.");
+        } else {
+            FileObject[] files = fileObj.getChildren();
+            List<FileObject> orderedFiles = FileUtil.getOrder(Arrays.asList(files), true);
+            for (FileObject fileObject : orderedFiles) {
+                Class<? extends ProductLibraryV2Action> actionExtClass = OperatorUIRegistry.getClassAttribute(fileObject, "actionClass", ProductLibraryV2Action.class, false);
+                try {
+                    ProductLibraryV2Action action = actionExtClass.newInstance();
+                    action.setProductLibraryToolView(this);
+                    localActions.add(action);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    logger.log(Level.SEVERE, "Failed to instantiate the product library action using class '"+actionExtClass+"'.", e);
+                }
+            }
+        }
+        return localActions;
+    }
+
     private void addListeners() {
-        ActionListener jointSearchCriteriaListener = new ActionListener() {
+        List<ProductLibraryV2Action> localActions = readLocalRepositoryActions();
+
+        ProductLibraryV2Action jointSearchCriteriaListener = new ProductLibraryV2Action("Joint Search Criteria") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 jointSearchCriteriaOptionClicked();
             }
+
+            @Override
+            public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
+                return (selectedProducts.length == 1 && selectedProducts[0].getRemoteMission() != null);
+            }
         };
-        ActionListener openLocalProductListener = new ActionListener() {
+        ProductLibraryV2Action openLocalProductListener = new ProductLibraryV2Action("Open") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 openLocalSelectedProductsOptionClicked();
             }
         };
-        ActionListener deleteLocalProductListener = new ActionListener() {
+        ProductLibraryV2Action deleteLocalProductListener = new ProductLibraryV2Action("Delete...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 deleteLocalSelectedProductsOptionClicked();
             }
         };
-        ActionListener batchProcessingListener = new ActionListener() {
+        ProductLibraryV2Action batchProcessingListener = new ProductLibraryV2Action("Batch Processing...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 openBatchProcessingDialog();
             }
         };
-        ActionListener showInExplorerListener = new ActionListener() {
+        ProductLibraryV2Action showInExplorerListener = new ProductLibraryV2Action("Show in Explorer...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 showSelectedLocalProductInExplorer();
             }
+
+            @Override
+            public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
+                return (selectedProducts.length == 1);
+            }
         };
-        ActionListener selectAllListener = new ActionListener() {
+        ProductLibraryV2Action selectAllListener = new ProductLibraryV2Action("Select All") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 repositoryOutputProductListPanel.getProductListPanel().selectAllProducts();
             }
         };
-        ActionListener selectNoneListener = new ActionListener() {
+        ProductLibraryV2Action selectNoneListener = new ProductLibraryV2Action("Select None") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 repositoryOutputProductListPanel.getProductListPanel().clearSelection();
             }
         };
-        ActionListener copyListener = new ActionListener() {
+        ProductLibraryV2Action copyListener = new ProductLibraryV2Action("Copy") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 copySelectedProductsOptionClicked();
             }
         };
-        ActionListener copyToListener = new ActionListener() {
+        ProductLibraryV2Action copyToListener = new ProductLibraryV2Action("Copy To...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 copyToSelectedProductsOptionClicked();
             }
         };
-        ActionListener moveToListener = new ActionListener() {
+        ProductLibraryV2Action moveToListener = new ProductLibraryV2Action("Move To...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 moveToSelectedProductsOptionClicked();
             }
         };
-        ActionListener exportListListener = new ActionListener() {
+        ProductLibraryV2Action exportListListener = new ProductLibraryV2Action("Export List...") {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 exportSelectedProductsListOptionClicked();
             }
         };
-        LocalProductsPopupListeners localProductsPopupListeners = new LocalProductsPopupListeners(openLocalProductListener, deleteLocalProductListener, batchProcessingListener, showInExplorerListener);
-        localProductsPopupListeners.setJointSearchCriteriaListener(jointSearchCriteriaListener);
-        localProductsPopupListeners.setSelectAllListener(selectAllListener);
-        localProductsPopupListeners.setSelectNoneListener(selectNoneListener);
-        localProductsPopupListeners.setCopyListener(copyListener);
-        localProductsPopupListeners.setCopyToListener(copyToListener);
-        localProductsPopupListeners.setMoveToListener(moveToListener);
-        localProductsPopupListeners.setExportListListener(exportListListener);
+        localActions.add(openLocalProductListener);
+        localActions.add(deleteLocalProductListener);
+        localActions.add(selectAllListener);
+        localActions.add(selectNoneListener);
+        localActions.add(copyListener);
+        localActions.add(copyToListener);
+        localActions.add(moveToListener);
+        localActions.add(exportListListener);
+        localActions.add(jointSearchCriteriaListener);
+        localActions.add(batchProcessingListener);
+        localActions.add(showInExplorerListener);
 
         ActionListener scanLocalRepositoryFoldersListener = new ActionListener() {
             @Override
@@ -529,32 +587,45 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 deleteAllLocalRepositoriesButtonPressed();
             }
         };
-        this.repositorySelectionPanel.setLocalRepositoriesListeners(localProductsPopupListeners, scanLocalRepositoryFoldersListener,
-                                                                    addLocalRepositoryFolderListener, deleteLocalRepositoryFolderListener);
+        this.repositorySelectionPanel.setLocalRepositoriesListeners(scanLocalRepositoryFoldersListener, addLocalRepositoryFolderListener,
+                                                                    deleteLocalRepositoryFolderListener, localActions);
 
-        ActionListener downloadRemoteProductListener = new ActionListener() {
+        ProductLibraryV2Action downloadRemoteProductListener = new ProductLibraryV2Action("Download") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 downloadSelectedRemoteProductsButtonPressed();
             }
+
+            @Override
+            public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
+                return !visibleProductsRepositoryPanel.getOutputProductResults().canOpenDownloadedProducts(selectedProducts);
+            }
         };
-        ActionListener openDownloadedRemoteProductListener = new ActionListener() {
+        ProductLibraryV2Action openDownloadedRemoteProductListener = new ProductLibraryV2Action("Open") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 openDownloadedRemoteProductsButtonPressed();
             }
+
+            @Override
+            public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
+                return visibleProductsRepositoryPanel.getOutputProductResults().canOpenDownloadedProducts(selectedProducts);
+            }
         };
 
-        RemoteProductsPopupListeners remoteProductsPopupListeners = new RemoteProductsPopupListeners(downloadRemoteProductListener, openDownloadedRemoteProductListener, jointSearchCriteriaListener);
+        List<ProductLibraryV2Action> remoteActions = new ArrayList<>();
+        remoteActions.add(openDownloadedRemoteProductListener);
+        remoteActions.add(downloadRemoteProductListener);
+        remoteActions.add(jointSearchCriteriaListener);
 
-        this.repositorySelectionPanel.setDownloadRemoteProductListener(remoteProductsPopupListeners);
+        this.repositorySelectionPanel.setDownloadRemoteProductListener(remoteActions);
     }
 
     private int showConfirmDialog(String title, String message, int buttonsOptionType) {
         return JOptionPane.showConfirmDialog(this, message, title, buttonsOptionType);
     }
 
-    private void showMessageDialog(String title, String message, int iconMessageType) {
+    public void showMessageDialog(String title, String message, int iconMessageType) {
         JOptionPane.showMessageDialog(this, message, title, iconMessageType);
     }
 
@@ -566,22 +637,38 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     .append("There is a running action.");
             showMessageDialog("Scan all local repositories", message.toString(), JOptionPane.ERROR_MESSAGE);
         } else {
-            ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
-            int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-            AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
-            this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository) {
+            ScanLocalRepositoryOptionsDialog dialog = new ScanLocalRepositoryOptionsDialog(null) {
                 @Override
-                protected void onFinishRunning() {
-                    onFinishRunningLocalProductsThread(this, true);
-                }
-
-                @Override
-                protected void onLocalRepositoryFolderDeleted(LocalRepositoryFolder localRepositoryFolder) {
-                    ProductLibraryToolViewV2.this.deleteLocalRepositoryFolder(localRepositoryFolder);
+                protected void okButtonPressed(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+                    super.okButtonPressed(scanRecursively, generateQuickLookImages, testZipFileForErrors);
+                    scanAllLocalRepositories(scanRecursively, generateQuickLookImages, testZipFileForErrors);
                 }
             };
-            this.localRepositoryProductsThread.executeAsync(); // start the thread
+            dialog.show();
         }
+    }
+
+    private void scanAllLocalRepositories(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+        ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+        int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+        AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
+        this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository, scanRecursively, generateQuickLookImages, testZipFileForErrors) {
+            @Override
+            protected void onFinishRunning() {
+                onFinishProcessingLocalRepoitoryThread(this, null); // 'null' => no local repository folder to select
+            }
+
+            @Override
+            protected void onLocalRepositoryFolderDeleted(LocalRepositoryFolder localRepositoryFolder) {
+                ProductLibraryToolViewV2.this.deleteLocalRepositoryFolder(localRepositoryFolder);
+            }
+
+            @Override
+            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+                processErrorFiles(errorFiles);
+            }
+        };
+        this.localRepositoryProductsThread.executeAsync(); // start the thread
     }
 
     private void searchProductListLater() {
@@ -604,21 +691,79 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to add the products", true);
             if (selectedLocalRepositoryFolder != null) {
                 // a local folder has been selected
-                ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
-                int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
-                AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
-                this.localRepositoryProductsThread = new AddLocalRepositoryFolderTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder, allLocalFolderProductsRepository) {
+                ScanLocalRepositoryOptionsDialog dialog = new ScanLocalRepositoryOptionsDialog(null) {
                     @Override
-                    protected void onFinishRunning() {
-                        onFinishRunningLocalProductsThread(this, true);
-                    }
-
-                    @Override
-                    protected void onFinishSavingProduct(SaveProductData saveProductData) {
-                        ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingLocalProduct(saveProductData);
+                    protected void okButtonPressed(boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+                        super.okButtonPressed(scanRecursively, generateQuickLookImages, testZipFileForErrors);
+                        addLocalRepository(selectedLocalRepositoryFolder, scanRecursively, generateQuickLookImages, testZipFileForErrors);
                     }
                 };
-                this.localRepositoryProductsThread.executeAsync(); // start the thread
+                dialog.show();
+            }
+        }
+    }
+
+    private void addLocalRepository(Path selectedLocalRepositoryFolder, boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
+        ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+        int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+        AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
+        this.localRepositoryProductsThread = new AddLocalRepositoryFolderTimerRunnable(progressBarHelper, threadId, selectedLocalRepositoryFolder, allLocalFolderProductsRepository,
+                                                                                       scanRecursively, generateQuickLookImages, testZipFileForErrors) {
+            @Override
+            protected void onFinishRunning() {
+                onFinishProcessingLocalRepoitoryThread(this, getLocalRepositoryFolderPath());
+            }
+
+            @Override
+            protected void onFinishSavingProduct(SaveProductData saveProductData) {
+                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingLocalProduct(saveProductData);
+            }
+
+            @Override
+            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+                processErrorFiles(errorFiles);
+            }
+        };
+        this.localRepositoryProductsThread.executeAsync(); // start the thread
+    }
+
+    private void processErrorFiles(Map<File, String> errorFiles) {
+        if (errorFiles != null && errorFiles.size() > 0) {
+            final StringBuilder str = new StringBuilder();
+            int cnt = 1;
+            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
+                str.append(entry.getValue()); // the message
+                str.append("   ");
+                str.append(entry.getKey().getAbsolutePath());
+                str.append('\n');
+                if (cnt >= 20) {
+                    str.append("plus " + (errorFiles.size() - 20) + " other errors...\n");
+                    break;
+                }
+                ++cnt;
+            }
+            final String question = "\nWould you like to save the list to a text file?";
+            Dialogs.Answer answer = Dialogs.requestDecision("Product Errors",
+                    "The follow files have errors:\n" + str.toString() + question,
+                    false, null);
+            if (answer == Dialogs.Answer.YES) {
+                final File file = Dialogs.requestFileForSave("Save as...", false,
+                        new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
+                        ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
+                if (file != null) {
+                    try {
+                        writeErrors(errorFiles, file);
+                    } catch (Exception e) {
+                        Dialogs.showError("Unable to save to " + file.getAbsolutePath());
+                    }
+                    if (Desktop.isDesktopSupported() && file.exists()) {
+                        try {
+                            Desktop.getDesktop().open(file);
+                        } catch (Exception e) {
+                            SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
+                        }
+                    }
+                }
             }
         }
     }
@@ -666,9 +811,28 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    private void onFinishRunningLocalProductsThread(Runnable invokerThread, boolean startSearchProducts) {
+    private boolean resetLocalRepositoryProductsThread(Runnable invokerThread) {
         if (invokerThread == this.localRepositoryProductsThread) {
             this.localRepositoryProductsThread = null; // reset
+            return true;
+        }
+        return false;
+    }
+
+    private void onFinishProcessingLocalRepoitoryThread(Runnable invokerThread, Path localRepositoryFolderPathToSelect) {
+        if (resetLocalRepositoryProductsThread(invokerThread)) {
+            if (this.repositorySelectionPanel.getSelectedProductsRepositoryPanel() instanceof AllLocalProductsRepositoryPanel) {
+                // the local repository is selected
+                AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
+                allLocalProductsRepositoryPanel.updateInputParameterValues(localRepositoryFolderPathToSelect, null, null, null, null);
+                this.repositoryOutputProductListPanel.clearOutputList(true);
+                searchProductListLater();
+            }
+        }
+    }
+
+    private void onFinishRunningLocalProductsThread(Runnable invokerThread, boolean startSearchProducts) {
+        if (resetLocalRepositoryProductsThread(invokerThread)) {
             if (this.repositorySelectionPanel.getSelectedProductsRepositoryPanel() instanceof AllLocalProductsRepositoryPanel) {
                 this.repositoryOutputProductListPanel.updateProductListCountTitle();
                 // refresh the products in the output panel
@@ -833,16 +997,36 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
+    public void readLocalProductsAsync(RepositoryProduct[] productsToRead, ThreadCallback<ProductEntry[]> threadCallback) {
+        if (this.localRepositoryProductsThread == null) {
+            ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
+            int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
+            this.localRepositoryProductsThread = new ReadLocalProductsTimerRunnable(progressBarHelper, threadId, productsToRead, threadCallback) {
+                @Override
+                protected void onFinishRunning() {
+                    resetLocalRepositoryProductsThread(this);
+                }
+            };
+            this.localRepositoryProductsThread.executeAsync(); // start the thread
+        } else {
+            StringBuilder message = new StringBuilder();
+            message.append("The local products cannot be read.")
+                    .append("\n\n")
+                    .append("There is a running action.");
+            showMessageDialog("Read local products", message.toString(), JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void deleteLocalSelectedProductsOptionClicked() {
         RepositoryProduct[] unopenedSelectedProducts = processUnopenedSelectedProducts();
         if (unopenedSelectedProducts.length > 0) {
             // there are selected products into the output table
             if (this.localRepositoryProductsThread != null) {
                 StringBuilder message = new StringBuilder();
-                message.append("The local products cannot be copied.")
+                message.append("The local products cannot be deleted.")
                         .append("\n\n")
                         .append("There is a running action.");
-                showMessageDialog("Copy local products", message.toString(), JOptionPane.ERROR_MESSAGE);
+                showMessageDialog("Delete local products", message.toString(), JOptionPane.ERROR_MESSAGE);
             } else {
                 StringBuilder message = new StringBuilder();
                 if (unopenedSelectedProducts.length > 1) {
@@ -1076,6 +1260,41 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
+    public RepositoryProduct[] getSelectedProducts() {
+        return this.repositoryOutputProductListPanel.getProductListPanel().getSelectedProducts();
+    }
+
+    public void findRelatedSlices() {
+        RepositoryProduct[] selectedProducts = getSelectedProducts();
+        if (selectedProducts.length > 0) {
+            // there are selected products into the output table
+            if (selectedProducts.length > 1) {
+                throw new IllegalStateException("Only one selected product is allowed.");
+            } else {
+                Integer dataTakeId = findLocalAttributeAsInt(AbstractMetadata.data_take_id, selectedProducts[0]);
+                if (dataTakeId != null && dataTakeId.intValue() != AbstractMetadata.NO_METADATA) {
+                    cancelSearchingProductList();
+                    AbstractProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
+                    if (selectedProductsRepositoryPanel instanceof AllLocalProductsRepositoryPanel) {
+                        // the local repository is selected
+                        AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel)selectedProductsRepositoryPanel;
+
+                        AttributeFilter attributeFilter = new AttributeFilter(AbstractMetadata.data_take_id, dataTakeId.toString(), AttributesParameterComponent.EQUAL_VALUE_FILTER);
+                        List<AttributeFilter> attributes = new ArrayList<>(1);
+                        attributes.add(attributeFilter);
+                        allLocalProductsRepositoryPanel.updateInputParameterValues(null, null,null, null, null, attributes);
+
+                        this.repositoryOutputProductListPanel.clearOutputList(true);
+
+                        searchProductListLater();
+                    } else {
+                        throw new IllegalStateException("The local products repository is not the selected repository.");
+                    }
+                }
+            }
+        }
+    }
+
     private void jointSearchCriteriaOptionClicked() {
         OutputProductListPanel productListPanel = this.repositoryOutputProductListPanel.getProductListPanel();
         RepositoryProduct[] selectedProducts = productListPanel.getSelectedProducts();
@@ -1208,5 +1427,33 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             pathIterator.next();
         }
         return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    private static void writeErrors(final Map<File, String> errorFiles, final File file) throws Exception {
+        PrintStream p = null; // declare a print stream object
+        try {
+            final FileOutputStream out = new FileOutputStream(file.getAbsolutePath());
+            // Connect print stream to the output stream
+            p = new PrintStream(out);
+            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
+                p.println(entry.getValue() + "   " + entry.getKey().getAbsolutePath());
+            }
+        } finally {
+            if (p != null) {
+                p.close();
+            }
+        }
+    }
+
+    public static Integer findLocalAttributeAsInt(String attributeName, RepositoryProduct repositoryProduct) {
+        Integer dataTakeId = null;
+        List<Attribute> localAttributes = repositoryProduct.getLocalAttributes();
+        for (int i=0; i<localAttributes.size() && dataTakeId == null; i++) {
+            Attribute attribute = localAttributes.get(i);
+            if (attribute.getName().equals(attributeName)) {
+                return Integer.parseInt(attribute.getValue());
+            }
+        }
+        return null;
     }
 }

@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import java.nio.file.Path;
 
 /**
+ * The class stores the status of a downloading product.
+ *
  * Created by jcoravu on 13/9/2019.
  */
 public class DownloadProgressStatus {

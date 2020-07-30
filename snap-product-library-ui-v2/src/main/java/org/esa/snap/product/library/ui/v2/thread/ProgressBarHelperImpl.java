@@ -7,6 +7,8 @@ import java.awt.*;
 import java.beans.PropertyChangeListener;
 
 /**
+ * The class implementation to manage the progress bar panel visible when running long time operations.
+ *
  * Created by jcoravu on 12/9/2019.
  */
 public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
@@ -60,6 +62,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
                 boolean oldVisible = this.progressBar.isVisible();
                 // hide the progress bar
                 setProgressPanelVisible(false);
+                this.progressBar.setIndeterminate(true);
                 if (oldVisible) {
                     // the progress bar was visible
                     setParametersEnabledWhileDownloading(true);
@@ -113,6 +116,47 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         }
     }
 
+    @Override
+    public boolean beginProgressBarTask(int threadId, String message, int totalWork) {
+        if (EventQueue.isDispatchThread()) {
+            if (this.currentThreadId == threadId) {
+                if (totalWork < 0) {
+                    throw new IllegalArgumentException("The total work " + totalWork +" is negative.");
+                }
+                this.progressBar.setIndeterminate(false);
+                this.progressBar.setValue(0);
+                this.progressBar.setMinimum(0);
+                this.progressBar.setMaximum(totalWork);
+
+                this.messageLabel.setText(message);
+                return true;
+            }
+            return false;
+        } else {
+            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
+        }
+    }
+
+    @Override
+    public boolean updateProgressBarValue(int threadId, int valueToAdd) {
+        if (EventQueue.isDispatchThread()) {
+            if (this.currentThreadId == threadId) {
+                if (valueToAdd < 0) {
+                    throw new IllegalArgumentException("The value to add " + valueToAdd +" is negative.");
+                }
+                int newValue = progressBar.getValue() + valueToAdd;
+                if (newValue > this.progressBar.getMaximum()) {
+                    throw new IllegalArgumentException("The new value " + newValue + " is greater than the maximum " + this.progressBar.getMaximum() + ".");
+                }
+                this.progressBar.setValue(newValue);
+                return true;
+            }
+            return false;
+        } else {
+            throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");
+        }
+    }
+
     public JButton getStopButton() {
         return stopButton;
     }
@@ -125,6 +169,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         if (EventQueue.isDispatchThread()) {
             this.currentThreadId++;
             setProgressPanelVisible(false);
+            this.progressBar.setIndeterminate(true);
             setParametersEnabledWhileDownloading(true);
         } else {
             throw new IllegalStateException("The method must be invoked from the AWT dispatch thread.");

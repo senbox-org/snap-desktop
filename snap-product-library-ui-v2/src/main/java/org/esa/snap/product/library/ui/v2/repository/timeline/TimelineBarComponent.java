@@ -2,6 +2,9 @@ package org.esa.snap.product.library.ui.v2.repository.timeline;
 
 import javax.swing.*;
 
+/**
+ * The label to represent a bar from the timeline.
+ */
 public class TimelineBarComponent extends JLabel {
 
     private final YearLabel yearLabel;

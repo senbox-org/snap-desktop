@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * The layer containing the polygon coordinates of the repository products.
+ *
  * Created by jcoravu on 10/9/2019.
  */
 public class PolygonsLayerModel {

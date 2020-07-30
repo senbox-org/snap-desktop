@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The class contains the data about the available repository products to be displayed by pagination.
+ *
  * Created by jcoravu on 30/1/2020.
  */
 public class OutputProductResults {
@@ -37,6 +39,18 @@ public class OutputProductResults {
         this.availableProducts = new ArrayList<>();
 
         this.currentPageNumber = 0;
+    }
+
+    public boolean canOpenDownloadedProducts(RepositoryProduct[] productsToCheck) {
+        boolean canOpenProducts = true;
+        for (int i=0; i<productsToCheck.length && canOpenProducts; i++) {
+            DownloadProgressStatus downloadProgressStatus = getDownloadedProductProgress(productsToCheck[i]);
+            if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
+                // there is at leat one selected product which is not downloaded
+                canOpenProducts = false;
+            }
+        }
+        return canOpenProducts;
     }
 
     public DownloadProgressStatus getDownloadedProductProgress(RepositoryProduct repositoryProduct) {

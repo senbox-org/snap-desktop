@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * The text field parameter component allows the user to enter a value for the search parameter.
+ *
  * Created by jcoravu on 7/8/2019.
  */
 public class StringParameterComponent extends TextFieldParameterComponent<String> {

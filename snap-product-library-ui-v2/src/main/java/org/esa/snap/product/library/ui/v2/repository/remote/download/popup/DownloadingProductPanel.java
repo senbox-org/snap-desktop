@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * The panel to show the data of a downloading product.
+ *
  * Created by jcoravu on 11/2/2020.
  */
 public class DownloadingProductPanel extends JPanel {

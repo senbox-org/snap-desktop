@@ -11,6 +11,9 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The model of the table containing the user accounts for a remote repository.
+ */
 public class RepositoriesCredentialsTableModel extends AbstractTableModel {
 
     /**

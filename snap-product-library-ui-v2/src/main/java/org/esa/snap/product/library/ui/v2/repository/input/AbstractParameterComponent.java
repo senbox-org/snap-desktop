@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 import javax.swing.*;
 
 /**
+ * The base class for a search parameter component.
+ *
  * Created by jcoravu on 7/8/2019.
  */
 public abstract class AbstractParameterComponent<ValueType> {

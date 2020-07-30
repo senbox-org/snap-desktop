@@ -8,6 +8,8 @@ import org.esa.snap.remote.products.repository.listener.ProgressListener;
 import java.nio.file.Path;
 
 /**
+ * The class stores the data about a product to be downloaded from a remote repository.
+ *
  * Created by jcoravu on 13/9/2019.
  */
 public class RemoteProductDownloader {

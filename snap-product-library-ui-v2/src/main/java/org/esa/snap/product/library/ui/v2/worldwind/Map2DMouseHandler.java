@@ -12,6 +12,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * Adapter class for receiving mouse events for 2D earth globe.
+ *
  * Created by jcoravu on 21/10/2019.
  */
 public class Map2DMouseHandler extends MouseAdapter {

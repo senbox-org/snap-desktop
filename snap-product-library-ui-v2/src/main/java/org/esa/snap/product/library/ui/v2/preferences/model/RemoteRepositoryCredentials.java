@@ -5,6 +5,9 @@ import org.esa.snap.core.util.StringUtils;
 
 import java.util.List;
 
+/**
+ * The credentials of a remote repository.
+ */
 public class RemoteRepositoryCredentials {
 
     private final String remoteRepositoryName;

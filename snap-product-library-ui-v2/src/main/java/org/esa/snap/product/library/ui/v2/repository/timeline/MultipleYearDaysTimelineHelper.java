@@ -3,6 +3,9 @@ package org.esa.snap.product.library.ui.v2.repository.timeline;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * The class computes the product count by day for several years.
+ */
 public abstract class MultipleYearDaysTimelineHelper extends AbstractMultipleYearsTimelineHelper {
 
     public MultipleYearDaysTimelineHelper(List<YearLabel> monthBarsByYear, String monthsOfYear[]) {

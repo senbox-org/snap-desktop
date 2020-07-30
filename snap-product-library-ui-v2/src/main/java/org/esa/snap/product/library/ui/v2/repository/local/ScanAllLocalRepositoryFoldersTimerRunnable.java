@@ -2,49 +2,60 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
-import org.esa.snap.product.library.v2.database.SaveProductData;
-import org.esa.snap.product.library.v2.database.ScanLocalRepositoryFolderHelper;
 import org.esa.snap.ui.loading.GenericRunnable;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to scan all the local repository folders.
+ *
  * Created by jcoravu on 4/10/2019.
  */
-public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgressTimerRunnable<Void> {
+public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {
 
     private static final Logger logger = Logger.getLogger(ScanAllLocalRepositoryFoldersTimerRunnable.class.getName());
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
+    private final boolean scanRecursively;
+    private final boolean generateQuickLookImages;
+    private final boolean testZipFileForErrors;
 
-    public ScanAllLocalRepositoryFoldersTimerRunnable(ProgressBarHelper progressPanel, int threadId, AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+    public ScanAllLocalRepositoryFoldersTimerRunnable(ProgressBarHelper progressPanel, int threadId, AllLocalFolderProductsRepository allLocalFolderProductsRepository,
+                                                      boolean scanRecursively, boolean generateQuickLookImages, boolean testZipFileForErrors) {
         super(progressPanel, threadId, 500);
 
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
+        this.scanRecursively = scanRecursively;
+        this.generateQuickLookImages = generateQuickLookImages;
+        this.testZipFileForErrors = testZipFileForErrors;
     }
 
     @Override
     protected boolean onTimerWakeUp(String message) {
-        return super.onTimerWakeUp("Scan all local repository folders...");
+        return super.onTimerWakeUp(null); // 'null' => do not reset the progress bar message
     }
 
     @Override
-    protected Void execute() throws Exception {
+    protected Map<File, String> execute() throws Exception {
         List<LocalRepositoryFolder> localRepositoryFolders = this.allLocalFolderProductsRepository.loadRepositoryFolders();
         if (!isFinished()) {
-            ScanLocalRepositoryFolderHelper scanLocalProductsHelper = new ScanLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository);
+            LocalRepositoryFolderHelper scanLocalProductsHelper = new LocalRepositoryFolderHelper(this.allLocalFolderProductsRepository, this.scanRecursively,
+                                                                                    this.generateQuickLookImages, this.testZipFileForErrors);
             for (int i = 0; i < localRepositoryFolders.size(); i++) {
                 if (isFinished()) {
                     break;
                 } else {
                     LocalRepositoryFolder localRepositoryFolder = localRepositoryFolders.get(i);
                     try {
-                        boolean deleteLocalFolderRepository = scanLocalProductsHelper.scanValidProductsFromFolder(localRepositoryFolder, this);
+                        boolean deleteLocalFolderRepository = scanLocalProductsHelper.scanRepository(localRepositoryFolder, this, this);
                         if (deleteLocalFolderRepository) {
                             // no products saved and delete the local repository folder from the application
                             updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
@@ -57,6 +68,7 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
                     }
                 }
             }
+            return scanLocalProductsHelper.getErrorFiles();
         }
         return null;
     }

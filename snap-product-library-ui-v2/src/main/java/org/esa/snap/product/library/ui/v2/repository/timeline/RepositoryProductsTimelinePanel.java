@@ -10,6 +10,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
+ * The panel containing the two types to compute the product count from the search list: by day, by month.
+ *
  * Created by jcoravu on 18/3/2020.
  */
 public class RepositoryProductsTimelinePanel extends JPanel {

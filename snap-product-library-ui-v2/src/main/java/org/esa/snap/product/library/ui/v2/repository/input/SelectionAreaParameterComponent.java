@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * The parameter component allows the user to select an area from the earth globe panel for the search parameter.
+ *
  * Created by jcoravu on 7/8/2019.
  */
 public class SelectionAreaParameterComponent extends AbstractParameterComponent<Rectangle2D> {

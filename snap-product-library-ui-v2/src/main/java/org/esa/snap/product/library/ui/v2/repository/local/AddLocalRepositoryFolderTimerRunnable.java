@@ -2,54 +2,69 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
-import org.esa.snap.product.library.v2.database.AddLocalRepositoryFolderHelper;
+import org.esa.snap.product.library.v2.database.LocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveProductData;
+import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.*;
+import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to add a local folder as a repository.
+ *
  * Created by jcoravu on 3/10/2019.
  */
-public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Void> {
+public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {
 
     private static final Logger logger = Logger.getLogger(AddLocalRepositoryFolderTimerRunnable.class.getName());
 
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
     private final Path localRepositoryFolderPath;
+    private final boolean scanRecursively;
+    private final boolean generateQuickLookImages;
+    private final boolean validateZips;
 
     public AddLocalRepositoryFolderTimerRunnable(ProgressBarHelper progressPanel, int threadId, Path localRepositoryFolderPath,
-                                                 AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+                                                 AllLocalFolderProductsRepository allLocalFolderProductsRepository, boolean scanRecursively,
+                                                 boolean generateQuickLookImages, boolean validateZips) {
 
         super(progressPanel, threadId, 500);
 
         this.allLocalFolderProductsRepository = allLocalFolderProductsRepository;
         this.localRepositoryFolderPath = localRepositoryFolderPath;
+        this.scanRecursively = scanRecursively;
+        this.generateQuickLookImages = generateQuickLookImages;
+        this.validateZips = validateZips;
     }
 
     @Override
     protected final boolean onTimerWakeUp(String message) {
-        return super.onTimerWakeUp("Add local repository folder...");
+        return super.onTimerWakeUp(null); // 'null' => do not reset the progress bar message
     }
 
     @Override
-    protected final Void execute() throws Exception {
+    protected final Map<File, String> execute() throws Exception {
         try {
-            AddLocalRepositoryFolderHelper saveLocalProductsHelper = new AddLocalRepositoryFolderHelper(this.allLocalFolderProductsRepository) {
+            LocalRepositoryFolderHelper saveLocalProductsHelper = new LocalRepositoryFolderHelper(this.allLocalFolderProductsRepository,
+                                                                                    this.scanRecursively, this.generateQuickLookImages, this.validateZips) {
                 @Override
                 protected void finishSavingProduct(SaveProductData saveProductData) {
                     updateFinishSavingProductDataLater(saveProductData);
                 }
             };
-            saveLocalProductsHelper.addValidProductsFromFolder(this.localRepositoryFolderPath, this);
+            saveLocalProductsHelper.addRepository(this.localRepositoryFolderPath, this, this);
+            return saveLocalProductsHelper.getErrorFiles();
         } catch (java.lang.InterruptedException exception) {
             logger.log(Level.FINE, "Stop adding products from the local repository folder '" + this.localRepositoryFolderPath+"'.");
+            return null; // nothing to return
         }
-        return null; // nothing to return
     }
 
     @Override
@@ -58,6 +73,10 @@ public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimer
     }
 
     protected void onFinishSavingProduct(SaveProductData saveProductData) {
+    }
+
+    public Path getLocalRepositoryFolderPath() {
+        return localRepositoryFolderPath;
     }
 
     private void updateFinishSavingProductDataLater(SaveProductData saveProductData) {

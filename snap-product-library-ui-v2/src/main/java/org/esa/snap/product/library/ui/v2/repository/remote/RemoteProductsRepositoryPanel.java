@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
+import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
@@ -23,14 +24,11 @@ import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
@@ -38,6 +36,8 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * The panel containing the query parameters of a remote repository.
+ *
  * Created by jcoravu on 5/8/2019.
  */
 public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
@@ -48,7 +48,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     private final JComboBox<Credentials> userAccountsComboBox;
 
     private ItemListener missionItemListener;
-    private RemoteProductsPopupListeners remoteProductsPopupListeners;
     private RemoteInputParameterValues remoteInputParameterValues;
     private DownloadingProductProgressCallback downloadingProductProgressCallback;
 
@@ -162,35 +161,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
-        boolean canOpenSelectedProducts = true;
-        for (int i=0; i<selectedProducts.length && canOpenSelectedProducts; i++) {
-            DownloadProgressStatus downloadProgressStatus = getOutputProductResults().getDownloadedProductProgress(selectedProducts[i]);
-            if (downloadProgressStatus == null || !downloadProgressStatus.canOpen()) {
-                canOpenSelectedProducts = false;
-            }
-        }
-        JMenuItem menuItem;
-        if (canOpenSelectedProducts) {
-            menuItem = new JMenuItem("Open");
-            menuItem.addActionListener(this.remoteProductsPopupListeners.getOpenDownloadedRemoteProductListener());
-        } else {
-            menuItem = new JMenuItem("Download");
-            menuItem.addActionListener(this.remoteProductsPopupListeners.getDownloadRemoteProductListener());
-        }
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(menuItem);
-        if (selectedProducts.length == 1) {
-            if (selectedProducts[0].getRemoteMission() != null) {
-                JMenuItem jointSearchCriteriaMenuItem = new JMenuItem("Joint Search Criteria");
-                jointSearchCriteriaMenuItem.addActionListener(this.remoteProductsPopupListeners.getJointSearchCriteriaListener());
-                popupMenu.add(jointSearchCriteriaMenuItem);
-            }
-        }
-        return popupMenu;
-    }
-
-    @Override
     public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                                                    ComponentDimension componentDimension) {
 
@@ -299,10 +269,6 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             }
         }
         return selectedCredentials;
-    }
-
-    public void setDownloadProductListeners(RemoteProductsPopupListeners remoteProductsPopupListeners) {
-        this.remoteProductsPopupListeners = remoteProductsPopupListeners;
     }
 
     public RemoteProductsRepositoryProvider getProductsRepositoryProvider() {

@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to download a remote product.
+ *
  * Created by jcoravu on 16/10/2019.
  */
 public abstract class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable implements ProgressListener {

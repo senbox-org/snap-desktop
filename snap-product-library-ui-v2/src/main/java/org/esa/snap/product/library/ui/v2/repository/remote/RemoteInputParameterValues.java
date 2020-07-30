@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2.repository.remote;
 import java.util.Map;
 
 /**
+ * The parameters data for a remote repository.
+ *
  * Created by jcoravu on 6/2/2020.
  */
 public class RemoteInputParameterValues {

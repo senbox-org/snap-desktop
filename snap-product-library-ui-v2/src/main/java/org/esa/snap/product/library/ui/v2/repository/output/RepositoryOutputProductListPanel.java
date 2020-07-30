@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * The panel class contains the product list after searching then in the repository.
+ *
  * Created by jcoravu on 21/8/2019.
  */
 public class RepositoryOutputProductListPanel extends JPanel implements OutputProductResultsCallback {

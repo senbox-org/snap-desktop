@@ -22,6 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The helper class to manage the downloading remote products.
+ *
  * Created by jcoravu on 17/10/2019.
  */
 public class DownloadRemoteProductsHelper implements DownloadingProductProgressCallback {

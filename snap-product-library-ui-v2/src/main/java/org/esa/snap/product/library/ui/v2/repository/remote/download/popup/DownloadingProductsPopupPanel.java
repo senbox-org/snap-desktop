@@ -15,6 +15,8 @@ import java.awt.*;
 import java.util.List;
 
 /**
+ * The panel containing the downloading products.
+ *
  * Created by jcoravu on 11/2/2020.
  */
 public class DownloadingProductsPopupPanel extends VerticalScrollablePanel {

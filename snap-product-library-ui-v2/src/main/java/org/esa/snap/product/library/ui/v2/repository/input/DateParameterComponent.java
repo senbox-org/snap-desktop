@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * The parameter component allows the user to select a date for the search parameter.
+ *
  * Created by jcoravu on 7/8/2019.
  */
 public class DateParameterComponent extends AbstractParameterComponent<Date> {

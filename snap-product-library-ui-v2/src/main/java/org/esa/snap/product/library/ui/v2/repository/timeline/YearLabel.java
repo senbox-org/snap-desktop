@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * The label to represent an year on the time axis.
+ */
 public class YearLabel extends JLabel {
 
     private final int year;
@@ -50,8 +53,8 @@ public class YearLabel extends JLabel {
     }
 
     public int computeMaximumProductCount() {
-        int maximumProductCount = this.timelineBars.get(0).getProductCount();
-        for (int i = 1; i < this.timelineBars.size(); i++) {
+        int maximumProductCount = 0;
+        for (int i = 0; i < this.timelineBars.size(); i++) {
             int productCount = this.timelineBars.get(i).getProductCount();
             if (maximumProductCount < productCount) {
                 maximumProductCount = productCount;

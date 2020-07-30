@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2.repository.remote.download;
 import org.esa.snap.remote.products.repository.ThreadStatus;
 
 /**
+ * The thread class to download a remote product in the background.
+ *
  * Created by jcoravu on 29/1/2020.
  */
 public abstract class AbstractBackgroundDownloadRunnable implements Runnable, ThreadStatus {

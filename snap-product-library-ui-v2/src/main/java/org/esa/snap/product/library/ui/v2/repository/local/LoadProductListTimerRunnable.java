@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to search the products in the local repository.
+ *
  * Created by jcoravu on 5/9/2019.
  */
 public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<List<RepositoryProduct>> {

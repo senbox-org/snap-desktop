@@ -5,6 +5,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * The class computes the product count for several years.
+ */
 public abstract class AbstractMultipleYearsTimelineHelper extends AbstractTimelineHelper {
 
     protected static final String SEPARATOR_LABEL_KEY = "SeparatorLabelKey";
@@ -33,7 +36,7 @@ public abstract class AbstractMultipleYearsTimelineHelper extends AbstractTimeli
         for (int year = miminumYear; year<=maximumYear; year++) {
             YearLabel foundYear = null;
             for (int k=0; k<this.yearLabels.size() && foundYear==null; k++) {
-                YearLabel existingYearLabel = monthBarsByYear.get(k);
+                YearLabel existingYearLabel = this.yearLabels.get(k);
                 if (year == existingYearLabel.getYear()) {
                     foundYear = existingYearLabel;
                 }
@@ -86,15 +89,20 @@ public abstract class AbstractMultipleYearsTimelineHelper extends AbstractTimeli
         int yearLabelY = panelY + (panelHeight - yearLabelsHeight);
         for (int i = 0; i < yearCount; i++) {
             YearLabel yearLabel = this.yearLabels.get(i);
+
+            // update the year label location
             yearLabel.setBounds(yearLabelX, yearLabelY, yearLabelsWidth, yearLabelsHeight);
             yearLabelX += yearLabelsWidth + gapBetweenYearLabels;
 
+            // update the separator label location
             JLabel yearSeparatorLabel = (JLabel) yearLabel.getClientProperty(SEPARATOR_LABEL_KEY);
             if (yearSeparatorLabel != null) {
+                // there is a separator line between the years
                 yearSeparatorLabel.setBounds(yearLabel.getX() - 1, 0, gapBetweenYearLabels, separatorHeight);
             }
         }
 
+        // display rhe bars
         doYearBarsLayout(panelX, panelY, panelWidth, panelHeight, yearLabelsWidth, yearLabelsHeight, getDefaultBarCountPerYear());
     }
 

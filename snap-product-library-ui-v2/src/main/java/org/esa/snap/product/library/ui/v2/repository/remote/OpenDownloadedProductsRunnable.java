@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to open in the application a downloaded product.
+ *
  * Created by jcoravu on 12/11/2019.
  */
 public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {

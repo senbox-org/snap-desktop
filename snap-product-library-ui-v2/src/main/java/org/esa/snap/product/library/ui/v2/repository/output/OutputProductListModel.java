@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
+ * The model class to store the visible products of the current page.
+ *
  * Created by jcoravu on 21/8/2019.
  */
 public class OutputProductListModel {

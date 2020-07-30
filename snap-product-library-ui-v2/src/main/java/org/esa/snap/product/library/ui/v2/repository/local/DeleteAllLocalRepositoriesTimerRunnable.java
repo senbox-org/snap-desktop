@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to delete all the local repository folders.
+ *
  * Created by jcoravu on 2/10/2019.
  */
 public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTimerRunnable<Void> {

@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * The panel containing the displayed products of one page.
+ *
  * Created by jcoravu on 23/9/2019.
  */
 public class OutputProductListPanel extends VerticalScrollablePanel implements RepositoryProductPanelBackground {

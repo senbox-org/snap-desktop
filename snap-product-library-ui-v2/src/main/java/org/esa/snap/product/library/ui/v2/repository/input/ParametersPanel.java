@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * The panel contains the search parameters of a repository.
+ *
  * Created by jcoravu on 18/9/2019.
  */
 public class ParametersPanel extends JPanel {

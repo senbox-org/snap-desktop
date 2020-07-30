@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread class to search the products on a remote repository.
+ *
  * Created by jcoravu on 9/8/2019.
  */
 public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunnable<Void> {

@@ -3,6 +3,8 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 import java.awt.*;
 
 /**
+ * The text field parameter component allows the user to enter a number for the search parameter.
+ *
  * Created by jcoravu on 17/2/2020.
  */
 public class NumberParameterComponent extends TextFieldParameterComponent<Number> {

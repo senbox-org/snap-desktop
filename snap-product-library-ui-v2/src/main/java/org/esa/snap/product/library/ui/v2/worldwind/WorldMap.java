@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * The interface contains method to access information from an world panel.
+ *
  * Created by jcoravu on 22/10/2019.
  */
 public interface WorldMap {

@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
+ * The panel contains the four buttons to implement the pagination.
+ *
  * Created by jcoravu on 29/1/2020.
  */
 public class OutputProductListPaginationPanel extends JPanel {

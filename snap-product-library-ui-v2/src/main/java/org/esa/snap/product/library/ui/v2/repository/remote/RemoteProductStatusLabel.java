@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * The status label for a repository product displayed in the output panel.
+ *
  * Created by jcoravu on 11/2/2020.
  */
 public class RemoteProductStatusLabel extends JLabel {

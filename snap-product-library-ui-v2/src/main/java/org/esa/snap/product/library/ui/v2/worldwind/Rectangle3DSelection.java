@@ -8,6 +8,8 @@ import gov.nasa.worldwindx.examples.util.SectorSelector;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * The class stores the coordinates of the selected area for a 3D earth globe.
+ *
  * Created by jcoravu on 22/10/2019.
  */
 public class Rectangle3DSelection extends SectorSelector {

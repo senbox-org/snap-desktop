@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The panel shows the attributes of a local product to be selected by the user when searching the products in
+ * the local repositories.
+ *
  * Created by jcoravu on 18/9/2019.
  */
 public class AttributesParameterComponent extends AbstractParameterComponent<List<AttributeFilter>> {
 
-    private static final AttributeValueFilter EQUAL_VALUE_FILTER = new AttributeValueFilter() {
+    public static final AttributeValueFilter EQUAL_VALUE_FILTER = new AttributeValueFilter() {
         @Override
         public boolean matches(String attributeValue, String valueToCheck) {
             return attributeValue.equalsIgnoreCase(valueToCheck);

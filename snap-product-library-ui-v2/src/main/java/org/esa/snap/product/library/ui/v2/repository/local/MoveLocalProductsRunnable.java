@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The thread to move local products from one local repository to other repository.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class MoveLocalProductsRunnable extends AbstractProcessLocalProductsRunnable {

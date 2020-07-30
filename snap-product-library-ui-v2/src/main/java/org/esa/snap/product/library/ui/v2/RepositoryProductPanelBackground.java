@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.util.Map;
 
 /**
+ * The interface contains methods to retrieve information from the panel of a repository product.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public interface RepositoryProductPanelBackground {

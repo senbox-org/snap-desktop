@@ -2,34 +2,29 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
+import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
+import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
+import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
-import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
-import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
-import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
-import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.*;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.remote.products.repository.Attribute;
-import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
+import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
@@ -38,6 +33,8 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * The panel containing the query parameters of a local repository.
+ *
  * Created by jcoravu on 5/8/2019.
  */
 public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
@@ -51,7 +48,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     private final JButton addFolderButton;
     private final JButton removeFoldersButton;
 
-    private LocalProductsPopupListeners localProductsPopupListeners;
     private LocalInputParameterValues localInputParameterValues;
 
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldMapPanelWrapper worlWindPanel) {
@@ -180,50 +176,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public JPopupMenu buildProductListPopupMenu(RepositoryProduct[] selectedProducts, OutputProductListModel productListModel) {
-        JMenuItem selectAllMenuItem = new JMenuItem("Select All");
-        selectAllMenuItem.addActionListener(this.localProductsPopupListeners.getSelectAllListener());
-        JMenuItem selectNoneMenuItem = new JMenuItem("Select None");
-        selectNoneMenuItem.addActionListener(this.localProductsPopupListeners.getSelectNoneListener());
-        JMenuItem copyMenuItem = new JMenuItem("Copy");
-        copyMenuItem.addActionListener(this.localProductsPopupListeners.getCopyListener());
-        JMenuItem copyToMenuItem = new JMenuItem("Copy To...");
-        copyToMenuItem.addActionListener(this.localProductsPopupListeners.getCopyToListener());
-        JMenuItem moveToMenuItem = new JMenuItem("Move To...");
-        moveToMenuItem.addActionListener(this.localProductsPopupListeners.getMoveToListener());
-        JMenuItem exportListMenuItem = new JMenuItem("Export List...");
-        exportListMenuItem.addActionListener(this.localProductsPopupListeners.getExportListListener());
-        JMenuItem openMenuItem = new JMenuItem("Open");
-        openMenuItem.addActionListener(this.localProductsPopupListeners.getOpenProductListener());
-        JMenuItem deleteMenuItem = new JMenuItem("Delete...");
-        deleteMenuItem.addActionListener(this.localProductsPopupListeners.getDeleteProductListener());
-        JMenuItem batchProcessingMenuItem = new JMenuItem("Batch Processing...");
-        batchProcessingMenuItem.addActionListener(this.localProductsPopupListeners.getBatchProcessingListener());
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(selectAllMenuItem);
-        popupMenu.add(selectNoneMenuItem);
-        popupMenu.add(copyMenuItem);
-        popupMenu.add(copyToMenuItem);
-        popupMenu.add(moveToMenuItem);
-        popupMenu.add(exportListMenuItem);
-        popupMenu.add(openMenuItem);
-        popupMenu.add(deleteMenuItem);
-        popupMenu.add(batchProcessingMenuItem);
-        if (selectedProducts.length == 1) {
-            JMenuItem showInExplorerMenuItem = new JMenuItem("Show in Explorer...");
-            showInExplorerMenuItem.addActionListener(this.localProductsPopupListeners.getShowInExplorerListener());
-            popupMenu.add(showInExplorerMenuItem);
-
-            if (selectedProducts[0].getRemoteMission() != null) {
-                JMenuItem jointSearchCriteriaMenuItem = new JMenuItem("Joint Search Criteria");
-                jointSearchCriteriaMenuItem.addActionListener(this.localProductsPopupListeners.getJointSearchCriteriaListener());
-                popupMenu.add(jointSearchCriteriaMenuItem);
-            }
-        }
-        return popupMenu;
-    }
-
-    @Override
     public AbstractRepositoryProductPanel buildProductProductPanel(RepositoryProductPanelBackground repositoryProductPanelBackground,
                                                                    ComponentDimension componentDimension) {
 
@@ -261,6 +213,39 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             return true;
         }
         return false;
+    }
+
+    public void updateInputParameterValues(Path localRepositoryFolderPath, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+        LocalRepositoryFolder localRepositoryFolderToSelect = null;
+        int size = this.foldersComboBox.getModel().getSize();
+        for (int i=0; i<size && localRepositoryFolderToSelect == null; i++) {
+            LocalRepositoryFolder localRepositoryFolder = this.foldersComboBox.getModel().getElementAt(i);
+            if (localRepositoryFolder != null && localRepositoryFolder.getPath().equals(localRepositoryFolderPath)) {
+                localRepositoryFolderToSelect = localRepositoryFolder;
+            }
+        }
+        updateInputParameterValues(localRepositoryFolderToSelect, null, startDate, endDate, areaOfInterestToSelect, attributes);
+    }
+
+    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, Date startDate, Date endDate,
+                                           Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+
+        this.foldersComboBox.setSelectedItem(localRepositoryFolder);
+        this.remoteMissionsComboBox.setSelectedItem(remoteMission);
+        for (int i=0; i<this.parameterComponents.size(); i++) {
+            AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
+            if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.FOOT_PRINT_PARAMETER)) {
+                inputParameterComponent.setParameterValue(areaOfInterestToSelect);
+            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.START_DATE_PARAMETER)) {
+                inputParameterComponent.setParameterValue(startDate);
+            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.END_DATE_PARAMETER)) {
+                inputParameterComponent.setParameterValue(endDate);
+            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER)) {
+                inputParameterComponent.setParameterValue(attributes);
+            } else {
+                inputParameterComponent.setParameterValue(null); // clear the value
+            }
+        }
     }
 
     public AllLocalFolderProductsRepository getAllLocalFolderProductsRepository() {
@@ -331,10 +316,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
         }
         return result;
-    }
-
-    public void setLocalProductsPopupListeners(LocalProductsPopupListeners localProductsPopupListeners) {
-        this.localProductsPopupListeners = localProductsPopupListeners;
     }
 
     public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {

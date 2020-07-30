@@ -11,6 +11,8 @@ import javax.swing.ImageIcon;
 import java.awt.Color;
 
 /**
+ * The panel to show the data of a local repository product.
+ *
  * Created by jcoravu on 27/9/2019.
  */
 public class LocalRepositoryProductPanel extends AbstractRepositoryProductPanel {
