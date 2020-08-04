@@ -5,8 +5,10 @@ Release Notes - Sentinel Application Platform
 # New in SNAP 8.0.0 
 
 In this release the development teams worked on general features like remote access of data, the processing and 
-IO performance and the memory management. But also sensor specific improvements and features have been implemented. 
-Here we just hightlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
+IO performance and the memory management. Also, sensor specific improvements and features have been implemented. 
+Noteworthy is also that we will drop the support for Python 2.7 for snappy with the next release. With version 9 of 
+SNAP, a Python 3 environment will be required. 
+Here we just highlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
 database: https://bit.ly/SNAP8_changelog
 
 ## Performance improvements
@@ -18,7 +20,7 @@ A first experimental step has also been made to lower the memory consumption. An
 been implemented which gives more control of the memory usage. Please see the separate topic below for more details.
 
 ## Reworked Product Library 
-The Product Library is upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
+The Product Library has been upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
 In addition, the display / interaction of / with product frames or quicklooks can be done on a 3D visualisation of Earth (NASA WorldWind).
 The possibility to access (and search for) remote data was introduced by regarding remote data sources as independent SNAP plugins.
 Besides, the parametrized search (with parameters in the form of values), it also handles the selection of the area of 
@@ -68,6 +70,13 @@ More information will be provided with the release of the plugin.
 # Known Issues
 When closing SNAP on Mac OS we observe crashes. It seems to happen after stating and closing SNAP for 4-5 times.
 This issue will be further investigated. https://senbox.atlassian.net/browse/SNAP-1320
+
+You might experience with issues on latest Linux version for some S1TBX operators.
+Saying something like: "libgfortran.so.3: cannot open shared object file: No such file or directory."
+This is happens because the latest libraries are not anymore provided by default  with the latest linux distributions.
+Please check the following page on how to solve this issue:
+https://github.com/jblas-project/jblas/wiki/Missing-Libraries 
+It is planned to solve this issue (https://senbox.atlassian.net/browse/SITBX-603) for the next release.
 
 
 
