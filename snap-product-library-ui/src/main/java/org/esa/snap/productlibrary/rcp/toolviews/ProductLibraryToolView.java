@@ -18,6 +18,7 @@ package org.esa.snap.productlibrary.rcp.toolviews;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.graphbuilder.rcp.dialogs.CheckListDialog;
 import org.esa.snap.productlibrary.db.DBProductQuery;
 import org.esa.snap.productlibrary.db.DBQuery;
 import org.esa.snap.productlibrary.db.ProductEntry;
@@ -25,7 +26,6 @@ import org.esa.snap.productlibrary.opensearch.CopernicusProductQuery;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.productlibrary.rcp.dialogs.CheckListDialog;
 import org.esa.snap.productlibrary.rcp.toolviews.extensions.ProductLibraryActionExt;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ListView;
 import org.esa.snap.productlibrary.rcp.toolviews.listviews.ProductEntryList;
@@ -56,6 +56,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponent",
@@ -674,12 +676,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         currentListView.setProductEntryList(productEntryList);
         notifySelectionChanged();
 
-        final GeoPos[][] geoBoundaries = new GeoPos[productEntryList.length][4];
-        int i = 0;
+        final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
         for (ProductEntry entry : productEntryList) {
-            geoBoundaries[i++] = entry.getGeoBoundary();
+            geoBoundaryList.add(entry.getGeoBoundary());
         }
-        worldMapUI.setAdditionalGeoBoundaries(geoBoundaries);
+        worldMapUI.setAdditionalGeoBoundaries(geoBoundaryList);
         worldMapUI.setSelectedGeoBoundaries(null);
     }
 
@@ -773,12 +774,11 @@ public class ProductLibraryToolView extends ToolTopComponent implements LabelBar
         dbPane.updateProductSelectionText(selections);
 
         if (selections != null) {
-            final GeoPos[][] geoBoundaries = new GeoPos[selections.length][4];
-            int i = 0;
+            final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
             for (ProductEntry entry : selections) {
-                geoBoundaries[i++] = entry.getGeoBoundary();
+                geoBoundaryList.add(entry.getGeoBoundary());
             }
-            worldMapUI.setSelectedGeoBoundaries(geoBoundaries);
+            worldMapUI.setSelectedGeoBoundaries(geoBoundaryList);
         } else {
             worldMapUI.setSelectedGeoBoundaries(null);
         }

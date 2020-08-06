@@ -16,12 +16,17 @@
 package org.esa.snap.graphbuilder.rcp.wizards;
 
 import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.productlibrary.db.ProductEntry;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.GeoUtils;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Map Panel
@@ -73,13 +78,22 @@ public abstract class AbstractMapPanel extends WizardPanel {
         final WorldMapUI worldMapUI = new WorldMapUI();
         this.add(worldMapUI.getWorlMapPane(), BorderLayout.CENTER);
 
-        final ProductEntry[] productEntryList =ProductEntry.createProductEntryList(productFileList);
-        final GeoPos[][] geoBoundaries = new GeoPos[productEntryList.length][4];
-        int i = 0;
-        for (ProductEntry entry : productEntryList) {
-            geoBoundaries[i++] = entry.getGeoBoundary();
-        }
+        final List<GeoPos[]> geoBoundariesList = getGeoBoundaries(productFileList);
+        worldMapUI.setAdditionalGeoBoundaries(geoBoundariesList);
+    }
 
-        worldMapUI.setAdditionalGeoBoundaries(geoBoundaries);
+    private List<GeoPos[]> getGeoBoundaries(final File[] productFileList) {
+        final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
+        for(File file : productFileList) {
+            try {
+                final Product product = CommonReaders.readProduct(file);
+                final int step = Math.max(30, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 10);
+                GeoPos[] geoPoints = GeoUtils.createGeoBoundary(product, null, step, true);
+                geoBoundaryList.add(geoPoints);
+            } catch (Exception e) {
+                SystemUtils.LOG.severe("Unable to load " + file);
+            }
+        }
+        return geoBoundaryList;
     }
 }

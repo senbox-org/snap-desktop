@@ -51,11 +51,11 @@ public class WorldMapUI {
         worldMapDataModel.setSelectionBoxEnd(lat, lon);
     }
 
-    public void setAdditionalGeoBoundaries(final GeoPos[][] geoBoundaries) {
+    public void setAdditionalGeoBoundaries(final List<GeoPos[]> geoBoundaries) {
         worldMapDataModel.setAdditionalGeoBoundaries(geoBoundaries);
     }
 
-    public void setSelectedGeoBoundaries(final GeoPos[][] geoBoundaries) {
+    public void setSelectedGeoBoundaries(final List<GeoPos[]> geoBoundaries) {
         worldMapDataModel.setSelectedGeoBoundaries(geoBoundaries);
     }
 

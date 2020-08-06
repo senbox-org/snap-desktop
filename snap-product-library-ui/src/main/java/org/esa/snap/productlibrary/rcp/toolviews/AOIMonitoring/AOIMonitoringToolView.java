@@ -65,6 +65,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @TopComponent.Description(
@@ -368,12 +370,11 @@ public class AOIMonitoringToolView extends ToolTopComponent {
         final AOI[] selectedAOIs = getSelectedAOIs();
         enableOnSelection(selectedAOIs.length > 0);
 
-        final GeoPos[][] geoBoundaries = new GeoPos[selectedAOIs.length][4];
-        int i = 0;
+        final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
         for (GeoPosList aoi : selectedAOIs) {
-            geoBoundaries[i++] = aoi.getPoints();
+            geoBoundaryList.add(aoi.getPoints());
         }
-        worldMapUI.setSelectedGeoBoundaries(geoBoundaries);
+        worldMapUI.setSelectedGeoBoundaries(geoBoundaryList);
     }
 
     private void performNewAction() {
@@ -525,12 +526,11 @@ public class AOIMonitoringToolView extends ToolTopComponent {
         aoiTable.setColumnModel(tableModel.getColumnModel());
         updateStatusLabel();
 
-        final GeoPos[][] geoBoundaries = new GeoPos[aoiList.length][4];
-        int i = 0;
+        final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
         for (GeoPosList aoi : aoiList) {
-            geoBoundaries[i++] = aoi.getPoints();
+            geoBoundaryList.add(aoi.getPoints());
         }
-        worldMapUI.setAdditionalGeoBoundaries(geoBoundaries);
+        worldMapUI.setAdditionalGeoBoundaries(geoBoundaryList);
     }
 
     private class MyProgressBarListener implements LabelBarProgressMonitor.ProgressBarListener {

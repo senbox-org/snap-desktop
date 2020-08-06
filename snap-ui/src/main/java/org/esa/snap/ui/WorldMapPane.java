@@ -21,7 +21,7 @@ import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.glayer.swing.WakefulComponent;
 import com.bc.ceres.grender.Viewport;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.tango.TangoIcons;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.openide.util.ImageUtilities;
@@ -231,7 +231,7 @@ public class WorldMapPane extends JPanel {
 
     static GeneralPath[] getGeoBoundaryPaths(Product product) {
         final int step = Math.max(16, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 250);
-        return ProductUtils.createGeoBoundaryPaths(product, null, step);
+        return GeoUtils.createGeoBoundaryPaths(product, null, step);
     }
 
     public boolean addZoomListener(ZoomListener zoomListener) {

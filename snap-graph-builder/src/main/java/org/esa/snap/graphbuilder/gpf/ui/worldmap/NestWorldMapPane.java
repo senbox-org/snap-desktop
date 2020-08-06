@@ -26,7 +26,7 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.ButtonOverlayControl;
 import org.esa.snap.ui.UIUtils;
@@ -242,7 +242,7 @@ public class NestWorldMapPane extends JPanel {
 
     public static GeneralPath[] getGeoBoundaryPaths(Product product) {
         final int step = Math.max(16, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 250);
-        return ProductUtils.createGeoBoundaryPaths(product, null, step);
+        return GeoUtils.createGeoBoundaryPaths(product, null, step);
     }
 
     private PixelPos getProductCenter(final Product product) {

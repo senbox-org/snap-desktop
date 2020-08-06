@@ -116,16 +116,16 @@ public class NestWorldMapPaneDataModel {
         return additionalGeoBoundaryList;
     }
 
-    public void setAdditionalGeoBoundaries(final GeoPos[][] geoBoundarys) {
-        final Boundary[] oldGeoBoundarys = getAdditionalGeoBoundaries();
-        if (geoBoundarys != null) {
+    public void setAdditionalGeoBoundaries(final List<GeoPos[]> geoBoundaries) {
+        final Boundary[] oldGeoBoundaries = getAdditionalGeoBoundaries();
+        if (geoBoundaries != null) {
             final List<Boundary> boundaryList = new ArrayList<>();
-            for (GeoPos[] geoBoundary : geoBoundarys) {
+            for (GeoPos[] geoBoundary : geoBoundaries) {
                 boundaryList.add(new Boundary(geoBoundary));
             }
             additionalGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
         }
-        firePropertyChange(PROPERTY_ADDITIONAL_GEO_BOUNDARIES, oldGeoBoundarys, additionalGeoBoundaryList);
+        firePropertyChange(PROPERTY_ADDITIONAL_GEO_BOUNDARIES, oldGeoBoundaries, additionalGeoBoundaryList);
     }
 
     public Boundary[] getSelectedGeoBoundaries() {
@@ -135,16 +135,16 @@ public class NestWorldMapPaneDataModel {
         return selectedGeoBoundaryList;
     }
 
-    public void setSelectedGeoBoundaries(final GeoPos[][] geoBoundarys) {
-        final Boundary[] oldGeoBoundarys = getSelectedGeoBoundaries();
-        if (geoBoundarys != null) {
+    public void setSelectedGeoBoundaries(final List<GeoPos[]> geoBoundaries) {
+        final Boundary[] oldGeoBoundaries = getSelectedGeoBoundaries();
+        if (geoBoundaries != null) {
             final List<Boundary> boundaryList = new ArrayList<>();
-            for (GeoPos[] geoBoundary : geoBoundarys) {
+            for (GeoPos[] geoBoundary : geoBoundaries) {
                 boundaryList.add(new Boundary(geoBoundary));
             }
             selectedGeoBoundaryList = boundaryList.toArray(new Boundary[boundaryList.size()]);
         }
-        firePropertyChange(PROPERTY_SELECTED_GEO_BOUNDARIES, oldGeoBoundarys, selectedGeoBoundaryList);
+        firePropertyChange(PROPERTY_SELECTED_GEO_BOUNDARIES, oldGeoBoundaries, selectedGeoBoundaryList);
     }
 
     public void addModelChangeListener(PropertyChangeListener listener) {

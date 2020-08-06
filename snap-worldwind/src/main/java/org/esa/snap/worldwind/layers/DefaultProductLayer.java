@@ -221,7 +221,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     private void addOutline(final Product product) {
 
         final int step = Math.max(16, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 250);
-        final GeneralPath[] boundaryPaths = ProductUtils.createGeoBoundaryPaths(product, null, step);
+        final GeneralPath[] boundaryPaths = org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true);
 
         final Polyline[] polyLineList = new Polyline[boundaryPaths.length];
         int i = 0;
