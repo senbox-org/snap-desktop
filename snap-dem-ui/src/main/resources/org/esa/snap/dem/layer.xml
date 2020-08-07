@@ -61,6 +61,18 @@
                 <attr name="helpId" stringvalue="FillHoleOp"/>
                 <attr name="icon" stringvalue="esaIcon"/>
             </file>
+
+            <file name="org-esa-snap-dem-gpf-ComputeSlopeAspectOp-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
+                <attr name="displayName" stringvalue="Compute Slope and Aspect"/>
+                <attr name="operatorName" stringvalue="Compute-Slope-Aspect"/>
+                <attr name="dialogTitle" stringvalue="Compute Slope and Aspect"/>
+                <attr name="ShortDescription" stringvalue="Compute Slope and Aspect from DEM"/>
+                <attr name="targetProductNameSuffix" stringvalue="_slope"/>
+                <attr name="helpId" stringvalue="ComputeSlopeAspectOp"/>
+                <attr name="icon" stringvalue="esaIcon"/>
+            </file>
         </folder>
     </folder>
 
@@ -99,6 +111,10 @@
                     <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-dem-gpf-FillDEMHoleOp-Action.instance"/>
                     <attr name="position" intvalue="300"/>
                 </file>
+                <file name="org-esa-snap-dem-gpf-ComputeSlopeAspectOp-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-dem-gpf-ComputeSlopeAspectOp-Action.instance"/>
+                    <attr name="position" intvalue="400"/>
+                </file>
             </folder>
         </folder>
     </folder>
@@ -107,6 +123,10 @@
         <file name="org.esa.snap.dem.gpf.ui.AddElevationOpUI">
             <attr name="operatorUIClass" stringvalue="org.esa.snap.dem.gpf.ui.AddElevationOpUI"/>
             <attr name="operatorName" stringvalue="AddElevation"/>
+        </file>
+        <file name="org.esa.snap.dem.gpf.ui.ComputeSlopeAspectOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.dem.gpf.ui.ComputeSlopeAspectOpUI"/>
+            <attr name="operatorName" stringvalue="Compute-Slope-Aspect"/>
         </file>
     </folder>
 
