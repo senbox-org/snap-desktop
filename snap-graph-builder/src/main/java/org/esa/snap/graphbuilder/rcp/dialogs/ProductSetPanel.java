@@ -18,8 +18,6 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.productlibrary.db.DBSearch;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTableModel;
@@ -64,7 +62,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private String targetProductNameSuffix = "";
     private JPanel buttonPanel = null;
 
-    private JButton addButton = null, addAllOpenButton = null, dbQueryButton = null, removeButton = null;
+    private JButton addButton = null, addAllOpenButton = null, removeButton = null;
     private JButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
     private JButton refreshButton = null, clearButton = null;
 
@@ -148,8 +146,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         final int rowCount = productSetTable.getFileCount();
 
         final boolean enableButtons = (rowCount > 0);
-        if (dbQueryButton != null)
-            dbQueryButton.setEnabled(enableButtons);
         if (removeButton != null)
             removeButton.setEnabled(enableButtons);
         if (moveTopButton != null)
@@ -199,25 +195,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
             public void actionPerformed(final ActionEvent e) {
                 addAllOpenProducts(tableModel);
-            }
-        });
-
-        dbQueryButton = DialogUtils.createButton("dbQueryButton", "DB Query", searchIcon, panel, DialogUtils.ButtonStyle.Icon);
-        dbQueryButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(final ActionEvent e) {
-                try {
-                    final File mstFile = tableModel.getFileAt(0);
-                    if (mstFile.exists()) {
-                        final ProductEntry[] entryList = DBSearch.search(mstFile);
-                        for (ProductEntry entry : entryList) {
-                            if (tableModel.getIndexOf(entry.getFile()) < 0)
-                                tableModel.addFile(entry);
-                        }
-                    }
-                } catch (Exception ex) {
-                    appContext.handleError("Unable to query DB", ex);
-                }
             }
         });
 
@@ -273,7 +250,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         panel.add(addButton);
         panel.add(addAllOpenButton);
         panel.add(removeButton);
-        //panel.add(dbQueryButton); //todo
         panel.add(moveTopButton);
         panel.add(moveUpButton);
         panel.add(moveDownButton);
@@ -410,10 +386,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
     public void setProductFileList(final File[] productFileList) {
         productSetTable.setFiles(productFileList);
-    }
-
-    public void setProductEntryList(final ProductEntry[] productEntryList) {
-        productSetTable.setProductEntries(productEntryList);
     }
 
     private enum MOVE { UP, DOWN, TOP, BOTTOM }

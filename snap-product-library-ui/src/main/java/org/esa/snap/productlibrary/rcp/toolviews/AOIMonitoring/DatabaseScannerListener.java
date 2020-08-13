@@ -102,7 +102,7 @@ public class DatabaseScannerListener implements DBScanner.DBScannerListener {
         final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
                                                                "Batch Processing", "batchProcessing", closeOnDone);
         batchDlg.addListener(batchListener);
-        batchDlg.setInputFiles(productEntryList);
+        //batchDlg.setInputFiles(productEntryList); //todo
         batchDlg.setTargetFolder(outputFolder);
         batchDlg.setSlaveFileMap(slaveFileMap);
         if (graphFile != null) {

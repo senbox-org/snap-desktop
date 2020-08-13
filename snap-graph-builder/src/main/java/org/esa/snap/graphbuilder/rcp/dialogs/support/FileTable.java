@@ -15,7 +15,6 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -93,15 +92,6 @@ public class FileTable extends JTable {
             fileModel.clear();
             for (String str : fileList) {
                 fileModel.addFile(new File(str));
-            }
-        }
-    }
-
-    public void setProductEntries(final ProductEntry[] productEntryList) {
-        if (productEntryList != null) {
-            fileModel.clear();
-            for (ProductEntry entry : productEntryList) {
-                fileModel.addFile(entry);
             }
         }
     }

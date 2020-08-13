@@ -17,10 +17,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
-import org.esa.snap.productlibrary.db.ProductDB;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -47,42 +44,15 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
 
     protected abstract TableData createFileStats(final File file);
 
-    protected abstract TableData createFileStats(final ProductEntry entry);
-
     public File[] getFileList() {
         return fileList.toArray(new File[fileList.size()]);
-    }
-
-    private static ProductEntry getProductEntry(final File file) {
-        try {
-            return ProductDB.instance().getProductEntry(file);
-        } catch (Exception e) {
-            if (SnapApp.getDefault() != null) {
-                Dialogs.showError("Error getting product entry: " + e.getMessage());
-            }
-        }
-        return null;
     }
 
     public void addFile(final File file) {
         fileList.add(file);
         clearBlankFile();
 
-        // check if already exists in db
-        final ProductEntry existingEntry = file.getName().isEmpty() ? null : getProductEntry(file);
-        if (existingEntry != null) {
-            dataList.add(createFileStats(existingEntry));
-        } else {
-            dataList.add(createFileStats(file));
-        }
-        fireTableDataChanged();
-    }
-
-    public void addFile(final ProductEntry entry) {
-        fileList.add(entry.getFile());
-        clearBlankFile();
-
-        dataList.add(createFileStats(entry));
+        dataList.add(createFileStats(file));
         fireTableDataChanged();
     }
 
@@ -196,23 +166,14 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
     public class TableData {
         protected final String data[] = new String[titles.length];
         protected final File file;
-        protected final ProductEntry entry;
 
         public TableData(final File file) {
             this.file = file;
-            this.entry = null;
-            updateData();
-        }
-
-        public TableData(final ProductEntry entry) {
-            this.file = null;
-            this.entry = entry;
             updateData();
         }
 
         TableData(final String[] values) {
             System.arraycopy(values, 0, data, 0, data.length);
-            this.entry = null;
             this.file = null;
         }
 

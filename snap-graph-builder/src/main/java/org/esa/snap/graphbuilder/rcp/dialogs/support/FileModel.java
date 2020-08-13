@@ -18,7 +18,6 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.engine_utilities.gpf.OperatorUtils;
 
 import java.io.File;
@@ -43,34 +42,15 @@ public class FileModel extends BaseFileModel implements FileTableModel {
         return new FileStats(file);
     }
 
-    protected TableData createFileStats(final ProductEntry entry) {
-        return new FileStats(entry);
-    }
-
     private class FileStats extends TableData {
 
         FileStats(final File file) {
             super(file);
         }
 
-        FileStats(final ProductEntry entry) {
-            super(entry);
-        }
-
         protected void updateData() {
             if (file != null) {
                 data[0] = file.getName();
-
-            } else if (entry != null) {
-                data[0] = entry.getName();
-                data[1] = entry.getProductType();
-                data[2] = entry.getFirstLineTime().format();
-
-                final MetadataElement meta = entry.getMetadata();
-                if (meta != null) {
-                    data[3] = String.valueOf(meta.getAttributeInt(AbstractMetadata.REL_ORBIT, 0));
-                    data[4] = String.valueOf(meta.getAttributeInt(AbstractMetadata.ABS_ORBIT, 0));
-                }
             }
         }
 

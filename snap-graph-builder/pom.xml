@@ -65,10 +65,6 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-product-library</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.snap</groupId>
             <artifactId>snap-remote-execution-ui</artifactId>
             <version>${project.version}</version>
         </dependency>

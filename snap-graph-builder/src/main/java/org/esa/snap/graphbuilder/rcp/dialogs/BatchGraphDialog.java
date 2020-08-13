@@ -27,7 +27,6 @@ import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.remote.execution.operator.RemoteExecutionDialog;
 import org.esa.snap.ui.AppContext;
@@ -236,10 +235,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     public void setInputFiles(final File[] productFileList) {
         productSetPanel.setProductFileList(productFileList);
-    }
-
-    public void setInputFiles(final ProductEntry[] productEntryList) {
-        productSetPanel.setProductEntryList(productEntryList);
     }
 
     public void setTargetFolder(final File path) {

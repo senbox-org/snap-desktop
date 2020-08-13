@@ -125,7 +125,7 @@ public class BatchActionExt implements ProductLibraryActionExt {
     private void batchProcess(final ProductEntry[] productEntryList, final File graphFile) {
         final BatchGraphDialog batchDlg = new BatchGraphDialog(SnapApp.getDefault().getAppContext(),
                 "Batch Processing", "batchProcessing", false);
-        batchDlg.setInputFiles(productEntryList);
+        //batchDlg.setInputFiles(productEntryList); //todo
         if (graphFile != null) {
             batchDlg.loadGraph(graphFile);
         }
