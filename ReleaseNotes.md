@@ -71,12 +71,6 @@ More information will be provided with the release of the plugin.
 When closing SNAP on Mac OS we observe crashes. It seems to happen after stating and closing SNAP for 4-5 times.
 This issue will be further investigated. https://senbox.atlassian.net/browse/SNAP-1320
 
-You might experience with issues on latest Linux version for some S1TBX operators.
-Saying something like: "libgfortran.so.3: cannot open shared object file: No such file or directory."
-This is happens because the latest libraries are not anymore provided by default  with the latest linux distributions.
-Please check the following page on how to solve this issue:
-https://github.com/jblas-project/jblas/wiki/Missing-Libraries 
-It is planned to solve this issue (https://senbox.atlassian.net/browse/SITBX-603) for the next release.
 
 
 
