@@ -229,6 +229,7 @@
                 <artifactId>snap-sta-ui</artifactId>
                 <version>${snap.version}</version>
             </dependency>
+            
         </dependencies>
     </dependencyManagement>
 
