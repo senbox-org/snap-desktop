@@ -4,7 +4,6 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.VersionChecker;
 import org.esa.snap.rcp.SnapApp;
 import org.openide.awt.CheckForUpdatesProvider;
-import org.openide.modules.OnStop;
 import org.openide.util.Lookup;
 import org.openide.windows.OnShowing;
 
@@ -27,8 +26,6 @@ public class DesktopVersionCheck {
                     "Please visit the SNAP home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
-    private static boolean hasChecked = false;
-
     private DesktopVersionCheck() {
     }
 
@@ -42,44 +39,34 @@ public class DesktopVersionCheck {
             if (!SnapApp.getDefault().getAppContext().getApplicationWindow().isVisible()) {
                 return;
             }
-            hasChecked = true;
-            if (VERSION_CHECKER.checkForNewRelease()) {
-                final JPanel panel = new JPanel();
-                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            if (VERSION_CHECKER.mustCheck()) {
+                if (VERSION_CHECKER.checkForNewRelease()) {
+                    VERSION_CHECKER.setChecked();
+                    final JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-                String localVersion = String.valueOf(VERSION_CHECKER.getLocalVersion());
-                String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
-                panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
+                    String localVersion = String.valueOf(VERSION_CHECKER.getLocalVersion());
+                    String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
+                    panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
 
-                final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
-                LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
-                panel.add(LinkLabel);
+                    final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
+                    LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
+                    panel.add(LinkLabel);
 
-                JOptionPane.showMessageDialog(null, panel);
-            } else {
-                final String message =
-                        "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
-                                "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
-                                "to get the best SNAP experience.\n\n" +
-                                "Press 'Yes', if you want to check for plugin updates now.\n\n";
-                Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
-                if (Dialogs.Answer.YES.equals(decision)) {
-                    final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
-                    assert checkForUpdatesProvider != null : "An instance of CheckForUpdatesProvider found in Lookup: " + Lookup.getDefault();
-                    checkForUpdatesProvider.openCheckForUpdatesWizard(true);
+                    JOptionPane.showMessageDialog(null, panel);
+                    return;
                 }
             }
-        }
-    }
-
-    @OnStop
-    public static class OnShutdown implements Runnable {
-
-        @Override
-        public void run() {
-            if (hasChecked) {
-                VERSION_CHECKER.setChecked();
+            final String message =
+                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
+                            "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
+                            "to get the best SNAP experience.\n\n" +
+                            "Press 'Yes', if you want to check for plugin updates now.\n\n";
+            Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
+            if (Dialogs.Answer.YES.equals(decision)) {
+                final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
+                checkForUpdatesProvider.openCheckForUpdatesWizard(true);
             }
         }
     }
