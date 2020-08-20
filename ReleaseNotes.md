@@ -67,11 +67,6 @@ provide a BETA version as plugin shortly after the SNAP release. The version sho
 or for operational services. But we would like to get your feedback on this new development, to further improve it. 
 More information will be provided with the release of the plugin.
 
-# Known Issues
-When closing SNAP on Mac OS we observe crashes. It seems to happen after stating and closing SNAP for 4-5 times.
-This issue will be further investigated. https://senbox.atlassian.net/browse/SNAP-1320
-
-
 
 
 # Issues
