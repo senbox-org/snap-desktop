@@ -51,6 +51,7 @@ import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
+import org.esa.snap.product.library.v2.database.DataAccess;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
@@ -95,8 +96,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -266,6 +267,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
+        for (RemoteProductsRepositoryProvider provider : remoteRepositoryProductProviders) {
+            DataAccess.saveRemoteRepositoryName(provider.getRepositoryName());
+        }
 
         createWorldWindowPanel(persistencePreferences);
         createRepositorySelectionPanel(remoteRepositoryProductProviders);
@@ -1349,6 +1353,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 // there is no running thread for the local repository products
                 Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to download the product", false);
                 if (selectedLocalRepositoryFolder != null) {
+                    new AllLocalFolderProductsRepository().saveLocalRepositoryFolder(selectedLocalRepositoryFolder);
                     AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
                     if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                         RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel) selectedRepository;
