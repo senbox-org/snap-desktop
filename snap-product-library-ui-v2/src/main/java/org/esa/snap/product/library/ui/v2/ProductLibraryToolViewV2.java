@@ -55,7 +55,6 @@ import org.esa.snap.product.library.v2.database.DataAccess;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -96,8 +95,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1001,7 +1000,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    public void readLocalProductsAsync(RepositoryProduct[] productsToRead, ThreadCallback<ProductEntry[]> threadCallback) {
+    public void readLocalProductsAsync(RepositoryProduct[] productsToRead, ThreadCallback<Product[]> threadCallback) {
         if (this.localRepositoryProductsThread == null) {
             ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
             int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
