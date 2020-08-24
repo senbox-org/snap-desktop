@@ -6,8 +6,7 @@ import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
-import javax.swing.SwingUtilities;
-import java.util.List;
+import javax.swing.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,11 +19,12 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
 
     private static final Logger logger = Logger.getLogger(DeleteAllLocalRepositoriesTimerRunnable.class.getName());
 
-    private final List<LocalRepositoryFolder> localRepositoryFolders;
+    private final LocalRepositoryFolder[] localRepositoryFolders;
     private final AllLocalFolderProductsRepository allLocalFolderProductsRepository;
 
-    public DeleteAllLocalRepositoriesTimerRunnable(ProgressBarHelper progressPanel, int threadId, List<LocalRepositoryFolder> localRepositoryFolders,
-                                                   AllLocalFolderProductsRepository allLocalFolderProductsRepository) {
+    public DeleteAllLocalRepositoriesTimerRunnable(ProgressBarHelper progressPanel, int threadId,
+                                                   AllLocalFolderProductsRepository allLocalFolderProductsRepository,
+                                                   LocalRepositoryFolder... localRepositoryFolders) {
         super(progressPanel, threadId, 500);
 
         this.localRepositoryFolders = localRepositoryFolders;
@@ -38,27 +38,25 @@ public class DeleteAllLocalRepositoriesTimerRunnable extends AbstractProgressTim
 
     @Override
     protected final Void execute() throws Exception {
-        for (int i=0; i<this.localRepositoryFolders.size(); i++) {
-            if (isFinished()) {
-                break;
-            } else {
-                LocalRepositoryFolder localRepositoryFolder = this.localRepositoryFolders.get(i);
-                boolean folderDeletedFromDatabase = false;
-                try {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "Delete the local repository folder '" + localRepositoryFolder.getPath().toString()+"'.");
-                    }
+        if (this.localRepositoryFolders != null) {
+            for (LocalRepositoryFolder folder : this.localRepositoryFolders) {
+                if (isFinished()) {
+                    break;
+                } else {
+                    boolean folderDeletedFromDatabase = false;
+                    try {
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "Delete the local repository folder '" + folder.getPath().toString() + "'.");
+                        }
 
-                    this.allLocalFolderProductsRepository.deleteRepositoryFolder(localRepositoryFolder);
-                    folderDeletedFromDatabase = true;
-                    //if (Files.exists(localRepositoryFolder.getPath())) {
-                    //    FileIOUtils.deleteFolder(localRepositoryFolder.getPath());
-                    //}
-                } catch (Exception exception) {
-                    logger.log(Level.SEVERE, "Failed to delete the local repository folder '" + localRepositoryFolder.getPath().toString() + "'.", exception);
-                } finally {
-                    if (folderDeletedFromDatabase) {
-                        updateLocalRepositoryFolderDeletedLater(localRepositoryFolder);
+                        this.allLocalFolderProductsRepository.deleteRepositoryFolder(folder);
+                        folderDeletedFromDatabase = true;
+                    } catch (Exception exception) {
+                        logger.log(Level.SEVERE, "Failed to delete the local repository folder '" + folder.getPath().toString() + "'.", exception);
+                    } finally {
+                        if (folderDeletedFromDatabase) {
+                            updateLocalRepositoryFolderDeletedLater(folder);
+                        }
                     }
                 }
             }

@@ -316,6 +316,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return result;
     }
 
+    public LocalRepositoryFolder getSelectedFolder() {
+        return (LocalRepositoryFolder) this.foldersComboBox.getSelectedItem();
+    }
+
     public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {
         List<LocalRepositoryFolder> localRepositoryFolders = null;
         List<String> remoteMissionNames = null;
