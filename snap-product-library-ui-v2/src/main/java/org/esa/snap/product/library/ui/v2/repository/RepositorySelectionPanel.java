@@ -138,7 +138,9 @@ public class RepositorySelectionPanel extends JPanel {
 
     public void finishSavingLocalProduct(SaveProductData saveProductData) {
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = getAllLocalProductsRepositoryPanel();
-        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+        if (saveProductData.getLocalRepositoryFolder() != null) {
+            allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+        }
         if (saveProductData.getRemoteMission() != null) {
             allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
         }
@@ -155,7 +157,9 @@ public class RepositorySelectionPanel extends JPanel {
             } else if (repositoryPanel instanceof AllLocalProductsRepositoryPanel) {
                 if (saveProductData != null) {
                     AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = (AllLocalProductsRepositoryPanel) repositoryPanel;
-                    allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+                    if (saveProductData.getLocalRepositoryFolder() != null) {
+                        allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
+                    }
                     allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
                     allLocalProductsRepositoryPanel.addAttributesIfMissing(repositoryProduct);
                 }
