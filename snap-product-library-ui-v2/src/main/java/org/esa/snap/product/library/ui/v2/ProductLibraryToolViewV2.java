@@ -51,10 +51,10 @@ import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
+import org.esa.snap.product.library.v2.database.DataAccess;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -95,8 +95,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -266,6 +266,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.textFieldPreferredHeight = productNameTextField.getPreferredSize().height;
 
         RemoteProductsRepositoryProvider[] remoteRepositoryProductProviders = RemoteProductsRepositoryProvider.getRemoteProductsRepositoryProviders();
+        for (RemoteProductsRepositoryProvider provider : remoteRepositoryProductProviders) {
+            DataAccess.saveRemoteRepositoryName(provider.getRepositoryName());
+        }
 
         createWorldWindowPanel(persistencePreferences);
         createRepositorySelectionPanel(remoteRepositoryProductProviders);
@@ -770,8 +773,15 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void deleteAllLocalRepositoriesButtonPressed() {
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel();
-        List<LocalRepositoryFolder> localRepositoryFoldersToDelete = allLocalProductsRepositoryPanel.getLocalRepositoryFolders();
-        if (localRepositoryFoldersToDelete.size() > 0) {
+        LocalRepositoryFolder[] folders;
+        final LocalRepositoryFolder selectedFolder = allLocalProductsRepositoryPanel.getSelectedFolder();
+        if (selectedFolder != null) {
+            folders = new LocalRepositoryFolder[] { selectedFolder };
+        } else {
+            List<LocalRepositoryFolder> localRepositoryFoldersToDelete = allLocalProductsRepositoryPanel.getLocalRepositoryFolders();
+            folders = localRepositoryFoldersToDelete.toArray(new LocalRepositoryFolder[0]);
+        }
+        if (folders.length > 0) {
             // there are local repositories into the application
             String dialogTitle = "Delete local products";
             if (this.localRepositoryProductsThread != null || this.downloadRemoteProductsHelper.isRunning()) {
@@ -794,7 +804,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
                     int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
                     AllLocalFolderProductsRepository allLocalFolderProductsRepository = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel().getAllLocalFolderProductsRepository();
-                    this.localRepositoryProductsThread = new DeleteAllLocalRepositoriesTimerRunnable(progressBarHelper, threadId, localRepositoryFoldersToDelete, allLocalFolderProductsRepository) {
+                    this.localRepositoryProductsThread = new DeleteAllLocalRepositoriesTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository, folders) {
                         @Override
                         protected void onFinishRunning() {
                             onFinishRunningLocalProductsThread(this, true);
@@ -997,7 +1007,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
     }
 
-    public void readLocalProductsAsync(RepositoryProduct[] productsToRead, ThreadCallback<ProductEntry[]> threadCallback) {
+    public void readLocalProductsAsync(RepositoryProduct[] productsToRead, ThreadCallback<Product[]> threadCallback) {
         if (this.localRepositoryProductsThread == null) {
             ProgressBarHelperImpl progressBarHelper = this.repositorySelectionPanel.getProgressBarHelper();
             int threadId = progressBarHelper.incrementAndGetCurrentThreadId();
@@ -1349,6 +1359,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 // there is no running thread for the local repository products
                 Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to download the product", false);
                 if (selectedLocalRepositoryFolder != null) {
+                    new AllLocalFolderProductsRepository().saveLocalRepositoryFolder(selectedLocalRepositoryFolder);
                     AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
                     if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                         RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel) selectedRepository;

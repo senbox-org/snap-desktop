@@ -7,7 +7,6 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.thread.ThreadCallback;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
-import org.esa.snap.productlibrary.db.ProductEntry;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
@@ -20,13 +19,13 @@ import java.nio.file.Path;
  *
  * Created by jcoravu on 21/7/2020.
  */
-public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnable<ProductEntry[]> {
+public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnable<Product[]> {
 
     private final RepositoryProduct[] productsToRead;
-    private final ThreadCallback<ProductEntry[]> threadCallback;
+    private final ThreadCallback<Product[]> threadCallback;
 
     public ReadLocalProductsTimerRunnable(ProgressBarHelper progressPanel, int threadId, RepositoryProduct[] productsToRead,
-                                          ThreadCallback<ProductEntry[]> threadCallback) {
+                                          ThreadCallback<Product[]> threadCallback) {
 
         super(progressPanel, threadId, 500);
 
@@ -40,8 +39,8 @@ public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnabl
     }
 
     @Override
-    protected ProductEntry[] execute() throws Exception {
-        ProductEntry[] productEntries = new ProductEntry[this.productsToRead.length];
+    protected Product[] execute() throws Exception {
+        Product[] products = new Product[this.productsToRead.length];
         for (int i=0; i<this.productsToRead.length; i++) {
             LocalRepositoryProduct repositoryProduct = (LocalRepositoryProduct)this.productsToRead[i];
             // check if the local product exists on the disk
@@ -67,7 +66,7 @@ public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnabl
                         throw new NullPointerException("The product '" + repositoryProduct.getName() + "' has not been read from '" + productFile.getAbsolutePath()+"'.");
                     } else {
                         // the product has been read
-                        productEntries[i] = new ProductEntry(product);
+                        products[i] = product;
                     }
                 }
             } else {
@@ -75,7 +74,7 @@ public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnabl
                 throw new IllegalStateException("The product '" + repositoryProduct.getPath() + "' does not exist into the local repository folder.");
             }
         }
-        return productEntries;
+        return products;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnabl
     }
 
     @Override
-    protected void onSuccessfullyFinish(ProductEntry[] result) {
+    protected void onSuccessfullyFinish(Product[] result) {
         this.threadCallback.onSuccessfullyFinish(result);
     }
 }

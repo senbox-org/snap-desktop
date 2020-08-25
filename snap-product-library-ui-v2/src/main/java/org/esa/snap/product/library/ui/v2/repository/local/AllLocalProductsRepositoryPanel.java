@@ -2,20 +2,20 @@ package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.apache.commons.lang.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
-import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.AbstractRepositoryProductPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
-import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
-import org.esa.snap.product.library.v2.database.*;
+import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
+import org.esa.snap.product.library.v2.database.AttributeFilter;
+import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.remote.products.repository.Attribute;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -29,8 +29,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The panel containing the query parameters of a local repository.
@@ -53,9 +53,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     public AllLocalProductsRepositoryPanel(ComponentDimension componentDimension, WorldMapPanelWrapper worlWindPanel) {
         super(worlWindPanel, componentDimension, new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
-        Path databaseParentFolderPath = H2DatabaseAccessor.getDatabaseParentFolder();
-        H2DatabaseParameters databaseParameters = new H2DatabaseParameters(databaseParentFolderPath);
-        this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository(databaseParameters);
+        this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository();
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
         ItemRenderer<LocalRepositoryFolder> foldersItemRenderer = new ItemRenderer<LocalRepositoryFolder>() {
@@ -316,6 +314,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             }
         }
         return result;
+    }
+
+    public LocalRepositoryFolder getSelectedFolder() {
+        return (LocalRepositoryFolder) this.foldersComboBox.getSelectedItem();
     }
 
     public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {
