@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -28,25 +29,29 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ScatterPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SCATTER_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "CorrelativePlot",
-        openAtStartup = false,
-        position = 5
+        mode = PackageDefaults.SCATTER_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.SCATTER_PLOT_WS_OPEN,
+        position = PackageDefaults.SCATTER_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 10),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SCATTER_PLOT_MENU_PATH,
+                position = PackageDefaults.SCATTER_PLOT_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.SCATTER_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.SCATTER_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ScatterPlotTopComponent_Name",
         preferredID = "ScatterPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ScatterPlotTopComponent_Name=Correlative Plot",
+        "CTL_ScatterPlotTopComponent_Name=" + PackageDefaults.SCATTER_PLOT_NAME,
         "CTL_ScatterPlotTopComponent_HelpId=correlativePlotDialog"
 })
 /**
@@ -59,7 +64,7 @@ public class ScatterPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        final Icon largeIcon = UIUtils.loadImageIcon("icons/ScatterPlot24.gif");
+        final Icon largeIcon = UIUtils.loadImageIcon("icons/seadas/CorrelativePlot24.png");
         final String chartTitle = ScatterPlotPanel.CHART_TITLE;
         final ScatterPlotPanel scatterPlotPanel = new ScatterPlotPanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId());
         final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, Bundle.CTL_ScatterPlotTopComponent_HelpId(), chartTitle, largeIcon);

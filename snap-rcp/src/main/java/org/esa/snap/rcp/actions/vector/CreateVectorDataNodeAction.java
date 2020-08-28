@@ -32,6 +32,7 @@ import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.nodes.UndoableProductNodeInsertion;
 import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -64,12 +65,16 @@ import java.text.MessageFormat;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Vector", position = 0),
-        @ActionReference(path = "Toolbars/Tools", position = 191)
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.VECTOR_DATA_NODE_MENU_PATH,
+                position = PackageDefaults.VECTOR_DATA_NODE_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.VECTOR_DATA_NODE_TOOLBAR_NAME,
+                position = PackageDefaults.VECTOR_DATA_NODE_TOOLBAR_POSITION)
 })
 @Messages({
-        "CTL_CreateVectorDataNodeActionText=New Vector Data Container",
-        "CTL_CreateVectorDataNodeActionPopupText=New Vector Data Container"
+        "CTL_CreateVectorDataNodeActionText=" + PackageDefaults.VECTOR_DATA_NODE_NAME,
+        "CTL_CreateVectorDataNodeActionPopupText=" + PackageDefaults.VECTOR_DATA_NODE_DESCRIPTION
 })
 public class CreateVectorDataNodeAction extends AbstractAction implements ContextAwareAction, LookupListener {
     private static final String HELP_ID = "vectorDataManagement";
@@ -86,8 +91,8 @@ public class CreateVectorDataNodeAction extends AbstractAction implements Contex
         this.lkp = lkp;
         result = this.lkp.lookupResult(ProductNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode16.gif", false));
-        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NewVectorDataNode24.gif", false));
+        putValue(Action.LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.VECTOR_DATA_NODE_ICON, false));
+        putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.VECTOR_DATA_NODE_SMALL_ICON, false));
         setEnabled(false);
     }
 
