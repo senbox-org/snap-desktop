@@ -1,0 +1,355 @@
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Colour Manipulation Preferences</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Colour Manipulation Preferences
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
+    </tr>
+</table>
+
+<h3>Overview</h3>
+
+<p>This page enables the user to modify the default settings for the Color Manipulation tool. Note: any changes made to
+    the
+    preferences will not be automatically updated until the application is either restarted or a new view window is
+    opened.
+</p>
+
+<p>To open the colour manipulation preferences window select /Tools/Options/Colour Manipulation </b>
+    from the main menu (Note: this may be located instead in File/Preferences on the Mac).
+</p>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/Color_Preferences.png"/></td>
+        </tr>
+        <tr>
+            <td align="center" style="border-width:0">
+                Color Manipulation preferences page
+            </td>
+        </tr>
+    </table>
+</div>
+
+<br>
+<hr>
+<h4>Default Palettes</h4>
+<ul>
+    <li>
+        <b>GRAY SCALE:</b> The color palette to use if the field "GRAY SCALE" is selected.
+    </li>
+
+    <li>
+        <b>STANDARD:</b> The color palette to use if the field "STANDARD" is selected.  This by default is a rainbow spectrum type of palette.
+    </li>
+
+    <li>
+        <b>UNIVERSAL:</b> The color palette to use if the field "UNIVERSAL" is selected.
+        The universal palette field is intended for color-blind compliant palettes.
+    </li>
+
+    <li>
+        <b>ANOMALIES:</b> The color palette to use if the field "ANOMALIES" is selected.  This is intended but not limited to an anomaly
+        type of palette.
+    </li>
+
+</ul>
+
+
+
+<br>
+<hr>
+<h4>Standard Options</h4>
+<p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being applied.
+</p>
+
+<ul>
+    <li>
+        <b>Palette:</b> - The palette to use for the scheme.
+
+        <ul>
+            <li>
+                <b>GRAY SCALE:</b> Uses the scheme as defined in the preferences field "GRAY SCALE".
+            </li>
+
+            <li>
+                <b>STANDARD:</b> Uses the scheme as defined in the preferences field "STANDARD".
+            </li>
+
+            <li>
+                <b>UNIVERSAL:</b> Uses the scheme as defined in the preferences field "UNIVERSAL".
+            </li>
+
+            <li>
+                <b>ANOMALIES:</b> Uses the scheme as defined in the preferences field "ANOMALIES".
+            </li>
+        </ul>
+
+    </li>
+
+    <li>
+        <b>Range:</b> - The range to use.
+
+        <ul>
+            <li>
+                <b>From Data:</b> Uses the range from the statistics of the data (100%).
+            </li>
+
+            <li>
+                <b>From Palette File :</b> Uses the range as defined in the palette file.
+            </li>
+        </ul>
+    </li>
+
+    <li>
+        <b>Log Scaling:</b> - The log scaling to use for the scheme.
+
+        <ul>
+            <li>
+                <b>TRUE :</b> Log scaling will be set to true.
+            </li>
+
+            <li>
+                <b>FALSE :</b> Log scaling will be set to false.
+            </li>
+
+            <li>
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+            </li>
+        </ul>
+    </li>
+
+</ul>
+
+
+
+
+
+<br>
+<hr>
+<h4>Scheme Options</h4>
+<p>This is the behavior regarding applying color schemes when opening a new band or clicking on the reset button. If
+    the "Apply Color Schemes Automatically" button is clicked and the bandname matches a regular expression scheme
+    lookup (defined in the configuration file ~/.snap/auxdata/color_schemes/color_palette_schemes_lookup.xml) then a
+    color scheme is applied (palette, range, log scaling).
+</p>
+
+<ul>
+    <li>
+        <b>Apply Color Schemes Automatically:</b> Automatically apply the color schemes when a band is opened or reset
+        button is clicked.
+    </li>
+
+    <li>
+        <b>Palette:</b> - The palette to use for the scheme.
+
+        <ul>
+            <li>
+                <b>From Scheme STANDARD:</b> Uses the scheme from the configuration file defined by the parameter
+                "STANDARD_FILENAME".
+            </li>
+
+            <li>
+                <b>From Scheme UNIVERSAL:</b> Uses the scheme from the configuration file defined by the parameter
+                "UNIVERSAL_FILENAME".
+                The universal palette field is intended for color-blind compliant palettes.
+            </li>
+
+            <li>
+                <b>GRAY SCALE:</b> Uses the scheme as defined in the preferences field "GRAY SCALE".
+            </li>
+
+            <li>
+                <b>STANDARD:</b> Uses the scheme as defined in the preferences field "STANDARD".
+            </li>
+
+            <li>
+                <b>UNIVERSAL:</b> Uses the scheme as defined in the preferences field "UNIVERSAL".
+            </li>
+
+            <li>
+                <b>ANOMALIES:</b> Uses the scheme as defined in the preferences field "ANOMALIES".
+            </li>
+        </ul>
+    </li>
+
+
+    <li>
+        <b>Range:</b> - The range to use for the scheme.
+
+        <ul>
+            <li>
+                <b>From Scheme:</b> Uses the scheme from the configuration file defined by the parameters
+                "MIN" and "MAX".
+            </li>
+
+
+            <li>
+                <b>From Data:</b> Uses the range from the statistics of the data (100%).
+            </li>
+
+            <li>
+                <b>From Palette File :</b> Uses the range as defined in the palette file.
+            </li>
+        </ul>
+    </li>
+
+
+    <li>
+        <b>Log Scaling:</b> - The log scaling to use for the scheme.
+
+        <ul>
+            <li>
+                <b>From Scheme:</b> Uses the log scaling from the configuration file defined by the parameter "LOG_SCALE".
+            </li>
+
+            <li>
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+            </li>
+
+            <li>
+                <b>TRUE :</b> Log scaling will be set to true.
+            </li>
+
+            <li>
+                <b>FALSE :</b> Log scaling will be set to false.
+            </li>
+        </ul>
+    </li>
+
+
+</ul>
+
+
+<br>
+<hr>
+<h4>Scheme Selector Options</h4>
+<p>These are options to how and what is displayed in the color scheme selector in the "Basic editor". The pre-defined
+    color schemes which appear in this selector are configured in the file:
+    ~/.snap/auxdata/color_schemes/color_palette_schemes.xml.
+</p>
+
+<ul>
+    <li>
+        <b>Verbose:</b> - This is the longer verbose name of the color scheme as defined by the parameter "VERBOSE_NAME"
+        in the configuration file.
+    </li>
+
+    <li>
+        <b>Sort:</b> - This schemes are sorted alphabetically. If sort is false then the schemes appear in the same
+        order
+        as they are defined in the configuration file.
+    </li>
+
+    <li>
+        <b>Categorize:</b> - This categorizes the display of the schemes in the selection into
+        "Primary Schemes" and "Additional Schemes" as determined
+        by the boolean parameter "PRIMARY" in the configuration file.
+    </li>
+
+    <li>
+        <b>Show Disabled:</b> - Schemes could be disabled for various reasons such as the color palette of the scheme
+        does not exist.
+        If this field is checked then those schemes will be displayed in grey. If you click on the scheme then a dialog
+        will
+        indicate why the scheme is disabled.
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Sliders Editor Options</h4>
+<ul>
+    <li>
+        <b>Histogram Zoom:</b> - The histogram will by default be zoomed in to span the min/max range of the
+        color palette (sliders).
+    </li>
+
+    <li>
+        <b>Show Information:</b> - The statistical information overlay within the histogram plot window will be
+        displayed by default.
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Button Enablement</h4>
+<p>You may customize your tool window by adding/removing a variety of tool buttons</p>
+<ul>
+    <li>
+        <b>1&sigma; (68.27%) Button: </b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto1SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>2&sigma; (95.45%) Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto2SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>3&sigma; (99.73%) Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto3SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>95% Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 95% of all pixels in the band. This is retained as a legacy function.
+        &nbsp; <img src="images/icons/Auto95Percent24.gif">
+    </li>
+
+    <li>
+        <b>100% Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 100% of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto100Percent24.gif">
+    </li>
+
+    <li>
+        <b>Information Button:</b> Enables this button in the "sliders editor". This function
+        enable display of statistical information overlaid in the histogram plot window..
+        &nbsp; <img src="images/icons/Information24.gif">
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>RGB Options</h4>
+<ul>
+    <li>
+        <b>Range Button (Min):</b> - The value at which the preset range button sets the first (minimum) point of the
+        color palette.
+        &nbsp; <img src="images/icons/AutoPresetRange24.png">
+    </li>
+
+    <li>
+        <b>Range Button (Max):</b> - The value at which the preset range button sets the last (maximum) point of the
+        color palette.
+        &nbsp; <img src="images/icons/AutoPresetRange24.png">
+    </li>
+</ul>
+
+<br>
+<hr>
+<h4>Restore</h4>
+<p>Restores all parameters within the Color Manipulation Preferences to the original default values.</p>
+
+
+</body>
+</html>

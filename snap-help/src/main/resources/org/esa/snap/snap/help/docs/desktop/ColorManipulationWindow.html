@@ -28,166 +28,321 @@
             Colour Manipulation
         </td>
 
-        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg"
-                                                                                     border="0"></a></td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
     </tr>
 </table>
 
 <h3>Overview</h3>
 
-<p>If you are opening an Image View of a data product's band or tie-point grid, the Sentinel Toolbox either loads image settings
-    from the product itself (BEAM-DIMAP format only) or uses default colour settings. The <b>Colour Manipulation</b> tool
-    window is used to modify the colours used in the image. Depending on the type of the source data used for the images,
-    the colour manipulation window offers different editors:
+<p>The "Colour Manipulation" tool
+    window is used to modify the colors and color mapping used in the image.  If you are opening an Image View of a
+    band or tie-point grid, the image loads with the color settings of the band
+    stored within the data file itself (BEAM-DIMAP format only) or applies default color settings as defined in the
+    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation).
 </p>
 
+<p>Depending on the type of the source data used for the images and the type of images to be created,
+    the this tool offers three editor modes: Basic, Sliders and Table.
+    If the source data is a single spectral/geophysical band, then the Basic, Sliders and Table mode editors are all
+    used. If
+    the source data is an indexed band then only the Table editor is used. If the source data is 3 bands used to create
+    a RGB
+    image then only the Sliders editor is used.
+</p>
+
+<p>To open the Colour Manipulation tool window, use the corresponding icon
+    <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
+    in the "Tool Windows" toolbar or select <i>/Tool Windows/Colour Manipulation</i>
+    from the main menu. Changes made within the Colour Manipulation tool window will directly become effective in the
+    image.
+</p>
+
+
+<br>
+<hr>
+<h4>Some Common Functions</h4>
+<b>Each editor in this tool has unique parameters but in general all editors share the follow functions:</b>
+
+<ul>
+    <li> <img src="images/icons/Undo24.gif"> &nbsp; The "Reset" button resets to the default settings.  In the case of a
+        single spectral/geophysical band it applies the default color scheme if applicable.
+    </li>
+
+    <li> <img src="images/icons/LogDisplay24.png"> &nbsp; The "Log Scaling" button toggles the log scaling and applies it to the image.  This option is not available in
+        the RGB image and for the index band source.  For the RGB image, any concept of log scaling needs to be either contained
+        within the configuration profile, or you can use the "Gamma non-linearity" feature within "More Options".
+    </li>
+
+    <li> <img src="images/icons/MultiAssign24.gif"> &nbsp; The "Apply to Other Bands" button enables you to apply/load the color palette
+        into any other band which is opened in a view window.
+    </li>
+
+
+    <li> <img src="images/icons/document-open.png"> &nbsp; The "Import Palette" button enables you to import a palette file (cpd or cpt).
+        Essentially this functions identical
+        to the color palette chooser except that this is a dialog selector displaying the files.
+    </li>
+
+    <li> <img src="images/icons/document-save.png"> &nbsp; The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal)
+        from the current parameters.
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Basic Editor</h4>
+
+<p> The "Basic" editor is only used when the source data is a single spectral/geophysical band.
+    In this editor you can select the color palette, the range (minimum and maximum), and whether the scaling
+    is logarithmic. These 3 parameters (palette, range and scaling) define a color scheme. You may either select
+    a pre-defined color scheme or individually adjust any of the parameters. Note that a color scheme can
+    automatically be applied when an image window is opened based on the band name (see <a
+            href="ColorManipulationPreferences.html">Preferences</a>).
+</p>
+
+<br>
 <div align="center">
-    <table width="640px">
+    <table>
         <tr>
-            <td align="center" style="border-width:0"><img src="images/ColManip1BSSmall.png"/></td>
-            <td align="center" style="border-width:0"><img src="images/ColManip1BTSmall.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_Basic.png"/></td>
         </tr>
         <tr>
             <td align="center" style="border-width:0">
-                <b>A.1</b>: Editor for images of a single, spectral/geophysical band
-                in <b>Sliders</b> mode
+                <b>A.1</b>: Basic mode editor<br> (for images of a single, spectral/geophysical band)
             </td>
+        </tr>
+    </table>
+</div>
+<br>
+
+<p><b><i>Scheme</i></b>: This section handles the setting and display of the color scheme.
+</p>
+<ul>
+    <li><b>Scheme Selector</b>: This selector is used to specify a pre-defined color scheme. Once you choose a color
+        scheme, all components
+        and the image will be updated with the parameters (palette, range and scaling) of the color scheme. These color
+        schemes are configured in an xml file which you can edit if you wish to add/modify color schemes
+        (~/.snap/auxdata/color_schemes/color_palette_schemes.xml).  If a scheme was automatically applied via bandname-lookup
+        when you opened the view window of the band, then this selector should display the scheme which has been applied.
+        Any subsequent changes to scheme parameters will cause this selector to be set to "None" (indicating that the
+        scheme no longer is being used in the image).
+    </li>
+</ul>
+
+<p><b><i>Palette</i></b>: This section enables you to load in a color palette.
+</p>
+<ul>
+    <li><b>Color Palette Chooser</b>: used to select pre-defined color palettes. These palettes are stored in
+        (~/.snap/auxdata/color_palettes).
+        There are currently two supported formats of these palettes: cpd and cpt. CPD is the native format (BEAM, SNAP
+        and SeaDAS).
+        CPT is the format used in the Generic Mapping Tools software. Each of these formats contain not only the color
+        ramp,
+        but actual data values for each point in the ramp. When you select the palette, those data values will
+        automatically
+        be redistributed across the range (Min, Max) currently displayed in the Basic window. The palettes weighting
+        between
+        points is preserved during this redistribution.
+    </li>
+    <li><b>Load exact values</b>: This checkbox when checked affects the behavior of the Color Palette Chooser. If
+        checked, then when a palette
+        is selected the points are not redistributed to the range but instead the exact data of the palette is used.
+    </li>
+    <li><b>Reverse</b>: This button enables you to reverse the direction of the color palette.
+    </li>
+</ul>
+
+
+<p><b><i>Range</i></b>: This section enables you to adjust the min and max of the color palettes. Any change to these
+    fields
+    will cause the color palette to redistribute based on this range, while retaining any current distribution point
+    weighting factors contained within the currently loaded palette. To alter the distribution see the "Sliders" and the
+    "Table" editors.
+</p>
+<ul>
+    <li><b>Min</b>: This textfield sets the image data value to use for the first point of the color palette. The first
+        palette point color
+        will be applied to all pixels with values below this minimum value.
+    </li>
+
+    <li><b>Min</b>: This textfield sets the image data value to use for the last point of the color palette. The last
+        palette point color
+        will be applied to all pixels with values above this maximum value.
+    </li>
+
+
+    <li><b>From Palette</b>: This button loads in the range settings from the palette file which was originally loaded
+        within the palette
+        chooser while maintaining any subsequent user alterations of the point distribution.
+    </li>
+
+    <li><b>From Data</b>: This button loads in the
+        range obtained from the statistics of the data (min and max of 100% of the data). If you wish to load other
+        statistical
+        ranges based on a histogram of the data see the "Sliders" editor.
+        </p>
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Sliders Editor</h4>
+
+<p> In the "Slider" mode you have control over how the individual points of the color palette are distributed.
+    You also have features associated with using the statistics and histogram of the data. The histogram
+    is displayed over the applied color palette with adjustable sliders for each point of the palette.
+</p>
+
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/Color_Sliders.png"/></td>
+        </tr>
+        <tr>
             <td align="center" style="border-width:0">
-                <b>A.2</b>: Editor for images of a single, spectral/geophysical band
-                in <b>Table</b> mode
+                <b>A.2</b>: Sliders mode editor<br> for images of a single, spectral/geophysical band
             </td>
         </tr>
+    </table>
+</div>
+
+<p><b>Modifying the Sliders</b>: Various aspects including color and position may be modified here, as well as adding
+    and removing sliders.
+</p>
+
+<ul>
+    <li><b>Color/Transparency</b>: To change the color/transparency of a slider, left-click on the slider and a variety
+        of color selection
+        options are available. One
+        option is "None" which makes the color bar at the slider location fully transparent. The transparency is a
+        linear
+        progression
+        between the adjacent sliders. More colors and partial transparency is available within the "More" option.
+    </li>
+
+    <li><b>Value</b>: To change the data value of a slider you may either click on the slider and move it, or left-click
+        on the slider's label text
+        and directly enter a new value in the textfield popup.
+    </li>
+
+    <li><b>Add Slider</b> To add a new slider, right click anywhere on the color bar between two existing slider and
+        select "Add new
+        Slider". A
+        new slider will be inserted
+        beneath the location of the mouse-click with its value and its colors set automatically by a linear
+        interpolation of
+        the
+        adjacent sliders.
+    </li>
+
+    <li><b>Remove Slider</b> To remove a slider, right click on the slider and select "Remove Slider". The palette will
+        then be updated by interpolating
+        between the adjacent remaining sliders
+    </li>
+
+    <li><b>Center Slider Position</b> To center a slider spatially between two adjacent slider, right click on the
+        slider and select "Center Slider
+        Position"
+    </li>
+
+    <li><b>Center Slider Color</b> To center a slider in color-space between two adjacent slider, right click on the
+        slider and select "Center Slider Color"
+    </li>
+
+</ul>
+
+<p><b>Statistical Information</b>: If the information <font color="red">Rough statistics!</font> is shown, the statistical information is computed on a
+    sub-sampled level. You can click it in order to compute the accurate statistical data
+</p>
+
+
+
+<p><b>Range Auto-Adjust</b>: Several buttons are available to auto-adjusted the range of the color palette. More
+    range auto-adjust buttons can be added as well by setting your <a href="ColorManipulationPreferences.html">Preferences</a>.
+</p>
+<ul>
+    <li>
+        <img src="images/icons/Auto1SigmaPercent24.gif">
+        &nbsp; adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/Auto2SigmaPercent24.gif">
+        &nbsp; adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/Auto3SigmaPercent24.gif">
+        &nbsp; adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/Auto95Percent24.gif">
+        &nbsp; adjusts the palette range to cover 95% of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/Auto100Percent24.gif">
+        &nbsp; adjusts the palette range to cover 100% (the full range) of all pixels in the band.
+    </li>
+
+    <li>
+        <img src="images/icons/AutoPresetRange24.png">
+        &nbsp; adjusts the palette range to a specific pre-set value (RGB mode only - see preferences).
+    </li>
+</ul>
+
+<p><b>Histogram View Zoom</b>: There are several zoom options for viewing the histogram over color palette image.
+</p>
+
+<ul>
+    <li>
+        <img src="images/icons/ZoomIn24V.gif">
+        &nbsp; Progressively zooms in to the histogram vertically
+    </li>
+
+    <li>
+        <img src="images/icons/ZoomOut24V.gif">
+        &nbsp; Progressively zooms out of the histogram vertically.
+    </li>
+
+    <li><img src="images/icons/ZoomHorizontal24.gif">
+        &nbsp; Toggles the horizontal zoom between the palette range bounds and the full data range.
+    </li>
+</ul>
+
+<p><b>Slider Distribution</b>: The sliders can be distributed all at once.
+</p>
+<ul>
+    <li>
+        <img src="images/icons/EvenDistribution.gif">
+        &nbsp; Distributes the inner sliders evenly between the first and the last slider.
+    </li>
+</ul>
+
+<p><b>RGB Images</b> The "Sliders" editor is also used for RGB images, in which case these is a red, green, and blue sliders channels</p>
+
+
+<div align="center">
+    <table>
         <tr>
-            <td colspan="2" align="center" style="border-width:0; padding-top: 15px;"><img src="images/ColManip1BBSmall.png"/></td>
-        </tr>
-        <tr>
-            <td colspan="2" align="center" style="border-width:0">
-                <b>A.3</b>: Editor for images of a single, spectral/geophysical band
-                in <b>Basic</b> mode
-            </td>
-        </tr>
-        <tr>
-            <td style="border-width:0">
-                &nbsp;
-            </td>
-            <td style="border-width:0">
-                &nbsp;
-            </td>
-        </tr>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_indexCoding.png"/></td>
-            <td align="center" style="border-width:0"><img src="images/CM_rgb_blue.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB1.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB2.png"/></td>
+            <td align="center" style="border-width:0"><img src="images/Color_RGB3.png"/></td>
         </tr>
         <tr align="center">
-            <td align="center" style="border-width:0">
-                <b>B.</b>: Editor for images of a single, index-coded band
-            </td>
-            <td align="center" style="border-width:0">
+            <td colspan="3" align="center" style="border-width:0">
                 <b>C.</b> Editor for images using separate R,G,B channels
             </td>
         </tr>
     </table>
 </div>
 
-<p>To open the colour manipulation window, use the corresponding icon
-    <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
-    icon in the main toolbar or select <b><a href="ViewMenu.html">View</a>/Tool Windows/Colour Manipulation</b>
-    from the main menu.
-</p>
-
-<p>Changes in the colour manipulation window will directly become effective.</p>
-
-<p>If the information <font color="red">Rough statistics!</font> is shown, the statistical information is computed on a
-    sub-sampled level. You can click it in order to compute the accurate statistical data.
-</p>
-
-
-<h3>A. Editor for images of a single, spectral/geophysical band</h3>
-
-<p>Images of a single, spectral/geophysical band use a colour palette to assign a colour to a sample value in the source
-    band.
-    By default, the editor is in a mode where sliders are used to modify the colour palette.
-    Each slider assigns sample values to colours:
-</p>
-
-<h4>Slider Mode</h4>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_default.png"></td>
-            <td align="center" style="border-width:0"><img src="images/CM_colors.png"></td>
-        </tr>
-    </table>
-</div>
-
-
-<h5>Colour Palette Modifications</h5>
-
-<p> As the white diagonal line above the histogram indicates, the colour palette will
-    be linearly applied to the samples of the source band of the current <a href="ProductSceneView.html">Image View</a>.
-    The label below the slider indicates the sample value assigned to the position of the slider in the histogram.
-    By moving a slider with the mouse you can easily change its sample value. If you double-click the label,
-    a text field appears where you can enter a sample value.
-    By moving a slider, the colours in the palette will change accordingly. You can also click between two sliders
-    in order to move the nearest slider of both under the mouse cursor.
-</p>
-
-<p>Slider colours are changed by clicking a slider. A popup window appears, where you can select the new colour.
-    If you select <b>None</b>, a fully transparent slider results. In the <b>More Options</b> panels you can adjust the
-    <b><a href="#nodata">No-Data Colour</a></b> and apply a
-    <b><a href="#histomatch">Histogram Matching</a></b> to enhance the contrast of the final image.
-</p>
-
-<p> If you right-click on a slider, a context menu will pop up. The available actions are
-    <b>Add slider</b>, <b>Remove slider</b>, <b>Center slider sample</b> and <b>Center slider colour</b>.
-    Some actions may be disabled when the action cannot be performed.
-</p>
-
-<h4>Basic Mode</h4>
-
-<p> In the basic mode it is possible to select a colour ramp from a set of predefined colour palettes.
-    The selected colour ramp will be applied to the current display range.
-    You can change the bounds of the display range by editing the min/max values.
-    Also you can set the display bounds to min/max defined by the selected colour palette file, or set display
-    bounds to the minimum and maximum data values.
-</p>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_basic.png"></td>
-            <td align="center" style="border-width:0"><img src="images/CM_basic_dropdown.png"></td>
-        </tr>
-    </table>
-</div>
-
-<h4>Table Mode</h4>
-
-<p>By changing the <b>Editor</b> option from <b>Sliders</b> to <b>Table</b> the sample value to colour assignment can
-    be done in a table:</p>
-
-<p align="center"><img src="images/CM_table.png"></p>
-
-<p>Here you can enter the colour and sample values directly by clicking into a table cell.</p>
-
-<h3>B. Editor for images of a single, index-coded band</h3>
-
-<p>Images of a single, index-coded band, e.g. the output of a cluster analysis, look-up discrete colours from a fixed-size table:</p>
-
-<p align="center"><img src="images/CM_indexCoding_view.png"></p>
-
-<p>Labels and colours are simply changed by clicking into the corresponding table cell.
-    In the <b>More Options</b> panels you can adjust the <b><a href="#nodata">No-Data Colour</a></b>.</p>
-
-<h3>Editor for images using separate R,G,B channels</h3>
-
-<p>Images using separate R,G,B channels obtain their colours from the samples of three arbitrary bands. In the
-    editor, users
-    can switch between the channels in order to edit the contrast stretch range and gamma value of each channel
-    separately.</p>
-
-<p align="center"><img src="images/CM_rgb.png"></p>
 
 <p>In this mode the sliders are used for contrast stretching in each of the R,G,B channels.
     In the <b>More Options</b> panels, you can adjust the <b><a href="#nodata">No-Data Colour</a></b> and
@@ -199,7 +354,61 @@
 </p>
 
 
-<h3>Common Functions</h3>
+<br>
+<hr>
+<h4>Table Editor</h4>
+
+<p>In the "Table" mode you can select the color and specify the data value of each point
+
+</p>
+<div align="center">
+    <table>
+        <tr>
+            <td colspan="2" align="center" style="border-width:0; padding-top: 15px;"><img
+                    src="images/Color_Table.png"/></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center" style="border-width:0">
+                <b>A.3</b>: Editor for images of a single, spectral/geophysical band
+                in <b>Table</b> mode
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p> The "Table" editor is also used for index bands.
+
+</p>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/Color_IndexBand.png"/></td>
+        </tr>
+        <tr align="center">
+            <td align="center" style="border-width:0">
+                <b>B.</b>: Editor for images of a single, index-coded band
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<p>Images of a single, index-coded band, e.g. the output of a look-up discrete colours from a
+    fixed-size table</p>
+
+<p>Labels and colours are simply changed by clicking into the corresponding table cell.
+    In the <b>More Options</b> panels you can adjust the <b><a href="#nodata">No-Data Colour</a></b>.</p>
+
+
+
+
+
+
+
+<br>
+<hr>
+<h3>More Options</h3>
 
 <h4><a name="nodata">No-Data Colour</a></h4>
 
@@ -239,19 +448,10 @@
     <img src="images/CM_discrete_true.png">
 </p>
 
-<h4><a name="multiassign">Multiple Assignment of the current Settings</a></h4>
 
-<p>
-    A click on the <img src="images/icons/MultiAssign24.gif"> icon opens a dialog where you can select
-    the bands to which you can assign the current colour palette. If the destination band has a similar
-    pixel value range, the slider positions are exacly preserved otherwise they are proportionally distributed
-    over the valid range of the destination band.</p>
 
-<h4>Import and Save of the Colour Palette</h4>
+<h4>Other Related Export Options</h4>
 
-<p> Click the <img src="images/icons/document-open.png"> icon to import colour palette definition files and the <img
-        src="images/icons/document-save.png"> icon to save the current colour manipulation settings.
-</p>
 
 <p>The colour palette information used for the current image can also be exported into an image file.
     Click the context menu item <a href="ExportColorLegend.html">Export Colour Legend</a>
@@ -262,67 +462,11 @@
     Choose from the <b>File</b> menu <b>Colour Palette</b> to export the table as a *.csv or *.txt file.
 </p>
 
-<p class="inote">Note: The Sentinel Toolbox has a couple of predefined colour palettes. They are stored
-    in <code><i>user-home</i>/.snap/snap-ui/auxdata/color-palettes</code>. For convenience, the
-    import/export file choosers in the colour manipulation window dialog use this folder by default.
-</p>
-
-<h4><a name="autoadjust">Slider Auto-Adjustment</a></h4>
-
-<p>
-    A click on the <img src="images/icons/Auto95Percent24.gif">
-    icon adjusts the sliders to cover 95% of all pixels in the band.
-</p>
-
-<p>
-    A click on the <img src="images/icons/Auto100Percent24.gif">
-    icon adjusts the sliders to cover 100% (the full range) of all pixels in the band.
-</p>
-
-<p>
-    A click on the <img src="images/icons/EvenDistribution.gif">
-    icon distributes the inner sliders evenly between the first and the last slider.
-</p>
-
-<h4><a name="zommingintohisto">Zooming into the histogram</a></h4>
-
-<p>
-    Click on the <img src="images/icons/ZoomIn24V.gif">
-    icon to zoom in vertically or on the
-    <img src="images/icons/ZoomIn24H.gif">
-    icon to
-    zoom into the histogram horizontally.
-</p>
-
-<h4><a name="zommingoutofhisto">Zooming out of the histogram</a></h4>
-
-<p> Click on the <img src="images/icons/ZoomOut24V.gif">
-    icon to zoom out vertically or on the
-    <img src="images/icons/ZoomOut24H.gif">icon
-    to zoom out of the histogram horizontally.
-</p>
-
-<h4>Logarithmic display</h4>
-
-<p> With a click on the button <img src="images/icons/LogDisplay24.png"> it is possible
-    to distribute the colour palette sliders in a logarithmic manner (right image in the figure below),
-    causing lower values to be displayed with smaller colour steps.
-</p>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/CM_Lin_Slider.png"><br>linear colour ramp</td>
-            <td align="center" style="border-width:0"><img src="images/CM_Log_Slider.png"><br>logarithmic colour ramp</td>
-        </tr>
-    </table>
-</div>
 
 
-<h4>Reset</h4>
 
-<p>The reset icon <img src="images/icons/Undo24.gif"> is used to revert the window to contain default values.
-</p>
+
+
 
 <h4>Extra information</h4>
 
@@ -339,5 +483,3 @@
 <hr>
 </body>
 </html>
-
-<!--page visited by UK-->
