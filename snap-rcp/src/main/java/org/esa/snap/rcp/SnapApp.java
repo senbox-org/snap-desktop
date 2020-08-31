@@ -501,7 +501,7 @@ public class SnapApp {
                 SnapApp.getDefault().onStart();
             } finally {
                 initImageIO();
-                SystemUtils.init3rdPartyLibs(Lookup.getDefault().lookup(ClassLoader.class));
+                SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
                 SnapApp.getDefault().initGPF();
             }
         }
