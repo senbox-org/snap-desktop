@@ -57,7 +57,7 @@ is disabled the amount of used memory can be reduced. The idea is that the cache
 long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback too. 
 More information can be found in the wiki. https://senbox.atlassian.net/wiki/x/VQCTLw 
 
-# Sensor specific improvements by Toolboxes
+## Sensor specific improvements by Toolboxes
 Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
 Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
 
@@ -67,9 +67,17 @@ provide a BETA version as plugin shortly after the SNAP release. The version sho
 or for operational services. But we would like to get your feedback on this new development, to further improve it. 
 More information will be provided with the release of the plugin.
 
+## Known Issues
+
+### SRTM 3 sec DEM
+During testing we observed sometimes wrong values provided by the SRTM data.
+Instead of the expected elevation the DEM is rturning the elevation of an adjacent pixel.
+This is not always happening but depends on the download and on the operating system.
+It has been only observed on latest Unix systems. Deleting and redownloading the DEM file 
+often helped to get the right values. For more information and updates on this issue please see https://senbox.atlassian.net/browse/SNAP-1344
 
 
-# Issues
+## Resolved Issues
 [SNAP-356] Products with PixelGeoCoding extremely slow to open
 [SNAP-494] BigGeoTiff writer should use compression by default.
 [SNAP-791] Write operator writes data more efficiently then ProductIO
