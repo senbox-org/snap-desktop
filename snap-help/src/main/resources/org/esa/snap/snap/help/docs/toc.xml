@@ -56,7 +56,6 @@
                     <tocitem text="ATSR" target="importAtsrProduct"/>
                     <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>
                     <tocitem text="ALOS/PRISM" target="importPrismProduct"/>
-                    <tocitem text="CHRIS" target="importChrisProduct"/>
                     <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
                     <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
                     <tocitem text="LANDSAT" target="importLandsatProduct"/>
