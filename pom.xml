@@ -41,8 +41,7 @@
         <module>snap-help</module>
         <module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>
-        <!-- DISABLE old Product Library & AOI Monitoring GUI -->
-        <!--<module>snap-product-library-ui</module>-->
+        <module>snap-product-library-ui</module>
         <module>snap-product-library-ui-v2</module>
         <module>snap-raster-ui</module>
         <module>snap-ui</module>
