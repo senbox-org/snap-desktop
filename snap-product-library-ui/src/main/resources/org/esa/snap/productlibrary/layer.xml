@@ -1,6 +1,7 @@
 <filesystem>
 
-    <folder name="ProductLibraryActions">
+    <!-- DISABLE old Product Library & AOI Monitoring GUI -->
+    <!--<folder name="ProductLibraryActions">
         <file name="ViewActionExt">
             <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.ViewActionExt"/>
             <attr name="position" intvalue="100"/>
@@ -39,6 +40,6 @@
             <attr name="actionExtClass" stringvalue="org.esa.snap.productlibrary.rcp.toolviews.extensions.JointSearchActionExt"/>
             <attr name="position" intvalue="2300"/>
         </file>
-    </folder>
+    </folder>-->
 
 </filesystem>

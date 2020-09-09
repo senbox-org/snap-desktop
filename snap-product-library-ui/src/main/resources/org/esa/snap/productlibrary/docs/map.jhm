@@ -4,8 +4,8 @@
         "http://java.sun.com/products/javahelp/map_2_0.dtd">
 
 <map version="2.0">
-
-    <mapID target="productLibrary" url="desktop/ProductLibrary.html"/>
-    <mapID target="AOIMonitoring" url="desktop/AOIMonitoring.html"/>
+    <!-- DISABLE old Product Library & AOI Monitoring GUI -->
+    <!--<mapID target="productLibrary" url="desktop/ProductLibrary.html"/>
+    <mapID target="AOIMonitoring" url="desktop/AOIMonitoring.html"/>-->
 
 </map>
