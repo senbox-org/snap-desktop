@@ -107,11 +107,12 @@
             <artifactId>snap-land-cover-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!-- DISABLE old Product Library & AOI Monitoring GUI -->
+        <!--<dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-product-library-ui</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-product-library-ui-v2</artifactId>

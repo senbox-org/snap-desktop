@@ -68,7 +68,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/* DISABLE old Product Library & AOI Monitoring GUI
 @TopComponent.Description(
         preferredID = "AOIMonitoringTopComponent",
         iconBase = "org/esa/snap/productlibrary/icons/aoi.png",
@@ -92,6 +92,7 @@ import java.util.List;
         "CTL_AOIMonitoringTopComponentName=AOI Monitoring",
         "CTL_AOIMonitoringTopComponentDescription=AOI Monitoring Batch Processing",
 })
+*/
 public class AOIMonitoringToolView extends ToolTopComponent {
 
     private static ImageIcon processIcon, processRolloverIcon;

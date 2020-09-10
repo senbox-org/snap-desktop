@@ -59,6 +59,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/* DISABLE old Product Library & AOI Monitoring GUI
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponent",
         iconBase = "org/esa/snap/productlibrary/icons/search.png",
@@ -82,6 +83,7 @@ import java.util.List;
         "CTL_ProductLibraryTopComponentName=Product Library",
         "CTL_ProductLibraryTopComponentDescription=Product Library",
 })
+*/
 public class ProductLibraryToolView extends ToolTopComponent implements LabelBarProgressMonitor.ProgressBarListener,
         DatabasePane.DatabaseQueryListener, WorldMapUI.WorldMapUIListener, ListView.ListViewListener {
 
