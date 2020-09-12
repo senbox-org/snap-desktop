@@ -173,5 +173,6 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         DialogUtils.enableComponents(externalDEMFileLabel, externalDEMFile, flag);
         DialogUtils.enableComponents(externalDEMNoDataValueLabel, externalDEMNoDataValue, flag);
         externalDEMBrowseButton.setVisible(flag);
+        externalDEMApplyEGMCheckBox.setVisible(flag);
     }
 }
