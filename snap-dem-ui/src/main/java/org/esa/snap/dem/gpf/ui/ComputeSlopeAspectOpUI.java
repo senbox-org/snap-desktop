@@ -44,7 +44,12 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
     private static final String externalDEMStr = "External DEM";
     private final JCheckBox externalDEMApplyEGMCheckBox = new JCheckBox("External DEM Apply EGM");
 
+    private final JTextField demBandName = new JTextField("");
+    private final JLabel demBandNameLabel = new JLabel("Elevation Band Name:");
+    private static final String bandDEMStr = "Band DEM";
+
     private final JComboBox<String> demResamplingMethod = new JComboBox<>(ResamplingFactory.resamplingNames);
+    private final JLabel demResamplingMethodLabel = new JLabel("DEM Resampling Method:");
     private final JTextField externalDEMFile = new JTextField("");
     private final JTextField externalDEMNoDataValue = new JTextField("");
     private final JButton externalDEMBrowseButton = new JButton("...");
@@ -59,6 +64,7 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         demName.addItem(externalDEMStr);
+        demName.addItem(bandDEMStr);
 
         initializeOperatorUI(operatorName, parameterMap);
 
@@ -73,10 +79,17 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
                     externalDEMFile.setText("");
                     enableExternalDEM(false);
                 }
+
+                if (((String) demName.getSelectedItem()).startsWith(bandDEMStr)) {
+                    enableBandDEM(true);
+                } else {
+                    enableBandDEM(false);
+                }
             }
         });
         externalDEMFile.setColumns(30);
         enableExternalDEM(((String) demName.getSelectedItem()).startsWith(externalDEMStr));
+        enableBandDEM(((String) demName.getSelectedItem()).startsWith(bandDEMStr));
 
         externalDEMBrowseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -122,6 +135,7 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         }
 
         externalDEMApplyEGMCheckBox.setSelected(externalDEMApplyEGM);
+        demBandName.setText(String.valueOf(paramMap.get("demBandName")));
     }
 
     @Override
@@ -143,6 +157,7 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         }
 
         paramMap.put("externalDEMApplyEGM", externalDEMApplyEGM);
+        paramMap.put("demBandName", demBandName.getText());
     }
 
     private JComponent createPanel() {
@@ -156,10 +171,11 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         DialogUtils.addComponent(contentPane, gbc, externalDEMFileLabel, externalDEMFile);
         gbc.gridx = 2;
         contentPane.add(externalDEMBrowseButton, gbc);
+        DialogUtils.addComponent(contentPane, gbc, demBandNameLabel, demBandName);
         gbc.gridy++;
         DialogUtils.addComponent(contentPane, gbc, externalDEMNoDataValueLabel, externalDEMNoDataValue);
         gbc.gridy++;
-        DialogUtils.addComponent(contentPane, gbc, "DEM Resampling Method:", demResamplingMethod);
+        DialogUtils.addComponent(contentPane, gbc, demResamplingMethodLabel, demResamplingMethod);
         gbc.gridy++;
         contentPane.add(externalDEMApplyEGMCheckBox, gbc);
         gbc.gridy++;
@@ -174,5 +190,10 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         DialogUtils.enableComponents(externalDEMNoDataValueLabel, externalDEMNoDataValue, flag);
         externalDEMBrowseButton.setVisible(flag);
         externalDEMApplyEGMCheckBox.setVisible(flag);
+    }
+
+    private void enableBandDEM(boolean flag) {
+        DialogUtils.enableComponents(demBandNameLabel, demBandName, flag);
+        DialogUtils.enableComponents(demResamplingMethodLabel, demResamplingMethod, !flag);
     }
 }
