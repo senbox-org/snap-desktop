@@ -234,6 +234,11 @@ public class FileTable extends JTable {
                         }
                     }
                 }
+
+                if(fileModel.getRowCount() < 100) {
+                    fileModel.refresh();
+                }
+
             } catch (Exception e) {
                 return false;
             }
