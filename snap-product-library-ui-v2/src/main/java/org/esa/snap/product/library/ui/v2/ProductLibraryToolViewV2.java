@@ -108,7 +108,7 @@ import static java.lang.Math.min;
  */
 @TopComponent.Description(
         preferredID = "ProductLibraryTopComponentV2",
-        iconBase = "org/esa/snap/productlibrary/icons/search.png",
+        iconBase = "org/esa/snap/product/library/ui/v2/icons/search.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(

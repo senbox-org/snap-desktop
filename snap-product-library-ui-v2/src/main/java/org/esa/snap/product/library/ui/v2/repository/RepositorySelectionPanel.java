@@ -68,7 +68,7 @@ public class RepositorySelectionPanel extends JPanel {
 
         Dimension buttonSize = new Dimension(preferredHeight, preferredHeight);
 
-        this.searchButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/search24.png", null, buttonSize, 1);
+        this.searchButton = SwingUtils.buildButton("/org/esa/snap/product/library/ui/v2/icons/search24.png", null, buttonSize, 1);
         this.searchButton.setToolTipText("Search");
 
         this.helpButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Help24.gif", null, buttonSize, 1);

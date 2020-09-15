@@ -78,7 +78,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.addFolderButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
         this.addFolderButton.setToolTipText("Add new local folder");
 
-        this.scanFoldersButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/refresh24.png", null, buttonSize, 1);
+        this.scanFoldersButton = SwingUtils.buildButton("/org/esa/snap/product/library/ui/v2/icons/refresh24.png", null, buttonSize, 1);
         this.scanFoldersButton.setToolTipText("Scan all local folders");
 
         this.removeFoldersButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);

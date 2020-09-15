@@ -34,7 +34,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         this.progressBar.setMaximumSize(progressBarSize);
 
         Dimension buttonSize = new Dimension(progressBarHeight, progressBarHeight);
-        this.stopButton = SwingUtils.buildButton("/org/esa/snap/productlibrary/icons/stop20.gif", null, buttonSize, 1);
+        this.stopButton = SwingUtils.buildButton("/org/esa/snap/product/library/ui/v2/icons/stop20.gif", null, buttonSize, 1);
         this.stopButton.setToolTipText("Stop");
 
         this.currentThreadId = 0;
