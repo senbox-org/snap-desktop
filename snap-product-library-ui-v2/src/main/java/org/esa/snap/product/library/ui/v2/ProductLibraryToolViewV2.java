@@ -126,8 +126,8 @@ import static java.lang.Math.min;
         preferredID = "ProductLibraryTopComponentV2"
 )
 @NbBundle.Messages({
-        "CTL_ProductLibraryTopComponentV2Name=Product Library v2",
-        "CTL_ProductLibraryTopComponentV2Description=Product Library v2",
+        "CTL_ProductLibraryTopComponentV2Name=Product Library",
+        "CTL_ProductLibraryTopComponentV2Description=Product Library",
 })
 public class ProductLibraryToolViewV2 extends ToolTopComponent implements ComponentDimension, DownloadProductListener {
 
