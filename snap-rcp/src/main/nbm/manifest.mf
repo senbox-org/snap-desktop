@@ -3,7 +3,7 @@ OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
 OpenIDE-Module-Implementation-Version: ${snap.nbmImplVersion}
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: true
-OpenIDE-Module-Display-Category: SNAP Desktop
+OpenIDE-Module-Display-Category: SNAP Core
 OpenIDE-Module-Localizing-Bundle: org/esa/snap/rcp/Bundle.properties
 OpenIDE-Module-Layer: org/esa/snap/rcp/layer.xml
 OpenIDE-Module-Long-Description: Modules providing API and GUI components for SNAP Desktop
