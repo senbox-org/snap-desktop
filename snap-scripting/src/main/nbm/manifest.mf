@@ -4,7 +4,7 @@ OpenIDE-Module-Implementation-Version: ${snap.nbmImplVersion}
 AutoUpdate-Show-In-Client: false
 AutoUpdate-Essential-Module: true
 OpenIDE-Module-Java-Dependencies: Java > 1.8
-OpenIDE-Module-Display-Category: SNAP
+OpenIDE-Module-Display-Category: SNAP Core
 OpenIDE-Module-Long-Description: <p>Provides a simple console for scri
  pting SNAP using JavaScript (default) or other Java-enabled interpret
  er languages (add-on).</p><p><b>Vendor:</b> Brockmann Consult GmbH</p

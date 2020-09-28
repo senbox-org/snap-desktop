@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Specification-Version: 1
-OpenIDE-Module-Display-Category: SNAP
+OpenIDE-Module-Display-Category: SNAP Core
 OpenIDE-Module-Implementation-Version: 1
 OpenIDE-Module-Java-Dependencies: Java > 1.8
 OpenIDE-Module-Type: STA
