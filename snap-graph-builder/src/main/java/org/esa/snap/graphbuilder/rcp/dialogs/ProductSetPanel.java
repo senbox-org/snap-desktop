@@ -141,9 +141,9 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return fileListPanel;
     }
 
-    private void updateComponents() {
+    protected void updateComponents() {
 
-        final int rowCount = productSetTable.getFileCount();
+        final int rowCount = getFileCount();
 
         final boolean enableButtons = (rowCount > 0);
         if (removeButton != null)
@@ -202,7 +202,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         removeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                final int rowCount = productSetTable.getFileCount();
+                final int rowCount = getFileCount();
                 if (rowCount == 1) {
                     tableModel.clear();
                     return;
@@ -372,6 +372,10 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         }
     }
 
+    public int getFileCount() {
+        return productSetTable.getFileCount();
+    }
+
     public File[] getFileList() {
         return productSetTable.getFileList();
     }
@@ -386,6 +390,10 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
     public void setProductFileList(final File[] productFileList) {
         productSetTable.setFiles(productFileList);
+
+        if(productFileList.length < AUTO_POPULATE_DETAILS_LIMIT) {
+            productSetTable.getModel().refresh();
+        }
     }
 
     private enum MOVE { UP, DOWN, TOP, BOTTOM }
