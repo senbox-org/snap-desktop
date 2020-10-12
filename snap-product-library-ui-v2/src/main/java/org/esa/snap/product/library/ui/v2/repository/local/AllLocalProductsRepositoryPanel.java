@@ -82,7 +82,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.scanFoldersButton.setToolTipText("Scan all local folders");
 
         this.removeFoldersButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
-        this.removeFoldersButton.setToolTipText("Remove all local folders");
+        this.removeFoldersButton.setToolTipText("Remove local folder(s)");
 
         ItemRenderer<String> attributeValuesItemRenderer = new ItemRenderer<String>() {
             @Override

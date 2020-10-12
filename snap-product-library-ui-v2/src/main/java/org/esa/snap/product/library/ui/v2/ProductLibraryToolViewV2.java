@@ -775,11 +775,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel();
         LocalRepositoryFolder[] folders;
         final LocalRepositoryFolder selectedFolder = allLocalProductsRepositoryPanel.getSelectedFolder();
+        String message_str="";
         if (selectedFolder != null) {
             folders = new LocalRepositoryFolder[] { selectedFolder };
+            message_str="Selected local repository will be deleted.";
         } else {
             List<LocalRepositoryFolder> localRepositoryFoldersToDelete = allLocalProductsRepositoryPanel.getLocalRepositoryFolders();
             folders = localRepositoryFoldersToDelete.toArray(new LocalRepositoryFolder[0]);
+            message_str="All the local repositories will be deleted.";
         }
         if (folders.length > 0) {
             // there are local repositories into the application
@@ -794,7 +797,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             } else {
                 // the local repository folders can be deleted
                 StringBuilder message = new StringBuilder();
-                message.append("All the local repositories will be deleted.")
+                message.append(message_str)
                         .append("\n\n")
                         .append("Are you sure you want to continue?");
                 int answer = showConfirmDialog(dialogTitle, message.toString(), JOptionPane.YES_NO_OPTION);
