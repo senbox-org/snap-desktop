@@ -775,18 +775,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         AllLocalProductsRepositoryPanel allLocalProductsRepositoryPanel = this.repositorySelectionPanel.getAllLocalProductsRepositoryPanel();
         LocalRepositoryFolder[] folders;
         final LocalRepositoryFolder selectedFolder = allLocalProductsRepositoryPanel.getSelectedFolder();
-        String message_str="";
+        String messageToDisplay = "";
         if (selectedFolder != null) {
             folders = new LocalRepositoryFolder[] { selectedFolder };
-            message_str="Selected local repository will be deleted.";
+            messageToDisplay = "Selected local repository will be deleted.";
         } else {
             List<LocalRepositoryFolder> localRepositoryFoldersToDelete = allLocalProductsRepositoryPanel.getLocalRepositoryFolders();
             folders = localRepositoryFoldersToDelete.toArray(new LocalRepositoryFolder[0]);
-            message_str="All the local repositories will be deleted.";
+            messageToDisplay = "All the local repositories will be deleted.";
         }
         if (folders.length > 0) {
             // there are local repositories into the application
-            String dialogTitle = "Delete local products";
+            String dialogTitle = "Delete local repositories";
             if (this.localRepositoryProductsThread != null || this.downloadRemoteProductsHelper.isRunning()) {
                 // there is a running action
                 StringBuilder message = new StringBuilder();
@@ -797,7 +797,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             } else {
                 // the local repository folders can be deleted
                 StringBuilder message = new StringBuilder();
-                message.append(message_str)
+                message.append(messageToDisplay)
                         .append("\n\n")
                         .append("Are you sure you want to continue?");
                 int answer = showConfirmDialog(dialogTitle, message.toString(), JOptionPane.YES_NO_OPTION);
