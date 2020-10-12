@@ -357,7 +357,6 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     private void runRemoveCredentialEvent() {
         credentialsListTable.getDefaultEditor(JTextField.class).stopCellEditing();
-        credentialsListTable.getDefaultEditor(JPasswordField.class).stopCellEditing();
         int selectedRowIndex = credentialsListTable.getSelectedRow();
         if (selectedRowIndex >= 0) {
             RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
