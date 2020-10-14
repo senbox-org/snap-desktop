@@ -150,7 +150,9 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
 
         this.nameLabel.setText(repositoryProduct.getName());
         this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
-        String mission = (repositoryProduct.getRemoteMission() == null) ? null : repositoryProduct.getRemoteMission().getName();
+        // if the product was downloaded and has a remote mission, display this remote mission
+        // otherwise, (it means it's an existing folder imported as local repository), use the metadata mission
+        String mission = (repositoryProduct.getRemoteMission() == null) ? repositoryProduct.getMetadataMission() : repositoryProduct.getRemoteMission().getName();
         this.missionLabel.setText(buildMissionLabelText(mission));
         this.acquisitionDateLabel.setText(buildAcquisitionDateLabelText(repositoryProduct.getAcquisitionDate()));
 
