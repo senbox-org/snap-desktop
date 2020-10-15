@@ -9,7 +9,8 @@
     <tr class="header">
         <td class="header">&nbsp;StatisticsOp Operator</td>
         <td class="header" align="right">
-          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
@@ -61,26 +62,41 @@ An operator that is used to compute statistics for any number of source products
   <td><code></code></td>
   <td>A comma-separated list of file paths specifying the source products.
 Each path may contain the wildcards '**' (matches recursively any directory),
-'*' (matches any character sequence in path names) and
-'?' (matches any single character).
-If, for example, all NetCDF files under /eodata/ shall be considered, use '/eodata/**/*.nc'.</td>
-  <td></td>
+      '*' (matches any character sequence in path names) and
+      '?' (matches any single character).
+      If, for example, all NetCDF files under /eodata/ shall be considered, use '/eodata/**/*.nc'.
+  </td>
+    <td></td>
 </tr>
-<tr>
-  <td><code>shapefile</code></td>
-  <td><code>File</code></td>
-  <td><code></code></td>
-  <td>An ESRI shapefile, providing the considered geographical region(s) given as polygons. If null, all pixels are considered.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>startDate</code></td>
-  <td><code>UTC</code></td>
-  <td><code></code></td>
-  <td>The start date. If not given, taken from the 'oldest' source product. Products that have a start date before the start date given by this parameter are not considered.</td>
-  <td>format: yyyy-MM-dd HH:mm:ss</td>
-</tr>
-<tr>
+    <tr>
+        <td><code>shapefile</code></td>
+        <td><code>File</code></td>
+        <td><code></code></td>
+        <td>An ESRI shapefile, providing the considered geographical region(s) given as polygons. If null, all pixels
+            are considered.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>featureId</code></td>
+        <td><code>String</code></td>
+        <td><code>name</code></td>
+        <td>The name of the attribute in the ESRI shapefile that shall be used to identify featuresin the output. If
+            none is given or if the shapefile does not have the attribute, the feature id will beused. This parameter is
+            case-sensitive. It is only considered when the shapefile parameter is set.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>startDate</code></td>
+        <td><code>UTC</code></td>
+        <td><code></code></td>
+        <td>The start date. If not given, taken from the 'oldest' source product. Products that have a start date before
+            the start date given by this parameter are not considered.
+        </td>
+        <td>format: yyyy-MM-dd HH:mm:ss</td>
+    </tr>
+    <tr>
   <td><code>endDate</code></td>
   <td><code>UTC</code></td>
   <td><code></code></td>

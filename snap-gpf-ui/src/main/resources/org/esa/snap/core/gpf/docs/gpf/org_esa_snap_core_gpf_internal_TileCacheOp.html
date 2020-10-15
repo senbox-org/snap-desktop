@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>TileCache Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;TileCache Operator</td>
+        <td class="header" align="right">
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>TileCache Operator Description</h1>
+<h2>Overview</h2>
+<table>
+    <tr>
+        <td><b>Name:</b></td>
+        <td><code>TileCache</code></td>
+    </tr>
+    <tr>
+        <td><b>Full name:</b></td>
+        <td><code>org.esa.snap.core.gpf.internal.TileCacheOp</code></td>
+    </tr>
+    <tr>
+        <td><b>Purpose:</b></td>
+        <td>Experimental Operator which provides a dedicated cache for its source product.<br/>A guide on how this
+            operator is used is provided at https://senbox.atlassian.net/wiki/x/VQCTLw.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Version:</b></td>
+        <td>0.1</td>
+    </tr>
+</table>
+<h2>Description</h2>
+Experimental: An Operator which uses a dedicated tile cache for the source product.
+The property <code>snap.gpf.disableTileCache</code> can be set to <code>true</code> in order to disable the cache for
+GPF by default.
+Within a graph, this operator can be used to cache the results of specific operators.
+<h2>Sources</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><code>source</code></td>
+        <td></td>
+    </tr>
+</table>
+<h2>Parameters</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Data Type</th>
+        <th>Default</th>
+        <th>Description</th>
+        <th>Constraints</th>
+    </tr>
+    <tr>
+        <td><code>cacheSize</code></td>
+        <td><code>int</code></td>
+        <td><code>1000</code></td>
+        <td>The cache size in MB. Set it to 0 to use default tile cache.</td>
+        <td></td>
+    </tr>
+</table>
+<hr/>
+</body>
+</html>

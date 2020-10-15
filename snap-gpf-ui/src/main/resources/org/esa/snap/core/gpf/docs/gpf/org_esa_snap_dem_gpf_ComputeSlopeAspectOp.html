@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Compute-Slope-Aspect Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Compute-Slope-Aspect Operator</td>
+        <td class="header" align="right">
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Compute-Slope-Aspect Operator Description</h1>
+<h2>Overview</h2>
+<table>
+    <tr>
+        <td><b>Name:</b></td>
+        <td><code>Compute-Slope-Aspect</code></td>
+    </tr>
+    <tr>
+        <td><b>Full name:</b></td>
+        <td><code>org.esa.snap.dem.gpf.ComputeSlopeAspectOp</code></td>
+    </tr>
+    <tr>
+        <td><b>Purpose:</b></td>
+        <td>Compute Slope and Aspect from DEM</td>
+    </tr>
+    <tr>
+        <td><b>Version:</b></td>
+        <td>null</td>
+    </tr>
+</table>
+<h2>Description</h2>
+This operator computes slope and aspect from DEM for a given source product.
+<h2>Sources</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><code>sourceProduct</code></td>
+        <td></td>
+    </tr>
+</table>
+<h2>Parameters</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Data Type</th>
+        <th>Default</th>
+        <th>Description</th>
+        <th>Constraints</th>
+    </tr>
+    <tr>
+        <td><code>demName</code></td>
+        <td><code>String</code></td>
+        <td><code>SRTM 1Sec HGT</code></td>
+        <td>The digital elevation model.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>demResamplingMethod</code></td>
+        <td><code>String</code></td>
+        <td><code>BILINEAR_INTERPOLATION</code></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>externalDEMFile</code></td>
+        <td><code>File</code></td>
+        <td><code></code></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>externalDEMNoDataValue</code></td>
+        <td><code>double</code></td>
+        <td><code>0</code></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>externalDEMApplyEGM</code></td>
+        <td><code>Boolean</code></td>
+        <td><code>false</code></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>demBandName</code></td>
+        <td><code>String</code></td>
+        <td><code>elevation</code></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+<hr/>
+</body>
+</html>
