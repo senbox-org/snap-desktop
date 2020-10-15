@@ -9,7 +9,8 @@
     <tr class="header">
         <td class="header">&nbsp;Read Operator</td>
         <td class="header" align="right">
-          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
@@ -49,17 +50,71 @@ Reads the specified file as product. This operator may serve as a source node in
 <tr>
   <td><code>file</code></td>
   <td><code>File</code></td>
-  <td><code></code></td>
-  <td>The file from which the data product is read.</td>
-  <td>not null; non empty</td>
+    <td><code></code></td>
+    <td>The file from which the data product is read.</td>
+    <td>not null; non empty</td>
 </tr>
-<tr>
-  <td><code>formatName</code></td>
-  <td><code>String</code></td>
-  <td><code></code></td>
-  <td>An (optional) format name.</td>
-  <td>non empty</td>
-</tr>
+    <tr>
+        <td><code>formatName</code></td>
+        <td><code>String</code></td>
+        <td><code></code></td>
+        <td>An (optional) format name.</td>
+        <td>non empty</td>
+    </tr>
+    <tr>
+        <td><code>sourceBands</code></td>
+        <td><code>String[]</code></td>
+        <td><code></code></td>
+        <td>The list of source bands.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>sourceMasks</code></td>
+        <td><code>String[]</code></td>
+        <td><code></code></td>
+        <td>The list of source masks.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>pixelRegion</code></td>
+        <td><code>Rectangle</code></td>
+        <td><code></code></td>
+        <td>The subset region in pixel coordinates.
+            Use the following format:
+            <x>,
+                <y>,
+                    <width>,
+                        <height>
+                            If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this
+                            parameter.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>geometryRegion</code></td>
+        <td><code>Geometry</code></td>
+        <td><code></code></td>
+        <td>The subset region in geographical coordinates using WKT-format,
+            e.g. POLYGON((
+            <lon1>
+                <lat1>,
+                    <lon2>
+                        <lat2>, ...,
+                            <lon1>
+                                <lat1>))
+                                    (make sure to quote the option due to spaces in
+                                    <geometry>).
+                                        If not given, the entire scene is used.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>copyMetadata</code></td>
+        <td><code>boolean</code></td>
+        <td><code>true</code></td>
+        <td>Whether to copy the metadata of the source product.</td>
+        <td></td>
+    </tr>
 </table>
 <hr/>
 </body>

@@ -9,7 +9,8 @@
     <tr class="header">
         <td class="header">&nbsp;GLCM Operator</td>
         <td class="header" align="right">
-          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
@@ -87,26 +88,33 @@ The operator extracts 10 texture features using GLCM:
 <tr>
   <td><code>quantizationLevelsStr</code></td>
   <td><code>String</code></td>
-  <td><code>32</code></td>
-  <td></td>
-  <td>value set: [8, 16, 32, 64, 128]</td>
+    <td><code>32</code></td>
+    <td></td>
+    <td>value set: [8, 16, 32, 64, 128]</td>
 </tr>
-<tr>
-  <td><code>displacement</code></td>
-  <td><code>int</code></td>
-  <td><code>4</code></td>
-  <td>Pixel displacement</td>
-  <td>interval: [1, 8]</td>
-</tr>
-<tr>
-  <td><code>outputContrast</code></td>
-  <td><code>Boolean</code></td>
-  <td><code>true</code></td>
-  <td>Output Contrast</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>outputDissimilarity</code></td>
+    <tr>
+        <td><code>displacement</code></td>
+        <td><code>int</code></td>
+        <td><code>4</code></td>
+        <td>Pixel displacement</td>
+        <td>interval: [1, 8]</td>
+    </tr>
+    <tr>
+        <td><code>noDataValue</code></td>
+        <td><code>double</code></td>
+        <td><code>-9999.0</code></td>
+        <td>Target product no data value</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>outputContrast</code></td>
+        <td><code>Boolean</code></td>
+        <td><code>true</code></td>
+        <td>Output Contrast</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>outputDissimilarity</code></td>
   <td><code>Boolean</code></td>
   <td><code>true</code></td>
   <td>Output Dissimilarity</td>

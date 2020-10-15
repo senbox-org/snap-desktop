@@ -9,7 +9,8 @@
     <tr class="header">
         <td class="header">&nbsp;Binning Operator</td>
         <td class="header" align="right">
-          <a href="../general/overview/SnapOverview.html">             <img src="images/snap_header.jpg" border="0"/></a>
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
@@ -215,8 +216,10 @@ in each source data product, so that it can be used as input for the binning.</t
   <td><code>outputBinnedData</code></td>
   <td><code>boolean</code></td>
   <td><code>false</code></td>
-  <td>If true, a SeaDAS-style, binned data NetCDF file is written in addition to the
-target product. The output file name will be &lt;target&gt;-bins.nc</td>
+    <td>If true, a SeaDAS-style, binned data NetCDF file is written in addition to the
+        target product. The output file name will be
+        <target>-bins.nc
+    </td>
   <td></td>
 </tr>
 <tr>
@@ -238,18 +241,26 @@ target product. The output file name will be &lt;target&gt;-bins.nc</td>
   <td><code>File</code></td>
   <td><code>.</code></td>
   <td>The name of the directory containing metadata templates (google "Apache Velocity VTL format").</td>
-  <td></td>
+    <td></td>
 </tr>
-<tr>
-  <td><code>metadataAggregatorName</code></td>
-  <td><code>String</code></td>
-  <td><code>NAME</code></td>
-  <td>The type of metadata aggregation to be used. Possible values are:
-'NAME': aggregate the name of each input product
-'FIRST_HISTORY': aggregates all input product names and the processing history of the first product
-'ALL_HISTORIES': aggregates all input product names and processing histories</td>
-  <td></td>
-</tr>
+    <tr>
+        <td><code>metadataAggregatorName</code></td>
+        <td><code>String</code></td>
+        <td><code>NAME</code></td>
+        <td>The type of metadata aggregation to be used. Possible values are:
+            'NAME': aggregate the name of each input product
+            'FIRST_HISTORY': aggregates all input product names and the processing history of the first product
+            'ALL_HISTORIES': aggregates all input product names and processing histories
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>planetaryGridClass</code></td>
+        <td><code>String</code></td>
+        <td><code>org.esa.snap.binning.support.SEAGrid</code></td>
+        <td></td>
+        <td></td>
+    </tr>
 </table>
 <hr/>
 </body>
