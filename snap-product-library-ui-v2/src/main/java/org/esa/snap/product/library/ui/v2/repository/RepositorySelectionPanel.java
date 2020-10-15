@@ -1,5 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
@@ -141,8 +142,11 @@ public class RepositorySelectionPanel extends JPanel {
         if (saveProductData.getLocalRepositoryFolder() != null) {
             allLocalProductsRepositoryPanel.addLocalRepositoryFolderIfMissing(saveProductData.getLocalRepositoryFolder());
         }
+        // a product has either a remote mission, either a metadata mission
         if (saveProductData.getRemoteMission() != null) {
             allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getRemoteMission().getName());
+        } else if (!StringUtils.isNullOrEmpty(saveProductData.getMetadataMission())) {
+            allLocalProductsRepositoryPanel.addMissionIfMissing(saveProductData.getMetadataMission());
         }
     }
 
