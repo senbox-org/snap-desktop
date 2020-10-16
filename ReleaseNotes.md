@@ -4,7 +4,7 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 8.0.0 
 
-In this release the development teams worked on general features like remote access of data, the processing and 
+In this release the development teams worked on general features like remote access of data, data processing,  
 IO performance and the memory management. Also, sensor specific improvements and features have been implemented. 
 Noteworthy is also that we will drop the support for Python 2.7 for snappy with the next release. With version 9 of 
 SNAP, a Python 3 environment will be required. 
