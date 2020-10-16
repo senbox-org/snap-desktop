@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
+import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
@@ -43,12 +44,20 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
         return super.onTimerWakeUp(null); // 'null' => do not reset the progress bar message
     }
 
+    protected void onFinishSavingProduct(SaveProductData saveProductData) {
+    }
+
     @Override
     protected Map<File, String> execute() throws Exception {
         List<LocalRepositoryFolder> localRepositoryFolders = this.allLocalFolderProductsRepository.loadRepositoryFolders();
         if (!isFinished()) {
             LocalRepositoryFolderHelper scanLocalProductsHelper = new LocalRepositoryFolderHelper(this.allLocalFolderProductsRepository, this.scanRecursively,
-                                                                                    this.generateQuickLookImages, this.testZipFileForErrors);
+                                                                                    this.generateQuickLookImages, this.testZipFileForErrors){
+                @Override
+                protected void finishSavingProduct(SaveProductData saveProductData) {
+                    updateFinishSavingProductDataLater(saveProductData);
+                }
+            };
             for (int i = 0; i < localRepositoryFolders.size(); i++) {
                 if (isFinished()) {
                     break;
@@ -88,6 +97,16 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
                 if (isCurrentProgressPanelThread()) {
                     onLocalRepositoryFolderDeleted(item);
                 }
+            }
+        };
+        SwingUtilities.invokeLater(runnable);
+    }
+
+    private void updateFinishSavingProductDataLater(SaveProductData saveProductData) {
+        GenericRunnable<SaveProductData> runnable = new GenericRunnable<SaveProductData>(saveProductData) {
+            @Override
+            protected void execute(SaveProductData item) {
+                onFinishSavingProduct(item);
             }
         };
         SwingUtilities.invokeLater(runnable);

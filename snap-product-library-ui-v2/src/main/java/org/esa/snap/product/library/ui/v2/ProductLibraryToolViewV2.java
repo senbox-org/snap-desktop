@@ -667,6 +667,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
 
             @Override
+            protected void onFinishSavingProduct(SaveProductData saveProductData) {
+                ProductLibraryToolViewV2.this.repositorySelectionPanel.finishSavingLocalProduct(saveProductData);
+            }
+
+            @Override
             protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
                 processErrorFiles(errorFiles);
             }
