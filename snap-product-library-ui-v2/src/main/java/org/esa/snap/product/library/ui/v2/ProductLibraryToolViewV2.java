@@ -658,7 +658,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         this.localRepositoryProductsThread = new ScanAllLocalRepositoryFoldersTimerRunnable(progressBarHelper, threadId, allLocalFolderProductsRepository, scanRecursively, generateQuickLookImages, testZipFileForErrors) {
             @Override
             protected void onFinishRunning() {
-                onFinishProcessingLocalRepoitoryThread(this, null); // 'null' => no local repository folder to select
+                onFinishProcessingLocalRepositoryThread(this, null); // 'null' => no local repository folder to select
             }
 
             @Override
@@ -719,7 +719,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                                                                                        scanRecursively, generateQuickLookImages, testZipFileForErrors) {
             @Override
             protected void onFinishRunning() {
-                onFinishProcessingLocalRepoitoryThread(this, getLocalRepositoryFolderPath());
+                onFinishProcessingLocalRepositoryThread(this, getLocalRepositoryFolderPath());
             }
 
             @Override
@@ -837,7 +837,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return false;
     }
 
-    private void onFinishProcessingLocalRepoitoryThread(Runnable invokerThread, Path localRepositoryFolderPathToSelect) {
+    private void onFinishProcessingLocalRepositoryThread(Runnable invokerThread, Path localRepositoryFolderPathToSelect) {
         if (resetLocalRepositoryProductsThread(invokerThread)) {
             if (this.repositorySelectionPanel.getSelectedProductsRepositoryPanel() instanceof AllLocalProductsRepositoryPanel) {
                 // the local repository is selected
