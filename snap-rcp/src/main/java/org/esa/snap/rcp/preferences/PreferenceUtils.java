@@ -23,10 +23,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.util.SystemUtils;
 import org.openide.awt.ColorComboBox;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.Color;
@@ -136,4 +133,8 @@ public class PreferenceUtils {
 
         return colorComboBox;
     }
+
+
+
+
 }
