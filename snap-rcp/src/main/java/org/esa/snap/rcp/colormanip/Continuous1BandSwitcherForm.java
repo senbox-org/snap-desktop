@@ -30,6 +30,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ */
+// OCT 2019 - Knowles
+//          - Set basic mode to be the default
+
+
 public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
 
     private final ColorManipulationForm parentForm;
@@ -41,6 +50,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
     private Continuous1BandTabularForm tabularPaletteEditorForm;
     private JRadioButton basicButton;
     private Continuous1BandBasicForm basicPaletteEditorForm;
+    public Boolean[] basicSwitcherIsActive = {false};
 
     public Continuous1BandSwitcherForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
@@ -52,7 +62,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
         editorGroup.add(basicButton);
         editorGroup.add(graphicalButton);
         editorGroup.add(tabularButton);
-        graphicalButton.setSelected(true);
+        basicButton.setSelected(true);
         final SwitcherActionListener switcherActionListener = new SwitcherActionListener();
         basicButton.addActionListener(switcherActionListener);
         graphicalButton.addActionListener(switcherActionListener);
@@ -121,7 +131,7 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
             newForm = tabularPaletteEditorForm;
         } else if (basicButton.isSelected()) {
             if (basicPaletteEditorForm == null) {
-                basicPaletteEditorForm = new Continuous1BandBasicForm(parentForm);
+                basicPaletteEditorForm = new Continuous1BandBasicForm(parentForm, basicSwitcherIsActive);
             }
             newForm = basicPaletteEditorForm;
         } else {
@@ -139,7 +149,9 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
             contentPanel.remove(oldForm.getContentPanel());
             contentPanel.add(childForm.getContentPanel(), BorderLayout.CENTER);
 
-            parentForm.installToolButtons();
+            boolean installAllButtons = !(newForm instanceof Continuous1BandGraphicalForm || newForm instanceof Continuous3BandGraphicalForm);
+
+            parentForm.installToolButtons(installAllButtons);
             parentForm.installMoreOptions();
             parentForm.revalidateToolViewPaneControl();
         } else {
@@ -161,7 +173,9 @@ public class Continuous1BandSwitcherForm implements ColorManipulationChildForm {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            basicSwitcherIsActive[0] = true;
             switchForm();
+            basicSwitcherIsActive[0] = false;
         }
     }
 }
