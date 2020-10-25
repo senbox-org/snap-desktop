@@ -10,6 +10,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveProductData;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsPersistence;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.GenericRunnable;
@@ -30,8 +31,6 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
 
     private static final Logger logger = Logger.getLogger(DownloadRemoteProductsHelper.class.getName());
 
-    public static final boolean UNCOMPRESSED_DOWNLOADED_PRODUCTS = false;
-
     private final ProgressBarHelperImpl progressPanel;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private final DownloadProductListener downloadProductListener;
@@ -47,7 +46,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         this.progressPanel = progressPanel;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
         this.downloadProductListener = downloadProductListener;
-        this.uncompressedDownloadedProducts = UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+        this.uncompressedDownloadedProducts = RepositoriesCredentialsPersistence.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
     }
 
     @Override
