@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
-import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.v2.preferences.model.RemoteRepositoryCredentials;
 
 import java.util.List;
 

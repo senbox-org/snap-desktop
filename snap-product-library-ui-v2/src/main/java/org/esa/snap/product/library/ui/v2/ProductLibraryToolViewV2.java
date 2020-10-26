@@ -26,7 +26,7 @@ import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
-import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
