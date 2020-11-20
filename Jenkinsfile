@@ -35,7 +35,7 @@ pipeline {
                         [$class: 'StringParameterValue', name: 's1tbx', value: "8.x"],
                         [$class: 'BooleanParameterValue', name: 's1tbx_enabled', value: false],
                         [$class: 'StringParameterValue', name: 's2tbx', value: "8.x"],
-                        [$class: 'BooleanParameterValue', name: 's2tbx_enabled', value: true],
+                        [$class: 'BooleanParameterValue', name: 's2tbx_enabled', value: false],
                         [$class: 'StringParameterValue', name: 's3tbx', value: "8.x"],
                         [$class: 'BooleanParameterValue', name: 's3tbx_enabled', value: false],
                         [$class: 'StringParameterValue', name: 'smos', value: "5.8.x"],
@@ -45,6 +45,7 @@ pipeline {
                         [$class: 'StringParameterValue', name: 'installer', value: "8.x"],
                         [$class: 'BooleanParameterValue', name: 'unit_test', value: params.launchTests],
                         [$class: 'BooleanParameterValue', name: 'long_test', value: params.runLongUnitTests],
+                    ]
                     quietPeriod: 0,
                     propagate: true,
                     wait: true);
