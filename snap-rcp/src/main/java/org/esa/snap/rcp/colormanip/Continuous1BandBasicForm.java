@@ -295,7 +295,19 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
 
-        fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
+//        fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
+        fromFile.addActionListener(e -> {
+            ColorManipulationDefaults.debug("Inside fromFile.addActionListener");
+
+            if (shouldFireChooserEvent) {
+                ColorManipulationDefaults.debug("Inside fromFile.addActionListener 2");
+
+                applyChanges(RangeKey.FromCpdFile);
+            }
+        });
+
+
+
 //        fromData.addActionListener(createListener(RangeKey.FromData));
         fromData.addActionListener(e -> {
             ColorManipulationDefaults.debug("Inside fromData.addActionListener");
@@ -739,14 +751,108 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
 
+
             // If retaining user textfield min/max make sure field is being passed along as it could be in a
             // lingering edit state.  Treat log button click separately as the reset should be on the log button.
 
-            if (key == RangeKey.FromLogButton ) {
+
+
+            boolean restoreTextfields = false;
+
+
+
+            if (key == RangeKey.FromCpdFile || key ==  RangeKey.FromData) {
+                // restore textfield to match image.  It will not be used and will be set later accordingly
+
+                shouldFireChooserEvent = false;
+                minField.setValue(targetMin);
+                maxField.setValue(targetMax);
+                shouldFireChooserEvent = true;
+
+            } else {
+                // textfield will be used and it could be in lingering state
+
+                boolean minMaxValid = true;
+                boolean logValid = false;
+
+
+                try {
+                    targetMin = getMinFieldValue();
+                } catch (NumberFormatException e) {
+                    minMaxValid = false;
+                    ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \n" + e.getMessage());
+                }
+
+
+                try {
+                    targetMax = getMaxFieldValue();
+                } catch (NumberFormatException e) {
+                    minMaxValid = false;
+                    ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \n" + e.getMessage());
+                }
+
+
+
+                if (minMaxValid) {
+                    minMaxValid = checkMinMax(targetMin, targetMax);
+                }
+
+
+
+                if (minMaxValid) {
+
+                    if (key == RangeKey.FromLogButton) {
+                        // Accept textfields and deal with log case later
+
+
+                    } else {
+                        // leave log alone and reset textfields if log conflict
+
+                        logValid = checkLogScalingAgainstMinMax(targetMin, targetMax, logDisplayButton.isSelected());
+
+                        if (!logValid) {
+                            restoreTextfields = true;
+                        }
+
+                    }
+
+                } else {
+                    restoreTextfields = true;
+                }
+
+
+
+
+
+                if (restoreTextfields) {
+                    // restore to a valid setting
+                    targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
+                    targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
+
+                    shouldFireChooserEvent = false;
+                    minField.setValue(targetMin);
+                    maxField.setValue(targetMax);
+                    shouldFireChooserEvent = true;
+                }
+
+
+                if (targetMin == currentInfo.getColorPaletteDef().getMinDisplaySample() &&
+                        targetMax == currentInfo.getColorPaletteDef().getMaxDisplaySample()) {
+                    valueChange = false;
+                } else {
+                    valueChange = true;
+                }
 
             }
 
 
+            // at this point textfields should be set to a desired valid value.
+
+
+
+
+            double tmpMin;
+            double tmpMax;
 
 
             switch (key) {
@@ -754,22 +860,25 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     ColorManipulationDefaults.debug("Inside FromCpdFile");
 
                     // Updates targetMin and targetMax
-                    targetMin = currentCPD.getSourceFileMin();
-                    targetMax = currentCPD.getSourceFileMax();
-                    valid = testMinMaxAgainstCurrentLog(targetMin, targetMax);
+                    tmpMin = currentCPD.getSourceFileMin();
+                    tmpMax = currentCPD.getSourceFileMax();
+                    valid = testMinMaxAgainstCurrentLog(tmpMin, tmpMax);
 
                     if (valid) {
+                        targetMin = tmpMin;
+                        targetMax = tmpMax;
+
+
+
                         if (targetMin == currentCPD.getMinDisplaySample() &&
                                 targetMax == currentCPD.getMaxDisplaySample()) {
                             valueChange = false;
+                        } else {
+                            valueChange = true;
                         }
-
-                        if (!valueChange) {
-                            ensureMinMaxEqualsImage();
-                        }
-                    } else {
-                        ensureMinMaxEqualsImage();
                     }
+
+
 
                     break;
 
@@ -781,21 +890,20 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     final Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
 
                     if (stx != null) {
-                        targetMin = stx.getMinimum();
-                        targetMax = stx.getMaximum();
-                        valid = testMinMaxAgainstCurrentLog(targetMin, targetMax);
+                        tmpMin = stx.getMinimum();
+                        tmpMax = stx.getMaximum();
+                        valid = testMinMaxAgainstCurrentLog(tmpMin, tmpMax);
 
                         if (valid) {
+                            targetMin = tmpMin;
+                            targetMax = tmpMax;
+
                             if (targetMin == currentCPD.getMinDisplaySample() &&
                                    targetMax == currentCPD.getMaxDisplaySample()) {
                                 valueChange = false;
+                            } else {
+                                valueChange = true;
                             }
-                        } else {
-                            ensureMinMaxEqualsImage();
-                        }
-
-                        if (!valueChange) {
-                            ensureMinMaxEqualsImage();
                         }
 
                     } else {
@@ -811,30 +919,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 case FromMinField:
                     ColorManipulationDefaults.debug("Inside FromMinField");
 
-                    // Updates targetMin
-                    try {
-                        targetMin = getMinValueWithTesting();
-
-                        if (targetMin == currentCPD.getMinDisplaySample()) {
-                            valueChange = false;
-                        }
-                    } catch (NumberFormatException e) {
-                        valid = false;
-                        // restore to a valid setting
-                        shouldFireChooserEvent = false;
-                        minField.setValue(currentInfo.getColorPaletteDef().getMinDisplaySample());
-                        shouldFireChooserEvent = true;
-                    }
-
-
-                    shouldFireChooserEvent = false;
-                    minField.setValue(targetMin);
-                    shouldFireChooserEvent = true;
-
-
-                        if (targetMin == currentCPD.getMinDisplaySample()) {
-                            valueChange = false;
-                        }
+                    // dealt with earlier
 
 
                     break;
@@ -842,29 +927,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 case FromMaxField:
                     ColorManipulationDefaults.debug("Inside FromMaxField");
 
-                    // Updates targetMax
-                    try {
-                        targetMax = getMaxValueWithTesting();
-
-                        if (targetMax == currentCPD.getMaxDisplaySample()) {
-                            valueChange = false;
-                        }
-                    } catch (NumberFormatException e) {
-                        valid = false;
-                        // restore to a valid setting
-                        shouldFireChooserEvent = false;
-                        maxField.setValue(currentInfo.getColorPaletteDef().getMaxDisplaySample());
-                        shouldFireChooserEvent = true;
-                    }
+                    // dealt with earlier
 
 
-                    shouldFireChooserEvent = false;
-                    maxField.setValue(targetMax);
-                    shouldFireChooserEvent = true;
-
-                        if (targetMax == currentCPD.getMaxDisplaySample()) {
-                            valueChange = false;
-                        }
                     break;
 
 
@@ -873,30 +938,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 case FromLogButton:
 
                     ColorManipulationDefaults.debug("Inside FromLogButton");
-
-                    boolean minMaxValid = false;
-
-                    try {
-                        targetMin = getMinFieldValue();
-                        targetMax = getMaxFieldValue();
-
-                        minMaxValid = checkMinMax(targetMin, targetMax);
-                    } catch (NumberFormatException e) {
-                        minMaxValid = false;
-                        ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \n" + e.getMessage());
-                    }
-
-
-                    if (!minMaxValid) {
-                        // restore to a valid setting
-                        shouldFireChooserEvent = false;
-                        targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
-                        targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-                        minField.setValue(targetMin);
-                        maxField.setValue(targetMax);
-                        shouldFireChooserEvent = true;
-                    }
 
 
                     if (logDisplayButton.isSelected()) {
@@ -930,41 +971,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     ColorManipulationDefaults.debug("Inside InvertPalette");
 
 
-                    // Updates targetMin
-                    try {
-                        targetMin = getMinValueWithTesting();
-
-                        if (targetMin == currentCPD.getMinDisplaySample()) {
-                            valueChange = false;
-                        }
-                    } catch (NumberFormatException e) {
-//                        valid = false;
-                        targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
-                        // restore to a valid setting
-                        shouldFireChooserEvent = false;
-                        minField.setValue(currentInfo.getColorPaletteDef().getMinDisplaySample());
-                        shouldFireChooserEvent = true;
-                    }
-
-
-                    // Updates targetMax
-                    try {
-                        targetMax = getMaxValueWithTesting();
-
-                        if (targetMax == currentCPD.getMaxDisplaySample()) {
-                            valueChange = false;
-                        }
-                    } catch (NumberFormatException e) {
-//                        valid = false;
-                        targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-                        // restore to a valid setting
-                        shouldFireChooserEvent = false;
-                        maxField.setValue(currentInfo.getColorPaletteDef().getMaxDisplaySample());
-                        shouldFireChooserEvent = true;
-                    }
-
-
                     valueChange = true;
 
                     break;
@@ -983,50 +989,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         targetMin = selectedCPD.getSourceFileMin();
                         targetMax = selectedCPD.getSourceFileMax();
                         targetAutoDistribute = false;
-                    } else {
 
-
-                        // Updates targetMin
-                        try {
-                            targetMin = getMinValueWithTesting();
-
-                            if (targetMin == currentCPD.getMinDisplaySample()) {
-                                valueChange = false;
-                            }
-                        } catch (NumberFormatException e) {
-//                        valid = false;
-                            targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
-                            // restore to a valid setting
-                            shouldFireChooserEvent = false;
-                            minField.setValue(currentInfo.getColorPaletteDef().getMinDisplaySample());
-                            shouldFireChooserEvent = true;
-                        }
-
-
-                        // Updates targetMax
-                        try {
-                            targetMax = getMaxValueWithTesting();
-
-                            if (targetMax == currentCPD.getMaxDisplaySample()) {
-                                valueChange = false;
-                            }
-                        } catch (NumberFormatException e) {
-//                        valid = false;
-                            targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-                            // restore to a valid setting
-                            shouldFireChooserEvent = false;
-                            maxField.setValue(currentInfo.getColorPaletteDef().getMaxDisplaySample());
-                            shouldFireChooserEvent = true;
-                        }
+                        valid = checkLogScalingAgainstMinMax(targetMin, targetMax, targetLogScaled);
 
                     }
-
-                    shouldFireChooserEvent = false;
-                    minField.setValue(targetMin);
-                    maxField.setValue(targetMax);
-                    shouldFireChooserEvent = true;
-
 
                     valueChange = true;
 
