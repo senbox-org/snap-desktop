@@ -737,68 +737,18 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
 
-//            // todo start
-//            // Always handle min/max fields so they don't linger in an editing state
-//
-//            boolean minMaxValid;
-//
-//            ColorManipulationDefaults.debug("isFocusOwner=" + minField.isFocusOwner());
-//            ColorManipulationDefaults.debug("isCursorSet=" + minField.isCursorSet());
-//            ColorManipulationDefaults.debug("isRequestFocusEnabled=" + minField.isRequestFocusEnabled());
-//
-//            try {
-//                targetMin = getMinFieldValue();
-//                targetMax = getMaxFieldValue();
-//
-//                minMaxValid = checkMinMax(targetMin, targetMax);
-//            } catch (NumberFormatException e) {
-//                minMaxValid = false;
-//                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \n" + e.getMessage());
-//            }
-//
-//
-//            ColorManipulationDefaults.debug("HELLO0");
-//
-//            if (minMaxValid) {
-//                if (logDisplayButton.isSelected()) {
-//                    // todo invert error message  checkMinMaxAgainstLogScaling
-//                    minMaxValid = checkLogScalingAgainstMinMax(targetMin, targetMax, logDisplayButton.isSelected());
-//                    ColorManipulationDefaults.debug("HELLO1");
-//
-//
-//                }
-//            }
-//
-////            if (key == RangeKey.FromLogButton) {
-////
-////            }
-//
-//
-//
-//            if (!minMaxValid) {
-//                // restore to a valid setting
-//                shouldFireChooserEvent = false;
-//                targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
-//                targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-////                logDisplayButton.setSelected(false);
-//
-//
-//
-//                minField.setValue(targetMin);
-//                maxField.setValue(targetMax);
-//
-//                shouldFireChooserEvent = true;
-//            }
-//
-//            // todo end
-//
-//
-//            ColorManipulationDefaults.debug("targetMin=" + targetMin);
-//            ColorManipulationDefaults.debug("targetMax=" + targetMax);
+
+
+            // If retaining user textfield min/max make sure field is being passed along as it could be in a
+            // lingering edit state.  Treat log button click separately as the reset should be on the log button.
+
+            if (key == RangeKey.FromLogButton ) {
+
+            }
 
 
 
-            // Set any target values which will be changed from the source values
+
             switch (key) {
                 case FromCpdFile:
                     ColorManipulationDefaults.debug("Inside FromCpdFile");
@@ -820,11 +770,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     } else {
                         ensureMinMaxEqualsImage();
                     }
-
-                    shouldFireChooserEvent = false;
-                    setComponentsActive(false);
-                    setComponentsActive(true);
-                    shouldFireChooserEvent = true;
 
                     break;
 
@@ -857,12 +802,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         valid = false;
                     }
 
-                    shouldFireChooserEvent = false;
-                    setComponentsActive(false);
-                    setComponentsActive(true);
-                    shouldFireChooserEvent = true;
 
                     break;
+
+
+
 
                 case FromMinField:
                     ColorManipulationDefaults.debug("Inside FromMinField");
@@ -883,16 +827,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     }
 
 
-
-
-
-
-
                     shouldFireChooserEvent = false;
                     minField.setValue(targetMin);
-
-                    setComponentsActive(false);
-                    setComponentsActive(true);
                     shouldFireChooserEvent = true;
 
 
@@ -924,15 +860,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
                     shouldFireChooserEvent = false;
                     maxField.setValue(targetMax);
-
-                    setComponentsActive(false);
-                    setComponentsActive(true);
                     shouldFireChooserEvent = true;
 
                         if (targetMax == currentCPD.getMaxDisplaySample()) {
                             valueChange = false;
                         }
                     break;
+
+
+
 
                 case FromLogButton:
 
@@ -962,8 +898,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         shouldFireChooserEvent = true;
                     }
 
-                    ColorManipulationDefaults.debug("HELLO2");
-
 
                     if (logDisplayButton.isSelected()) {
                         valid = checkLogScalingAgainstMinMax(targetMin, targetMax, logDisplayButton.isSelected());
@@ -978,52 +912,22 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         }
                     }
 
-                    ColorManipulationDefaults.debug("HELLO3");
 
-
-                    shouldFireChooserEvent = false;
-                    setComponentsActive(false);
-                    setComponentsActive(true);
-                    shouldFireChooserEvent = true;
-
-                    // todo Danny
-                    // need to address min and max ... maybe look at the textfields
-                    // Since logDisplay Button is AbstractButton it does not trigger a lose focus event upon the min and
-                    // max textfields.  So we need to have those fields fired to make sure there isn't any lingering edits
-                    // in those fields which could result in a mismatch between those fields and the image.
-
-
-                    // Updates targetLogScaled
-//                    if (logDisplayButton.isSelected()) {
-//                        valid = testLogScalingAgainstCurrentMinMax(logDisplayButton.isSelected());
-//                        if (valid) {
-//                            colorPaletteChooser.setLog10Display(targetLogScaled);
-//                        } else {
-//                            // restore to a valid setting
-//                            shouldFireChooserEvent = false;
-//                            logDisplayButton.setSelected(false);
-//                            shouldFireChooserEvent = true;
-//                        }
-//                    }
                     targetLogScaled = logDisplayButton.isSelected();
 
                     if (targetLogScaled == currentInfo.isLogScaled()) {
                         valueChange = false;
                     }
 
-                    // todo Setting this to true just in case testfields were updated
+                    // todo Setting this to true just in case textfields were updated
 
                     valueChange = true;
                     break;
 
+
+
                 case InvertPalette:
                     ColorManipulationDefaults.debug("Inside InvertPalette");
-
-
-
-
-
-
 
 
                     // Updates targetMin
@@ -1061,21 +965,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     }
 
 
-                    shouldFireChooserEvent = false;
-                    setComponentsActive(false);
-                    setComponentsActive(true);
-                    shouldFireChooserEvent = true;
-
-
-
-
-
-
-
-
                     valueChange = true;
 
                     break;
+
+
 
                 case FromPaletteChooser:
                     ColorManipulationDefaults.debug("Inside FromPaletteChooser");
@@ -1131,15 +1025,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     shouldFireChooserEvent = false;
                     minField.setValue(targetMin);
                     maxField.setValue(targetMax);
-
-                    setComponentsActive(false);
-                    setComponentsActive(true);
                     shouldFireChooserEvent = true;
-
-
-
-
-
 
 
                     valueChange = true;
@@ -1151,13 +1037,14 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             }
 
 
-//            shouldFireChooserEvent = false;
-//            minField.setValue(targetMin);
-//            maxField.setValue(targetMax);
-//
-//            setComponentsActive(false);
-//            setComponentsActive(true);
-//            shouldFireChooserEvent = true;
+            // All cases of lingering textfield entry will have been handled, now make sure texfields get set
+            // into a state of not being edited.
+            shouldFireChooserEvent = false;
+            setComponentsActive(false);
+            setComponentsActive(true);
+            shouldFireChooserEvent = true;
+
+
 
 
 
