@@ -433,11 +433,13 @@ class PixelInfoViewModelUpdater {
         if (currentRaster != null) {
             for (Band band : currentFlagBands) {  // currentFlagBands is already filtered for "equals size" in registerFlagDatasets
                 final FlagCoding flagCoding = band.getFlagCoding();
-                final int numFlags = flagCoding.getNumAttributes();
-                final String bandNameDot = band.getName() + ".";
-                for (int j = 0; j < numFlags; j++) {
-                    String name = bandNameDot + flagCoding.getAttributeAt(j).getName();
-                    flagModel.addRow(name, "", "");
+                if (flagCoding != null) {
+                    final int numFlags = flagCoding.getNumAttributes();
+                    final String bandNameDot = band.getName() + ".";
+                    for (int j = 0; j < numFlags; j++) {
+                        String name = bandNameDot + flagCoding.getAttributeAt(j).getName();
+                        flagModel.addRow(name, "", "");
+                    }
                 }
             }
         }
