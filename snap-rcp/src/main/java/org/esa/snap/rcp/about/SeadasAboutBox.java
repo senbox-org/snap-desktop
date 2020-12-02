@@ -61,8 +61,6 @@ public class SeadasAboutBox extends JPanel {
                 + "GUI layout and some minor default behavior.  The <i>SeaDAS-Toolbox</i> contains all the NASA <br>"
                 + "Ocean Biology science processing science tools as well as some additional GUI tools <br>"
                 + "related to ocean sciences.<br><br>"
-                + "Alert!  This is a Beta version and is built using an unreleased SNAP development version.  This does not <br>"
-                + "represent what will be in SNAP 8.0.0."
                 + "</html>"
         );
 
