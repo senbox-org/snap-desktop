@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertPolylineFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,12 +36,12 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 160
+        path = "Toolbars/" + PackageDefaults.DRAW_POLYLINE_TOOLBAR_NAME,
+        position = PackageDefaults.DRAW_POLYLINE_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_DrawPolylineToolActionText=Draw Polyline",
-                  "CTL_DrawPolylineToolActionDescription=Polyline drawing tool"
+                  "CTL_DrawPolylineToolActionText=" + PackageDefaults.DRAW_POLYLINE_NAME,
+                  "CTL_DrawPolylineToolActionDescription=" + PackageDefaults.DRAW_POLYLINE_DESCRIPTION
           })
 public class DrawPolylineToolAction extends ToolAction {
     @SuppressWarnings("UnusedDeclaration")
@@ -52,7 +53,7 @@ public class DrawPolylineToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawPolylineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolylineToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawPolylineTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_POLYLINE_ICON, false));
         Interactor interactor = new InsertPolylineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

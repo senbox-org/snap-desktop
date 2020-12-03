@@ -38,10 +38,7 @@ import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.ui.GridBagUtils;
-import org.esa.snap.ui.ModalDialog;
-import org.esa.snap.ui.PixelPositionListener;
-import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.*;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.product.spectrum.SpectrumBand;
@@ -108,16 +105,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif")
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
+@TopComponent.Description(
+        preferredID = "SpectrumTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
+@TopComponent.Registration(
+        mode = PackageDefaults.SPECTRUM_WS_MODE,
+        openAtStartup = PackageDefaults.SPECTRUM_WS_OPEN,
+        position = PackageDefaults.SPECTRUM_WS_POSITION)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Optical", position = 0),
-        @ActionReference(path = "Menu/View/Tool Windows/Optical"),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SPECTRUM_MENU_PATH_1,
+                position = PackageDefaults.SPECTRUM_MENU_POSITION_1),
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.SPECTRUM_MENU_PATH_2,
+                position = PackageDefaults.SPECTRUM_MENU_POSITION_2),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.SPECTRUM_TOOLBAR_NAME,
+                position = PackageDefaults.SPECTRUM_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent")
-@NbBundle.Messages({"CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
+@NbBundle.Messages({"CTL_SpectrumTopComponent_Name=" + PackageDefaults.SPECTRUM_NAME, "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
 /**
  * A window which displays spectra at selected pixel positions.
  */

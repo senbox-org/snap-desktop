@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,25 +26,29 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/DensityPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.DENSITY_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ScatterPlot",
-        openAtStartup = false,
-        position = 10
+        mode = PackageDefaults.DENSITY_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.DENSITY_PLOT_WS_OPEN,
+        position = PackageDefaults.DENSITY_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 20),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.DENSITY_PLOT_MENU_PATH,
+                position = PackageDefaults.DENSITY_PLOT_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.DENSITY_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.DENSITY_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DensityPlotTopComponent_Name",
         preferredID = "DensityPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_DensityPlotTopComponent_Name=Scatter Plot",
+        "CTL_DensityPlotTopComponent_Name=" + PackageDefaults.DENSITY_PLOT_NAME,
         "CTL_DensityPlotTopComponent_HelpId=densityPlotDialog"
 })
 /**

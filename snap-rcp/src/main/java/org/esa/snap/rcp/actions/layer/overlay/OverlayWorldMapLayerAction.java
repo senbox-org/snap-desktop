@@ -18,6 +18,7 @@ import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
 import org.esa.snap.core.layer.WorldMapLayerType;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -35,12 +36,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayWorldMapLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayWorldMapLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 50),
-        @ActionReference(path = "Toolbars/Overlay", position = 50)
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_WORLD_MAP_MENU_PATH,
+                position = PackageDefaults.OVERLAY_WORLD_MAP_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.OVERLAY_WORLD_MAP_TOOLBAR_NAME,
+                position = PackageDefaults.OVERLAY_WORLD_MAP_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
-        "CTL_OverlayWorldMapLayerActionName=World Map Overlay",
-        "CTL_OverlayWorldMapLayerActionToolTip=Show/hide world map overlay for the selected image"
+        "CTL_OverlayWorldMapLayerActionName=" + PackageDefaults.OVERLAY_WORLD_MAP_NAME,
+        "CTL_OverlayWorldMapLayerActionToolTip=" + PackageDefaults.OVERLAY_WORLD_MAP_DESCRIPTION
 })
 public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
 
@@ -51,7 +56,7 @@ public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayWorldMapLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/WorldMapOverlay.png", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/WorldMapOverlay24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_WORLD_MAP_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayWorldMapLayerActionToolTip());
     }
 

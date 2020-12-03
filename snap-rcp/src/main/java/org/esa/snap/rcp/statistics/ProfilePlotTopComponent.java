@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -28,25 +29,29 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ProfilePlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ProfilePlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.PROFILE_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ProfilePlot",
-        openAtStartup = false,
-        position = 30
+        mode = PackageDefaults.PROFILE_PLOT_WS_MODE,
+        openAtStartup = PackageDefaults.PROFILE_PLOT_WS_OPEN,
+        position = PackageDefaults.PROFILE_PLOT_WS_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ProfilePlotTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Analysis",position = 30),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.PROFILE_PLOT_MENU_PATH,
+                position = PackageDefaults.PROFILE_PLOT_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.PROFILE_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.PROFILE_PLOT_TOOLBAR_POSITION)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ProfilePlotTopComponent_Name",
         preferredID = "ProfilePlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ProfilePlotTopComponent_Name=Profile Plot",
+        "CTL_ProfilePlotTopComponent_Name=" + PackageDefaults.PROFILE_PLOT_NAME,
         "CTL_ProfilePlotTopComponent_HelpId=profilePlotDialog"
 })
 /**

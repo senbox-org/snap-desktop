@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertLineFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,12 +36,12 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 150
+        path = "Toolbars/" + PackageDefaults.DRAW_LINE_TOOLBAR_NAME,
+        position = PackageDefaults.DRAW_LINE_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_DrawLineToolActionText=Draw Line",
-                  "CTL_DrawLineToolActionDescription=Line drawing tool"
+                  "CTL_DrawLineToolActionText=" + PackageDefaults.DRAW_LINE_NAME,
+                  "CTL_DrawLineToolActionDescription=" + PackageDefaults.DRAW_LINE_DESCRIPTION
           })
 public class DrawLineToolAction extends ToolAction {
     @SuppressWarnings("UnusedDeclaration")
@@ -52,7 +53,7 @@ public class DrawLineToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawLineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawLineToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawLineTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_LINE_ICON, false));
         Interactor interactor = new InsertLineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
