@@ -17,6 +17,7 @@ package org.esa.snap.rcp.layermanager;
 
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.AbstractLayerListener;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.layer.LayerEditor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -34,9 +35,9 @@ import java.beans.PropertyChangeEvent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = false,
-        position = 1
+        mode = PackageDefaults.LAYER_EDITOR_MODE,
+        openAtStartup = PackageDefaults.LAYER_EDITOR_OPEN,
+        position = PackageDefaults.LAYER_EDITOR_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerEditorTopComponent")
 @ActionReferences({
@@ -48,7 +49,7 @@ import java.beans.PropertyChangeEvent;
         preferredID = "LayerEditorTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_LayerEditorTopComponent_Name=Layer Editor",
+        "CTL_LayerEditorTopComponent_Name=" + PackageDefaults.LAYER_EDITOR_NAME,
         "CTL_LayerEditorTopComponent_HelpId=showLayerEditorWnd"
 })
 /**

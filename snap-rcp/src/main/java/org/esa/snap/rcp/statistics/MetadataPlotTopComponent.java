@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -43,21 +44,24 @@ import java.awt.BorderLayout;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.MetadataPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 70),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.METADATA_PLOT_TOOLBAR_NAME,
+                position = PackageDefaults.METADATA_PLOT_TOOLBAR_POSITION
+        )
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MetadataPlotTopComponent_Name",
         preferredID = "MetadataPlotTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_MetadataPlotTopComponent_Name=Metadata Plot",
+        "CTL_MetadataPlotTopComponent_Name=" + PackageDefaults.METADATA_PLOT_NAME,
         "CTL_MetadataPlotTopComponent_HelpId=metadataPlotDialog"
 })
 public class MetadataPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        final Icon largeIcon = new ImageIcon(MetadataPlotTopComponent.class.getResource("/org/esa/snap/rcp/icons/MetadataPlot24.png"));
+        final Icon largeIcon = new ImageIcon(MetadataPlotTopComponent.class.getResource("/org/esa/snap/rcp/icons/" + PackageDefaults.METADATA_PLOT_ICON));
         MetadataPlotPanel metadataPlotPanel = new MetadataPlotPanel(this, Bundle.CTL_MetadataPlotTopComponent_HelpId());
         final TableViewPagePanel tableViewPanel = new MetadataTableViewPagePanel(metadataPlotPanel, largeIcon);
         metadataPlotPanel.setAlternativeView(tableViewPanel);
