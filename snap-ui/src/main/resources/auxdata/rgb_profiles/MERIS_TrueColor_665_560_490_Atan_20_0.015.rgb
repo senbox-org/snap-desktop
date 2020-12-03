@@ -1,0 +1,10 @@
+# RGB-Image Configuration Profile
+# MERIS_TrueColor_(665,560,490)_Atan_20_0.015
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=MERIS_TrueColor_(665,560,490)_Atan_20_0.015
+red=if (rhos_665 \!\= NaN and rhos_560 \!\= NaN and rhos_490 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_665 - 0.015))) else NaN
+green=if (rhos_665 \!\= NaN and rhos_560 \!\= NaN and rhos_490 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_560 - 0.015))) else NaN
+blue=if (rhos_665 \!\= NaN and rhos_560 \!\= NaN and rhos_490 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_490 - 0.015))) else NaN
