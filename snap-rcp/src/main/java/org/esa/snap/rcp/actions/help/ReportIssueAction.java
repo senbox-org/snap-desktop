@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 })
 public class ReportIssueAction extends AbstractAction {
 
-    private static final String DEFAULT_REPORT_ISSUE_PAGE_URL = "http://step.esa.int/main/community/issue-reporting/";
+    private static final String DEFAULT_REPORT_ISSUE_PAGE_URL = "https://seadas.gsfc.nasa.gov/help/issue-reporting/";
 
     /**
      * Launches the default browser to display the web page.
