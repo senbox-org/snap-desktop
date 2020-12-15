@@ -40,8 +40,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -76,7 +74,7 @@ class MosaicFormModel {
 
     private final PropertySet container;
     private final Map<String, Object> parameterMap = new HashMap<>();
-    private final Map<File, Product> sourceProductMap = Collections.synchronizedMap(new HashMap<File, Product>());
+    private final Map<File, Product> sourceProductMap = Collections.synchronizedMap(new HashMap<>());
     private final WorldMapPaneDataModel worldMapModel = new WorldMapPaneDataModel();
     private MosaicForm parentForm;
 
@@ -91,15 +89,12 @@ class MosaicFormModel {
         container.setDefaultValues();
         container.setValue(PROPERTY_UPDATE_MODE, false);
         container.setValue(PROPERTY_SHOW_SOURCE_PRODUCTS, false);
-        container.addPropertyChangeListener(PROPERTY_SHOW_SOURCE_PRODUCTS, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (Boolean.TRUE.equals(evt.getNewValue())) {
-                    final Collection<Product> products = sourceProductMap.values();
-                    worldMapModel.setProducts(products.toArray(new Product[products.size()]));
-                } else {
-                    worldMapModel.setProducts(null);
-                }
+        container.addPropertyChangeListener(PROPERTY_SHOW_SOURCE_PRODUCTS, evt -> {
+            if (Boolean.TRUE.equals(evt.getNewValue())) {
+                final Collection<Product> products = sourceProductMap.values();
+                worldMapModel.setProducts(products.toArray(new Product[0]));
+            } else {
+                worldMapModel.setProducts(null);
             }
         });
     }
@@ -122,7 +117,9 @@ class MosaicFormModel {
                     final Product product = entry.getValue();
                     worldMapModel.removeProduct(product);
                     iterator.remove();
-                    product.dispose();
+                    if (product != null) {
+                        product.dispose();
+                    }
                     changeSourceProducts = true;
                 }
             }
@@ -193,9 +190,9 @@ class MosaicFormModel {
 
         switch(level) {
             case PROPERTY_MIN_VALUE :
-                return (double) Collections.min(Arrays.asList(latitudePoints));
+                return Collections.min(Arrays.asList(latitudePoints));
             case PROPERTY_MAX_VALUE :
-                return (double) Collections.max(Arrays.asList(latitudePoints));
+                return Collections.max(Arrays.asList(latitudePoints));
             default :
                 return Double.MAX_VALUE;
         }
@@ -213,9 +210,9 @@ class MosaicFormModel {
 
         switch(level) {
             case PROPERTY_MIN_VALUE :
-                return (double) Collections.min(Arrays.asList(longitudePoints));
+                return Collections.min(Arrays.asList(longitudePoints));
             case PROPERTY_MAX_VALUE :
-                return (double) Collections.max(Arrays.asList(longitudePoints));
+                return Collections.max(Arrays.asList(longitudePoints));
             default :
                 return Double.MAX_VALUE;
         }
