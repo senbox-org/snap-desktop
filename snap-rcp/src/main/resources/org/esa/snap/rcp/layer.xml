@@ -188,17 +188,46 @@
         <folder name="UndoRedo"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="300"/>
         </folder>
-        <folder name="Analysis">
-            <attr name="position" intvalue="400"/>
+
+        <folder name="Raster">
+            <attr name="position" intvalue="401"/>
         </folder>
+        <folder name="Masks">
+            <attr name="position" intvalue="402"/>
+        </folder>
+
         <folder name="Overlay">
             <attr name="position" intvalue="500"/>
         </folder>
+        <folder name="Interactors">
+            <attr name="position" intvalue="501"/>
+        </folder>
+
+
         <folder name="Processing">
             <attr name="position" intvalue="600"/>
         </folder>
-        <folder name="Tools">
-            <attr name="position" intvalue="700"/>
+
+
+        <folder name="Image">
+            <attr name="position" intvalue="601"/>
+        </folder>
+        <folder name="Geometry">
+            <attr name="position" intvalue="602"/>
+        </folder>
+        <folder name="Geometry Lines">
+            <attr name="position" intvalue="602"/>
+        </folder>
+
+        <folder name="Pins">
+            <attr name="position" intvalue="603"/>
+        </folder>
+
+        <!--<folder name="Tools">-->
+            <!--<attr name="position" intvalue="700"/>-->
+        <!--</folder>-->
+        <folder name="Analysis">
+            <attr name="position" intvalue="701"/>
         </folder>
         <folder name="Tool Windows">
             <attr name="position" intvalue="800"/>

@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,25 +26,28 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "InformationTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Information.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.INFORMATION_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "Information",
-        openAtStartup = false,
-        position = 30
+        mode = PackageDefaults.INFORMATION_MODE,
+        openAtStartup = PackageDefaults.INFORMATION_OPEN,
+        position = PackageDefaults.INFORMATION_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.InformationTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 35),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.INFORMATION_TOOLBAR_NAME,
+                position = PackageDefaults.INFORMATION_TOOLBAR_POSITION
+        )
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_InformationTopComponent_Name",
         preferredID = "InformationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_InformationTopComponent_Name=Information",
+        "CTL_InformationTopComponent_Name=" + PackageDefaults.INFORMATION_NAME,
         "CTL_InformationTopComponent_HelpId=informationDialog"
 })
 /**
