@@ -1,0 +1,103 @@
+# Represents the primary defaults
+# This file may be edit or to add or override entries you can edit the user_cpd_defaults.txt file
+#
+
+
+
+
+# ID                   MIN         MAX         LOG_SCALE  CPD_FILENAME              CPD_FILENAME(COLORBLIND)  COLORBAR_TITLE        COLORBAR_LABELS                   DESCRIPTION
+ absorption           :1.0000e-03 :1.0        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.001,0.003,0.01,0.1,0.3,1       :Absorption
+ adg_s                :0.0        :2.0        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Spectral slope for gelbstof and detrital absorption
+ anc_SSS              :0.0        :70         :false     :oceancolor_sss.cpd       :universal_bluered.cpd          :                     :                                 :Sea Surface Salinity Reference
+ angstrom             :-0.15      :2.2        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Angstrom coefficient
+ aot                  :0.0        :0.25       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0,0.05,0.1,0.15,0.2,0.25           :Aerosol optical thickness
+ bbp                  :1.0e-03    :0.1        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Particle backscatter
+ bbp_s                :-1.0       :1.0        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Spectral slope for particle backscatter
+ bbw                  :1.0e-04    :0.01       :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Backscattering coefficient of seawater
+ bb                   :1.0e-03    :0.1        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Total backscatter
+ bbp_giop             :1.0e-04    :0.1        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Particle backscatter
+ BSi                  :0.001      :10         :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Biogenic Silica
+ BulkSST              :271.15     :318.15     :false     :oceancolor_sst.cpd       :universal_bluered.cpd          :                     :                                 :Sea Surface Temperature (VIIRSN)
+ calcite              :5.e-05     :0.05       :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :5e-5,0.0002,0.001,0.005,0.05     :Calcite Concentration
+ cdom_index           :0          :7          :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :CDOM Index
+ chisqr_giop          :0.0        :5.0        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Chi-square per degree of freedom
+ chlor_a              :0.01       :20.0       :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :Chlorophyll          :0.01,0.03,0.1,0.3,1,3,20         :Chlorophyll a concentration
+ chlor_a_owterr       :0.0        :100.0      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Chlorophyll a relative error, OWT algorithm
+ elev                 :-12000.0   :15000.0    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :-12000,-6000,0,7500,15000        :Elevation
+ epsilon              :0.85       :1.231      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Epsilon of aerosol correction
+ EVI                  :-0.05      :0.9152     :false     :oceancolor_ndvi.cpd      :universal_bluered.cpd          :                     :                                 :Enhanced Vegetation Index
+ evi                  :-0.35      :0.92       :false     :oceancolor_ndvi.cpd      :universal_bluered.cpd          :                     :                                 :Enhanced Vegetation Index
+ flag                 :0.0        :1.016      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                       Aerosol optical thickness          :Flags
+ flh                  :0.0        :0.05       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.0,0.01,0.02,0.03,0.04,0.05     :Fluorescence Line Height
+ fqy                  :0.0        :0.05       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Fluorescence Quantum Yield
+ ipar                 :0.0        :0.0025     :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Instantaneous Photosynthetically Available Radiation
+ Kd_lee               :0.01       :6.0        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.01,0.05,0.2,1,5                :Diffuse attenuation
+ Kd_490               :0.01       :6.0        :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.01,0.05,0.2,1,5                :Diffuse attenuation coefficient at 490 nm
+ NDVI                 :-0.05      :0.915200   :false     :oceancolor_ndvi.cpd      :universal_bluered.cpd          :                     :                                 :Normalized Difference Vegetation Index
+ ndvi                 :-0.35      :0.920000   :false     :oceancolor_ndvi.cpd      :universal_bluered.cpd          :                     :                                 :Normalized Difference Vegetation Index
+ nLw_lt_430           :0.0        :5.08000    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized water-leaving radiance at [less than 430] nm
+ nLw_430_479          :0.0        :3.81000    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized water-leaving radiance at [430-479] nm
+ nLw_480_529          :0.0        :2.54000    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized water-leaving radiance at [480-529] nm
+ nLw_530_599          :0.0        :1.27000    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized water-leaving radiance at [530-599] nm
+ nLw_ge_600           :0.0        :1.01600    :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized water-leaving radiance at [greater than or equal to 600] nm
+ nw                   :1.3        :1.4        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Index of refraction of seawater
+ owtd                 :1          :8          :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Dominant optical Water Type
+ owt                  :0          :1          :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Normalized optical Water Type
+ par                  :0.0        :76.2       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0,20,40,60,76.2                  :Photosynthetically Available Radiation
+ pic                  :5.0e-05    :0.05       :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :5e-5,0.0002,0.001,0.005,0.05     :Particulate Inorganic Carbon
+ pixels               :0          :65500      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Number of pixels per bin
+ poc                  :10         :1000       :true      :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :10,30,100,300,1000               :Particulate Organic Carbon
+ rad_sm               :0          :0.4        :false     :sm.cpd                   :universal_bluered.cpd          :                     :                                 :Soil Moisture
+ rhos                 :0.01       :1.0        :true      :gray_scale.cpd           :gray_scale.cpd           :                     :0.01,0.03,0.1,0.3,1              :rhos
+ rhos_red             :0.01       :1.0        :true      :standard_red.cpd         :standard_red.cpd         :                     :0.01,0.03,0.1,0.3,1              :rhos (red)
+ rhos_blue            :0.01       :1.0        :true      :standard_blue.cpd        :standard_blue.cpd        :                     :0.01,0.03,0.1,0.3,1              :rhos (blue)
+ rhos_green           :0.01       :1.0        :true      :standard_green.cpd       :standard_green.cpd       :                     :0.01,0.03,0.1,0.3,1              :rhos (green)
+ Rrs_lt_430           :0.0        :0.025      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.0,0.005,0.01,0.015,0.02,0.025  :Remote sensing reflectance at [less than 430 nm]
+ Rrs_430_459          :0.0        :0.02       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.0,0.005,0.01,0.015,0.02        :Remote sensing reflectance at [430-459] nm
+ Rrs_460_499          :0.0        :0.015      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.0,0.005,0.01,0.015             :Remote sensing reflectance at [460 - 499] nm
+ Rrs_ge_500           :0.0        :0.01       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0.0,0.0025,0.005,0.0075,0.01     :Remote sensing reflectance at [greater than or equal to 500] nm
+ rrsdiff_giop         :0.0        :0.1        :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Relative Rrs difference
+ scat_wind_speed      :0          :20         :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Scatterometer Wind Speed
+ scenes               :0          :65500      :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :                                 :Number of scenes per bin
+ solz                 :0.0        :90.0       :false     :oceancolor_standard.cpd  :universal_bluered.cpd          :                     :0,15,30,45,60,75,90              :Solar Zenith Angle
+ SSS                  :0          :70         :false     :oceancolor_sss.cpd       :universal_bluered.cpd          :                     :                                 :Sea Surface Salinity
+ sst                  :-2.0       :45.0       :false     :oceancolor_sst.cpd       :universal_bluered.cpd          :                     :0,10,20,30,40,45                 :Sea Surface Temperature
+ Zeu                  :5.0        :180.0      :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Euphotic Depth
+ Zhl_morel            :2.0        :65.0       :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Heated Layer Depth (Morel)
+ Zhl                  :2.0        :65.0       :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Heated Layer Depth
+ Zp_10_lee            :2.0        :180.0      :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Photic Depth at 10% Light (Lee)
+ Zp_50_lee            :5.0        :180.0      :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Photic Depth at 50% Light (Lee)
+ Zsd                  :2.0        :180.0      :false     :oceancolor_zphotic.cpd   :universal_bluered.cpd          :                     :                                 :Secchi Depth
+
+
+ bathymetry           :10.0       : 11000.0   :true      :smooth_inv_blue.cpd      :smooth_inv_blue.cpd      :                     :10,100,1000,10000                :Bathymetry (depth in meters)
+ elevation            :-12000.0   :15000.0    :false     :gray_scale.cpdthe        :universal_bluered.cpd    :                     :-12000,-6000,0,7500,15000        :Elevation (with respect to sea-level in meters)
+ topography           :5          :5000.0     :true      :smooth_green.cpd         :smooth_green.cpd         :                     :5,50,500,5000                    :Topography (with respect to sea-level in meters)
+ topography_ETOP      :0          :8500.0     :false     :topography.cpd           :universal_bluered.cpd    :                     :                                 :Topography (Colormap used in the ETOPO1 global relief map)
+
+ chlor_a_bluegreen    :0.01       :50.0       :true      :chlor_blue_green.cpd     :chlor_blue_green.cpd     :   Chlorophyll                    :0.01,0.05,0.15,3,50.0            :Chlorophyll a concentration with color palette split between eutrophic (green) and oligotrophic (blue)
+ chlor_a_uni          :0.01       :20.0       :true      :universal_bluered.cpd    :universal_bluered.cpd    :  Chlorophyll                     :0.01,0.03,0.1,0.3,1,3,20         :Chlorophyll a concentration with universal (color-blind compliant) blue to red color palette
+ chlor_a_uni_bg       :0.01       :20.0       :true      :universal_bluegreen.cpd  :universal_bluegreen.cpd  :  Chlorophyll                     :0.01,0.03,0.1,0.3,1,3,20         :Chlorophyll a concentration with universal (semi-color-blind compliant) blue to green color palette
+ chlor_a_oc           :0.01       :20.0       :true      :oceancolor_standard.cpd  :oceancolor_standard.cpd  :  Chlorophyll                   :0.01,0.03,0.1,0.3,1,3,20         :Chlorophyll a concentration
+
+ CI                   :0.0001     :0.01       :true      :oceancolor_standard.cpd  :universal_bluered.cpd    : Cyanobacteria Index          :                                      :Cyanobacteria Index
+ 256PtLinear          :0          :255        :false     :oceancolor_standard.cpd  :universal_bluered.cpd    :           :                                      :Cyanobacteria Index
+
+
+
+
+
+#<ColorSchemes>
+#    <ColorSchemes id="chlor_a">
+#        <MIN value="0.01"/>
+#        <MAX value="20.0"/>
+#        <LOG value="true"/>
+#        <CPD_FILE value="oceancolor_standard.cpd"/>
+#        <COLOR_BAR_LABELS value="0.01,0.03,0.1,0.3,1,3,20"/>
+#        <COLOR_BAR_TITLE value="Chlorophyll"/>
+#        <COLOR_BAR_SCALING value=""/>
+#        <COLOR_BAR_UNITS value=""/>
+#        <DESCRIPTION value="Chlorophyll a concentration"/>
+#    </ColorSchemes>
+#</ColorSchemes>
+
