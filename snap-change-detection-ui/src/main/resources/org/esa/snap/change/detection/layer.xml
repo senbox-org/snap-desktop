@@ -1,0 +1,36 @@
+<filesystem>
+    <folder name="Actions">
+        <folder name="Operators">
+            <file name="org-esa-snap-raster-gpf-Change-Vector-Analysis-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled" />
+                <attr name="delegate" methodvalue="org.esa.snap.core.gpf.ui.DefaultOperatorAction.create" />
+                <attr name="operatorName" stringvalue="ChangeVectorAnalysisOp" />
+                <attr name="displayName" stringvalue="Change Vector Analysis" />
+                <attr name="dialogTitle" stringvalue="Change Vector Analysis between dual bands at two dates" />
+                <attr name="targetProductNameSuffix" stringvalue="_CVA" />
+                <attr name="ShortDescription" stringvalue="Change Vector Analysis" />
+                <attr name="helpId" stringvalue="ChangeVectorAnalysisOp" />
+            </file>
+        </folder>
+    </folder>
+
+    <folder name="Menu">
+        <folder name="Raster">
+            <folder name="Change Detection">
+                <attr name="position" intvalue="490" />
+                <file name="org-esa-snap-raster-gpf-Change-Vector-Analysis-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-raster-gpf-Change-Vector-Analysis-Action.instance" />
+                    <attr name="position" intvalue="300" />
+                </file>
+            </folder>
+        </folder>
+    </folder>
+
+    <folder name="OperatorUIs">
+        <file name="org.esa.snap.raster.gpf.ui.ChangeVectorAnalysisOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.raster.gpf.ui.ChangeVectorAnalysisOpUI"/>
+            <attr name="operatorName" stringvalue="Change Vector Analysis"/>
+        </file>
+    </folder>
+
+</filesystem>
