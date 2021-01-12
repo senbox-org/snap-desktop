@@ -256,7 +256,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://seadas.gsfc.nasa.gov/updatecenter/8.0/snap/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap/updates.xml.gz"/>
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -264,7 +264,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://seadas.gsfc.nasa.gov/updatecenter/8.0/snap-toolboxes/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-toolboxes/updates.xml.gz"/>
             </file>
             <file name="seadas_toolbox_update_center.instance">
                 <attr name="displayName" stringvalue="SEADAS Toolbox"/>
@@ -272,7 +272,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://seadas.gsfc.nasa.gov/updatecenter/8.0/seadas-toolbox/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/seadas-toolbox/updates.xml.gz"/>
             </file>
             <file name="snap_supported_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Supported Plugins"/>
@@ -280,7 +280,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://seadas.gsfc.nasa.gov/updatecenter/8.0/snap-supported-plugins/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-supported-plugins/updates.xml.gz"/>
             </file>
             <file name="snap_community_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Community Plugins"/>
@@ -288,7 +288,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://seadas.gsfc.nasa.gov/updatecenter/8.0/snap-community-plugins/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-community-plugins/updates.xml.gz"/>
             </file>
         </folder>
     </folder>
