@@ -3,6 +3,8 @@ package org.esa.snap.rcp.colormanip;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.math.Histogram;
+import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import java.io.File;
@@ -172,8 +174,30 @@ public class ColorSchemeUtils {
             double max;
 
             if (isRangeFromDataNonScheme(configuration)) {
-                min = stx.getMinimum();
-                max = stx.getMaximum();
+//                double range = 95.45 / 100.0;
+//                double minPTile = (1.0 - range) / 2.0;
+//                double maxPTile = 1.0 - minPTile;
+//
+//                double minPTileThreshhold[] = stx.getHistogram().getPTileThreshold(minPTile);
+//                double maxPTileThreshhold[] = stx.getHistogram().getPTileThreshold(maxPTile);
+//                min = minPTileThreshhold[0];
+//                max = maxPTileThreshhold[0];
+
+
+                final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
+
+                Range autoStretchRange = histogram.findRangeForPercent(12.0);
+//                    if (autoStretchRange == null) {
+//                        return false;
+//                    }
+//
+//                    if (logScaled && scale(autoStretchRange.getMin()) <= 0) {
+//                        return false;
+//                    }
+                min = autoStretchRange.getMin();
+                max = autoStretchRange.getMax();
+//                min = stx.getMinimum();
+//                max = stx.getMaximum();
             } else {
                 min = colorPaletteDef.getMinDisplaySample();
                 max = colorPaletteDef.getMaxDisplaySample();
