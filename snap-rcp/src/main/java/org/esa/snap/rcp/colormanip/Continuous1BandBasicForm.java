@@ -948,51 +948,37 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     // Updates targetMin and targetMax
                     final Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
 
-                    final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
-
-                    Range autoStretchRange = histogram.findRangeForPercent(6.0);
-//                    if (autoStretchRange == null) {
-//                        return false;
-//                    }
-//
-//                    if (logScaled && scale(autoStretchRange.getMin()) <= 0) {
-//                        return false;
-//                    }
-                    tmpMin = autoStretchRange.getMin();
-                    tmpMax = autoStretchRange.getMax();
-
-
-//                    double range = 95.45 / 100.0;
-//                    double minPTile = (1.0 - range) / 2.0;
-//                    double maxPTile = 1.0 - minPTile;
-//
-//
-//                    double minPTileThreshhold[] = stx.getHistogram().getPTileThreshold(minPTile);
-//                    double maxPTileThreshold[] = stx.getHistogram().getPTileThreshold(maxPTile);
-
-
-
-
-
-
 
                     if (stx != null) {
-//                        tmpMin = stx.getMinimum();
-//                        tmpMax = stx.getMaximum();
-//                        tmpMin = minPTileThreshhold[0];
-//                        tmpMax = maxPTileThreshold[0];
-                        valid = testMinMaxAgainstCurrentLog(tmpMin, tmpMax);
 
-                        if (valid) {
-                            targetMin = tmpMin;
-                            targetMax = tmpMax;
+                        final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
 
-                            if (targetMin == currentCPD.getMinDisplaySample() &&
-                                   targetMax == currentCPD.getMaxDisplaySample()) {
-                                valueChange = false;
-                            } else {
-                                valueChange = true;
+                        PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+
+                        double percentile = configuration.getPropertyDouble(PROPERTY_RANGE_PERCENTILE_KEY, PROPERTY_RANGE_PERCENTILE_DEFAULT);
+
+                        Range autoStretchRange = histogram.findRangeForPercent(percentile);
+
+                        if (autoStretchRange != null) {
+
+                            tmpMin = autoStretchRange.getMin();
+                            tmpMax = autoStretchRange.getMax();
+
+                            valid = testMinMaxAgainstCurrentLog(tmpMin, tmpMax);
+
+                            if (valid) {
+                                targetMin = tmpMin;
+                                targetMax = tmpMax;
+
+                                if (targetMin == currentCPD.getMinDisplaySample() &&
+                                        targetMax == currentCPD.getMaxDisplaySample()) {
+                                    valueChange = false;
+                                } else {
+                                    valueChange = true;
+                                }
                             }
+                        } else {
+                            valid = false;
                         }
 
                     } else {

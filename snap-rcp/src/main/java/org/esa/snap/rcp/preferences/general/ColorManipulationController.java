@@ -106,6 +106,12 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT);
+
+
+
+
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT);
@@ -459,6 +465,24 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_TOOLTIP)
         boolean slidersShowExtraInfo = ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT;
+
+
+
+
+        // Range Percentile Options
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_TOOLTIP)
+        boolean rangePercentileSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_TOOLTIP,
+                interval = "[0.10,100.0]")
+        double rangePercentile = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT;
+
+
 
 
 

@@ -168,48 +168,51 @@ public class ColorSchemeUtils {
         }
 
         if (colorPaletteDef != null) {
-            Stx stx = productSceneView.getRaster().getStx();
 
-            double min;
-            double max;
+            double minTarget;
+            double maxTarget;
 
             if (isRangeFromDataNonScheme(configuration)) {
-//                double range = 95.45 / 100.0;
-//                double minPTile = (1.0 - range) / 2.0;
-//                double maxPTile = 1.0 - minPTile;
-//
-//                double minPTileThreshhold[] = stx.getHistogram().getPTileThreshold(minPTile);
-//                double maxPTileThreshhold[] = stx.getHistogram().getPTileThreshold(maxPTile);
-//                min = minPTileThreshhold[0];
-//                max = maxPTileThreshhold[0];
+                Stx stx = productSceneView.getRaster().getStx();
 
 
-                final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
+                if (stx != null) {
+                    final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
 
-                Range autoStretchRange = histogram.findRangeForPercent(12.0);
-//                    if (autoStretchRange == null) {
-//                        return false;
-//                    }
-//
-//                    if (logScaled && scale(autoStretchRange.getMin()) <= 0) {
-//                        return false;
-//                    }
-                min = autoStretchRange.getMin();
-                max = autoStretchRange.getMax();
-//                min = stx.getMinimum();
-//                max = stx.getMaximum();
+                    double percentile = configuration.getPropertyDouble(PROPERTY_RANGE_PERCENTILE_KEY, PROPERTY_RANGE_PERCENTILE_DEFAULT);
+
+                    Range autoStretchRange = histogram.findRangeForPercent(percentile);
+
+                    if (autoStretchRange != null) {
+                        minTarget = autoStretchRange.getMin();
+                        maxTarget = autoStretchRange.getMax();
+                    } else {
+                        minTarget = stx.getMinimum();
+                        maxTarget = stx.getMaximum();
+                    }
+                } else {
+                    minTarget = colorPaletteDef.getMinDisplaySample();
+                    maxTarget = colorPaletteDef.getMaxDisplaySample();
+                }
             } else {
-                min = colorPaletteDef.getMinDisplaySample();
-                max = colorPaletteDef.getMaxDisplaySample();
+                minTarget = colorPaletteDef.getMinDisplaySample();
+                maxTarget = colorPaletteDef.getMaxDisplaySample();
             }
 
 
             boolean logScaledSource = colorPaletteDef.isLogScaled();
+
             boolean logScaledTarget = isGeneralLogScaled(colorPaletteDef, productSceneView);
 
+            // todo Possibly show alert GUI in future - this line just prevents log scaling for min < 0
+            if (minTarget <= 0) {
+                logScaledTarget = false;
+            }
+
+
             productSceneView.getImageInfo().setColorPaletteDef(colorPaletteDef,
-                    min,
-                    max,
+                    minTarget,
+                    maxTarget,
                     true, //colorPaletteDef.isAutoDistribute(),
                     logScaledSource,
                     logScaledTarget);
