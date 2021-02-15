@@ -76,6 +76,7 @@ class BinningFormModel {
     static final String PROPERTY_KEY_SOURCE_PRODUCT_FORMAT = "sourceProductFormat";
     static final String PROPERTY_KEY_SOURCE_PRODUCT_PATHS = "sourceProductPaths";
     static final String PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT = "contextSourceProduct";
+    static final String PROPERTY_KEY_REFERENCE_BAND = "referenceBand";
 
     static final String GLOBAL_WKT = "polygon((-180 -90, 180 -90, 180 90, -180 90, -180 -90))";
 
@@ -109,7 +110,7 @@ class BinningFormModel {
         propertySet.addProperty(createTransientProperty(PROPERTY_KEY_SOUTH_BOUND, Double.class));                                // temp
         propertySet.addProperty(createTransientProperty(PROPERTY_KEY_SOURCE_PRODUCTS, Product[].class));                         // temp
         propertySet.addProperty(createTransientProperty(PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT, Product.class));                    // temp
-
+        propertySet.addProperty(createTransientProperty(PROPERTY_KEY_REFERENCE_BAND, String.class));
 
 
         propertySet.setDefaultValues();
@@ -147,6 +148,10 @@ class BinningFormModel {
         return products;
     }
 
+    public String getReferenceBand(){
+        return getPropertyValue(BinningFormModel.PROPERTY_KEY_REFERENCE_BAND);
+    }
+
     public String[] getSourceProductPaths() {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_PATHS);
     }
@@ -154,7 +159,6 @@ class BinningFormModel {
     public String getSourceProductFormat() {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_SOURCE_PRODUCT_FORMAT);
     }
-
 
     public Product getContextProduct() {
         return getPropertyValue(BinningFormModel.PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT);

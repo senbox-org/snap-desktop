@@ -203,7 +203,7 @@ public class BinningDialog extends SingleTargetProductDialog {
         parameters.put("superSampling", formModel.getSuperSampling());
         parameters.put("sourceProductFormat", formModel.getSourceProductFormat());
         parameters.put("sourceProductPaths", formModel.getSourceProductPaths());
-
+        parameters.put("referenceBand", formModel.getReferenceBand());
         BinningOp.TimeFilterMethod method = formModel.getTimeFilterMethod();
         parameters.put("timeFilterMethod", method);
         if (method == BinningOp.TimeFilterMethod.SPATIOTEMPORAL_DATA_DAY) {

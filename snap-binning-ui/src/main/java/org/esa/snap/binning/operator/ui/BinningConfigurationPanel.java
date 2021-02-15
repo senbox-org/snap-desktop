@@ -31,6 +31,7 @@ import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -62,6 +63,7 @@ class BinningConfigurationPanel extends JPanel {
     private double currentGridResolution;
     private AggregatorTableController aggregatorTableController;
     private VariableTableController variableTableController;
+    private final JComboBox<String> referenceBands = new JComboBox();
 
     BinningConfigurationPanel(AppContext appContext, BinningFormModel binningFormModel) {
         this.appContext = appContext;
@@ -102,7 +104,15 @@ class BinningConfigurationPanel extends JPanel {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(BinningFormModel.PROPERTY_KEY_CONTEXT_SOURCE_PRODUCT)) {
-                    validPixelExpressionButton.setEnabled(hasSourceProducts());
+                    boolean hasSourceProduct = hasSourceProducts();
+                    validPixelExpressionButton.setEnabled(hasSourceProduct);
+                    if(hasSourceProduct)
+                    {
+                        hasMultizeSourceProducts();
+                        udpateReferenceBands();
+                        referenceBands.setVisible(true);
+                    }else
+                        referenceBands.setVisible(false);
                 }
             }
         });
@@ -132,6 +142,19 @@ class BinningConfigurationPanel extends JPanel {
 
         JLabel superSamplingLabel = new JLabel("Super-sampling:");
         final JTextField superSamplingTextField = new IntegerTextField(1);
+
+        JLabel referenceBandLabel = new JLabel("<html>Resampling Reference Band:<br><i>(only to multi-size products case)</i></html>");
+        referenceBands.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    if(referenceBands.getSelectedItem()!=null)
+                        binningFormModel.setProperty(BinningFormModel.PROPERTY_KEY_REFERENCE_BAND, referenceBands.getSelectedItem());
+                } catch (Exception e) {
+                    appContext.handleError("Invalid reference band", e);
+                }
+            }
+        });
+        referenceBands.setVisible(false);
 
         final ResolutionTextFieldListener listener = new ResolutionTextFieldListener(resolutionTextField, numRowsTextField);
 
@@ -164,7 +187,6 @@ class BinningConfigurationPanel extends JPanel {
         targetHeightLabel.setToolTipText("<html>The number of rows of the <b>maximum</b> target grid</html>");
         resolutionLabel.setToolTipText("The spatial resolution, directly depending on #rows");
         superSamplingLabel.setToolTipText("Every input pixel is subdivided into n x n sub-pixels in order to reduce or avoid the Moiré effect");
-
         TableLayout layout = new TableLayout(3);
         layout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
         layout.setTableWeightX(0.0);
@@ -189,6 +211,9 @@ class BinningConfigurationPanel extends JPanel {
 
         parametersPanel.add(superSamplingLabel);
         parametersPanel.add(superSamplingTextField);
+
+        parametersPanel.add(referenceBandLabel);
+        parametersPanel.add(referenceBands);
 
         return parametersPanel;
     }
@@ -223,6 +248,32 @@ class BinningConfigurationPanel extends JPanel {
 
     private boolean hasSourceProducts() {
         return binningFormModel.getContextProduct() != null;
+    }
+    /**
+     * check if the product is multisize (apply @hasSourceProducts() method before to check product exists)
+     * @return
+     */
+    private boolean hasMultizeSourceProducts(){
+        return binningFormModel.getContextProduct().isMultiSize();
+    }
+
+    private String[] getBandsNames(){
+        if(binningFormModel.getContextProduct() != null)
+        {
+            return binningFormModel.getContextProduct().getBandNames();
+        }else
+            return null;
+    }
+
+    private void udpateReferenceBands()
+    {
+        referenceBands.removeAllItems();
+        String[] bandNames = getBandsNames();
+        if(bandNames!=null)
+        {
+            for(String bandName : bandNames)
+                referenceBands.addItem(bandName);
+        }
     }
 
     private String editExpression(String expression) {
