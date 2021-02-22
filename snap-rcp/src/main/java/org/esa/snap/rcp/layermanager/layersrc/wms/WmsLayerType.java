@@ -16,11 +16,9 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.wms;
 
-import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.glayer.Layer;
@@ -35,6 +33,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.StyleImpl;
+import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.data.wms.response.GetMapResponse;
@@ -58,7 +57,7 @@ import java.util.List;
  * @since BEAM 4.6
  */
 @LayerTypeMetadata(name = "WmsLayerType",
-                   aliasNames = {"org.esa.snap.rcp.layermanager.layersrc.wms.WmsLayerType"})
+        aliasNames = {"org.esa.snap.rcp.layermanager.layersrc.wms.WmsLayerType"})
 public class WmsLayerType extends ImageLayer.Type {
 
     public static final String PROPERTY_NAME_RASTER = "raster";
@@ -75,7 +74,7 @@ public class WmsLayerType extends ImageLayer.Type {
             mapServer = getWmsServer(configuration);
         } catch (Exception e) {
             final String message = String.format("Not able to access Web Mapping Server: %s",
-                                                 configuration.getValue(WmsLayerType.PROPERTY_NAME_URL));
+                                                 configuration.<URL>getValue(WmsLayerType.PROPERTY_NAME_URL));
             throw new RuntimeException(message, e);
         }
         final int layerIndex = configuration.getValue(WmsLayerType.PROPERTY_NAME_LAYER_INDEX);
@@ -110,7 +109,6 @@ public class WmsLayerType extends ImageLayer.Type {
         return template;
     }
 
-    @SuppressWarnings({"unchecked"})
     private static DefaultMultiLevelSource createMultiLevelSource(PropertySet configuration,
                                                                   WebMapServer wmsServer,
                                                                   org.geotools.data.ows.Layer layer) {
@@ -147,8 +145,7 @@ public class WmsLayerType extends ImageLayer.Type {
             final DefaultMultiLevelModel multiLevelModel = new DefaultMultiLevelModel(1, i2mTransform, bounds);
             multiLevelSource = new DefaultMultiLevelSource(image, multiLevelModel);
         } catch (Exception e) {
-            throw new IllegalStateException(String.format("Failed to access WMS: %s", configuration.getValue(
-                    WmsLayerType.PROPERTY_NAME_URL)), e);
+            throw new IllegalStateException(String.format("Failed to access WMS: %s", configuration.<URL>getValue(WmsLayerType.PROPERTY_NAME_URL)), e);
         }
         return multiLevelSource;
     }
@@ -158,7 +155,7 @@ public class WmsLayerType extends ImageLayer.Type {
     }
 
     private static WebMapServer getWmsServer(PropertySet configuration) throws IOException, ServiceException {
-        return new WebMapServer((URL) configuration.getValue(WmsLayerType.PROPERTY_NAME_URL));
+        return new WebMapServer(configuration.<WMSCapabilities>getValue(WmsLayerType.PROPERTY_NAME_URL));
     }
 
     private static BufferedImage downloadWmsImage(GetMapRequest mapRequest, WebMapServer wms) throws IOException,
@@ -182,8 +179,7 @@ public class WmsLayerType extends ImageLayer.Type {
         }
 
         @Override
-        public Object convertDomToValue(DomElement parentElement, Object value) throws ConversionException,
-                ValidationException {
+        public Object convertDomToValue(DomElement parentElement, Object value) {
             try {
                 String srsName = parentElement.getChild(SRS_NAME).getValue();
                 double minX = Double.parseDouble(parentElement.getChild(MIN_X).getValue());
@@ -198,7 +194,7 @@ public class WmsLayerType extends ImageLayer.Type {
         }
 
         @Override
-        public void convertValueToDom(Object value, DomElement parentElement) throws ConversionException {
+        public void convertValueToDom(Object value, DomElement parentElement) {
             CRSEnvelope crsEnvelope = (CRSEnvelope) value;
             DomElement srsName = parentElement.createChild(SRS_NAME);
             srsName.setValue(crsEnvelope.getSRSName());
