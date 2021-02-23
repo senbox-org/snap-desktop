@@ -1024,13 +1024,14 @@ public class ProductSubsetDialog extends ModalDialog {
                     int sy = ((Number) paramSY.getValue()).intValue();
 
                     if(product.isMultiSize()) {
-                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap (new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1),
+
+                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap (computeROIToPositiveAxis(x1,y1,x2,y2),
                                                                                  (String) referenceCombo.getSelectedItem(),
                                                                                  product, null));
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     } else {
-                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0));
+                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(computeROIToPositiveAxis(x1,y1,x2,y2), 0));
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     }
@@ -1075,6 +1076,18 @@ public class ProductSubsetDialog extends ModalDialog {
                     updatingUI.set(false);
                 }
             }
+        }
+
+        private Rectangle computeROIToPositiveAxis(int x1,int y1, int x2, int y2)
+        {
+            // keep positive dimensions of the ROI
+            int diffX = x2 - x1;
+            int diffY = y2 - y1;
+            if(diffX<0)
+                x1=x1+diffX-1;
+            if(diffY<0)
+                y1=y1+diffY-1;
+            return new Rectangle(x1, y1, Math.abs(diffX)+1,  Math.abs(diffY)+1);
         }
 
         private void syncLatLonWithXYParams() {
