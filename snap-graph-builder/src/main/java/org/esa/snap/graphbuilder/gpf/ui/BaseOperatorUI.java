@@ -165,6 +165,20 @@ public abstract class BaseOperatorUI implements OperatorUI {
             }
         }
     }
+    /**
+     * The method check if there are at least one multi-size source product
+     * @return false if there is not multi-size source product
+     */
+    protected boolean hasMultiSizeProducts()
+    {
+        if (sourceProducts != null) {
+            for (Product prod : sourceProducts) {
+                if(prod.isMultiSize())
+                    return true;
+            }
+        }
+        return false;
+    }
 
     protected String[] getBandNames() {
         final ArrayList<String> bandNames = new ArrayList<>(5);

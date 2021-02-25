@@ -15,11 +15,15 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
+import org.opengis.filter.temporal.Before;
+import org.openide.util.lookup.Lookups;
 
 import javax.swing.*;
 import java.awt.GridBagConstraints;
@@ -37,7 +41,7 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
     private final JList bandList = new JList();
     private final JComboBox<String> geometries = new JComboBox();
-    private final JComboBox<String> referenceBands = new JComboBox();
+
     private final JRadioButton landMask = new JRadioButton("Mask out the Land");
     private final JRadioButton seaMask = new JRadioButton("Mask out the Sea");
     private final JCheckBox useSRTMCheckBox = new JCheckBox("Use SRTM 3sec");
@@ -76,8 +80,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
     public void initParameters() {
 
         OperatorUIUtils.initParamList(bandList, getBandNames());
-        for(String band:getBandNames())
-            referenceBands.addItem(band);    
         final Boolean doLandMask = (Boolean) paramMap.get("landMask");
         if (doLandMask != null && doLandMask) {
             landMask.setSelected(true);
@@ -100,6 +102,15 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         Integer shorelineExtension = (Integer) paramMap.get("shorelineExtension");
         shorelineExtensionTextField.setText(shorelineExtension == null ? "0" : shorelineExtension.toString());
+
+        if(hasSourceProducts()){
+            boolean isMultiSizeProducts = hasMultiSizeProducts();
+            if(isMultiSizeProducts) {
+                Dialogs.showError("The multi-size source product is not supported."
+                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
+                +"in the graph builder.");
+            }
+        }
     }
 
     @Override
@@ -118,7 +129,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
             paramMap.put("geometry", geometries.getSelectedItem());
             paramMap.put("invertGeometry", invertGeometry);
         }
-        paramMap.put("referenceBand", referenceBands.getSelectedItem().toString());
 
         Integer shorelineExtension = 0;
         try {
@@ -128,16 +138,21 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         }
         paramMap.put("shorelineExtension", shorelineExtension);
         paramMap.put("useSRTM", useSRTM);
+        if(hasSourceProducts()){
+            boolean isMultiSizeProducts = hasMultiSizeProducts();
+            if(isMultiSizeProducts) {
+                throw new IllegalArgumentException("The multi-size source product is not supported."
+                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
+                +"in the graph builder.");
+            }
+        }
     }
 
     private JComponent createPanel() {
 
         final JPanel contentPane = new JPanel(new GridBagLayout());
         final GridBagConstraints gbc = DialogUtils.createGridBagConstraints();
-        DialogUtils.addComponent(contentPane, gbc, "<html>Resampling Reference Band:<br><i>(only to multi-size products case)</i></html>", referenceBands);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy++;
+
         DialogUtils.addComponent(contentPane, gbc, "Source Bands:", new JScrollPane(bandList));
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
