@@ -77,6 +77,8 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
+
+
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
@@ -95,6 +97,18 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_LOG_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_LOG_DEFAULT);
 
+
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT);
+
+
+
+
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT);
@@ -104,21 +118,8 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
-
-
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY, ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT);
-
-
-
-
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY, ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT);
-        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_KEY, ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_DEFAULT);
 
 
@@ -419,6 +420,49 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
+
+        // Range Percentile Options
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_TOOLTIP)
+        boolean rangePercentileSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_TOOLTIP,
+                interval = "[0.10,100.0]")
+        double rangePercentile = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_TOOLTIP)
+        boolean range1Sigma = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_TOOLTIP)
+        boolean range2Sigma = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_TOOLTIP)
+        boolean range3Sigma = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_TOOLTIP)
+        boolean range95 = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY,
+                description = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_TOOLTIP)
+        boolean range100 = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT;
+
+
+
+
+
         // Scheme Selector Options
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_SCHEME_SELECTOR_SECTION_LABEL,
@@ -469,59 +513,22 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
-        // Range Percentile Options
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_KEY,
-                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_SECTION_TOOLTIP)
-        boolean rangePercentileSection = true;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY,
-                description = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_TOOLTIP,
-                interval = "[0.10,100.0]")
-        double rangePercentile = ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT;
-
-
-
-
-
-        // Button Options
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY,
-                description = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_TOOLTIP)
-        boolean buttonsSection = true;
+//
+//
+//        // Button Options
+//
+//        @Preference(label = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_LABEL,
+//                key = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_KEY,
+//                description = ColorManipulationDefaults.PROPERTY_BUTTONS_SECTION_TOOLTIP)
+//        boolean buttonsSection = true;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY,
                 description = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_TOOLTIP)
         boolean sliderZoomVertical = ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_KEY,
-                description = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_TOOLTIP)
-        boolean range1Sigma = ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT;
 
-        @Preference(label = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_KEY,
-                description = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_TOOLTIP)
-        boolean range2Sigma = ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_KEY,
-                description = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_TOOLTIP)
-        boolean range3Sigma = ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_KEY,
-                description = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_TOOLTIP)
-        boolean range95 = ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT;
-
-        @Preference(label = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_LABEL,
-                key = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_KEY,
-                description = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_TOOLTIP)
-        boolean range100 = ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT;
 
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_LABEL,

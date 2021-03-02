@@ -16,7 +16,7 @@
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Colour Manipulation</title>
+    <title>Sentinel Toolbox Help - Color Manipulation / Colour Manipulation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -25,7 +25,7 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Colour Manipulation
+            Color Manipulation / Colour Manipulation
         </td>
 
         <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
@@ -34,17 +34,24 @@
     </tr>
 </table>
 
+<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
+    SNAP application, elsewhere in your application the spelling may be "colour"</p>
+
+
 <h3>Overview</h3>
 
-<p>The "Colour Manipulation" tool
-    window is used to modify the colors and color mapping used in the image.  If you are opening an Image View of a
+
+<p>This tool
+    is used to modify the color palette mapping used in the image.  If you are opening an Image View of a
     band or tie-point grid, the image loads with the color settings of the band
-    stored within the data file itself (BEAM-DIMAP format only) or applies default color settings as defined in the
-    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Colour Manipulation).
+    stored within the data file itself (BEAM-DIMAP format only) or for other files it applies default color
+    settings as defined in the
+    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Color Manipulation).
+
 </p>
 
 <p>Depending on the type of the source data used for the images and the type of images to be created,
-    the this tool offers three editor modes: Basic, Sliders and Table.
+    this tool offers three editor modes: Basic, Sliders and Table.
     If the source data is a single spectral/geophysical band, then the Basic, Sliders and Table mode editors are all
     used. If
     the source data is an indexed band then only the Table editor is used. If the source data is 3 bands used to create
@@ -52,41 +59,43 @@
     image then only the Sliders editor is used.
 </p>
 
-<p>To open the Colour Manipulation tool window, use the corresponding icon
+<p>To open the Color Manipulation tool window, use the corresponding icon
     <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
-    in the "Tool Windows" toolbar or select <i>/Tool Windows/Colour Manipulation</i>
-    from the main menu. Changes made within the Colour Manipulation tool window will directly become effective in the
-    image.
+    in the "Tool Windows" toolbar or select <i>/Tool Windows/Color Manipulation</i>
+    from the main menu. Changes made within the Color Manipulation tool window will directly become effective in the
+    image of the currently selected band.
 </p>
 
 
 <br>
 <hr>
 <h4>Some Common Functions</h4>
-<b>Each editor in this tool has unique parameters but in general all editors share the follow functions:</b>
+<b>Each editor mode (Basic, Sliders, Table) in this tool has unique parameters but all editors share
+    the following common functions:</b>
 
 <ul>
     <li> <img src="images/icons/Undo24.gif"> &nbsp; The "Reset" button resets to the default settings.  In the case of a
         single spectral/geophysical band it applies the default color scheme if applicable.
     </li>
 
-    <li> <img src="images/icons/LogDisplay24.png"> &nbsp; The "Log Scaling" button toggles the log scaling and applies it to the image.  This option is not available in
-        the RGB image and for the index band source.  For the RGB image, any concept of log scaling needs to be either contained
-        within the configuration profile, or you can use the "Gamma non-linearity" feature within "More Options".
+    <li> <img src="images/icons/LogDisplay24.png"> &nbsp; The "Log Scaling" button toggles the log scaling and applies
+        it to the image.  This option is not available in the RGB image and for the index band source.  For the RGB
+        image, any concept of log scaling needs to be either contained within the configuration profile, or you can
+        use the "Gamma non-linearity" feature within "More Options".
     </li>
 
-    <li> <img src="images/icons/MultiAssign24.gif"> &nbsp; The "Apply to Other Bands" button enables you to apply/load the color palette
-        into any other band which is opened in a view window.
+    <li> <img src="images/icons/MultiAssign24.gif"> &nbsp; The "Apply to Other Bands" button enables you to apply/load
+        the color palette into any other band which is opened in a view window.
     </li>
 
 
-    <li> <img src="images/icons/document-open.png"> &nbsp; The "Import Palette" button enables you to import a palette file (cpd or cpt).
-        Essentially this functions identical
-        to the color palette chooser except that this is a dialog selector displaying the files.
+    <li> <img src="images/icons/document-open.png"> &nbsp; The "Import Palette" button enables you to import a palette
+        file (cpd or cpt).  Essentially this functions identically to the color palette chooser except that this is a
+        dialog selector displaying the files.
     </li>
 
-    <li> <img src="images/icons/document-save.png"> &nbsp; The "Export Palette" button enables you to export a "custom" palette file (cpd, cpt, or pal)
-        from the current parameters.
+    <li> <img src="images/icons/document-save.png"> &nbsp; The "Export Palette" button enables you to export a "custom"
+        palette file (cpd, cpt, or pal) from the current parameters.
     </li>
 </ul>
 
@@ -180,7 +189,7 @@
     </li>
 
     <li><b>From Data</b>: This button loads in the
-        range obtained from the statistics of the data (min and max of 100% of the data). If you wish to load other
+        range obtained from the statistics of the data (min and max percentile of the data - see Preferences). If you wish to load other
         statistical
         ranges based on a histogram of the data see the "Sliders" editor.
         </p>
@@ -345,11 +354,11 @@
 
 
 <p>In this mode the sliders are used for contrast stretching in each of the R,G,B channels.
-    In the <b>More Options</b> panels, you can adjust the <b><a href="#nodata">No-Data Colour</a></b> and
+    In the <b>More Options</b> panels, you can adjust the <b><a href="#nodata">No-Data Color</a></b> and
     <b><a href="#histomatch">Histogram Matching</a></b> for the final image. The <b>Source Band</b> and <b>Gamma</b>
     options
     apply to each channel. The gamma value is used to adapt the transfer function which quantises the band's
-    sample values to colour values. A gamma value of <code>0.7</code> for the blue channel enhances most
+    sample values to color values. A gamma value of <code>0.7</code> for the blue channel enhances most
     RGB images.
 </p>
 
@@ -394,11 +403,11 @@
 </div>
 
 
-<p>Images of a single, index-coded band, e.g. the output of a look-up discrete colours from a
+<p>Images of a single, index-coded band, e.g. the output of a look-up discrete colors from a
     fixed-size table</p>
 
-<p>Labels and colours are simply changed by clicking into the corresponding table cell.
-    In the <b>More Options</b> panels you can adjust the <b><a href="#nodata">No-Data Colour</a></b>.</p>
+<p>Labels and colors are simply changed by clicking into the corresponding table cell.
+    In the <b>More Options</b> panels you can adjust the <b><a href="#nodata">No-Data Color</a></b>.</p>
 
 
 
@@ -410,10 +419,10 @@
 <hr>
 <h3>More Options</h3>
 
-<h4><a name="nodata">No-Data Colour</a></h4>
+<h4><a name="nodata">No-Data Color</a></h4>
 
-<p>In the <b>More Options</b> panel of all editors you can adjust the <b>No-Data Colour</b>.
-    This colour will be used for no-data pixels in the source band(s).
+<p>In the <b>More Options</b> panel of all editors you can adjust the <b>No-Data Color</b>.
+    This color will be used for no-data pixels in the source band(s).
     If you select <b>None</b>, no-data sample will be transparent in the image.</p>
 
 <h4><a name="histomatch">Histogram Matching</a></h4>
@@ -423,15 +432,15 @@
     histogram matching to images which can often improve image quality.
 </p>
 
-<h4><a name="discrete">Discrete Colours</a></h4>
+<h4><a name="discrete">Discrete Colors</a></h4>
 
 <p>Sometimes it is needed that an image is classified by value ranges. Each value range should be displayed with a
-    defined colour.
-    To toggle the use of discrete colours use the discrete colour checkbox. Each slider position defines the
-    start or the end of a value range. The colour of an image pixel is defined by the following rule:
+    defined color.
+    To toggle the use of discrete colors use the discrete color checkbox. Each slider position defines the
+    start or the end of a value range. The color of an image pixel is defined by the following rule:
 </p>
 <pre>
-            lsc = leftSliderColour
+            lsc = leftSliderColor
             lsv = leftSliderValue
             rsv = rightSliderValue
             vop = valueOfImagePixel
@@ -439,12 +448,12 @@
 </pre>
 
 <p align="center">
-    <b>Discrete colours 'off'</b><br><br>
+    <b>Discrete colors 'off'</b><br><br>
     <img src="images/CM_discrete_false.png">
 </p>
 
 <p align="center">
-    <b>Discrete colours 'on'</b><br><br>
+    <b>Discrete colors 'on'</b><br><br>
     <img src="images/CM_discrete_true.png">
 </p>
 
@@ -453,13 +462,13 @@
 <h4>Other Related Export Options</h4>
 
 
-<p>The colour palette information used for the current image can also be exported into an image file.
-    Click the context menu item <a href="ExportColorLegend.html">Export Colour Legend</a>
-    over an open image view in order export the colour legend.
+<p>The color palette information used for the current image can also be exported into an image file.
+    Click the context menu item <a href="ExportColorLegend.html">Export Color Legend</a>
+    over an open image view in order export the color legend.
 </p>
 
-<p>The colour palette can be also exported as a <a href="ExportColorPalette.html">Colour Palette Table</a>.
-    Choose from the <b>File</b> menu <b>Colour Palette</b> to export the table as a *.csv or *.txt file.
+<p>The color palette can be also exported as a <a href="ExportColorPalette.html">Color Palette Table</a>.
+    Choose from the <b>File</b> menu <b>Color Palette</b> to export the table as a *.csv or *.txt file.
 </p>
 
 

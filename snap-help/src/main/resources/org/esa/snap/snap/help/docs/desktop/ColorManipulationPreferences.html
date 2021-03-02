@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Colour Manipulation Preferences</title>
+    <title>Sentinel Toolbox Help - Color Manipulation / Colour Manipulation Preferences</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -9,7 +9,7 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Colour Manipulation Preferences
+            Color / Colour Manipulation Preferences
         </td>
 
         <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
@@ -17,6 +17,9 @@
                 border="0"></a></td>
     </tr>
 </table>
+
+<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
+    SNAP application, elsewhere in your application the spelling may be "colour"</p>
 
 <h3>Overview</h3>
 
@@ -26,26 +29,29 @@
     opened.
 </p>
 
-<p>To open the colour manipulation preferences window select /Tools/Options/Colour Manipulation </b>
+<p>To open the color manipulation preferences window select /Tools/Options/Color Manipulation </b>
     from the main menu (Note: this may be located instead in File/Preferences on the Mac).
 </p>
+
+
+<br>
+<hr>
+<h4>Default Palettes</h4><br>
 
 <div align="center">
     <table>
         <tr>
-            <td align="center" style="border-width:0"><img src="images/Color_Preferences.png"/></td>
-        </tr>
-        <tr>
-            <td align="center" style="border-width:0">
-                Color Manipulation preferences page
-            </td>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref01.png"/></td>
         </tr>
     </table>
 </div>
 
 <br>
-<hr>
-<h4>Default Palettes</h4>
+
+<p>These will be palettes to use with the associated field name.
+</p>
+
+<br>
 <ul>
     <li>
         <b>GRAY SCALE:</b> The color palette to use if the field "GRAY SCALE" is selected.
@@ -72,6 +78,17 @@
 <br>
 <hr>
 <h4>Standard Options</h4>
+<br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
 <p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being applied.
 </p>
 
@@ -139,12 +156,23 @@
 
 <br>
 <hr>
-<h4>Scheme Options</h4>
+<h4>Scheme Options</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref03.png"/></td>
+        </tr>
+    </table>
+</div>
+<br>
+
 <p>This is the behavior regarding applying color schemes when opening a new band or clicking on the reset button. If
     the "Apply Color Schemes Automatically" button is clicked and the bandname matches a regular expression scheme
     lookup (defined in the configuration file ~/.snap/auxdata/color_schemes/color_palette_schemes_lookup.xml) then a
     color scheme is applied (palette, range, log scaling).
 </p>
+
+
 
 <ul>
     <li>
@@ -233,9 +261,83 @@
 </ul>
 
 
+
+
 <br>
 <hr>
-<h4>Scheme Selector Options</h4>
+<h4>Percentile Range</h4><br>
+
+<div align="center">
+<table>
+    <tr>
+        <td align="center" style="border-width:0"><img src="images/ColorManipPref04.png"/></td>
+    </tr>
+</table>
+</div>
+
+<br>
+
+<p>Histogram-based range settings which get applied to palette.</p>
+
+
+<ul>
+    <li>
+        <b>Percentile Range Default: </b> Default palette range based on percentage of pixels in a band. This
+        is used when scheme is disabled or when "From Data" is the specified behavior.  This is also used with
+        the "From Data" button.
+    </li>
+
+    <li>
+        <b>1&sigma; (68.27%) Button: </b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto1SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>2&sigma; (95.45%) Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto2SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>3&sigma; (99.73%) Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto3SigmaPercent24.gif">
+    </li>
+
+    <li>
+        <b>95% Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 95% of all pixels in the band. This is retained as a legacy function.
+        &nbsp; <img src="images/icons/Auto95Percent24.gif">
+    </li>
+
+    <li>
+        <b>100% Button:</b> Enables this button in the "sliders editor". This function
+        adjusts the palette range to cover 100% of all pixels in the band.
+        &nbsp; <img src="images/icons/Auto100Percent24.gif">
+    </li>
+
+
+</ul>
+
+
+
+
+
+
+<br>
+<hr>
+<h4>Scheme Selector Options</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref05.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
 <p>These are options to how and what is displayed in the color scheme selector in the "Basic editor". The pre-defined
     color schemes which appear in this selector are configured in the file:
     ~/.snap/auxdata/color_schemes/color_palette_schemes.xml.
@@ -269,9 +371,22 @@
 </ul>
 
 
+
+
 <br>
 <hr>
-<h4>Sliders Editor Options</h4>
+<h4>Sliders Editor Options</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref06.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
 <ul>
     <li>
         <b>Histogram Zoom:</b> - The histogram will by default be zoomed in to span the min/max range of the
@@ -282,58 +397,10 @@
         <b>Show Information:</b> - The statistical information overlay within the histogram plot window will be
         displayed by default.
     </li>
-</ul>
-
-
-
-<br>
-<hr>
-<h4>Percentile Range</h4>
-<p>Histogram-based range settings which get applied to palette.</p>
-<ul>
-    <li>
-        <b>Percentile Range Default: </b> Default palette range based on percentage of pixels in a band. This
-        is used when scheme is disabled or when "From Data" is the specified behavior.  This is also used with
-        the "From Data" button.
-    </li>
-
-</ul>
-
-
-
-<br>
-<hr>
-<h4>Button Enablement</h4>
-<p>You may customize your tool window by adding/removing a variety of tool buttons</p>
-<ul>
-    <li>
-        <b>1&sigma; (68.27%) Button: </b> Enables this button in the "sliders editor". This function
-        adjusts the palette range to cover 1&sigma; (68.27%) of all pixels in the band.
-        &nbsp; <img src="images/icons/Auto1SigmaPercent24.gif">
-    </li>
 
     <li>
-        <b>2&sigma; (95.45%) Button:</b> Enables this button in the "sliders editor". This function
-        adjusts the palette range to cover 2&sigma; (95.45%) of all pixels in the band.
-        &nbsp; <img src="images/icons/Auto2SigmaPercent24.gif">
-    </li>
-
-    <li>
-        <b>3&sigma; (99.73%) Button:</b> Enables this button in the "sliders editor". This function
-        adjusts the palette range to cover 3&sigma; (99.73%) of all pixels in the band.
-        &nbsp; <img src="images/icons/Auto3SigmaPercent24.gif">
-    </li>
-
-    <li>
-        <b>95% Button:</b> Enables this button in the "sliders editor". This function
-        adjusts the palette range to cover 95% of all pixels in the band. This is retained as a legacy function.
-        &nbsp; <img src="images/icons/Auto95Percent24.gif">
-    </li>
-
-    <li>
-        <b>100% Button:</b> Enables this button in the "sliders editor". This function
-        adjusts the palette range to cover 100% of all pixels in the band.
-        &nbsp; <img src="images/icons/Auto100Percent24.gif">
+        <b>Vertical Zoom Buttons:</b> Enables the vertical zoom buttons in the "sliders editor".
+        &nbsp; <img src="images/icons/ZoomIn24V.gif"> &nbsp; <img src="images/icons/ZoomOut24V.gif">
     </li>
 
     <li>
@@ -341,12 +408,26 @@
         enable display of statistical information overlaid in the histogram plot window..
         &nbsp; <img src="images/icons/Information24.gif">
     </li>
+
 </ul>
+
+
 
 
 <br>
 <hr>
-<h4>RGB Options</h4>
+<h4>RGB Options</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref07.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
 <ul>
     <li>
         <b>Range Button (Min):</b> - The value at which the preset range button sets the first (minimum) point of the
@@ -363,7 +444,18 @@
 
 <br>
 <hr>
-<h4>Restore</h4>
+<h4>Restore</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref08.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
 <p>Restores all parameters within the Color Manipulation Preferences to the original default values.</p>
 
 
