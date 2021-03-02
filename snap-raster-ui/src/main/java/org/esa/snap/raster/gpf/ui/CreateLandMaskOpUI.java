@@ -15,11 +15,15 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
+import org.opengis.filter.temporal.Before;
+import org.openide.util.lookup.Lookups;
 
 import javax.swing.*;
 import java.awt.GridBagConstraints;
@@ -76,7 +80,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
     public void initParameters() {
 
         OperatorUIUtils.initParamList(bandList, getBandNames());
-
         final Boolean doLandMask = (Boolean) paramMap.get("landMask");
         if (doLandMask != null && doLandMask) {
             landMask.setSelected(true);
@@ -99,6 +102,15 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         Integer shorelineExtension = (Integer) paramMap.get("shorelineExtension");
         shorelineExtensionTextField.setText(shorelineExtension == null ? "0" : shorelineExtension.toString());
+
+        if(hasSourceProducts()){
+            boolean isMultiSizeProducts = hasMultiSizeProducts();
+            if(isMultiSizeProducts) {
+                Dialogs.showError("The multi-size source product is not supported."
+                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
+                +"in the graph builder.");
+            }
+        }
     }
 
     @Override
@@ -126,6 +138,14 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         }
         paramMap.put("shorelineExtension", shorelineExtension);
         paramMap.put("useSRTM", useSRTM);
+        if(hasSourceProducts()){
+            boolean isMultiSizeProducts = hasMultiSizeProducts();
+            if(isMultiSizeProducts) {
+                throw new IllegalArgumentException("The multi-size source product is not supported."
+                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
+                +"in the graph builder.");
+            }
+        }
     }
 
     private JComponent createPanel() {
