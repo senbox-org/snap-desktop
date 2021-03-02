@@ -1,9 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JLabel;
@@ -108,7 +106,7 @@ public class ColorFormModel {
 
     public Component createEmptyContentPanel() {
         return new JLabel("<html>This tool window is used to manipulate the<br>" +
-                          "<b>colouring of images</b> shown in an image view.<br>" +
+                          "<b>" + NamingConvention.COLOR_LOWER_CASE + "ing of images</b> shown in an image view.<br>" +
                           " Right now, there is no selected image view.", SwingConstants.CENTER);
     }
 
