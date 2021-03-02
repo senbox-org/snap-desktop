@@ -1,0 +1,10 @@
+# RGB-Image Configuration Profile
+# VIIRS_TrueColor_(671,551,486)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=VIIRS_TrueColor_(671,551,486)_Log
+red=if (rhos_671 \!\= NaN and rhos_551 \!\= NaN and rhos_486 \!\= NaN) then (log(rhos_671/0.01)/log(1/0.01)) else NaN
+green=if (rhos_671 \!\= NaN and rhos_551 \!\= NaN and rhos_486 \!\= NaN) then (log(rhos_551/0.01)/log(1/0.01)) else NaN
+blue=if (rhos_671 \!\= NaN and rhos_551 \!\= NaN and rhos_486 \!\= NaN) then (log(rhos_486/0.01)/log(1/0.01)) else NaN
