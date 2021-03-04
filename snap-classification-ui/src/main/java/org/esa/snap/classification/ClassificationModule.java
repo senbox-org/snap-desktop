@@ -21,7 +21,7 @@ import org.openide.modules.OnStart;
 /**
  * Handle OnStart for module
  */
-public class classificationModule {
+public class ClassificationModule {
 
     @OnStart
     public static class StartOp implements Runnable {
