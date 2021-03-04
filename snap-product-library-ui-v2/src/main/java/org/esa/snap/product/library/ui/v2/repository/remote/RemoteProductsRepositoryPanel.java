@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.apache.http.auth.Credentials;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
 import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
@@ -34,6 +35,7 @@ import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The panel containing the query parameters of a remote repository.
@@ -195,7 +197,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
         String selectedMission = getSelectedMission();
         List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
-        this.parameterComponents = panel.addParameterComponents(parameters, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
+        // filter the UI displayed parameters (those having a proper label)
+        List<RepositoryQueryParameter> parametersForUI = parameters.stream().filter(p -> StringUtils.isNotNullAndNotEmpty(p.getLabel())).collect(Collectors.toList());
+        this.parameterComponents = panel.addParameterComponents(parametersForUI, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
         RepositoryQueryParameter areaOfInterestParameter = null;
         for (int i=0; i<parameters.size(); i++) {
