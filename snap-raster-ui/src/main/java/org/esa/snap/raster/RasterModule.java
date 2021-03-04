@@ -7,7 +7,7 @@ package org.esa.snap.raster;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.openide.modules.OnStart;
 
-public class rasterModule {
+public class RasterModule {
     @OnStart
     public static class StartOp implements Runnable {
 
