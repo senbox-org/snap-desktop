@@ -55,7 +55,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.esa.snap.core.util.NamingConventionSnap.COLOR_LOWER_CASE;
+import static org.esa.snap.core.util.NamingConvention.COLOR_LOWER_CASE;
 
 
 /**
