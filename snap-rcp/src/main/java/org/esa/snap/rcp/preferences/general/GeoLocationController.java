@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option)
@@ -9,7 +9,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
@@ -22,6 +22,8 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
+import org.esa.snap.core.dataio.geocoding.util.DistanceWeightingInterpolator;
+import org.esa.snap.core.dataio.geocoding.util.XYInterpolator;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
@@ -38,6 +40,7 @@ import java.awt.Insets;
 
 import static com.bc.ceres.swing.TableLayout.Anchor;
 import static com.bc.ceres.swing.TableLayout.Fill;
+import static org.esa.snap.core.dataio.geocoding.util.XYInterpolator.SYSPROP_GEOCODING_INTERPOLATOR;
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
 import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_OFFSET_1;
@@ -83,6 +86,7 @@ public final class GeoLocationController extends DefaultConfigController {
         final PropertySet propertySet = context.getPropertySet();
         final Property snapToExactGeolocationProperty = propertySet.getProperty(PREFERENCE_KEY_ADJUST_PIN_GEO_POS);
         final Property pixelGeocodingFractionAccuracyProperty = propertySet.getProperty(PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY);
+        final Property pixelGeoCodingFractionInterpolatorProperty = propertySet.getProperty(SYSPROP_GEOCODING_INTERPOLATOR);
         final Property tiePointInverseHighPrecisionProperty = propertySet.getProperty(PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION);
         final Property showGeoPosAsDecimals = propertySet.getProperty(PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS);
         final Property showPixelPosAsDecimals = propertySet.getProperty(PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS);
@@ -93,6 +97,9 @@ public final class GeoLocationController extends DefaultConfigController {
 
         descriptor = pixelGeocodingFractionAccuracyProperty.getDescriptor();
         final JComponent[] pixelGeocodingfractionAccuracyComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
+
+        descriptor = pixelGeoCodingFractionInterpolatorProperty.getDescriptor();
+        final JComponent[] pixelGeocodingFractionInterpolatorComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
 
         descriptor = tiePointInverseHighPrecisionProperty.getDescriptor();
         JComponent[] tiePointInverseHighPrecisionComponents = registry.findPropertyEditor(descriptor).createComponents(descriptor, context);
@@ -119,6 +126,8 @@ public final class GeoLocationController extends DefaultConfigController {
         pageUI.add(PreferenceUtils.createTitleLabel("General Settings"));
         pageUI.add(snapToExactGeolocationComponents[0]);
         pageUI.add(pixelGeocodingfractionAccuracyComponents[0]);
+        pageUI.add(pixelGeocodingFractionInterpolatorComponents[1]);
+        pageUI.add(pixelGeocodingFractionInterpolatorComponents[0]);
         pageUI.add(tiePointInverseHighPrecisionComponents[0]);
         tableLayout.createHorizontalSpacer();
 
@@ -146,6 +155,10 @@ public final class GeoLocationController extends DefaultConfigController {
         @Preference(label = "Use sub-pixel fraction accuracy for pixel-based geo-coding",
                 key = PREFERENCE_KEY_PIXEL_GEO_CODING_FRACTION_ACCURACY, config = "snap")
         boolean getPixelPosWithFractionAccuracy = false;
+
+        @Preference(label = "Select interpolation method for sub-pixel fraction accuracy for pixel-based geo-coding",
+                key = SYSPROP_GEOCODING_INTERPOLATOR, config = "snap")
+        DistanceWeightingInterpolator.Type geodeticInterpolator = XYInterpolator.Type.EUCLIDIAN;
 
         @Preference(label = "Use high precision approximations for inverse tie point geo-coding",
                 key = PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION, config = "snap")

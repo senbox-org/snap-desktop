@@ -20,12 +20,14 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.geocoding.*;
 import org.esa.snap.core.dataio.geocoding.forward.PixelForward;
+import org.esa.snap.core.dataio.geocoding.forward.PixelInterpolatingForward;
 import org.esa.snap.core.dataio.geocoding.inverse.PixelQuadTreeInverse;
 import org.esa.snap.core.dataio.geocoding.util.RasterUtils;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
@@ -50,6 +52,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.prefs.Preferences;
+
+import static org.esa.snap.core.dataio.geocoding.ComponentGeoCoding.SYSPROP_SNAP_PIXEL_CODING_FRACTION_ACCURACY;
 
 @ActionID(
         category = "Tools",
@@ -187,8 +192,17 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
                 final double[] latitudes = RasterUtils.loadDataScaled(latBand);
                 final GeoRaster geoRaster = new GeoRaster(longitudes, latitudes, lonBand.getName(), latBand.getName(),
                         product.getSceneRasterWidth(), product.getSceneRasterHeight(), groundResInKm);
-                final ForwardCoding forward = ComponentFactory.getForward(PixelForward.KEY);
-                final InverseCoding inverse = ComponentFactory.getInverse(PixelQuadTreeInverse.KEY);
+                final Preferences preferences = Config.instance("snap").preferences();
+                final boolean useFractAccuracy = preferences.getBoolean(SYSPROP_SNAP_PIXEL_CODING_FRACTION_ACCURACY, false);
+                final ForwardCoding forward;
+                final InverseCoding inverse;
+                if (useFractAccuracy) {
+                    forward = ComponentFactory.getForward(PixelInterpolatingForward.KEY);
+                    inverse = ComponentFactory.getInverse(PixelQuadTreeInverse.KEY_INTERPOLATING);
+                } else {
+                    forward = ComponentFactory.getForward(PixelForward.KEY);
+                    inverse = ComponentFactory.getInverse(PixelQuadTreeInverse.KEY);
+                }
 
                 final ComponentGeoCoding geoCoding = new ComponentGeoCoding(geoRaster, forward, inverse, GeoChecks.POLES);
                 geoCoding.initialize();
