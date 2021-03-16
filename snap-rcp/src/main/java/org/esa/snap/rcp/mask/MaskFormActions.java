@@ -84,7 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 /**
  * @author Marco Peters
@@ -524,7 +524,7 @@ class MaskFormActions {
                 for (final Element child : children) {
                     final DimapPersistable persistable = DimapPersistence.getPersistable(child);
                     if (persistable != null) {
-                        final Mask mask = (Mask) persistable.createObjectFromXml(child, product, null);
+                        final Mask mask = (Mask) persistable.createObjectFromXml(child, product);
                         addMaskToProductIfPossible(mask, product);
                     }
                 }
