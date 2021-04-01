@@ -55,6 +55,7 @@ public class SourceUI extends BaseOperatorUI {
     private static final int MIN_SCENE_VALUE = 0;
     private static final String FILE_PARAMETER = "file";
     private static final String FORMAT_PARAMETER = "formatName";
+    private static final String USE_ADVANCED_OPTIONS_PARAMETER = "useAdvancedOptions";
     private static final String BAND_LIST_PARAMETER = "bandNames";
     private static final String MASK_LIST_PARAMETER = "maskNames";
     private static final String PIXEL_REGION_PARAMETER = "pixelRegion";
@@ -65,6 +66,8 @@ public class SourceUI extends BaseOperatorUI {
     private final JList maskList = new JList();
     SourceProductSelector sourceProductSelector = null;
     private JComboBox<String> formatNameComboBox = new JComboBox<>();
+    private JButton advancedOptionsBtn = new JButton("Advanced options");
+    private JPanel advancedOptionsPanel = new JPanel(new GridBagLayout());
     private AtomicBoolean updatingUI = new AtomicBoolean(false);
     private JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
     private JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
@@ -192,6 +195,7 @@ public class SourceUI extends BaseOperatorUI {
             selectedFormat = null;
         }
         paramMap.put(FORMAT_PARAMETER, selectedFormat);
+        paramMap.put(USE_ADVANCED_OPTIONS_PARAMETER, advancedOptionsPanel.isVisible());
         OperatorUIUtils.updateParamList(bandList, paramMap, BAND_LIST_PARAMETER);
         OperatorUIUtils.updateParamList(maskList, paramMap, MASK_LIST_PARAMETER);
         if (pixelCoordRadio.isSelected()) {
@@ -228,6 +232,10 @@ public class SourceUI extends BaseOperatorUI {
         ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
+        advancedOptionsBtn.addActionListener(e -> {
+            advancedOptionsPanel.setVisible(!advancedOptionsPanel.isVisible());
+            advancedOptionsBtn.setText(advancedOptionsPanel.isVisible() ? "Without Advanced options" : "Advanced options");
+        });
         pixelCoordRadio.addActionListener(e -> {
             pixelPanel.setVisible(true);
             geoPanel.setVisible(false);
@@ -239,40 +247,48 @@ public class SourceUI extends BaseOperatorUI {
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
 
-        GridBagConstraints gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.WEST, 2, 1, 0, 0);
+        GridBagConstraints gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 0, 0);
         JPanel productSelectionPanel = sourceProductSelector.createDefaultPanel();
         productSelectionPanel.setMinimumSize(new Dimension(600, 50));
         productSelectionPanel.setPreferredSize(new Dimension(600, 50));
         contentPanel.add(productSelectionPanel, gbc);
         gbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         contentPanel.add(new JLabel("Data Format:"), gbc);
-        gbc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
+        gbc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         formatNameComboBox.setToolTipText("Select 'Any Format' to let SNAP decide");
         contentPanel.add(formatNameComboBox, gbc);
-        gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
-        contentPanel.add(new JLabel("Source Bands:"), gbc);
-        gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        contentPanel.add(new JScrollPane(bandList), gbc);
+        gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
+        contentPanel.add(advancedOptionsBtn, gbc);
+        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
+        advancedOptionsPanel.setVisible(false);
+        contentPanel.add(advancedOptionsPanel, gbc);
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
+        contentPanel.add(new JPanel(), gbc);
 
-        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
-        contentPanel.add(copyMetadata, gbc);
-        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
-        contentPanel.add(new JLabel("Source Masks:"), gbc);
-        gbc = SwingUtils.buildConstraints(1, 4, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
-        contentPanel.add(new JScrollPane(maskList), gbc);
+        gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(new JLabel("Source Bands:"), gbc);
+        gbc = SwingUtils.buildConstraints(1, 0, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
+        advancedOptionsPanel.add(new JScrollPane(bandList), gbc);
+
+        gbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(copyMetadata, gbc);
+        gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(new JLabel("Source Masks:"), gbc);
+        gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
+        advancedOptionsPanel.add(new JScrollPane(maskList), gbc);
 
         JPanel regionTypePanel = new JPanel(new GridLayout(1, 2));
         regionTypePanel.add(pixelCoordRadio);
         regionTypePanel.add(geoCoordRadio);
 
+        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(regionTypePanel, gbc);
+
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(pixelPanel, gbc);
+
         gbc = SwingUtils.buildConstraints(0, 5, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
-        contentPanel.add(regionTypePanel, gbc);
-
-        gbc = SwingUtils.buildConstraints(0, 6, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
-        contentPanel.add(pixelPanel, gbc);
-
-        gbc = SwingUtils.buildConstraints(0, 7, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
-        contentPanel.add(geoPanel, gbc);
+        advancedOptionsPanel.add(geoPanel, gbc);
         geoPanel.setVisible(false);
 
         return contentPanel;
