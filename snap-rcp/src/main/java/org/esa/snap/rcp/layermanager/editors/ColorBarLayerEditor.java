@@ -426,7 +426,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
         pd.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
-        pd.setValueRange(new ValueRange(0.0, 100.00));
+        pd.setValueRange(new ValueRange(PROPERTY_IMAGE_SCALING_SIZE_MIN, PROPERTY_IMAGE_SCALING_SIZE_MAX));
         pd.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL);
         pd.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP);
         pd.setEnabled(enabled);
@@ -441,7 +441,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void  addColorBarLength() {
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_LENGTH_KEY, PROPERTY_LEGEND_LENGTH_TYPE);
         pd.setDefaultValue(PROPERTY_LEGEND_LENGTH_DEFAULT);
-        pd.setValueRange(new ValueRange(100, 4000));
+        pd.setValueRange(new ValueRange(PROPERTY_LEGEND_LENGTH_VALUE_MIN, PROPERTY_LEGEND_LENGTH_VALUE_MAX));
         pd.setDisplayName(PROPERTY_LEGEND_LENGTH_LABEL);
         pd.setDescription(PROPERTY_LEGEND_LENGTH_TOOLTIP);
         pd.setDefaultConverter();
@@ -452,7 +452,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void  addColorBarWidth() {
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_WIDTH_KEY, PROPERTY_LEGEND_WIDTH_TYPE);
         pd.setDefaultValue(PROPERTY_LEGEND_WIDTH_DEFAULT);
-        pd.setValueRange(new ValueRange(10, 500));
+        pd.setValueRange(new ValueRange(PROPERTY_LEGEND_WIDTH_MIN, PROPERTY_LEGEND_WIDTH_MAX));
         pd.setDisplayName(PROPERTY_LEGEND_WIDTH_LABEL);
         pd.setDescription(PROPERTY_LEGEND_WIDTH_TOOLTIP);
         pd.setDefaultConverter();
