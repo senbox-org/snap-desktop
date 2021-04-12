@@ -35,7 +35,7 @@ public class TargetUI extends BaseOperatorUI {
     TargetProductSelector targetProductSelector = null;
     private static final String FILE_PARAMETER = "file";
     private static final String FORMAT_PARAMETER = "formatName";
-    private static final String deafultFileName = "target";
+    private static final String defaultFileName = "target";
     private String sourceProductName;
     private AppContext appContext;
 
@@ -83,7 +83,7 @@ public class TargetUI extends BaseOperatorUI {
     }
 
     private String getDefaultFileName() {
-        String fileName = deafultFileName;
+        String fileName = defaultFileName;
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
             final File file = (File) fileValue;
@@ -97,7 +97,7 @@ public class TargetUI extends BaseOperatorUI {
                 }
                 sourceProductName = sourceProducts[0].getName();
             }
-            if(fileName.equals(deafultFileName) || sourceProductsChange) {
+            if(fileName.equals(defaultFileName) || sourceProductsChange) {
                 fileName = sourceProducts[0].getName();
             }
         }
