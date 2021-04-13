@@ -649,10 +649,44 @@ public class ProductSceneImage implements ProductLayerContext {
     static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
+//
+//        // Title Section
+//
+//        addSectionPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY);
+//
+//
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
 
 
 
-        // Label Values
+        // Orientation Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
+
+
+
+        // Tick Label Values
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
@@ -672,7 +706,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
 
-
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT,
@@ -690,35 +723,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
-
-
-        // Title Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY);
-
-
-
-
-
-        // Formatting Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT,
-                ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT,
-                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
-
-
-
-        // Color Bar Location Section
+        // Placement Location Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY);
@@ -752,6 +757,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        // Size & Scaling Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY);
@@ -776,7 +782,10 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT,
                 ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TYPE);
 
-        // Title Parameter Section
+
+
+
+        // Title Format Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY);
@@ -787,9 +796,9 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TITLE_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
@@ -811,17 +820,10 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TYPE);
 
 
 
-
-
-
-        // Title Units Section
+        // Units Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY);
@@ -832,9 +834,9 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_UNITS_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
@@ -856,20 +858,47 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TYPE);
 
+
+
+        // Tick Label Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY);
+
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TYPE);
 
 
 
 
-
-
-
-
-
-        // Tickmarks Section
+        // Tick Marks Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY);
@@ -878,7 +907,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
                 ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
-
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
@@ -890,7 +918,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT,
                 ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TYPE);
 
-
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
@@ -898,29 +925,8 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
-        // Border Section
 
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TYPE);
-
-
-
-        // Inside Labels Section
+        // Backdrop Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY);
@@ -942,6 +948,31 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+
+        // Palette Border Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TYPE);
+
+
+
+        // Legend Border Section
+
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY);
 
@@ -959,57 +990,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TYPE);
-
-
-
-
-
-
-
-
-        // Labels Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY);
-
-
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TYPE);
-
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TYPE);
-
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_TYPE);
-
-
-
-
-
 
     }
 
