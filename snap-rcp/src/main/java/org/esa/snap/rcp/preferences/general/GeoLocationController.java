@@ -22,7 +22,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
-import org.esa.snap.core.dataio.geocoding.util.DistanceWeightingInterpolator;
 import org.esa.snap.core.dataio.geocoding.util.XYInterpolator;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
@@ -158,7 +157,7 @@ public final class GeoLocationController extends DefaultConfigController {
 
         @Preference(label = "Select interpolation method for sub-pixel fraction accuracy for pixel-based geo-coding",
                 key = SYSPROP_GEOCODING_INTERPOLATOR, config = "snap")
-        DistanceWeightingInterpolator.Type geodeticInterpolator = XYInterpolator.Type.EUCLIDIAN;
+        XYInterpolator.Type geodeticInterpolator = XYInterpolator.Type.EUCLIDIAN;
 
         @Preference(label = "Use high precision approximations for inverse tie point geo-coding",
                 key = PREFERENCE_KEY_TIE_POINT_INVERSE_HIGH_PRECISION, config = "snap")
