@@ -182,6 +182,8 @@ public class SourceUI extends BaseOperatorUI {
                 File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
                 paramMap.put(FILE_PARAMETER, prod.getFileLocation());
                 if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
+                    // sourceProducts from BaseOperatorUI should be populated in order to be able to later obtain getBandNames(), getGeometries(),
+                    // therefore calling setSourceProduct(prod); would not be enough, setSourceProducts() is needed
                     setSourceProducts(new Product[]{prod});
                     OperatorUIUtils.initParamList(bandList, getBandNames());
                     OperatorUIUtils.initParamList(maskList, getGeometries());
@@ -205,6 +207,38 @@ public class SourceUI extends BaseOperatorUI {
             paramMap.put(GEOMETRY_REGION_PARAMETER, getGeometry());
         }
         paramMap.put(COPY_METADATA_PARAMETER, copyMetadata.isSelected());
+    }
+
+    public void updateAdvancedOptionsUIAtProductChange() {
+        if (sourceProductSelector != null) {
+            advancedOptionsBtn.setEnabled(sourceProductSelector.getSelectedProduct() != null);
+
+            final Product prod = sourceProductSelector.getSelectedProduct();
+            if (prod != null && prod.getFileLocation() != null) {
+                File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
+                if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
+                    // for same types of products (with identical band names) the selected bands/masks are kept, therefore clear the selection when input product changes
+                    bandList.clearSelection();
+                    maskList.clearSelection();
+
+                    // reset default visible coords panel
+                    pixelCoordRadio.setSelected(true);
+                    pixelPanel.setVisible(true);
+                    geoPanel.setVisible(false);
+
+                    // also reset pixel coords
+                    pixelCoordXSpinner.setValue(0);
+                    pixelCoordYSpinner.setValue(0);
+                    pixelCoordWidthSpinner.setValue(Integer.MAX_VALUE);
+                    pixelCoordHeightSpinner.setValue(Integer.MAX_VALUE);
+
+                    // trigger the calculation of product bounds
+                    pixelPanelChanged();
+                    // sync geo coords
+                    syncLatLonWithXYParams();
+                }
+            }
+        }
     }
 
     public void setSourceProduct(final Product product) {
@@ -236,6 +270,7 @@ public class SourceUI extends BaseOperatorUI {
             advancedOptionsPanel.setVisible(!advancedOptionsPanel.isVisible());
             advancedOptionsBtn.setText(advancedOptionsPanel.isVisible() ? "Without Advanced options" : "Advanced options");
         });
+        advancedOptionsBtn.setEnabled(sourceProductSelector.getSelectedProduct() != null);
         pixelCoordRadio.addActionListener(e -> {
             pixelPanel.setVisible(true);
             geoPanel.setVisible(false);
@@ -598,6 +633,7 @@ public class SourceUI extends BaseOperatorUI {
                     updateFormatNamesCombo(product.getFileLocation());
                 }
             }
+            updateAdvancedOptionsUIAtProductChange();
             updateParameters();
         }
 
