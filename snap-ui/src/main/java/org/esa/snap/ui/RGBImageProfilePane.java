@@ -250,8 +250,9 @@ public class RGBImageProfilePane extends JPanel {
      * Gets the selected RGB expressions as array of 3 strings.
      *
      * @return the selected RGB expressions, never null
-     * @see #getSelectedProfile()
+     * @deprecated please use #getSelectedProfile()
      */
+    @Deprecated
     public String[] getRgbExpressions() {
         return new String[]{
                 getExpression(0),
