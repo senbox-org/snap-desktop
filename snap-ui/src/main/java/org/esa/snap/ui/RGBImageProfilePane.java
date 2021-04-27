@@ -109,10 +109,10 @@ public class RGBImageProfilePane extends JPanel {
                               UIUtils.loadImageIcon("icons/Remove24.gif"));   // todo - use the nicer "cross" icon
         deleteAction.putValue(Action.SHORT_DESCRIPTION, "Delete the selected RGB profile");
 
-        JPanel p2 = new JPanel(new GridLayout(1, 3, 2, 2));
-        p2.add(ToolButtonFactory.createButton(openAction, false));
-        p2.add(ToolButtonFactory.createButton(saveAsAction, false));
-        p2.add(ToolButtonFactory.createButton(deleteAction, false));
+        JPanel storageButtonPanel = new JPanel(new GridLayout(1, 3, 2, 2));
+        storageButtonPanel.add(ToolButtonFactory.createButton(openAction, false));
+        storageButtonPanel.add(ToolButtonFactory.createButton(saveAsAction, false));
+        storageButtonPanel.add(ToolButtonFactory.createButton(deleteAction, false));
 
         profileModel = new DefaultComboBoxModel<>();
         profileBox = new JComboBox<>(profileModel);
@@ -146,20 +146,23 @@ public class RGBImageProfilePane extends JPanel {
             rgbaExprBoxes[i].setName("rgbExprBox_" + i);
         }
 
-        JPanel p1 = new JPanel(new BorderLayout(2, 2));
-        p1.add(new JLabel("Profile: "), BorderLayout.NORTH);
-        p1.add(profileBox, BorderLayout.CENTER);
-        p1.add(p2, BorderLayout.EAST);
+        JPanel profilePanel = new JPanel(new BorderLayout(2, 2));
+        profilePanel.add(new JLabel("Profile: "), BorderLayout.NORTH);
+        profilePanel.add(profileBox, BorderLayout.CENTER);
+        profilePanel.add(storageButtonPanel, BorderLayout.EAST);
 
-        JPanel p3 = new JPanel(new GridBagLayout());
+        JPanel colorComponentPanel = new JPanel(new GridBagLayout());
         final GridBagConstraints c3 = new GridBagConstraints();
         c3.anchor = GridBagConstraints.WEST;
         c3.fill = GridBagConstraints.HORIZONTAL;
         c3.insets = new Insets(2, 2, 2, 2);
         final int n = SHOW_ALPHA ? 4 : 3;
         for (int i = 0; i < n; i++) {
-            c3.gridy = i;
-            addColorComponentRow(p3, c3, i);
+            c3.gridy = 2 * i;
+            addColorComponentRow(colorComponentPanel, c3, i);
+
+            c3.gridy = 2 * i + 1;
+            addColorRangeComponentsRow(colorComponentPanel, c3, i);
         }
         referencedRastersAreCompatibleLabel = new JLabel();
 
@@ -169,8 +172,8 @@ public class RGBImageProfilePane extends JPanel {
         layout.setRowWeightY(3, 1.0);
         layout.setTablePadding(10, 10);
         setLayout(layout);
-        add(p1);
-        add(p3);
+        add(profilePanel);
+        add(colorComponentPanel);
         layout.setCellFill(2, 0, TableLayout.Fill.NONE);
         layout.setCellAnchor(2, 0, TableLayout.Anchor.NORTHEAST);
         add(referencedRastersAreCompatibleLabel);
@@ -509,8 +512,6 @@ public class RGBImageProfilePane extends JPanel {
         final Dimension preferredSize = rgbaExprBoxes[index].getPreferredSize();
         editorButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
 
-        constraints.gridy = index;
-
         constraints.gridx = 0;
         constraints.weightx = 0;
         p3.add(new JLabel(getComponentName(index) + ": "), constraints);
@@ -522,6 +523,33 @@ public class RGBImageProfilePane extends JPanel {
         constraints.gridx = 2;
         constraints.weightx = 0;
         p3.add(editorButton, constraints);
+    }
+
+    private void addColorRangeComponentsRow(JPanel p3, final GridBagConstraints constraints, final int index) {
+        constraints.gridx = 0;
+        constraints.weightx = 0;
+        p3.add(new JLabel(), constraints);
+
+        final JPanel container = new JPanel();
+        final GridBagConstraints containerConstraints = new GridBagConstraints();
+        containerConstraints.gridy = 0;
+        containerConstraints.gridx = 0;
+        container.add(new JCheckBox("fixed range"), containerConstraints);
+
+        containerConstraints.gridx = 1;
+        container.add(new JTextField(12), containerConstraints);
+
+        containerConstraints.gridx = 2;
+        container.add(new JLabel("min"), containerConstraints);
+
+        containerConstraints.gridx = 3;
+        container.add(new JTextField(12), containerConstraints);
+
+        containerConstraints.gridx = 4;
+        container.add(new JLabel("max"), containerConstraints);
+
+        constraints.gridx = 1;
+        p3.add(container, constraints);
     }
 
     protected String getComponentName(final int index) {
@@ -711,14 +739,14 @@ public class RGBImageProfilePane extends JPanel {
 
     private class ProfileItem {
 
-        private RGBImageProfile _profile;
+        private final RGBImageProfile profile;
 
         public ProfileItem(RGBImageProfile profile) {
-            _profile = profile;
+            this.profile = profile;
         }
 
         public RGBImageProfile getProfile() {
-            return _profile;
+            return profile;
         }
 
         @Override
@@ -739,7 +767,7 @@ public class RGBImageProfilePane extends JPanel {
 
         @Override
         public String toString() {
-            String name = _profile.getName().replace('_', ' ');
+            String name = profile.getName().replace('_', ' ');
             if (getSelectedProfileItem().equals(this) && isSelectedProfileModified()) {
                 name += " (modified)";
             }
