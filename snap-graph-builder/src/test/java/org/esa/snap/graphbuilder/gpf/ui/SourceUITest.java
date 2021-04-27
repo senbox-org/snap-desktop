@@ -84,7 +84,7 @@ public class SourceUITest {
     public void testUpdateParameters() {
 
         sourceUI.CreateOpTab("testOp", parameterMap, appContext);
-        parameterMap.put(FILE_PARAMETER, defaultProducts[0]);
+        parameterMap.put(FILE_PARAMETER, defaultProducts[0].getFileLocation());
 
         sourceUI.updateParameters();
 

@@ -106,7 +106,7 @@ public class SourceUI extends BaseOperatorUI {
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
-        initializeOperatorUI(operatorName, parameterMap);
+        paramMap = parameterMap;
         sourceProductSelector = new SourceProductSelector(appContext);
         sourceProductSelector.initProducts();
         sourceProductSelector.addSelectionChangeListener(new SourceSelectionChangeListener());
