@@ -27,6 +27,7 @@ import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
@@ -35,6 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -49,7 +51,7 @@ public class RGBImageProfilePane extends JPanel {
 
     private static final boolean SHOW_ALPHA = false;
 
-    private String[] COLOR_COMP_NAMES = new String[]{
+    private static final String[] COLOR_COMP_NAMES = new String[]{
             "Red", /*I18N*/
             "Green", /*I18N*/
             "Blue", /*I18N*/
@@ -57,15 +59,16 @@ public class RGBImageProfilePane extends JPanel {
     };
     public static final Font EXPRESSION_FONT = new Font("Courier", Font.PLAIN, 12);
 
-    private static Color okMsgColor = new Color(0, 128, 0);
-    private static Color warnMsgColor = new Color(128, 0, 0);
+    private static final Color okMsgColor = new Color(0, 128, 0);
+    private static final Color warnMsgColor = new Color(128, 0, 0);
 
     private PropertyMap preferences;
     private Product product;
     private final Product[] openedProducts;
     private JComboBox<ProfileItem> profileBox;
 
-    private JComboBox[] rgbaExprBoxes;
+    private final JComboBox[] rgbaExprBoxes;
+    private final RangeComponents[] rangeComponents;
     private DefaultComboBoxModel<ProfileItem> profileModel;
     private AbstractAction saveAsAction;
     private AbstractAction deleteAction;
@@ -106,10 +109,10 @@ public class RGBImageProfilePane extends JPanel {
             }
         };
         deleteAction.putValue(Action.LARGE_ICON_KEY,
-                              UIUtils.loadImageIcon("icons/Remove24.gif"));   // todo - use the nicer "cross" icon
+                UIUtils.loadImageIcon("icons/Remove24.gif"));   // todo - use the nicer "cross" icon
         deleteAction.putValue(Action.SHORT_DESCRIPTION, "Delete the selected RGB profile");
 
-        JPanel storageButtonPanel = new JPanel(new GridLayout(1, 3, 2, 2));
+        final JPanel storageButtonPanel = new JPanel(new GridLayout(1, 3, 2, 2));
         storageButtonPanel.add(ToolButtonFactory.createButton(openAction, false));
         storageButtonPanel.add(ToolButtonFactory.createButton(saveAsAction, false));
         storageButtonPanel.add(ToolButtonFactory.createButton(deleteAction, false));
@@ -144,6 +147,11 @@ public class RGBImageProfilePane extends JPanel {
         for (int i = 0; i < rgbaExprBoxes.length; i++) {
             rgbaExprBoxes[i] = createRgbaBox(bandNames);
             rgbaExprBoxes[i].setName("rgbExprBox_" + i);
+        }
+
+        rangeComponents = new RangeComponents[3];
+        for (int i = 0; i < rangeComponents.length; i++) {
+            rangeComponents[i] = new RangeComponents();
         }
 
         JPanel profilePanel = new JPanel(new BorderLayout(2, 2));
@@ -228,10 +236,8 @@ public class RGBImageProfilePane extends JPanel {
         profileBox = null;
         saveAsAction = null;
         deleteAction = null;
-        for (int i = 0; i < rgbaExprBoxes.length; i++) {
-            rgbaExprBoxes[i] = null;
-        }
-        rgbaExprBoxes = null;
+        Arrays.fill(rgbaExprBoxes, null);
+        Arrays.fill(rangeComponents, null);
     }
 
     public boolean getStoreProfileInProduct() {
@@ -268,7 +274,6 @@ public class RGBImageProfilePane extends JPanel {
      * Gets the selected RGBA expressions as array of 4 strings.
      *
      * @return the selected RGBA expressions, never null
-     * @see #getSelectedProfile()
      */
     public String[] getRgbaExpressions() {
         return new String[]{
@@ -277,6 +282,25 @@ public class RGBImageProfilePane extends JPanel {
                 getExpression(2),
                 getExpression(3),
         };
+    }
+
+    public RGBImageProfile getRgbProfile() {
+        final String[] rgbaExpressions = getRgbaExpressions();
+
+        final Range[] ranges = new Range[3];
+        for (int i = 0; i < rangeComponents.length; i++) {
+            ranges[i] = rangeComponents[i].getRange();
+        }
+
+        String[] pattern = null;
+        String name = "";
+        final RGBImageProfile selectedProfile = getSelectedProfile();
+        if (selectedProfile != null) {
+            name = selectedProfile.getName();
+            pattern = selectedProfile.getPattern();
+        }
+
+        return new RGBImageProfile(name, rgbaExpressions, pattern, ranges);
     }
 
     public void addProfiles(RGBImageProfile[] profiles) {
@@ -357,23 +381,23 @@ public class RGBImageProfilePane extends JPanel {
             profile.setRgbaExpressions(rgbaExpressions);
         } catch (IOException e) {
             AbstractDialog.showErrorDialog(this,
-                                           String.format("Failed to open RGB-profile '%s':\n%s", file.getName(), e.getMessage()),
-                                           "Open RGB-Image Profile");
+                    String.format("Failed to open RGB-profile '%s':\n%s", file.getName(), e.getMessage()),
+                    "Open RGB-Image Profile");
             return;
         }
         if (profile == null) {
             AbstractDialog.showErrorDialog(this,
-                                           String.format("Invalid RGB-Profile '%s'.", file.getName()),
-                                           "Open RGB-Image Profile");
+                    String.format("Invalid RGB-Profile '%s'.", file.getName()),
+                    "Open RGB-Image Profile");
             return;
         }
 
         RGBImageProfileManager.getInstance().addProfile(profile);
         if (product != null && !profile.isApplicableTo(product)) {
             AbstractDialog.showErrorDialog(this,
-                                           String.format("The selected RGB-Profile '%s'\nis not applicable to the current product.",
-                                                         profile.getName()),
-                                           "Open RGB-Image Profile");
+                    String.format("The selected RGB-Profile '%s'\nis not applicable to the current product.",
+                            profile.getName()),
+                    "Open RGB-Image Profile");
             return;
         }
         addNewProfile(profile);
@@ -402,14 +426,14 @@ public class RGBImageProfilePane extends JPanel {
             }
         }
         RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
-                                                      rgbaExpressions);
+                rgbaExpressions);
         try {
             profile.store(file);
         } catch (IOException e) {
             AbstractDialog.showErrorDialog(this,
-                                           "Failed to save RGB-profile '" + file.getName() + "':\n"
-                                                   + e.getMessage(),
-                                           "Open RGB-Image Profile");
+                    "Failed to save RGB-profile '" + file.getName() + "':\n"
+                            + e.getMessage(),
+                    "Open RGB-Image Profile");
             return;
         }
 
@@ -436,11 +460,11 @@ public class RGBImageProfilePane extends JPanel {
             }
             if (selectedFile.exists()) {
                 final int answer = JOptionPane.showConfirmDialog(RGBImageProfilePane.this,
-                                                                 "The file '" + selectedFile.getName()
-                                                                         + "' already exists.\n" +
-                                                                         "So you really want to overwrite it?",
-                                                                 "Safe RGB-Profile As",
-                                                                 JOptionPane.YES_NO_CANCEL_OPTION);
+                        "The file '" + selectedFile.getName()
+                                + "' already exists.\n" +
+                                "So you really want to overwrite it?",
+                        "Safe RGB-Profile As",
+                        JOptionPane.YES_NO_CANCEL_OPTION);
                 if (answer == JOptionPane.CANCEL_OPTION) {
                     selectedFile = null;
                     break;
@@ -487,13 +511,24 @@ public class RGBImageProfilePane extends JPanel {
         try {
             final ProfileItem profileItem = getSelectedProfileItem();
             if (profileItem != null) {
-                final String[] rgbaExpressions = profileItem.getProfile().getRgbaExpressions();
+                final RGBImageProfile profile = profileItem.getProfile();
+                final String[] rgbaExpressions = profile.getRgbaExpressions();
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, rgbaExpressions[i]);
                 }
+                final Range redMinMax = profile.getRedMinMax();
+                rangeComponents[0].set(redMinMax);
+                final Range greenMinMax = profile.getGreenMinMax();
+                rangeComponents[1].set(greenMinMax);
+                final Range blueMinMax = profile.getBlueMinMax();
+                rangeComponents[2].set(blueMinMax);
             } else {
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, "");
+                }
+                final Range invalidRange = new Range(Double.NaN, Double.NaN);
+                for (int i = 0; i < rangeComponents.length; i++) {
+                    rangeComponents[i].set(invalidRange);
                 }
             }
         } finally {
@@ -531,22 +566,24 @@ public class RGBImageProfilePane extends JPanel {
         p3.add(new JLabel(), constraints);
 
         final JPanel container = new JPanel();
+        final RangeComponents rangeComponent = rangeComponents[index];
         final GridBagConstraints containerConstraints = new GridBagConstraints();
         containerConstraints.gridy = 0;
         containerConstraints.gridx = 0;
-        container.add(new JCheckBox("fixed range"), containerConstraints);
+        containerConstraints.weightx = 1;
+        container.add(rangeComponent.fixedRangeCheckBox, containerConstraints);
 
         containerConstraints.gridx = 1;
-        container.add(new JTextField(12), containerConstraints);
+        container.add(rangeComponent.minText, containerConstraints);
 
         containerConstraints.gridx = 2;
-        container.add(new JLabel("min"), containerConstraints);
+        container.add(rangeComponent.minLabel, containerConstraints);
 
         containerConstraints.gridx = 3;
-        container.add(new JTextField(12), containerConstraints);
+        container.add(rangeComponent.maxText, containerConstraints);
 
         containerConstraints.gridx = 4;
-        container.add(new JLabel("max"), containerConstraints);
+        container.add(rangeComponent.maxLabel, containerConstraints);
 
         constraints.gridx = 1;
         p3.add(container, constraints);
@@ -642,11 +679,11 @@ public class RGBImageProfilePane extends JPanel {
                 profileBox.repaint();
             }
         }
-        final String[] rgbaExpressions = getRgbaExpressions();
+        final RGBImageProfile selectedProfile = getSelectedProfile();
         final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
         try {
             if (!BandArithmetic.areRastersEqualInSize(openedProducts,
-                                                      defaultProductIndex, rgbaExpressions)) {
+                    defaultProductIndex, selectedProfile.getRgbaExpressions())) {
                 referencedRastersAreCompatibleLabel.setText("Referenced rasters are not of the same size");
                 referencedRastersAreCompatibleLabel.setForeground(warnMsgColor);
             } else {
@@ -796,4 +833,75 @@ public class RGBImageProfilePane extends JPanel {
         return null;
     }
 
+    static class RangeComponents {
+        final JCheckBox fixedRangeCheckBox;
+
+        final JLabel minLabel;
+        final JTextField minText;
+
+        final JLabel maxLabel;
+        final JTextField maxText;
+
+        RangeComponents() {
+            fixedRangeCheckBox = new JCheckBox("fixed range");
+            fixedRangeCheckBox.addActionListener(e -> this.enableMinMax(fixedRangeCheckBox.isSelected()));
+
+            minText = new JTextField(12);
+            minLabel = new JLabel("min");
+            maxText = new JTextField(12);
+            maxLabel = new JLabel("max");
+
+            fixedRangeCheckBox.setSelected(false);
+            enableMinMax(false);
+        }
+
+        void enableMinMax(boolean enable) {
+            minLabel.setEnabled(enable);
+            minText.setEnabled(enable);
+            maxLabel.setEnabled(enable);
+            maxText.setEnabled(enable);
+        }
+
+        void set(Range range) {
+            final double min = range.getMin();
+            final double max = range.getMax();
+
+            boolean enable = false;
+            if (!Double.isNaN(min)) {
+                minText.setText(Double.toString(min));
+                enable = true;
+            } else {
+                minText.setText("");
+            }
+
+            if (!Double.isNaN(max)) {
+                maxText.setText(Double.toString(max));
+                enable = true;
+            } else {
+                maxText.setText("");
+            }
+
+            enableMinMax(enable);
+            fixedRangeCheckBox.setSelected(enable);
+        }
+
+
+        Range getRange() {
+            double min = Double.NaN;
+            double max = Double.NaN;
+
+            final String minValueString = minText.getText();
+            // @todo 1 tb/tb handle number format errors 2021-04-28
+            if (StringUtils.isNotNullAndNotEmpty(minValueString)) {
+                min = Double.parseDouble(minValueString.trim());
+            }
+
+            final String maxValueString = maxText.getText();
+            if (StringUtils.isNotNullAndNotEmpty(maxValueString)) {
+                max = Double.parseDouble(maxValueString.trim());
+            }
+
+            return new Range(min, max);
+        }
+    }
 }
