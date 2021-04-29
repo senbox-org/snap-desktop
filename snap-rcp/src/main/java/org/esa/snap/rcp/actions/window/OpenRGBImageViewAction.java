@@ -95,7 +95,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
 
         final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), rgbProduct,
-                                                                        openedProducts, defaultBandIndices);
+                openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
@@ -198,10 +198,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             pm.beginTask("Creating RGB image...", 2);
             rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
-                                                      rgbBands[1],
-                                                      rgbBands[2],
-                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
-                                                      SubProgressMonitor.create(pm, 1));
+                    rgbBands[1],
+                    rgbBands[2],
+                    SnapApp.getDefault().getPreferencesPropertyMap(),
+                    SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
 
@@ -225,14 +225,26 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final RGBChannelDef defFromProfile = rgbImageProfile.getRgbChannelDef();
 
         for (int i = 0; i < rgbBands.length; i++) {
-            final RGBChannelDef rgbChannelDef = rgbBands[i].getImageInfo().getRgbChannelDef();
+            final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
             final double min = defFromProfile.getMinDisplaySample(i);
             if (Double.isNaN(min)) {
-                defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
+                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                if (rgbChannelDef != null) {
+                    defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
+                } else {
+                    final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
+                    defFromProfile.setMinDisplaySample(i, minColorPalette);
+                }
             }
             final double max = defFromProfile.getMaxDisplaySample(i);
             if (Double.isNaN(max)) {
-                defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
+                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                if (rgbChannelDef != null) {
+                    defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
+                } else {
+                    final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
+                    defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                }
             }
         }
 
@@ -272,10 +284,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
-                                                          determineWidth(expression, products, elementIndex),
-                                                          determineHeight(expression, products, elementIndex),
-                                                          RGBImageProfile.RGB_BAND_NAMES[i],
-                                                          expression, products);
+                        determineWidth(expression, products, elementIndex),
+                        determineHeight(expression, products, elementIndex),
+                        RGBImageProfile.RGB_BAND_NAMES[i],
+                        expression, products);
             }
             rgbBands[i] = rgbBand;
         }

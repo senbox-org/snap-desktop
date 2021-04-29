@@ -212,6 +212,7 @@ public class RGBImageProfilePaneTest {
     @Test
     public void testRangeComponents_getRange() {
         final RGBImageProfilePane.RangeComponents components = new RGBImageProfilePane.RangeComponents();
+        components.fixedRangeCheckBox.setSelected(true);
 
         components.minText.setText(" -1.76");
         components.maxText.setText(" 2.0076  ");
@@ -222,8 +223,22 @@ public class RGBImageProfilePaneTest {
     }
 
     @Test
+    public void testRangeComponents_getRange_unselected() {
+        final RGBImageProfilePane.RangeComponents components = new RGBImageProfilePane.RangeComponents();
+        components.fixedRangeCheckBox.setSelected(false);
+
+        components.minText.setText(" -1.76");
+        components.maxText.setText(" 2.0076  ");
+
+        final Range range = components.getRange();
+        assertEquals(Double.NaN, range.getMin(), 1e-8);
+        assertEquals(Double.NaN, range.getMax(), 1e-8);
+    }
+
+    @Test
     public void testRangeComponents_getRange_emptyFields() {
         final RGBImageProfilePane.RangeComponents components = new RGBImageProfilePane.RangeComponents();
+        components.fixedRangeCheckBox.setSelected(true);
 
         components.minText.setText("");
         components.maxText.setText("6.8");

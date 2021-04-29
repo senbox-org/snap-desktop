@@ -425,8 +425,13 @@ public class RGBImageProfilePane extends JPanel {
                 rgbaExpressions[i] = rgbaExpressions[i].replace(BandArithmetic.getProductNodeNamePrefix(this.product), "");
             }
         }
-        RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
-                rgbaExpressions);
+
+        final Range[] ranges = new Range[3];
+        for (int i = 0; i < 3 ; i++) {
+            ranges[i] = rangeComponents[i].getRange();
+        }
+        final RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
+                rgbaExpressions, null, ranges);
         try {
             profile.store(file);
         } catch (IOException e) {
@@ -527,8 +532,8 @@ public class RGBImageProfilePane extends JPanel {
                     setExpression(i, "");
                 }
                 final Range invalidRange = new Range(Double.NaN, Double.NaN);
-                for (int i = 0; i < rangeComponents.length; i++) {
-                    rangeComponents[i].set(invalidRange);
+                for (RangeComponents rangeComponent : rangeComponents) {
+                    rangeComponent.set(invalidRange);
                 }
             }
         } finally {
@@ -890,15 +895,17 @@ public class RGBImageProfilePane extends JPanel {
             double min = Double.NaN;
             double max = Double.NaN;
 
-            final String minValueString = minText.getText();
-            // @todo 1 tb/tb handle number format errors 2021-04-28
-            if (StringUtils.isNotNullAndNotEmpty(minValueString)) {
-                min = Double.parseDouble(minValueString.trim());
-            }
+            if (fixedRangeCheckBox.isSelected()) {
+                final String minValueString = minText.getText();
+                // @todo 1 tb/tb handle number format errors 2021-04-28
+                if (StringUtils.isNotNullAndNotEmpty(minValueString)) {
+                    min = Double.parseDouble(minValueString.trim());
+                }
 
-            final String maxValueString = maxText.getText();
-            if (StringUtils.isNotNullAndNotEmpty(maxValueString)) {
-                max = Double.parseDouble(maxValueString.trim());
+                final String maxValueString = maxText.getText();
+                if (StringUtils.isNotNullAndNotEmpty(maxValueString)) {
+                    max = Double.parseDouble(maxValueString.trim());
+                }
             }
 
             return new Range(min, max);
