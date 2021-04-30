@@ -36,16 +36,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RGBImageProfilePane extends JPanel {
 
@@ -205,7 +201,7 @@ public class RGBImageProfilePane extends JPanel {
                 for (int i = 0; i < profileModel.getSize(); i++) {
                     selectableProfiles.add(profileModel.getElementAt(i).getProfile());
                 }
-                RGBImageProfile[] selectableProfileArray = selectableProfiles.toArray(new RGBImageProfile[selectableProfiles.size()]);
+                RGBImageProfile[] selectableProfileArray = selectableProfiles.toArray(new RGBImageProfile[0]);
                 RGBImageProfile profile = findProfileForProductPattern(selectableProfileArray, product);
                 if (profile != null) {
                     selectProfile(profile);
@@ -427,7 +423,7 @@ public class RGBImageProfilePane extends JPanel {
         }
 
         final Range[] ranges = new Range[3];
-        for (int i = 0; i < 3 ; i++) {
+        for (int i = 0; i < 3; i++) {
             ranges[i] = rangeComponents[i].getRange();
         }
         final RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
@@ -896,15 +892,19 @@ public class RGBImageProfilePane extends JPanel {
             double max = Double.NaN;
 
             if (fixedRangeCheckBox.isSelected()) {
-                final String minValueString = minText.getText();
-                // @todo 1 tb/tb handle number format errors 2021-04-28
-                if (StringUtils.isNotNullAndNotEmpty(minValueString)) {
-                    min = Double.parseDouble(minValueString.trim());
-                }
 
-                final String maxValueString = maxText.getText();
-                if (StringUtils.isNotNullAndNotEmpty(maxValueString)) {
-                    max = Double.parseDouble(maxValueString.trim());
+                try {
+                    final String minValueString = minText.getText();
+                    if (StringUtils.isNotNullAndNotEmpty(minValueString)) {
+                        min = Double.parseDouble(minValueString.trim());
+                    }
+
+                    final String maxValueString = maxText.getText();
+                    if (StringUtils.isNotNullAndNotEmpty(maxValueString)) {
+                        max = Double.parseDouble(maxValueString.trim());
+                    }
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid input - minimum and maximum must be floating point values");
                 }
             }
 
