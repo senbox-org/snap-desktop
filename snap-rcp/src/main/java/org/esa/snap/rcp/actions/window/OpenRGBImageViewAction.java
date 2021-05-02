@@ -18,11 +18,7 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RGBImageProfile;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
@@ -74,7 +70,7 @@ import java.util.stream.Collectors;
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "rgbImageProfile";
-    private Product product;
+    private final Product product;
 
     public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
@@ -87,7 +83,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         if (product != null) {
             openProductSceneViewRGB(product, HELP_ID);
         }
-
     }
 
     @Override
@@ -100,20 +95,20 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
 
         final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), rgbProduct,
-                                                                        openedProducts, defaultBandIndices);
+                openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
         if (!ok) {
             return;
         }
-        final String[] rgbaExpressions = profilePane.getRgbaExpressions();
+        final RGBImageProfile rgbProfile = profilePane.getRgbProfile();
         if (profilePane.getStoreProfileInProduct()) {
-            RGBImageProfile.storeRgbaExpressions(rgbProduct, rgbaExpressions);
+            RGBImageProfile.storeRgbaExpressions(rgbProduct, rgbProfile.getRgbaExpressions());
         }
 
         final String sceneName = createSceneName(rgbProduct, profilePane.getSelectedProfile(), "RGB");
-        openProductSceneViewRGB(sceneName, rgbProduct, rgbaExpressions);
+        openProductSceneViewRGB(sceneName, rgbProduct, rgbProfile);
     }
 
     public static int[] getDefaultBandIndices(final Product product) {
@@ -150,14 +145,14 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return bandIndices;
     }
 
-    private void openProductSceneViewRGB(final String name, final Product product, final String[] rgbaExpressions) {
+    private void openProductSceneViewRGB(final String name, final Product product, final RGBImageProfile rgbImageProfile) {
         final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
                 SnapApp.getDefault().getMainFrame(),
                 SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + "'") {
 
             @Override
             protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
-                return createProductSceneImageRGB(name, product, rgbaExpressions, pm);
+                return createProductSceneImageRGB(name, product, rgbImageProfile, pm);
             }
 
             @Override
@@ -194,21 +189,26 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     }
 
-    private ProductSceneImage createProductSceneImageRGB(String name, final Product product, String[] rgbaExpressions,
-                                                         ProgressMonitor pm) throws Exception {
+    private ProductSceneImage createProductSceneImageRGB(String name, final Product product, RGBImageProfile rgbImageProfile,
+                                                         ProgressMonitor pm) {
         Band[] rgbBands = null;
         boolean errorOccurred = false;
         ProductSceneImage productSceneImage = null;
         try {
             pm.beginTask("Creating RGB image...", 2);
-            rgbBands = allocateRgbBands(product, rgbaExpressions);
+            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
-                                                      rgbBands[1],
-                                                      rgbBands[2],
-                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
-                                                      SubProgressMonitor.create(pm, 1));
+                    rgbBands[1],
+                    rgbBands[2],
+                    SnapApp.getDefault().getPreferencesPropertyMap(),
+                    SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
+
+            final RGBChannelDef userRgbChannelDef = mergeRgbChannelDefs(rgbImageProfile, rgbBands);
+            final ImageInfo imageInfo = new ImageInfo(userRgbChannelDef);
+            productSceneImage.setImageInfo(imageInfo);
+
         } catch (Exception e) {
             errorOccurred = true;
             throw e;
@@ -219,6 +219,36 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             }
         }
         return productSceneImage;
+    }
+
+    static RGBChannelDef mergeRgbChannelDefs(RGBImageProfile rgbImageProfile, Band[] rgbBands) {
+        final RGBChannelDef defFromProfile = rgbImageProfile.getRgbChannelDef();
+
+        for (int i = 0; i < rgbBands.length; i++) {
+            final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
+            final double min = defFromProfile.getMinDisplaySample(i);
+            if (Double.isNaN(min)) {
+                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                if (rgbChannelDef != null) {
+                    defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
+                } else {
+                    final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
+                    defFromProfile.setMinDisplaySample(i, minColorPalette);
+                }
+            }
+            final double max = defFromProfile.getMaxDisplaySample(i);
+            if (Double.isNaN(max)) {
+                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                if (rgbChannelDef != null) {
+                    defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
+                } else {
+                    final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
+                    defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                }
+            }
+        }
+
+        return defFromProfile;
     }
 
     public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
@@ -254,10 +284,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
             Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
-                                                          determineWidth(expression, products, elementIndex),
-                                                          determineHeight(expression, products, elementIndex),
-                                                          RGBImageProfile.RGB_BAND_NAMES[i],
-                                                          expression, products);
+                        determineWidth(expression, products, elementIndex),
+                        determineHeight(expression, products, elementIndex),
+                        RGBImageProfile.RGB_BAND_NAMES[i],
+                        expression, products);
             }
             rgbBands[i] = rgbBand;
         }

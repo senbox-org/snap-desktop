@@ -56,6 +56,12 @@
     <b>Red</b> - Defines the mathematical expression for the red channel.<br>
     <b>Green</b> - Defines the mathematical expression for the green channel.<br>
     <b>Blue</b> - Defines the mathematical expression for the blue channel.<br>
+    <br>
+
+    Each of the color channels can either be used with fixed minimum and maximum values or use automated histogram-based scaling.
+    The checkbox "fixed range" switches the RGB calculation to fixed mode; minimum and maximum values can be entered in the
+    respective text boxes. You can leave either of the values empty to not specify one of the boundaries. For this field the
+    histogram-calculated boundary value is used.
 </p>
 
 <p>Use the <img src="images/icons/NextDialogButton.gif" alt="Opens the Band Maths Expression Editor" border="0"> to
@@ -101,14 +107,44 @@ The possible entries for an RGB-Profile are listed in the following table:
         <td>The band maths expression used to create the red channel. This entry is mandatory.</td>
     </tr>
     <tr>
+        <td>red_min</td>
+        <td>float</td>
+        <td>The minimum value for the red channel scaling. This entry is optional.</td>
+    </tr>
+    <tr>
+        <td>red_max</td>
+        <td>float</td>
+        <td>The maximum value for the red channel scaling. This entry is optional.</td>
+    </tr>
+    <tr>
         <td>green or g</td>
         <td>String</td>
         <td>The band maths expression used to create the green channel. This entry is mandatory.</td>
     </tr>
     <tr>
+        <td>green_min</td>
+        <td>float</td>
+        <td>The minimum value for the green channel scaling. This entry is optional.</td>
+    </tr>
+    <tr>
+        <td>green_max</td>
+        <td>float</td>
+        <td>The maximum value for the green channel scaling. This entry is optional.</td>
+    </tr>
+    <tr>
         <td>blue or b</td>
         <td>String</td>
         <td>The band maths expression used to create the blue channel. This entry is mandatory.</td>
+    </tr>
+    <tr>
+        <td>blue_min</td>
+        <td>float</td>
+        <td>The minimum value for the blue channel scaling. This entry is optional.</td>
+    </tr>
+    <tr>
+        <td>blue_max</td>
+        <td>float</td>
+        <td>The maximum value for the blue channel scaling. This entry is optional.</td>
     </tr>
 </table>
 
@@ -129,11 +165,15 @@ The possible entries for an RGB-Profile are listed in the following table:
         0.60 * radiance_5 + \
         radiance_6 + \
         0.13 * radiance_7)
+        red_min=3.8
+        red_max=6.9
 
         green = log(1.0 + 0.21 * radiance_3 + \
         0.50 * radiance_4 + \
         radiance_5 + \
         0.38 * radiance_6)
+        green_min=3.74
+        green_max=6.88
 
         blue = log(1.0 + 0.21 * radiance_1 + \
         1.75 * radiance_2 + \
