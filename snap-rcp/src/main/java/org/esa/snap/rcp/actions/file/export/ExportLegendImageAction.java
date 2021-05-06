@@ -110,7 +110,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     private ParamGroup legendParamGroup;
     private ImageLegend imageLegend;
-    private boolean showEditorFirst = false;  // todo put this in preferences
+    private boolean showEditorFirst = true;  // todo put this in preferences
 
 
     private ParamChangeListener paramChangeListener;
@@ -142,6 +142,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramChangeListener = createParamChangeListener();
 
 
+
     }
 
 
@@ -154,8 +155,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+        showEditorFirst = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT);
+
         if (showEditorFirst == true) {
-            final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
             initImageLegend(view);
 
             final ImageLegendDialog dialog = new ImageLegendDialog(legendParamGroup,

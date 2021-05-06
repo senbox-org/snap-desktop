@@ -166,6 +166,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
 
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT);
+
+
+
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_SECTION_KEY, true);
         restoreDefaults =  initPropertyDefaults(context, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_KEY, ColorBarLayerType.PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
@@ -884,7 +889,17 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+        // Color Bar Export
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_TOOLTIP)
+        boolean exportSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_TOOLTIP)
+        boolean exportEditorShow = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT;
 
 
 
