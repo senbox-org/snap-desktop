@@ -87,7 +87,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
             JPEG_FORMAT_DESCRIPTION,
-            TIFF_FORMAT_DESCRIPTION,
+            TIFF_FORMAT_DESCRIPTION
     };
 
 
@@ -110,6 +110,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     private ParamGroup legendParamGroup;
     private ImageLegend imageLegend;
+    private boolean showEditorFirst = false;
+
 
     private ParamChangeListener paramChangeListener;
 
@@ -152,65 +154,86 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-//        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
 //
-//        imageLegend = null;
+//        if (showEditorFirst == true) {
+//
+//            imageLegend = null;
 //
 ////        SystemUtils.LOG.severe("Test severe message Danny");
 ////        SystemUtils.LOG.info("Test info message Danny");
 ////        SystemUtils.LOG.warning("Test warning message Danny");
 //
 //
-//        // Look for the existence of the ColorBar Layer and get a copy of its imageLegend
+//            // Look for the existence of the ColorBar Layer and get a copy of its imageLegend
 //
-//        List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
-//        for (Layer layer : layers) {
+//            List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
+//            for (Layer layer : layers) {
 ////            System.out.println("layerName=" + layer.getName());
 //
-//            if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
+//                if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
 ////                System.out.println("Found ColorBar layer");
 //
-//                ColorBarLayer colorBarLayer = (ColorBarLayer) layer;
-//                if (colorBarLayer != null) {
-//                    ImageLegend imageLegendFromLayer = colorBarLayer.getImageLegend();
-//                    if (imageLegendFromLayer != null) {
-//                        imageLegend = imageLegendFromLayer.getCopyOfImageLegend();
+//                    ColorBarLayer colorBarLayer = (ColorBarLayer) layer;
+//                    if (colorBarLayer != null) {
+//                        ImageLegend imageLegendFromLayer = colorBarLayer.getImageLegend();
+//                        if (imageLegendFromLayer != null) {
+//                            imageLegend = imageLegendFromLayer.getCopyOfImageLegend();
+//                        }
+//                    }
+//                    break;
+//                }
+//            }
+//
+//
+//            // If null then set imageLegend based on the preferences defaults
+//            final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+//            if (imageLegend == null) {
+//
+//                final RasterDataNode raster = view.getRaster();
+//                PropertyMap configuration = view.getSceneImage().getConfiguration();
+//
+//                if (configuration != null) {
+//                    System.out.println("Making new imageLegend");
+//
+//                    imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+//                    initLegendWithPreferences(view);
+////                imageLegend.updateWithProperties(configuration, raster);
+//                }
+//            }
+//
+//            if (imageLegend != null) {
+//                // it's not a layer so no scaling
+//                // todo this is not correct
+//                imageLegend.setLayerScaling(1.0);
+//
+//
+//                // this will initialize the custom label values
+//                String distributionTypeOriginal = imageLegend.getDistributionType();
+//                if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
+//                    if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
+//                        imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
 //                    }
 //                }
-//                break;
+//                imageLegend.createImage();
+////            imageLegend.createColorBarInfos();
+//                imageLegend.setDistributionType(distributionTypeOriginal);
+//                //
+//
+//
+//                legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener);
+//
+//                updateEnablement();
+//
 //            }
+//
+//
+//            final ImageLegendDialog dialog = new ImageLegendDialog(legendParamGroup,
+//                    imageLegend,
+//                    true,
+//                    getHelpCtx().getHelpID());
+//            dialog.show();
+//
 //        }
-//
-//
-//
-//
-//        // If null then set imageLegend based on the preferences defaults
-//
-//        if (imageLegend == null) {
-//
-//            final RasterDataNode raster = view.getRaster();
-//            PropertyMap configuration = view.getSceneImage().getConfiguration();
-//
-//            if (configuration != null) {
-//                System.out.println("Making new imageLegend");
-//
-//                imageLegend = new ImageLegend(raster.getImageInfo(), raster);
-//                initLegendWithPreferences(view);
-////                imageLegend.updateWithProperties(configuration, raster);
-//            }
-//        }
-//
-//
-//
-//        legendParamGroup = createLegendParamGroup(imageLegend);
-//        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
-//
-//        final ImageLegendDialog dialog = new ImageLegendDialog(legendParamGroup,
-//                imageLegend,
-//                true,
-//                getHelpCtx().getHelpID());
-//        dialog.show();
-
 
         exportImage(imageFileFilters);
     }
@@ -226,79 +249,85 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     @Override
     protected void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view, String imageBaseName) {
 
-        imageLegend = null;
+
+        if (!showEditorFirst == true) {
+            imageLegend = null;
 
 //        SystemUtils.LOG.severe("Test severe message Danny");
 //        SystemUtils.LOG.info("Test info message Danny");
 //        SystemUtils.LOG.warning("Test warning message Danny");
 
 
-        // Look for the existence of the ColorBar Layer and get a copy of its imageLegend
+            // Look for the existence of the ColorBar Layer and get a copy of its imageLegend
 
-        List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
-        for (Layer layer : layers) {
+            List<Layer> layers = SnapApp.getDefault().getSelectedProductSceneView().getRootLayer().getChildren();
+            for (Layer layer : layers) {
 //            System.out.println("layerName=" + layer.getName());
 
-            if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
+                if (ColorBarLayerType.COLOR_BAR_LAYER_NAME.equals(layer.getName())) {
 //                System.out.println("Found ColorBar layer");
 
-                ColorBarLayer colorBarLayer = (ColorBarLayer) layer;
-                if (colorBarLayer != null) {
-                    ImageLegend imageLegendFromLayer = colorBarLayer.getImageLegend();
-                    if (imageLegendFromLayer != null) {
-                        imageLegend = imageLegendFromLayer.getCopyOfImageLegend();
+                    ColorBarLayer colorBarLayer = (ColorBarLayer) layer;
+                    if (colorBarLayer != null) {
+                        ImageLegend imageLegendFromLayer = colorBarLayer.getImageLegend();
+                        if (imageLegendFromLayer != null) {
+                            imageLegend = imageLegendFromLayer.getCopyOfImageLegend();
+                        }
+                    }
+                    break;
+                }
+            }
+
+
+            // If null then set imageLegend based on the preferences defaults
+
+            if (imageLegend == null) {
+
+                final RasterDataNode raster = view.getRaster();
+                PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+                if (configuration != null) {
+                    System.out.println("Making new imageLegend");
+
+                    imageLegend = new ImageLegend(raster.getImageInfo(), raster);
+                    initLegendWithPreferences(view);
+//                imageLegend.updateWithProperties(configuration, raster);
+                }
+            }
+
+
+            if (imageLegend != null) {
+                // it's not a layer so no scaling
+                imageLegend.setLayerScaling(1.0);
+
+
+                // this will initialize the custom label values
+                String distributionTypeOriginal = imageLegend.getDistributionType();
+                if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
+                    if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
+                        imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
                     }
                 }
-                break;
-            }
-        }
-
-
-        // If null then set imageLegend based on the preferences defaults
-
-        if (imageLegend == null) {
-
-            final RasterDataNode raster = view.getRaster();
-            PropertyMap configuration = view.getSceneImage().getConfiguration();
-
-            if (configuration != null) {
-                System.out.println("Making new imageLegend");
-
-                imageLegend = new ImageLegend(raster.getImageInfo(), raster);
-                initLegendWithPreferences(view);
-//                imageLegend.updateWithProperties(configuration, raster);
-            }
-        }
-
-
-        if (imageLegend != null) {
-            // it's not a layer so no scaling
-            // todo this is not correct
-            imageLegend.setLayerScaling(1.0);
-
-
-            // this will initialize the custom label values
-            String distributionTypeOriginal = imageLegend.getDistributionType();
-            if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
-                if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
-                    imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
-                }
-            }
-            imageLegend.createImage();
+                imageLegend.createImage();
 //            imageLegend.createColorBarInfos();
-            imageLegend.setDistributionType(distributionTypeOriginal);
-            //
+                imageLegend.setDistributionType(distributionTypeOriginal);
+                //
 
 
-            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener);
+                legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener);
 
-            updateEnablement();
+
+                updateEnablement();
 
 //        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
 
 //        modifyHeaderText(legendParamGroup, view.getRaster());
 
 
+            }
+        }
+
+        if (imageLegend != null) {
             fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - export " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME); /*I18N*/
 
 
@@ -312,7 +341,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                     legendParamGroup,
                     imageLegend, getHelpCtx().getHelpID()));
         }
-
 
     }
 
@@ -560,19 +588,19 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener) {
 
         ParamGroup paramGroup = new ParamGroup();
+        Parameter param;
 
-
-        Parameter param = new Parameter(PROPERTY_TITLE_SHOW_KEY2, imageLegend.isShowTitle());
+        param = new Parameter(PROPERTY_TITLE_SHOW_KEY2, imageLegend.isShowTitle());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL);
         paramGroup.addParameter(param);
 
-
+        // todo tmp comment
         param = new Parameter(PROPERTY_TITLE_TEXT_KEY2, imageLegend.getTitleText());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_TEXT_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
-
+// todo end tmp comment
 
         param = new Parameter(PROPERTY_TITLE_COLOR_KEY2, imageLegend.getTitleColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
@@ -845,7 +873,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private void updateUIState() {
             boolean headerTextEnabled = (Boolean) usingHeaderParam.getValue();
+            // todo comment
             headerTextParam.setUIEnabled(headerTextEnabled);
+            // todo end comment
             backgroundTransparencyParam.setUIEnabled(transparencyEnabled);
         }
 
@@ -884,16 +914,19 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 2;
             p.add(usingHeaderParam.getEditor().getEditorComponent(), gbc);
 
+            // todo tmp comment
+
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(headerTextParam.getEditor().getLabelComponent(), gbc);
             p.add(headerTextParam.getEditor().getEditorComponent(), gbc);
+            // todo end
+
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsTextParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsTextParam.getEditor().getEditorComponent(), gbc);
-
             gbc.gridy++;
             gbc.insets.top = 5;
             p.add(orientationParam.getEditor().getLabelComponent(), gbc);
