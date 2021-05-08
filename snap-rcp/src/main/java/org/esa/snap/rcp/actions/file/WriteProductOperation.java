@@ -17,7 +17,14 @@ import org.openide.util.NbBundle;
 
 import java.io.File;
 
-import static org.esa.snap.rcp.preferences.general.WriteOptionsController.*;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_INCREMENTAL;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_PRODUCT_HEADERS;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_PRODUCT_HISTORY;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.PREFERENCE_KEY_SAVE_INCREMENTAL;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.PREFERENCE_KEY_SAVE_PRODUCT_ANNOTATIONS;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.PREFERENCE_KEY_SAVE_PRODUCT_HEADERS;
+import static org.esa.snap.rcp.preferences.general.WriteOptionsController.PREFERENCE_KEY_SAVE_PRODUCT_HISTORY;
 
 /**
  * @author Norman Fomferra
@@ -137,14 +144,6 @@ public class WriteProductOperation implements Runnable, Cancellable {
                                         ProgressMonitor pm) {
         Debug.assertNotNull(product);
         try {
-            // todo - really add GPF dependency?!?
-            /*
-            if (product.getProductReader() instanceof OperatorProductReader) {
-                GPF.writeProduct(product, file, formatName, incremental, pm);
-            } else {
-                ProductIO.writeProduct(product, file, formatName, incremental, pm);
-            }
-            */
             ProductIO.writeProduct(product, file, formatName, incremental, pm);
             return !pm.isCanceled() ? true : null;
         } catch (RuntimeException e) {
