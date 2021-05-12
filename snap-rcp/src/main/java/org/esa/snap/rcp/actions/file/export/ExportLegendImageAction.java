@@ -601,10 +601,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.getProperties().setMaxValue(1.0f);
         paramGroup.addParameter(param);
 
-        param = new Parameter("legend.antialiasing", imageLegend.isAntialiasing());
-        param.getProperties().setLabel("Perform anti-aliasing");
-        paramGroup.addParameter(param);
-        //System.out.println("imageLegend.isAntialiasing()="+imageLegend.isAntialiasing());
 
         param = new Parameter(PROPERTY_TITLE_COLOR_KEY2, imageLegend.getTitleColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
@@ -792,12 +788,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).getValue();
         imageLegend.setCustomLabelValues((String) value);
-
-
-        value = legendParamGroup.getParameter("legend.antialiasing").getValue();
-        imageLegend.setAntialiasing((Boolean) value);
-
-
     }
 
 
@@ -817,7 +807,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter headerTextParam;
         private Parameter unitsTextParam;
         private Parameter orientationParam;
-        private Parameter antialiasingParam;
         private Parameter backgroundTransparencyParam;
         private Parameter labelValuesActualParam;
         private Parameter distributionTypeParam;
@@ -940,7 +929,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             backgroundTransparencyParam = paramGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2);
             labelValuesActualParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2);
             distributionTypeParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2);
-            antialiasingParam = paramGroup.getParameter("legend.antialiasing");
         }
 
         private void showPreview() {
