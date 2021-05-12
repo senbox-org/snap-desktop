@@ -378,7 +378,7 @@ class GeoCodingPanel extends PagePanel {
 
     private void writeFXYGeoCoding(FXYGeoCoding fxyGeoCoding, String nodeType) {
         addEmptyRow();
-        addRow("The" + nodeType + " uses a polynomial based geo-coding.");
+        addRow("The " + nodeType + " uses a polynomial based geo-coding.");
         addEmptyRow();
 
         addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
