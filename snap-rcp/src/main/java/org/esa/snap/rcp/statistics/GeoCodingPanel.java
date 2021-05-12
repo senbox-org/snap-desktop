@@ -46,6 +46,7 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.List;
 
 /**
  * @author Thomas Storm
@@ -137,19 +138,27 @@ class GeoCodingPanel extends PagePanel {
         final Product product = getProduct();
 
         boolean usingUniformGeoCodings = false;
+        GeoCoding sceneGeoCoding = null;
         if (product != null) {
             usingUniformGeoCodings = product.isUsingSingleGeoCoding();
+            sceneGeoCoding = product.getSceneGeoCoding();
         }
 
-        final PixelPos sceneCenter;
-        final PixelPos sceneUL;
-        final PixelPos sceneUR;
-        final PixelPos sceneLL;
-        final PixelPos sceneLR;
-        final String nodeType;
-        if (usingUniformGeoCodings) {
+        PixelPos sceneCenter = new PixelPos();
+        PixelPos sceneUL = new PixelPos();
+        PixelPos sceneUR = new PixelPos();
+        PixelPos sceneLL = new PixelPos();
+        PixelPos sceneLR = new PixelPos();
+        String nodeType = "";
+
+        if (product != null) {
+            if (!usingUniformGeoCodings) {
+                addEmptyRow();
+                addRow("Some bands come with an individual geo-coding that differs from the geo-coding of the product. Select a band to see the bands individual geo-coding.");
+                addEmptyRow();
+            }
             nodeType = "product";
-            geoCoding = product.getSceneGeoCoding();
+            geoCoding = sceneGeoCoding;
             sceneCenter = new PixelPos(Math.floor(product.getSceneRasterWidth() / 2.0) + 0.5,
                                        Math.floor(product.getSceneRasterHeight() / 2.0) + 0.5);
             sceneUL = new PixelPos(0 + 0.5f, 0 + 0.5f);
@@ -157,13 +166,15 @@ class GeoCodingPanel extends PagePanel {
             sceneLL = new PixelPos(0 + 0.5f, product.getSceneRasterHeight() - 1 + 0.5f);
             sceneLR = new PixelPos(product.getSceneRasterWidth() - 1 + 0.5f,
                                    product.getSceneRasterHeight() - 1 + 0.5f);
-        } else {
-            if (raster == null) {
-                return;
-            }
-
+        }
+        if (raster != null && !usingUniformGeoCodings) {
             nodeType = "band";
             geoCoding = raster.getGeoCoding();
+            if (sceneGeoCoding != null && geoCoding == sceneGeoCoding) {
+                addEmptyRow();
+                addRow("This band uses the same geo-coding as the product.");
+                addEmptyRow();
+            }
             sceneCenter = new PixelPos(Math.floor(raster.getRasterWidth() / 2.0) + 0.5,
                                        Math.floor(raster.getRasterHeight() / 2.0) + 0.5);
             sceneUL = new PixelPos(0 + 0.5, 0 + 0.5);
@@ -364,13 +375,13 @@ class GeoCodingPanel extends PagePanel {
 
             final FXYGeoCoding fxyGeoCoding = codingWrapper.getGeoGoding();
             addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
-                           "by using following polynomial equations</html>");
+                   "by using following polynomial equations</html>");
             addRow(fxyGeoCoding.getLatFunction().createCFunctionCode("latitude", "x", "y"));
             addRow(fxyGeoCoding.getLonFunction().createCFunctionCode("longitude", "x", "y"));
             addEmptyRow();
 
             addRow("<html>Pixels (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
-                           "by using the following polynomial equations</html>");
+                   "by using the following polynomial equations</html>");
             addRow(fxyGeoCoding.getPixelXFunction().createCFunctionCode("x", "lat", "lon"));
             addRow(fxyGeoCoding.getPixelYFunction().createCFunctionCode("y", "lat", "lon"));
         }
@@ -382,13 +393,13 @@ class GeoCodingPanel extends PagePanel {
         addEmptyRow();
 
         addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
-                       "by using following polynomial equations</html>");
+               "by using following polynomial equations</html>");
         addRow(fxyGeoCoding.getLatFunction().createCFunctionCode("latitude", "x", "y"));
         addRow(fxyGeoCoding.getLonFunction().createCFunctionCode("longitude", "x", "y"));
         addEmptyRow();
 
         addRow("<html>Pixels (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
-                       "by using the following polynomial equations</html>");
+               "by using the following polynomial equations</html>");
         addRow(fxyGeoCoding.getPixelXFunction().createCFunctionCode("x", "lat", "lon"));
         addRow(fxyGeoCoding.getPixelYFunction().createCFunctionCode("y", "lat", "lon"));
     }
@@ -445,11 +456,11 @@ class GeoCodingPanel extends PagePanel {
 
         addEmptyRow();
         addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
-                       "by linear interpolation between pixels.</html>");
+               "by linear interpolation between pixels.</html>");
 
         addEmptyRow();
         addRow("<html>Pixel coordinates (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
-                       "by a search algorithm.</html>");
+               "by a search algorithm.</html>");
         addEmptyRow();
     }
 
@@ -497,12 +508,12 @@ class GeoCodingPanel extends PagePanel {
         addRow("Crossing 180 degree meridian", String.valueOf(tgc.isCrossingMeridianAt180()));
         addEmptyRow();
         addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
-                       "by linear interpolation between tie points.</html>");
+               "by linear interpolation between tie points.</html>");
 
         final int numApproximations = tgc.getNumApproximations();
         if (numApproximations > 0) {
             addRow("<html>Pixel coordinates (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
-                           "by polynomial approximations for " + numApproximations + " tile(s).</html>");
+                   "by polynomial approximations for " + numApproximations + " tile(s).</html>");
             addEmptyRow();
 
             for (int i = 0; i < numApproximations; i++) {
@@ -523,7 +534,7 @@ class GeoCodingPanel extends PagePanel {
             addEmptyRow();
             addRow(
                     "<html>WARNING: Pixel coordinates (x,y) cannot be computed from geographic coordinates (lat,lon)<br/>" +
-                            "because appropriate polynomial approximations could not be found.</html>");
+                    "because appropriate polynomial approximations could not be found.</html>");
         }
     }
 }
