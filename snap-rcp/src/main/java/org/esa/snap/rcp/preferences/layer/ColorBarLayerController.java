@@ -37,7 +37,6 @@ import java.awt.*;
 /**
  * * Panel handling colorbar layer preferences. Sub-panel of the "Layer"-panel.
  *
- * @author thomas
  * @author Daniel Knowles
  */
 

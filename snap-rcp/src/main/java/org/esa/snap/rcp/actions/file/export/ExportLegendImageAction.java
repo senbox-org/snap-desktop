@@ -62,6 +62,13 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.util.List;
 
+/**
+ * @author Brockmann Consult
+ * @author Daniel Knowles
+ * @version $Revision$ $Date$
+ */
+//MAY2020 - Daniel Knowles - Major revision to color bar and color bar layer tools
+
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportLegendImageAction"
