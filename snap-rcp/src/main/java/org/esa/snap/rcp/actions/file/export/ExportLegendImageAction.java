@@ -130,6 +130,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private ImageLegend imageLegend;
     private boolean showEditorFirst;
     private boolean blackWhiteColor;
+    private int legendWidth = 1200;
 
 
     private ParamChangeListener paramChangeListener;
@@ -252,10 +253,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         if (imageLegend != null) {
 
-            // it's not a layer so no scaling
-            imageLegend.setLayerScaling(1.0);
-
-
             // this will initialize the custom label values
             String distributionTypeOriginal = imageLegend.getDistributionType();
             if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
@@ -264,8 +261,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
             }
 
-
-            imageLegend.createImage();
+            imageLegend.setLayerScaling(100.0);
+            // todo preferences on "LegendWidth"
+            imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
             imageLegend.setDistributionType(distributionTypeOriginal);
 
             legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor);
@@ -518,7 +516,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT));
 
 
-        imageLegend.setLayerScaling(1.0);
+        imageLegend.setLayerScaling(100.0);
+
+
         imageLegend.setAntialiasing((Boolean) true);
 
         //  imageLegend.setBackgroundTransparencyEnabled(true);
@@ -529,7 +529,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         transferParamsToImageLegend(legendParamGroup, imageLegend);
         imageLegend.setTransparencyEnabled(isTransparencySupportedByFormat(imageFormat));
-        return imageLegend.createImage();
+        imageLegend.setLayerScaling(100.0);
+        return imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
     }
 
     @Override
@@ -670,7 +671,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                     imageLegend.setTickMarkCount((Integer) tickMarkCount);
                 }
                 // update custom labels
-                imageLegend.createImage();
+                imageLegend.setLayerScaling(100.0);
+                imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
                 System.out.println("custom=" + imageLegend.getCustomLabelValues());
                 legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
             }
@@ -722,6 +724,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         Object value;
 
+        imageLegend.setLayerScaling(100.0);
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2).getValue();
         imageLegend.setShowTitle((Boolean) value);
