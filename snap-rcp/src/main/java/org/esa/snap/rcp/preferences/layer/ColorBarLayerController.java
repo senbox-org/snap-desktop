@@ -168,6 +168,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT);
+
+
+
 
 
 
@@ -905,6 +910,23 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_TOOLTIP)
         boolean exportBWColorUse = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP)
+        boolean exportUseLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
+        int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
+
+
+
+
+
 
 
 

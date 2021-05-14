@@ -99,6 +99,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
     // Make different keys for export parameters so it doesn't affect color bar layer
+    // Keys named differently from preferences to not overwrite preferences
     private static final String PROPERTY_ORIENTATION_KEY2 = ColorBarLayerType.PROPERTY_ORIENTATION_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_COUNT_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY + ".export";
     private static final String PROPERTY_TITLE_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY + ".export";
@@ -108,9 +109,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LABEL_VALUES_ACTUAL_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_MODE_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY + ".export";
     private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
+    private static final String PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY + ".export";
+    private static final String PROPERTY_EXPORT_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY + ".export";
+
+
+
 
 
     // these parameters are not used in GUI but are used to store initial values used if deselecting the black/white override
+    // Keys named differently from preferences to not overwrite preferences
     private static final String PROPERTY_TITLE_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY + ".export";
     private static final String PROPERTY_UNITS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY + ".export";
     private static final String PROPERTY_LABELS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY + ".export";
@@ -130,7 +137,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private ImageLegend imageLegend;
     private boolean showEditorFirst;
     private boolean blackWhiteColor;
-    private int legendWidth = 1200;
+    private int legendWidth;
+    private boolean useLegendWidth;
 
 
     private ParamChangeListener paramChangeListener;
@@ -175,11 +183,22 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+        // initialize these parameters from the preferences
         showEditorFirst = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY,
                 ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT);
 
         blackWhiteColor = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT);
+
+        useLegendWidth = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT);
+
+        legendWidth = configuration.getPropertyInt(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT);
+
+
+
 
         if (showEditorFirst == true) {
             initImageLegend(view);
@@ -263,10 +282,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             imageLegend.setLayerScaling(100.0);
             // todo preferences on "LegendWidth"
-            imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
+
+
+            imageLegend.createImage(new Dimension(legendWidth,legendWidth), useLegendWidth);
             imageLegend.setDistributionType(distributionTypeOriginal);
 
-            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor);
+            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor, useLegendWidth, legendWidth);
 
 
             updateEnablement();
@@ -300,237 +321,243 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         final RasterDataNode raster = view.getRaster();
         PropertyMap configuration = view.getSceneImage().getConfiguration();
 
+        imageLegend.initLegendWithPreferences(configuration, raster);
         // Orientation Parameters
 
-        String orientationString = configuration.getPropertyString(ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
-
-        if (ColorBarLayerType.OPTION_VERTICAL.equals(orientationString)) {
-            imageLegend.setOrientation(ImageLegend.VERTICAL);
-        } else {
-            imageLegend.setOrientation(ImageLegend.HORIZONTAL);
-        }
-
-        imageLegend.setReversePalette(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT));
-
-
-        // Label Distribution and Values
-
-        imageLegend.setTickMarkCount(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT));
-
-        imageLegend.setDistributionType(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT));
-
-        imageLegend.setCustomLabelValues(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT));
-
-        imageLegend.setScalingFactor(configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT));
-
-        imageLegend.setDecimalPlaces(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT));
-
-        imageLegend.setDecimalPlacesForce(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT));
-
-
-        // Sizing and Location
-        imageLegend.setColorBarLength(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT));
-
-        imageLegend.setColorBarThickness(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT));
-
-        imageLegend.setTitleVerticalAnchor(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT));
-
-
-        // Title parameters
-
-        imageLegend.setShowTitle(
-                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
-                        ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT));
-
-
-        String titleTextDefault = configuration.getPropertyString(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT);
-
-        String titleText = (ColorBarLayerType.NULL_SPECIAL.equals(titleTextDefault)) ? raster.getName() : titleTextDefault;
-
-        imageLegend.setTitleText(titleText);
-
-
-        imageLegend.setTitleFontSize(
-                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
-                        ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT));
-
-        imageLegend.setTitleColor(
-                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
-                        ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT));
-
-        imageLegend.setTitleFontName(
-                configuration.getPropertyString(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
-                        ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT));
-
-
-        boolean titleParameterBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT);
-
-        boolean titleParameterItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT);
-
-        int titleFontType = ColorBarLayer.getFontType(titleParameterItalic, titleParameterBold);
-
-        imageLegend.setTitleFontType(titleFontType);
-
-
-        // Units parameters
-
-        imageLegend.setShowUnits(
-                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
-                        ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT));
-
-
-        String unitsTextDefault = configuration.getPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
-
-
-
-        String unitsText = "";
-        if (ColorBarLayerType.NULL_SPECIAL.equals(unitsTextDefault)) {
-            String unit = raster.getUnit();
-            if (unit != null && unit.length() > 0) {
-                unitsText = "(" + raster.getUnit() + ")";
-            }
-        } else {
-            unitsText = unitsTextDefault;
-        }
-
-
-        imageLegend.setUnitsText(unitsText);
-
-
-        imageLegend.setUnitsFontSize(
-                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
-                        ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT));
-
-        imageLegend.setUnitsColor(
-                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
-                        ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT));
-
-        imageLegend.setUnitsFontName(
-                configuration.getPropertyString(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
-                        ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT));
-
-
-        boolean unitsBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT);
-
-        boolean unitsItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
-
-        int unitsFontType = ColorBarLayer.getFontType(unitsItalic, unitsBold);
-
-        imageLegend.setUnitsFontType(unitsFontType);
-
-
-
-
-        // Labels Parameters
-
-        imageLegend.setLabelsShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT));
-
-        imageLegend.setLabelsFontName(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT));
-
-        boolean labelsFontBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
-
-        boolean labelsFontItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
-
-        imageLegend.setLabelsFontType(ColorBarLayer.getFontType(labelsFontItalic, labelsFontBold));
-
-        imageLegend.setLabelsFontSize(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT));
-
-        imageLegend.setLabelsColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT));
-
-
-
-        // Tick Marks Section
-
-        imageLegend.setTickmarkShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT));
-
-        imageLegend.setTickmarkLength(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
-                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT));
-
-        imageLegend.setTickmarkWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT));
-
-        imageLegend.setTickmarkColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT));
-
-
-
-        // Backdrop Section
-
-        imageLegend.setBackdropShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT));
-
-        imageLegend.setBackdropColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT));
-
-        double backdropTrans = configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
-
-        imageLegend.setBackdropTransparency(((Number) backdropTrans).floatValue());
-
-
-        // Palette Border Section
-
-        imageLegend.setBorderShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT));
-
-        imageLegend.setBorderWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT));
-
-        imageLegend.setBorderColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT));
-
-
-        // Legend Border Section
-
-        imageLegend.setBackdropBorderShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT));
-
-        imageLegend.setBackdropBorderWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT));
-
-        imageLegend.setBackdropBorderColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT));
-
-
-        imageLegend.setLayerScaling(100.0);
-
-
-        imageLegend.setAntialiasing((Boolean) true);
-
-        //  imageLegend.setBackgroundTransparencyEnabled(true);
+//        String orientationString = configuration.getPropertyString(ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+//                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
+//
+//        if (ColorBarLayerType.OPTION_VERTICAL.equals(orientationString)) {
+//            imageLegend.setOrientation(ImageLegend.VERTICAL);
+//        } else {
+//            imageLegend.setOrientation(ImageLegend.HORIZONTAL);
+//        }
+//
+//        imageLegend.setReversePalette(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+//                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT));
+//
+//
+//        // Label Distribution and Values
+//
+//        imageLegend.setTickMarkCount(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT));
+//
+//        imageLegend.setDistributionType(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT));
+//
+//        imageLegend.setCustomLabelValues(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT));
+//
+//        imageLegend.setScalingFactor(configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT));
+//
+//        imageLegend.setDecimalPlaces(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT));
+//
+//        imageLegend.setDecimalPlacesForce(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+//                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT));
+//
+//
+//        // Sizing and Location
+//        imageLegend.setColorBarLength(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
+//                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT));
+//
+//        imageLegend.setColorBarThickness(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
+//                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT));
+//
+//        imageLegend.setTitleVerticalAnchor(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT));
+//
+//
+//        // Title parameters
+//
+//        imageLegend.setShowTitle(
+//                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
+//                        ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT));
+//
+//
+//        String titleTextDefault = configuration.getPropertyString(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
+//                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT);
+//
+//        String titleText = (ColorBarLayerType.NULL_SPECIAL.equals(titleTextDefault)) ? raster.getName() : titleTextDefault;
+//
+//        imageLegend.setTitleText(titleText);
+//
+//
+//        imageLegend.setTitleFontSize(
+//                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+//                        ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT));
+//
+//        imageLegend.setTitleColor(
+//                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+//                        ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT));
+//
+//        imageLegend.setTitleFontName(
+//                configuration.getPropertyString(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
+//                        ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT));
+//
+//
+//        boolean titleParameterBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
+//                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT);
+//
+//        boolean titleParameterItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
+//                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT);
+//
+//        int titleFontType = ColorBarLayer.getFontType(titleParameterItalic, titleParameterBold);
+//
+//        imageLegend.setTitleFontType(titleFontType);
+//
+//
+//        // Units parameters
+//
+//        imageLegend.setShowUnits(
+//                configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+//                        ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT));
+//
+//
+//        String unitsTextDefault = configuration.getPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+//                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
+//
+//
+//
+//        String unitsText = "";
+//        if (ColorBarLayerType.NULL_SPECIAL.equals(unitsTextDefault)) {
+//            String unit = raster.getUnit();
+//            if (unit != null && unit.length() > 0) {
+//                unitsText = "(" + raster.getUnit() + ")";
+//            }
+//        } else {
+//            unitsText = unitsTextDefault;
+//        }
+//
+//
+//        imageLegend.setUnitsText(unitsText);
+//
+//
+//        imageLegend.setUnitsFontSize(
+//                configuration.getPropertyInt(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+//                        ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT));
+//
+//        imageLegend.setUnitsColor(
+//                configuration.getPropertyColor(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+//                        ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT));
+//
+//        imageLegend.setUnitsFontName(
+//                configuration.getPropertyString(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
+//                        ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT));
+//
+//
+//        boolean unitsBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+//                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT);
+//
+//        boolean unitsItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+//                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT);
+//
+//        int unitsFontType = ColorBarLayer.getFontType(unitsItalic, unitsBold);
+//
+//        imageLegend.setUnitsFontType(unitsFontType);
+//
+//
+//
+//
+//        // Labels Parameters
+//
+//        imageLegend.setLabelsShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT));
+//
+//        imageLegend.setLabelsFontName(configuration.getPropertyString(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT));
+//
+//        boolean labelsFontBold = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT);
+//
+//        boolean labelsFontItalic = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT);
+//
+//        imageLegend.setLabelsFontType(ColorBarLayer.getFontType(labelsFontItalic, labelsFontBold));
+//
+//        imageLegend.setLabelsFontSize(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT));
+//
+//        imageLegend.setLabelsColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT));
+//
+//
+//
+//        // Tick Marks Section
+//
+//        imageLegend.setTickmarkShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT));
+//
+//        imageLegend.setTickmarkLength(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT));
+//
+//        imageLegend.setTickmarkWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT));
+//
+//        imageLegend.setTickmarkColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT));
+//
+//
+//
+//        // Backdrop Section
+//
+//        imageLegend.setBackdropShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT));
+//
+//        imageLegend.setBackdropColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT));
+//
+//        double backdropTrans = configuration.getPropertyDouble(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+//                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+//
+//        imageLegend.setBackdropTransparency(((Number) backdropTrans).floatValue());
+//
+//
+//        // Palette Border Section
+//
+//        imageLegend.setBorderShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT));
+//
+//        imageLegend.setBorderWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
+//                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT));
+//
+//        imageLegend.setBorderColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT));
+//
+//
+//        // Legend Border Section
+//
+//        imageLegend.setBackdropBorderShow(configuration.getPropertyBool(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY,
+//                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT));
+//
+//        imageLegend.setBackdropBorderWidth(configuration.getPropertyInt(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY,
+//                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT));
+//
+//        imageLegend.setBackdropBorderColor(configuration.getPropertyColor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
+//                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT));
+//
+//
+//        imageLegend.setLayerScaling(100.0);
+//
+//
+//        imageLegend.setAntialiasing((Boolean) true);
+//
+//        //  imageLegend.setBackgroundTransparencyEnabled(true);
     }
 
 
     @Override
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
         transferParamsToImageLegend(legendParamGroup, imageLegend);
+
+
         imageLegend.setTransparencyEnabled(isTransparencySupportedByFormat(imageFormat));
         imageLegend.setLayerScaling(100.0);
-        return imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
+
+        useLegendWidth =  (Boolean)legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
+        legendWidth =  (Integer) legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).getValue();
+        return imageLegend.createImage(new Dimension(legendWidth,legendWidth), useLegendWidth);
     }
 
     @Override
@@ -538,7 +565,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         return true;
     }
 
-    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener, boolean blackWhiteColor) {
+    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener, boolean blackWhiteColor, boolean useLegendWidth, int legendWidth) {
 
         ParamGroup paramGroup = new ParamGroup();
         Parameter param;
@@ -551,6 +578,20 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2, blackWhiteColor);
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_LABEL);
         paramGroup.addParameter(param);
+
+
+        param = new Parameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2, useLegendWidth);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL);
+        paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2, legendWidth);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL);
+        paramGroup.addParameter(param);
+
+
+
+
+
 
 
         param = new Parameter(PROPERTY_TITLE_TEXT_KEY2, imageLegend.getTitleText());
@@ -672,7 +713,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
                 // update custom labels
                 imageLegend.setLayerScaling(100.0);
-                imageLegend.createImage(new Dimension(legendWidth,legendWidth), true);
+
+                useLegendWidth =  (Boolean)legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
+                legendWidth =  (Integer) legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).getValue();
+                imageLegend.createImage(new Dimension(legendWidth,legendWidth), useLegendWidth);
                 System.out.println("custom=" + imageLegend.getCustomLabelValues());
                 legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
             }
@@ -697,6 +741,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(false);
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(true);
         }
+
+
+        // todo
+
+        boolean useLegendWidthTmp = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
+        legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).setUIEnabled(useLegendWidthTmp);
+
     }
 
 
@@ -748,6 +799,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
+        //todo useLegendWidth and legendWidth need to be implement something like this
         Boolean blackWhiteColor =  (Boolean)legendParamGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2).getValue();
         if (blackWhiteColor) {
             imageLegend.setTitleColor(Color.BLACK);
@@ -814,6 +866,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter numberOfTicksParam;
         private Parameter usingHeaderParam;
         private Parameter bwColorOverrideParam;
+        private Parameter useLegendWidthParam;
+        private Parameter legendWidthParam;
         private Parameter headerTextParam;
         private Parameter unitsTextParam;
         private Parameter orientationParam;
@@ -915,6 +969,16 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(useLegendWidthParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(legendWidthParam.getEditor().getLabelComponent(), gbc);
+            p.add(legendWidthParam.getEditor().getEditorComponent(), gbc);
+
+
+            gbc.gridy++;
             gbc.insets.top = 15;
             gbc.gridwidth = 2;
             gbc.anchor = GridBagConstraints.CENTER;
@@ -932,6 +996,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private void initParams() {
             usingHeaderParam = paramGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2);
             bwColorOverrideParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2);
+            useLegendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2);
+            legendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2);
             numberOfTicksParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2);
             headerTextParam = paramGroup.getParameter(PROPERTY_TITLE_TEXT_KEY2);
             unitsTextParam = paramGroup.getParameter(PROPERTY_UNITS_TEXT_KEY2);
