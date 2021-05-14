@@ -86,6 +86,7 @@
     <mapID target="showLayerManagerWnd" url="desktop/LayerManagerWindow.html"/>
     <mapID target="showNavigationWnd" url="desktop/NavigationWindow.html"/>
     <mapID target="showColorManipulationWnd" url="desktop/ColorManipulationWindow.html"/>
+    <mapID target="colorManipulationPreferences" url="desktop/ColorManipulationPreferences.html"/>
     <mapID target="showSpectrumWnd" url="desktop/SpectrumWindow.html"/>
     <mapID target="spectrumChooser" url="desktop/SpectrumChooser.html"/>
     <mapID target="showWorldMapWnd" url="desktop/WorldMap.html"/>

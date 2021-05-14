@@ -19,6 +19,7 @@ import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -68,10 +69,10 @@ import java.util.Optional;
         @ActionReference(path = "Context/ProductSceneView" ,position = 80)
 })
 @NbBundle.Messages({
-        "CTL_ExportColorPaletteAction_MenuText=Colour Palette as File",
-        "CTL_ExportColorPaletteAction_PopupText=Export Colour Palette as File",
-        "CTL_ExportColorPaletteAction_DialogTitle=Export Colour Palette",
-        "CTL_ExportColorPaletteAction_ShortDescription=Export Colour Palette as File."
+        "CTL_ExportColorPaletteAction_MenuText=" + NamingConvention.COLOR_MIXED_CASE + " Palette as File",
+        "CTL_ExportColorPaletteAction_PopupText=Export " + NamingConvention.COLOR_MIXED_CASE + " Palette as File",
+        "CTL_ExportColorPaletteAction_DialogTitle=Export " + NamingConvention.COLOR_MIXED_CASE + " Palette",
+        "CTL_ExportColorPaletteAction_ShortDescription=Export " + NamingConvention.COLOR_MIXED_CASE + " Palette as File."
 })
 public class ExportColorPaletteAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
 
@@ -119,7 +120,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
                 writeColorPalette(raster, file);
             } catch (IOException ie) {
                 Dialogs.showError(Bundle.CTL_ExportColorPaletteAction_DialogTitle(),
-                                      "Failed to export colour palette:\n" + ie.getMessage());
+                                      "Failed to export " + NamingConvention.COLOR_LOWER_CASE + " palette:\n" + ie.getMessage());
             }
         }
     }

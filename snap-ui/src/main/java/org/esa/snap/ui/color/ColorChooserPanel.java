@@ -1,5 +1,7 @@
 package org.esa.snap.ui.color;
 
+import org.esa.snap.core.util.NamingConvention;
+
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -122,7 +124,7 @@ public class ColorChooserPanel extends JPanel {
         newChooserPanels[0] = new MyAbstractColorChooserPanel();
         colorChooser.setChooserPanels(newChooserPanels);
         ColorTracker colorTracker = new ColorTracker(colorChooser);
-        JDialog dialog = JColorChooser.createDialog(this, "Select Colour", true, colorChooser, colorTracker, null);
+        JDialog dialog = JColorChooser.createDialog(this, "Select " + NamingConvention.COLOR_MIXED_CASE, true, colorChooser, colorTracker, null);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
         return colorTracker.getColor();

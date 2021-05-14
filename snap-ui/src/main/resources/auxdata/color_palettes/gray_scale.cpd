@@ -1,0 +1,16 @@
+# Color Palette Definition File
+numPoints=6
+color0=0,0,0
+color1=51,51,51
+color2=102,102,102
+color3=153,153,153
+color4=204,204,204
+color5=255,255,255
+sample0=0.0000001
+sample1=.2
+sample2=.4
+sample3=.6
+sample4=.8
+sample5=1
+autoDistribute=true
+isLogScaled=false

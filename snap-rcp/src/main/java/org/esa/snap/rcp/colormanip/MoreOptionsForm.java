@@ -22,6 +22,7 @@ import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.color.ColorComboBoxAdapter;
@@ -95,7 +96,7 @@ public class MoreOptionsForm {
 
         bindingContext = new BindingContext(propertyContainer);
 
-        JLabel noDataColorLabel = new JLabel("No-data colour: ");
+        JLabel noDataColorLabel = new JLabel("No-data " + NamingConvention.COLOR_LOWER_CASE + ": ");
         ColorComboBox noDataColorComboBox = new ColorComboBox();
         Binding noDataColorBinding = bindingContext.bind(NO_DATA_COLOR_PROPERTY, new ColorComboBoxAdapter(noDataColorComboBox));
         noDataColorBinding.addComponent(noDataColorLabel);
@@ -113,8 +114,8 @@ public class MoreOptionsForm {
             final ImageInfo.HistogramMatching matching = getHistogramMatching();
             if (matching != null && matching != ImageInfo.HistogramMatching.None) {
                 final String message = "<html>Histogram matching will be applied to the currently displayed image.<br/>" +
-                                       "Sample values of the colour palette will not longer translate into<br/>" +
-                                       "their associated colours.</html>";
+                                       "Sample values of the " + NamingConvention.COLOR_LOWER_CASE + " palette will no longer translate into<br/>" +
+                                       "their associated " + NamingConvention.COLOR_LOWER_CASE + "s.</html>";
                 Dialogs.showInformation("Histogram Matching", message, "warningHistogramMatching");
             }
             updateModel();

@@ -32,12 +32,18 @@ class ColorPaletteManager {
         cpdList.clear();
 
         final File[] files = palettesDir.listFiles((dir, name) -> {
-            return name.toLowerCase().endsWith(".cpd");
+            return name.toLowerCase().endsWith(".cpd") || name.toLowerCase().endsWith(".cpt");
         });
         if (files != null) {
             for (File file : files) {
                 try {
-                    ColorPaletteDef newCpd = ColorPaletteDef.loadColorPaletteDef(file);
+                    ColorPaletteDef newCpd;
+
+                    if (file.getName().endsWith("cpt")) {
+                        newCpd = ColorPaletteDef.loadCpt(file);
+                    } else {
+                        newCpd = ColorPaletteDef.loadColorPaletteDef(file);
+                    }
                     cpdList.add(newCpd);
                     cpdNames.add(file.getName());
                 } catch (IOException e) {

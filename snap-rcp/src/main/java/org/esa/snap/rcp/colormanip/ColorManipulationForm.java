@@ -14,7 +14,7 @@ public interface ColorManipulationForm {
 
     ColorFormModel getFormModel();
 
-    void installToolButtons();
+    void installToolButtons(boolean installAllButtons);
 
     void installMoreOptions();
 

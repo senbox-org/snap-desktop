@@ -1,0 +1,10 @@
+# RGB-Image Configuration Profile
+# MODIS_TrueColor_(645,555,469)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=MODIS_TrueColor_(645,555,469)_Log
+red=if (rhos_645 \!\= NaN and rhos_555 \!\= NaN and rhos_469 \!\= NaN) then (log(rhos_645/0.01)/log(1/0.01)) else NaN
+green=if (rhos_645 \!\= NaN and rhos_555 \!\= NaN and rhos_469 \!\= NaN) then (log(rhos_555/0.01)/log(1/0.01)) else NaN
+blue=if (rhos_645 \!\= NaN and rhos_555 \!\= NaN and rhos_469 \!\= NaN) then (log(rhos_469/0.01)/log(1/0.01)) else NaN
