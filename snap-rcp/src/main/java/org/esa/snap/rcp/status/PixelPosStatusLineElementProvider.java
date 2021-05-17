@@ -48,8 +48,6 @@ public class PixelPosStatusLineElementProvider
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
     private static final String ZOOM_LEVEL_FORMAT = "Zoom %s  Level %s";
     private static final String PIXEL_SIZE_FORMAT = "PixelSpacing %s m %s m";
-    private static final String SCALE_FORMAT = "ScaleFactor %s";
-
 
     private final JLabel zoomLevelLabel;
     private final JLabel geoPosLabel;
@@ -165,11 +163,9 @@ public class PixelPosStatusLineElementProvider
                 scaleStr = "1:" + ((int) v == v ? (int) v : v);
             }
             zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
-            double scale= rasterDataNode.getMultiLevelModel().getScale(currentLevel);
             double scaleX= rasterDataNode.getImageToModelTransform().getScaleX();
             double scaleY= Math.abs(rasterDataNode.getImageToModelTransform().getScaleY());
             pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT,decimalFormat.format(scaleX),decimalFormat.format(scaleY)));
-            scaleLabel.setText(String.format(SCALE_FORMAT, scale));
         } else {
             setDefault();
 
@@ -182,7 +178,6 @@ public class PixelPosStatusLineElementProvider
         pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, "--", "--"));
         zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, "--", "--"));
         pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT, "--", "--"));
-        scaleLabel.setText(String.format(SCALE_FORMAT, "--", "--"));
     }
 
 
