@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
@@ -45,16 +47,21 @@ public class PixelPosStatusLineElementProvider
     private static final String GEO_POS_FORMAT = "Lat %8s  Lon %8s";
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
     private static final String ZOOM_LEVEL_FORMAT = "Zoom %s  Level %s";
+    private static final String PIXEL_SIZE_FORMAT = "PixelSpacing %s m %s m";
+    private static final String SCALE_FORMAT = "ScaleFactor %s";
 
 
     private final JLabel zoomLevelLabel;
     private final JLabel geoPosLabel;
     private final JLabel pixelPosLabel;
+    private final JLabel pixelSpacingLabel;
+    private final JLabel scaleLabel;
     private final JPanel panel;
 
     private boolean showPixelOffsetDecimals;
     private boolean showGeoPosOffsetDecimals;
-
+    private final DecimalFormatSymbols formatSymbols;
+    private final DecimalFormat decimalFormat;
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(DocumentWindowManager.Predicate.view(ProductSceneView.class), this);
         SnapApp.getDefault().getPreferences().addPreferenceChangeListener(this);
@@ -72,6 +79,14 @@ public class PixelPosStatusLineElementProvider
         zoomLevelLabel.setPreferredSize(new Dimension(150, 20));
         zoomLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        pixelSpacingLabel = new JLabel();
+        pixelSpacingLabel.setPreferredSize(new Dimension(180, 20));
+        pixelSpacingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        scaleLabel = new JLabel();
+        scaleLabel.setPreferredSize(new Dimension(180, 20));
+        scaleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         panel.add(Box.createHorizontalGlue());
@@ -82,7 +97,13 @@ public class PixelPosStatusLineElementProvider
         panel.add(geoPosLabel);
         panel.add(new JSeparator(SwingConstants.VERTICAL));
         panel.add(zoomLevelLabel);
-
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(pixelSpacingLabel);
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(scaleLabel);
+        formatSymbols = new DecimalFormatSymbols();
+        formatSymbols.setDecimalSeparator('.');
+        decimalFormat = new DecimalFormat("#.#",formatSymbols);
     }
 
     @Override
@@ -144,7 +165,11 @@ public class PixelPosStatusLineElementProvider
                 scaleStr = "1:" + ((int) v == v ? (int) v : v);
             }
             zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
-
+            double scale= rasterDataNode.getMultiLevelModel().getScale(currentLevel);
+            double scaleX= rasterDataNode.getImageToModelTransform().getScaleX();
+            double scaleY= Math.abs(rasterDataNode.getImageToModelTransform().getScaleY());
+            pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT,decimalFormat.format(scaleX),decimalFormat.format(scaleY)));
+            scaleLabel.setText(String.format(SCALE_FORMAT, scale));
         } else {
             setDefault();
 
@@ -156,6 +181,8 @@ public class PixelPosStatusLineElementProvider
         geoPosLabel.setText(String.format(GEO_POS_FORMAT, "--", "--"));
         pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, "--", "--"));
         zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, "--", "--"));
+        pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT, "--", "--"));
+        scaleLabel.setText(String.format(SCALE_FORMAT, "--", "--"));
     }
 
 
