@@ -103,7 +103,7 @@ public class PixelPosStatusLineElementProvider
         panel.add(scaleLabel);
         formatSymbols = new DecimalFormatSymbols();
         formatSymbols.setDecimalSeparator('.');
-        decimalFormat = new DecimalFormat("#.#",formatSymbols);
+        decimalFormat = new DecimalFormat("#.##",formatSymbols);
     }
 
     @Override
