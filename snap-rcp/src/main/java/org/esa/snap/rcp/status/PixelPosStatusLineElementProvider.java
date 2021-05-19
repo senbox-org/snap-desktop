@@ -2,6 +2,8 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
+
+import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -27,6 +29,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormatSymbols;
 import java.text.DecimalFormat;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -60,6 +63,7 @@ public class PixelPosStatusLineElementProvider
 
     private boolean showPixelOffsetDecimals;
     private boolean showGeoPosOffsetDecimals;
+    private final DecimalFormatSymbols formatSymbols;
     private final DecimalFormat decimalFormat;
     private double longitudeResolutionInMeter;
     private double latitudeResolutionInMeter;
@@ -82,7 +86,7 @@ public class PixelPosStatusLineElementProvider
         zoomLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         pixelSpacingLabel = new JLabel();
-        pixelSpacingLabel.setPreferredSize(new Dimension(180, 20));
+        pixelSpacingLabel.setPreferredSize(new Dimension(230, 20));
         pixelSpacingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         scaleLabel = new JLabel();
@@ -103,12 +107,14 @@ public class PixelPosStatusLineElementProvider
         panel.add(pixelSpacingLabel);
         panel.add(new JSeparator(SwingConstants.VERTICAL));
         panel.add(scaleLabel);
-        decimalFormat = new DecimalFormat("#");
+        formatSymbols = new DecimalFormatSymbols();
+        formatSymbols.setDecimalSeparator('.');
+        decimalFormat = new DecimalFormat("#.##", formatSymbols);
         longitudeResolutionInMeter = Double.NaN;
         latitudeResolutionInMeter = Double.NaN;
     }
 
-    private void computeResolutionFromProjectedPos() {
+    private void computeResolution() {
         longitudeResolutionInMeter = Double.NaN;
         latitudeResolutionInMeter = Double.NaN;
         ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
@@ -121,30 +127,36 @@ public class PixelPosStatusLineElementProvider
             return;
         }
         GeoCoding geoCoding = rasterDataNode.getGeoCoding();
-        int width = rasterDataNode.getRasterWidth();
-        int height = rasterDataNode.getRasterHeight();
-        if(width >1 && height>1)
+        if (geoCoding instanceof CrsGeoCoding)
         {
-            int x1 = (int) (width * 0.5);
-            int y1 = (int) (height * 0.5);
-            GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
-            GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((x1 + 1), y1), null);
-            GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, (y1 + 1)), null);
-            double resLon = geoPos.getLon();
-            double resLat = geoPos.getLat();
-            double resLonX = geoPosX.getLon();
-            double resLatX = geoPosX.getLat();
-            double resLonY = geoPosY.getLon();
-            double resLatY = geoPosY.getLat();
-            final SphericalDistance spherDist = new SphericalDistance(resLon, resLat);
-            double longitudeDistance = spherDist.distance(resLonX, resLatX);
-            double latitudeDistance = spherDist.distance(resLonY, resLatY);
-            final DefaultGeographicCRS wgs84 = DefaultGeographicCRS.WGS84;
-            final Ellipsoid ellipsoid = wgs84.getDatum().getEllipsoid();
-            final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) / 2;
-            final double meanEarthRadiusKm = meanEarthRadiusM / 1000.0;
-            longitudeResolutionInMeter = longitudeDistance * meanEarthRadiusKm * 1000;
-            latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusKm * 1000;
+            longitudeResolutionInMeter = rasterDataNode.getImageToModelTransform().getScaleX();
+            latitudeResolutionInMeter = Math.abs(rasterDataNode.getImageToModelTransform().getScaleY());
+        }else{
+            int width = rasterDataNode.getRasterWidth();
+            int height = rasterDataNode.getRasterHeight();
+            if(width >1 && height>1)
+            {
+                int x1 = (int) (width * 0.5);
+                int y1 = (int) (height * 0.5);
+                GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
+                GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((x1 + 1), y1), null);
+                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, (y1 + 1)), null);
+                double resLon = geoPos.getLon();
+                double resLat = geoPos.getLat();
+                double resLonX = geoPosX.getLon();
+                double resLatX = geoPosX.getLat();
+                double resLonY = geoPosY.getLon();
+                double resLatY = geoPosY.getLat();
+                final SphericalDistance spherDist = new SphericalDistance(resLon, resLat);
+                double longitudeDistance = spherDist.distance(resLonX, resLatX);
+                double latitudeDistance = spherDist.distance(resLonY, resLatY);
+                final DefaultGeographicCRS wgs84 = DefaultGeographicCRS.WGS84;
+                final Ellipsoid ellipsoid = wgs84.getDatum().getEllipsoid();
+                final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) / 2;
+                final double meanEarthRadiusKm = meanEarthRadiusM / 1000.0;
+                longitudeResolutionInMeter = longitudeDistance * meanEarthRadiusKm * 1000;
+                latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusKm * 1000;
+            }
         }
     }
 
@@ -246,7 +258,7 @@ public class PixelPosStatusLineElementProvider
     public void windowSelected(DocumentWindowManager.Event<Object, ProductSceneView> e) {
         ProductSceneView view = e.getWindow().getView();
         view.addPixelPositionListener(this);
-        computeResolutionFromProjectedPos();
+        computeResolution();
     }
 
     @Override
