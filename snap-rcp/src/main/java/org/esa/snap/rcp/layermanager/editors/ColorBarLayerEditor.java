@@ -35,8 +35,7 @@ import static org.esa.snap.core.layer.ColorBarLayerType.*;
  * @version $Revision$ $Date$
  * @since BEAM 4.6
  */
-//SEP2018 - Daniel Knowles - adds numerous new properties and related binding contexts.
-//JAN2018 - Daniel Knowles - updated with SeaDAS gridline revisions
+
 
 public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 

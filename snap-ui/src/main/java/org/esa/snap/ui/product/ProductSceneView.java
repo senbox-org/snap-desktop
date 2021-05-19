@@ -121,6 +121,8 @@ import java.util.Vector;
  *
  * @author Norman Fomferra
  */
+// MAY2021 - Daniel Knowles - added mechanisms for Color Bar Legend Layer
+
 public class ProductSceneView extends BasicView
         implements FigureEditorAware, ProductNodeView, PropertyChangeListener, ProductLayerContext, ViewportAware {
 
@@ -738,7 +740,7 @@ public class ProductSceneView extends BasicView
 
 
         if (colorBarLayer != null) {
-            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo().getColorPaletteDef().isDiscrete());
+            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
         }
     }
 

@@ -41,6 +41,7 @@ import java.awt.geom.AffineTransform;
 
 
 // SEP2018 - Daniel Knowles - added multiple new properties to the Graticule layer configuration
+// MAY2021 - Daniel Knowles - added mechanisms for Color Bar Legend Layer
 
 public class ProductSceneImage implements ProductLayerContext {
 
@@ -642,11 +643,11 @@ public class ProductSceneImage implements ProductLayerContext {
         colorBarLayer.setId(ProductSceneView.COLORBAR_LAYER_ID);
         colorBarLayer.setVisible(false);
         colorBarLayer.setName(ColorBarLayerType.COLOR_BAR_LAYER_NAME);
-        applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo().getColorPaletteDef().isDiscrete());
+        applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
         return colorBarLayer;
     }
 
-    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer, boolean discrete) {
+    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer, ImageInfo imageInfo) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
 //
@@ -691,7 +692,7 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
 
-        if (discrete) {
+        if (imageInfo.getColorPaletteDef().isDiscrete()) {
             addPropertyToLayerConfiguration(configuration, layer,
                     ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
                     ColorBarLayerType.DISTRIB_EXACT_STR,
