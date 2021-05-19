@@ -735,8 +735,10 @@ public class ProductSceneView extends BasicView
         }
 
         ColorBarLayer colorBarLayer = getColorBarLayer(false);
+
+
         if (colorBarLayer != null) {
-            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer);
+            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo().getColorPaletteDef().isDiscrete());
         }
     }
 

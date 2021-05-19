@@ -642,11 +642,11 @@ public class ProductSceneImage implements ProductLayerContext {
         colorBarLayer.setId(ProductSceneView.COLORBAR_LAYER_ID);
         colorBarLayer.setVisible(false);
         colorBarLayer.setName(ColorBarLayerType.COLOR_BAR_LAYER_NAME);
-        applyColorBarLayerStyle(configuration, colorBarLayer);
+        applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo().getColorPaletteDef().isDiscrete());
         return colorBarLayer;
     }
 
-    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer) {
+    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer, boolean discrete) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
 //
@@ -691,10 +691,17 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
-                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
+        if (discrete) {
+            addPropertyToLayerConfiguration(configuration, layer,
+                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                    ColorBarLayerType.DISTRIB_EXACT_STR,
+                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
+        } else {
+            addPropertyToLayerConfiguration(configuration, layer,
+                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
+                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
+        }
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,

@@ -139,6 +139,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private boolean blackWhiteColor;
     private int legendWidth;
     private boolean useLegendWidth;
+    private boolean discrete;
 
 
     private ParamChangeListener paramChangeListener;
@@ -166,6 +167,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
+
+
 
         paramChangeListener = createParamChangeListener();
 
@@ -197,6 +200,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         legendWidth = configuration.getPropertyInt(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
                 ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT);
 
+
+        discrete = SnapApp.getDefault().getSelectedProductSceneView().getImageInfo().getColorPaletteDef().isDiscrete();
 
 
 
@@ -272,8 +277,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         if (imageLegend != null) {
 
+            if (discrete) {
+                imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EXACT_STR);
+            }
+
             // this will initialize the custom label values
             String distributionTypeOriginal = imageLegend.getDistributionType();
+
+
+
             if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
                 if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
                     imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
@@ -281,8 +293,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             }
 
             imageLegend.setLayerScaling(100.0);
-            // todo preferences on "LegendWidth"
-
 
             imageLegend.createImage(new Dimension(legendWidth,legendWidth), useLegendWidth);
             imageLegend.setDistributionType(distributionTypeOriginal);
@@ -622,6 +632,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2, imageLegend.getCustomLabelValues());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         paramGroup.addParameter(param);
+
+
 
         param = new Parameter(PROPERTY_LABEL_VALUES_MODE_KEY2, imageLegend.getDistributionType());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL);

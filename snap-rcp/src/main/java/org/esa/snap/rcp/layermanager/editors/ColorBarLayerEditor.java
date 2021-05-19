@@ -42,13 +42,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
     BindingContext context;
     PropertyMap configuration;
-
+    boolean discrete;
 
     @Override
     protected void addEditablePropertyDescriptors() {
 
 
         configuration = SnapApp.getDefault().getSelectedProductSceneView().getSceneImage().getConfiguration();
+        discrete = SnapApp.getDefault().getSelectedProductSceneView().getImageInfo().getColorPaletteDef().isDiscrete();
 
         context = getBindingContext();
 
@@ -301,10 +302,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
     private void addLabelValuesMode() {
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_TYPE);
-        pd.setDefaultValue(PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+
         pd.setDisplayName(PROPERTY_LABEL_VALUES_MODE_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
         pd.setValueSet(new ValueSet(PROPERTY_LABEL_VALUES_MODE_VALUE_SET));
+        if (discrete) {
+            pd.setDefaultValue(DISTRIB_EXACT_STR);
+        } else {
+            pd.setDefaultValue(PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        }
+
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
@@ -320,7 +327,12 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultValue(PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         pd.setDisplayName(PROPERTY_LABEL_VALUES_COUNT_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
-        pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+        if (discrete) {
+            pd.setEnabled(false);
+        } else {
+            pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+        }
+
         pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_COUNT_MIN, PROPERTY_LABEL_VALUES_COUNT_MAX));
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
@@ -344,7 +356,13 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultValue(PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
-        pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+
+        if (discrete) {
+            pd.setEnabled(false);
+        } else {
+            pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        }
+
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
