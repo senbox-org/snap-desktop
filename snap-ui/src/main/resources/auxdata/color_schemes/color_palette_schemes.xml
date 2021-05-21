@@ -1,0 +1,823 @@
+<schemeList>
+    <Scheme name="absorption">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>1.0000e-03</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.001,0.003,0.01,0.1,0.3,1</COLORBAR_LABELS>
+        <DESCRIPTION>Absorption</DESCRIPTION>
+    </Scheme>
+    <Scheme name="adg_s">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>2.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Spectral slope for gelbstof and detrital absorption</DESCRIPTION>
+    </Scheme>
+    <Scheme name="anc_SSS">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>70</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_sss.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Sea Surface Salinity Reference</DESCRIPTION>
+    </Scheme>
+    <Scheme name="angstrom">
+        <VERBOSE_NAME/>
+        <MIN>-0.15</MIN>
+        <MAX>2.2</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Angstrom coefficient</DESCRIPTION>
+    </Scheme>
+    <Scheme name="aot">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.25</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
+        <DESCRIPTION>Aerosol optical thickness</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bbp">
+        <VERBOSE_NAME/>
+        <MIN>1.0e-03</MIN>
+        <MAX>0.1</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Particle backscatter</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bbp_s">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Spectral slope for particle backscatter</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bbw">
+        <VERBOSE_NAME/>
+        <MIN>1.0e-04</MIN>
+        <MAX>0.01</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Backscattering coefficient of seawater</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bb">
+        <VERBOSE_NAME/>
+        <MIN>1.0e-03</MIN>
+        <MAX>0.1</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Total backscatter</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bbp_giop">
+        <VERBOSE_NAME/>
+        <MIN>1.0e-04</MIN>
+        <MAX>0.1</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Particle backscatter</DESCRIPTION>
+    </Scheme>
+    <Scheme name="BSi">
+        <VERBOSE_NAME/>
+        <MIN>0.001</MIN>
+        <MAX>10</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Biogenic Silica</DESCRIPTION>
+    </Scheme>
+    <Scheme name="BulkSST">
+        <VERBOSE_NAME/>
+        <MIN>271.15</MIN>
+        <MAX>318.15</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_sst.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Sea Surface Temperature (VIIRSN)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="calcite">
+        <VERBOSE_NAME/>
+        <MIN>5.e-05</MIN>
+        <MAX>0.05</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>5e-5,0.0002,0.001,0.005,0.05</COLORBAR_LABELS>
+        <DESCRIPTION>Calcite Concentration</DESCRIPTION>
+    </Scheme>
+    <Scheme name="cdom_index">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>7</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>CDOM Index</DESCRIPTION>
+    </Scheme>
+    <Scheme name="chlor_a">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>chlor_a (Chlorophyll)</VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
+    </Scheme>
+    <Scheme name="chisqr_giop">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>5.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Chi-square per degree of freedom</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="chlor_a_owterr">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>100.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a relative error, OWT algorithm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="elev">
+        <VERBOSE_NAME/>
+        <MIN>-12000.0</MIN>
+        <MAX>15000.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>-12000,-6000,0,7500,15000</COLORBAR_LABELS>
+        <DESCRIPTION>Elevation</DESCRIPTION>
+    </Scheme>
+    <Scheme name="epsilon">
+        <VERBOSE_NAME/>
+        <MIN>0.85</MIN>
+        <MAX>1.231</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Epsilon of aerosol correction</DESCRIPTION>
+    </Scheme>
+    <Scheme name="EVI">
+        <VERBOSE_NAME/>
+        <MIN>-0.05</MIN>
+        <MAX>0.9152</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
+    </Scheme>
+    <Scheme name="evi">
+        <VERBOSE_NAME/>
+        <MIN>-0.35</MIN>
+        <MAX>0.92</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
+    </Scheme>
+    <Scheme name="flag">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>1.016</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>Aerosol optical thickness</COLORBAR_LABELS>
+        <DESCRIPTION>Flags</DESCRIPTION>
+    </Scheme>
+    <Scheme name="flh">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>0.05</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0,0.01,0.02,0.03,0.04,0.05</COLORBAR_LABELS>
+        <DESCRIPTION>Fluorescence Line Height</DESCRIPTION>
+    </Scheme>
+    <Scheme name="fqy">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>0.05</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Fluorescence Quantum Yield</DESCRIPTION>
+    </Scheme>
+    <Scheme name="ipar">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>0.0025</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Instantaneous Photosynthetically Available Radiation</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Kd_lee">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>6.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.05,0.2,1,5</COLORBAR_LABELS>
+        <DESCRIPTION>Diffuse attenuation</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Kd_490">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>6.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.05,0.2,1,5</COLORBAR_LABELS>
+        <DESCRIPTION>Diffuse attenuation coefficient at 490 nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="NDVI">
+        <VERBOSE_NAME/>
+        <MIN>-0.05</MIN>
+        <MAX>0.915200</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
+    </Scheme>
+    <Scheme name="ndvi">
+        <VERBOSE_NAME/>
+        <MIN>-0.35</MIN>
+        <MAX>0.920000</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nLw_lt_430">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>5.08000</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized water-leaving radiance at [less than 430] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nLw_430_479">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>3.81000</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized water-leaving radiance at [430-479] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nLw_480_529">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>2.54000</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized water-leaving radiance at [480-529] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nLw_530_599">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>1.27000</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized water-leaving radiance at [530-599] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nLw_ge_600">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>1.01600</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized water-leaving radiance at [greater than or equal to 600] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="nw">
+        <VERBOSE_NAME/>
+        <MIN>1.3</MIN>
+        <MAX>1.4</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Index of refraction of seawater</DESCRIPTION>
+    </Scheme>
+    <Scheme name="owtd">
+        <VERBOSE_NAME/>
+        <MIN>1</MIN>
+        <MAX>8</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Dominant optical Water Type</DESCRIPTION>
+    </Scheme>
+    <Scheme name="owt">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>1</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized optical Water Type</DESCRIPTION>
+    </Scheme>
+    <Scheme name="par">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>76.2</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,20,40,60,76.2</COLORBAR_LABELS>
+        <DESCRIPTION>Photosynthetically Available Radiation</DESCRIPTION>
+    </Scheme>
+    <Scheme name="pic">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>5.0e-05</MIN>
+        <MAX>0.05</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>5e-5,0.0002,0.001,0.005,0.05</COLORBAR_LABELS>
+        <DESCRIPTION>Particulate Inorganic Carbon</DESCRIPTION>
+    </Scheme>
+    <Scheme name="pixels">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>65500</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Number of pixels per bin</DESCRIPTION>
+    </Scheme>
+    <Scheme name="poc">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>10</MIN>
+        <MAX>1000</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
+        <DESCRIPTION>Particulate Organic Carbon</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rad_sm">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>0.4</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>sm.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Soil Moisture</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rhos">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>gray_scale.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>gray_scale.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
+        <DESCRIPTION>rhos</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rhos_red">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>standard_red.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>standard_red.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
+        <DESCRIPTION>rhos (red)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rhos_blue">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>standard_blue.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>standard_blue.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
+        <DESCRIPTION>rhos (blue)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rhos_green">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>standard_green.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>standard_green.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
+        <DESCRIPTION>rhos (green)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Rrs_lt_430">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Rrs (&lt; 430)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.025</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0,0.005,0.01,0.015,0.02,0.025</COLORBAR_LABELS>
+        <DESCRIPTION>Remote sensing reflectance at [less than 430 nm]</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Rrs_430_459">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Rrs (430-459)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.02</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0,0.005,0.01,0.015,0.02</COLORBAR_LABELS>
+        <DESCRIPTION>Remote sensing reflectance at [430-459] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Rrs_460_499">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Rrs (460-499)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.015</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0,0.005,0.01,0.015</COLORBAR_LABELS>
+        <DESCRIPTION>Remote sensing reflectance at [460 - 499] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Rrs_ge_500">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Rrs (500 &gt;)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.01</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0,0.0025,0.005,0.0075,0.01</COLORBAR_LABELS>
+        <DESCRIPTION>Remote sensing reflectance at [greater than or equal to 500] nm</DESCRIPTION>
+    </Scheme>
+    <Scheme name="rrsdiff_giop">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>0.1</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Relative Rrs difference</DESCRIPTION>
+    </Scheme>
+    <Scheme name="scat_wind_speed">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>20</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Scatterometer Wind Speed</DESCRIPTION>
+    </Scheme>
+    <Scheme name="scenes">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>65500</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Number of scenes per bin</DESCRIPTION>
+    </Scheme>
+    <Scheme name="solz">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>90.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,15,30,45,60,75,90</COLORBAR_LABELS>
+        <DESCRIPTION>Solar Zenith Angle</DESCRIPTION>
+    </Scheme>
+    <Scheme name="SSS">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>70</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_sss.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Sea Surface Salinity</DESCRIPTION>
+    </Scheme>
+    <Scheme name="sst">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>sst (Sea Surface Temperature)</VERBOSE_NAME>
+        <MIN>-2.0</MIN>
+        <MAX>45.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_sst.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,10,20,30,40,45</COLORBAR_LABELS>
+        <DESCRIPTION>Sea Surface Temperature</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zeu">
+        <VERBOSE_NAME/>
+        <MIN>5.0</MIN>
+        <MAX>180.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Euphotic Depth</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zhl_morel">
+        <VERBOSE_NAME/>
+        <MIN>2.0</MIN>
+        <MAX>65.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Heated Layer Depth (Morel)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zhl">
+        <VERBOSE_NAME/>
+        <MIN>2.0</MIN>
+        <MAX>65.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Heated Layer Depth</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zp_10_lee">
+        <VERBOSE_NAME/>
+        <MIN>2.0</MIN>
+        <MAX>180.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Photic Depth at 10% Light (Lee)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zp_50_lee">
+        <VERBOSE_NAME/>
+        <MIN>5.0</MIN>
+        <MAX>180.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Photic Depth at 50% Light (Lee)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="Zsd">
+        <VERBOSE_NAME/>
+        <MIN>2.0</MIN>
+        <MAX>180.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Secchi Depth</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bathymetry">
+        <VERBOSE_NAME/>
+        <MIN>10.0</MIN>
+        <MAX>11000.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>smooth_inv_blue.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>smooth_inv_blue.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,100,1000,10000</COLORBAR_LABELS>
+        <DESCRIPTION>Bathymetry (depth in meters)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="bathymetry_deep">
+        <VERBOSE_NAME/>
+        <MIN>10.0</MIN>
+        <MAX>11000.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>deep.cpt</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>deep.cpt</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,100,1000,10000</COLORBAR_LABELS>
+        <DESCRIPTION>Bathymetry (depth in meters)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="elevation">
+        <VERBOSE_NAME/>
+        <MIN>-12000.0</MIN>
+        <MAX>15000.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>gray_scale.cpdthe</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>-12000,-6000,0,7500,15000</COLORBAR_LABELS>
+        <DESCRIPTION>Elevation (with respect to sea-level in meters)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="topography">
+        <VERBOSE_NAME/>
+        <MIN>5</MIN>
+        <MAX>5000.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>smooth_green.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>smooth_green.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS>5,50,500,5000</COLORBAR_LABELS>
+        <DESCRIPTION>Topography (with respect to sea-level in meters)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="topography_ETOP">
+        <VERBOSE_NAME/>
+        <MIN>0</MIN>
+        <MAX>8500.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>topography.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Topography (Colormap used in the ETOPO1 global relief map)</DESCRIPTION>
+    </Scheme>
+    <Scheme name="chlor_a_bluegreen">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>50.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>chlor_blue_green.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>chlor_blue_green.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.05,0.15,3,50.0</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration with color palette split between eutrophic (green) and oligotrophic
+            (blue)
+        </DESCRIPTION>
+    </Scheme>
+    <Scheme name="chlor_a_uni">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>universal_bluered.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration with universal (color-blind compliant) blue to red color palette
+        </DESCRIPTION>
+    </Scheme>
+    <Scheme name="chlor_a_uni_bg">
+        <VERBOSE_NAME/>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>universal_bluegreen.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluegreen.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration with universal (semi-color-blind compliant) blue to green color
+            palette
+        </DESCRIPTION>
+    </Scheme>
+<!--    <Scheme name="chlor_a_oc">-->
+<!--        <VERBOSE_NAME/>-->
+<!--        <MIN>0.01</MIN>-->
+<!--        <MAX>20.0</MAX>-->
+<!--        <LOG_SCALE>true</LOG_SCALE>-->
+<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
+<!--        <UNIVERSAL_FILENAME>oceancolor_standard.cpd</UNIVERSAL_FILENAME>-->
+<!--        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>-->
+<!--        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>-->
+<!--        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>-->
+<!--    </Scheme>-->
+    <Scheme name="CI">
+        <VERBOSE_NAME>CI (Cyanobacteria Index)</VERBOSE_NAME>
+        <MIN>0.0001</MIN>
+        <MAX>0.01</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cyanobacteria Index</COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>
+    </Scheme>
+<!--    <Scheme name="256PtLinear">-->
+<!--        <VERBOSE_NAME/>-->
+<!--        <MIN>0</MIN>-->
+<!--        <MAX>255</MAX>-->
+<!--        <LOG_SCALE>false</LOG_SCALE>-->
+<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
+<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+<!--        <COLORBAR_TITLE></COLORBAR_TITLE>-->
+<!--        <COLORBAR_LABELS></COLORBAR_LABELS>-->
+<!--        <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>-->
+<!--    </Scheme>-->
+</schemeList>

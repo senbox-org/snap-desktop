@@ -1,0 +1,161 @@
+# Note order is important with wildcards
+# These are read in from top to bottom
+# For any duplicate matches the lower (later) entry wins
+
+ 
+#PATTERN              SCHEME_ID        :COLORBAR_TITLE(OVERRIDE)    :COLORBAR_LABELS(OVERRIDE)      :DESCRIPTION(OVERRIDE)
+ adg_unc_*_giop      :absorption       :                            :                               :Absorption due to gelbstof and detritus
+ adg_*_giop          :absorption       :                            :                               :Absorption due to gelbstof and detritus
+ adg_s_*             :adg_s            :                            :                               :
+ angstrom_*          :angstrom         :                            :                               :
+ aot_*               :aot              :Aerosol optical thickness   :                               :
+ aph_*               :absorption       :                            :                               :Absorption due to phytoplankton
+ aw_*                :absorption       :                            :                               :Absorption coefficient of seawater
+ a_*                 :absorption       :                            :                               :Total absorption
+ a_unc_*             :absorption       :                            :                               :Total absorption
+ bbp_unc_*_giop      :bbp_giop         :                            :                               :
+ bbp_*_giop          :bbp_giop         :                            :                               :
+ bbp_s_*             :bbp_s            :                            :                               :
+ bbp_*               :bbp              :USE_SCHEME_VALUE            :USE_SCHEME_VALUE               :USE_SCHEME_VALUE
+ bb_*_giop           :bbp_giop         :                            :                               :
+ bb_unc_*_giop       :bbp_giop         :                            :                               :
+ bbw_*               :bbw              :                            :                               :
+ bb_*                :bb               :                            :                               :
+ calcite_*           :calcite          :                            :                               :
+ Chlorophyll_a       :chlor_a          :                            :                               :
+ chlor_*             :chlor_a          :USE_SCHEME_VALUE            :USE_SCHEME_VALUE               :USE_SCHEME_VALUE
+ chl_*               :chlor_a          :                            :                               :
+ eps_78              :epsilon          :                            :                               :
+ FLAG_*              :flags            :                            :                               :
+ fqy                 :fqy              :                            :                               :
+ fqy2                :fqy              :                            :                               :
+ fsat                :flh              :                            :                               :
+ Kd_PAR_*            :Kd_490           :                            :                               :
+ Kd_*_lee            :Kd_lee           :                            :                               :
+ K_490               :Kd_490           :                            :                               :
+ nflh                :flh              :                            :                               :
+ nflh2               :flh              :                            :                               :
+ nw_*                :nw               
+ owtn_*              :owt              
+ owt_*               :owt              
+ pic2                :pic              
+ poc_*               :poc              
+ Rrs_40*             :Rrs_lt_430       
+ Rrs_41*             :Rrs_lt_430       
+ Rrs_42*             :Rrs_lt_430       
+ Rrs_43*             :Rrs_430_459      
+ Rrs_44*             :Rrs_430_459      
+ Rrs_45*             :Rrs_430_459      
+ Rrs_46*             :Rrs_460_499      
+ Rrs_47*             :Rrs_460_499      
+ Rrs_48*             :Rrs_460_499      
+ Rrs_49*             :Rrs_460_499      
+ Rrs_5*              :Rrs_ge_500       
+ Rrs_6*              :Rrs_ge_500       
+ Rrs_7*              :Rrs_ge_500       
+ Rrs_8*              :Rrs_ge_500       
+ Rrs_9*              :Rrs_ge_500       
+ rhos_*              :rhos             
+ nLw_40*             :nLw_lt_430       
+ nLw_41*             :nLw_lt_430       
+ nLw_42*             :nLw_lt_430       
+ nLw_43*             :nLw_430_479      
+ nLw_44*             :nLw_430_479      
+ nLw_45*             :nLw_430_479      
+ nLw_46*             :nLw_430_479      
+ nLw_47*             :nLw_430_479      
+ nLw_48*             :nLw_480_529      
+ nLw_49*             :nLw_480_529      
+ nLw_50*             :nLw_480_529      
+ nLw_51*             :nLw_480_529      
+ nLw_52*             :nLw_480_529      
+ nLw_53*             :nLw_530_599      
+ nLw_54*             :nLw_530_599      
+ nLw_55*             :nLw_530_599      
+ nLw_56*             :nLw_530_599      
+ nLw_57*             :nLw_530_599      
+ nLw_58*             :nLw_530_599      
+ nLw_59*             :nLw_530_599      
+ nLw_6*              :nLw_ge_600       
+ nLw_7*              :nLw_ge_600       
+ nLw_8*              :nLw_ge_600       
+ nLw_9*              :nLw_ge_600       
+ sst*                :sst
+ taua_*              :aot              
+ tau_*               :aot              
+ Zeu_*               :Zeu              
+ Zsd_*               :Zsd              
+
+ CI_stumpf           :CI
+ CI_cyano            :CI
+
+
+# Note: blank SCHEME_ID means use PATTERN as SCHEME_ID
+# Semi-colon must also be used as delimiter for blank SCHEME_ID case
+#PATTERN              SCHEME_ID        :COLORBAR_TITLE(OVERRIDE)    :COLORBAR_LABELS(OVERRIDE)      :DESCRIPTION(OVERRIDE)
+ absorption          :
+ adg                 :
+ adg_s               :
+ anc_SSS             :
+ angstrom            :
+ aot                 :Aerosol optical thickness
+ aph                 :
+ aw                  :
+ bbp                 :
+ bbp_s               :
+ bbw                 :
+ bb                  :
+ bbp_giop            :
+ BSi                 :
+ BulkSST             :
+ calcite             :
+ cdom_index          :
+ chisqr_giop         :
+ chlor_a             : chlor_a           : Chlorophyll
+ chlor_a_bluegreen   : chlor_a_bluegreen : Chlorophyll
+ chlor_a_owterr      :
+ elev                :
+ epsilon             :
+ EVI                 :
+ evi                 :
+ flag                :
+ flh                 :
+ ipar                :
+ Kd_lee              :
+ Kd_490              : Kd_490
+ NDVI                :
+ ndvi                :
+ nLw_lt_430          :
+ nLw_430_479         :
+ nLw_480_529         :
+ nLw_530_599         :
+ nLw_ge_600          :
+ nw                  :
+ owtd                :
+ owt                 :
+ par                 :
+ pic                 :
+ pixels              :
+ poc                 :
+ rad_sm              :
+ rhos                :
+ Rrs_lt_430          :
+ Rrs_430_459         :
+ Rrs_460_499         :
+ Rrs_ge_500          :
+ rrsdiff_giop        :
+ scat_wind_speed     :
+ scenes              :
+ solz                :
+ SSS                 :
+ sst                 :
+ Zeu                 :
+ Zhl_morel           :
+ Zp_10_lee           :
+ Zp_50_lee           :
+ Zsd                 :
+
+
+ bathymetry          :
+ elevation           :
+ topography          :
