@@ -52,7 +52,10 @@ public class RemoteProductStatusLabel extends JLabel {
             } else if (downloadProgressStatus.isOpened()) {
                 percentText = "Downloaded (opened)";
                 foregroundColor = Color.GREEN;
-            } else {
+            } else if (downloadProgressStatus.isQueued()) {
+                percentText = "Download queued";
+                foregroundColor = Color.ORANGE;
+            }else {
                 throw new IllegalStateException("The percent progress status is unknown. The value is " + downloadProgressStatus.getValue()+".");
             }
         }

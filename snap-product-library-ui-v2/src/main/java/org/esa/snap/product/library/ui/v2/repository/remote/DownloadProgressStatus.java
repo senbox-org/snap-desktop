@@ -21,6 +21,7 @@ public class DownloadProgressStatus {
     public static final byte FAIL_OPENED = 10;
     public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 11;
     public static final byte SAVED = 12;
+    public static final byte QUEUED = 13;
 
     private short value;
     private byte status;
@@ -107,4 +108,9 @@ public class DownloadProgressStatus {
     public boolean canOpen() {
         return (this.value == 100 && this.downloadedPath != null);
     }
+
+    public boolean isQueued() {
+        return (this.status == QUEUED);
+    }
+
 }
