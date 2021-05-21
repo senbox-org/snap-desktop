@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
@@ -18,6 +19,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadPro
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -197,9 +199,21 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
         String selectedMission = getSelectedMission();
         List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
+        Credentials savedCredentials = RepositoriesCredentialsController.getInstance().getRepositoryCollectionCredential(this.productsRepositoryProvider.getRepositoryName(), selectedMission);
         // filter the UI displayed parameters (those having a proper label)
         List<RepositoryQueryParameter> parametersForUI = parameters.stream().filter(p -> StringUtils.isNotNullAndNotEmpty(p.getLabel())).collect(Collectors.toList());
         this.parameterComponents = panel.addParameterComponents(parametersForUI, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
+
+        if (savedCredentials != null) {
+            for (AbstractParameterComponent<?> parameterComponent : this.parameterComponents) {
+                if (parameterComponent.getParameterName().contentEquals("username")) {
+                    parameterComponent.setParameterValue(savedCredentials.getUserPrincipal().getName());
+                }
+                if (parameterComponent.getParameterName().contentEquals("password")) {
+                    parameterComponent.setParameterValue(savedCredentials.getPassword());
+                }
+            }
+        }
 
         RepositoryQueryParameter areaOfInterestParameter = null;
         for (int i=0; i<parameters.size(); i++) {
@@ -262,8 +276,28 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.downloadingProductProgressCallback = downloadingProductProgressCallback;
     }
 
+    private Credentials getSearchCredentials() {
+        String username = null;
+        String password = null;
+        for (AbstractParameterComponent<?> parameterComponent : this.parameterComponents) {
+            if (parameterComponent.getParameterName().contentEquals("username")) {
+                username = (String) parameterComponent.getParameterValue();
+            }
+            if (parameterComponent.getParameterName().contentEquals("password")) {
+                password = (String) parameterComponent.getParameterValue();
+            }
+        }
+        if (StringUtils.isNotNullAndNotEmpty(username) && StringUtils.isNotNullAndNotEmpty(password)) {
+            return new UsernamePasswordCredentials(username, password);
+        }
+        return null;
+    }
+
     public Credentials getSelectedAccount() {
-        Credentials selectedCredentials = null;
+        Credentials selectedCredentials = getSearchCredentials();
+        if (selectedCredentials != null) {
+            return selectedCredentials;
+        }
         if (this.userAccountsComboBox != null) {
             // the repository provider requires authentication
             selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();

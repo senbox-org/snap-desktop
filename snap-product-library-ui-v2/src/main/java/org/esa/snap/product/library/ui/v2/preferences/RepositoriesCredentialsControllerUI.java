@@ -252,7 +252,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 boolean changedAutoUncompress = getChangedAutoUncompress();
                 boolean changedDownloadAllPagesEnabled = getChangedDownloadAllPagesEnabled();
                 int changedNrRecordsOnPage = getChangedNrRecordsOnPage();
-                repositoriesCredentialsController.saveConfigurations(new RepositoriesCredentialsConfigurations(createCopy(changedRepositoriesCredentials), changedAutoUncompress, changedDownloadAllPagesEnabled, changedNrRecordsOnPage));
+                repositoriesCredentialsController.saveConfigurations(new RepositoriesCredentialsConfigurations(createCopy(changedRepositoriesCredentials), repositoriesCredentialsController.getRepositoriesCollectionsCredentials(), changedAutoUncompress, changedDownloadAllPagesEnabled, changedNrRecordsOnPage));
                 this.autoUncompress = changedAutoUncompress;
                 this.downloadAllPages = changedDownloadAllPagesEnabled;
                 this.nrRecordsOnPage = changedNrRecordsOnPage;

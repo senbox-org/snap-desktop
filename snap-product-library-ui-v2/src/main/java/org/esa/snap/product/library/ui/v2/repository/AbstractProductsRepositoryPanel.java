@@ -20,7 +20,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +124,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     }
 
     protected final Map<String, Object> getParameterValues() {
-        Map<String, Object> parameterValues = new HashMap<>();
+        Map<String, Object> parameterValues = new LinkedHashMap<>();
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent<?> parameterComponent = this.parameterComponents.get(i);
             Boolean result = parameterComponent.hasValidValue();

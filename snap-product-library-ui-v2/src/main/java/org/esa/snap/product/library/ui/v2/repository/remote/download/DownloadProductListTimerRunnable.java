@@ -1,7 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
@@ -98,7 +98,12 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                         }
                     }
                 };
-                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
+                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, getPageSize(), this.parameterValues, downloaderListener, this);
+                if (this.parameterValues.containsKey("username") && this.parameterValues.containsKey("password")) {
+                    String username = (String) this.parameterValues.get("username");
+                    String password = (String) this.parameterValues.get("password");
+                    RepositoriesCredentialsController.getInstance().saveRepositoryCollectionCredential(this.remoteRepositoryName, this.mission, new UsernamePasswordCredentials(username, password));
+                }
             } catch (java.lang.InterruptedException exception) {
                 logger.log(Level.FINE, "Stop searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
                 return null; // nothing to return
