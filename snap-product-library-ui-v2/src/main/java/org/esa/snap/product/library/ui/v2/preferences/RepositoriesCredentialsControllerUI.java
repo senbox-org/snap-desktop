@@ -68,10 +68,12 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     private final List<RemoteProductsRepositoryProvider> remoteRepositories = new ArrayList<>();
     private JPanel credentialsListPanel;
     private JRadioButton autoUncompressEnabled;
+    private JRadioButton downloadAllPagesEnabled;
     private JComboBox<Integer> recordsOnPageCb;
     private RepositoriesCredentialsBean repositoriesCredentialsBean = new RepositoriesCredentialsBean();
     private List<RemoteRepositoryCredentials> repositoriesCredentials;
     private boolean autoUncompress;
+    private boolean downloadAllPages;
     private int nrRecordsOnPage;
     private boolean isInitialized = false;
     private int currentSelectedRow = -1;
@@ -80,6 +82,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
         this.repositoriesCredentials = createCopy(repositoriesCredentialsController.getRepositoriesCredentials());
         this.autoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        this.downloadAllPages = repositoriesCredentialsController.downloadsAllPages();
         this.nrRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
         loadRemoteRepositories();
         repositoriesListTable = buildRepositoriesListTable();
@@ -170,6 +173,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         return autoUncompressEnabled.isSelected();
     }
 
+    private boolean getChangedDownloadAllPagesEnabled() {
+        return downloadAllPagesEnabled.isSelected();
+    }
+
     private int getChangedNrRecordsOnPage() {
         return recordsOnPageCb.getItemAt(recordsOnPageCb.getSelectedIndex());
     }
@@ -243,9 +250,11 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
                 List<RemoteRepositoryCredentials> changedRepositoriesCredentials = getChangedRemoteRepositories();
                 boolean changedAutoUncompress = getChangedAutoUncompress();
+                boolean changedDownloadAllPagesEnabled = getChangedDownloadAllPagesEnabled();
                 int changedNrRecordsOnPage = getChangedNrRecordsOnPage();
-                repositoriesCredentialsController.saveConfigurations(new RepositoriesCredentialsConfigurations(createCopy(changedRepositoriesCredentials), changedAutoUncompress, changedNrRecordsOnPage));
+                repositoriesCredentialsController.saveConfigurations(new RepositoriesCredentialsConfigurations(createCopy(changedRepositoriesCredentials), changedAutoUncompress, changedDownloadAllPagesEnabled, changedNrRecordsOnPage));
                 this.autoUncompress = changedAutoUncompress;
+                this.downloadAllPages = changedDownloadAllPagesEnabled;
                 this.nrRecordsOnPage = changedNrRecordsOnPage;
                 AppContext appContext = SnapApp.getDefault().getAppContext();
                 appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
@@ -267,6 +276,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         this.repositoriesCredentials = createCopy(repositoriesCredentialsController.getRepositoriesCredentials());
         this.currentSelectedRow = -1;
         this.autoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        this.downloadAllPages = repositoriesCredentialsController.downloadsAllPages();
         this.nrRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
     }
 
@@ -290,8 +300,9 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
             }
         }
         boolean savedAutoUncompress = repositoriesCredentialsController.isAutoUncompress();
+        boolean savedDownloadAllPages = repositoriesCredentialsController.downloadsAllPages();
         int savedRecordsOnPage = repositoriesCredentialsController.getNrRecordsOnPage();
-        return changed || savedAutoUncompress != getChangedAutoUncompress() || savedRecordsOnPage != getChangedNrRecordsOnPage();
+        return changed || savedAutoUncompress != getChangedAutoUncompress() || savedDownloadAllPages != getChangedDownloadAllPagesEnabled() || savedRecordsOnPage != getChangedNrRecordsOnPage();
     }
 
     /**
@@ -546,10 +557,28 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         autoUncompressRBsPanel.add(autoUncompressEnabled);
         autoUncompressRBsPanel.add(autoUncompressDisabled);
         autoUncompressPanel.add(new JLabel("Auto uncompress downloaded archive products:", SwingConstants.LEFT));
-        autoUncompressPanel.add(Box.createHorizontalGlue());
         autoUncompressPanel.add(autoUncompressRBsPanel);
         autoUncompressPanel.add(Box.createHorizontalGlue());
         return autoUncompressPanel;
+    }
+
+    private JPanel buildDownloadAllPagesPanel() {
+        JPanel downloadAllPagesPanel = new JPanel();
+        downloadAllPagesPanel.setLayout(new BoxLayout(downloadAllPagesPanel, BoxLayout.LINE_AXIS));
+        downloadAllPagesEnabled = new JRadioButton("Yes");
+        JRadioButton downloadAllPagesDisabled = new JRadioButton("No", true);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(downloadAllPagesEnabled);
+        buttonGroup.add(downloadAllPagesDisabled);
+        downloadAllPagesEnabled.setSelected(this.downloadAllPages);
+        JPanel downloadAllPagesRBsPanel = new JPanel();
+        downloadAllPagesRBsPanel.setLayout(new BoxLayout(downloadAllPagesRBsPanel, BoxLayout.LINE_AXIS));
+        downloadAllPagesRBsPanel.add(downloadAllPagesEnabled);
+        downloadAllPagesRBsPanel.add(downloadAllPagesDisabled);
+        downloadAllPagesPanel.add(new JLabel("Download all pages of result search:", SwingConstants.LEFT));
+        downloadAllPagesPanel.add(downloadAllPagesRBsPanel);
+        downloadAllPagesPanel.add(Box.createHorizontalGlue());
+        return downloadAllPagesPanel;
     }
 
     private JPanel buildRecordsOnPagePanel() {
@@ -558,7 +587,6 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         recordsOnPageCb = new JComboBox<>(new Integer[]{10, 20, 30, 40, 50});
         recordsOnPageCb.setSelectedItem(this.nrRecordsOnPage);
         recordsOnPagePanel.add(new JLabel("Number of records on search result page:", SwingConstants.LEFT));
-        recordsOnPagePanel.add(Box.createHorizontalGlue());
         recordsOnPagePanel.add(recordsOnPageCb);
         recordsOnPagePanel.add(Box.createHorizontalGlue());
         return recordsOnPagePanel;
@@ -567,8 +595,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
     private JPanel buildExtraConfigurationsPanel() {
         JPanel extraConfigurationsPanel = new JPanel();
         extraConfigurationsPanel.setBorder(BorderFactory.createTitledBorder("Other options"));
-        extraConfigurationsPanel.setLayout(new BoxLayout(extraConfigurationsPanel, BoxLayout.LINE_AXIS));
+        extraConfigurationsPanel.setLayout(new BoxLayout(extraConfigurationsPanel, BoxLayout.PAGE_AXIS));
         extraConfigurationsPanel.add(buildAutoUncompressPanel());
+        extraConfigurationsPanel.add(Box.createHorizontalGlue());
+        extraConfigurationsPanel.add(buildDownloadAllPagesPanel());
         extraConfigurationsPanel.add(Box.createHorizontalGlue());
         extraConfigurationsPanel.add(buildRecordsOnPagePanel());
         extraConfigurationsPanel.add(Box.createHorizontalGlue());
@@ -624,6 +654,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
 
     private void refreshSearchResultsConfigurations() {
         this.autoUncompressEnabled.setSelected(this.autoUncompress);
+        this.downloadAllPagesEnabled.setSelected(this.downloadAllPages);
         this.recordsOnPageCb.setSelectedItem(this.nrRecordsOnPage);
     }
 

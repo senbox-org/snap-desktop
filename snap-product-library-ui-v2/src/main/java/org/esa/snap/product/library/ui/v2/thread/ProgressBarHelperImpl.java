@@ -57,7 +57,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
     public boolean hideProgressPanel(int threadId) {
         if (EventQueue.isDispatchThread()) {
             if (this.currentThreadId == threadId) {
-                this.currentThreadId++;
+//                this.currentThreadId++;
                 this.messageLabel.setText(""); // reset the message text
                 boolean oldVisible = this.progressBar.isVisible();
                 // hide the progress bar
