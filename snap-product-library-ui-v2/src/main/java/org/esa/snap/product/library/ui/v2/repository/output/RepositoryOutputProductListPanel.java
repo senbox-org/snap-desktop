@@ -3,8 +3,10 @@ package org.esa.snap.product.library.ui.v2.repository.output;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
+import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.repository.timeline.RepositoryProductsTimelinePanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsPersistence;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomComboBox;
@@ -46,6 +48,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     private RepositoryProductsTimelinePanel productsTimelinePanel;
     private int visibleProductsPerPage;
+    private DownloadProductListTimerRunnable downloadProductListTimerRunnable = null;
+    private Long currentFullResultsListCount = null;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
                                             ActionListener stopButtonListener, int progressBarWidth, boolean showStopDownloadButton) {
@@ -169,6 +173,18 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         addComponents(componentDimension, showStopDownloadButton);
     }
 
+    public void setDownloadProductListTimerRunnable(DownloadProductListTimerRunnable downloadProductListTimerRunnable) {
+        this.downloadProductListTimerRunnable = downloadProductListTimerRunnable;
+    }
+
+    public void setCurrentFullResultsListCount(Long currentFullResultsListCount) {
+        this.currentFullResultsListCount = currentFullResultsListCount;
+    }
+
+    private boolean downloadsAllPages(){
+        return RepositoriesCredentialsController.getInstance().downloadsAllPages();
+    }
+
     @Override
     public Comparator<RepositoryProduct> getProductsComparator() {
         ComparatorItem comparator = (ComparatorItem)this.comparatorsComboBox.getSelectedItem();
@@ -263,14 +279,25 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 refreshPaginationButtons(); // refresh the pagination button after received the products
             }
             this.productsTimelinePanel.refresh(outputProductResults);
+            if(!downloadsAllPages() && productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
+                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+            }
         }
+    }
+
+    private boolean productListPageDownloaded(int pageNumber){
+        return pageNumber <= getOutputProductResults().getAvailableProductCount() / this.visibleProductsPerPage + (getOutputProductResults().getAvailableProductCount() % this.visibleProductsPerPage > 0 ? 1 : 0);
     }
 
     private void displayNextPageProducts() {
         int totalPageCount = computeTotalPageCount();
         OutputProductResults outputProductResults = getOutputProductResults();
         if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
-            displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+            if(!downloadsAllPages() && this.downloadProductListTimerRunnable != null && !productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
+                this.downloadProductListTimerRunnable.downloadProductListNextPage();
+            }else {
+                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+            }
         } else {
             throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
         }
@@ -360,8 +387,9 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         OutputProductResults outputProductResults = getOutputProductResults();
         int count = 0;
         if (outputProductResults.getAvailableProductCount() > 0) {
-            count = outputProductResults.getAvailableProductCount() / this.visibleProductsPerPage;
-            if (outputProductResults.getAvailableProductCount() % this.visibleProductsPerPage > 0) {
+            long totalCount = downloadsAllPages() || this.currentFullResultsListCount == null ? outputProductResults.getAvailableProductCount() : this.currentFullResultsListCount;
+            count = (int) (totalCount / this.visibleProductsPerPage);
+            if (totalCount % this.visibleProductsPerPage > 0) {
                 count++;
             }
         }
@@ -374,10 +402,10 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     public void updateProductListCountTitle() {
         int pageProductCount = this.productListPanel.getProductListModel().getProductCount();
-        int totalProductCount = getOutputProductResults().getAvailableProductCount();
+        long totalProductCount = downloadsAllPages() || this.currentFullResultsListCount == null ? getOutputProductResults().getAvailableProductCount() : this.currentFullResultsListCount;
         String text = getTitle() + ": " + Integer.toString(pageProductCount);
         if (totalProductCount > 0) {
-            text += " out of " + Integer.toString(totalProductCount);
+            text += " out of " + Long.toString(totalProductCount);
         }
         this.titleLabel.setText(text);
     }
