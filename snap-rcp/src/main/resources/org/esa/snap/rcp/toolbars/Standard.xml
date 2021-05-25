@@ -1,21 +1,45 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configuration PUBLIC "-//NetBeans IDE//DTD toolbar//EN"
         "http://www.netbeans.org/dtds/toolbar1_1.dtd">
+
+
 <Configuration>
-    <Row>
-        <Toolbar name="File" visible="true" />
-        <Toolbar name="Clipboard" visible="false" />
-        <Toolbar name="UndoRedo" visible="false" />
 
-        <Toolbar name="Analysis" visible="false"/>
-        <Toolbar name="Overlay" visible="true" />
-        <Toolbar name="Processing" visible="true" />
-        <Toolbar name="Tools" visible="true"/>
-        <Toolbar name="Tool Windows" visible="false"/>
-        <Toolbar name="Radar Tool Windows" visible="false"/>
-        <Toolbar name="Projects" visible="false" />
-        <Toolbar name="Window Arrangement" visible="true" />
+<Row>
 
-        <Toolbar name="Memory" visible="false" align="right"/>
-    </Row>
+    <Toolbar name="File" visible="true" />
+    <Toolbar name="Clipboard" visible="false" />
+    <Toolbar name="UndoRedo" visible="false" />
+
+    <!--<Toolbar name="Tools" visible="false"/>-->
+    <Toolbar name="Raster" visible="true"/>
+    <Toolbar name="Masks" visible="true"/>
+
+
+    <Toolbar name="Overlay" visible="true" />
+    <Toolbar name="Interactors" visible="true"/>
+
+
+    <Toolbar name="Processing" visible="true" />
+
+
+    <Toolbar name="Miscellaneous" visible="false"/>
+    <Toolbar name="Image" visible="false"/>
+    <Toolbar name="Geometry" visible="true"/>
+    <Toolbar name="Geometry Lines" visible="false"/>
+
+    <Toolbar name="Pins" visible="true"/>
+    <Toolbar name="Analysis" visible="true"/>
+
+    
+    <Toolbar name="Info" visible="false"/>
+    <Toolbar name="Ground Control Points" visible="false"/>
+    <Toolbar name="Tool Windows" visible="false"/>
+    <Toolbar name="Radar Tool Windows" visible="false"/>
+    <Toolbar name="Projects" visible="false" />
+    <Toolbar name="Window Arrangement" visible="false" />
+
+    <Toolbar name="Memory" visible="false" align="right"/>
+</Row>
 </Configuration>
+

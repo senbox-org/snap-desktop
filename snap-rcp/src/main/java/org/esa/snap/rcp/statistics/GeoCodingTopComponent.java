@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,7 +26,7 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "GeoCodingTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/PhiLam.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.GEO_CODING_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -36,14 +37,17 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.GeoCodingTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 40),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.GEO_CODING_TOOLBAR_NAME,
+                position = PackageDefaults.GEO_CODING_TOOLBAR_POSITION
+        )
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GeoCodingTopComponent_Name",
         preferredID = "GeoCodingTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_GeoCodingTopComponent_Name=Geo-Coding",
+        "CTL_GeoCodingTopComponent_Name=" + PackageDefaults.GEO_CODING_NAME,
         "CTL_GeoCodingTopComponent_HelpId=geoCodingInfoDialog"
 })
 /**
