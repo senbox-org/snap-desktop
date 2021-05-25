@@ -36,7 +36,7 @@ class AboutPanel extends JPanel {
         FileObject configFile = FileUtil.getConfigFile("AboutBox");
         if (configFile != null) {
             JTabbedPane tabbedPane = new JTabbedPane();
-            tabbedPane.add("SNAP", new SnapAboutBox());
+            tabbedPane.add("SeaDAS", new SeadasAboutBox());
             addAboutBoxPlugins(tabbedPane, configFile);
             tabbedPane.add("Licenses", new LicensesAboutBox());
             add(tabbedPane, BorderLayout.CENTER);

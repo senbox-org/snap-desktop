@@ -21,9 +21,9 @@ public class DesktopVersionCheck {
 
     private static final String STEP_WEB_PAGE = SystemUtils.getApplicationHomepageUrl();
     private static final String MSG_UPDATE_INFO =
-            "<html>A new SNAP version is available for download!<br>" +
-                    "Currently installed %s, available is %s.<br>" +
-                    "Please visit the SNAP home page at";
+            "<html>A new SeaDAS version is available for download!<br>" +
+                    "Currently installed SeaDAS %s, available is SeaDAS %s.<br>" +
+                    "To download, please visit the SeaDAS home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
     private DesktopVersionCheck() {
@@ -59,11 +59,10 @@ public class DesktopVersionCheck {
                 }
             }
             final String message =
-                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
+                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SeaDAS.\n" +
                             "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
-                            "to get the best SNAP experience.\n\n" +
                             "Press 'Yes', if you want to check for plugin updates now.\n\n";
-            Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
+            Dialogs.Answer decision = Dialogs.requestDecision("SeaDAS Update", message, false, "optional.version.check.onstartup");
             if (Dialogs.Answer.YES.equals(decision)) {
                 final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
                 checkForUpdatesProvider.openCheckForUpdatesWizard(true);
