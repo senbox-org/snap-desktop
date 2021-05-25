@@ -42,6 +42,7 @@ import org.esa.snap.productlibrary.rcp.toolviews.timeline.TimelinePanel;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -66,9 +67,9 @@ import java.util.List;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "rightSlidingSide",
-        openAtStartup = true,
-        position = 0
+        mode = PackageDefaults.PRODUCT_LIBRARY_MODE,
+        openAtStartup = PackageDefaults.PRODUCT_LIBRARY_OPEN,
+        position = PackageDefaults.PRODUCT_LIBRARY_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.productlibrary.rcp.toolviews.ProductLibraryToolView")
 @ActionReferences({
@@ -80,7 +81,7 @@ import java.util.List;
         preferredID = "ProductLibraryTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ProductLibraryTopComponentName=Product Library",
+        "CTL_ProductLibraryTopComponentName=" + PackageDefaults.PRODUCT_LIBRARY_NAME,
         "CTL_ProductLibraryTopComponentDescription=Product Library",
 })
 */

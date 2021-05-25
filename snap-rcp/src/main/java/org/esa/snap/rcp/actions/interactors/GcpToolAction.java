@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.placemark.InsertGcpInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -36,11 +37,11 @@ import javax.swing.*;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 140
+        path = "Toolbars/" + PackageDefaults.GCP_TOOL_ACTION_TOOLBAR_NAME,
+        position = PackageDefaults.GCP_TOOL_ACTION_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_GcpToolActionText=GCP Tool",
+                  "CTL_GcpToolActionText=" + PackageDefaults.GCP_TOOL_ACTION_NAME,
                   "CTL_GcpToolActionDescription=GCP placing tool"
           })
 public class GcpToolAction extends ToolAction {
@@ -54,7 +55,7 @@ public class GcpToolAction extends ToolAction {
         super(lookup, new InsertGcpInteractor());
         putValue(NAME, Bundle.CTL_GcpToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_GcpToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GcpTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.GCP_TOOL_ACTION_ICON, false));
     }
 
     @Override

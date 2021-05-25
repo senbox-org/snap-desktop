@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -21,12 +22,16 @@ import org.openide.util.NbBundle;
 @ActionID(category = "View", id = "OverlayGraticuleLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayGraticuleLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 20),
-        @ActionReference(path = "Toolbars/Overlay", position = 20)
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OVERLAY_GRATICULE_MENU_PATH,
+                position = PackageDefaults.OVERLAY_GRATICULE_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.OVERLAY_GRATICULE_TOOLBAR_NAME,
+                position = PackageDefaults.OVERLAY_GRATICULE_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGraticuleLayerActionName=Graticule Overlay",
-        "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
+        "CTL_OverlayGraticuleLayerActionName=" + PackageDefaults.OVERLAY_GRATICULE_NAME,
+        "CTL_OverlayGraticuleLayerActionToolTip=" + PackageDefaults.OVERLAY_GRATICULE_DESCRIPTION
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
@@ -34,7 +39,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGraticuleLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_GRATICULE_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayGraticuleLayerActionToolTip());
     }
 
