@@ -4,8 +4,11 @@
 
 <toc version="2.0" categoryclosedimage="folder" categoryopenimage="folder" topicimage="doc">
 
+    <tocitem text="SeaDAS Overview" target="seadasOverview"/>
+
+
     <tocitem text="General">
-        <tocitem text="Overview" target="snapOverview"/>
+        <tocitem text="SNAP Overview" target="snapOverview"/>
         <tocitem text="Definitions" target="snapDefinitions"/>
         <tocitem text="Data Sources" target="snapDataSources"/>
         <tocitem text="Related Links" target="snapRelatedLinks"/>
