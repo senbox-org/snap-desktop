@@ -16,10 +16,9 @@
 
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import com.bc.ceres.binding.ValueRange;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 
@@ -31,10 +30,26 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
 import java.awt.Component;
 
+/**
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
+ */
+// OCT 2019 - Knowles / Yang
+//          - Added checks to ensure that only positive values are allowed in log scaling mode.
+//          - Added checks to ensure that palette values are numeric.
+//          - Added checks to ensure that value entries are numerically between the adjacent values.
+// FEB 2020 - Knowles
+//          - Added call to reset the color scheme to 'none'
+//          - Added log button
+
+
+
 public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
-    private static final String[] COLUMN_NAMES = new String[]{"Colour", "Value"};
-    private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, Double.class};
+    private static final String[] COLUMN_NAMES = new String[]{NamingConvention.COLOR_MIXED_CASE, "Value"};
+    private static final Class<?>[] COLUMN_TYPES = new Class<?>[]{Color.class, String.class};
 
     private final ColorManipulationForm parentForm;
     private ImageInfoTableModel tableModel;
@@ -42,6 +57,11 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
     private final MoreOptionsForm moreOptionsForm;
     private TableModelListener tableModelListener;
     private final DiscreteCheckBox discreteCheckBox;
+
+    private final AbstractButton logButton;
+    final Boolean[] logButtonClicked = {false};
+
+
 
     public Continuous1BandTabularForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
@@ -51,6 +71,19 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
             parentForm.applyChanges();
             tableModel.addTableModelListener(tableModelListener);
         };
+
+
+
+        logButton = LogDisplay.createButton();
+        logButton.addActionListener(e -> {
+            if (!logButtonClicked[0]) {
+                logButtonClicked[0] = true;
+                applyChangesLogToggle();
+                logButtonClicked[0] = false;
+            }
+        });
+
+
         moreOptionsForm = new MoreOptionsForm(this, parentForm.getFormModel().canUseHistogramMatching());
         discreteCheckBox = new DiscreteCheckBox(parentForm);
         moreOptionsForm.addRow(discreteCheckBox);
@@ -80,6 +113,15 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         tableModel.addTableModelListener(tableModelListener);
     }
 
+
+    @Override
+    public AbstractButton[] getToolButtons() {
+        return new AbstractButton[]{
+                logButton
+        };
+    }
+
+
     @Override
     public void handleFormHidden(ColorFormModel formModel) {
         tableModel.removeTableModelListener(tableModelListener);
@@ -87,7 +129,17 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
     @Override
     public void updateFormModel(ColorFormModel formModel) {
-        tableModel.fireTableDataChanged();
+        final ImageInfo imageInfo = formModel.getOriginalImageInfo();
+        final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
+
+        final boolean logScaled = imageInfo.isLogScaled();
+        final boolean discrete = cpd.isDiscrete();
+
+        if (logScaled != logButton.isSelected()) {
+            logButton.setSelected(logScaled);
+        }
+
+            tableModel.fireTableDataChanged();
         discreteCheckBox.setDiscreteColorsMode(parentForm.getFormModel().getModifiedImageInfo().getColorPaletteDef().isDiscrete());
     }
 
@@ -105,10 +157,7 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         return contentPanel;
     }
 
-    @Override
-    public AbstractButton[] getToolButtons() {
-        return new AbstractButton[0];
-    }
+
 
     @Override
     public MoreOptionsForm getMoreOptionsForm() {
@@ -165,14 +214,32 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            resetSchemeSelector();
+
             final ColorPaletteDef.Point point = getImageInfo().getColorPaletteDef().getPointAt(rowIndex);
+            final ValueRange valueRange;
+            if (rowIndex == 0) {
+                valueRange = new ValueRange(Double.NEGATIVE_INFINITY, getImageInfo().getColorPaletteDef().getPointAt(1).getSample());
+            } else if (rowIndex == getImageInfo().getColorPaletteDef().getNumPoints() - 1) {
+                valueRange = new ValueRange(getImageInfo().getColorPaletteDef().getPointAt(rowIndex - 1).getSample(), Double.POSITIVE_INFINITY);
+            } else {
+                valueRange = new ValueRange(getImageInfo().getColorPaletteDef().getPointAt(rowIndex - 1).getSample(),
+                        getImageInfo().getColorPaletteDef().getPointAt(rowIndex + 1).getSample());
+            }
             if (columnIndex == 0) {
                 final Color color = (Color) aValue;
                 point.setColor(color == null ? ImageInfo.NO_COLOR : color);
                 fireTableCellUpdated(rowIndex, columnIndex);
             } else if (columnIndex == 1) {
-                point.setSample((Double) aValue);
-                fireTableCellUpdated(rowIndex, columnIndex);
+
+                if (ColorUtils.isNumber((String) aValue, "Table value", true)) {
+                    double aValueDouble = Double.parseDouble((String) aValue);
+                    if (ColorUtils.checkTableRangeCompatibility(aValueDouble, valueRange.getMin(), valueRange.getMax()) && ColorUtils.checkLogCompatibility(aValueDouble, "Value",
+                            parentForm.getFormModel().getModifiedImageInfo().isLogScaled())) {
+                        point.setSample(aValueDouble);
+                        fireTableCellUpdated(rowIndex, columnIndex);
+                    }
+                }
             }
         }
 
@@ -182,4 +249,37 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
         }
 
     }
+
+
+
+    private void resetSchemeSelector() {
+        ColorSchemeInfo colorSchemeNoneInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
+        parentForm.getFormModel().getProductSceneView().getImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+        parentForm.getFormModel().getModifiedImageInfo().setColorSchemeInfo(colorSchemeNoneInfo);
+    }
+
+
+    private void applyChangesLogToggle() {
+
+        final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+        final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+
+        final boolean sourceLogScaled = currentInfo.isLogScaled();
+        final boolean targetLogScaled = logButton.isSelected();
+        final double min = currentCPD.getMinDisplaySample();
+        final double max = currentCPD.getMaxDisplaySample();
+        final ColorPaletteDef cpd = currentCPD;
+        final boolean autoDistribute = true;
+
+        if (ColorUtils.checkRangeCompatibility(min, max, targetLogScaled)) {
+            resetSchemeSelector();
+
+
+            currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, sourceLogScaled, targetLogScaled);
+            parentForm.applyChanges();
+        } else {
+            logButton.setSelected(false);
+        }
+    }
+
 }
