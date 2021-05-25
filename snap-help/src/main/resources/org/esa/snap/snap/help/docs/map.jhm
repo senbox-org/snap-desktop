@@ -65,7 +65,6 @@
     <mapID target="importLandsatProduct" url="desktop/ImportLandsat.html"/>
     <mapID target="importAVHRR" url="desktop/ImportAVHRR.html"/>
     <mapID target="importAvnir2Product" url="desktop/ImportAVNIR2.html"/>
-    <mapID target="importNasaObpgProduct" url="desktop/ImportNasaObpgHDF.html"/>
     <mapID target="importPrismProduct" url="desktop/ImportPRISM.html"/>
     <mapID target="importNetCdfProduct" url="desktop/ImportNetCDF.html"/>
     <mapID target="importSpotVgtProduct" url="desktop/ImportSpotVgt.html"/>

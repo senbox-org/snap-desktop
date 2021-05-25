@@ -64,7 +64,6 @@
                     <tocitem text="LANDSAT" target="importLandsatProduct"/>
                     <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>
                     <tocitem text="MODIS" target="importModisProduct"/>
-                    <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
                     <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>
                     <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>
                 </tocitem>
