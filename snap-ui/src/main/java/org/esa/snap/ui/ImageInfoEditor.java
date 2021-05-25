@@ -23,10 +23,12 @@ import com.jidesoft.popup.JidePopup;
 import com.jidesoft.swing.JidePopupMenu;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.core.util.math.Histogram;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.color.ColorChooserPanel;
+
 
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
@@ -59,13 +61,25 @@ import java.awt.image.DataBufferInt;
 import java.text.DecimalFormat;
 
 
+
 /**
  * Unstable interface. Do not use.
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles (NASA)
+ * @author Bing Yang (NASA)
  * @version $Revision$ $Date$
  * @since BEAM 4.5.1
  */
+// OCT 2019 - Knowles / Yang
+//          - Added a boolean field "logScaled" for determining if log scaled.
+//          - Added abstract method "checkSliderRangeCompatibility" to be used for slider value adjacency checks.
+//          - Added abstract method "checkLogCompatibility" to be used for log scaling illegal value checks.
+//          - Incorporated the above checks within the listener of the slider.
+// FEB 2020 - Knowles
+//          - Added computePercent() method to enable any percent range of the histogram to be calculated
+
+
 public abstract class ImageInfoEditor extends JPanel {
 
     public static final String PROPERTY_NAME_MODEL = "model";
@@ -107,6 +121,8 @@ public abstract class ImageInfoEditor extends JPanel {
     private ModelCL modelCL;
     private JidePopup popup;
     private BufferedImage paletteBackgound;
+
+    private boolean logScaled = false;
 
     public ImageInfoEditor() {
         labelFont = createLabelFont();
@@ -167,24 +183,56 @@ public abstract class ImageInfoEditor extends JPanel {
         }
     }
 
-    public void compute95Percent() {
+
+
+    public boolean computePercent(boolean logScaled, double threshhold) {
         final Histogram histogram = new Histogram(getModel().getHistogramBins(),
-                                                  scaleInverse(getModel().getMinSample()),
-                                                  scaleInverse(getModel().getMaxSample()));
-        final Range autoStretchRange = histogram.findRangeFor95Percent();
+                scaleInverse(getModel().getMinSample()),
+                scaleInverse(getModel().getMaxSample()));
+
+        Range autoStretchRange = histogram.findRangeForPercent(threshhold);
+        if (autoStretchRange == null) {
+            return false;
+        }
+
+        if (logScaled && scale(autoStretchRange.getMin()) <= 0) {
+            return false;
+        }
+
         computeFactors();
         setFirstSliderSample(scale(autoStretchRange.getMin()));
         setLastSliderSample(scale(autoStretchRange.getMax()));
         partitionSliders(false);
         computeZoomInToSliderLimits();
+
+        return true;
     }
 
-    public void compute100Percent() {
+
+
+    public boolean setRGBminmax(double min, double max) {
+        computeFactors();
+        setFirstSliderSample(min);
+        setLastSliderSample(max);
+        partitionSliders(false);
+        computeZoomInToSliderLimits();
+
+        return true;
+    }
+
+    public boolean compute100Percent(boolean logScaled) {
+
+        if (logScaled && getModel().getMinSample() <= 0) {
+            return false;
+        }
+
         computeFactors();
         setFirstSliderSample(getModel().getMinSample());
         setLastSliderSample(getModel().getMaxSample());
         partitionSliders(false);
         computeZoomInToSliderLimits();
+
+        return true;
     }
 
     public void distributeSlidersEvenly() {
@@ -804,7 +852,7 @@ public abstract class ImageInfoEditor extends JPanel {
         vc.getDescriptor("sample").setValueRange(valueRange);
 
         final BindingContext ctx = new BindingContext(vc);
-        final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("#0.0#"));
+        final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("#0.000000000#"));
         formatter.setValueClass(Double.class); // to ensure that double values are returned
         final JFormattedTextField field = new JFormattedTextField(formatter);
         field.setColumns(11);
@@ -815,11 +863,19 @@ public abstract class ImageInfoEditor extends JPanel {
 
         ctx.addPropertyChangeListener("sample", pce -> {
             hidePopup();
-            setSliderSample(sliderIndex, (Double) ctx.getBinding("sample").getPropertyValue());
-            computeZoomInToSliderLimits();
-            applyChanges();
+            Double value = (Double) ctx.getBinding("sample").getPropertyValue();
+            if (
+                    checkSliderRangeCompatibility(value, valueRange.getMin(), valueRange.getMax())
+                    && checkLogCompatibility(value, "slider", isLogScaled())
+                    ) {
+                setSliderSample(sliderIndex, value);
+                computeZoomInToSliderLimits();
+                applyChanges();
+            }
+
         });
     }
+
 
     private void showPopup(MouseEvent evt, JComponent component) {
         hidePopup();
@@ -838,6 +894,7 @@ public abstract class ImageInfoEditor extends JPanel {
             popup = null;
         }
     }
+
 
     private class InternalMouseListener implements MouseListener, MouseMotionListener {
 
@@ -994,7 +1051,7 @@ public abstract class ImageInfoEditor extends JPanel {
 
         private JMenuItem createMenuItemCenterColorValue(final int sliderIndex) {
             JMenuItem menuItem = new JMenuItem();
-            menuItem.setText("Center Slider Colour"); /* I18N */
+            menuItem.setText("Center Slider " + NamingConvention.COLOR_MIXED_CASE); /* I18N */
             menuItem.setMnemonic('c');
             menuItem.addActionListener(actionEvent -> {
                 final Color newColor = ColorPaletteDef.getCenterColor(getSliderColor(sliderIndex - 1),
@@ -1179,5 +1236,34 @@ public abstract class ImageInfoEditor extends JPanel {
         public void stateChanged(ChangeEvent e) {
             fireStateChanged();
         }
+    }
+
+
+    /**
+     * Determine whether value is illegal value (zero or less) if in log mode
+     * @param value
+     * @param componentName identify theGUI component
+     * @param isLogScaled
+     * @return
+     */
+    protected abstract boolean checkLogCompatibility(double value, String componentName, boolean isLogScaled);
+
+
+    /**
+     * Determine whether a value is in between a min and a max value (or adjacent values)
+     * @param value
+     * @param min
+     * @param max
+     * @return
+     */
+    protected abstract boolean checkSliderRangeCompatibility(double value, double min, double max);
+
+
+    public boolean isLogScaled() {
+        return logScaled;
+    }
+
+    public void setLogScaled(boolean logScaled) {
+        this.logScaled = logScaled;
     }
 }
