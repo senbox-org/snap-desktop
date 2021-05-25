@@ -20,10 +20,10 @@ import java.awt.*;
  */
 public class SeadasAboutBox extends JPanel {
 
-//    private static String SEADAS_VERSION = "8.0.0-Beta";
+//    private static String SEADAS_VERSION = "8.1.0";
     private static String seadasVersion;
 
-    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/docs/release-notes/seadas-platform/8.0.0.md";
+    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/docs/release-notes/seadas-platform/8.1.0.md";
 //    private  String RELEASE_NOTES_URL_NAME = "SeaDAS " + seadasVersion + " Release Notes";
     private  String releaseNotesUrlName;
 
@@ -72,10 +72,10 @@ public class SeadasAboutBox extends JPanel {
                 + "<b>SeaDAS version: </b>" + seadasVersion + "<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
-                + "<b>SNAP Desktop implementation version: </b>SEADAS-8.0.0 (branded from SNAP 8.0.2)<br>"
+                + "<b>SNAP Desktop implementation version: </b>SEADAS-8.1.0 (branded from SNAP 8.0.3)<br>"
                 + "<b>SNAP Desktop git repository branch: </b>https://github.com/senbox-org/snap-desktop/tree/SEADAS-8.0.0-SNAP-8.0.2<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
-                + "<b>SNAP Engine implementation version: </b>SEADAS-8.0.0 (branded from SNAP 8.0.2)<br>"
+                + "<b>SNAP Engine implementation version: </b>SEADAS-8.1.0 (branded from SNAP 8.0.3)<br>"
                 + "<b>SNAP Engine git repository branch: </b>https://github.com/senbox-org/snap-engine/tree/SEADAS-8.0.0-SNAP-8.0.2<br>"
 
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
