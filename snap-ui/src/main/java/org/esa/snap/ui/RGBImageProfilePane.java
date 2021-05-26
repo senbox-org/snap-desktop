@@ -681,10 +681,17 @@ public class RGBImageProfilePane extends JPanel {
             }
         }
         final RGBImageProfile selectedProfile = getSelectedProfile();
+        final String[] rgbaExpressions;
+        if (selectedProfile != null) {
+            rgbaExpressions = selectedProfile.getRgbaExpressions();
+        } else {
+            rgbaExpressions = getRgbaExpressions();
+        }
+
         final int defaultProductIndex = ArrayUtils.getElementIndex(product, openedProducts);
         try {
             if (!BandArithmetic.areRastersEqualInSize(openedProducts,
-                    defaultProductIndex, selectedProfile.getRgbaExpressions())) {
+                    defaultProductIndex, rgbaExpressions)) {
                 referencedRastersAreCompatibleLabel.setText("Referenced rasters are not of the same size");
                 referencedRastersAreCompatibleLabel.setForeground(warnMsgColor);
             } else {
