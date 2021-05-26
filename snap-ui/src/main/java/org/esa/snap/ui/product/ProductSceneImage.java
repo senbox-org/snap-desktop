@@ -692,17 +692,10 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
 
-        if (imageInfo.getColorPaletteDef().isDiscrete()) {
-            addPropertyToLayerConfiguration(configuration, layer,
-                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
-                    ColorBarLayerType.DISTRIB_EXACT_STR,
-                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
-        } else {
-            addPropertyToLayerConfiguration(configuration, layer,
-                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
-                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
-                    ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
-        }
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
