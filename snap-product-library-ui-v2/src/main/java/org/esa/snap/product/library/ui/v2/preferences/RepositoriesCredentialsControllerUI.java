@@ -312,7 +312,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("productLibraryTool");
+        return new HelpCtx("productLibraryToolV2");
     }
 
     /**
