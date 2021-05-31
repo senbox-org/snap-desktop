@@ -585,6 +585,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
         JPanel recordsOnPagePanel = new JPanel();
         recordsOnPagePanel.setLayout(new BoxLayout(recordsOnPagePanel, BoxLayout.LINE_AXIS));
         recordsOnPageCb = new JComboBox<>(new Integer[]{10, 20, 30, 40, 50});
+        recordsOnPageCb.setMaximumSize(new Dimension(20, 50));
         recordsOnPageCb.setSelectedItem(this.nrRecordsOnPage);
         recordsOnPagePanel.add(new JLabel("Number of records on search result page:", SwingConstants.LEFT));
         recordsOnPagePanel.add(recordsOnPageCb);
