@@ -27,10 +27,7 @@ import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -223,7 +220,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             }
         }
 
-        add(panel, BorderLayout.NORTH);
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setBorder(SwingUtils.LINE_BORDER);
+        add(scrollPane, BorderLayout.CENTER);
 
         if (areaOfInterestParameter != null) {
             addAreaParameterComponent(areaOfInterestParameter);

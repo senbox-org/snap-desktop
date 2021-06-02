@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * Created by jcoravu on 18/9/2019.
  */
-public class ParametersPanel extends JPanel {
+public class ParametersPanel extends VerticalScrollablePanel {
 
     public ParametersPanel() {
         super(new GridBagLayout());
