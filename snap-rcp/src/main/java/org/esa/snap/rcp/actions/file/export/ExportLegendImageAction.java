@@ -44,15 +44,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -90,6 +82,10 @@ import java.util.List;
 })
 
 public class ExportLegendImageAction extends AbstractExportImageAction {
+
+    private static final String HELP_ID = "exportLegendImageFile";
+
+
     private final static String[][] IMAGE_FORMAT_DESCRIPTIONS = {
             BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
@@ -98,23 +94,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     };
 
 
+
     // Make different keys for export parameters so it doesn't affect color bar layer
     // Keys named differently from preferences to not overwrite preferences
     private static final String PROPERTY_ORIENTATION_KEY2 = ColorBarLayerType.PROPERTY_ORIENTATION_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_COUNT_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY + ".export";
     private static final String PROPERTY_TITLE_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY + ".export";
+    private static final String PROPERTY_UNITS_SHOW_KEY2 = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY + ".export";
     private static final String PROPERTY_TITLE_TEXT_KEY2 = ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY + ".export";
     private static final String PROPERTY_UNITS_TEXT_KEY2 = ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY + ".export";
     private static final String PROPERTY_BACKDROP_TRANSPARENCY_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_ACTUAL_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_MODE_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY + ".export";
-    private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
     private static final String PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY + ".export";
     private static final String PROPERTY_EXPORT_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY + ".export";
 
-
-    // these parameters are not used in GUI but are used to store initial values used if deselecting the black/white override
-    // Keys named differently from preferences to not overwrite preferences
+    // These are all the color keys which get bypasses dependent on the PROPERTY_EXPORT_USE_BW_COLOR_KEY2
+    private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
     private static final String PROPERTY_TITLE_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY + ".export";
     private static final String PROPERTY_UNITS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY + ".export";
     private static final String PROPERTY_LABELS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY + ".export";
@@ -124,7 +120,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LEGEND_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY + ".export";
 
 
-    private static final String HELP_ID = "exportLegendImageFile";
+
 
 
     private SnapFileFilter[] imageFileFilters;
@@ -351,6 +347,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        param = new Parameter(PROPERTY_UNITS_SHOW_KEY2, imageLegend.isShowUnits());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL);
+        paramGroup.addParameter(param);
+
+
+
         param = new Parameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2, blackWhiteColor);
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_LABEL);
         paramGroup.addParameter(param);
@@ -553,6 +555,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2).getValue();
         imageLegend.setShowTitle((Boolean) value);
 
+        value = legendParamGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2).getValue();
+        imageLegend.setShowUnits((Boolean) value);
+
         value = legendParamGroup.getParameter(PROPERTY_TITLE_TEXT_KEY2).getValue();
         imageLegend.setTitleText((String) value);
 
@@ -569,7 +574,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-        //todo useLegendWidth and legendWidth need to be implement something like this
         Boolean blackWhiteColor = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2).getValue();
         if (blackWhiteColor) {
             imageLegend.setTitleColor(Color.BLACK);
@@ -635,6 +639,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private Parameter numberOfTicksParam;
         private Parameter usingHeaderParam;
+        private Parameter usingUnitsParam;
         private Parameter bwColorOverrideParam;
         private Parameter useLegendWidthParam;
         private Parameter legendWidthParam;
@@ -644,6 +649,19 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter backgroundTransparencyParam;
         private Parameter labelValuesActualParam;
         private Parameter distributionTypeParam;
+
+
+        private Parameter titleColorParam;
+        private Parameter unitsColorParam;
+        private Parameter labelsColorParam;
+        private Parameter tickmarksColorParam;
+        private Parameter paletteBorderColorParam;
+        private Parameter backdropColorParam;
+        private Parameter legendBorderColorParam;
+
+
+
+
 
 
         public ImageLegendDialog(ParamGroup paramGroup, ImageLegend imageLegend,
@@ -664,7 +682,22 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private void updateUIState() {
             boolean headerTextEnabled = (Boolean) usingHeaderParam.getValue();
             headerTextParam.setUIEnabled(headerTextEnabled);
+
+            boolean unitsTextEnabled = (Boolean) usingUnitsParam.getValue();
+            unitsTextParam.setUIEnabled(unitsTextEnabled);
+
             backgroundTransparencyParam.setUIEnabled(transparencyEnabled);
+
+
+            boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
+            titleColorParam.setUIEnabled(!bwColorOverride);
+            unitsColorParam.setUIEnabled(!bwColorOverride);
+            labelsColorParam.setUIEnabled(!bwColorOverride);
+            tickmarksColorParam.setUIEnabled(!bwColorOverride);
+            paletteBorderColorParam.setUIEnabled(!bwColorOverride);
+            backdropColorParam.setUIEnabled(!bwColorOverride);
+            legendBorderColorParam.setUIEnabled(!bwColorOverride);
+
         }
 
         public ParamGroup getParamGroup() {
@@ -706,6 +739,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(headerTextParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(usingUnitsParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsTextParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsTextParam.getEditor().getEditorComponent(), gbc);
@@ -736,10 +773,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
-
-            gbc.gridy++;
-            gbc.gridwidth = 2;
             p.add(useLegendWidthParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
@@ -747,6 +780,44 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(legendWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(legendWidthParam.getEditor().getEditorComponent(), gbc);
 
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(titleColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(titleColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(unitsColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(unitsColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(labelsColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(labelsColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(tickmarksColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(tickmarksColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(paletteBorderColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(paletteBorderColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(backdropColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(backdropColorParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(legendBorderColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(legendBorderColorParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
             gbc.insets.top = 15;
@@ -760,11 +831,29 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(info, gbc);
             p.setBorder(new EmptyBorder(7, 7, 7, 7));
 
-            setContent(p);
+
+            p.setMinimumSize(p.getPreferredSize());
+
+            JScrollPane jScrollPane = new JScrollPane(p);
+
+            setContent(jScrollPane);
         }
 
         private void initParams() {
+
+            titleColorParam = paramGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2);
+            unitsColorParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2);
+            labelsColorParam = paramGroup.getParameter(PROPERTY_LABELS_FONT_COLOR_KEY2);
+            tickmarksColorParam = paramGroup.getParameter(PROPERTY_TICKMARKS_COLOR_KEY2);
+            paletteBorderColorParam = paramGroup.getParameter(PROPERTY_PALETTE_BORDER_COLOR_KEY2);
+            backdropColorParam = paramGroup.getParameter(PROPERTY_BACKDROP_COLOR_KEY2);
+            legendBorderColorParam = paramGroup.getParameter(PROPERTY_LEGEND_BORDER_COLOR_KEY2);
+
+
+
+
             usingHeaderParam = paramGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2);
+            usingUnitsParam = paramGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2);
             bwColorOverrideParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2);
             useLegendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2);
             legendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2);
