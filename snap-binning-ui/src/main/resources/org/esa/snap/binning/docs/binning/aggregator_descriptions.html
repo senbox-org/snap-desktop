@@ -135,8 +135,8 @@ Output bands are:
 
 <h4>ON_MAX_SET</h4>
 <i>AggregatorOnMaxSet</i>: this aggregator selects input data from a list of input variables under the condition that
-another band has the maximum value in the aggregation input set. For example it allows implementing the output of all
-radiance data under the condition that the sensor-zenith angle is maximal. A tracling for minimal value is possible by
+another band has the maximum value in the aggregation input set. For example it allows aggregating the output of all
+radiance data under the condition that the sensor-zenith angle is maximal. A tracking for a minimal value condition is possible by
 defining a virtual variable that contains the negative of the variable to be tracked.
 Parameters are:
 
@@ -168,7 +168,7 @@ Output bands are:
 
 
 <h4>SUM</h4>
-<i>AggregatorSum</i>: this aggregator sums up all input measurements per gris cell. It has no public parameters.
+<i>AggregatorSum</i>: this aggregator sums up all input measurements per grid cell. It has no public parameters.
 <br/>
 Output bands are:
 <ul>

@@ -256,7 +256,7 @@ public class ProductSceneView extends BasicView
         figureEditor.addSelectionChangeListener(new PinSelectionChangeListener());
 
         this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN,
-                false);
+                                                                             false);
         if (scrollBarsShown) {
             this.scrollPane = createScrollPane();
             add(scrollPane, BorderLayout.CENTER);
@@ -282,8 +282,8 @@ public class ProductSceneView extends BasicView
         final Layer rootLayer = sceneImage.getRootLayer();
 
         final Set<LayerType> layerTypes = LayerTypeRegistry.getLayerTypes();
-        for(LayerType layerType : layerTypes) {
-            if(layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
+        for (LayerType layerType : layerTypes) {
+            if (layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
                 PropertyContainer config = new PropertyContainer();
                 config.addProperty(Property.create("raster", getRaster()));
                 Layer layer = layerType.createLayer(sceneImage, config);
@@ -329,7 +329,7 @@ public class ProductSceneView extends BasicView
 
     private AdjustableViewScrollPane createScrollPane() {
         AbstractButton zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll13.gif"),
-                false);
+                                                                      false);
         zoomAllButton.setFocusable(false);
         zoomAllButton.setFocusPainted(false);
         zoomAllButton.addActionListener(e -> getLayerCanvas().zoomAll());
@@ -533,7 +533,6 @@ public class ProductSceneView extends BasicView
      * Gets the product raster of a single banded view.
      *
      * @return the product raster, in case of a 3-banded RGB view it returns the first raster.
-     *
      * @see #isRGB()
      */
     public RasterDataNode getRaster() {
@@ -628,8 +627,8 @@ public class ProductSceneView extends BasicView
         for (VectorDataNode vectorDataNode : vectorDataNodes) {
             final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer vectorDataLayer = LayerUtils.getChildLayer(getRootLayer(),
-                    LayerUtils.SEARCH_DEEP,
-                    nodeFilter);
+                                                             LayerUtils.SEARCH_DEEP,
+                                                             nodeFilter);
             if (vectorDataLayer != null) {
                 vectorDataLayer.setVisible(true);
             }
@@ -658,7 +657,7 @@ public class ProductSceneView extends BasicView
 
             if (layer == null) {
                 layer = LayerUtils.getChildLayer(getRootLayer(), LayerUtils.SearchMode.DEEP,
-                        VectorDataLayerFilterFactory.createGeometryFilter());
+                                                 VectorDataLayerFilterFactory.createGeometryFilter());
             }
             if (layer != null) {
                 final VectorDataLayer vectorDataLayer = (VectorDataLayer) layer;
@@ -774,8 +773,8 @@ public class ProductSceneView extends BasicView
     public VectorDataLayer selectVectorDataLayer(VectorDataNode vectorDataNode) {
         LayerFilter layerFilter = new VectorDataLayerFilter(vectorDataNode);
         VectorDataLayer layer = (VectorDataLayer) LayerUtils.getChildLayer(getRootLayer(),
-                LayerUtils.SEARCH_DEEP,
-                layerFilter);
+                                                                           LayerUtils.SEARCH_DEEP,
+                                                                           layerFilter);
         if (layer != null) {
             setSelectedLayer(layer);
         }
@@ -805,7 +804,8 @@ public class ProductSceneView extends BasicView
      * @since BEAM 4.7
      */
     public Placemark getSelectedPin() {
-        return getSelectedPlacemark(getProduct().getPinGroup());
+        final Product product = getProduct();
+        return product != null ? getSelectedPlacemark(product.getPinGroup()) : null;
     }
 
     /**
@@ -1102,8 +1102,8 @@ public class ProductSceneView extends BasicView
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
                 final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
-                        color, expression, true,
-                        getBaseImageLayer().getImageToModelTransform());
+                                                                                                  color, expression, true,
+                                                                                                  getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
@@ -1135,11 +1135,11 @@ public class ProductSceneView extends BasicView
          */
         public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, Product[] products) {
             super(name,
-                    ProductData.TYPE_FLOAT32,
-                    width,
-                    height,
-                    expression);
-            if(products == null || products.length == 0) {
+                  ProductData.TYPE_FLOAT32,
+                  width,
+                  height,
+                  expression);
+            if (products == null || products.length == 0) {
                 deriveRasterPropertiesFromExpression(expression, product);
             } else {
                 deriveRasterPropertiesFromExpression(expression, products);
