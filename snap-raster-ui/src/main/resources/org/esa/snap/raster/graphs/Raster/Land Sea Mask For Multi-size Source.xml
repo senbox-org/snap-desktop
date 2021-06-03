@@ -44,7 +44,7 @@
       <sourceProduct refid="Land-Sea-Mask"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/florian/target.dim</file>
+      <file/>
       <formatName>BEAM-DIMAP</formatName>
     </parameters>
   </node>
