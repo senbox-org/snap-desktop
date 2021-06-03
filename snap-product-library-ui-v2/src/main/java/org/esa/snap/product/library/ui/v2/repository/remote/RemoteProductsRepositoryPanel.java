@@ -169,7 +169,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    protected void addInputParameterComponentsToPanel() {
+    protected ParametersPanel getInputParameterComponentsPanel() {
         ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
@@ -211,7 +211,14 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 }
             }
         }
+        return panel;
+    }
 
+    @Override
+    protected RepositoryQueryParameter getAreaOfInterestParameter(){
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        String selectedMission = getSelectedMission();
+        List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
         RepositoryQueryParameter areaOfInterestParameter = null;
         for (int i=0; i<parameters.size(); i++) {
             RepositoryQueryParameter param = parameters.get(i);
@@ -219,14 +226,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 areaOfInterestParameter = param;
             }
         }
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setBorder(SwingUtils.LINE_BORDER);
-        add(scrollPane, BorderLayout.CENTER);
-
-        if (areaOfInterestParameter != null) {
-            addAreaParameterComponent(areaOfInterestParameter);
-        }
+        return areaOfInterestParameter;
     }
 
     @Override
