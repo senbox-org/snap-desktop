@@ -54,7 +54,6 @@ import java.awt.*;
 public final class ColorManipulationController extends DefaultConfigController {
 
     Property restoreDefaults;
-    Property useStandardOptionsAsDefault;
 
     boolean propertyValueChangeEventsEnabled = true;
 
@@ -62,9 +61,6 @@ public final class ColorManipulationController extends DefaultConfigController {
     Enablement enablementGeneralPalette;
     Enablement enablementGeneralRange;
     Enablement enablementGeneralLog;
-
-
-
 
 
 
@@ -305,7 +301,7 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
     /**
-     * Configure enablement of the components
+     * Configure enablement of the components tied to PROPERTY_GENERAL_CUSTOM_KEY
      *
      * @param context
      * @author Daniel Knowles
@@ -325,7 +321,10 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
         // handle it the first time so bound properties get properly enabled
-        handleGeneralCustom();
+//        handleGeneralCustom();
+        enablementGeneralPalette.apply();
+        enablementGeneralRange.apply();
+        enablementGeneralLog.apply();
     }
 
     /**

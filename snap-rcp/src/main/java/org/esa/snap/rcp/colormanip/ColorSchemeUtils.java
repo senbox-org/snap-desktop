@@ -52,7 +52,7 @@ public class ColorSchemeUtils {
             }
         }
 
-        boolean customDefaultScheme = configuration.getPropertyBool(PROPERTY_GENERAL_CUSTOM_KEY, PROPERTY_GENERAL_CUSTOM_DEFAULT);  //todo make this a preference
+        boolean customDefaultScheme = configuration.getPropertyBool(PROPERTY_GENERAL_CUSTOM_KEY, PROPERTY_GENERAL_CUSTOM_DEFAULT);
 
         if (!imageInfoSet) {
             if (customDefaultScheme) {
