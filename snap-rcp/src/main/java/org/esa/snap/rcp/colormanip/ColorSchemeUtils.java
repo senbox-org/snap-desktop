@@ -33,7 +33,7 @@ public class ColorSchemeUtils {
      * @param productSceneView
      */
 
-    public static void setImageInfoToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
+    public static void setImageInfoToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView, boolean resetToDefaults) {
 
 
         boolean imageInfoSet = false;
@@ -52,9 +52,18 @@ public class ColorSchemeUtils {
             }
         }
 
+        boolean customDefaultScheme = configuration.getPropertyBool(PROPERTY_GENERAL_CUSTOM_KEY, PROPERTY_GENERAL_CUSTOM_DEFAULT);  //todo make this a preference
+
         if (!imageInfoSet) {
-            colorPaletteSchemes.reset();
-            setImageInfoToGeneralColor(configuration, defaultImageInfo, productSceneView);
+            if (customDefaultScheme) {
+                colorPaletteSchemes.reset();
+                setImageInfoToGeneralColor(configuration, defaultImageInfo, productSceneView);
+            } else {
+                if (resetToDefaults) {
+                    productSceneView.setImageInfo(defaultImageInfo);
+                }
+            }
+
         }
 
     }

@@ -153,6 +153,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private BrightnessContrastPanel brightnessContrastPanel;
     private JTabbedPane tabbedPane;
 
+
     ColorManipulationFormImpl(TopComponent colorManipulationToolView, ColorFormModel formModel) {
         Assert.notNull(colorManipulationToolView);
         Assert.notNull(formModel);
@@ -225,6 +226,15 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             if (getFormModel().isContinuous3BandImage() || getFormModel().isDiscrete1BandImage()) {
                 getFormModel().setModifiedImageInfo(getFormModel().getOriginalImageInfo());
             } else {
+                PropertyMap configuration = productSceneView.getSceneImage().getConfiguration();
+
+                if (productSceneView.getImageInfo().getColorSchemeInfo() == null) {
+                    ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =null (setToDefault)");
+                    ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), productSceneView, false);
+                } else {
+                    ColorManipulationDefaults.debug("In ColorManipulationFormImpl: colorSchemeInfo =" + productSceneView.getImageInfo().getColorSchemeInfo().toString());
+                }
+
                 ColorManipulationDefaults.debug("In ColorManipulationFormImpl: about to do setModifiedImageInfo ");
                 getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
                 ColorManipulationDefaults.debug("In ColorManipulationFormImpl: finished setModifiedImageInfo ");
@@ -432,7 +442,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         for (int i = 0; i < additionalButtons.length; i++) {
             AbstractButton button = additionalButtons[i];
             toolButtonsPanel.add(button, gbc);
-                gbc.gridy += 1;
+            gbc.gridy += 1;
         }
 
         if (installAllButtons) {
@@ -570,10 +580,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private void resetToDefaults() {
         if (getFormModel().isValid()) {
-            PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+                PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-            ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView());
-            getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
+                ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView(), true);
+                getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
         }
