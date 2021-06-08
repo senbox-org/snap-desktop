@@ -58,10 +58,11 @@ public final class ColorManipulationController extends DefaultConfigController {
     boolean propertyValueChangeEventsEnabled = true;
 
 
-    Enablement enablementDefaultColorBlindCpd;
-    Enablement enablementDefaultSchemeStandardCpd;
-    Enablement enablementDefaultSchemeColorBlindCpd;
-    Enablement enablementDefaultStandardCpd;
+    Enablement enablementGeneralPalette;
+    Enablement enablementGeneralRange;
+    Enablement enablementGeneralLog;
+
+
 
 
     protected PropertySet createPropertySet() {
@@ -86,6 +87,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT);
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_GENERAL_LOG_KEY, ColorManipulationDefaults.PROPERTY_GENERAL_LOG_DEFAULT);
@@ -173,11 +175,13 @@ public final class ColorManipulationController extends DefaultConfigController {
     @Override
     protected void configure(BindingContext context) {
 
+        configureGeneralCustomEnablement(context);
 
         // Handle resetDefaults events - set all other components to defaults
         restoreDefaults.addPropertyChangeListener(evt -> {
             handleRestoreDefaults(context);
         });
+
 
 
         // Add listeners to all components in order to uncheck restoreDefaults checkbox accordingly
@@ -252,6 +256,11 @@ public final class ColorManipulationController extends DefaultConfigController {
     }
 
 
+
+
+
+
+
     /**
      * Set restoreDefault component because a property has changed
      * @param context
@@ -291,21 +300,46 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
 
+    /**
+     * Configure enablement of the components tied to PROPERTY_GENERAL_CUSTOM_KEY
+     *
+     * @param context
+     * @author Daniel Knowles
+     */
+    private void configureGeneralCustomEnablement(BindingContext context) {
 
 
+        enablementGeneralPalette = context.bindEnabledState(ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_KEY, true,
+                ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY, true);
+
+        enablementGeneralRange = context.bindEnabledState(ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_KEY, true,
+                ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY, true);
+
+        enablementGeneralLog = context.bindEnabledState(ColorManipulationDefaults.PROPERTY_GENERAL_LOG_KEY, true,
+                ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY, true);
+
+
+
+        // handle it the first time so bound properties get properly enabled
+//        handleGeneralCustom();
+        enablementGeneralPalette.apply();
+        enablementGeneralRange.apply();
+        enablementGeneralLog.apply();
+    }
 
     /**
      * Handles enablement of the components
      *
      * @author Daniel Knowles
      */
-    private void handleUseColorBlindEnablement() {
-        enablementDefaultColorBlindCpd.apply();
-        enablementDefaultSchemeColorBlindCpd.apply();
-
-        enablementDefaultStandardCpd.apply();
-        enablementDefaultSchemeStandardCpd.apply();
+    private void handleGeneralCustom() {
+        enablementGeneralPalette.apply();
+        enablementGeneralRange.apply();
+        enablementGeneralLog.apply();
     }
+
+
+
 
 
 
@@ -346,10 +380,17 @@ public final class ColorManipulationController extends DefaultConfigController {
 
         // General Options
 
+
         @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_GENERAL_SECTION_TOOLTIP)
         boolean generalBehaviorSection = true;
+
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY,
+                description = ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_TOOLTIP)
+        boolean generalCustomSchemes = ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_GENERAL_PALETTE_KEY,
@@ -374,6 +415,9 @@ public final class ColorManipulationController extends DefaultConfigController {
                         ColorManipulationDefaults.PROPERTY_GENERAL_LOG_OPTION2,
                         ColorManipulationDefaults.PROPERTY_GENERAL_LOG_OPTION3})
         String generalLog = ColorManipulationDefaults.PROPERTY_GENERAL_LOG_DEFAULT;
+
+
+
 
 
 
