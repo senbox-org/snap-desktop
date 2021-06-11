@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.runtime.internal.Platform;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
@@ -505,7 +506,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         schemeInfoLabel.setText("<html>*Modified scheme");
-        schemeInfoLabel.setToolTipText("Not using exact scheme default: see preferences");
+
+        String optionsLocation = getOptionsLocation();
+
+        schemeInfoLabel.setToolTipText("Not using exact scheme default: see " + optionsLocation);
 
         boolean visible = false;
 
@@ -540,6 +544,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         shouldFireChooserEvent = true;
+    }
+
+    // this should get a common place. Maybe in Platform? Not sure, so it stays here for now.
+    private String getOptionsLocation() {
+        String optionsLocation = "Tools/Options";
+        final Platform currentPlatform = Platform.getCurrentPlatform();
+        if (currentPlatform != null && currentPlatform.getId() == Platform.ID.macosx) {
+            optionsLocation = "App Menu/Preferences";
+        }
+        return optionsLocation;
     }
 
     @Override
