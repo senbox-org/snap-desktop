@@ -17,34 +17,50 @@
 package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.runtime.internal.Platform;
 import com.bc.ceres.swing.TableLayout;
+import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.core.datamodel.*;
-
-
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.math.Histogram;
 import org.esa.snap.core.util.math.Range;
 
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DecimalFormat;
 
-import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_LOG_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_LOG_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_PALETTE_KEY;
 import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_RANGE_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.TOOLNAME_COLOR_MANIPULATION;
 
 /**
  * @author Brockmann Consult
@@ -95,12 +111,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final DiscreteCheckBox discreteCheckBox;
     private final JCheckBox loadWithCPDFileValuesCheckBox;
     private final ColorSchemeManager colorSchemeManager;
-    private JLabel colorSchemeJLabel;
-    private JButton paletteInversionButton;
+    private final JLabel colorSchemeJLabel;
+    private final JButton paletteInversionButton;
 
 
-    final Boolean[] minTextFieldListenerEnabled = {new Boolean(true)};
-    final Boolean[] maxTextFieldListenerEnabled = {new Boolean(true)};
+    final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
+    final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] logButtonListenerEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
 
@@ -133,16 +149,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
-        loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use it's actual value and overwrite user min/max values");
+        loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use its actual values and overwrite user min/max values");
 
         paletteInversionButton = new JButton("Reverse");
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
-        paletteInversionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                applyChanges(RangeKey.InvertPalette);
-            }
-        });
+        paletteInversionButton.addActionListener(e -> applyChanges(RangeKey.InvertPalette));
         paletteInversionButton.setEnabled(true);
         paletteInversionButton.setFocusable(false);
 
@@ -210,11 +221,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 //        });
 
 
-
-
-
-
-
 //        minField.getDocument().addDocumentListener(new DocumentListener() {
 //            @Override
 //            public void insertUpdate(DocumentEvent e) {
@@ -242,8 +248,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 //        });
 
 
-
-
         minField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -260,25 +264,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
 
 
-
-        minField.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                ColorManipulationDefaults.debug("minField: ActionListener: actionPerformed");
-
-                handleMinTextfield();
-            }
+        minField.addActionListener(e -> {
+            ColorManipulationDefaults.debug("minField: ActionListener: actionPerformed");
+            handleMinTextfield();
         });
 
 
-
-        maxField.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                ColorManipulationDefaults.debug("maxField: ActionListener: actionPerformed");
-
-                handleMaxTextfield();
-            }
+        maxField.addActionListener(e -> {
+            ColorManipulationDefaults.debug("maxField: ActionListener: actionPerformed");
+            handleMaxTextfield();
         });
 
 
@@ -291,35 +285,27 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             @Override
             public void focusLost(FocusEvent e) {
                 ColorManipulationDefaults.debug("maxField: FocusListener: focusLost");
-
                 handleMaxTextfield();
             }
 
         });
 
 
-
-
-//        fromFile.addActionListener(createListener(RangeKey.FromCpdFile));
         fromFile.addActionListener(e -> {
             ColorManipulationDefaults.debug("Inside fromFile.addActionListener");
 
             if (shouldFireChooserEvent) {
                 ColorManipulationDefaults.debug("Inside fromFile.addActionListener 2");
-
                 applyChanges(RangeKey.FromCpdFile);
             }
         });
 
 
-
-//        fromData.addActionListener(createListener(RangeKey.FromData));
         fromData.addActionListener(e -> {
             ColorManipulationDefaults.debug("Inside fromData.addActionListener");
 
             if (shouldFireChooserEvent) {
                 ColorManipulationDefaults.debug("Inside fromData.addActionListener 2");
-
                 applyChanges(RangeKey.FromData);
             }
         });
@@ -350,56 +336,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
 
 
-        colorSchemeManager.getjComboBox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (colorSchemeManager.isjComboBoxShouldFire()) {
-                    colorSchemeManager.setjComboBoxShouldFire(false);
-                    ColorManipulationDefaults.debug("Inside standardColorPaletteSchemes listener");
-                    handleColorSchemeSelector();
-                    colorSchemeManager.setjComboBoxShouldFire(true);
-                }
+        colorSchemeManager.getjComboBox().addActionListener(e -> {
+            if (colorSchemeManager.isjComboBoxShouldFire()) {
+                colorSchemeManager.setjComboBoxShouldFire(false);
+                ColorManipulationDefaults.debug("Inside standardColorPaletteSchemes listener");
+                handleColorSchemeSelector();
+                colorSchemeManager.setjComboBoxShouldFire(true);
             }
         });
 
         shouldFireChooserEvent = true;
-    }
-
-
-    private double getMaxValueWithTesting() throws NumberFormatException {
-
-        if (maxField.getText().length() > 0) {
-            boolean valid = true;
-
-            final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
-            boolean logScaled = currentInfo.isLogScaled();
-            double min = currentInfo.getColorPaletteDef().getMinDisplaySample();
-            double max = 0.0; // bogus default
-
-            try {
-                max = Double.parseDouble(maxField.getText());
-            } catch (NumberFormatException e) {
-                valid = false;
-                String errorMessage = e.getMessage();
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field is not a number\":\n" + errorMessage);
-            }
-
-            if (valid && max <= min) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field must be greater than Min field\"");
-            }
-
-            if (valid && logScaled && max <= 0) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field cannot be less than or equal to zero with log scaling\"");
-            }
-
-            if (valid) {
-                return max;
-            }
-        }
-
-        throw new NumberFormatException("Zero length max field");
     }
 
 
@@ -418,66 +364,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         }
 
         return valid;
-    }
-
-
-    private double getMinValueWithTesting() throws NumberFormatException {
-
-        if (minField.getText().length() > 0) {
-            boolean valid = true;
-
-            final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
-            boolean logScaled = currentInfo.isLogScaled();
-            double min = 0.0; // bogus default
-            double max = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-            try {
-                min = Double.parseDouble(minField.getText());
-            } catch (NumberFormatException e) {
-                valid = false;
-                String errorMessage = e.getMessage();
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field is not a number\":\n" + errorMessage);
-            }
-
-            if (valid && max <= min) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field must be less than Max field\"");
-            }
-
-            if (valid && logScaled && min <= 0) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field cannot be less than or equal to zero with log scaling\"");
-            }
-
-            if (valid) {
-                return min;
-            }
-        }
-
-        throw new NumberFormatException("Zero length min field");
-    }
-
-
-
-
-
-
-
-
-
-    // returns true if this could be number if the user types more
-    private boolean inCompleteNumber(String number) {
-        if (number == null) {
-            return true;
-        }
-
-        number = number.trim();
-
-        if (number.length() == 0 || number.equals("-")) {
-            return true;
-        }
-
-        return false;
     }
 
 
@@ -565,7 +451,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
 
-
     @Override
     public Component getContentPanel() {
         return contentPanel;
@@ -621,7 +506,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         schemeInfoLabel.setText("<html>*Modified scheme");
-        schemeInfoLabel.setToolTipText("Not using exact scheme default: see preferences");
+
+        String optionsLocation = getOptionsLocation();
+
+        schemeInfoLabel.setToolTipText("Not using exact scheme default: see " + optionsLocation);
 
         boolean visible = false;
 
@@ -656,6 +544,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         shouldFireChooserEvent = true;
+    }
+
+    // this should get a common place. Maybe in Platform? Not sure, so it stays here for now.
+    private String getOptionsLocation() {
+        String optionsLocation = "Tools/Options";
+        final Platform currentPlatform = Platform.getCurrentPlatform();
+        if (currentPlatform != null && currentPlatform.getId() == Platform.ID.macosx) {
+            optionsLocation = "App Menu/Preferences";
+        }
+        return optionsLocation;
     }
 
     @Override
@@ -702,30 +600,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
 
-    private boolean testLogScalingAgainstCurrentMinMax(boolean logScaled) {
-
-        boolean valid = true;
-
-        if (logScaled) {
-            final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
-            double min = currentInfo.getColorPaletteDef().getMinDisplaySample();
-            double max = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-            if (min <= 0) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMin field cannot be less than or equal to zero with log scaling\"");
-            } else if (max <= 0) {
-                valid = false;
-                ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \nMax field cannot be less than or equal to zero with log scaling\"");
-            }
-        }
-
-        return valid;
-    }
-
-
     private void applyChanges(RangeKey key) {
-        ColorManipulationDefaults.debug("applyChanges: Start: key=" +key.toString());
+        ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
 
         if (shouldFireChooserEvent) {
             // The 'valid' variable is used to determine whether the component entries are valid.  For the cases
@@ -758,21 +634,13 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             boolean targetAutoDistribute = true;
 
 
-
-
-
-
-
             // If retaining user textfield min/max make sure field is being passed along as it could be in a
             // lingering edit state.  Treat log button click separately as the reset should be on the log button.
 
 
+            ColorManipulationDefaults.debug("applyChanges: 2: key=" + key);
 
-
-
-            ColorManipulationDefaults.debug("applyChanges: 2: key=" +key.toString());
-
-            if (key == RangeKey.FromCpdFile || key ==  RangeKey.FromData) {
+            if (key == RangeKey.FromCpdFile || key == RangeKey.FromData) {
                 // restore textfield to match image.  It will not be used and will be set later accordingly
 
 
@@ -794,7 +662,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 ColorManipulationDefaults.debug("applyChanges: currentInfo.getColorPaletteDef().getMinDisplaySample=" + currentInfo.getColorPaletteDef().getMinDisplaySample());
                 ColorManipulationDefaults.debug("applyChanges: targetMax=" + targetMax);
                 ColorManipulationDefaults.debug("applyChanges: currentInfo.getColorPaletteDef().getMaxDisplaySample=" + currentInfo.getColorPaletteDef().getMaxDisplaySample());
-
 
 
             } else {
@@ -824,7 +691,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 }
 
 
-
                 if (minMaxValid) {
                     minMaxValid = checkMinMax(targetMin, targetMax);
 
@@ -834,30 +700,22 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 }
 
 
-
                 if (minMaxValid) {
 
+                    //noinspection StatementWithEmptyBody
                     if (key == RangeKey.FromLogButton) {
                         // Accept textfields and deal with log case later
-
-
                     } else {
                         // leave log alone and reset textfields if log conflict
-
                         minMaxValid = checkLogScalingAgainstMinMax(targetMin, targetMax, logDisplayButton.isSelected(), false);
 
                         if (!minMaxValid) {
                             dialogErrorMsg = "Min/Max cannot be non-positive value.  Resetting Min/Max";
                         }
-
                     }
-
                 }
 
-
-                ColorManipulationDefaults.debug("applyChanges: 3: key=" +key.toString());
-
-
+                ColorManipulationDefaults.debug("applyChanges: 3: key=" + key);
 
 
                 if (!minMaxValid) {
@@ -867,9 +725,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
                     shouldFireChooserEvent = false;
                     minField.setValue(targetMin);
-//                    minField.setText(Double.toString(targetMin));
                     maxField.setValue(targetMax);
-//                    maxField.setText(Double.toString(targetMax));
                     shouldFireChooserEvent = true;
 
                     if (dialogErrorMsg == null || dialogErrorMsg.length() <= 1) {
@@ -878,10 +734,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     }
 
                     ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": " + dialogErrorMsg);
-                    dialogErrorMsg = null;
                 }
-
-
 
 
                 ColorManipulationDefaults.debug("applyChanges: targetMin=" + targetMin);
@@ -890,29 +743,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 ColorManipulationDefaults.debug("applyChanges: currentInfo.getColorPaletteDef().getMaxDisplaySample=" + currentInfo.getColorPaletteDef().getMaxDisplaySample());
 
 
-
-                if (targetMin == currentInfo.getColorPaletteDef().getMinDisplaySample() &&
-                        targetMax == currentInfo.getColorPaletteDef().getMaxDisplaySample()) {
-                    valueChange = false;
-                } else {
-                    valueChange = true;
-                }
-
+                valueChange = targetMin != currentInfo.getColorPaletteDef().getMinDisplaySample() ||
+                        targetMax != currentInfo.getColorPaletteDef().getMaxDisplaySample();
             }
 
             ColorManipulationDefaults.debug("valueChange: " + valueChange);
-
-            ColorManipulationDefaults.debug("applyChanges: 4: key=" +key.toString());
-
+            ColorManipulationDefaults.debug("applyChanges: 4: key=" + key);
 
             // at this point textfields should be set to a desired valid value.
 
-
-
-
             double tmpMin;
             double tmpMax;
-
 
             switch (key) {
                 case FromCpdFile:
@@ -928,29 +769,18 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         targetMax = tmpMax;
 
 
-
-                        if (targetMin == currentCPD.getMinDisplaySample() &&
-                                targetMax == currentCPD.getMaxDisplaySample()) {
-                            valueChange = false;
-                        } else {
-                            valueChange = true;
-                        }
+                        valueChange = targetMin != currentCPD.getMinDisplaySample() ||
+                                targetMax != currentCPD.getMaxDisplaySample();
                     }
 
-
-
                     break;
-
 
                 case FromData:
                     ColorManipulationDefaults.debug("Inside FromData");
 
                     // Updates targetMin and targetMax
                     final Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
-
-
                     if (stx != null) {
-
                         final Histogram histogram = new Histogram(stx.getHistogramBins(), stx.getMinimum(), stx.getMaximum());
 
                         PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
@@ -970,12 +800,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                                 targetMin = tmpMin;
                                 targetMax = tmpMax;
 
-                                if (targetMin == currentCPD.getMinDisplaySample() &&
-                                        targetMax == currentCPD.getMaxDisplaySample()) {
-                                    valueChange = false;
-                                } else {
-                                    valueChange = true;
-                                }
+                                valueChange = targetMin != currentCPD.getMinDisplaySample() ||
+                                        targetMax != currentCPD.getMaxDisplaySample();
                             }
                         } else {
                             valid = false;
@@ -984,36 +810,20 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     } else {
                         valid = false;
                     }
-
-
                     break;
-
-
-
 
                 case FromMinField:
                     ColorManipulationDefaults.debug("Inside FromMinField");
-
                     // dealt with earlier
-
-
                     break;
 
                 case FromMaxField:
                     ColorManipulationDefaults.debug("Inside FromMaxField");
-
                     // dealt with earlier
-
-
                     break;
 
-
-
-
                 case FromLogButton:
-
                     ColorManipulationDefaults.debug("Inside FromLogButton");
-
 
                     if (logDisplayButton.isSelected()) {
                         valid = checkLogScalingAgainstMinMax(targetMin, targetMax, logDisplayButton.isSelected(), false);
@@ -1030,7 +840,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                         }
                     }
 
-
                     targetLogScaled = logDisplayButton.isSelected();
 
                     if (targetLogScaled == currentInfo.isLogScaled()) {
@@ -1042,17 +851,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                     valueChange = true;
                     break;
 
-
-
                 case InvertPalette:
                     ColorManipulationDefaults.debug("Inside InvertPalette");
-
 
                     valueChange = true;
 
                     break;
-
-
 
                 case FromPaletteChooser:
                     ColorManipulationDefaults.debug("Inside FromPaletteChooser");
@@ -1090,7 +894,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
             ColorManipulationDefaults.debug("valueChange: " + valueChange);
 
-            ColorManipulationDefaults.debug("applyChanges: 6: key=" +key.toString());
+            ColorManipulationDefaults.debug("applyChanges: 6: key=" + key);
 
             // All cases of lingering textfield entry will have been handled, now make sure texfields get set
             // into a state of not being edited.
@@ -1100,9 +904,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             shouldFireChooserEvent = true;
 
 
-            ColorManipulationDefaults.debug("applyChanges: 7: key=" +key.toString());
-
-
+            ColorManipulationDefaults.debug("applyChanges: 7: key=" + key);
 
 
             if (logDisplayButton.isSelected()) {
@@ -1114,19 +916,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
             if (valid && valueChange) {
-                ColorManipulationDefaults.debug("applyChanges: 8: key=" +key.toString());
+                ColorManipulationDefaults.debug("applyChanges: 8: key=" + key);
 
                 ColorManipulationDefaults.debug("Is valid");
 
                 if (key == RangeKey.InvertPalette) {
                     ColorManipulationDefaults.debug("Applying currentInfo.setColorPaletteDefInvert");
-
-//                    currentInfo.setColorPaletteDefInvert(sourceCpd);
                     currentInfo.setColorPaletteDefInvert(sourceCpd, targetMin, targetMax);
 
                 } else {
                     ColorManipulationDefaults.debug("Applying currentInfo.setColorPaletteDef");
-
                     currentInfo.setColorPaletteDef(sourceCpd, targetMin, targetMax, targetAutoDistribute, sourceLogScaled, targetLogScaled);
                 }
 
@@ -1136,31 +935,10 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 parentForm.applyChanges();
             }
 
-            ColorManipulationDefaults.debug("applyChanges: Finish: key=" +key.toString());
+            ColorManipulationDefaults.debug("applyChanges: Finish: key=" + key);
 
 
         }
-    }
-
-
-
-
-    private void ensureMinMaxEqualsImage() {
-
-        final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
-
-        // restore to match image setting
-        shouldFireChooserEvent = false;
-        double targetMin = currentInfo.getColorPaletteDef().getMinDisplaySample();
-        double targetMax = currentInfo.getColorPaletteDef().getMaxDisplaySample();
-
-        minField.setValue(targetMin);
-        maxField.setValue(targetMax);
-
-        setComponentsActive(false);
-        setComponentsActive(true);
-
-        shouldFireChooserEvent = true;
     }
 
 
@@ -1168,19 +946,14 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         boolean valid = true;
 
-        String errorMessage = "";
-
-            if (min == max) {
-                valid = false;
-                errorMessage = "Min cannot equal Max\nRestoring form to image values";
-            } else if (min > max) {
-                errorMessage = "Min cannot be equal to Max\nRestoring form to image values";
-                valid = false;
-            }
+        if (min == max) {
+            valid = false;
+        } else if (min > max) {
+            valid = false;
+        }
 
         return valid;
     }
-
 
 
     private double getMinFieldValue() throws NumberFormatException {
@@ -1189,7 +962,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             try {
                 return Double.parseDouble(minField.getText());
             } catch (NumberFormatException e) {
-                String errorMessage = e.getMessage();
                 throw new NumberFormatException("Min textField is not a number\n" + e.getMessage());
             }
         }
@@ -1211,7 +983,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         throw new NumberFormatException("Max textfield is empty");
     }
-
 
 
     private boolean checkLogScalingAgainstMinMax(double min, double max, boolean logScaled, boolean showErrorDialog) {
@@ -1243,39 +1014,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         return valid;
     }
-
-
-
-    private boolean checkMinMaxAgainstLogScaling(double min, double max, boolean logScaled) {
-
-        boolean valid = true;
-
-        String errorMessage = "";
-
-        if (logScaled) {
-            if (min == 0) {
-                valid = false;
-                errorMessage = "Min cannot be equal to zero with log scaling";
-            } else if (min < 0) {
-                errorMessage = "Min cannot be less than zero with log scaling";
-                valid = false;
-            } else if (max == 0) {
-                errorMessage = "Max cannot be less than zero with log scaling";
-                valid = false;
-            } else if (max < 0) {
-                errorMessage = "Max cannot be less than zero with log scaling";
-                valid = false;
-            }
-        }
-
-        if (!valid) {
-            ColorUtils.showErrorDialog("ERROR!: " + TOOLNAME_COLOR_MANIPULATION + ": \n" + errorMessage);
-        }
-
-        return valid;
-    }
-
-
 
 
     private JPanel getSchemePanel(String title) {
@@ -1386,9 +1124,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             return ProductUtils.createImageInfo(parentForm.getFormModel().getRasters(), false, ProgressMonitor.NULL);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
-                    "Failed to create default image settings:\n" + e.getMessage(),
-                    "I/O Error",
-                    JOptionPane.ERROR_MESSAGE);
+                                          "Failed to create default image settings:\n" + e.getMessage(),
+                                          "I/O Error",
+                                          JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }

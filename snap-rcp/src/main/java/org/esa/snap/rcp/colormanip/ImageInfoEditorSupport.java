@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.colormanip;
 
+import com.bc.ceres.core.runtime.internal.Platform;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.util.PropertyMap;
@@ -90,9 +91,9 @@ class ImageInfoEditorSupport {
 
         setRGBminmax = createButton("org/esa/snap/rcp/icons/AutoPresetRange24.png");
         setRGBminmax.setName("setRGBminmax");
-        setRGBminmax.setToolTipText("<html>Set channel range with pre-set values (see preferences)</html>"); /*I18N*/
+        final String optionsLocation = getOptionsLocation();
+        setRGBminmax.setToolTipText("<html>Set channel range with pre-set values (see " + optionsLocation + ")</html>"); /*I18N*/
         setRGBminmax.addActionListener(form.wrapWithAutoApplyActionListener(e -> setRGBminmax()));
-
 
 
         zoomInVButton = createButton("org/esa/snap/rcp/icons/ZoomIn24V.gif");
@@ -182,13 +183,24 @@ class ImageInfoEditorSupport {
         }
     }
 
+    // this should get a common place. Maybe in Platform? Not sure, so it stays here for now.
+    private String getOptionsLocation() {
+        String optionsLocation = "Tools/Options";
+        final Platform currentPlatform = Platform.getCurrentPlatform();
+        if (currentPlatform != null && currentPlatform.getId() == Platform.ID.macosx) {
+            optionsLocation = "App Menu/Preferences";
+        }
+        return optionsLocation;
+    }
 
     private void compute1SigmaPercent() {
         computePercent(68.27);
     }
+
     private void compute2SigmaPercent() {
         computePercent(95.45);
     }
+
     private void compute3SigmaPercent() {
         computePercent(99.73);
     }
