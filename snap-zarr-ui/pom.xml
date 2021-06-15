@@ -17,17 +17,14 @@
 
     <packaging>nbm</packaging>
 
-    <properties>
-        <snap.version>9.0.0-SNAPSHOT</snap.version>
-        <javahelp.version>2.0.05</javahelp.version>
-        <netbeans.version>RELEASE82</netbeans.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-zarr</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
@@ -79,19 +76,6 @@
             <plugin>
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-<!--                <version>4.4</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <dependencies>-->
-<!--                    <dependency>-->
-<!--                        <groupId>javax.help</groupId>-->
-<!--                        <artifactId>javahelp</artifactId>-->
-<!--                        <version>${javahelp.version}</version>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
-<!--                <configuration>-->
-<!--                    <requiresRestart>true</requiresRestart>-->
-<!--                    <sourceManifestFile>target/nbm/manifest.mf</sourceManifestFile>-->
-<!--                </configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -103,19 +87,6 @@
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <debug>true</debug>
-                    <encoding>UTF-8</encoding>
-                    <excludes>
-                        <exclude>.gitignore</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
