@@ -78,7 +78,11 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         int dividerMargins = 0;
         float initialDividerLocationPercent = 0.5f;
         CustomSplitPane parametersSplitPane = new CustomSplitPane(JSplitPane.VERTICAL_SPLIT, visibleDividerSize, dividerMargins, initialDividerLocationPercent, SwingUtils.TRANSPARENT_COLOR);
-        parametersSplitPane.setTopComponent(new JScrollPane(parametersPanel));
+        JScrollPane parametersScrollPanel = new JScrollPane(parametersPanel);
+        parametersScrollPanel.setBorder(null);
+        parametersScrollPanel.setMinimumSize(new Dimension(300, 200));
+        parametersSplitPane.setTopComponent(parametersScrollPanel);
+        areaParameterComponent.setMinimumSize(new Dimension(300, 200));
         parametersSplitPane.setBottomComponent(areaParameterComponent);
         add(parametersSplitPane, BorderLayout.CENTER);
     }
