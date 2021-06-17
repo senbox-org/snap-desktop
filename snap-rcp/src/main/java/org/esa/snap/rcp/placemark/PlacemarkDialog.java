@@ -39,7 +39,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Window;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -101,22 +100,12 @@ public class PlacemarkDialog extends ModalDialog {
         propertySet.getProperty(PROPERTY_NAME_PIXEL_Y).getDescriptor().setUnit("pixels");
 
 
-        PropertyChangeListener geoChangeListener = new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updatePixelPos();
-            }
-        };
+        PropertyChangeListener geoChangeListener = evt -> updatePixelPos();
 
         propertySet.getProperty(PROPERTY_NAME_LAT).addPropertyChangeListener(geoChangeListener);
         propertySet.getProperty(PROPERTY_NAME_LON).addPropertyChangeListener(geoChangeListener);
 
-        PropertyChangeListener pixelChangeListener = new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                updateGeoPos();
-            }
-        };
+        PropertyChangeListener pixelChangeListener = evt -> updateGeoPos();
 
         propertySet.getProperty(PROPERTY_NAME_PIXEL_X).addPropertyChangeListener(pixelChangeListener);
         propertySet.getProperty(PROPERTY_NAME_PIXEL_Y).addPropertyChangeListener(pixelChangeListener);
@@ -200,7 +189,7 @@ public class PlacemarkDialog extends ModalDialog {
     }
 
     public double getPixelX() {
-        return (Double) bindingContext.getPropertySet().getValue(PROPERTY_NAME_PIXEL_X);
+        return bindingContext.getPropertySet().getValue(PROPERTY_NAME_PIXEL_X);
     }
 
     public void setPixelX(double pixelX) {
@@ -208,7 +197,7 @@ public class PlacemarkDialog extends ModalDialog {
     }
 
     public double getPixelY() {
-        return (Double) bindingContext.getPropertySet().getValue(PROPERTY_NAME_PIXEL_Y);
+        return bindingContext.getPropertySet().getValue(PROPERTY_NAME_PIXEL_Y);
     }
 
     public void setPixelY(double pixelY) {
@@ -216,7 +205,7 @@ public class PlacemarkDialog extends ModalDialog {
     }
 
     public double getLat() {
-        return (Double) bindingContext.getPropertySet().getValue(PROPERTY_NAME_LAT);
+        return bindingContext.getPropertySet().getValue(PROPERTY_NAME_LAT);
     }
 
     public void setLat(double lat) {
@@ -224,7 +213,7 @@ public class PlacemarkDialog extends ModalDialog {
     }
 
     public double getLon() {
-        return (Double) bindingContext.getPropertySet().getValue(PROPERTY_NAME_LON);
+        return bindingContext.getPropertySet().getValue(PROPERTY_NAME_LON);
     }
 
     public void setLon(double lon) {
@@ -310,15 +299,15 @@ public class PlacemarkDialog extends ModalDialog {
         dialog.setStyleCss(placemark.getStyleCss());
         boolean ok = (dialog.show() == ID_OK);
         if (ok) {
-            if (!belongsToProduct) {
-                // must add to product, otherwise setting the pixel position wil fail
-                placemarkDescriptor.getPlacemarkGroup(product).add(placemark);
-            }
             placemark.setName(dialog.getName());
             placemark.setLabel(dialog.getLabel());
             placemark.setDescription(dialog.getDescription());
-            placemark.setGeoPos(dialog.getGeoPos());
             placemark.setStyleCss(dialog.getStyleCss());
+            if (!belongsToProduct) {
+                // must add to product, otherwise setting the pixel position basied on geo position wil fail
+                placemarkDescriptor.getPlacemarkGroup(product).add(placemark);
+            }
+            placemark.setGeoPos(dialog.getGeoPos());
         }
         return ok;
     }
