@@ -139,8 +139,8 @@ public class PixelPosStatusLineElementProvider
                 int x1 = (int) (width * 0.5);
                 int y1 = (int) (height * 0.5);
                 GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
-                GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((x1 + 1), y1), null);
-                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, (y1 + 1)), null);
+                GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((x1 -1), y1), null);
+                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, (y1 -1)), null);
                 double resLon = geoPos.getLon();
                 double resLat = geoPos.getLat();
                 double resLonX = geoPosX.getLon();
@@ -152,10 +152,9 @@ public class PixelPosStatusLineElementProvider
                 double latitudeDistance = spherDist.distance(resLonY, resLatY);
                 final DefaultGeographicCRS wgs84 = DefaultGeographicCRS.WGS84;
                 final Ellipsoid ellipsoid = wgs84.getDatum().getEllipsoid();
-                final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) / 2;
-                final double meanEarthRadiusKm = meanEarthRadiusM / 1000.0;
-                longitudeResolutionInMeter = longitudeDistance * meanEarthRadiusKm * 1000;
-                latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusKm * 1000;
+                final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) * 0.5;
+                longitudeResolutionInMeter = longitudeDistance * meanEarthRadiusM;
+                latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusM;
             }
         }
     }
