@@ -270,6 +270,11 @@ public class ExportImageAction extends AbstractExportImageAction {
     }
 
     static RenderedImage createImage(ProductSceneView view, boolean fullScene, Dimension dimension, boolean alphaChannel, boolean geoReferenced) {
+        final long pixelCount = dimension.width * (long) dimension.height;
+        if (pixelCount > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Image size is too big. Maximum supported pixel count is " + Integer.MAX_VALUE + ". Current pixel count is " + pixelCount);
+        }
+
         final int imageType = alphaChannel ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR;
 
         final BufferedImage bufferedImage = new BufferedImage(dimension.width, dimension.height, imageType);
