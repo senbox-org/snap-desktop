@@ -53,6 +53,7 @@
         <module>snap-smart-configurator-ui</module>
         <module>snap-virtual-file-system-preferences-ui</module>
         <module>snap-remote-execution-ui</module>
+        <module>snap-zarr-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
