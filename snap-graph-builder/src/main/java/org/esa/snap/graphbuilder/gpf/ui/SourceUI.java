@@ -57,12 +57,14 @@ public class SourceUI extends BaseOperatorUI {
     private static final String FORMAT_PARAMETER = "formatName";
     private static final String USE_ADVANCED_OPTIONS_PARAMETER = "useAdvancedOptions";
     private static final String BAND_LIST_PARAMETER = "bandNames";
+    private static final String TIEPOINTGRID_LIST_PARAMETER = "tiePointGridNames";
     private static final String MASK_LIST_PARAMETER = "maskNames";
     private static final String PIXEL_REGION_PARAMETER = "pixelRegion";
     private static final String GEOMETRY_REGION_PARAMETER = "geometryRegion";
     private static final String COPY_METADATA_PARAMETER = "copyMetadata";
     private static final String ANY_FORMAT = "Any Format";
     private final JList bandList = new JList();
+    private final JList tiePointGridList = new JList();
     private final JList maskList = new JList();
     SourceProductSelector sourceProductSelector = null;
     private JComboBox<String> formatNameComboBox = new JComboBox<>();
@@ -186,6 +188,7 @@ public class SourceUI extends BaseOperatorUI {
                     // therefore calling setSourceProduct(prod); would not be enough, setSourceProducts() is needed
                     setSourceProducts(new Product[]{prod});
                     OperatorUIUtils.initParamList(bandList, getBandNames());
+                    OperatorUIUtils.initParamList(tiePointGridList,getTiePointGridNames());
                     OperatorUIUtils.initParamList(maskList, getGeometries());
                     pixelPanelChanged();
                     geoCodingChange();
@@ -199,6 +202,7 @@ public class SourceUI extends BaseOperatorUI {
         paramMap.put(FORMAT_PARAMETER, selectedFormat);
         paramMap.put(USE_ADVANCED_OPTIONS_PARAMETER, advancedOptionsPanel.isVisible());
         OperatorUIUtils.updateParamList(bandList, paramMap, BAND_LIST_PARAMETER);
+        OperatorUIUtils.updateParamList(tiePointGridList, paramMap, TIEPOINTGRID_LIST_PARAMETER);
         OperatorUIUtils.updateParamList(maskList, paramMap, MASK_LIST_PARAMETER);
         if (pixelCoordRadio.isSelected()) {
             paramMap.put(PIXEL_REGION_PARAMETER, new Rectangle(((Number) pixelCoordXSpinner.getValue()).intValue(), ((Number) pixelCoordYSpinner.getValue()).intValue(), ((Number) pixelCoordWidthSpinner.getValue()).intValue(), ((Number) pixelCoordHeightSpinner.getValue()).intValue()));
@@ -219,6 +223,7 @@ public class SourceUI extends BaseOperatorUI {
                 if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
                     // for same types of products (with identical band names) the selected bands/masks are kept, therefore clear the selection when input product changes
                     bandList.clearSelection();
+                    tiePointGridList.clearSelection();
                     maskList.clearSelection();
 
                     // reset default visible coords panel
@@ -294,7 +299,7 @@ public class SourceUI extends BaseOperatorUI {
         contentPanel.add(formatNameComboBox, gbc);
         gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         contentPanel.add(advancedOptionsBtn, gbc);
-        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
         advancedOptionsPanel.setVisible(false);
         contentPanel.add(advancedOptionsPanel, gbc);
         gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
@@ -312,17 +317,22 @@ public class SourceUI extends BaseOperatorUI {
         gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         advancedOptionsPanel.add(new JScrollPane(maskList), gbc);
 
+        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(new JLabel("TiePoint Grid:"), gbc);
+        gbc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
+        advancedOptionsPanel.add(new JScrollPane(tiePointGridList), gbc);
+
         JPanel regionTypePanel = new JPanel(new GridLayout(1, 2));
         regionTypePanel.add(pixelCoordRadio);
         regionTypePanel.add(geoCoordRadio);
 
-        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
         advancedOptionsPanel.add(regionTypePanel, gbc);
 
-        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        gbc = SwingUtils.buildConstraints(0, 5, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
         advancedOptionsPanel.add(pixelPanel, gbc);
 
-        gbc = SwingUtils.buildConstraints(0, 5, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        gbc = SwingUtils.buildConstraints(0, 6, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
         advancedOptionsPanel.add(geoPanel, gbc);
         geoPanel.setVisible(false);
 
