@@ -134,29 +134,58 @@ public class PixelPosStatusLineElementProvider
         }else{
             int width = rasterDataNode.getRasterWidth();
             int height = rasterDataNode.getRasterHeight();
-            if(width >1 && height>1)
-            {
-                int x1 = (int) (width * 0.5);
-                int y1 = (int) (height * 0.5);
-                GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
-                GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((x1 -1), y1), null);
-                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, (y1 -1)), null);
-                double resLon = geoPos.getLon();
-                double resLat = geoPos.getLat();
-                double resLonX = geoPosX.getLon();
-                double resLatX = geoPosX.getLat();
-                double resLonY = geoPosY.getLon();
-                double resLatY = geoPosY.getLat();
-                final SphericalDistance spherDist = new SphericalDistance(resLon, resLat);
-                double longitudeDistance = spherDist.distance(resLonX, resLatX);
-                double latitudeDistance = spherDist.distance(resLonY, resLatY);
+
+            int minWidth = 12;//depends on checking area of the computeGeocodingAccordingDuplicatedValue
+            if(width > minWidth && height > 2)
+            {   
                 final DefaultGeographicCRS wgs84 = DefaultGeographicCRS.WGS84;
                 final Ellipsoid ellipsoid = wgs84.getDatum().getEllipsoid();
                 final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) * 0.5;
-                longitudeResolutionInMeter = longitudeDistance * meanEarthRadiusM;
+
+                int x1 = (int) (width * 0.5);
+                int y1 = (int) (height * 0.5);
+                GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
+                double resLon = geoPos.getLon();
+                double resLat = geoPos.getLat();
+                final SphericalDistance spherDist = new SphericalDistance(resLon, resLat);
+
+                //compute latitude
+                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, y1 +1), null);
+                double resLonY = geoPosY.getLon();
+                double resLatY = geoPosY.getLat();
+                double latitudeDistance = spherDist.distance(resLonY, resLatY);
                 latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusM;
+
+                // compute longitude with checking of duplicated geocoding
+                longitudeResolutionInMeter = computeGeocodingAccordingDuplicatedValue(geoCoding, width, x1, y1, resLon, spherDist, meanEarthRadiusM);
             }
         }
+    }
+
+    private double computeGeocodingAccordingDuplicatedValue(GeoCoding geoCoding,int width, int xRef, int yRef, double resLon,
+                                        SphericalDistance spherDist, double meanEarthRadiusM)
+    {
+        
+        int step = 5;
+        int distanceMax = 20;
+        int diffPix = step;
+        boolean haveAResolution = false;
+        while(!haveAResolution && diffPix < distanceMax && xRef+diffPix < width-1)
+        {
+            GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos(xRef + diffPix, yRef), null);
+            double resLonX = geoPosX.getLon();
+            if(resLon != resLonX)
+            {
+                haveAResolution = true;
+            }else{
+                diffPix += step;
+            }
+        }
+        GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((xRef + diffPix), yRef), null);                
+        double resLonX = geoPosX.getLon();
+        double resLatX = geoPosX.getLat();
+        double longitudeDistance = spherDist.distance(resLonX, resLatX);
+        return longitudeDistance * meanEarthRadiusM / (double)diffPix;
     }
 
     @Override
