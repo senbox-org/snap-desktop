@@ -16,7 +16,6 @@
 
 package org.esa.snap.dataio.znap.preferences;
 
-import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
 
@@ -36,9 +35,18 @@ import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.*;
 
 final class WriterPanel extends javax.swing.JPanel {
 
-    public static final String ZARR_FORMAT_NAME = "Zarr (default)";
-    public static final String ZLIB_DEFAULT_COMPRESSOR_LIB = "zlib (default)";
-    public static final String COMPRESSOR_NULL = "null";
+    private static final String ZARR_FORMAT_NAME = "Zarr (default)";
+    private static final String COMPRESSOR_NULL = "null";
+    private static final String COMPRESSOR_ZLIB = "zlib";
+    private static final String DEFAULT_EXTENSION = " (default)";
+    private static final String[] AVAILABLE_COMPRESSORS = {COMPRESSOR_NULL, COMPRESSOR_ZLIB};
+
+    static {
+        for (int i = 0; i < AVAILABLE_COMPRESSORS.length; i++) {
+            AVAILABLE_COMPRESSORS[i] = appendDefaultExtensionIfItIsTheDefaultCompressorId(AVAILABLE_COMPRESSORS[i]);
+        }
+    }
+
     private final WriterOptionsPanelController controller;
 
     private JComponent createZipArchiveLabel;
@@ -56,16 +64,6 @@ final class WriterPanel extends javax.swing.JPanel {
         addListenerToComponents(controller);
     }
 
-    private void addWriterFormatNames(Vector<String> formatNames) {
-        final String[] allProductWriterFormatStrings = ProductIOPlugInManager.getInstance().getAllProductWriterFormatStrings();
-        for (String formatString : allProductWriterFormatStrings) {
-            if (formatString.toLowerCase().contains("zarr")) {
-                continue;
-            }
-            formatNames.add(formatString);
-        }
-    }
-
     void load() {
         Preferences preferences = Config.instance("snap").load().preferences();
 
@@ -75,8 +73,9 @@ final class WriterPanel extends javax.swing.JPanel {
         String binaryFormat = preferences.get(PROPERTY_NAME_BINARY_FORMAT, ZARR_FORMAT_NAME);
         binaryFormatCombo.setSelectedItem(binaryFormat);
 
-        String compressorId = preferences.get(PROPERTY_NAME_COMPRESSOR_ID, ZLIB_DEFAULT_COMPRESSOR_LIB);
-        compressorCombo.setSelectedItem(compressorId);
+        String compressorId = preferences.get(PROPERTY_NAME_COMPRESSOR_ID, DEFAULT_COMPRESSOR_ID);
+        final String entryToBeSelected = appendDefaultExtensionIfItIsTheDefaultCompressorId(compressorId);
+        compressorCombo.setSelectedItem(entryToBeSelected);
 
         int compressionLevel = preferences.getInt(PROPERTY_NAME_COMPRESSION_LEVEL, DEFAULT_COMPRESSION_LEVEL);
         int idx = Arrays.asList(ZLIB_COMPRESSION_LEVELS).indexOf(compressionLevel);
@@ -102,7 +101,8 @@ final class WriterPanel extends javax.swing.JPanel {
             }
 
             String compressorId = compressorCombo.getItemAt(compressorCombo.getSelectedIndex());
-            final boolean isDefaultCompressorId = ZLIB_DEFAULT_COMPRESSOR_LIB.equals(compressorId);
+            compressorId = removeDefaultExtension(compressorId);
+            final boolean isDefaultCompressorId = DEFAULT_COMPRESSOR_ID.equals(compressorId);
             if (compressorCombo.isEnabled() && !isDefaultCompressorId) {
                 preferences.put(PROPERTY_NAME_COMPRESSOR_ID, compressorId);
             } else {
@@ -117,7 +117,7 @@ final class WriterPanel extends javax.swing.JPanel {
             int selectedIndex = compressionLevelCombo.getSelectedIndex();
             int compressionLevel = ZLIB_COMPRESSION_LEVELS[selectedIndex];
             final boolean isDefaultCompressionLevel = compressionLevel == DEFAULT_COMPRESSION_LEVEL;
-            if (compressionLevelCombo.isEnabled() && !isDefaultCompressionLevel){
+            if (compressionLevelCombo.isEnabled() && !isDefaultCompressionLevel) {
                 preferences.putInt(PROPERTY_NAME_COMPRESSION_LEVEL, compressionLevel);
             } else {
                 preferences.remove(PROPERTY_NAME_COMPRESSION_LEVEL);
@@ -131,6 +131,14 @@ final class WriterPanel extends javax.swing.JPanel {
         }
     }
 
+    private static String appendDefaultExtensionIfItIsTheDefaultCompressorId(String compressorId) {
+        return DEFAULT_COMPRESSOR_ID.equals(compressorId) ? compressorId + DEFAULT_EXTENSION : compressorId;
+    }
+
+    private static String removeDefaultExtension(String comboBoxEntry) {
+        return comboBoxEntry.replace(DEFAULT_EXTENSION, "");
+    }
+
     boolean valid() {
         return true;
     }
@@ -139,11 +147,15 @@ final class WriterPanel extends javax.swing.JPanel {
         binaryFormatLabel = new JLabel("Binary format:");
         Vector<String> formatNames = new Vector<>();
         formatNames.add(ZARR_FORMAT_NAME);
-        addWriterFormatNames(formatNames);
+        formatNames.add("GeoTIFF");
+        formatNames.add("GeoTIFF-BigTIFF");
+        formatNames.add("ENVI");
+        formatNames.add("NetCDF4-CF");
         binaryFormatCombo = new JComboBox<>(formatNames);
 
         compressorLabel = new JLabel("Compressor:");
-        compressorCombo = new JComboBox<>(new String[]{ZLIB_DEFAULT_COMPRESSOR_LIB, COMPRESSOR_NULL});
+
+        compressorCombo = new JComboBox<>(AVAILABLE_COMPRESSORS);
 
         compressionLevelLabel = new JLabel("Compression level:");
         compressionLevelCombo = new JComboBox<>();
@@ -223,8 +235,11 @@ final class WriterPanel extends javax.swing.JPanel {
         compressorCombo.setEnabled(noArchiveAndZarrFormat);
         compressorLabel.setEnabled(noArchiveAndZarrFormat);
 
-        boolean zlibDefaultCompressor = compressorCombo.getSelectedIndex() == 0;
-        boolean levelEnabled = noArchiveAndZarrFormat && zlibDefaultCompressor;
+        int selectedIndex = compressorCombo.getSelectedIndex();
+        String selectedItem = compressorCombo.getItemAt(selectedIndex);
+        final String selectedCompressorID = removeDefaultExtension(selectedItem);
+        boolean compressorIsSelected = !COMPRESSOR_NULL.equals(selectedCompressorID);
+        boolean levelEnabled = noArchiveAndZarrFormat && compressorIsSelected;
         compressionLevelCombo.setEnabled(levelEnabled);
         compressionLevelLabel.setEnabled(levelEnabled);
     }
