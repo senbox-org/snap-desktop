@@ -2,14 +2,19 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
+
+import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.math.SphericalDistance;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.datum.Ellipsoid;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -24,6 +29,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.text.DecimalFormatSymbols;
+import java.text.DecimalFormat;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
@@ -45,15 +52,21 @@ public class PixelPosStatusLineElementProvider
     private static final String GEO_POS_FORMAT = "Lat %8s  Lon %8s";
     private static final String PIXEL_POS_FORMAT = "X %6s  Y %6s";
     private static final String ZOOM_LEVEL_FORMAT = "Zoom %s  Level %s";
-
+    private static final String PIXEL_SIZE_FORMAT = "Pixel Spacing: %s m %s m";
 
     private final JLabel zoomLevelLabel;
     private final JLabel geoPosLabel;
     private final JLabel pixelPosLabel;
+    private final JLabel pixelSpacingLabel;
+    private final JLabel scaleLabel;
     private final JPanel panel;
 
     private boolean showPixelOffsetDecimals;
     private boolean showGeoPosOffsetDecimals;
+    private final DecimalFormatSymbols formatSymbols;
+    private final DecimalFormat decimalFormat;
+    private double longitudeResolutionInMeter;
+    private double latitudeResolutionInMeter;
 
     public PixelPosStatusLineElementProvider() {
         DocumentWindowManager.getDefault().addListener(DocumentWindowManager.Predicate.view(ProductSceneView.class), this);
@@ -72,6 +85,14 @@ public class PixelPosStatusLineElementProvider
         zoomLevelLabel.setPreferredSize(new Dimension(150, 20));
         zoomLevelLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        pixelSpacingLabel = new JLabel();
+        pixelSpacingLabel.setPreferredSize(new Dimension(230, 20));
+        pixelSpacingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        scaleLabel = new JLabel();
+        scaleLabel.setPreferredSize(new Dimension(180, 20));
+        scaleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         panel.add(Box.createHorizontalGlue());
@@ -82,7 +103,89 @@ public class PixelPosStatusLineElementProvider
         panel.add(geoPosLabel);
         panel.add(new JSeparator(SwingConstants.VERTICAL));
         panel.add(zoomLevelLabel);
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(pixelSpacingLabel);
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+        panel.add(scaleLabel);
+        formatSymbols = new DecimalFormatSymbols();
+        formatSymbols.setDecimalSeparator('.');
+        decimalFormat = new DecimalFormat("#.##", formatSymbols);
+        longitudeResolutionInMeter = Double.NaN;
+        latitudeResolutionInMeter = Double.NaN;
+    }
 
+    private void computeResolution() {
+        longitudeResolutionInMeter = Double.NaN;
+        latitudeResolutionInMeter = Double.NaN;
+        ProductSceneView productSceneView = SnapApp.getDefault().getSelectedProductSceneView();
+        if (productSceneView == null) {
+            return;
+        }
+
+        RasterDataNode rasterDataNode = productSceneView.getRaster();
+        if (rasterDataNode == null) {
+            return;
+        }
+        GeoCoding geoCoding = rasterDataNode.getGeoCoding();
+        if (geoCoding instanceof CrsGeoCoding)
+        {
+            longitudeResolutionInMeter = rasterDataNode.getImageToModelTransform().getScaleX();
+            latitudeResolutionInMeter = Math.abs(rasterDataNode.getImageToModelTransform().getScaleY());
+        }else{
+            int width = rasterDataNode.getRasterWidth();
+            int height = rasterDataNode.getRasterHeight();
+
+            int minWidth = 12;//depends on checking area of the computeGeocodingAccordingDuplicatedValue
+            if(width > minWidth && height > 2)
+            {   
+                final DefaultGeographicCRS wgs84 = DefaultGeographicCRS.WGS84;
+                final Ellipsoid ellipsoid = wgs84.getDatum().getEllipsoid();
+                final double meanEarthRadiusM = (ellipsoid.getSemiMajorAxis() + ellipsoid.getSemiMinorAxis()) * 0.5;
+
+                int x1 = (int) (width * 0.5);
+                int y1 = (int) (height * 0.5);
+                GeoPos geoPos = geoCoding.getGeoPos(new PixelPos(x1, y1), null);
+                double resLon = geoPos.getLon();
+                double resLat = geoPos.getLat();
+                final SphericalDistance spherDist = new SphericalDistance(resLon, resLat);
+
+                //compute latitude
+                GeoPos geoPosY = geoCoding.getGeoPos(new PixelPos(x1, y1 +1), null);
+                double resLonY = geoPosY.getLon();
+                double resLatY = geoPosY.getLat();
+                double latitudeDistance = spherDist.distance(resLonY, resLatY);
+                latitudeResolutionInMeter = latitudeDistance * meanEarthRadiusM;
+
+                // compute longitude with checking of duplicated geocoding
+                longitudeResolutionInMeter = computeGeocodingAccordingDuplicatedValue(geoCoding, width, x1, y1, resLon, spherDist, meanEarthRadiusM);
+            }
+        }
+    }
+
+    private double computeGeocodingAccordingDuplicatedValue(GeoCoding geoCoding,int width, int xRef, int yRef, double resLon,
+                                        SphericalDistance spherDist, double meanEarthRadiusM)
+    {
+        
+        int step = 5;
+        int distanceMax = 20;
+        int diffPix = step;
+        boolean haveAResolution = false;
+        while(!haveAResolution && diffPix < distanceMax && xRef+diffPix < width-1)
+        {
+            GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos(xRef + diffPix, yRef), null);
+            double resLonX = geoPosX.getLon();
+            if(resLon != resLonX)
+            {
+                haveAResolution = true;
+            }else{
+                diffPix += step;
+            }
+        }
+        GeoPos geoPosX = geoCoding.getGeoPos(new PixelPos((xRef + diffPix), yRef), null);                
+        double resLonX = geoPosX.getLon();
+        double resLatX = geoPosX.getLat();
+        double longitudeDistance = spherDist.distance(resLonX, resLatX);
+        return longitudeDistance * meanEarthRadiusM / (double)diffPix;
     }
 
     @Override
@@ -130,7 +233,8 @@ public class PixelPosStatusLineElementProvider
             if (showPixelOffsetDecimals) {
                 pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, imageP.getX(), imageP.getY()));
             } else {
-                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()), (int) Math.floor(imageP.getY())));
+                pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()),
+                        (int) Math.floor(imageP.getY())));
             }
 
             LayerCanvas layerCanvas = (LayerCanvas) e.getSource();
@@ -144,6 +248,10 @@ public class PixelPosStatusLineElementProvider
                 scaleStr = "1:" + ((int) v == v ? (int) v : v);
             }
             zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
+            if (longitudeResolutionInMeter != Double.NaN && latitudeResolutionInMeter != Double.NaN)
+                pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT,
+                                decimalFormat.format(latitudeResolutionInMeter),
+                                decimalFormat.format(longitudeResolutionInMeter)));
 
         } else {
             setDefault();
@@ -156,8 +264,8 @@ public class PixelPosStatusLineElementProvider
         geoPosLabel.setText(String.format(GEO_POS_FORMAT, "--", "--"));
         pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, "--", "--"));
         zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, "--", "--"));
+        pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT, "--", "--"));
     }
-
 
     @Override
     public void pixelPosNotAvailable() {
@@ -178,12 +286,15 @@ public class PixelPosStatusLineElementProvider
     public void windowSelected(DocumentWindowManager.Event<Object, ProductSceneView> e) {
         ProductSceneView view = e.getWindow().getView();
         view.addPixelPositionListener(this);
+        computeResolution();
     }
 
     @Override
     public void windowDeselected(DocumentWindowManager.Event<Object, ProductSceneView> e) {
         ProductSceneView view = e.getWindow().getView();
         view.removePixelPositionListener(this);
+        longitudeResolutionInMeter = Double.NaN;
+        latitudeResolutionInMeter = Double.NaN;
     }
 
     private void updateSettings() {
@@ -197,4 +308,3 @@ public class PixelPosStatusLineElementProvider
                 PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS);
     }
 }
-
