@@ -111,6 +111,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LABEL_VALUES_COUNT_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_ACTUAL_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_SCALING_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY + ".export";
+    private static final String PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY + ".export";
+    private static final String PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY + ".export";
+
+
+
+    // Image Scaling Section
+
 
 
 
@@ -458,8 +465,17 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        param = new Parameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2, imageLegend.getDecimalPlaces());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL);
+        param.getProperties().setMinValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MIN);
+        param.getProperties().setMaxValue(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX);
+        param.addParamChangeListener(paramChangeListener);
+        paramGroup.addParameter(param);
 
-
+        param = new Parameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2, imageLegend.isDecimalPlacesForce());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
+        param.addParamChangeListener(paramChangeListener);
+        paramGroup.addParameter(param);
 
 
 
@@ -644,6 +660,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_SCALING_KEY2).getValue();
         imageLegend.setScalingFactor((Double) value);
 
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2).getValue();
+        imageLegend.setDecimalPlaces((Integer) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2).getValue();
+        imageLegend.setDecimalPlacesForce((Boolean) value);
+
 
 
 
@@ -709,25 +731,33 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private ParamGroup paramGroup;
 
+
+
+        // Title and Units Text
+        private Parameter headerTextParam;
+        private Parameter unitsTextParam;
+
+        // Orientation
+        private Parameter orientationParam;
+        private Parameter reversePaletteParam;
+
+        // Tick Label Values
+        private Parameter distributionTypeParam;
         private Parameter numberOfTicksParam;
+        private Parameter labelValuesActualParam;
+        private Parameter labelValuesScalingParam;
+        private Parameter labelValuesDecimalPlacesParam;
+        private Parameter labelValuesForceDecimalPlacesParam;
+
+
+
+
         private Parameter usingHeaderParam;
         private Parameter usingUnitsParam;
         private Parameter bwColorOverrideParam;
         private Parameter useLegendWidthParam;
         private Parameter legendWidthParam;
-        private Parameter headerTextParam;
-        private Parameter unitsTextParam;
-
-        private Parameter orientationParam;
-        private Parameter reversePaletteParam;
-
-
-
         private Parameter backgroundTransparencyParam;
-        private Parameter labelValuesActualParam;
-        private Parameter labelValuesScalingParam;
-        private Parameter distributionTypeParam;
-
 
         private Parameter titleColorParam;
         private Parameter unitsColorParam;
@@ -827,10 +857,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(unitsTextParam.getEditor().getEditorComponent(), gbc);
 
 
+
+            // Orientation
+
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(sectionBreak(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL), gbc);
-
 
             gbc.gridy++;
             gbc.insets.top = 5;
@@ -838,12 +870,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(orientationParam.getEditor().getLabelComponent(), gbc);
             p.add(orientationParam.getEditor().getEditorComponent(), gbc);
 
-
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(reversePaletteParam.getEditor().getEditorComponent(), gbc);
 
 
+
+            // Tick Label Values
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -872,15 +905,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(labelValuesScalingParam.getEditor().getLabelComponent(), gbc);
             p.add(labelValuesScalingParam.getEditor().getEditorComponent(), gbc);
 
-
-
-
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(labelValuesDecimalPlacesParam.getEditor().getLabelComponent(), gbc);
+            p.add(labelValuesDecimalPlacesParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
-            gbc.insets.top = 5;
-            gbc.gridwidth = 1;
-            p.add(backgroundTransparencyParam.getEditor().getLabelComponent(), gbc);
-            p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
+            gbc.gridwidth = 2;
+            p.add(labelValuesForceDecimalPlacesParam.getEditor().getEditorComponent(), gbc);
+
+
+
+
+            // Image Scaling Section
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(sectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -890,6 +931,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 1;
             p.add(legendWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(legendWidthParam.getEditor().getEditorComponent(), gbc);
+
+
+
+
+            // Backdrop Section
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(sectionBreak("Colors"), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -929,6 +979,25 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 1;
             p.add(legendBorderColorParam.getEditor().getLabelComponent(), gbc);
             p.add(legendBorderColorParam.getEditor().getEditorComponent(), gbc);
+
+
+
+
+
+            // Backdrop Section
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(sectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL), gbc);
+
+            gbc.gridy++;
+            gbc.insets.top = 5;
+            gbc.gridwidth = 1;
+            p.add(backgroundTransparencyParam.getEditor().getLabelComponent(), gbc);
+            p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
+
+
+
 
             gbc.gridy++;
             gbc.insets.top = 15;
@@ -971,7 +1040,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             numberOfTicksParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2);
             labelValuesActualParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2);
             labelValuesScalingParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_SCALING_KEY2);
-
+            labelValuesDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2);
+            labelValuesForceDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2);
 
 
 
