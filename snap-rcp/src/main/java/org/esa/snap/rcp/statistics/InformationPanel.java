@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Brockmann Consult GmbH (info@brockmann-consult.de)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option)
@@ -9,7 +9,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
@@ -20,9 +20,14 @@ import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.AbstractBand;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.ConvolutionFilterBand;
+import org.esa.snap.core.datamodel.FilterBand;
+import org.esa.snap.core.datamodel.GeneralFilterBand;
+import org.esa.snap.core.datamodel.Kernel;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.util.ModuleMetadata;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
@@ -31,10 +36,12 @@ import org.openide.windows.TopComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Thomas Storm
+ * @author Sabine Embacher
  */
 class InformationPanel extends TablePagePanel {
 
@@ -108,6 +115,35 @@ class InformationPanel extends TablePagePanel {
             addEntry("Wavelength:", String.valueOf(band.getSpectralWavelength()), "nm");
             addEntry("Bandwidth:", String.valueOf(band.getSpectralBandwidth()), "nm");
             addEntry("Solar flux:", String.valueOf(band.getSolarFlux()), "mW/(m^2*nm)");
+            if (band instanceof FilterBand) {
+                addEmptyLine();
+                addEntry("FilterBand:", band.getClass().getTypeName(), "");
+                final FilterBand fb = (FilterBand) band;
+                addEntry("Source band name:", fb.getSource().getName(), "");
+                Kernel kernel = null;
+                if (band instanceof ConvolutionFilterBand) {
+                    final ConvolutionFilterBand cfb = (ConvolutionFilterBand) band;
+                    addEntry("Iteration count:", "" + cfb.getIterationCount(), "");
+                    kernel = cfb.getKernel();
+                } else if (band instanceof GeneralFilterBand) {
+                    final GeneralFilterBand gfb = (GeneralFilterBand) band;
+                    addEntry("Iteration count:", "" + gfb.getIterationCount(), "");
+                    addEntry("Op type:", "" + gfb.getOpType(), "");
+                    kernel = gfb.getStructuringElement();
+                }
+                if (kernel != null) {
+                    addEntry("Kernel width:", "" + kernel.getWidth(), "");
+                    addEntry("Kernel height:", "" + kernel.getHeight(), "");
+                    addEntry("Kernel xOrigin:", "" + kernel.getXOrigin(), "");
+                    addEntry("Kernel yOrigin:", "" + kernel.getYOrigin(), "");
+                    addEntry("Kernel factor:", "" + kernel.getFactor(), "");
+                    addEntry("Kernel data:", Arrays.toString( kernel.getKernelData(null)), "");
+                }
+            }
+            if (band instanceof VirtualBand) {
+                final VirtualBand vb = (VirtualBand) band;
+                addEntry("VirtualBand Expression:", vb.getExpression(), "");
+            }
         } else if (getRaster() instanceof TiePointGrid) {
             final TiePointGrid grid = (TiePointGrid) getRaster();
             addEntry("Name:", grid.getName(), "");
@@ -132,7 +168,7 @@ class InformationPanel extends TablePagePanel {
             return;
         }
         if (tableModel.getRowCount() > 0) {
-            addEntry("", "", "");
+            addEmptyLine();
         }
 
         addEntry("Product name:", product.getName(), "");
@@ -154,8 +190,8 @@ class InformationPanel extends TablePagePanel {
 
         Dimension preferredTileSize = product.getPreferredTileSize();
         if (preferredTileSize != null) {
-            addEntry("Product preferred tile width:", String.valueOf((int)preferredTileSize.getWidth()), "pixels");
-            addEntry("Product preferred tile height:", String.valueOf((int)preferredTileSize.getHeight()), "pixels");
+            addEntry("Product preferred tile width:", String.valueOf((int) preferredTileSize.getWidth()), "pixels");
+            addEntry("Product preferred tile height:", String.valueOf((int) preferredTileSize.getHeight()), "pixels");
         }
 
         final String startTimeString = product.getStartTime() != null ?
@@ -182,7 +218,11 @@ class InformationPanel extends TablePagePanel {
         getTable().getColumnModel().getColumn(index_of_value_and_unit_column).setMaxWidth(widthOfValueAndUnitColumn);
         setColumnRenderer(0, RendererFactory.createRenderer(RendererFactory.ALTERNATING_ROWS));
         setColumnRenderer(1, RendererFactory.createRenderer(RendererFactory.ALTERNATING_ROWS
-                                                                    | RendererFactory.TOOLTIP_AWARE));
+                                                            | RendererFactory.TOOLTIP_AWARE));
+    }
+
+    private void addEmptyLine() {
+        addEntry("", "", "");
     }
 
     private void addEntry(final String label, final String value, final String unit) {
@@ -223,7 +263,7 @@ class InformationPanel extends TablePagePanel {
         final ProductReader productReader = product.getProductReader();
         if (productReader != null) {
             ModuleMetadata moduleMetadata = SystemUtils.loadModuleMetadata(productReader.getClass());
-            if(moduleMetadata != null) {
+            if (moduleMetadata != null) {
                 return String.format("%s - v%s", moduleMetadata.getDisplayName(), moduleMetadata.getVersion());
             }
             return "unknown";
@@ -297,7 +337,7 @@ class InformationPanel extends TablePagePanel {
                     return tableRow.label;
                 case index_of_value_and_unit_column:
                     return tableRow.value +
-                            (StringUtils.isNotNullAndNotEmpty(tableRow.unit) ? " " + tableRow.unit : "");
+                           (StringUtils.isNotNullAndNotEmpty(tableRow.unit) ? " " + tableRow.unit : "");
             }
 
             throw new IllegalStateException("Invalid index: row=" + rowIndex + "; column=" + columnIndex);
