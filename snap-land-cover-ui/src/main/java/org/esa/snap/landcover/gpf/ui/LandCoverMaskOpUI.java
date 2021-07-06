@@ -40,11 +40,11 @@ import java.util.Map;
  */
 public class LandCoverMaskOpUI extends BaseOperatorUI {
 
-    private final JList<String> bandList = new JList();
+    private final JList<String> bandList = new JList<>();
 
-    private final JComboBox<String> landCoverBandCombo = new JComboBox();
+    private final JComboBox<String> landCoverBandCombo = new JComboBox<>();
     private final JLabel validLandCoverClassesLabel = new JLabel("Valid land cover classes:");
-    private final JList<String> validLandCoverClassesList = new JList();
+    private final JList<String> validLandCoverClassesList = new JList<>();
     private final JScrollPane validLandCoverClassesScroll = new JScrollPane(validLandCoverClassesList);
     private final JLabel validPixelExpressionLabel = new JLabel("Valid pixel expression:");
     private final JTextArea validPixelExpressionText = new JTextArea();
@@ -59,22 +59,20 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         initializeOperatorUI(operatorName, parameterMap);
         final JComponent panel = createPanel();
 
-        landCoverBandCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                validLandCoverClassesList.removeAll();
-                String[] classes = getLandCoverClasses((String) landCoverBandCombo.getSelectedItem());
-                if(classes.length > 0) {
-                    validLandCoverClassesList.setListData(classes);
+        landCoverBandCombo.addItemListener(e -> {
+            validLandCoverClassesList.removeAll();
+            String[] classes = getLandCoverClasses((String) landCoverBandCombo.getSelectedItem());
+            if(classes.length > 0) {
+                validLandCoverClassesList.setListData(classes);
 
-                    final int[] selClasses = (int[]) paramMap.get("validLandCoverClasses");
-                    if (selClasses != null) {
-                        validLandCoverClassesList.setSelectedIndices(getClassIndexes(selClasses));
-                    }
-                    showLandCoverClasses(true);
-                } else {
-
-                    showLandCoverClasses(false);
+                final int[] selClasses = (int[]) paramMap.get("validLandCoverClasses");
+                if (selClasses != null) {
+                    validLandCoverClassesList.setSelectedIndices(getClassIndexes(selClasses));
                 }
+                showLandCoverClasses(true);
+            } else {
+
+                showLandCoverClasses(false);
             }
         });
 
@@ -130,7 +128,7 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         } catch (Exception e) {
             // return empty namesList
         }
-        return namesList.toArray(new String[namesList.size()]);
+        return namesList.toArray(new String[0]);
     }
 
     private String[] getLandCoverClasses(final String landCoverBandName) {
@@ -151,13 +149,13 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
                 }
             }
         }
-        return classList.toArray(new String[classList.size()]);
+        return classList.toArray(new String[0]);
     }
 
     private int[] getClassIndexes(final int[] selClasses) {
         final List<Integer> indexList = new ArrayList<>(selClasses.length);
         for (int i = 0; i < validLandCoverClassesList.getModel().getSize(); ++i) {
-            final String listName = (String) validLandCoverClassesList.getModel().getElementAt(i);
+            final String listName = validLandCoverClassesList.getModel().getElementAt(i);
             for (int selClass : selClasses) {
                 final String selClassName = classNameMap.get(selClass);
                 if (listName.equals(selClassName)) {
