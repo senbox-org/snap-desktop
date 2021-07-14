@@ -44,6 +44,7 @@ import java.util.Map;
 public class SubsetUI extends BaseOperatorUI {
 
     private final JList bandList = new JList();
+    private final JList tiePointGridList = new JList();
 
     private final JComboBox referenceCombo = new JComboBox();
     private final JTextField regionX = new JTextField("");
@@ -91,7 +92,8 @@ public class SubsetUI extends BaseOperatorUI {
     @Override
     public void initParameters() {
 
-        OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
+        OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("bandNames"));
+        OperatorUIUtils.initParamList(tiePointGridList, getTiePointGridNames(), (Object[])paramMap.get("tiePointGridNames"));
 
         String _oldSelected = (String) referenceCombo.getSelectedItem();
         referenceCombo.removeAllItems();
@@ -102,13 +104,13 @@ public class SubsetUI extends BaseOperatorUI {
                 referenceCombo.setSelectedItem(string);
             }
         }
-
         //enable or disable referenceCombo depending on sourceProduct
         if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {
             referenceCombo.setEnabled(false);
         } else {
             referenceCombo.setEnabled(true);
         }
+
 
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {
@@ -172,7 +174,7 @@ public class SubsetUI extends BaseOperatorUI {
                 }
             }
         }
-
+        OperatorUIUtils.updateParamList(tiePointGridList, paramMap, "tiePointGridNames");
 
         final String subSamplingXStr = subSamplingX.getText();
         if (subSamplingXStr != null && !subSamplingXStr.isEmpty())
@@ -216,6 +218,12 @@ public class SubsetUI extends BaseOperatorUI {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
         contentPane.add(new JScrollPane(bandList), gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        contentPane.add(new JLabel("Tie-Point Grids:"), gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 1;
+        contentPane.add(new JScrollPane(tiePointGridList), gbc);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
