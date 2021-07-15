@@ -64,12 +64,10 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
      */
     private Benchmark benchmarkModel;
 
-
     /**
      * Parent panel
      */
     private PerformancePanel perfPanel;
-
 
     /**
      * Constructor
@@ -79,7 +77,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
      * @param benchmarkModel Benchmark model
      * @param appContext     Application context
      */
-    public BenchmarkDialog(PerformancePanel perfPanel, String operatorName, Benchmark benchmarkModel, AppContext appContext) {
+    public BenchmarkDialog(PerformancePanel perfPanel, String operatorName, Benchmark benchmarkModel,
+            AppContext appContext) {
         super(operatorName, appContext, "Benchmark " + operatorName, null, false);
 
         this.benchmarkModel = benchmarkModel;
@@ -87,12 +86,11 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         this.perfPanel = perfPanel;
     }
 
-
     protected void executeOperator(Product targetProduct, ProgressHandleMonitor pm) throws Exception {
         final TargetProductSelectorModel model = getTargetProductSelector().getModel();
 
-        //To avoid a nullPointerException in model.getProductFile()
-        if(model.getProductName()==null) {
+        // To avoid a nullPointerException in model.getProductFile()
+        if (model.getProductName() == null) {
             model.setProductName(targetProduct.getName());
         }
 
@@ -114,11 +112,10 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             execOp = writeOp;
         }
 
-
         SubProgressMonitor pm2 = (SubProgressMonitor) SubProgressMonitor.create(pm, 95);
 
-        //execute
-        if(execOp.canComputeTile() || execOp.canComputeTileStack()) {
+        // execute
+        if (execOp.canComputeTile() || execOp.canComputeTileStack()) {
             final OperatorExecutor executor = OperatorExecutor.create(execOp);
             executor.execute(pm2);
         } else {
@@ -132,18 +129,14 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
         BenchmarkExecutor executor = new BenchmarkExecutor();
 
-        //launch processing with a progress bar
+        // launch processing with a progress bar
         ProgressHandleMonitor pm = ProgressHandleMonitor.create("Running benchmark", executor);
 
         executor.setProgressHandleMonitor(pm);
 
-        ProgressUtils.runOffEventThreadWithProgressDialog(executor, "Benchmarking....",
-                                                          pm.getProgressHandle(),
-                                                          true,
-                                                          50,
-                                                          1000);
+        ProgressUtils.runOffEventThreadWithProgressDialog(executor, "Benchmarking....", pm.getProgressHandle(), true,
+                50, 1000);
     }
-
 
     private class BenchmarkExecutor implements Runnable, Cancellable {
 
@@ -159,7 +152,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
         @Override
         public boolean cancel() {
-            //load old params (before benchmark)
+            // load old params (before benchmark)
             benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
 
             canceled = true;
@@ -183,7 +176,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             //add current performance parameters to benchmark
             PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
             currentBenchmarkSingleCalcul = new BenchmarkSingleCalculus(
-                    currentPerformanceParameters.getDefaultTileSize(), currentPerformanceParameters.getTileHeight(),currentPerformanceParameters.getTileWidth(),
+                    String.valueOf(currentPerformanceParameters.getDefaultTileSize()), currentPerformanceParameters.getTileHeight(),currentPerformanceParameters.getTileWidth(),
                     currentPerformanceParameters.getCacheSize(),
                     currentPerformanceParameters.getNbThreads());
 
@@ -213,19 +206,20 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
 
                     final Product targetProduct;
 
-                    //load performance parameters for current benchmark
-                    benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
-
                     //processing start time
                     long startTime = System.currentTimeMillis();
                     
                     try {
                         targetProduct = createTargetProduct();
-
                     } catch (Throwable t) {
                         handleInitialisationError(t);
                         throw t;
                     }
+                    if(benchmarkSingleCalcul.getTileSize().matches("\\*"))
+                        benchmarkSingleCalcul.setTileSize(String.valueOf(targetProduct.getSceneRasterWidth()));
+                    //load performance parameters for current benchmark
+                    benchmarkModel.loadBenchmarkPerfParams(benchmarkSingleCalcul);
+
                     if (targetProduct == null) {
                         throw new NullPointerException("Target product is null.");
                     }
@@ -266,17 +260,16 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             managePostBenchmark();
         }
 
-
         private void managePostBenchmark() {
             if (!canceled) {
-                //sort benchmark results and return the fastest
+                // sort benchmark results and return the fastest
                 BenchmarkSingleCalculus bestBenchmarkSingleCalcul = benchmarkModel.getFasterBenchmarkSingleCalculus();
-                //load fastest params?
+                // load fastest params?
                 benchmarkModel.loadBenchmarkPerfParams(bestBenchmarkSingleCalcul);
 
                 showResults();
 
-                //update parent panel with best values
+                // update parent panel with best values
                 perfPanel.updatePerformanceParameters(bestBenchmarkSingleCalcul);
             }
 
@@ -286,12 +279,11 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
         private void showResults() {
             // table model
             class BenchmarkTableModel extends AbstractTableModel {
-                //final String[] columnNames = benchmarkModel.getColumnsNames();
-                //final int[][] data = benchmarkModel.getRowsToShow();
+                // final String[] columnNames = benchmarkModel.getColumnsNames();
+                // final int[][] data = benchmarkModel.getRowsToShow();
 
                 final String[] columnNames = benchmarkModel.getColumnsNamesWithoutTileDimension();
                 final int[][] data = benchmarkModel.getRowsToShowWhitoutTileDimension();
-
 
                 @Override
                 public Class getColumnClass(int column) {
@@ -329,7 +321,8 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
             JPanel panel = new JPanel(new BorderLayout(4, 4));
             JScrollPane panelTable = new JScrollPane(table);
             panel.add(panelTable, BorderLayout.CENTER);
-            NotifyDescriptor d = new NotifyDescriptor(panel, "Benchmark results", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null);
+            NotifyDescriptor d = new NotifyDescriptor(panel, "Benchmark results", JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, null);
             DialogDisplayer.getDefault().notify(d);
         }
     }

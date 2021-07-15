@@ -586,15 +586,13 @@ final class PerformancePanel extends javax.swing.JPanel {
     private void processingParamsComputeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         if(validCompute()){
             //Create performance parameters benchmark lists
-            java.util.List<Integer> tileSizeList = new ArrayList<>();
+            java.util.List<String> tileSizeList = new ArrayList<>();
             java.util.List<String> tileDimensionList = new ArrayList<>();
             java.util.List<Integer> cacheSizesList = new ArrayList<>();
             java.util.List<Integer> nbThreadsList = new ArrayList<>();
-
             for(String tileSize : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
-                tileSizeList.add(Integer.parseInt(tileSize));
+                tileSizeList.add(tileSize);
             }
-
             //for(String dimension : StringUtils.split(benchmarkTileSizeTextField.getText(), ';')){
             //    tileDimensionList.add(dimension);
             //}
@@ -715,7 +713,7 @@ final class PerformancePanel extends javax.swing.JPanel {
 
     private boolean validCompute() {
         boolean isValid = true;
-        Pattern patternBenchmarkValues = Pattern.compile("([0-9]+[\\;]*)+");
+        Pattern patternBenchmarkValues = Pattern.compile("([0-9]+[\\;|*]*)+");
 
         /*String[] dimensions = StringUtils.split(benchmarkTileDimensionTextField.getText(), ';');
         boolean isValidDimensions = true;
