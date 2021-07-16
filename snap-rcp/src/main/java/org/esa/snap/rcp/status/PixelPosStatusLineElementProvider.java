@@ -220,7 +220,8 @@ public class PixelPosStatusLineElementProvider
             }
             GeoCoding geoCoding = rasterDataNode.getGeoCoding();
             if (geoCoding == null) {
-                geoPosLabel.setText(String.format(GEO_POS_FORMAT, "--", "--"));
+                setDefault();
+                return;
             } else {
                 GeoPos geoPos = geoCoding.getGeoPos(pixelPos, null);
                 if (showGeoPosOffsetDecimals) {
