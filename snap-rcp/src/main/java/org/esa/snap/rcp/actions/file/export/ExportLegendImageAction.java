@@ -117,43 +117,68 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
     // Image Scaling Section
-
-
-
-
-
-    private static final String PROPERTY_TITLE_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY + ".export";
-    private static final String PROPERTY_UNITS_SHOW_KEY2 = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY + ".export";
-
-    private static final String PROPERTY_BACKDROP_TRANSPARENCY_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY + ".export";
-
-
-
-
-
-
-
-
     private static final String PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY + ".export";
     private static final String PROPERTY_EXPORT_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY + ".export";
 
-    // These are all the color keys which get bypasses dependent on the PROPERTY_EXPORT_USE_BW_COLOR_KEY2
-    private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
-    private static final String PROPERTY_TITLE_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY + ".export";
+    // Title Section
+    private static final String PROPERTY_TITLE_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY + ".export";
     private static final String PROPERTY_TITLE_FONT_SIZE_KEY2 = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY + ".export";
+    private static final String PROPERTY_TITLE_FONT_BOLD_KEY2 = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY + ".export";
+    private static final String PROPERTY_TITLE_FONT_ITALIC_KEY2 = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY + ".export";
     private static final String PROPERTY_TITLE_FONT_NAME_KEY2 = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY + ".export";
+    private static final String PROPERTY_TITLE_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY + ".export";
 
-
-    private static final String PROPERTY_UNITS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY + ".export";
+    // Units Section
+    private static final String PROPERTY_UNITS_SHOW_KEY2 = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY + ".export";
     private static final String PROPERTY_UNITS_FONT_SIZE_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY + ".export";
     private static final String PROPERTY_UNITS_FONT_NAME_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY + ".export";
+    private static final String PROPERTY_UNITS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY + ".export";
 
-
+    // Tick-Mark Labels Section
+    private static final String PROPERTY_LABELS_SHOW_KEY2 = ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY + ".export";
+    private static final String PROPERTY_LABELS_FONT_SIZE_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY + ".export";
+    private static final String PROPERTY_LABELS_FONT_NAME_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY + ".export";
     private static final String PROPERTY_LABELS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY + ".export";
+
+
+    // Tickmarks Section
     private static final String PROPERTY_TICKMARKS_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY + ".export";
-    private static final String PROPERTY_PALETTE_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY + ".export";
+
+
+    // Backdrop Section
+    private static final String PROPERTY_BACKDROP_TRANSPARENCY_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY + ".export";
     private static final String PROPERTY_BACKDROP_COLOR_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY + ".export";
+
+
+    // Palette Border Section
+    private static final String PROPERTY_PALETTE_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY + ".export";
+
+
+    // Legend Border Section
     private static final String PROPERTY_LEGEND_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY + ".export";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // These are all the color keys which get bypasses dependent on the PROPERTY_EXPORT_USE_BW_COLOR_KEY2
+    private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
+
+
+
+
+
+
+
 
 
 
@@ -500,6 +525,21 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        boolean titleFontTypeBold = ColorBarLayer.isFontTypeBold(imageLegend.getTitleFontType());
+        param = new Parameter(PROPERTY_TITLE_FONT_BOLD_KEY2, titleFontTypeBold);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_LABEL);
+        paramGroup.addParameter(param);
+
+        boolean titleFontTypeItalicBold = ColorBarLayer.isFontTypeItalic(imageLegend.getTitleFontType());
+        param = new Parameter(PROPERTY_TITLE_FONT_ITALIC_KEY2, titleFontTypeItalicBold);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_LABEL);
+        paramGroup.addParameter(param);
+
+
+
+
+
+
         param = new Parameter(PROPERTY_TITLE_FONT_NAME_KEY2, imageLegend.getTitleFontName());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.FONT_NAME_SANSERIF,
@@ -545,6 +585,28 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         // Tick-Mark Labels Section
+
+        param = new Parameter(PROPERTY_LABELS_SHOW_KEY2, imageLegend.isLabelsShow());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL);
+        paramGroup.addParameter(param);
+
+
+        param = new Parameter(PROPERTY_LABELS_FONT_SIZE_KEY2, imageLegend.getLabelsFontSize());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL);
+        param.getProperties().setMinValue(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MIN);
+        param.getProperties().setMaxValue(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_MAX);
+        paramGroup.addParameter(param);
+
+
+        param = new Parameter(PROPERTY_LABELS_FONT_NAME_KEY2, imageLegend.getLabelsFontName());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL);
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.FONT_NAME_SANSERIF,
+                ColorBarLayerType.FONT_NAME_SERIF,
+                ColorBarLayerType.FONT_NAME_COURIER,
+                ColorBarLayerType.FONT_NAME_MONOSPACED
+        });
+        paramGroup.addParameter(param);
+
 
         param = new Parameter(PROPERTY_LABELS_FONT_COLOR_KEY2, imageLegend.getLabelsColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL);
@@ -748,65 +810,104 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
+        // Image Scaling Section
 
+        // nothing needed here
+
+
+
+        // Title Section
         value = legendParamGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2).getValue();
         imageLegend.setShowTitle((Boolean) value);
-
-        value = legendParamGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2).getValue();
-        imageLegend.setShowUnits((Boolean) value);
-
-
-        Boolean blackWhiteColor = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2).getValue();
-        if (blackWhiteColor) {
-            imageLegend.setTitleColor(Color.BLACK);
-            imageLegend.setUnitsColor(Color.BLACK);
-            imageLegend.setLabelsColor(Color.BLACK);
-            imageLegend.setTickmarkColor(Color.BLACK);
-            imageLegend.setBorderColor(Color.BLACK);
-            imageLegend.setBackdropColor(Color.WHITE);
-            imageLegend.setBackdropBorderColor(Color.WHITE);
-        } else {
-
-            value = legendParamGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2).getValue();
-            imageLegend.setTitleColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2).getValue();
-            imageLegend.setUnitsColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_COLOR_KEY2).getValue();
-            imageLegend.setLabelsColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_TICKMARKS_COLOR_KEY2).getValue();
-            imageLegend.setTickmarkColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_PALETTE_BORDER_COLOR_KEY2).getValue();
-            imageLegend.setBorderColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_BACKDROP_COLOR_KEY2).getValue();
-            imageLegend.setBackdropColor((Color) value);
-
-            value = legendParamGroup.getParameter(PROPERTY_LEGEND_BORDER_COLOR_KEY2).getValue();
-            imageLegend.setBackdropBorderColor((Color) value);
-
-        }
-
-
-        value = legendParamGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2).getValue();
-        imageLegend.setBackdropTransparency(((Number) value).floatValue());
-
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_FONT_SIZE_KEY2).getValue();
         imageLegend.setTitleFontSize((Integer) value);
 
+        boolean titleFontBold = (Boolean) legendParamGroup.getParameter(PROPERTY_TITLE_FONT_BOLD_KEY2).getValue();
+        boolean titleFontItalic = (Boolean) legendParamGroup.getParameter(PROPERTY_TITLE_FONT_ITALIC_KEY2).getValue();
+        imageLegend.setTitleFontType(ColorBarLayer.getFontType(titleFontItalic, titleFontBold));
+
+
         value = legendParamGroup.getParameter(PROPERTY_TITLE_FONT_NAME_KEY2).getValue();
         imageLegend.setTitleFontName((String) value);
 
+        value = legendParamGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2).getValue();
+        imageLegend.setTitleColor((Color) value);
+
+
+
+        // Units Section
+        value = legendParamGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2).getValue();
+        imageLegend.setShowUnits((Boolean) value);
 
         value = legendParamGroup.getParameter(PROPERTY_UNITS_FONT_SIZE_KEY2).getValue();
         imageLegend.setUnitsFontSize((Integer) value);
 
         value = legendParamGroup.getParameter(PROPERTY_UNITS_FONT_NAME_KEY2).getValue();
         imageLegend.setUnitsFontName((String) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2).getValue();
+        imageLegend.setUnitsColor((Color) value);
+
+
+
+        // Tick-Mark Labels Section
+        value = legendParamGroup.getParameter(PROPERTY_LABELS_SHOW_KEY2).getValue();
+        imageLegend.setLabelsShow((Boolean) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_SIZE_KEY2).getValue();
+        imageLegend.setLabelsFontSize((Integer) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_NAME_KEY2).getValue();
+        imageLegend.setLabelsFontName((String) value);
+
+        value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_COLOR_KEY2).getValue();
+        imageLegend.setLabelsColor((Color) value);
+
+
+
+
+        // Tickmarks Section
+        value = legendParamGroup.getParameter(PROPERTY_TICKMARKS_COLOR_KEY2).getValue();
+        imageLegend.setTickmarkColor((Color) value);
+
+
+
+        // Backdrop Section
+        value = legendParamGroup.getParameter(PROPERTY_BACKDROP_TRANSPARENCY_KEY2).getValue();
+        imageLegend.setBackdropTransparency(((Number) value).floatValue());
+
+        value = legendParamGroup.getParameter(PROPERTY_BACKDROP_COLOR_KEY2).getValue();
+        imageLegend.setBackdropColor((Color) value);
+
+
+
+        // Palette Border Section
+        value = legendParamGroup.getParameter(PROPERTY_PALETTE_BORDER_COLOR_KEY2).getValue();
+        imageLegend.setBorderColor((Color) value);
+
+
+
+        // Legend Border Section
+        value = legendParamGroup.getParameter(PROPERTY_LEGEND_BORDER_COLOR_KEY2).getValue();
+        imageLegend.setBackdropBorderColor((Color) value);
+
+
+
+
+
+        // Override all the colors if requested
+        Boolean blackWhiteColor = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2).getValue();
+        if (blackWhiteColor) {
+            imageLegend.setTitleColor(Color.BLACK);
+            imageLegend.setUnitsColor(Color.BLACK);
+            imageLegend.setLabelsColor(Color.BLACK);
+            imageLegend.setTickmarkColor(Color.BLACK);
+            imageLegend.setBackdropColor(Color.WHITE);
+            imageLegend.setBorderColor(Color.BLACK);
+            imageLegend.setBackdropBorderColor(Color.WHITE);
+        }
+
 
 
     }
@@ -822,10 +923,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         private ParamGroup paramGroup;
 
+        private Parameter bwColorOverrideParam;
+
+
 
 
         // Title and Units Text
-        private Parameter headerTextParam;
+        private Parameter titleTextParam;
         private Parameter unitsTextParam;
 
         // Orientation
@@ -840,34 +944,43 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter labelValuesDecimalPlacesParam;
         private Parameter labelValuesForceDecimalPlacesParam;
 
-
-
-
-        private Parameter usingHeaderParam;
-        private Parameter usingUnitsParam;
-        private Parameter bwColorOverrideParam;
+        // Image Scaling Section
         private Parameter useLegendWidthParam;
         private Parameter legendWidthParam;
-        private Parameter backgroundTransparencyParam;
 
-        private Parameter titleColorParam;
+
+        // Title Section
+        private Parameter titleShowParam;
         private Parameter titleFontSizeParam;
+        private Parameter titleBoldParam;
+        private Parameter titleItalicParam;
         private Parameter titleFontNameParam;
+        private Parameter titleColorParam;
 
 
-
+        // Units Section
+        private Parameter unitsShowParam;
         private Parameter unitsColorParam;
         private Parameter unitsFontSizeParam;
         private Parameter unitsFontNameParam;
 
-
-
-
-
+        // Tick-Mark Labels Section
+        private Parameter labelsShowParam;
+        private Parameter labelsFontSizeParam;
+        private Parameter labelsFontNameParam;
         private Parameter labelsColorParam;
+
+        // Tickmarks Section
         private Parameter tickmarksColorParam;
-        private Parameter paletteBorderColorParam;
+
+        // Backdrop Section
+        private Parameter backgroundTransparencyParam;
         private Parameter backdropColorParam;
+
+        // Palette Border Section
+        private Parameter paletteBorderColorParam;
+
+        // Legend Border Section
         private Parameter legendBorderColorParam;
 
 
@@ -891,10 +1004,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
         private void updateUIState() {
-            boolean headerTextEnabled = (Boolean) usingHeaderParam.getValue();
-            headerTextParam.setUIEnabled(headerTextEnabled);
+            boolean headerTextEnabled = (Boolean) titleShowParam.getValue();
+            titleTextParam.setUIEnabled(headerTextEnabled);
 
-            boolean unitsTextEnabled = (Boolean) usingUnitsParam.getValue();
+            boolean unitsTextEnabled = (Boolean) unitsShowParam.getValue();
             unitsTextParam.setUIEnabled(unitsTextEnabled);
 
             backgroundTransparencyParam.setUIEnabled(transparencyEnabled);
@@ -947,8 +1060,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy = 0;
             gbc.gridwidth = 1;
-            p.add(headerTextParam.getEditor().getLabelComponent(), gbc);
-            p.add(headerTextParam.getEditor().getEditorComponent(), gbc);
+            p.add(titleTextParam.getEditor().getLabelComponent(), gbc);
+            p.add(titleTextParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
@@ -1034,18 +1147,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-            // Colors Override Section
-
-            gbc.gridy++;
-            gbc.gridwidth = 2;
-            p.add(sectionBreak("Colors Override"), gbc);
-
-            gbc.gridy++;
-            gbc.gridwidth = 2;
-            p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
-
-
-
 
             // Title Section
 
@@ -1055,12 +1156,22 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(usingHeaderParam.getEditor().getEditorComponent(), gbc);
+            p.add(titleShowParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(titleFontSizeParam.getEditor().getLabelComponent(), gbc);
             p.add(titleFontSizeParam.getEditor().getEditorComponent(), gbc);
+
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(titleBoldParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(titleItalicParam.getEditor().getEditorComponent(), gbc);
+
 
             gbc.gridy++;
             gbc.gridwidth = 1;
@@ -1084,7 +1195,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(usingUnitsParam.getEditor().getEditorComponent(), gbc);
+            p.add(unitsShowParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
@@ -1110,6 +1221,20 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(sectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(labelsShowParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(labelsFontSizeParam.getEditor().getLabelComponent(), gbc);
+            p.add(labelsFontSizeParam.getEditor().getEditorComponent(), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(labelsFontNameParam.getEditor().getLabelComponent(), gbc);
+            p.add(labelsFontNameParam.getEditor().getEditorComponent(), gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
@@ -1181,6 +1306,18 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
+            // Colors Override Section
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(sectionBreak("Colors Override"), gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
+
+
+
 
 
 
@@ -1214,7 +1351,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private void initParams() {
 
             // Title and Units Text
-            headerTextParam = paramGroup.getParameter(PROPERTY_TITLE_TEXT_KEY2);
+            titleTextParam = paramGroup.getParameter(PROPERTY_TITLE_TEXT_KEY2);
             unitsTextParam = paramGroup.getParameter(PROPERTY_UNITS_TEXT_KEY2);
 
 
@@ -1238,20 +1375,26 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
             // Title Section
-            usingHeaderParam = paramGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2);
-            titleColorParam = paramGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2);
+            titleShowParam = paramGroup.getParameter(PROPERTY_TITLE_SHOW_KEY2);
             titleFontSizeParam = paramGroup.getParameter(PROPERTY_TITLE_FONT_SIZE_KEY2);
+            titleBoldParam = paramGroup.getParameter(PROPERTY_TITLE_FONT_BOLD_KEY2);
+            titleItalicParam = paramGroup.getParameter(PROPERTY_TITLE_FONT_ITALIC_KEY2);
             titleFontNameParam = paramGroup.getParameter(PROPERTY_TITLE_FONT_NAME_KEY2);
+            titleColorParam = paramGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2);
 
 
             // Units Section
-            usingUnitsParam = paramGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2);
-            unitsColorParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2);
+            unitsShowParam = paramGroup.getParameter(PROPERTY_UNITS_SHOW_KEY2);
             unitsFontSizeParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_SIZE_KEY2);
             unitsFontNameParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_NAME_KEY2);
+            unitsColorParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2);
+
 
 
             // Tick-Mark Labels Section
+            labelsShowParam = paramGroup.getParameter(PROPERTY_LABELS_SHOW_KEY2);
+            labelsFontSizeParam = paramGroup.getParameter(PROPERTY_LABELS_FONT_SIZE_KEY2);
+            labelsFontNameParam = paramGroup.getParameter(PROPERTY_LABELS_FONT_NAME_KEY2);
             labelsColorParam = paramGroup.getParameter(PROPERTY_LABELS_FONT_COLOR_KEY2);
 
 
