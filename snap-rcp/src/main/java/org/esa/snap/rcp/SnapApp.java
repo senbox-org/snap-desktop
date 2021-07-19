@@ -396,6 +396,9 @@ public class SnapApp {
      * Overrides should call {@code super.onShowing()} as a first step unless they know whet they are doing.
      */
     public void onShowing() {
+        initImageIO();
+        SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
+        SnapApp.getDefault().initGPF();
         getMainFrame().setTitle(getEmptyTitle());
         getSelectionSupport(ProductSceneView.class).addHandler(new SceneViewListener());
         getSelectionSupport(ProductNode.class).addHandler(new ProductNodeListener());
@@ -497,13 +500,7 @@ public class SnapApp {
         @Override
         public void run() {
             LOG.info("Starting SNAP Desktop");
-            try {
-                SnapApp.getDefault().onStart();
-            } finally {
-                initImageIO();
-                SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
-                SnapApp.getDefault().initGPF();
-            }
+            SnapApp.getDefault().onStart();
         }
     }
 
