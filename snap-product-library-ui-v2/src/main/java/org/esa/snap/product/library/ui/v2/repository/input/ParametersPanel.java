@@ -3,6 +3,7 @@ package org.esa.snap.product.library.ui.v2.repository.input;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * Created by jcoravu on 18/9/2019.
  */
-public class ParametersPanel extends JPanel {
+public class ParametersPanel extends VerticalScrollablePanel {
 
     public ParametersPanel() {
         super(new GridBagLayout());
@@ -38,7 +39,11 @@ public class ParametersPanel extends JPanel {
                 // the parameter type is string
                 String defaultValue = (param.getDefaultValue() == null) ? null : (String)param.getDefaultValue();
                 if (param.getValueSet() == null) {
-                    parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                    if(param.getName().toLowerCase().contentEquals("password")){
+                        parameterComponent = new SecretStringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                    } else {
+                        parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                    }
                 } else {
                     Object[] defaultValues = param.getValueSet();
                     String[] values = new String[defaultValues.length + 1];
@@ -47,7 +52,7 @@ public class ParametersPanel extends JPanel {
                     }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
-            } else if (param.getType() == Double.class || param.getType() == Integer.class || param.getType() == Short.class) {
+            } else if (param.getType() == Double.class || param.getType() == Float.class || param.getType() == Integer.class || param.getType() == Short.class) {
                 // the parameter type is number
                 Number defaultValue = (param.getDefaultValue() == null) ? null : (Number)param.getDefaultValue();
                 parameterComponent = new NumberParameterComponent(param.getName(), param.getType(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
@@ -55,7 +60,11 @@ public class ParametersPanel extends JPanel {
                 parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
             } else if (param.getType() == String[].class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
-                parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                if(param.getName().toLowerCase().contentEquals("password")){
+                    parameterComponent = new SecretStringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                }else {
+                    parameterComponent = new StringParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                }
             } else {
                 boolean found = false;
                 for (int k=0; k<classesToIgnore.length; k++) {

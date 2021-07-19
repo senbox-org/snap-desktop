@@ -129,6 +129,13 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                     }
 
                     @Override
+                    public void notifyProductStatus(String productStatusName) {
+                        if(productStatusName.toLowerCase().contentEquals("queued")){
+                            notifyProductStatusLater(this, DownloadProgressStatus.QUEUED);
+                        }
+                    }
+
+                    @Override
                     protected void updateDownloadingProgressPercent(short progressPercent, Path downloadedPath) {
                         updateDownloadingProgressPercentLater(this, progressPercent, downloadedPath);
                     }
@@ -230,6 +237,22 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
             }
         };
         SwingUtilities.invokeLater(runnable);
+    }
+
+    private void notifyProductStatusLater(DownloadProductRunnable parentRunnable, byte downloadStatus){
+        Runnable notifyProductStatusRunnable= () -> onNotifyProductStatus(parentRunnable, downloadStatus);
+        SwingUtilities.invokeLater(notifyProductStatusRunnable);
+    }
+
+    private void onNotifyProductStatus(DownloadProductRunnable parentRunnable, byte downloadStatus){
+        Pair<DownloadProgressStatus, Boolean> value = this.runningTasks.get(parentRunnable);
+        if (value == null) {
+            throw new NullPointerException("The value is null.");
+        } else {
+            DownloadProgressStatus downloadProgressStatus = value.getFirst();
+            downloadProgressStatus.setStatus(downloadStatus);
+            this.downloadProductListener.onUpdateProductDownloadProgress(parentRunnable.getProductToDownload());
+        }
     }
 
     private void updateDownloadingProgressPercentLater(DownloadProductRunnable parentRunnableItem, short progressPercentValue, Path downloadedPath) {

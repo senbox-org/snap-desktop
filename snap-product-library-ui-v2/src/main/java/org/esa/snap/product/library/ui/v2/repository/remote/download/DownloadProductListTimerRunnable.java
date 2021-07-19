@@ -1,12 +1,13 @@
 package org.esa.snap.product.library.ui.v2.repository.remote.download;
 
 import org.apache.http.auth.Credentials;
-import org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSemaphore;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
+import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProductListDownloaderListener;
@@ -35,6 +36,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
     private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
+    private final Object lock = new Object();
 
     public DownloadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, Credentials credentials,
                                             RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
@@ -51,6 +53,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         this.threadListener = threadListener;
         this.repositoryProductListPanel = repositoryProductListPanel;
         this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
+    }
+
+    private boolean downloadsAllPages() {
+        return RepositoriesCredentialsController.getInstance().downloadsAllPages();
+    }
+
+    private int getPageSize() {
+        return RepositoriesCredentialsController.getInstance().getNrRecordsOnPage();
     }
 
     @Override
@@ -74,10 +84,26 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                     public void notifyPageProducts(int pageNumber, List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
                         if (!isFinished()) {
                             updatePageProductsLater(pageResults, totalProductCount, retrievedProductCount);
+                            if (!downloadsAllPages() && retrievedProductCount < totalProductCount) {
+                                hideProgressPanelLater();
+                                synchronized (lock) {
+                                    try {
+                                        lock.wait();
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                    }
+                                }
+                                showProgressPanelLater();
+                            }
                         }
                     }
                 };
-                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, this.parameterValues, downloaderListener, this);
+                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, getPageSize(), this.parameterValues, downloaderListener, this);
+                if (this.parameterValues.containsKey("username") && this.parameterValues.containsKey("password")) {
+                    String username = (String) this.parameterValues.get("username");
+                    String password = (String) this.parameterValues.get("password");
+                    RepositoriesCredentialsController.getInstance().saveRepositoryCollectionCredential(this.remoteRepositoryName, this.mission, new UsernamePasswordCredentials(username, password));
+                }
             } catch (java.lang.InterruptedException exception) {
                 logger.log(Level.FINE, "Stop searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
                 return null; // nothing to return
@@ -95,6 +121,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         }
 
         super.cancelRunning();
+    }
+
+    public void downloadProductListNextPage() {
+        if (!isFinished()) {
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
     }
 
     @Override
@@ -118,6 +152,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     private void updateProductListSizeLater(long totalProductCount) {
+        repositoryProductListPanel.setCurrentFullResultsListCount(totalProductCount);
         GenericRunnable<Long> runnable = new GenericRunnable<Long>(totalProductCount) {
             @Override
             protected void execute(Long totalProductCountValue) {
@@ -131,6 +166,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     }
 
     private void updatePageProductsLater(List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
+        repositoryProductListPanel.setDownloadProductListTimerRunnable(this);
         Runnable runnable = new ProductPageResultsRunnable(pageResults, totalProductCount, retrievedProductCount) {
             @Override
             protected void execute(List<RepositoryProduct> pageResultsValue, long totalProductCountValue, int retrievedProductCountValue) {
@@ -142,6 +178,14 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
             }
         };
         SwingUtilities.invokeLater(runnable);
+    }
+
+    private void hideProgressPanelLater() {
+        SwingUtilities.invokeLater(() -> super.onHideProgressPanelLater());
+    }
+
+    private void showProgressPanelLater() {
+        SwingUtilities.invokeLater(() -> super.onTimerWakeUp("Fetching next page ..."));
     }
 
     private static abstract class ProductPageResultsRunnable implements Runnable {
