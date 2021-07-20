@@ -119,6 +119,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     // Image Scaling Section
     private static final String PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY + ".export";
     private static final String PROPERTY_EXPORT_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY + ".export";
+    private static final String PROPERTY_COLORBAR_LENGTH_KEY2 = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY + ".export";
+    private static final String PROPERTY_COLORBAR_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY + ".export";
 
     // Title Section
     private static final String PROPERTY_TITLE_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY + ".export";
@@ -523,6 +525,21 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
+        param = new Parameter(PROPERTY_COLORBAR_LENGTH_KEY2, imageLegend.getColorBarLength());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_LABEL);
+        param.getProperties().setMinValue(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_VALUE_MIN);
+        param.getProperties().setMaxValue(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_VALUE_MAX);
+        paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_COLORBAR_WIDTH_KEY2, imageLegend.getColorBarWidth());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_LABEL);
+        param.getProperties().setMinValue(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_MIN);
+        param.getProperties().setMaxValue(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_MAX);
+        paramGroup.addParameter(param);
+
+
+
+
 
 
         // Title Section
@@ -885,8 +902,11 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         // Image Scaling Section
+        value = legendParamGroup.getParameter(PROPERTY_COLORBAR_LENGTH_KEY2).getValue();
+        imageLegend.setColorBarLength((Integer) value);
 
-        // nothing needed here
+        value = legendParamGroup.getParameter(PROPERTY_COLORBAR_WIDTH_KEY2).getValue();
+        imageLegend.setColorBarWidth((Integer) value);
 
 
 
@@ -1058,6 +1078,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         // Image Scaling Section
         private Parameter useLegendWidthParam;
         private Parameter legendWidthParam;
+        private Parameter colorbarLengthParam;
+        private Parameter colorbarWidthParam;
 
 
         // Title Section
@@ -1267,7 +1289,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(legendWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(legendWidthParam.getEditor().getEditorComponent(), gbc);
 
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(colorbarLengthParam.getEditor().getLabelComponent(), gbc);
+            p.add(colorbarLengthParam.getEditor().getEditorComponent(), gbc);
 
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(colorbarWidthParam.getEditor().getLabelComponent(), gbc);
+            p.add(colorbarWidthParam.getEditor().getEditorComponent(), gbc);
 
 
 
@@ -1558,6 +1588,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             // Image Scaling Section
             useLegendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2);
             legendWidthParam = paramGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2);
+            colorbarLengthParam = paramGroup.getParameter(PROPERTY_COLORBAR_LENGTH_KEY2);
+            colorbarWidthParam = paramGroup.getParameter(PROPERTY_COLORBAR_WIDTH_KEY2);
 
 
             // Title Section
