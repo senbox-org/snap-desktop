@@ -1494,7 +1494,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 1;
             p.add(paletteBorderColorParam.getEditor().getLabelComponent(), gbc);
             p.add(paletteBorderColorParam.getEditor().getEditorComponent(), gbc);
-
+            paletteBorderColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
+            paletteBorderColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
 
 
             // Legend Border Section
@@ -1538,17 +1539,17 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-            gbc.gridy++;
-            gbc.insets.top = 15;
-            gbc.gridwidth = 2;
-            gbc.anchor = GridBagConstraints.CENTER;
-            p.add(previewButton, gbc);
+//            gbc.gridy++;
+//            gbc.insets.top = 15;
+//            gbc.gridwidth = 2;
+//            gbc.anchor = GridBagConstraints.CENTER;
+//            p.add(previewButton, gbc);
 
-            gbc.gridy++;
-            gbc.anchor = GridBagConstraints.CENTER;
-            gbc.gridwidth = 2;
-            JLabel info = new JLabel("<html><hr>More color bar format options available using the layer editor<br> and preferences.  See help page link below for details.<hr></html");
-            p.add(info, gbc);
+//            gbc.gridy++;
+//            gbc.anchor = GridBagConstraints.CENTER;
+//            gbc.gridwidth = 2;
+//            JLabel info = new JLabel("<html><hr>More color bar format options available using the layer editor<br> and preferences.  See help page link below for details.<hr></html");
+//            p.add(info, gbc);
             p.setBorder(new EmptyBorder(7, 7, 7, 7));
 
 
@@ -1556,7 +1557,34 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             JScrollPane jScrollPane = new JScrollPane(p);
 
-            setContent(jScrollPane);
+
+            jScrollPane.setMinimumSize(jScrollPane.getPreferredSize());
+
+
+            final GridBagConstraints gbcOuter = new GridBagConstraints();
+            final JPanel outer = GridBagUtils.createPanel();
+
+            gbcOuter.anchor = GridBagConstraints.WEST;
+            gbcOuter.fill = GridBagConstraints.BOTH;
+            gbcOuter.gridx = 0;
+            gbcOuter.gridy = 0;
+            gbcOuter.weighty = 1;
+
+            outer.add(jScrollPane, gbcOuter);
+
+            gbcOuter.gridx = 0;
+            gbcOuter.gridy = 1;
+            gbcOuter.weighty = 0;
+            gbcOuter.insets.top = 15;
+            gbcOuter.fill = GridBagConstraints.NONE;
+            gbcOuter.anchor = GridBagConstraints.CENTER;
+            outer.add(previewButton, gbcOuter);
+
+
+
+
+
+            setContent(outer);
         }
 
 
