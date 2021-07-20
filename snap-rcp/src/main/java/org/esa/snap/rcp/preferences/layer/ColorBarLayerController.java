@@ -109,8 +109,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY, ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY, ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY, true);
@@ -605,17 +605,17 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 interval = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_INTERVAL)
         double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
-                description = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_VALUE_INTERVAL)
-        int legendLength = ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
+                description = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_VALUE_INTERVAL)
+        int colorbarLength = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_INTERVAL)
-        int legendWidth = ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_INTERVAL)
+        int colorbarWidth = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT;
 
 
 

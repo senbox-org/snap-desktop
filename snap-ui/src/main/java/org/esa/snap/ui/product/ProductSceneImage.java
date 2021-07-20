@@ -774,14 +774,14 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_LEGEND_LENGTH_TYPE);
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_KEY,
-                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_DEFAULT,
-                ColorBarLayerType.PROPERTY_LEGEND_WIDTH_TYPE);
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TYPE);
 
 
 

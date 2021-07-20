@@ -440,22 +440,22 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
     private void  addColorBarLength() {
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_LENGTH_KEY, PROPERTY_LEGEND_LENGTH_TYPE);
-        pd.setDefaultValue(PROPERTY_LEGEND_LENGTH_DEFAULT);
-        pd.setValueRange(new ValueRange(PROPERTY_LEGEND_LENGTH_VALUE_MIN, PROPERTY_LEGEND_LENGTH_VALUE_MAX));
-        pd.setDisplayName(PROPERTY_LEGEND_LENGTH_LABEL);
-        pd.setDescription(PROPERTY_LEGEND_LENGTH_TOOLTIP);
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_COLORBAR_LENGTH_KEY, PROPERTY_COLORBAR_LENGTH_TYPE);
+        pd.setDefaultValue(PROPERTY_COLORBAR_LENGTH_DEFAULT);
+        pd.setValueRange(new ValueRange(PROPERTY_COLORBAR_LENGTH_VALUE_MIN, PROPERTY_COLORBAR_LENGTH_VALUE_MAX));
+        pd.setDisplayName(PROPERTY_COLORBAR_LENGTH_LABEL);
+        pd.setDescription(PROPERTY_COLORBAR_LENGTH_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
 
 
     private void  addColorBarWidth() {
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_WIDTH_KEY, PROPERTY_LEGEND_WIDTH_TYPE);
-        pd.setDefaultValue(PROPERTY_LEGEND_WIDTH_DEFAULT);
-        pd.setValueRange(new ValueRange(PROPERTY_LEGEND_WIDTH_MIN, PROPERTY_LEGEND_WIDTH_MAX));
-        pd.setDisplayName(PROPERTY_LEGEND_WIDTH_LABEL);
-        pd.setDescription(PROPERTY_LEGEND_WIDTH_TOOLTIP);
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_COLORBAR_WIDTH_KEY, PROPERTY_COLORBAR_WIDTH_TYPE);
+        pd.setDefaultValue(PROPERTY_COLORBAR_WIDTH_DEFAULT);
+        pd.setValueRange(new ValueRange(PROPERTY_COLORBAR_WIDTH_MIN, PROPERTY_COLORBAR_WIDTH_MAX));
+        pd.setDisplayName(PROPERTY_COLORBAR_WIDTH_LABEL);
+        pd.setDescription(PROPERTY_COLORBAR_WIDTH_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
