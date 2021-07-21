@@ -1200,77 +1200,95 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.insets.top = 5;
 
 
-
             // Title and Units Text
 
             gbc.gridy = 0;
             gbc.gridwidth = 1;
             p.add(titleTextParam.getEditor().getLabelComponent(), gbc);
             p.add(titleTextParam.getEditor().getEditorComponent(), gbc);
+            titleTextParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_TEXT_TOOLTIP);
+            titleTextParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_TEXT_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsTextParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsTextParam.getEditor().getEditorComponent(), gbc);
-
+            unitsTextParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
+            unitsTextParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
 
 
             // Orientation
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL), gbc);
+            JLabel orientationSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL);
+            orientationSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP);
+            p.add(orientationSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.insets.top = 5;
             gbc.gridwidth = 1;
             p.add(orientationParam.getEditor().getLabelComponent(), gbc);
             p.add(orientationParam.getEditor().getEditorComponent(), gbc);
+            orientationParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP);
+            orientationParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(reversePaletteParam.getEditor().getEditorComponent(), gbc);
-
+            reversePaletteParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP);
 
 
             // Tick Label Values
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL), gbc);
+            JLabel tickLabelValuesSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL);
+            tickLabelValuesSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP);
+            p.add(tickLabelValuesSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.insets.top = 5;
             gbc.gridwidth = 1;
             p.add(distributionTypeParam.getEditor().getLabelComponent(), gbc);
             p.add(distributionTypeParam.getEditor().getEditorComponent(), gbc);
+            distributionTypeParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
+            distributionTypeParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TOOLTIP);
 
             gbc.gridy++;
             gbc.insets.top = 5;
             gbc.gridwidth = 1;
             p.add(numberOfTicksParam.getEditor().getLabelComponent(), gbc);
             p.add(numberOfTicksParam.getEditor().getEditorComponent(), gbc);
+            numberOfTicksParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
+            numberOfTicksParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
 
             gbc.gridy++;
             gbc.insets.top = 5;
             gbc.gridwidth = 1;
             p.add(labelValuesActualParam.getEditor().getLabelComponent(), gbc);
             p.add(labelValuesActualParam.getEditor().getEditorComponent(), gbc);
+            labelValuesActualParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
+            labelValuesActualParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelValuesScalingParam.getEditor().getLabelComponent(), gbc);
             p.add(labelValuesScalingParam.getEditor().getEditorComponent(), gbc);
+            labelValuesScalingParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
+            labelValuesScalingParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelValuesDecimalPlacesParam.getEditor().getLabelComponent(), gbc);
             p.add(labelValuesDecimalPlacesParam.getEditor().getEditorComponent(), gbc);
+            labelValuesDecimalPlacesParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
+            labelValuesDecimalPlacesParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(labelValuesForceDecimalPlacesParam.getEditor().getEditorComponent(), gbc);
-
+            labelValuesForceDecimalPlacesParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
 
 
 
@@ -1278,26 +1296,37 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL), gbc);
+            JLabel imageScalingSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL);
+            imageScalingSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP);
+            p.add(imageScalingSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(useLegendWidthParam.getEditor().getEditorComponent(), gbc);
+            useLegendWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(legendWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(legendWidthParam.getEditor().getEditorComponent(), gbc);
+            legendWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP);
+            legendWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(colorbarLengthParam.getEditor().getLabelComponent(), gbc);
             p.add(colorbarLengthParam.getEditor().getEditorComponent(), gbc);
+            colorbarLengthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TOOLTIP);
+            colorbarLengthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(colorbarWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(colorbarWidthParam.getEditor().getEditorComponent(), gbc);
+            colorbarWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP);
+            colorbarWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP);
+
+
 
 
 
@@ -1305,37 +1334,45 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL), gbc);
+            JLabel titleSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL);
+            titleSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
+            p.add(titleSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(titleShowParam.getEditor().getEditorComponent(), gbc);
+            titleShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(titleFontSizeParam.getEditor().getLabelComponent(), gbc);
             p.add(titleFontSizeParam.getEditor().getEditorComponent(), gbc);
-
+            titleFontSizeParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP);
+            titleFontSizeParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(titleBoldParam.getEditor().getEditorComponent(), gbc);
+            titleBoldParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(titleItalicParam.getEditor().getEditorComponent(), gbc);
-
+            titleItalicParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(titleFontNameParam.getEditor().getLabelComponent(), gbc);
             p.add(titleFontNameParam.getEditor().getEditorComponent(), gbc);
+            titleFontNameParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TOOLTIP);
+            titleFontNameParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(titleColorParam.getEditor().getLabelComponent(), gbc);
             p.add(titleColorParam.getEditor().getEditorComponent(), gbc);
-
+            titleColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
+            titleColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
 
 
 
@@ -1344,38 +1381,46 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_UNITS_SECTION_LABEL), gbc);
+            JLabel unitsSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_UNITS_SECTION_LABEL);
+            unitsSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_UNITS_SECTION_TOOLTIP);
+            p.add(unitsSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(unitsShowParam.getEditor().getEditorComponent(), gbc);
+            unitsShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsFontSizeParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsFontSizeParam.getEditor().getEditorComponent(), gbc);
-
+            unitsFontSizeParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP);
+            unitsFontSizeParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP);
 
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(unitsBoldParam.getEditor().getEditorComponent(), gbc);
+            unitsBoldParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(unitsItalicParam.getEditor().getEditorComponent(), gbc);
-
+            unitsItalicParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsFontNameParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsFontNameParam.getEditor().getEditorComponent(), gbc);
+            unitsFontNameParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TOOLTIP);
+            unitsFontNameParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(unitsColorParam.getEditor().getLabelComponent(), gbc);
             p.add(unitsColorParam.getEditor().getEditorComponent(), gbc);
-
+            unitsColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
+            unitsColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
 
 
 
@@ -1383,38 +1428,46 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL), gbc);
+            JLabel tickmarkLabelsSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_LABELS_SECTION_LABEL);
+            tickmarkLabelsSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
+            p.add(tickmarkLabelsSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(labelsShowParam.getEditor().getEditorComponent(), gbc);
+            labelsShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelsFontSizeParam.getEditor().getLabelComponent(), gbc);
             p.add(labelsFontSizeParam.getEditor().getEditorComponent(), gbc);
-
+            labelsFontSizeParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
+            labelsFontSizeParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP);
 
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(labelsBoldParam.getEditor().getEditorComponent(), gbc);
+            labelsBoldParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(labelsItalicParam.getEditor().getEditorComponent(), gbc);
-
+            labelsItalicParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelsFontNameParam.getEditor().getLabelComponent(), gbc);
             p.add(labelsFontNameParam.getEditor().getEditorComponent(), gbc);
+            labelsFontNameParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP);
+            labelsFontNameParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelsColorParam.getEditor().getLabelComponent(), gbc);
             p.add(labelsColorParam.getEditor().getEditorComponent(), gbc);
-
+            labelsColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
+            labelsColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
 
 
 
@@ -1422,28 +1475,36 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL), gbc);
-
+            JLabel tickmarksSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_LABEL);
+            tickmarksSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_TOOLTIP);
+            p.add(tickmarksSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(tickmarksShowParam.getEditor().getEditorComponent(), gbc);
+            tickmarksShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(tickmarksLengthParam.getEditor().getLabelComponent(), gbc);
             p.add(tickmarksLengthParam.getEditor().getEditorComponent(), gbc);
+            tickmarksLengthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
+            tickmarksLengthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(tickmarksWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(tickmarksWidthParam.getEditor().getEditorComponent(), gbc);
+            tickmarksWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP);
+            tickmarksWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TOOLTIP);
 
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(tickmarksColorParam.getEditor().getLabelComponent(), gbc);
             p.add(tickmarksColorParam.getEditor().getEditorComponent(), gbc);
+            tickmarksColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
+            tickmarksColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TOOLTIP);
 
 
 
@@ -1452,23 +1513,30 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL), gbc);
+            JLabel backdropSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL);
+            backdropSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
+            p.add(backdropSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(backdropShowParam.getEditor().getEditorComponent(), gbc);
+            backdropShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.insets.top = 5;
             gbc.gridwidth = 1;
             p.add(backgroundTransparencyParam.getEditor().getLabelComponent(), gbc);
             p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
+            backgroundTransparencyParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
+            backgroundTransparencyParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
 
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(backdropColorParam.getEditor().getLabelComponent(), gbc);
             p.add(backdropColorParam.getEditor().getEditorComponent(), gbc);
+            backdropColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
+            backdropColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
 
 
 
@@ -1477,49 +1545,56 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_LABEL), gbc);
+            JLabel paletteBorderSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_LABEL);
+            paletteBorderSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_TOOLTIP);
+            p.add(paletteBorderSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(paletteBorderShowParam.getEditor().getEditorComponent(), gbc);
-
+            paletteBorderShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(paletteBorderWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(paletteBorderWidthParam.getEditor().getEditorComponent(), gbc);
-
+            paletteBorderWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP);
+            paletteBorderWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(paletteBorderColorParam.getEditor().getLabelComponent(), gbc);
             p.add(paletteBorderColorParam.getEditor().getEditorComponent(), gbc);
-            paletteBorderColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
             paletteBorderColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
+            paletteBorderColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
 
 
             // Legend Border Section
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL), gbc);
+            JLabel legendBorderSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL);
+            legendBorderSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_TOOLTIP);
+            p.add(legendBorderSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(legendBorderShowParam.getEditor().getEditorComponent(), gbc);
-
+            legendBorderShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(legendBorderWidthParam.getEditor().getLabelComponent(), gbc);
             p.add(legendBorderWidthParam.getEditor().getEditorComponent(), gbc);
-
+            legendBorderWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP);
+            legendBorderWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(legendBorderColorParam.getEditor().getLabelComponent(), gbc);
             p.add(legendBorderColorParam.getEditor().getEditorComponent(), gbc);
-
+            legendBorderColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP);
+            legendBorderColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP);
 
 
 
@@ -1527,31 +1602,19 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy++;
             gbc.gridwidth = 2;
-            p.add(sectionBreak("Colors Override"), gbc);
+            JLabel colorsOverrideSectionLabel = sectionBreak("Colors Override");
+            colorsOverrideSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_TOOLTIP);
+            p.add(colorsOverrideSectionLabel, gbc);
+
 
             gbc.gridy++;
             gbc.gridwidth = 2;
             p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
+            bwColorOverrideParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_TOOLTIP);
 
 
 
-
-
-
-
-//            gbc.gridy++;
-//            gbc.insets.top = 15;
-//            gbc.gridwidth = 2;
-//            gbc.anchor = GridBagConstraints.CENTER;
-//            p.add(previewButton, gbc);
-
-//            gbc.gridy++;
-//            gbc.anchor = GridBagConstraints.CENTER;
-//            gbc.gridwidth = 2;
-//            JLabel info = new JLabel("<html><hr>More color bar format options available using the layer editor<br> and preferences.  See help page link below for details.<hr></html");
-//            p.add(info, gbc);
             p.setBorder(new EmptyBorder(7, 7, 7, 7));
-
 
             p.setMinimumSize(p.getPreferredSize());
 
@@ -1579,10 +1642,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbcOuter.fill = GridBagConstraints.NONE;
             gbcOuter.anchor = GridBagConstraints.CENTER;
             outer.add(previewButton, gbcOuter);
-
-
-
-
+            
 
             setContent(outer);
         }
