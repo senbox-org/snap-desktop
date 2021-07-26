@@ -5,7 +5,8 @@
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Color Bar Legend (Preferences)</title>
+    <title>Sentinel Toolbox Help - Color (Colour) Bar Legend Preferences</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -13,183 +14,463 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Color Bar Legend (Preferences)</td>
+            Color (Colour) Bar Legend Preferences
+        </td>
 
-        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
     </tr>
 </table>
 
-<h4><img src="images/icons/ColorbarVertical24.png"> &nbsp;&nbsp;
-    Color Bar Legend (Preferences)</h4>
+<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
+    SNAP application, elsewhere in your application the spelling may be "colour"</p>
 
+<h3>Overview</h3>
 
-<p>
-    The Graticule Overlay tool creates a map gridlines layer over the selected band's <a href="ProductSceneView.html">Image View</a>.
-    This layer can include gridlines, coordinate labels, a border.
+<p>This page enables the user to modify the default settings for the Color Manipulation tool. Note: any changes made to
+    the
+    preferences will not be automatically updated until the application is either restarted or a new view window is
+    opened.
 </p>
 
-<p align="center">
-    <img src="images/GraticuleOverlay.png"><br><br>
-    <i>Image 1: Map gridlines (graticules) placed over a mapped (reprojected) image<br>
-        derived from a MODIS Aqua level-2 scene</i>
-</p>
-
-<h3>Location</h3>
-<p>
-    <b>Layer Toggle</b> - The graticule layer is toggled on and off via the graticule icon in the <i>Overlay</i> toolbar or
-    <i>Layer-&gt;Graticule Overlay</i> within the menu system.  Initially the graticule layer does not exist, but is created during the first
-    instance of the graticule layer being toggled on.  Default settings are applied when the graticule layer is created.<br><br>
-
-    <b>Layer Editor</b> - Subsequent to the creation of the graticule layer, any of the properties such as font size, line spacing, etc., may
-    be edited by using the <i>Layer Editor</i>.  This editor is accessed by opening the <i>Layer Manager</i>, clicking on the word
-    <i>Graticule</i> (this selects the layer as the active layer), and then either clicking of the pencil icon within the
-    <i>Layer Manager</i> or selecting <i>Layer-&gt;Layer Editor</i> from within the menu system.<br><br>
-
-    <b>Preferences Editor</b> - To edit the default values of the graticule layer properties go to
-    <i>Tools-&gt;Options-&gt;Layer-&gt;Graticule Layer</i>. (see <a href="PreferencesDialog.html">Preferences Dialog</a>)
-</p>
-<br>
-
-
-
-<h3>Properties</h3>
-
-
-<p>
-    <b>Grid Spacing</b> - The latitude and longitude step sizes may be set directly where the value represents
-    degrees between the gridlines.
-    Setting this field to zero results in Auto-Sizing. The Auto-Sizing algorithm will set the gridline spacing to a reasonable
-    value such that there are about 3-5 lines. Also note that lines are placed at the nearest most sensible degree
-    value.
-</p>
-<ul>
-    <li><b>Latitude</b> - sets latitude step size</li>
-    <li><b>Longitude</b> - sets longitude step size</li>
-</ul>
-
-
-<p>
-    <b>Labels</b> - Formatting and placement of the text labels associated with the map gridlines indicating geographic position.
-</p>
-<ul>
-    <li><b>North</b> - Display north labels</li>
-    <li><b>South</b> - Display south labels</li>
-    <li><b>West</b> - Display west labels</li>
-    <li><b>East</b> - Display east labels</li>
-    <li><b>Suffix (N,S,W,E)</b> - Format label text with suffix (N,S,W,E) instead of (+/-)</li>
-    <li><b>Decimal Value</b> - Format label text with decimal value instead of degrees/minutes/seconds</li>
-    <li><b>Put on Inside</b> - Put labels inside of the data image.  In this case a backdrop is added to the labels.</li>
-    <li><b>Italic</b> - Format label text font in italic</li>
-    <li><b>Bold</b> - Format label text font in bold</li>
-    <li><b>Rotation (Latitude)</b> - Rotate latitude labels (0 degrees = perpendicular)</li>
-    <li><b>Rotation (Longitude)</b> - Rotate longitude labels (0 degrees = perpendicular)</li>
-    <li><b>Font</b> - Set the font of the labels</li>
-    <li><b>Size</b> - Set the size of the labels</li>
-    <li><b>Color</b> - Set the color of the labels</li>
-</ul>
-
-
-
-<p>
-    <b>Gridlines</b> - Formatting of the map gridlines.
-</p>
-<ul>
-    <li><b>Show</b> - Display the gridlines</li>
-    <li><b>Width</b> - Set the width of the gridlines</li>
-    <li><b>Dash Length</b> - Set dash length of gridlines or set to solid gridlines (0=SOLID)</li>
-    <li><b>Transparency</b> - Set the transparency of the gridlines</li>
-    <li><b>Color</b> - Set the color of the gridlines</li>
-</ul>
-
-
-
-<p>
-    <b>Border</b> - Formatting of the image border.
-</p>
-<ul>
-    <li><b>Show</b> - Display the border</li>
-    <li><b>Width</b> - Set the width of the border</li>
-    <li><b>Color</b> - Set the color of the border</li>
-</ul>
-
-
-<p>
-    <b>Tickmarks</b> - Formatting of the tickmarks.
-</p>
-<ul>
-    <li><b>Show</b> - Display the tickmarks</li>
-    <li><b>Put Inside</b> - Placement of the tickmarks towards the inside of the image</li>
-    <li><b>Width</b> - Set the width of the tickmarks</li>
-    <li><b>Color</b> - Set the color of the tickmarks</li>
-</ul>
-
-
-
-<p>
-    <b>Corner Labels</b> - Display the labels for the corner pixels of the image.
-</p>
-<ul>
-    <li><b>North</b> - Display the north corner label</li>
-    <li><b>South</b> - Display the south corner label</li>
-    <li><b>West</b> - Display the west corner label</li>
-    <li><b>East</b> - Display the east corner label</li>
-</ul>
-
-
-<p>
-    <b>Inside Labels Backdrop</b> - Formatting of the backdrop used when displaying labels inside of the image.
-</p>
-<ul>
-    <li><b>Transparency</b> - Set the transparency of the inside label backdrop</li>
-    <li><b>Color</b> - Set the color of the inside label backdrop</li>
-</ul>
-<br>
-
-<h3>Notes, Pitfalls and Issues</h3>
-
-<p>
-    <b>Note: Font Sizing</b> - The user font size property is in term of "approximated" points rather than pixels. This enables a
-    sensible default font size setting which will work well with files of any resolution. Internally the font sizes
-    are actually tied to the pixel sizes and there is a conversion of points to pixels being made.
-</p>
-
-<p>
-    <b>Note: Small Images</b> - For extremely small files (less than about 100 pixels in one dimension)
-    you may likely see problems with the map gridlines, such as missing labels.  This is because there is not enough
-    pixels on the image to generate the font.  A workaround to this would be to reproject the low resolution image to
-    a much higher resolution image using nearest neighbor sampling.  This will effectively give the appearance and shape
-    of the original low resolution pixels while using a high resolution raster grid.
-</p>
-
-
-<p>
-    <b>Pitfall: Blurry Text Labels</b> - Scene images are exported using a raster file format (png, gif, etc.).  This
-    means that any text overlayed on the image such as the map gridlines labels and other text annotations will also be
-    rasterized.  In order to maintain the appearance of sharp text labels you may need to increase the image dimension
-    of the file to be exported.  This can be done within the <i>Export Image</i> tool.
-</p>
-
-<p>
-    <b>Pitfall: No Labels because they are Outside of View Window</b> -
-    When labels are placed outside of the image border this will also likely
-    place them outside of the view window, in which case so you will need to zoom out to see them.  When you export the
-    image using the <i>Export Image</i> tool, you will need to specify "View region" and not "Full scene" as the Image Region.
-</p>
-
-
-
-<p>
-    <b>Issue: Image Orientation</b> - The logic of the current map gridlines tool assumes that north is at the top of the image,
-    and west is to the left of the image.  For any images which do not conform to this orientation, the map gridlines
-    labels may fail to display.
-</p>
-
-<p>
-    <b>Issue: Projection</b> - Certain projections such as polar projections may fail to display map gridlines.
+<p>To open the color manipulation preferences window select /Tools/Options/Color Manipulation </b>
+    from the main menu (Note: this may be located instead in File/Preferences on the Mac).
 </p>
 
 
 <br>
 <hr>
+<h4>Title / Units Text</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref01.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
+<p>These fields are the text to be placed as the title and units of the color bar legend.
+</p>
+
+<br>
+<ul>
+    <li>
+        <b>Title Text:</b> The text to be placed as the title of the color bar.
+        This field gets auto-populated
+        based on the band's name and does not have an associated preferences value.  To format the title font,
+        use the "Title Format" section in this same tool window.
+    </li>
+
+    <li>
+        <b>Units Text:</b>  The text to be placed for the units in the title section of the color bar.
+        This field gets auto-populated
+        based on the band's units and does not have an associated preferences value.  To format the units font,
+        use the "Units Format" section in this same tool window.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Orientation</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields set the orientation parameters of the color bar legend.</p>
+
+<ul>
+    <li>
+        <b>Orientation:</b> Sets the orientation to either vertical or horizontal
+    </li>
+
+    <li>
+        <b>Reverse Palette &amp; Labels:</b>  Reverses the direction of the palette along with it's labels.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Tick Label Values</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields determine the actual data values and data formatting to use for the tick marks labels.</p>
+
+<ul>
+    <li>
+        <b>Mode:</b> Sets the actual data values of the labels
+
+        <ul>
+            <li>
+                <b>Generated Values:</b> The values will be auto-generated based on the number of desired
+                tick marks as specified in the "Label Count" textfield in this section.
+            </li>
+
+            <li>
+                <b>Entered Values:</b> The values used are manually entered in the "Label Values" textfield.
+
+            </li>
+
+            <li>
+                <b>Palette Values:</b> Values will be used which are in the palette definition file.
+            </li>
+        </ul>
+    </li>
+
+    <li>
+        <b>Label Count:</b>  The desired number of tick marks to be auto-generated onto the color bar
+        (only used for Mode: "Generated Values").
+    </li>
+
+    <li>
+        <b>Label Values:</b>  The values are manually entered here when in mode "Entered Values".
+        The labels are placed in the corresponding data location on the color bar.
+        In this mode values will appear with data format exactly as they are entered and no decimal
+        place adjustments occur.  <br><br>
+        You may use the following value-text pairs syntax to use custom text to represent numbers:
+        "{NUMBER}:{TEXT}, NUMBER:{TEXT}", <i>(For example "Label Values" = "0.01:low, 1.0:medium, 20.0:high")</i>
+    </li>
+
+    <li>
+        <b>Label Scaling:</b>  A multiplier to apply to the displayed label value.  Note that using
+        a value not equal to "1.0" will essentially change your units and you may wish to adjust
+        your "Units Text" accordingly.  <br><i>For example: if the raw data value is 0.001 and units are meters,
+        then setting "Label Scaling" = "1000" will display the data as "1" on the color bar, and then you
+        correspondingly specify "Units Text" = "(millimeters)".</i>
+    </li>
+
+    <li>
+        <b>Decimal Places:</b>  The decimal places to use (Note: does not apply to Mode = "Entered Values")
+    </li>
+
+    <li>
+        <b>Trailing Decimal Zeros:</b>  Force the full decimal places by adding all trailing zeros instead of truncating.
+        For example if "Trailing Decimal Places" is selected and "Decimal Places" = "2" then the raw data value "0.2"
+        will be displayed as "0.20" instead of "0.2". (Note: does not apply to "Mode" = "Entered Values")
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Size and Scaling</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields set the size of the color bar and the full legend image.</p>
+
+<ul>
+    <li>
+        <b>Resize to Legend Width:</b> Resizes the full legend image to the size specified in the textfield "Legend Width".
+    </li>
+
+    <li>
+        <b>Legend Width:</b>  The is the full legend image width if "Resize to Legend Width" has been selected.
+    </li>
+
+    <li>
+        <b>Color Bar Length:</b>  This is the length (in pixels) of the color bar (just the color bar itself and
+        not the full color bar legend image.
+    </li>
+
+    <li>
+        <b>Color Bar Width:</b>  This is the width/thickness (in pixels) of the color bar (just the color bar itself and
+        not the full color bar legend image.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Title Format</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the "Title Text".</p>
+
+<ul>
+    <li>
+        <b>Show Title:</b> Whether or not to display the "Title Text" on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Title Size:</b>  The font size (in pixels) of the "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font Bold:</b>  Apply font bold to "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font Italic:</b>  Apply font italic to "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font:</b>  Specifies the font-face to use for "Title Text" (very limited selection).
+    </li>
+
+    <li>
+        <b>Title Color:</b>  The font color to apply to "Title Text".
+    </li>
+
+</ul>
+
+
+
+<br><hr><h4>Units Format</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the "Units Text".</p>
+
+<ul>
+    <li>
+        <b>Show Units:</b> Whether or not to display the "Units Text" on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Units Size:</b>  The font size (in pixels) of the "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font Bold:</b>  Apply font bold to "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font Italic:</b>  Apply font italic to "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font:</b>  Specifies the font-face to use for "Units Text" (very limited selection).
+    </li>
+
+    <li>
+        <b>Units Color:</b>  The font color to apply to "Units Text".
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Tick Label Format</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the font formatting to apply to the tick mark labels.</p>
+
+<ul>
+    <li>
+        <b>Show Tick Labels:</b> Whether or not to display the tick mark labels on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Labels Size:</b>  The font size (in pixels) of the tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font Bold:</b>  Apply font bold to tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font Italic:</b>  Apply font italic to tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font:</b>  Specifies the font-face to use for the tick mark labels (very limited selection).
+    </li>
+
+    <li>
+        <b>Labels Color:</b>  The font color to apply to tick mark labels.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Tick Marks</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the tick marks.</p>
+
+<ul>
+    <li>
+        <b>Show Tick Marks:</b> Whether or not to display the tick marks on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Tick Length:</b> Length (in pixels) of each tick mark.
+    </li>
+
+    <li>
+        <b>Tick Width:</b> Width (in pixels) of each tick mark.
+    </li>
+
+    <li>
+        <b>Tick Color:</b> Color of each tick mark.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Backdrop</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the backdrop (background of full image).</p>
+
+<ul>
+    <li>
+        <b>Show Backdrop:</b> Whether or not to display the backdrop on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Backdrop Trans:</b> Transparency of each the backdrop.
+    </li>
+
+    <li>
+        <b>Backdrop Color:</b> Color of the backdrop.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Palette Border</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the palette border (the border around the color bar, not
+    the border around the full image).</p>
+
+<ul>
+    <li>
+        <b>Show Palette Border:</b> Whether or not to display the palette border.
+    </li>
+
+    <li>
+        <b>Border Width:</b> Width (in pixels) of each the palette border.
+    </li>
+
+    <li>
+        <b>Border Color:</b> Color of the palette border.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Legend Border</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These fields specify the formatting to apply to the legend border (the border around the full image, not
+    the border around the color bar).</p>
+
+<ul>
+    <li>
+        <b>Show Legend Border:</b> Whether or not to display the legend border.
+    </li>
+
+    <li>
+        <b>Legend Width:</b> Width (in pixels) of each the legend border.
+    </li>
+
+    <li>
+        <b>Legend Color:</b> Color of the legend border.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Colors Override</h4><br>
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
+        </tr>
+    </table>
+</div><br>
+
+<p>These convenience fields override all the colors into a set scheme of colors</p>
+
+<ul>
+    <li>
+        <b>Black/White Color Override:</b> Overrides all color with a black on white scheme.
+    </li>
+</ul>
+
+
+
+
+
+<br>
+<hr>
+<h4>Restore</h4><br>
+
+<div align="center">
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref08.png"/></td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
+<p>Restores all parameters within the Color Manipulation Preferences to the original default values.</p>
+
+
 </body>
 </html>
