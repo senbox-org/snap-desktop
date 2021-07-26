@@ -112,11 +112,11 @@ public class SourceUI extends BaseOperatorUI {
         sourceProductSelector.addSelectionChangeListener(new SourceSelectionChangeListener());
 
         final JComponent panel = createPanel();
+        initParameters();
         final Product selectedProduct = sourceProductSelector.getSelectedProduct();
         if (selectedProduct != null) {
             updateFormatNamesCombo(selectedProduct.getFileLocation());
         }
-        initParameters();
         return new JScrollPane(panel);
     }
 
@@ -151,7 +151,7 @@ public class SourceUI extends BaseOperatorUI {
                 if (srcProduct == null) {
                     srcProduct = CommonReaders.readProduct(file);
                 }
-                if (sourceProductSelector.getSelectedProduct().getFileLocation() != fileValue) {
+                if (sourceProductSelector.getSelectedProduct() == null || sourceProductSelector.getSelectedProduct().getFileLocation() != fileValue) {
                     sourceProductSelector.setSelectedProduct(srcProduct);
                 }
             } catch (IOException e) {
