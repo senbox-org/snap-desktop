@@ -67,6 +67,9 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+//JUN2021 - Daniel Knowles - Minor renaming due to revisions of color bar and color bar layer tools
+
+
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportKmzFileAction"

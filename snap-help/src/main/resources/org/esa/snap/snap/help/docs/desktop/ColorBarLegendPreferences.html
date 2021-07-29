@@ -28,67 +28,33 @@
 
 <h3>Overview</h3>
 
-<p>This page enables the user to modify the default settings for the Color Manipulation tool. Note: any changes made to
-    the
-    preferences will not be automatically updated until the application is either restarted or a new view window is
-    opened.
+
+<p>The are two separate but interrelated tools for creating color bars either as a layer on a scene image or exporting
+    the color bar as its own file.  This preferences page applies to both related tools.
 </p>
 
-<p>To open the color manipulation preferences window select /Tools/Options/Color Manipulation </b>
+<p>To add a Color Bar Layer, toggle the color bar Layer Tool select "/Layer/Color Bar Legend".  The "Layer Editor" is used
+    for editing the Color Bar parameters (inside the Layer Manager click "ColorBar" and then the pencil icon).
+</p>
+
+<p>To open the color bar Export Tool select "/File/Export/Other/Color Bar Legend" or from with the scene image right-click
+    and select "Color Bar Legend"
+</p>
+
+<p>To open the color bar legend preferences window select "/Tools/Options/Color Bar Legend"
     from the main menu (Note: this may be located instead in File/Preferences on the Mac).
 </p>
 
 
-<br>
-<hr>
-<h4>Title / Units Text</h4><br>
-
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref01.png"/></td>
-        </tr>
-    </table>
-</div>
-
-<br>
-
-<p>These fields are the text to be placed as the title and units of the color bar legend.
-</p>
-
-<br>
-<ul>
-    <li>
-        <b>Title Text:</b> The text to be placed as the title of the color bar.
-        This field gets auto-populated
-        based on the band's name and does not have an associated preferences value.  To format the title font,
-        use the "Title Format" section in this same tool window.
-    </li>
-
-    <li>
-        <b>Units Text:</b>  The text to be placed for the units in the title section of the color bar.
-        This field gets auto-populated
-        based on the band's units and does not have an associated preferences value.  To format the units font,
-        use the "Units Format" section in this same tool window.
-    </li>
-</ul>
-
 
 
 <br><hr><h4>Orientation</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields set the orientation parameters of the color bar legend.</p>
 
 <ul>
     <li>
-        <b>Orientation:</b> Sets the orientation to either vertical or horizontal
+        <b>Alignment:</b> Sets the alignment of color bar to either vertical or horizontal
     </li>
 
     <li>
@@ -99,13 +65,6 @@
 
 
 <br><hr><h4>Tick Label Values</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields determine the actual data values and data formatting to use for the tick marks labels.</p>
 
@@ -166,23 +125,26 @@
 
 
 <br><hr><h4>Size and Scaling</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
-<p>These fields set the size of the color bar and the full legend image.</p>
+<p>These fields set the size of the color bar and the size scaling onto the view window scene.</p>
 
 <ul>
     <li>
-        <b>Resize to Legend Width:</b> Resizes the full legend image to the size specified in the textfield "Legend Width".
+        <b>Scale to Scene Size:</b> (LAYER TOOL ONLY) Resizes the full legend image to a percentage of the size view window image scene
+        (as specified in the "Legend Scaling Factor" textfield.
     </li>
 
     <li>
-        <b>Legend Width:</b>  The is the full legend image width if "Resize to Legend Width" has been selected.
+        <b>Scene Size Scaling:</b> (LAYER TOOL ONLY) Percent to scale color bar legend image length to the view window image scene.
+    </li>
+
+
+    <li>
+        <b>Scale to File Size:</b> (EXPORT TOOL ONLY) Resizes the full legend image to the size specified in the textfield "Legend Size".
+    </li>
+
+    <li>
+        <b>File Size:</b> (EXPORT TOOL ONLY) Width (in pixels) of legend image file (height if vertical image) if "Scale to File Size" has been selected.
     </li>
 
     <li>
@@ -199,13 +161,6 @@
 
 
 <br><hr><h4>Title Format</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the "Title Text".</p>
 
@@ -239,13 +194,6 @@
 
 
 <br><hr><h4>Units Format</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the "Units Text".</p>
 
@@ -279,13 +227,6 @@
 
 
 <br><hr><h4>Tick Label Format</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the font formatting to apply to the tick mark labels.</p>
 
@@ -319,13 +260,6 @@
 
 
 <br><hr><h4>Tick Marks</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the tick marks.</p>
 
@@ -350,13 +284,6 @@
 
 
 <br><hr><h4>Backdrop</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the backdrop (background of full image).</p>
 
@@ -378,13 +305,6 @@
 
 
 <br><hr><h4>Palette Border</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the palette border (the border around the color bar, not
     the border around the full image).</p>
@@ -407,13 +327,6 @@
 
 
 <br><hr><h4>Legend Border</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
 
 <p>These fields specify the formatting to apply to the legend border (the border around the full image, not
     the border around the color bar).</p>
@@ -434,22 +347,33 @@
 
 
 
-<br><hr><h4>Colors Override</h4><br>
-<div align="center">
-    <table>
-        <tr>
-            <td align="center" style="border-width:0"><img src="images/ColorManipPref02.png"/></td>
-        </tr>
-    </table>
-</div><br>
+<br><hr><h4>Color Bar Export Tool</h4><br>
 
-<p>These convenience fields override all the colors into a set scheme of colors</p>
+<p>These fields are ONLY used by the Color Bar Export Tool and are NOT used by the Color Bar Layer Tool.</p>
 
 <ul>
     <li>
-        <b>Black/White Color Override:</b> Overrides all color with a black on white scheme.
+        <b>Show Editor:</b>  This configuration when TRUE displays the editor GUI first when you use the "Export
+        Color Bar Legend" tool.  Otherwise you get a file selector GUI and may access the editor GUI through the "Properties"
+        button on the file selector GUI.
+    </li>
+
+    <li>
+        <b>Black/White Color Override:</b>Overrides all color fields with a black letters on white background color scheme.
+        This exists to enable a different (but generic) default color setup for the Color Bar Export Tool from the Color Bar Layer Tool.
+    </li>
+
+
+    <li>
+        <b>Legend Size Scaling:</b> Resizes the full legend image to the size specified in the textfield "Legend Size".
+    </li>
+
+    <li>
+        <b>Legend Size:</b>  The is the full legend image length including backdrop dimensions (in pixels) if "Resize to Legend Length" has been selected.
     </li>
 </ul>
+
+
 
 
 
@@ -469,7 +393,7 @@
 
 <br>
 
-<p>Restores all parameters within the Color Manipulation Preferences to the original default values.</p>
+<p>Restores all parameters within the Color Bar Legend Preferences to the original default values.</p>
 
 
 </body>

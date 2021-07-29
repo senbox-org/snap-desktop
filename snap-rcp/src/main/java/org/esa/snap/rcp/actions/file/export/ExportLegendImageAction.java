@@ -1642,7 +1642,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbcOuter.fill = GridBagConstraints.NONE;
             gbcOuter.anchor = GridBagConstraints.CENTER;
             outer.add(previewButton, gbcOuter);
-            
+
 
             setContent(outer);
         }
