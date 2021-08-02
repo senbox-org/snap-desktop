@@ -681,6 +681,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
                 ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT,
                 ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
@@ -750,10 +755,6 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
 
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT,
-                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
 
 
 

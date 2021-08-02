@@ -104,6 +104,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     // Orientation
     private static final String PROPERTY_ORIENTATION_KEY2 = ColorBarLayerType.PROPERTY_ORIENTATION_KEY + ".export";
+    private static final String PROPERTY_LOCATION_TITLE_VERTICAL_KEY2 = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY + ".export";
     private static final String PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2 = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY + ".export";
 
     // Tick Label Values
@@ -458,6 +459,18 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1, ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2});
         param.getProperties().setValueSetBound(true);
         paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_LOCATION_TITLE_VERTICAL_KEY2, imageLegend.getTitleVerticalAnchor());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL);
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.VERTICAL_TITLE_LEFT, ColorBarLayerType.VERTICAL_TITLE_RIGHT,
+                ColorBarLayerType.VERTICAL_TITLE_TOP, ColorBarLayerType.VERTICAL_TITLE_BOTTOM});
+        param.getProperties().setValueSetBound(true);
+        paramGroup.addParameter(param);
+
+
+
+
+
 
         param = new Parameter(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2, imageLegend.isReversePalette());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL);
@@ -871,6 +884,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             imageLegend.setOrientation(ImageLegend.HORIZONTAL);
         }
 
+
+        value = legendParamGroup.getParameter(PROPERTY_LOCATION_TITLE_VERTICAL_KEY2).getValue();
+        imageLegend.setTitleVerticalAnchor((String) value);
+
         value = legendParamGroup.getParameter(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2).getValue();
         imageLegend.setReversePalette((Boolean) value);
 
@@ -1065,6 +1082,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         // Orientation
         private Parameter orientationParam;
+        private Parameter titleAnchorParam;
         private Parameter reversePaletteParam;
 
         // Tick Label Values
@@ -1149,23 +1167,91 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
         private void updateUIState() {
-            boolean headerTextEnabled = (Boolean) titleShowParam.getValue();
-            titleTextParam.setUIEnabled(headerTextEnabled);
-
-            boolean unitsTextEnabled = (Boolean) unitsShowParam.getValue();
-            unitsTextParam.setUIEnabled(unitsTextEnabled);
-
-            backgroundTransparencyParam.setUIEnabled(transparencyEnabled);
+//            boolean headerTextEnabled = (Boolean) titleShowParam.getValue();
+//            titleTextParam.setUIEnabled(headerTextEnabled);
+//
+//            boolean unitsTextEnabled = (Boolean) unitsShowParam.getValue();
+//            unitsTextParam.setUIEnabled(unitsTextEnabled);
 
 
+
+            // Colors Override
             boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
-            titleColorParam.setUIEnabled(!bwColorOverride);
+//            titleColorParam.setUIEnabled(!bwColorOverride);
             unitsColorParam.setUIEnabled(!bwColorOverride);
             labelsColorParam.setUIEnabled(!bwColorOverride);
             tickmarksColorParam.setUIEnabled(!bwColorOverride);
             paletteBorderColorParam.setUIEnabled(!bwColorOverride);
             backdropColorParam.setUIEnabled(!bwColorOverride);
             legendBorderColorParam.setUIEnabled(!bwColorOverride);
+
+
+
+            // Title Section
+            boolean titleShowParamEnabled = (Boolean) titleShowParam.getValue();
+            titleFontSizeParam.setUIEnabled(titleShowParamEnabled);
+            titleBoldParam.setUIEnabled(titleShowParamEnabled);
+            titleItalicParam.setUIEnabled(titleShowParamEnabled);
+            titleFontNameParam.setUIEnabled(titleShowParamEnabled);
+            titleColorParam.setUIEnabled(titleShowParamEnabled && !bwColorOverride);
+
+            // Units Section
+            boolean unitsShowParamEnabled = (Boolean) unitsShowParam.getValue();
+            unitsColorParam.setUIEnabled(unitsShowParamEnabled);
+            unitsBoldParam.setUIEnabled(unitsShowParamEnabled);
+            unitsItalicParam.setUIEnabled(unitsShowParamEnabled);
+            unitsFontSizeParam.setUIEnabled(unitsShowParamEnabled);
+            unitsFontNameParam.setUIEnabled(unitsShowParamEnabled);
+
+
+
+
+            // Tick-Mark Labels Section
+            boolean labelsShowParamEnabled = (Boolean) labelsShowParam.getValue();
+            labelsFontSizeParam.setUIEnabled(labelsShowParamEnabled);
+            labelsBoldParam.setUIEnabled(labelsShowParamEnabled);
+            labelsItalicParam.setUIEnabled(labelsShowParamEnabled);
+            labelsFontNameParam.setUIEnabled(labelsShowParamEnabled);
+            labelsColorParam.setUIEnabled(labelsShowParamEnabled);
+
+
+            // Tickmarks Section
+            boolean tickmarksShowParamEnabled = (Boolean) tickmarksShowParam.getValue();
+            tickmarksLengthParam.setUIEnabled(tickmarksShowParamEnabled);
+            tickmarksWidthParam.setUIEnabled(tickmarksShowParamEnabled);
+            tickmarksColorParam.setUIEnabled(tickmarksShowParamEnabled);
+
+
+            // Backdrop Section
+            boolean backdropShowParamEnabled = (Boolean) backdropShowParam.getValue();
+            backgroundTransparencyParam.setUIEnabled(backdropShowParamEnabled);
+            backdropColorParam.setUIEnabled(backdropShowParamEnabled);
+
+
+            // Palette Border Section
+            boolean paletteBorderShowParamEnabled = (Boolean) paletteBorderShowParam.getValue();
+            paletteBorderWidthParam.setUIEnabled(paletteBorderShowParamEnabled);
+            paletteBorderColorParam.setUIEnabled(paletteBorderShowParamEnabled);
+
+
+            // Legend Border Section
+            boolean legendBorderShowParamEnabled = (Boolean) legendBorderShowParam.getValue();
+            legendBorderWidthParam.setUIEnabled(legendBorderShowParamEnabled);
+            legendBorderColorParam.setUIEnabled(legendBorderShowParamEnabled);
+
+
+
+
+
+
+
+
+            String orientation = (String) orientationParam.getValue();
+            if (ColorBarLayerType.OPTION_VERTICAL.equals(orientation)) {
+                titleAnchorParam.setUIEnabled(true);
+            } else {
+                titleAnchorParam.setUIEnabled(false);
+            }
 
         }
 
@@ -1232,6 +1318,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(orientationParam.getEditor().getEditorComponent(), gbc);
             orientationParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP);
             orientationParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP);
+
+            gbc.gridy++;
+            gbc.insets.top = 5;
+            gbc.gridwidth = 1;
+            p.add(titleAnchorParam.getEditor().getLabelComponent(), gbc);
+            p.add(titleAnchorParam.getEditor().getEditorComponent(), gbc);
+            titleAnchorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP);
+            titleAnchorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP);
+
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -1661,6 +1756,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             // Orientation
             orientationParam = paramGroup.getParameter(PROPERTY_ORIENTATION_KEY2);
+            titleAnchorParam = paramGroup.getParameter(PROPERTY_LOCATION_TITLE_VERTICAL_KEY2);
             reversePaletteParam = paramGroup.getParameter(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2);
 
 

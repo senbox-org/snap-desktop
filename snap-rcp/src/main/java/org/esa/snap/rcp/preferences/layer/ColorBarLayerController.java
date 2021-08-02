@@ -86,6 +86,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
 
 
@@ -103,7 +104,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY, true);
@@ -485,6 +485,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
                         ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2})
         String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP,
+                valueSet = {ColorBarLayerType.VERTICAL_TITLE_LEFT,
+                        ColorBarLayerType.VERTICAL_TITLE_RIGHT,
+                        ColorBarLayerType.VERTICAL_TITLE_TOP,
+                        ColorBarLayerType.VERTICAL_TITLE_BOTTOM})
+        String titleVerticalLocation = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT;
+
         @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL,
                 key = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
                 description = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP)
@@ -576,14 +585,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
-                key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
-                description = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP,
-                valueSet = {ColorBarLayerType.VERTICAL_TITLE_LEFT,
-                        ColorBarLayerType.VERTICAL_TITLE_RIGHT,
-                        ColorBarLayerType.VERTICAL_TITLE_TOP,
-                        ColorBarLayerType.VERTICAL_TITLE_BOTTOM})
-        String titleVerticalLocation = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT;
 
 
 

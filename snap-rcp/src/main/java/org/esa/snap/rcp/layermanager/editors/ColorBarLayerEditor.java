@@ -52,52 +52,40 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Title Section
 
+        addTitleTextfield();
+        addUnitsTextfield();
+
 //        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
 //                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
 //                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
 
 
-        PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
-        titleParameterTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT);
-        titleParameterTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_TEXT_LABEL);
-        titleParameterTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_TEXT_TOOLTIP);
-        titleParameterTextPD.setDefaultConverter();
-        addPropertyDescriptor(titleParameterTextPD);
+//        PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
+//                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
+//        titleParameterTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT);
+//        titleParameterTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_TEXT_LABEL);
+//        titleParameterTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_TEXT_TOOLTIP);
+//        titleParameterTextPD.setDefaultConverter();
+//        addPropertyDescriptor(titleParameterTextPD);
+//
+//
+//        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+//                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
+//        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
+//        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_TEXT_LABEL);
+//        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
+//        titleUnitsTextPD.setDefaultConverter();
+//        addPropertyDescriptor(titleUnitsTextPD);
 
 
-        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
-        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
-        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_TEXT_LABEL);
-        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
-        titleUnitsTextPD.setDefaultConverter();
-        addPropertyDescriptor(titleUnitsTextPD);
 
 
         // Orientation Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP);
-
-
-        PropertyDescriptor orientationPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_ORIENTATION_KEY, String.class);
-        orientationPD.setDefaultValue(ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
-        orientationPD.setDisplayName(ColorBarLayerType.PROPERTY_ORIENTATION_LABEL);
-        orientationPD.setDescription(ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP);
-        orientationPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_ORIENTATION_VALUE_SET));
-        orientationPD.setDefaultConverter();
-        addPropertyDescriptor(orientationPD);
-
-        PropertyDescriptor reversePalettePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
-                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
-        reversePalettePD.setDefaultValue(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
-        reversePalettePD.setDisplayName(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL);
-        reversePalettePD.setDescription(ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP);
-        reversePalettePD.setDefaultConverter();
-        addPropertyDescriptor(reversePalettePD);
-
+        addOrientationSectionBreak();
+        addAlignment();
+        addTitleAnchor();
+        addReversePalette();
 
 
         // Label Values
@@ -111,57 +99,54 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesForceDecimalPlaces();
 
 
-
-
         // Color Bar Location Section
 
-        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
+        addLocationSectionBreak();
+        addLocationInside();
+        addLocationPlacement();
+        addLocationOffset();
+        addLocationShift();
 
-        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
-        locationInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
-        locationInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_LABEL);
-        locationInsidePD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TOOLTIP);
-        locationInsidePD.setDefaultConverter();
-        addPropertyDescriptor(locationInsidePD);
+//        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
+//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
+//
+//        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
+//        locationInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
+//        locationInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_LABEL);
+//        locationInsidePD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TOOLTIP);
+//        locationInsidePD.setDefaultConverter();
+//        addPropertyDescriptor(locationInsidePD);
+//
+//        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TYPE);
+//        locationPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
+//        locationPlacementPD.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
+//        locationPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_LABEL);
+//        locationPlacementPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TOOLTIP);
+//        locationPlacementPD.setDefaultConverter();
+//        addPropertyDescriptor(locationPlacementPD);
+//
+//
+//        PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
+//        locationOffsetPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
+//        locationOffsetPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL);
+//        locationOffsetPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP);
+//        locationOffsetPD.setDefaultConverter();
+//        addPropertyDescriptor(locationOffsetPD);
+//
+//        PropertyDescriptor locationShiftPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
+//                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
+//        locationShiftPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
+//        locationShiftPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL);
+//        locationShiftPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP);
+//        locationShiftPD.setDefaultConverter();
+//        addPropertyDescriptor(locationShiftPD);
 
-        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TYPE);
-        locationPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
-        locationPlacementPD.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
-        locationPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_LABEL);
-        locationPlacementPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TOOLTIP);
-        locationPlacementPD.setDefaultConverter();
-        addPropertyDescriptor(locationPlacementPD);
 
 
-        PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
-        locationOffsetPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
-        locationOffsetPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL);
-        locationOffsetPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP);
-        locationOffsetPD.setDefaultConverter();
-        addPropertyDescriptor(locationOffsetPD);
-
-        PropertyDescriptor locationShiftPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
-        locationShiftPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
-        locationShiftPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL);
-        locationShiftPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP);
-        locationShiftPD.setDefaultConverter();
-        addPropertyDescriptor(locationShiftPD);
-
-
-        PropertyDescriptor titleVerticalAnchorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
-        titleVerticalAnchorPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
-        titleVerticalAnchorPD.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_VALUE_SET));
-        titleVerticalAnchorPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL);
-        titleVerticalAnchorPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP);
-        titleVerticalAnchorPD.setDefaultConverter();
-        addPropertyDescriptor(titleVerticalAnchorPD);
 
 
 
@@ -212,38 +197,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addTickMarksColor();
 
 
-
-
-
-
         // Backdrop Section
-
-        addSectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
-                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
-                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
-
-        PropertyDescriptor backdropShowPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, Boolean.class);
-        backdropShowPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
-        backdropShowPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL);
-        backdropShowPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
-        backdropShowPD.setDefaultConverter();
-        addPropertyDescriptor(backdropShowPD);
-
-        PropertyDescriptor backdropTransparencyPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, Double.class);
-        backdropTransparencyPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
-        backdropTransparencyPD.setValueRange(new ValueRange(0, 1));
-        backdropTransparencyPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL);
-        backdropTransparencyPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
-        backdropTransparencyPD.setDefaultConverter();
-        addPropertyDescriptor(backdropTransparencyPD);
-
-        PropertyDescriptor backdropColorPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, Color.class);
-        backdropColorPD.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT);
-        backdropColorPD.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL);
-        backdropColorPD.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
-        backdropColorPD.setDefaultConverter();
-        addPropertyDescriptor(backdropColorPD);
-
+        addBackdropSectionBreak();
+        addBackdropShow();
+        addBackdropTransparency();
+        addBackdropColor();
 
 
 
@@ -262,17 +220,12 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
         context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, true,
                 PROPERTY_TITLE_SHOW_KEY, true);
 
 
         context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
                 ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
-
-
-
-
 
 
     }
@@ -286,7 +239,97 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
 
+    // Title / Units
 
+    private void addTitleTextfield() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_TEXT_KEY,
+                PROPERTY_TITLE_TEXT_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_TEXT_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_TEXT_LABEL);
+        pd.setDescription(PROPERTY_TITLE_TEXT_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void addUnitsTextfield() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_TEXT_KEY,
+                PROPERTY_UNITS_TEXT_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_TEXT_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_TEXT_LABEL);
+        pd.setDescription(PROPERTY_UNITS_TEXT_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+
+
+
+
+
+
+    // Orientation
+
+
+    private void addOrientationSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
+                PROPERTY_ORIENTATION_SECTION_LABEL,
+                PROPERTY_ORIENTATION_SECTION_TOOLTIP);
+    }
+
+
+    private void addAlignment() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_TYPE);
+
+        pd.setDisplayName(PROPERTY_ORIENTATION_LABEL);
+        pd.setDescription(PROPERTY_ORIENTATION_TOOLTIP);
+        pd.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_ORIENTATION_VALUE_SET));
+        pd.setDefaultValue(PROPERTY_ORIENTATION_DEFAULT);
+
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void addTitleAnchor() {
+        String alignment = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
+
+        boolean enabled = (OPTION_VERTICAL.equals(alignment)) ? true : false;
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
+        pd.setDisplayName(PROPERTY_LOCATION_TITLE_VERTICAL_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP);
+
+        pd.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_VALUE_SET));
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true,
+                PROPERTY_ORIENTATION_KEY, OPTION_VERTICAL);
+    }
+
+
+    private void addReversePalette() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
+        pd.setDefaultValue(PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
+        pd.setDisplayName(PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL);
+        pd.setDescription(PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+
+
+
+
+
+    // Label Values
 
 
     private void addLabelValuesSectionBreak() {
@@ -394,6 +437,66 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
+
+
+
+
+
+
+    // Color Bar Location Section
+
+
+
+    private void addLocationSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
+            PROPERTY_LOCATION_SECTION_LABEL,
+                PROPERTY_LOCATION_SECTION_TOOLTIP);
+    }
+
+
+    private void addLocationInside() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_INSIDE_KEY,
+                PROPERTY_LOCATION_INSIDE_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_INSIDE_DEFAULT);
+        pd.setDisplayName(PROPERTY_LOCATION_INSIDE_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_INSIDE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void addLocationPlacement() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_KEY,
+                PROPERTY_LOCATION_PLACEMENT_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_PLACEMENT_DEFAULT);
+        pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
+        pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_PLACEMENT_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void addLocationOffset() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_OFFSET_KEY,
+                PROPERTY_LOCATION_OFFSET_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_OFFSET_DEFAULT);
+        pd.setDisplayName(PROPERTY_LOCATION_OFFSET_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_OFFSET_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void addLocationShift() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_SHIFT_KEY,
+                PROPERTY_LOCATION_SHIFT_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_SHIFT_DEFAULT);
+        pd.setDisplayName(PROPERTY_LOCATION_SHIFT_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_SHIFT_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
 
 
 
@@ -858,6 +961,62 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+
+
+
+
+
+
+
+
+
+
+    // Backdrop Section
+
+    private void  addBackdropSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
+    }
+
+    private void  addBackdropShow() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void  addBackdropTransparency() {
+        boolean enabled = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT);
+        pd.setValueRange(new ValueRange(0, 1));
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
+    }
+
+
+    private void  addBackdropColor() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_BACKDROP_SHOW_KEY, PROPERTY_BACKDROP_SHOW_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, PROPERTY_BACKDROP_COLOR_TYPE);
+        pd.setDefaultValue(PROPERTY_BACKDROP_COLOR_DEFAULT);
+        pd.setDisplayName(PROPERTY_BACKDROP_COLOR_LABEL);
+        pd.setDescription(PROPERTY_BACKDROP_COLOR_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_BACKDROP_COLOR_KEY, PROPERTY_BACKDROP_SHOW_KEY);
+    }
 
 
 
