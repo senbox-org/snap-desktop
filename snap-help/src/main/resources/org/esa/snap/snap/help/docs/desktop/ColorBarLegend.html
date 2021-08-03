@@ -46,10 +46,13 @@
 </p>
 
 <p>
-    If a Color Bar layer exists, then the Color Bar Export Tool will use the same initial settings as the layer image.
-    If there is no layer then the initial settings come from the preferences.
+    For the Color Bar File Export tool, if a Color Bar layer already exists, then the Color Bar Export Tool will use the
+    same initial settings as the layer image.  If there is no layer then the initial settings come from the preferences.
 </p>
 
+<p>The 3 Tools ("Color Bar Layer", "Color Bar Export", and "Color Bar Preferences") all share almost the same fields
+so they are all consolidated here in this single help page, with notation regarding any fields not applicable to
+a particular tool.</p>
 
 <br>
 <hr>
@@ -66,6 +69,7 @@
 <br>
 
 <p>These fields are the text to be placed as the title and units of the color bar legend.
+    (Note: these fields are NOT located in the Preferences as they are band dependent.)
 </p>
 
 <br>
@@ -419,11 +423,32 @@
 <ul>
     <li>
         <b>Black/White Color Override:</b>Overrides all color fields with a black letters on white background color scheme.
-        This exists to enable a different (but generic) default color setup for the Color Bar Export Tool from the Color Bar Layer Tool.
+        This exists to enable a different (but generic) default color setup for the Color Bar Export Tool than the Color Bar Layer Tool.
     </li>
 </ul>
 
 
+<br><hr><h4>Color Bar Export Tool (PREFERENCES TOOL ONLY)</h4><br>
+
+<ul>
+    <li>
+        <b>Show Editor:</b>This configuration when TRUE displays the editor GUI first when you use the "Export
+        Color Bar Legend" tool.  Otherwise you get a file selector GUI and may access the editor GUI through the "Properties"
+        button on the file selector GUI.
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Restore (PREFERENCES TOOL ONLY)</h4><br>
+
+<ul>
+    <li>
+        <b>Default (Color Bar Legend Preferences):</b>Restores all preferences parameters within the Color Bar Legend
+        Preferences to the original default values.
+    </li>
+</ul>
 
 
 

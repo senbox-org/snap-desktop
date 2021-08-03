@@ -95,7 +95,7 @@
     <mapID target="noDataOverlay" url="desktop/NoDataOverlay.html"/>
     <mapID target="graticuleOverlay" url="desktop/ShowGraticuleOverlay.html"/>
     <mapID target="colorBarLegend" url="desktop/ColorBarLegend.html"/>
-    <mapID target="colorBarLegendPreferences" url="desktop/ColorBarLegendPreferences.html"/>
+    <mapID target="colorBarLegendPreferences" url="desktop/ColorBarLegend.html"/>
     <mapID target="noDataValue" url="desktop/NoDataValue.html"/>
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>
     <mapID target="geoCodingInfoDialog" url="desktop/GeoCodingInfo.html"/>

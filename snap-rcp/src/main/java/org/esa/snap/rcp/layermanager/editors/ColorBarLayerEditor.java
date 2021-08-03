@@ -147,13 +147,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLegendBorderColor();
 
 
-
-        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, true,
-                PROPERTY_TITLE_SHOW_KEY, true);
-
-
-        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
-                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
+//  Commented out because choosing NOT to set enablement of this component as it might confused user being location
+        // far away from the "Show Title" and "Show Units" components
+//        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, true,
+//                PROPERTY_TITLE_SHOW_KEY, true);
+//
+//
+//        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, true,
+//                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY, true);
 
 
     }
