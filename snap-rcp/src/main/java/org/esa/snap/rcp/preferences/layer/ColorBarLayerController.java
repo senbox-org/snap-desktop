@@ -53,19 +53,9 @@ import java.awt.*;
 public final class ColorBarLayerController extends DefaultConfigController {
 
     Property restoreDefaults;
+    Property orientationComboBoxProperty;
+    Property labelValuesModeProperty;
 
-
-    Enablement enablementTickmarksInside;
-    Enablement enablementTickmarksLength;
-    Enablement enablementTickmarksColor;
-
-    Enablement enablementBorderWidth;
-    Enablement enablementBorderColor;
-
-    Enablement enablementLabelsFontItalic;
-    Enablement enablementLabelsFontBold;
-    Enablement enablementLabelsFontName;
-    Enablement enablementLabelsFontColor;
 
     boolean propertyValueChangeEventsEnabled = true;
 
@@ -85,13 +75,13 @@ public final class ColorBarLayerController extends DefaultConfigController {
         //
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
+        orientationComboBoxProperty = initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        labelValuesModeProperty = initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
@@ -219,15 +209,26 @@ public final class ColorBarLayerController extends DefaultConfigController {
     @Override
     protected void configure(BindingContext context) {
 
-//        configureTickmarksEnablement(context);
-//        configureBorderEnablement(context);
-        configureLabelsEnablement(context);
-
+        configureEnablement(context);
 
         // Handle resetDefaults events - set all other components to defaults
         restoreDefaults.addPropertyChangeListener(evt -> {
             handleRestoreDefaults(context);
         });
+
+        // Handle handleOrientationComboBoxEnablement enablement events -
+        orientationComboBoxProperty.addPropertyChangeListener(evt -> {
+            handleOrientationComboBoxEnablement(context);
+        });
+
+        // Handle handleLabelValuesModeEnablement enablement events -
+        labelValuesModeProperty.addPropertyChangeListener(evt -> {
+            handleLabelValuesModeEnablement(context);
+        });
+
+
+
+
 
 
         // Add listeners to all components in order to uncheck restoreDefaults checkbox accordingly
@@ -300,81 +301,108 @@ public final class ColorBarLayerController extends DefaultConfigController {
     }
 
 
+
+    private void handleOrientationComboBoxEnablement(BindingContext context) {
+
+        String alignment = orientationComboBoxProperty.getValue();
+
+        boolean enabled = (ColorBarLayerType.OPTION_VERTICAL.equals(alignment)) ? true : false;
+
+        context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, enabled);
+    }
+
+
+
+    private void handleLabelValuesModeEnablement(BindingContext context) {
+
+        String mode = labelValuesModeProperty.getValue();
+
+        if (ColorBarLayerType.DISTRIB_EXACT_STR.equals(mode)) {
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, false);
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, false);
+        } else if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(mode)) {
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, false);
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, true);
+        } else {
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, true);
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, false);
+        }
+
+    }
+
+
+
+
+
     /**
-     * Configure enablement of the tickmarks components
+     * Configure enablement of the preferences components
      *
      * @param context
      * @author Daniel Knowles
      */
-    private void configureTickmarksEnablement(BindingContext context) {
+    private void configureEnablement(BindingContext context) {
+
+        // Orientation
+        handleOrientationComboBoxEnablement(context);
 
 
-        enablementTickmarksLength = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
-
-        enablementTickmarksColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY, true);
+        // Label (Values)
+        handleLabelValuesModeEnablement(context);
 
 
-        // handle it the first time so bound properties get properly enabled
-        handleTickmarksEnablement();
-    }
+        // Image Scaling Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY);
 
 
-    /**
-     * Handles enablement of the tickmarks components
-     *
-     * @author Daniel Knowles
-     */
-    private void handleTickmarksEnablement() {
-//        enablementTickmarksInside.apply();
-        enablementTickmarksLength.apply();
-        enablementTickmarksColor.apply();
-    }
+        // Title Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
+
+
+        // Units Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY);
+
+
+        // Tick-Mark Labels Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY);
+
+
+        // Tickmarks Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
+
+
+        // Backdrop Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
+
+
+        // Palette Border Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY);
+
+
+        // Legend Border Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY);
 
 
 
-
-
-
-
-    /**
-     * Configure enablement of the labels components
-     *
-     * @param context
-     * @author Daniel Knowles
-     */
-    private void configureLabelsEnablement(BindingContext context) {
-
-
-        enablementLabelsFontItalic = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-        enablementLabelsFontBold = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-        enablementLabelsFontName = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-        enablementLabelsFontColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY, true);
-
-        // handle it the first time so bound properties get properly enabled
-        handleLabelsEnablement();
-    }
-
-
-
-    /**
-     * Handles enablement of the labels components
-     *
-     * @author Daniel Knowles
-     */
-    private void handleLabelsEnablement() {
-        enablementLabelsFontBold.apply();
-        enablementLabelsFontItalic.apply();
-        enablementLabelsFontName.apply();
-        enablementLabelsFontColor.apply();
+        // note if problem occurs then try adding .apply() to method call as illustrated here:
+        // context.bindEnabledState(ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY, ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY).apply();
     }
 
 
@@ -382,34 +410,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-    /**
-     * Configure enablement of the border components
-     *
-     * @param context
-     * @author Daniel Knowles
-     */
-    private void configureBorderEnablement(BindingContext context) {
-
-        enablementBorderWidth = context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, true,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, true);
-
-        enablementBorderColor = context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY, true,
-                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY, true);
 
 
-        // handle it the first time so bound properties get properly enabled
-        handleBorderEnablement();
-    }
-
-    /**
-     * Handles enablement of the gridlines components
-     *
-     * @author Daniel Knowles
-     */
-    private void handleBorderEnablement() {
-        enablementBorderWidth.apply();
-        enablementBorderColor.apply();
-    }
 
 
     /**

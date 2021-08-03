@@ -45,43 +45,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     @Override
     protected void addEditablePropertyDescriptors() {
 
-
         configuration = SnapApp.getDefault().getSelectedProductSceneView().getSceneImage().getConfiguration();
         context = getBindingContext();
 
 
         // Title Section
-
         addTitleTextfield();
         addUnitsTextfield();
 
-//        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY,
-//                ColorBarLayerType.PROPERTY_TITLE_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP);
-
-
-//        PropertyDescriptor titleParameterTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
-//                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
-//        titleParameterTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT);
-//        titleParameterTextPD.setDisplayName(ColorBarLayerType.PROPERTY_TITLE_TEXT_LABEL);
-//        titleParameterTextPD.setDescription(ColorBarLayerType.PROPERTY_TITLE_TEXT_TOOLTIP);
-//        titleParameterTextPD.setDefaultConverter();
-//        addPropertyDescriptor(titleParameterTextPD);
-//
-//
-//        PropertyDescriptor titleUnitsTextPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
-//                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
-//        titleUnitsTextPD.setDefaultValue(ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT);
-//        titleUnitsTextPD.setDisplayName(ColorBarLayerType.PROPERTY_UNITS_TEXT_LABEL);
-//        titleUnitsTextPD.setDescription(ColorBarLayerType.PROPERTY_UNITS_TEXT_TOOLTIP);
-//        titleUnitsTextPD.setDefaultConverter();
-//        addPropertyDescriptor(titleUnitsTextPD);
-
-
-
 
         // Orientation Section
-
         addOrientationSectionBreak();
         addAlignment();
         addTitleAnchor();
@@ -89,7 +62,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Label Values
-
         addLabelValuesSectionBreak();
         addLabelValuesMode();
         addLabelValuesCount();
@@ -100,55 +72,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Color Bar Location Section
-
         addLocationSectionBreak();
         addLocationInside();
         addLocationPlacement();
         addLocationOffset();
         addLocationShift();
-
-//        addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_LABEL,
-//                ColorBarLayerType.PROPERTY_LOCATION_SECTION_TOOLTIP);
-//
-//        PropertyDescriptor locationInsidePD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
-//        locationInsidePD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
-//        locationInsidePD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_LABEL);
-//        locationInsidePD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TOOLTIP);
-//        locationInsidePD.setDefaultConverter();
-//        addPropertyDescriptor(locationInsidePD);
-//
-//        PropertyDescriptor locationPlacementPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TYPE);
-//        locationPlacementPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
-//        locationPlacementPD.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
-//        locationPlacementPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_LABEL);
-//        locationPlacementPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TOOLTIP);
-//        locationPlacementPD.setDefaultConverter();
-//        addPropertyDescriptor(locationPlacementPD);
-//
-//
-//        PropertyDescriptor locationOffsetPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
-//        locationOffsetPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
-//        locationOffsetPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL);
-//        locationOffsetPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP);
-//        locationOffsetPD.setDefaultConverter();
-//        addPropertyDescriptor(locationOffsetPD);
-//
-//        PropertyDescriptor locationShiftPD = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
-//                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
-//        locationShiftPD.setDefaultValue(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
-//        locationShiftPD.setDisplayName(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL);
-//        locationShiftPD.setDescription(ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP);
-//        locationShiftPD.setDefaultConverter();
-//        addPropertyDescriptor(locationShiftPD);
-
-
-
-
-
 
 
         // Color Bar Scaling Section

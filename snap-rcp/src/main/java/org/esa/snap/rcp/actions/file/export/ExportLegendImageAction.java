@@ -1178,12 +1178,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             // Colors Override
             boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
 //            titleColorParam.setUIEnabled(!bwColorOverride);
-            unitsColorParam.setUIEnabled(!bwColorOverride);
-            labelsColorParam.setUIEnabled(!bwColorOverride);
-            tickmarksColorParam.setUIEnabled(!bwColorOverride);
-            paletteBorderColorParam.setUIEnabled(!bwColorOverride);
-            backdropColorParam.setUIEnabled(!bwColorOverride);
-            legendBorderColorParam.setUIEnabled(!bwColorOverride);
+//            unitsColorParam.setUIEnabled(!bwColorOverride);
+//            labelsColorParam.setUIEnabled(!bwColorOverride);
+//            tickmarksColorParam.setUIEnabled(!bwColorOverride);
+//            paletteBorderColorParam.setUIEnabled(!bwColorOverride);
+//            backdropColorParam.setUIEnabled(!bwColorOverride);
+//            legendBorderColorParam.setUIEnabled(!bwColorOverride);
 
 
 
@@ -1197,7 +1197,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             // Units Section
             boolean unitsShowParamEnabled = (Boolean) unitsShowParam.getValue();
-            unitsColorParam.setUIEnabled(unitsShowParamEnabled);
+            unitsColorParam.setUIEnabled(unitsShowParamEnabled && !bwColorOverride);
             unitsBoldParam.setUIEnabled(unitsShowParamEnabled);
             unitsItalicParam.setUIEnabled(unitsShowParamEnabled);
             unitsFontSizeParam.setUIEnabled(unitsShowParamEnabled);
@@ -1212,32 +1212,32 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             labelsBoldParam.setUIEnabled(labelsShowParamEnabled);
             labelsItalicParam.setUIEnabled(labelsShowParamEnabled);
             labelsFontNameParam.setUIEnabled(labelsShowParamEnabled);
-            labelsColorParam.setUIEnabled(labelsShowParamEnabled);
+            labelsColorParam.setUIEnabled(labelsShowParamEnabled && !bwColorOverride);
 
 
             // Tickmarks Section
             boolean tickmarksShowParamEnabled = (Boolean) tickmarksShowParam.getValue();
             tickmarksLengthParam.setUIEnabled(tickmarksShowParamEnabled);
             tickmarksWidthParam.setUIEnabled(tickmarksShowParamEnabled);
-            tickmarksColorParam.setUIEnabled(tickmarksShowParamEnabled);
+            tickmarksColorParam.setUIEnabled(tickmarksShowParamEnabled && !bwColorOverride);
 
 
             // Backdrop Section
             boolean backdropShowParamEnabled = (Boolean) backdropShowParam.getValue();
             backgroundTransparencyParam.setUIEnabled(backdropShowParamEnabled);
-            backdropColorParam.setUIEnabled(backdropShowParamEnabled);
+            backdropColorParam.setUIEnabled(backdropShowParamEnabled && !bwColorOverride);
 
 
             // Palette Border Section
             boolean paletteBorderShowParamEnabled = (Boolean) paletteBorderShowParam.getValue();
             paletteBorderWidthParam.setUIEnabled(paletteBorderShowParamEnabled);
-            paletteBorderColorParam.setUIEnabled(paletteBorderShowParamEnabled);
+            paletteBorderColorParam.setUIEnabled(paletteBorderShowParamEnabled && !bwColorOverride);
 
 
             // Legend Border Section
             boolean legendBorderShowParamEnabled = (Boolean) legendBorderShowParam.getValue();
             legendBorderWidthParam.setUIEnabled(legendBorderShowParamEnabled);
-            legendBorderColorParam.setUIEnabled(legendBorderShowParamEnabled);
+            legendBorderColorParam.setUIEnabled(legendBorderShowParamEnabled && !bwColorOverride);
 
 
 
