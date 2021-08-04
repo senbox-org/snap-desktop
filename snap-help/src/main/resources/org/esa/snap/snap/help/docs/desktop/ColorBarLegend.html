@@ -1,0 +1,457 @@
+
+<!--Help page for the color bar legend tool preferences-->
+<!--@author Daniel Knowles-->
+
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Color (Colour) Bar Legend</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Color (Colour) Bar Legend
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
+    </tr>
+</table>
+
+<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
+    SNAP application, elsewhere in your application the spelling may be "colour"</p>
+
+<h3>Overview</h3>
+
+<p>A color bar legend is a representation of the color palette and it's associated scene product values.  There
+    are two separate but interrelated tools for creating color bars either as a layer on a scene image or exporting
+    the color bar as its own file.  (Note: color bars can only be created for non-RGB images.)
+</p>
+
+<p>To add a Color Bar Layer, toggle the color bar Layer Tool select "/Layer/Color Bar Legend".  The "Layer Editor" is used
+    for editing the Color Bar parameters (inside the Layer Manager click "ColorBar" and then the pencil icon).
+</p>
+
+<p>To open the color bar Export Tool select "/File/Export/Other/Color Bar Legend" or from with the scene image right-click
+    and select "Color Bar Legend"
+</p>
+
+<p>To open the color bar legend preferences window select "/Tools/Options/Color Bar Legend"
+    from the main menu (Note: this may be located instead in File/Preferences on the Mac).
+</p>
+
+<p>
+    For the Color Bar File Export tool, if a Color Bar layer already exists, then the Color Bar Export Tool will use the
+    same initial settings as the layer image.  If there is no layer then the initial settings come from the preferences.
+</p>
+
+<p>The 3 Tools ("Color Bar Layer", "Color Bar Export", and "Color Bar Preferences") all share almost the same fields
+so they are all consolidated here in this single help page, with notation regarding any fields not applicable to
+a particular tool.</p>
+
+<br>
+<hr>
+<h4>Title / Units Text</h4><br>
+
+<!--<div align="center">-->
+<!--<table>-->
+<!--<tr>-->
+<!--<td align="center" style="border-width:0"><img src="images/ColorManipPref01.png"/></td>-->
+<!--</tr>-->
+<!--</table>-->
+<!--</div>-->
+
+<br>
+
+<p>These fields are the text to be placed as the title and units of the color bar legend.
+    (Note: these fields are NOT located in the Preferences as they are band dependent.)
+</p>
+
+<br>
+<ul>
+    <li>
+        <b>Title Text:</b> The text to be placed as the title of the color bar.
+        This field gets auto-populated
+        based on the band's name and does not have an associated preferences value.  To format the title font,
+        use the "Title Format" section in this same tool window.
+    </li>
+
+    <li>
+        <b>Units Text:</b>  The text to be placed for the units in the title section of the color bar.
+        This field gets auto-populated
+        based on the band's units and does not have an associated preferences value.  To format the units font,
+        use the "Units Format" section in this same tool window.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Orientation</h4><br>
+
+<p>These fields set the orientation parameters of the color bar legend.</p>
+
+<ul>
+    <li>
+        <b>Alignment:</b> Sets the alignment of the color bar to either vertical or horizontal
+    </li>
+
+    <li>
+        <b>Title Anchor:</b> (for VERTICAL ALIGNMENT ONLY)  Sets the location of the title on the color bar if
+        alignment is vertical.
+    </li>
+
+    <li>
+        <b>Reverse Palette &amp; Labels:</b>  Reverses the direction of the palette along with it's labels.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Tick Label Values</h4><br>
+
+<p>These fields determine the actual data values and data formatting to use for the tick marks labels.</p>
+
+<ul>
+    <li>
+        <b>Mode:</b> Sets the actual data values of the labels
+
+        <ul>
+            <li>
+                <b>Generated Values:</b> The values will be auto-generated based on the number of desired
+                tick marks as specified in the "Label Count" textfield in this section.
+            </li>
+
+            <li>
+                <b>Entered Values:</b> The values used are manually entered in the "Label Values" textfield.
+
+            </li>
+
+            <li>
+                <b>Palette Values:</b> Values will be used which are in the palette definition file.
+            </li>
+        </ul>
+    </li>
+
+    <li>
+        <b>Label Count:</b>  The desired number of tick marks to be auto-generated onto the color bar
+        (only used for Mode: "Generated Values").
+    </li>
+
+    <li>
+        <b>Label Values:</b>  The values are manually entered here when in mode "Entered Values".
+        The labels are placed in the corresponding data location on the color bar.
+        In this mode values will appear with data format exactly as they are entered and no decimal
+        place adjustments occur.  <br><br>
+        You may use the following value-text pairs syntax to use custom text to represent numbers:
+        "{NUMBER}:{TEXT}, NUMBER:{TEXT}", <i>(For example "Label Values" = "0.01:low, 1.0:medium, 20.0:high")</i>
+    </li>
+
+    <li>
+        <b>Label Scaling:</b>  A multiplier to apply to the displayed label value.  Note that using
+        a value not equal to "1.0" will essentially change your units and you may wish to adjust
+        your "Units Text" accordingly.  <br><i>For example: if the raw data value is 0.001 and units are meters,
+        then setting "Label Scaling" = "1000" will display the data as "1" on the color bar, and then you
+        correspondingly specify "Units Text" = "(millimeters)".</i>
+    </li>
+
+    <li>
+        <b>Decimal Places:</b>  The decimal places to use (Note: does not apply to Mode = "Entered Values")
+    </li>
+
+    <li>
+        <b>Trailing Decimal Zeros:</b>  Force the full decimal places by adding all trailing zeros instead of truncating.
+        For example if "Trailing Decimal Places" is selected and "Decimal Places" = "2" then the raw data value "0.2"
+        will be displayed as "0.20" instead of "0.2". (Note: does not apply to "Mode" = "Entered Values")
+    </li>
+</ul>
+
+
+<br><hr><h4>Placement Location (LAYER TOOL ONLY)</h4><br>
+
+<p>These fields set the placement location anchor of the color bar image legend on the scene image.</p>
+
+<ul>
+    <li>
+        <b>Place Color Bar Inside Image:</b> (LAYER TOOL ONLY) Place color bar inside/outside scene image bounds.
+    </li>
+
+    <li>
+        <b>Scene Anchor:</b> (LAYER TOOL ONLY) Where to place color bar legend on the scene image.
+    </li>
+
+    <li>
+        <b>Scene Anchor Offset:</b> (LAYER TOOL ONLY) Move color bar legend away from anchored axis (by percentage of color bar height).
+    </li>
+
+    <li>
+        <b>Scene Anchor Shift:</b> (LAYER TOOL ONLY) Move color bar legend along the anchored axis (by percentage of color bar width).
+    </li>
+</ul>
+
+
+<br><hr><h4>Size and Scaling</h4><br>
+
+<p>These fields set the size of the color bar and the size scaling onto the view window scene.</p>
+
+<ul>
+    <li>
+        <b>Scale to Scene Size:</b> (LAYER TOOL ONLY) Resizes the full legend image to a percentage of the size view window image scene
+        (as specified in the "Legend Scaling Factor" textfield.
+    </li>
+
+    <li>
+        <b>Scene Size Scaling:</b> (LAYER TOOL ONLY) Percent to scale color bar legend image length to the view window image scene.
+    </li>
+
+
+    <li>
+        <b>Scale to File Size:</b> (EXPORT TOOL ONLY) Resizes the full legend image to the size specified in the textfield "Legend Size".
+    </li>
+
+    <li>
+        <b>File Size:</b> (EXPORT TOOL ONLY) Width (in pixels) of legend image file (height if vertical image) if "Scale to File Size" has been selected.
+    </li>
+
+
+    <li>
+        <b>Color Bar Length:</b>  This is the length (in pixels) of the color bar (just the color bar itself and
+        not the full color bar legend image.
+    </li>
+
+    <li>
+        <b>Color Bar Width:</b>  This is the width/thickness (in pixels) of the color bar (just the color bar itself and
+        not the full color bar legend image.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Title Format</h4><br>
+
+<p>These fields specify the formatting to apply to the "Title Text".</p>
+
+<ul>
+    <li>
+        <b>Show Title:</b> Whether or not to display the "Title Text" on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Title Size:</b>  The font size (in pixels) of the "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font Bold:</b>  Apply font bold to "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font Italic:</b>  Apply font italic to "Title Text".
+    </li>
+
+    <li>
+        <b>Title Font:</b>  Specifies the font-face to use for "Title Text" (very limited selection).
+    </li>
+
+    <li>
+        <b>Title Color:</b>  The font color to apply to "Title Text".
+    </li>
+
+</ul>
+
+
+
+<br><hr><h4>Units Format</h4><br>
+
+<p>These fields specify the formatting to apply to the "Units Text".</p>
+
+<ul>
+    <li>
+        <b>Show Units:</b> Whether or not to display the "Units Text" on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Units Size:</b>  The font size (in pixels) of the "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font Bold:</b>  Apply font bold to "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font Italic:</b>  Apply font italic to "Units Text".
+    </li>
+
+    <li>
+        <b>Units Font:</b>  Specifies the font-face to use for "Units Text" (very limited selection).
+    </li>
+
+    <li>
+        <b>Units Color:</b>  The font color to apply to "Units Text".
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Tick Label Format</h4><br>
+
+<p>These fields specify the font formatting to apply to the tick mark labels.</p>
+
+<ul>
+    <li>
+        <b>Show Tick Labels:</b> Whether or not to display the tick mark labels on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Labels Size:</b>  The font size (in pixels) of the tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font Bold:</b>  Apply font bold to tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font Italic:</b>  Apply font italic to tick mark labels.
+    </li>
+
+    <li>
+        <b>Labels Font:</b>  Specifies the font-face to use for the tick mark labels (very limited selection).
+    </li>
+
+    <li>
+        <b>Labels Color:</b>  The font color to apply to tick mark labels.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Tick Marks</h4><br>
+
+<p>These fields specify the formatting to apply to the tick marks.</p>
+
+<ul>
+    <li>
+        <b>Show Tick Marks:</b> Whether or not to display the tick marks on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Tick Length:</b> Length (in pixels) of each tick mark.
+    </li>
+
+    <li>
+        <b>Tick Width:</b> Width (in pixels) of each tick mark.
+    </li>
+
+    <li>
+        <b>Tick Color:</b> Color of each tick mark.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Backdrop</h4><br>
+
+<p>These fields specify the formatting to apply to the backdrop (background of full image).</p>
+
+<ul>
+    <li>
+        <b>Show Backdrop:</b> Whether or not to display the backdrop on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Backdrop Trans:</b> Transparency of each the backdrop.
+    </li>
+
+    <li>
+        <b>Backdrop Color:</b> Color of the backdrop.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Palette Border</h4><br>
+
+<p>These fields specify the formatting to apply to the palette border (the border around the color bar, not
+    the border around the full image).</p>
+
+<ul>
+    <li>
+        <b>Show Palette Border:</b> Whether or not to display the palette border.
+    </li>
+
+    <li>
+        <b>Border Width:</b> Width (in pixels) of each the palette border.
+    </li>
+
+    <li>
+        <b>Border Color:</b> Color of the palette border.
+    </li>
+</ul>
+
+
+
+
+<br><hr><h4>Legend Border</h4><br>
+
+<p>These fields specify the formatting to apply to the legend border (the border around the full image, not
+    the border around the color bar).</p>
+
+<ul>
+    <li>
+        <b>Show Legend Border:</b> Whether or not to display the legend border.
+    </li>
+
+    <li>
+        <b>Legend Width:</b> Width (in pixels) of each the legend border.
+    </li>
+
+    <li>
+        <b>Legend Color:</b> Color of the legend border.
+    </li>
+</ul>
+
+
+
+<br><hr><h4>Colors Override (EXPORT TOOL ONLY)</h4><br>
+
+<ul>
+    <li>
+        <b>Black/White Color Override:</b>Overrides all color fields with a black letters on white background color scheme.
+        This exists to enable a different (but generic) default color setup for the Color Bar Export Tool than the Color Bar Layer Tool.
+    </li>
+</ul>
+
+
+<br><hr><h4>Color Bar Export Tool (PREFERENCES TOOL ONLY)</h4><br>
+
+<ul>
+    <li>
+        <b>Show Editor:</b>This configuration when TRUE displays the editor GUI first when you use the "Export
+        Color Bar Legend" tool.  Otherwise you get a file selector GUI and may access the editor GUI through the "Properties"
+        button on the file selector GUI.
+    </li>
+</ul>
+
+
+<br>
+<hr>
+<h4>Restore (PREFERENCES TOOL ONLY)</h4><br>
+
+<ul>
+    <li>
+        <b>Default (Color Bar Legend Preferences):</b>Restores all preferences parameters within the Color Bar Legend
+        Preferences to the original default values.
+    </li>
+</ul>
+
+
+
+
+</body>
+</html>
