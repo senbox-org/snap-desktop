@@ -59,7 +59,7 @@ import java.util.List;
  * @author Daniel Knowles
  * @version $Revision$ $Date$
  */
-//MAY2020 - Daniel Knowles - Major revision to color bar and color bar layer tools
+//MAY2020 - Daniel Knowles - Major revision to color bar legend tools
 
 @ActionID(
         category = "File",
