@@ -17,8 +17,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
 /**
- * @author Marco Peters
- * @author Muhammad.bc
+ * @author Daniel Knowles
  */
 @ActionID(category = "View", id = "OverlayColorBarLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlayColorBarLayerActionName")

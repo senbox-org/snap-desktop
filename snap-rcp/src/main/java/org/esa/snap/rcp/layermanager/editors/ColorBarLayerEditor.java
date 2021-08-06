@@ -32,8 +32,6 @@ import static org.esa.snap.core.layer.ColorBarLayerType.*;
  * Editor for colorbar layer.
  *
  * @author Daniel Knowles
- * @version $Revision$ $Date$
- * @since BEAM 4.6
  */
 
 
