@@ -114,8 +114,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LABEL_VALUES_SCALING_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY + ".export";
-
-
+    private static final String PROPERTY_WEIGHT_TOLERANCE_KEY2 = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_KEY + ".export";
 
     // Image Scaling Section
     private static final String PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY + ".export";
@@ -147,57 +146,29 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LABELS_FONT_NAME_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY + ".export";
     private static final String PROPERTY_LABELS_FONT_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY + ".export";
 
-
     // Tickmarks Section
     private static final String PROPERTY_TICKMARKS_SHOW_KEY2 = ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY + ".export";
     private static final String PROPERTY_TICKMARKS_LENGTH_KEY2 = ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY + ".export";
     private static final String PROPERTY_TICKMARKS_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY + ".export";
     private static final String PROPERTY_TICKMARKS_COLOR_KEY2 = ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY + ".export";
 
-
     // Backdrop Section
     private static final String PROPERTY_BACKDROP_SHOW_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY + ".export";
     private static final String PROPERTY_BACKDROP_TRANSPARENCY_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY + ".export";
     private static final String PROPERTY_BACKDROP_COLOR_KEY2 = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY + ".export";
-
 
     // Palette Border Section
     private static final String PROPERTY_PALETTE_BORDER_SHOW_KEY2 = ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY + ".export";
     private static final String PROPERTY_PALETTE_BORDER_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY + ".export";
     private static final String PROPERTY_PALETTE_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY + ".export";
 
-
     // Legend Border Section
     private static final String PROPERTY_LEGEND_BORDER_SHOW_KEY2 = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY + ".export";
     private static final String PROPERTY_LEGEND_BORDER_WIDTH_KEY2 = ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY + ".export";
     private static final String PROPERTY_LEGEND_BORDER_COLOR_KEY2 = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY + ".export";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // These are all the color keys which get bypasses dependent on the PROPERTY_EXPORT_USE_BW_COLOR_KEY2
     private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
-
-
-
-
-
-
-
-
-
 
 
 
@@ -226,8 +197,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         super(Bundle.CTL_ExportLegendImageAction_MenuText(), HELP_ID);
 
-//        System.out.println("Entering export image legend");
-
         putValue("popupText", Bundle.CTL_ExportLegendImageAction_PopupText());
         imageFileFilters = new SnapFileFilter[IMAGE_FORMAT_DESCRIPTIONS.length];
         for (int i = 0; i < IMAGE_FORMAT_DESCRIPTIONS.length; i++) {
@@ -240,7 +209,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         paramChangeListener = createParamChangeListener();
-
     }
 
 
@@ -331,8 +299,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             PropertyMap configuration = view.getSceneImage().getConfiguration();
 
             if (configuration != null) {
-//                System.out.println("Making new imageLegend");
-
                 imageLegend = new ImageLegend(raster.getImageInfo(), raster);
                 initLegendWithPreferences(view);
             }
@@ -429,10 +395,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-
-
-
-
         // Title and Units Text
 
         param = new Parameter(PROPERTY_TITLE_TEXT_KEY2, imageLegend.getTitleText());
@@ -466,10 +428,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 ColorBarLayerType.VERTICAL_TITLE_TOP, ColorBarLayerType.VERTICAL_TITLE_BOTTOM});
         param.getProperties().setValueSetBound(true);
         paramGroup.addParameter(param);
-
-
-
-
 
 
         param = new Parameter(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2, imageLegend.isReversePalette());
@@ -522,6 +480,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL);
         param.addParamChangeListener(paramChangeListener);
         paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_WEIGHT_TOLERANCE_KEY2, imageLegend.getWeightTolerance());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_LABEL);
+        paramGroup.addParameter(param);
+
+
 
 
 
@@ -759,10 +723,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-
-
-
-
         return paramGroup;
     }
 
@@ -914,6 +874,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2).getValue();
         imageLegend.setDecimalPlacesForce((Boolean) value);
 
+        value = legendParamGroup.getParameter(PROPERTY_WEIGHT_TOLERANCE_KEY2).getValue();
+        imageLegend.setWeightTolerance((Double) value);
 
 
 
@@ -1074,8 +1036,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter bwColorOverrideParam;
 
 
-
-
         // Title and Units Text
         private Parameter titleTextParam;
         private Parameter unitsTextParam;
@@ -1092,6 +1052,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter labelValuesScalingParam;
         private Parameter labelValuesDecimalPlacesParam;
         private Parameter labelValuesForceDecimalPlacesParam;
+        private Parameter weightToleranceParam;
 
         // Image Scaling Section
         private Parameter useLegendWidthParam;
@@ -1177,13 +1138,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             // Colors Override
             boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
-//            titleColorParam.setUIEnabled(!bwColorOverride);
-//            unitsColorParam.setUIEnabled(!bwColorOverride);
-//            labelsColorParam.setUIEnabled(!bwColorOverride);
-//            tickmarksColorParam.setUIEnabled(!bwColorOverride);
-//            paletteBorderColorParam.setUIEnabled(!bwColorOverride);
-//            backdropColorParam.setUIEnabled(!bwColorOverride);
-//            legendBorderColorParam.setUIEnabled(!bwColorOverride);
 
 
 
@@ -1238,10 +1192,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             boolean legendBorderShowParamEnabled = (Boolean) legendBorderShowParam.getValue();
             legendBorderWidthParam.setUIEnabled(legendBorderShowParamEnabled);
             legendBorderColorParam.setUIEnabled(legendBorderShowParamEnabled && !bwColorOverride);
-
-
-
-
 
 
 
@@ -1384,6 +1334,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 2;
             p.add(labelValuesForceDecimalPlacesParam.getEditor().getEditorComponent(), gbc);
             labelValuesForceDecimalPlacesParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(weightToleranceParam.getEditor().getLabelComponent(), gbc);
+            p.add(weightToleranceParam.getEditor().getEditorComponent(), gbc);
+            weightToleranceParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
+            weightToleranceParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
 
 
 
@@ -1709,6 +1666,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
+
+
+
             p.setBorder(new EmptyBorder(7, 7, 7, 7));
 
             p.setMinimumSize(p.getPreferredSize());
@@ -1767,6 +1727,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             labelValuesScalingParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_SCALING_KEY2);
             labelValuesDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2);
             labelValuesForceDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2);
+            weightToleranceParam = paramGroup.getParameter(PROPERTY_WEIGHT_TOLERANCE_KEY2);
 
 
             // Image Scaling Section
@@ -1832,8 +1793,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             // Colors Override Section
             bwColorOverrideParam = paramGroup.getParameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2);
-
-
 
         }
 

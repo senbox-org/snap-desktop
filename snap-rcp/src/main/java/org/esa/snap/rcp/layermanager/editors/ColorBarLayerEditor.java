@@ -67,6 +67,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
         addLabelValuesForceDecimalPlaces();
+        addWeightTolerance();
 
 
         // Color Bar Location Section
@@ -143,6 +144,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLegendBorderShow();
         addLegendBorderWidth();
         addLegendBorderColor();
+
+
 
 
 //  Commented out because choosing NOT to set enablement of this component as it might confused user being location
@@ -1067,6 +1070,19 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
 
+
+
+
+    private void  addWeightTolerance() {
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_WEIGHT_TOLERANCE_KEY, PROPERTY_WEIGHT_TOLERANCE_TYPE);
+        pd.setDefaultValue(PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
+        pd.setDisplayName(PROPERTY_WEIGHT_TOLERANCE_LABEL);
+        pd.setDescription(PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(true);
+        addPropertyDescriptor(pd);
+    }
 
 
 

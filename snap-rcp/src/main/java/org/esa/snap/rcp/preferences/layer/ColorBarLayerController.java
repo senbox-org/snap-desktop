@@ -87,6 +87,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_KEY, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
@@ -160,10 +161,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY, ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT);
-
-
-
-
 
 
 
@@ -547,6 +544,13 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP)
         boolean decimalPlacesForce = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_LABEL,
+                key = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_KEY,
+                description = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP)
+        double weightTolerance = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT;
+
 
 
 
