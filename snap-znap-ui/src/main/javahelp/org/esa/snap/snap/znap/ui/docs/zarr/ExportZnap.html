@@ -1,0 +1,348 @@
+<!--
+  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html lang="uk">
+<head>
+    <title>Sentinel Toolbox Help - Export ZNAP</title>
+    <link rel="stylesheet" href="../style.css">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Export ZNAP
+        </td>
+
+        <td class="header" align="right"><a
+                href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border=0></a></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td colspan="3"> &nbsp;</td>
+    </tr>
+    <tr>
+        <td> &nbsp; &nbsp; &nbsp;</td>
+        <td>
+            <h4>
+                ⚠ ⚠ ⚠ Your attention, please! ⚠ ⚠ ⚠
+            </h4>
+            <h4>This writer is available as beta version.</h4>
+            <p>
+                In the near future, this writer will become the default writer for the SNAP application to
+                replace BEAM-DIMAP.
+            </p>
+            <p>
+                Using this format for production purposes is not yet recommended, as parts of the format may still
+                change. However, it would be very helpful if you use this format for testing purposes to give us
+                feedback.</p>
+            <p>
+                To send us feedback, please use the
+                <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+                    <param name="content" value="https://forum.step.esa.int/c/snap/">
+                    <param name="text" value="<html><u>SNAP forum.</u></html>">
+                </object>
+            </p>
+        </td>
+        <td> &nbsp; &nbsp; &nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="3"> &nbsp;</td>
+    </tr>
+</table>
+
+<h3>
+    Export product to ZNAP format
+</h3>
+<p>
+    With this writer you can export the data of the current product into the ZNAP format of SNAP.
+</p>
+<h4>
+    What is Zarr / JZarr?
+</h4>
+<h5>
+    The documentation of Zarr itself says:
+</h5>
+<p class="i1">
+    Zarr in general is a Python package providing an implementation of compressed, chunked, N-dimensional arrays,
+    designed for use in parallel computing.</p>
+<p>
+    Source reference and for detailed information, please refer to the documentation of the
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://zarr.readthedocs.io/en/stable/index.html">
+        <param name="text" value="<html><u>Python Zarr library.</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object>
+</p>
+<h5>
+    Measure Space explains it well what Zarr is:
+</h5>
+<div class="i1">
+    <p>
+        Zarr's official website describes Zarr as a Python package that provides an implementation of chunked, compressed,
+        N-dimensional arrays.<br>
+        Chunked indicates that Zarr can handle very large datasets and fast data access.<br>
+        Compressed means that Zarr can save files using reasonable storge size which also means with less cost.<br>
+        N-dimensional arrays reveals that Zarr can handle multi-dimension datasets just like Netcdf (e.g. geoscience
+        datasets with time, x, y, and z four-dimensional datasets).
+    </p>
+    <p>Some highlights as follow:</p>
+    <ul class="narrow">
+        <li>Create N-dimensional arrays with any NumPy dtype.</li>
+        <li>Chunk arrays along any dimension.</li>
+        <li>Compress and/or filter chunks using any NumCodecs codec.</li>
+        <li>Store arrays in memory, on disk, inside a Zip file, on S3, …</li>
+        <li>Read an array concurrently from multiple threads or processes.</li>
+        <li>Write to an array concurrently from multiple threads or processes.</li>
+        <li>Organize arrays into hierarchies via groups.</li>
+    </ul>
+    <p>
+        The most critical component of Zarr is that it can let you read and write files to cloud storage system
+        (e.g. AWS S3) just like your local file system with the same convience of Netcdf format.
+    </p>
+</div>
+
+<p>
+    Reference:
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content"
+               value="https://medium.com/@measurespace/use-zarr-to-access-clound-storage-just-like-your-local-file-system-d67607cb128b">
+        <param name="text"
+               value="<html><u>Use Zarr to access cloud storage just like your local file system</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object>
+</p>
+
+<h5>
+    JZarr
+</h5>
+<p>
+    ZNAP uses the JZarr library. It is a Java implementation for the Zarr format and is still under development.
+    All data written with JZarr can be read with Python Zarr. Conversely, not everything written with Python
+    Zarr can currently be read by JZarr. One of the reasons for this is that not all compression algorithms
+    supported by Zarr are yet implemented in JZarr.<br>
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://jzarr.readthedocs.io/en/latest/">
+        <param name="text" value="<html><u>JZarr is a Java implementation of Zarr.</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object>
+</p>
+
+<h3>The ZNAP format</h3>
+<p>
+    The format consists mainly of Zarr groups and subgroups and Zarr arrays contained therein as well as additional
+    metadata, which is mainly in JSON format.</p>
+<p>
+    A Zarr group or subgroup consists of a folder and a file called ".zgroup", which defines the folder as a group.<br>
+    Optionally, each group or subgroup can contain one ".zattrs" (JSON metadata) file.<br>
+    Also optionally, there can be any number of zarr arrays in each group.</p>
+<p>
+    A Zarr array consists of a folder, a ".zarray" file that defines the array (size, chunk size, data type, etc.),
+    an optional ".zattrs" file for metadata, and finally of course the array data itself.</p>
+<p>
+    The array data can be written as Zarr chunk files, or in one of SNAP's internal formats:</p>
+<ul class="narrow">
+    <li>ENVI</li>
+    <li>GeoTIFF</li>
+    <li>GeoTIFF-BigTIFF</li>
+    <li>NetCDF4-CF</li>
+</ul>
+<p>
+    Another subgroup is called "SNAP". It contains further metadata and vector data.</p>
+
+<h3>Zip-Archive File or Folder Structure in the File System</h3>
+<p>
+    Via the Options dialogue in SNAP UI or corresponding VM parameters, if SNAP is used on the command line (e.g. Graph
+    Processing Tool), it can be decided whether the product is written as a zip archive or as a folder structure.</p>
+<p><img src="../images/options.png"></p>
+<p>
+    If Zip-Archive is selected the array data can only be written as Zarr chunks.<br>
+    Zip-Archive is default and in most cases the fastest way to write and read products.</p>
+<p>
+    If Zip-Archive is deselected, the binary format for the array data can be chosen from the following:</p>
+<ul class="narrow">
+    <li>Zarr (default)</li>
+    <li>ENVI</li>
+    <li>GeoTIFF</li>
+    <li>GeoTIFF-BigTIFF</li>
+    <li>NetCDF4-CF</li>
+</ul>
+<p>
+    If "Zarr" is selected as binary format, you can choose between "null (default)" Compressor or "zlib" Compressor.<br>
+    The "null" compressor is only a proxy, which writes the data of a chunk natively to the disk without
+    overhead but also without compression.</p>
+<p>
+    If "zlib" compressor is selected, compression level 0 - 9 can be chosen.<br>
+    Compression level 3 is default.<br>
+    Higher compression levels rarely result in even higher compression rates. However, this is of course dependent
+    on the type of data to be written and can therefore be selected by the user.</p>
+
+
+<h3>ZNAP product file</h3>
+<p>
+    A product exported in this way is fully compatible with the Python Zarr library and can be processed directly if none
+    of the SNAP internal formats is used as the binary format for the array data. So neither ENVI nor one of the other
+    formats but Zarr (default).</p>
+
+
+<h5>Root Group</h5>
+<p>
+    The exported product consists of a zarr group at the highest level. This product root group contains meta
+    information that refers to the product such as product name, product description, product type,
+    sensing start/end, geocoding, ...</p>
+<p><img src="../images/prod_att_75.png"></p>
+<p>
+    General information about how a group is saved can be found here.
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://jzarr.readthedocs.io/en/latest/tutorial.html#groups">
+        <param name="text" value="<html><u>here.</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object></p>
+
+<h5>Raster Data</h5>
+<p> Raster data (e.g. bands and tie point grids) are written as chunked, compressed, N-dimensional zarr arrays within
+    the root group. To achieve the highest possible speed when writing data, the chunk size is aligned to the
+    tile size of the data.</p>
+<p>
+    Besides the chunked binary data, the data type, compression type, shape, chunk size, etc. are written to a
+    <span class="code">.zarray</span> file. <br><br>
+    <img src="../images/array_75.png"><br>
+    The meaning of the zarr specific values in the <span class="code">.zarray</span> file is explained in detail in
+    the documentation of the
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://zarr.readthedocs.io/en/stable/spec/v2.html#arrays">
+        <param name="text" value="<html><u>Python Zarr Array.</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object></p>
+<p>
+    Such zarr arrays also contain metadata that refers to the raster such as e.g. long_name,
+    wavelength and unit, valid_pixel_expression, flag mask meaning and description or offsets, etc<br>
+    See examples <a href="#examples">below</a>.</p>
+<p>
+    General information about how an array is stored can be found
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://jzarr.readthedocs.io/en/latest/tutorial.html#persistent-arrays">
+        <param name="text" value="<html><u>here.</u></html>">
+        <param name="textFontSize" value="12pt">
+    </object></p>
+
+<h3>Features</h3>
+<ul>
+    <!--    <li>-->
+    <!--        The ZNAP reader/writer works with a java path object as input and can read and write directly from-->
+    <!--        or into a cloud. Currently Snap is not yet able to connect to a cloud (e.g. Amazon AWS S3 Bucket). But if-->
+    <!--        this should be implemented in SNAP, ZNAP is immediately cloud ready.<br>-->
+    <!--        See example: <span class="code">https://jzarr.readthedocs.io/en/latest/amazonS3.html</span>-->
+    <!--    </li>-->
+    <li>
+        Raster data can be written compressed or uncompressed.<br>
+        Default is zlib compression with compression level 3.<br>
+        If you are using the SNAP application you will find a tab "ZNAP" in the Options dialog to switch
+        off compression or change the compression level.<br>
+        In case you use the writer in a command line application, you can start the application with the JVM argument
+        <span class="code">-Dznap.compressor.id=null</span> to disable compression or with the JVM argument
+        <span class="code">-Dznap.compression.level=X</span> to change the compression level. Valid value range
+        for <span class="code">X</span> is <span class="code">0-9</span>.
+    </li>
+    <li>
+        Instead of writing raster data as chunked zarr array, the data can be written using an already
+        available writer like ENVI or GeoTiff listed above.<br>
+        Warning! If this option is used, the writing speed can be dramatically decreased.
+        To switch the binary format you can use the options dialog, tab ZNAP, or you can use the JVM argument
+        <span class="code">-Dznap.binary.format=&lt;FORMATNAME&gt;</span>
+    </li>
+</ul>
+
+<h3>Command line JVM arguments</h3>
+<ul>
+    <li><b>znap.use.zip.archive</b><br>
+        Use <span class="code">-Dznap.use.zip.archive=&lt;value&gt;</span> to switch on/off zip archive writing.<br>
+        Valid values are <b>true</b> or <b>false</b>.
+    </li>
+    <li><b>znap.binary.format</b><br>
+        Use <span class="code">-Dznap.binary.format=&lt;value&gt;</span> to select the binary data format.<br>
+        Valid values are:
+        <ul>
+            <li>empty to select default</li>
+            <li><b>ENVI</b></li>
+            <li><b>GeoTIFF</b></li>
+            <li><b>GeoTIFF-BigTIFF</b></li>
+            <li><b>NetCDF4-CF</b></li>
+        </ul>
+    </li>
+    <li><b>znap.compressor.id</b><br>
+        Use <span class="code">-Dznap.compressor.id=&lt;value&gt;</span> to select the compressor for chunk compression.<br>
+        Valid values are <b>null</b> or <b>zlib</b>.
+    </li>
+    <li><b>znap.compression.level</b><br>
+        Use <span class="code">-Dznap.compression.level=&lt;value&gt;</span> to select the compression level.<br>
+        Valid only if <b>zlib</b> compressor is selected.<br>
+        Valid value range is <b>0 - 9</b>.
+    </li>
+</ul>
+
+<h3>
+    not yet implemented
+</h3>
+<h5>
+    Some parts of the data model may not yet supported in this beta version.
+</h5>
+<ul class="narrow">
+    <li>BasicPixelGeocoding</li>
+    <li>FXYGeoCoding</li>
+    <li>GcpGeoCoding</li>
+    <li>MapGeoCoding</li>
+    <li>
+        <ul>Image Information
+            <li>Statistics like min/max/mean/standardDeviation value</li>
+            <li>Color palette</li>
+            <li>Histogram</li>
+        </ul>
+    <li>Masks</li>
+    <li>Vector Data like pins, ground control points, other geometries</li>
+</ul>
+<p>
+    A persitstable layer is currently being prepared, which will allow developers to integrate their own
+    implementations of the data model, e.g. special implementations of geocoding, in this format without
+    having to know the format's internal structure.
+</p>
+<hr>
+
+<a name="examples"></a>
+<h3>Examples</h3>
+<p>
+    The following examples show snippets of <b>.zattrs</b> files.
+</p>
+<p>
+    Metadata example for an optical raster:<br>
+    <img src="../images/band_att_75.png"/>
+</p>
+<p>
+    Metadata example for flag raster data:<br>
+    <img src="../images/flag_att_75.png"/>
+</p>
+<p>
+    Metadata example for tie point raster data:<br>
+    <img src="../images/tie_point_att_75.png"/>
+</p>
+<hr>
+</body>
+</html>
