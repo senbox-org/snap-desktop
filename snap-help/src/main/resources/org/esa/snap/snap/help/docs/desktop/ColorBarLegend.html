@@ -119,7 +119,7 @@ all tools.</p>
 
 <ul>
     <li>
-        <b>Mode:</b> Sets the actual data values of the labels
+        <b>Label Value Mode:</b> Sets the actual data values of the labels
 
         <ul>
             <li>
@@ -169,6 +169,27 @@ all tools.</p>
         For example if "Trailing Decimal Places" is selected and "Decimal Places" = "2" then the raw data value "0.2"
         will be displayed as "0.20" instead of "0.2". (Note: does not apply to "Mode" = "Entered Values")
     </li>
+
+    <li>
+        <b>Weight Tolerance:</b>  Weight tolerance to keep desired auto-generated values on the ends of the color bar.
+        This is primarily needed when the color palette has been defined based on the statistics of the band (see the
+        Color Manipulation Tool for defining color palettes).  This is also needed if your palette has been defined
+        to a greater decimal precision than the request display "Decimal Places" of your color bar legend.
+
+        Color palettes defined based on the statistics of the band
+        will tend to have values which requires a lot of decimal places to display.  Subsequently when the points on the
+        color bar legend are auto-generated, the end-points can in many cases not actually be on the color bar due to rounding
+        caused by decimal point specification.  This weight tolerance enables the auto-generated end-point labels to stay on
+        the color bar.  For example a weight tolerance = ".01" would keep any labels on the color bar which are off by 1%
+        of the value spread across the min/max of the color bar.
+    </li>
+
+    <li>
+        <b>Auto-Fill Values Textfield:</b>  Auto-populate the values field with the generated values.  This is useful
+        is you wish to edit the auto-generated values, but it has the side effect of causing the other entry textfields
+        of the Color Bar Legend Tool entry form to be wide.
+    </li>
+
 </ul>
 
 

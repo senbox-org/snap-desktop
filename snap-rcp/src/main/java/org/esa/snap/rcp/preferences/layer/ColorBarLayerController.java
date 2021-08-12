@@ -88,6 +88,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_KEY, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
@@ -551,7 +552,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP)
         double weightTolerance = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT;
 
-
+        @Preference(label = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL,
+                key = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
+                description = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP)
+        boolean populateLabelValuesTextfield = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT;
 
 
         // Placement Location Section
