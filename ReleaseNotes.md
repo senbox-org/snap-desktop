@@ -1,17 +1,128 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.0
 
-# New in SNAP 8.0.0 
+The SNAP 9 release provides several new tools and features and also bug fixes to the users. The noteworthy news are
+highlighted in the following sections. For the full list of changes check our issue
+tracker: https://bit.ly/snap9_changelog
+
+### Improved Colour Manipulation Tool
+
+Our friends from the NASA OBPG who develop SeaDAS, have improved the Colour Manipulation Tool. Some points which have
+been enhanced are:
+
+* Auto-applied color schemes based on a band-name lookup (configurable in preferences)
+* Palette reversal capability
+* Color Manipulation preferences page
+* Some new RGB profiles and Colour Palettes
+* New auto-range adjustment buttons
+
+### New ZNAP Data Format.
+
+With SNAP 8, we provided a first look on the newly developed data format. Now we are considering it as feature complete.
+This new format shall replace the BEAM-DIMAP format as SNAPs default format. For now BEAM-DIMAP is still the default.
+The ZNAP format has some benefits. Smaller footprint on disk, faster writing, and it uses a single file or directory for
+storing the data. As format for the binary data Zarr is used by default. This allows Python developer to read the data
+easily with Xarray, for example. Even binary data format can be configured and GeoTiff or NetCDF can be used to store
+the binary data.
+
+### Sentinel-3 Toolbox
+
+The Sentinel-3 Toolbox offers some new operators which are mainly dedicated for the preprocessing of Sentinel-3 data.
+There is the OLCI Anomaly Detection operator which can detect and flag anomalous pixels, an operator which harmonises
+the data of OLCI A and B and an operator which can perform Dark Object Subtraction (DOS) on optical data.  
+For OLCI L2 Land and Water data the Quality Working Group (QWG) have defined recommended flags. They are now
+incorporated in the products as masks and should be considered when using the data. In addition an operators is now
+available which makes MERIS 4th reprocessing data data compatible with already existing operators. This allows to use
+the new data set with older operators. In SNAP8 the pixel-based geo-coding has been reimplemented, in this release
+further improvements have been achieved. Now the Sentinel-3 data uses the pixel-based geo-coding by default and not the
+tie-points anymore.
+
+### Resolved Issues
+
+    [SNAP-1474] Consider write option for ADS when writing NetCDF4-BEAM
+    [SNAP-1461] Subset operator: computed spatial region are different for the same original resolution
+    [SNAP-1454] DEM download certificateexception: no subject alternative dns name
+    [SNAP-1450] Masks of type Geometry not stored in BEAM-DIMAP
+    [SNAP-1429] Writing is getting slow after some time for huge data products
+    [SNAP-1428] The homepage URL is wrongly generated
+    [SNAP-1427] JP2 reader - inconsistency between Int16 and UInt16
+    [SNAP-1419] Subset fails for very small areas
+    [SNAP-1414] Scatter plot fails if bands use different tiling
+    [SNAP-1406] Reading Merra data from NetCDF fails
+    [SNAP-1387] Missing pixels after reprojection when using pixel-based geo-coding
+    [SNAP-1383] SRTM download URL not working
+    [SNAP-1382] Missing tiles in image view
+    [SNAP-1379] Opening BigGeoTiff file results in ArrayIndexOutOfBoundsException
+    [SNAP-1377] Discontinuity information is not correctly stored in DIMAP
+    [SNAP-1374] NullPointerException is thrown in Mosaic GUI
+    [SNAP-1370] If multiple products shall be closed only one is closed
+    [SNAP-1369] Vector data cannot be restored from BEAM-DIMAP
+    [SNAP-1367] Azul JDK does not include fonts
+    [SNAP-1365] In Reprojection always nearest neighbour resampling is used
+    [SNAP-1358] Data not correctly written to DIMAP
+    [SNAP-1355] In certain edge cases the WriteOp writes data wrong
+    [SNAP-1331] Coordinates are not imported correctly
+    [SNAP-1301] Error creating product subset using Subset operator
+    [SNAP-1267] Super-sampling has no effect in binning
+    [SNAP-1167] Geotiff writer geocoding is using wrong geocoding in some cases
+    [SNAP-1072] Update SVVP wiki page
+    [SNAP-1057] Make land/sea mask compatible with multi-size products
+    [SNAP-611] S2 Masks can't be used in Band Math in Graph Builder
+    [SNAP-1464] Set only GCP and Pin layer to visible by default
+    [SNAP-1462] Improve JAI tile cache handling when writing data
+    [SNAP-1456] Support ASTER v3
+    [SNAP-1449] Allow whitespaces for array parameter values
+    [SNAP-1444] Improve memory consumption by GraphProcessor
+    [SNAP-1443] Geocoding interpolating property should be taken into account in persistables
+    [SNAP-1438] Improvement of Colour Manipulation Tool
+    [SNAP-1437] Geo-coding information not displayed when product uses band-wise geo-coding
+    [SNAP-1436] JP2 reader - use shorter file names for decompressed tiles
+    [SNAP-1435] Product Library - Scientific Data Hub : API URL changed
+    [SNAP-1434] URLs to the updatecenter to use HTTPS
+    [SNAP-1411] Product Library - Scientific Data Hub : Too Many Requests
+    [SNAP-1410] Product Library - USGS : response format changed
+    [SNAP-1405] Product Library - Amazon Web Services - S2 "requester pays" bucket
+    [SNAP-1401] Enable lookup tables with decreasing coordinate axis values
+    [SNAP-1400] JP2 reader - GML metadata for EPSG:4326
+    [SNAP-1385] Product Library - Alaska Satellite Facility : add relative orbit number in search results for SAR sensors
+    [SNAP-1384] Product Library - Scientific Data Hub : add relative orbit number in search results for SAR sensors
+    [SNAP-1376] Use lazy loading for tie-points in DIMAP
+    [SNAP-1359] Product Library database should allow multiple connections
+    [SNAP-1357] BMP should not be the default format when exporting images
+    [SNAP-1354] The supported Python versions should be updated in the installer
+    [SNAP-1315] All help material shall be revised
+    [SNAP-1194] Provide a SNAP Core only installer and server only installers
+    [SNAP-1193] Service loading should be done in background task
+    [SNAP-1091] Update Install4J version
+    [SNAP-1029] Improve visual analysis of the images
+    [SNAP-1028] Improve status bar
+    [SNAP-981] Improve resampling operator
+    [SNAP-980] Improve the integration and generalisation of the existing Mosaicking operators
+    [SNAP-979] Make the "Transfer Mask" action compatible with multi-size products.
+    [SNAP-970] Make the Binning operator compatible with multi-size products.
+    [SNAP-758] Clean up operator descriptions
+    [SNAP-613] Support "Use CRS of" in Reprojection operator in Graph Builder
+    [SNAP-1386] Mean aggregator for binning operator
+    [SNAP-1381] Improve Graph Editor in a new Graph Builder extension
+    [SNAP-1031] Implement tools for change detection
+    [SNAP-520] RGB profile shall support min and max value for each channel
+    [SNAP-1442] Evaluate effort to replace ZipFileSystem in Alos2GeoTiffProductReaderPlugIn
+    [SNAP-1215] Write a System Design Document (SDD)
+    [SNAP-1206] Collocation of multiple products (S1, S2 or S3) shall be documented
+    [SNAP-1187] Execute unit tests also on Windows platform
+    [SNAP-1051] Investigate the possibility of SNAP becoming one of the OSGeo projects
+
+# New in SNAP 8.0.0
 
 In this release the development teams worked on general features like remote access of data, data processing,  
-IO performance and the memory management. Also, sensor specific improvements and features have been implemented. 
-Noteworthy is also that we will drop the support for Python 2.7 for snappy with the next release. With version 9 of 
-SNAP, a Python 3 environment will be required. 
-Here we just highlight the main improvements. Check out the full list of issues (>200) solved for SNAP 8 in our issue 
-database: https://bit.ly/SNAP8_changelog
+IO performance and the memory management. Also, sensor specific improvements and features have been implemented.
+Noteworthy is also that we will drop the support for Python 2.7 for snappy with the next release. With version 9 of
+SNAP, a Python 3 environment will be required. Here we just highlight the main improvements. Check out the full list of
+issues (>200) solved for SNAP 8 in our issue database: https://bit.ly/SNAP8_changelog
 
-## Performance improvements
+### Performance improvements
 In order to increase the performance of SNAP and improve the user experience some tasks have been performed.
 The reading and writing performance of the BEAM-DIMAP format has been significantly improved. In some cases opening an 
 image in SNAP took up to 5 minutes. Now, it only  takes seconds. Similar magnitude of improvement has been 
@@ -19,7 +130,8 @@ achieved for the writing.
 A first experimental step has also been made to lower the memory consumption. An experimental Tile Cache Operator has 
 been implemented which gives more control of the memory usage. Please see the separate topic below for more details.
 
-## Reworked Product Library 
+### Reworked Product Library
+
 The Product Library has been upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
 In addition, the display / interaction of / with product frames or quicklooks can be done on a 3D visualisation of Earth (NASA WorldWind).
 The possibility to access (and search for) remote data was introduced by regarding remote data sources as independent SNAP plugins.
@@ -31,12 +143,12 @@ New remote data repositories were added:
     * Alaska Satellite Facility (ASF): for Sentinel-1 and ALOS data
     * US Geological Survey (USGS): for Landsat-8 data
 
-## Windowed Reading of Products
+### Windowed Reading of Products
 Allows specifying a window (spatial subset) of either pixel coordinates or geographical coordinates, so that,
 instead of first opening a full product and then subsetting it to a region of interest,
 the reader will open directly the region of interest as a full-fledged product.
 
-## New NetCDF Library Version
+### New NetCDF Library Version
 We now use version 5.3 of the NetCDF library. If you use the NetCDF API directly exposed through SNAP you might be 
 interested in the changes of the library.
 You can check the documentation provided by unidata at https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html. 
@@ -44,40 +156,39 @@ A specific migration guide is provided (https://docs.unidata.ucar.edu/netcdf-jav
 We also removed the support for writing NetCDF3. They can still be read but not written anymore. If you still used the 
 old format names 'NetCDF-CF' or 'NetCDF-BEAM' you should switch to NetCDF-CF or NetCDF-BEAM. You will benefit from 
 smaller file sizes. 
-  
-## New Reimplemented GeoCoding
+
+### New Reimplemented GeoCoding
 The pixel-based GeoCoding had some issues in the past. It was slow, and in some situations it just didn't work and 
 produced artifacts. These problems affect especially Sentinel-3 data. With SNAP 8 we now use a new implementation. 
 While it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
 
-## Experimental Tile Cache Operator
+### Experimental Tile Cache Operator
 To further improve the memory management, especially during data processing, we introduced a special operator which can 
 be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general cache 
 is disabled the amount of used memory can be reduced. The idea is that the cache memory is done automatically in the 
 long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback too. 
 More information can be found in the wiki. https://senbox.atlassian.net/wiki/x/VQCTLw 
 
-## Sensor specific improvements by Toolboxes
+### Sensor specific improvements by Toolboxes
 Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
 Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
 
-## New Internal Default Data Format.
+### New Internal Default Data Format.
 With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just 
 provide a BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system 
 or for operational services. But we would like to get your feedback on this new development, to further improve it. 
 More information will be provided with the release of the plugin.
 
-## Known Issues
+### Known Issues
 
-### SRTM 3 sec DEM
+#### SRTM 3 sec DEM
 During testing we observed sometimes wrong values provided by the SRTM data.
 Instead of the expected elevation the DEM is rturning the elevation of an adjacent pixel.
 This is not always happening but depends on the download and on the operating system.
 It has been only observed on latest Unix systems. Deleting and redownloading the DEM file 
 often helped to get the right values. For more information and updates on this issue please see https://senbox.atlassian.net/browse/SNAP-1344
 
-
-## Resolved Issues
+### Resolved Issues
     [SNAP-356] Products with PixelGeoCoding extremely slow to open
     [SNAP-494] BigGeoTiff writer should use compression by default.
     [SNAP-791] Write operator writes data more efficiently then ProductIO
