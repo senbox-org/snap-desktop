@@ -94,7 +94,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     };
 
 
-
     // Make different keys for export parameters so it doesn't affect color bar layer
     // Keys named differently from preferences to not overwrite preferences
 
@@ -111,6 +110,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_LABEL_VALUES_MODE_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_COUNT_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_ACTUAL_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY + ".export";
+    private static final String PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY2 = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_SCALING_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY + ".export";
     private static final String PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2 = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY + ".export";
@@ -171,13 +171,13 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private static final String PROPERTY_EXPORT_USE_BW_COLOR_KEY2 = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY + ".export";
 
 
-
     private SnapFileFilter[] imageFileFilters;
 
     private ParamGroup legendParamGroup;
     private ImageLegend imageLegend;
     private boolean showEditorFirst;
     private boolean blackWhiteColor;
+    private boolean populateLabelValuesTextfield;
     private int legendWidth;
     private boolean useLegendWidth;
     private boolean discrete;
@@ -230,6 +230,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         blackWhiteColor = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY,
                 ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT);
+
+        populateLabelValuesTextfield = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
+                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
 
         useLegendWidth = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
                 ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT);
@@ -312,21 +315,26 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             }
 
             // this will initialize the custom label values
-            String distributionTypeOriginal = imageLegend.getDistributionType();
+            if (populateLabelValuesTextfield) {
+                String distributionTypeOriginal = imageLegend.getDistributionType();
 
 
-            if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
-                if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
-                    imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
+                if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionTypeOriginal)) {
+                    if (imageLegend.getCustomLabelValues() == null || imageLegend.getCustomLabelValues().length() == 0) {
+                        imageLegend.setDistributionType(ColorBarLayerType.DISTRIB_EVEN_STR);
+                    }
                 }
+
+                imageLegend.setLayerScaling(100.0);
+
+                imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
+
+                imageLegend.setDistributionType(distributionTypeOriginal);
             }
 
-            imageLegend.setLayerScaling(100.0);
 
-            imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
-            imageLegend.setDistributionType(distributionTypeOriginal);
 
-            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor, useLegendWidth, legendWidth);
+            legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor, populateLabelValuesTextfield, useLegendWidth, legendWidth);
 
 
             updateEnablement();
@@ -381,7 +389,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         return true;
     }
 
-    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener, boolean blackWhiteColor, boolean useLegendWidth, int legendWidth) {
+    private static ParamGroup createLegendParamGroup(ImageLegend imageLegend, ParamChangeListener paramChangeListener, boolean blackWhiteColor, boolean populateLabelValuesTextfield, boolean useLegendWidth, int legendWidth) {
 
         ParamGroup paramGroup = new ParamGroup();
         Parameter param;
@@ -392,7 +400,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_EXPORT_USE_BW_COLOR_KEY2, blackWhiteColor);
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_LABEL);
         paramGroup.addParameter(param);
-
 
 
         // Title and Units Text
@@ -408,7 +415,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
-
 
 
         // Orientation
@@ -436,8 +442,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
         // Tick Label Values
 
         param = new Parameter(PROPERTY_LABEL_VALUES_MODE_KEY2, imageLegend.getDistributionType());
@@ -457,8 +461,18 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param.addParamChangeListener(paramChangeListener);
         paramGroup.addParameter(param);
 
+        String labelValuesPreferencesDefault = "";
+        if (populateLabelValuesTextfield) {
+            labelValuesPreferencesDefault = imageLegend.getCustomLabelValues();
+        }
         param = new Parameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2, imageLegend.getCustomLabelValues());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
+        paramGroup.addParameter(param);
+
+
+        param = new Parameter(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY2, populateLabelValuesTextfield);
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL);
+        param.addParamChangeListener(paramChangeListener);
         paramGroup.addParameter(param);
 
         param = new Parameter(PROPERTY_LABEL_VALUES_SCALING_KEY2, imageLegend.getScalingFactor());
@@ -484,9 +498,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_WEIGHT_TOLERANCE_KEY2, imageLegend.getWeightTolerance());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_LABEL);
         paramGroup.addParameter(param);
-
-
-
 
 
         // Image Scaling Section
@@ -515,10 +526,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
-
-
         // Title Section
 
         param = new Parameter(PROPERTY_TITLE_SHOW_KEY2, imageLegend.isShowTitle());
@@ -544,10 +551,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
-
-
         param = new Parameter(PROPERTY_TITLE_FONT_NAME_KEY2, imageLegend.getTitleFontName());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.FONT_NAME_SANSERIF,
@@ -561,8 +564,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_TITLE_COLOR_KEY2, imageLegend.getTitleColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL);
         paramGroup.addParameter(param);
-
-
 
 
         // Units Section
@@ -589,7 +590,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
         param = new Parameter(PROPERTY_UNITS_FONT_NAME_KEY2, imageLegend.getUnitsFontName());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.FONT_NAME_SANSERIF,
@@ -602,7 +602,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_UNITS_FONT_COLOR_KEY2, imageLegend.getUnitsColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL);
         paramGroup.addParameter(param);
-
 
 
         // Tick-Mark Labels Section
@@ -630,8 +629,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
         param = new Parameter(PROPERTY_LABELS_FONT_NAME_KEY2, imageLegend.getLabelsFontName());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL);
         param.getProperties().setValueSet(new String[]{ColorBarLayerType.FONT_NAME_SANSERIF,
@@ -645,8 +642,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_LABELS_FONT_COLOR_KEY2, imageLegend.getLabelsColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL);
         paramGroup.addParameter(param);
-
-
 
 
         // Tickmarks Section
@@ -669,7 +664,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
         // Backdrop Section
 
         param = new Parameter(PROPERTY_BACKDROP_SHOW_KEY2, imageLegend.isBackdropShow());
@@ -689,7 +683,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
         // Palette Border Section
 
         param = new Parameter(PROPERTY_PALETTE_BORDER_SHOW_KEY2, imageLegend.isBorderShow());
@@ -703,7 +696,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         param = new Parameter(PROPERTY_PALETTE_BORDER_COLOR_KEY2, imageLegend.getBorderColor());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_LABEL);
         paramGroup.addParameter(param);
-
 
 
         // Legend Border Section
@@ -721,11 +713,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         paramGroup.addParameter(param);
 
 
-
-
         return paramGroup;
     }
-
 
 
     private ParamChangeListener createParamChangeListener() {
@@ -738,7 +727,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     }
 
 
-
     private void updateUIState(String parameterName) {
 
         if (PROPERTY_LABEL_VALUES_MODE_KEY2.equals(parameterName) || PROPERTY_LABEL_VALUES_COUNT_KEY2.equals(parameterName)) {
@@ -748,7 +736,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 if (imageLegend.getDistributionType() == null || !imageLegend.getDistributionType().equals(distributionType)) {
                     imageLegend.setDistributionType((String) distributionType);
                 }
-
 
                 if (ColorBarLayerType.DISTRIB_EVEN_STR.equals(distributionType)) {
                     Object tickMarkCount = legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).getValue();
@@ -761,10 +748,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 useLegendWidth = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
                 legendWidth = (Integer) legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).getValue();
                 imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
-                legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
             }
 
             updateEnablement();
+        }
+
+
+        populateLabelValuesTextfield = (Boolean) legendParamGroup.getParameter(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY2).getValue();
+        if (populateLabelValuesTextfield) {
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setValue(imageLegend.getCustomLabelValues(), null);
         }
 
 
@@ -822,9 +814,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setLayerScaling(100.0);
 
 
-
-
-
         // Title and Units Text
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_TEXT_KEY2).getValue();
@@ -832,7 +821,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_UNITS_TEXT_KEY2).getValue();
         imageLegend.setUnitsText((String) value);
-
 
 
         // Orientation
@@ -850,7 +838,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY2).getValue();
         imageLegend.setReversePalette((Boolean) value);
-
 
 
         // Tick Label Values
@@ -878,15 +865,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setWeightTolerance((Double) value);
 
 
-
-
         // Image Scaling Section
         value = legendParamGroup.getParameter(PROPERTY_COLORBAR_LENGTH_KEY2).getValue();
         imageLegend.setColorBarLength((Integer) value);
 
         value = legendParamGroup.getParameter(PROPERTY_COLORBAR_WIDTH_KEY2).getValue();
         imageLegend.setColorBarWidth((Integer) value);
-
 
 
         // Title Section
@@ -906,7 +890,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_COLOR_KEY2).getValue();
         imageLegend.setTitleColor((Color) value);
-
 
 
         // Units Section
@@ -929,14 +912,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setUnitsColor((Color) value);
 
 
-
         // Tick-Mark Labels Section
         value = legendParamGroup.getParameter(PROPERTY_LABELS_SHOW_KEY2).getValue();
         imageLegend.setLabelsShow((Boolean) value);
 
         value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_SIZE_KEY2).getValue();
         imageLegend.setLabelsFontSize((Integer) value);
-
 
 
         boolean labelsFontBold = (Boolean) legendParamGroup.getParameter(PROPERTY_LABELS_FONT_BOLD_KEY2).getValue();
@@ -949,8 +930,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_LABELS_FONT_COLOR_KEY2).getValue();
         imageLegend.setLabelsColor((Color) value);
-
-
 
 
         // Tickmarks Section
@@ -967,7 +946,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setTickmarkColor((Color) value);
 
 
-
         // Backdrop Section
         value = legendParamGroup.getParameter(PROPERTY_BACKDROP_SHOW_KEY2).getValue();
         imageLegend.setBackdropShow((Boolean) value);
@@ -977,7 +955,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_BACKDROP_COLOR_KEY2).getValue();
         imageLegend.setBackdropColor((Color) value);
-
 
 
         // Palette Border Section
@@ -991,7 +968,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         imageLegend.setBorderColor((Color) value);
 
 
-
         // Legend Border Section
         value = legendParamGroup.getParameter(PROPERTY_LEGEND_BORDER_SHOW_KEY2).getValue();
         imageLegend.setBackdropBorderShow((Boolean) value);
@@ -1001,9 +977,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         value = legendParamGroup.getParameter(PROPERTY_LEGEND_BORDER_COLOR_KEY2).getValue();
         imageLegend.setBackdropBorderColor((Color) value);
-
-
-
 
 
         // Override all the colors if requested
@@ -1017,7 +990,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             imageLegend.setBorderColor(Color.BLACK);
             imageLegend.setBackdropBorderColor(Color.WHITE);
         }
-
 
 
     }
@@ -1049,6 +1021,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter distributionTypeParam;
         private Parameter numberOfTicksParam;
         private Parameter labelValuesActualParam;
+        private Parameter populateLabelValuesTextfieldParam;
         private Parameter labelValuesScalingParam;
         private Parameter labelValuesDecimalPlacesParam;
         private Parameter labelValuesForceDecimalPlacesParam;
@@ -1108,10 +1081,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter legendBorderColorParam;
 
 
-
-
-
-
         public ImageLegendDialog(ParamGroup paramGroup, ImageLegend imageLegend,
                                  boolean transparencyEnabled, String helpId) {
             super(SnapApp.getDefault().getMainFrame(), SnapApp.getDefault().getInstanceName() + " - " + ColorBarLayerType.COLOR_BAR_LEGEND_NAME, ID_OK_CANCEL_HELP, helpId);
@@ -1135,10 +1104,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //            unitsTextParam.setUIEnabled(unitsTextEnabled);
 
 
-
             // Colors Override
             boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
-
 
 
             // Title Section
@@ -1156,8 +1123,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             unitsItalicParam.setUIEnabled(unitsShowParamEnabled);
             unitsFontSizeParam.setUIEnabled(unitsShowParamEnabled);
             unitsFontNameParam.setUIEnabled(unitsShowParamEnabled);
-
-
 
 
             // Tick-Mark Labels Section
@@ -1192,8 +1157,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             boolean legendBorderShowParamEnabled = (Boolean) legendBorderShowParam.getValue();
             legendBorderWidthParam.setUIEnabled(legendBorderShowParamEnabled);
             legendBorderColorParam.setUIEnabled(legendBorderShowParamEnabled && !bwColorOverride);
-
-
 
 
             String orientation = (String) orientationParam.getValue();
@@ -1317,6 +1280,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             labelValuesActualParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
 
             gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(populateLabelValuesTextfieldParam.getEditor().getEditorComponent(), gbc);
+            populateLabelValuesTextfieldParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP);
+
+
+            gbc.gridy++;
             gbc.gridwidth = 1;
             p.add(labelValuesScalingParam.getEditor().getLabelComponent(), gbc);
             p.add(labelValuesScalingParam.getEditor().getEditorComponent(), gbc);
@@ -1341,7 +1310,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(weightToleranceParam.getEditor().getEditorComponent(), gbc);
             weightToleranceParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
             weightToleranceParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
-
 
 
             // Image Scaling Section
@@ -1377,9 +1345,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(colorbarWidthParam.getEditor().getEditorComponent(), gbc);
             colorbarWidthParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP);
             colorbarWidthParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP);
-
-
-
 
 
             // Title Section
@@ -1425,8 +1390,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(titleColorParam.getEditor().getEditorComponent(), gbc);
             titleColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
             titleColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP);
-
-
 
 
             // Units Section
@@ -1475,7 +1438,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             unitsColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP);
 
 
-
             // Tick-Mark Labels Section
 
             gbc.gridy++;
@@ -1522,7 +1484,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             labelsColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP);
 
 
-
             // Tickmarks Section
 
             gbc.gridy++;
@@ -1560,39 +1521,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
-
-            // Backdrop Section
-
-            gbc.gridy++;
-            gbc.gridwidth = 2;
-            JLabel backdropSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL);
-            backdropSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
-            p.add(backdropSectionLabel, gbc);
-
-            gbc.gridy++;
-            gbc.gridwidth = 2;
-            p.add(backdropShowParam.getEditor().getEditorComponent(), gbc);
-            backdropShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
-
-            gbc.gridy++;
-            gbc.insets.top = 5;
-            gbc.gridwidth = 1;
-            p.add(backgroundTransparencyParam.getEditor().getLabelComponent(), gbc);
-            p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
-            backgroundTransparencyParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
-            backgroundTransparencyParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
-
-
-            gbc.gridy++;
-            gbc.gridwidth = 1;
-            p.add(backdropColorParam.getEditor().getLabelComponent(), gbc);
-            p.add(backdropColorParam.getEditor().getEditorComponent(), gbc);
-            backdropColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
-            backdropColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
-
-
-
-
             // Palette Border Section
 
             gbc.gridy++;
@@ -1619,6 +1547,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             p.add(paletteBorderColorParam.getEditor().getEditorComponent(), gbc);
             paletteBorderColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
             paletteBorderColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TOOLTIP);
+
 
 
             // Legend Border Section
@@ -1650,6 +1579,37 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
 
+
+            // Backdrop Section
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            JLabel backdropSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL);
+            backdropSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP);
+            p.add(backdropSectionLabel, gbc);
+
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            p.add(backdropShowParam.getEditor().getEditorComponent(), gbc);
+            backdropShowParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP);
+
+            gbc.gridy++;
+            gbc.insets.top = 5;
+            gbc.gridwidth = 1;
+            p.add(backgroundTransparencyParam.getEditor().getLabelComponent(), gbc);
+            p.add(backgroundTransparencyParam.getEditor().getEditorComponent(), gbc);
+            backgroundTransparencyParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
+            backgroundTransparencyParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP);
+
+
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(backdropColorParam.getEditor().getLabelComponent(), gbc);
+            p.add(backdropColorParam.getEditor().getEditorComponent(), gbc);
+            backdropColorParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
+            backdropColorParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP);
+
+
             // Colors Override Section
 
             gbc.gridy++;
@@ -1663,10 +1623,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 2;
             p.add(bwColorOverrideParam.getEditor().getEditorComponent(), gbc);
             bwColorOverrideParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_TOOLTIP);
-
-
-
-
 
 
             p.setBorder(new EmptyBorder(7, 7, 7, 7));
@@ -1703,10 +1659,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-
-
-
-
         private void initParams() {
 
             // Title and Units Text
@@ -1724,6 +1676,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             distributionTypeParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_MODE_KEY2);
             numberOfTicksParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2);
             labelValuesActualParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2);
+            populateLabelValuesTextfieldParam = paramGroup.getParameter(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY2);
             labelValuesScalingParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_SCALING_KEY2);
             labelValuesDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2);
             labelValuesForceDecimalPlacesParam = paramGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2);
@@ -1753,7 +1706,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             unitsItalicParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_ITALIC_KEY2);
             unitsFontNameParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_NAME_KEY2);
             unitsColorParam = paramGroup.getParameter(PROPERTY_UNITS_FONT_COLOR_KEY2);
-
 
 
             // Tick-Mark Labels Section
@@ -1788,7 +1740,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             legendBorderShowParam = paramGroup.getParameter(PROPERTY_LEGEND_BORDER_SHOW_KEY2);
             legendBorderWidthParam = paramGroup.getParameter(PROPERTY_LEGEND_BORDER_WIDTH_KEY2);
             legendBorderColorParam = paramGroup.getParameter(PROPERTY_LEGEND_BORDER_COLOR_KEY2);
-
 
 
             // Colors Override Section
@@ -1842,7 +1793,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-        private static  JLabel sectionBreak(String title) {
+        private static JLabel sectionBreak(String title) {
             return new JLabel(ColorBarLayerType.DASHES + " " + title + " " + ColorBarLayerType.DASHES);
         }
 

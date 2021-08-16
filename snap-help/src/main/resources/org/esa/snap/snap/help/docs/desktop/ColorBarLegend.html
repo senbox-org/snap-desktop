@@ -34,6 +34,10 @@
     page is available which governs both of these tools.   (Note: color bars can only be created for non-RGB images.)
 </p>
 
+<p>The 3 Tools ("Color Bar Legend Layer Tool", "Color Bar Legend Export Tool", and "Color Bar Legend Preferences") all share almost the same fields
+    so they are all consolidated here in this single help page, with notation regarding any fields which not applicable to
+    all tools.</p>
+
 <p><b>Color Bar Legend Layer Tool:</b> To add a Color Bar Layer, toggle the color bar Layer Tool select "/Layer/Color Bar Legend".  The "Layer Editor" is used
     for editing the Color Bar parameters (inside the Layer Manager click "ColorBar" and then the pencil icon).
 </p>
@@ -41,19 +45,18 @@
 <p><b>Color Bar Legend Export Tool:</b> To open the color bar Export Tool select "/File/Export/Other/Color Bar Legend" or from with the scene image right-click
     and select "Color Bar Legend"
 </p>
-
-<p><b>Color Bar Legend Preferences:</b> To open the color bar legend preferences window select "/Tools/Options/Color Bar Legend"
-    from the main menu (Note: this may be located instead in File/Preferences on the Mac).
-</p>
-
 <p>
     For the Color Bar File Export tool, if a Color Bar layer already exists, then the Color Bar Export Tool will use the
     same initial settings as the layer image.  If there is no layer then the initial settings come from the preferences.
 </p>
 
-<p>The 3 Tools ("Color Bar Legend Layer Tool", "Color Bar Legend Export Tool", and "Color Bar Legend Preferences") all share almost the same fields
-so they are all consolidated here in this single help page, with notation regarding any fields which not applicable to
-all tools.</p>
+<p><b>Color Bar Legend Preferences:</b> To open the color bar legend preferences window select "/Tools/Options/Color Bar Legend"
+    from the main menu (Note: this may be located instead in File/Preferences on the Mac).
+</p>
+
+
+
+
 
 <br>
 <hr>
@@ -152,6 +155,13 @@ all tools.</p>
         "{NUMBER}:{TEXT}, NUMBER:{TEXT}", <i>(For example "Label Values" = "0.01:low, 1.0:medium, 20.0:high")</i>
     </li>
 
+
+    <li>
+        <b>Auto-Fill Label Values Textfield:</b>  Auto-populate the Label Values field with the generated values.  This is useful
+        is you wish to edit the auto-generated values, but it has the side effect of causing the other entry textfields
+        of the Color Bar Legend Tool entry form to be wide.
+    </li>
+
     <li>
         <b>Label Scaling:</b>  A multiplier to apply to the displayed label value.  Note that using
         a value not equal to "1.0" will essentially change your units and you may wish to adjust
@@ -184,11 +194,6 @@ all tools.</p>
         of the value spread across the min/max of the color bar.
     </li>
 
-    <li>
-        <b>Auto-Fill Values Textfield:</b>  Auto-populate the values field with the generated values.  This is useful
-        is you wish to edit the auto-generated values, but it has the side effect of causing the other entry textfields
-        of the Color Bar Legend Tool entry form to be wide.
-    </li>
 
 </ul>
 
@@ -374,29 +379,6 @@ all tools.</p>
     </li>
 </ul>
 
-
-
-<br><hr><h4>Backdrop</h4><br>
-
-<p>These fields specify the formatting to apply to the backdrop (background of full image).</p>
-
-<ul>
-    <li>
-        <b>Show Backdrop:</b> Whether or not to display the backdrop on the color bar legend image.
-    </li>
-
-    <li>
-        <b>Backdrop Trans:</b> Transparency of each the backdrop.
-    </li>
-
-    <li>
-        <b>Backdrop Color:</b> Color of the backdrop.
-    </li>
-</ul>
-
-
-
-
 <br><hr><h4>Palette Border</h4><br>
 
 <p>These fields specify the formatting to apply to the palette border (the border around the color bar, not
@@ -404,17 +386,18 @@ all tools.</p>
 
 <ul>
     <li>
-        <b>Show Palette Border:</b> Whether or not to display the palette border.
+        <b>Show Palette Border:</b> Display a border around the palette (color bar) image.
     </li>
 
     <li>
-        <b>Border Width:</b> Width (in pixels) of each the palette border.
+        <b>Palette Border Width:</b> Width of palette (color bar) border line.
     </li>
 
     <li>
-        <b>Border Color:</b> Color of the palette border.
+        <b>Border Color:</b> Color of the palette (color bar) border line.
     </li>
 </ul>
+
 
 
 
@@ -430,11 +413,30 @@ all tools.</p>
     </li>
 
     <li>
-        <b>Legend Width:</b> Width (in pixels) of each the legend border.
+        <b>Legend Width:</b> Width of border line around the full legend.
     </li>
 
     <li>
-        <b>Legend Color:</b> Color of the legend border.
+        <b>Legend Color:</b> Color of the border line around the full legend.
+    </li>
+</ul>
+
+
+<br><hr><h4>Legend Backdrop</h4><br>
+
+<p>These fields specify the formatting to apply to the legend backdrop (background of full image).</p>
+
+<ul>
+    <li>
+        <b>Show Backdrop:</b> Whether or not to display the backdrop on the color bar legend image.
+    </li>
+
+    <li>
+        <b>Backdrop Trans:</b> Transparency of the legend backdrop.
+    </li>
+
+    <li>
+        <b>Backdrop Color:</b> Color of the legend backdrop.
     </li>
 </ul>
 

@@ -64,6 +64,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesMode();
         addLabelValuesCount();
         addLabelValuesActual();
+        addAutoPopulateLabelValues();
         addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
         addLabelValuesForceDecimalPlaces();
@@ -124,14 +125,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addTickMarksColor();
 
 
-        // Backdrop Section
-        addBackdropSectionBreak();
-        addBackdropShow();
-        addBackdropTransparency();
-        addBackdropColor();
-
-
-
         // Palette Border Section
         addPaletteBorderSectionBreak();
         addPaletteBorderShow();
@@ -145,6 +138,12 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLegendBorderWidth();
         addLegendBorderColor();
 
+
+        // Backdrop Section
+        addBackdropSectionBreak();
+        addBackdropShow();
+        addBackdropTransparency();
+        addBackdropColor();
 
 
 
@@ -1084,6 +1083,17 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(pd);
     }
 
+
+    private void  addAutoPopulateLabelValues() {
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, PROPERTY_POPULATE_VALUES_TEXTFIELD_TYPE);
+        pd.setDefaultValue(PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
+        pd.setDisplayName(PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL);
+        pd.setDescription(PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(true);
+        addPropertyDescriptor(pd);
+    }
 
 
 }

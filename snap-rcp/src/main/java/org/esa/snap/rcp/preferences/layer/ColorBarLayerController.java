@@ -84,11 +84,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
         labelValuesModeProperty = initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_KEY, ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
@@ -383,10 +383,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         context.bindEnabledState(ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY, ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY);
 
 
-        // Backdrop Section
-        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
-        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
-
 
         // Palette Border Section
         context.bindEnabledState(ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY);
@@ -396,6 +392,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
         // Legend Border Section
         context.bindEnabledState(ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY);
         context.bindEnabledState(ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY);
+
+
+        // Backdrop Section
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
+        context.bindEnabledState(ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY, ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY);
 
 
 
@@ -529,6 +530,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP)
         String labelValuesActual = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL,
+                key = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
+                description = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP)
+        boolean populateLabelValuesTextfield = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT;
+
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP,
@@ -552,10 +558,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_TOOLTIP)
         double weightTolerance = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL,
-                key = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
-                description = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP)
-        boolean populateLabelValuesTextfield = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT;
 
 
         // Placement Location Section
@@ -844,29 +846,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        // Backdrop Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
-        boolean backdropSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP)
-        boolean backdropShow = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP)
-        double backdropTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
-        Color backdropColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
-
-
 
 
         // Palette Border
@@ -894,6 +873,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+
+
         // Legend Border
 
         @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_LABEL,
@@ -915,6 +896,31 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TOOLTIP)
         Color legendBorderColor = ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT;
+
+
+
+        // Backdrop Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_SECTION_TOOLTIP)
+        boolean backdropSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TOOLTIP)
+        boolean backdropShow = ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TOOLTIP)
+        double backdropTransparency = ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TOOLTIP)
+        Color backdropColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
+
 
 
 
