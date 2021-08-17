@@ -774,18 +774,31 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         if (ColorBarLayerType.DISTRIB_MANUAL_STR.equals(distributionType)) {
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(true);
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_WEIGHT_TOLERANCE_KEY2).setUIEnabled(false);
         } else if (ColorBarLayerType.DISTRIB_EXACT_STR.equals(distributionType)) {
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(false);
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(false);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_WEIGHT_TOLERANCE_KEY2).setUIEnabled(true);
         } else {
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_ACTUAL_KEY2).setUIEnabled(false);
             legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_COUNT_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY2).setUIEnabled(true);
+            legendParamGroup.getParameter(PROPERTY_WEIGHT_TOLERANCE_KEY2).setUIEnabled(true);
         }
+
 
         boolean useLegendWidthTmp = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
         legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).setUIEnabled(useLegendWidthTmp);
 
     }
+
+
+
 
 
     private static JComponent createImageLegendAccessory(final JFileChooser fileChooser,

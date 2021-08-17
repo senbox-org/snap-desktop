@@ -327,6 +327,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
     }
 
+    private void  addAutoPopulateLabelValues() {
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, PROPERTY_POPULATE_VALUES_TEXTFIELD_TYPE);
+        pd.setDefaultValue(PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
+        pd.setDisplayName(PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL);
+        pd.setDescription(PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(true);
+        addPropertyDescriptor(pd);
+    }
 
 
 
@@ -353,6 +363,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
                 PROPERTY_LABEL_VALUES_DECIMAL_PLACES_MAX));
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, false,
+                PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);
     }
 
 
@@ -365,6 +378,25 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDescription(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY, false,
+                PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);    }
+
+
+
+
+    private void  addWeightTolerance() {
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_WEIGHT_TOLERANCE_KEY, PROPERTY_WEIGHT_TOLERANCE_TYPE);
+        pd.setDefaultValue(PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
+        pd.setDisplayName(PROPERTY_WEIGHT_TOLERANCE_LABEL);
+        pd.setDescription(PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(true);
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_WEIGHT_TOLERANCE_KEY, false,
+                PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);
     }
 
 
@@ -1070,30 +1102,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
-
-    private void  addWeightTolerance() {
-
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_WEIGHT_TOLERANCE_KEY, PROPERTY_WEIGHT_TOLERANCE_TYPE);
-        pd.setDefaultValue(PROPERTY_WEIGHT_TOLERANCE_DEFAULT);
-        pd.setDisplayName(PROPERTY_WEIGHT_TOLERANCE_LABEL);
-        pd.setDescription(PROPERTY_WEIGHT_TOLERANCE_TOOLTIP);
-        pd.setDefaultConverter();
-        pd.setEnabled(true);
-        addPropertyDescriptor(pd);
-    }
-
-
-    private void  addAutoPopulateLabelValues() {
-
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, PROPERTY_POPULATE_VALUES_TEXTFIELD_TYPE);
-        pd.setDefaultValue(PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
-        pd.setDisplayName(PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL);
-        pd.setDescription(PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP);
-        pd.setDefaultConverter();
-        pd.setEnabled(true);
-        addPropertyDescriptor(pd);
-    }
 
 
 }
