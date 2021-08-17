@@ -931,12 +931,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LEGEND_EXPORT_SECTION_TOOLTIP)
         boolean exportSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_LABEL,
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_LABEL + " (EXPORT ONLY)",
                 key = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_KEY,
                 description = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_TOOLTIP)
         boolean exportEditorShow = ColorBarLayerType.PROPERTY_EXPORT_EDITOR_SHOW_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_LABEL,
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_LABEL + " (EXPORT ONLY)",
                 key = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_KEY,
                 description = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_TOOLTIP)
         boolean exportBWColorUse = ColorBarLayerType.PROPERTY_EXPORT_USE_BW_COLOR_DEFAULT;
