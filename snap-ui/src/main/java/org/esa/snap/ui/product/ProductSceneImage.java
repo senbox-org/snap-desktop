@@ -726,6 +726,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
+                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT,
+                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TYPE);
@@ -740,10 +745,7 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
-                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT,
-                ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TYPE);
+
 
 
         // Placement Location Section
