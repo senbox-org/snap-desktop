@@ -47,7 +47,7 @@ import java.awt.*;
         keywordsCategory = "Layer",
         id = "LayerColorBar")
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerColorBar=ColorBar Layer",
+        "Options_DisplayName_LayerColorBar=Color Bar Legend Layer",
         "Options_Keywords_LayerColorBar=layer, colorbar"
 })
 public final class ColorBarLayerController extends DefaultConfigController {
