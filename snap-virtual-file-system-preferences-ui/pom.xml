@@ -5,7 +5,7 @@
     <parent>
         <artifactId>snap-desktop</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>8.0.7-SNAPSHOT</version>
+        <version>8.0.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
