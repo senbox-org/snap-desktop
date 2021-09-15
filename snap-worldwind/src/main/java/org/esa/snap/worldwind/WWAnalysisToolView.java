@@ -32,6 +32,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
+import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
@@ -42,11 +43,19 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
@@ -189,6 +198,16 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                             }
                         }
                     }
+                    final LayerList layerList = getWwd().getModel().getLayers();
+                    // Instead of the default Place Name layer we use special implementation to replace
+                    // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
+                    final Layer placeNameLayer = layerList.getLayerByName("Place Names");
+                    layerList.remove(placeNameLayer);
+
+                    final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
+                    layerList.add(fixingPlaceNameLayer);
+                    fixingPlaceNameLayer.setEnabled(true);
+
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);
@@ -200,7 +219,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         layerPanel.update(getWwd());
                     }
                     if (includeProductPanel) {
-                        final LayerList layerList = getWwd().getModel().getLayers();
                         Layer layer = layerList.getLayerByName("Products");
 
                         productPanel = new ProductPanel(wwjPanel.getWwd(), (DefaultProductLayer) layer);

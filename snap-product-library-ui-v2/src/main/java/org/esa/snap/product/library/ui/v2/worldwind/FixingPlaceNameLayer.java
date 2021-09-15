@@ -16,7 +16,7 @@
  *
  */
 
-package org.esa.snap.worldwind.layers;
+package org.esa.snap.product.library.ui.v2.worldwind;
 
 import gov.nasa.worldwind.layers.Earth.NASAWFSPlaceNameLayer;
 import gov.nasa.worldwind.render.DeclutteringTextRenderer;
@@ -35,7 +35,12 @@ import java.util.logging.Logger;
 
 /**
  * @author Marco Peters
- * @since 8.0.6
+ * @since 8.0.7
+ * <p>
+ * TODO: This is a copy org.esa.snap.worldwind.layers.FixingPlaceNameLayer in snap-worldwind module.
+ * Product library should use the snap-worldwind module as dependency, instead of the specific dependencies to the world wind libraries.
+ * But when replacing them. The world view didn't loaded anymore.  That's the reason why we have a copy here.
+ * This should be investigated.
  */
 public class FixingPlaceNameLayer extends NASAWFSPlaceNameLayer {
 
