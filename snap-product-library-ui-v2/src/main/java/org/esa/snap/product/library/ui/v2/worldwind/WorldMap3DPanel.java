@@ -73,6 +73,15 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
             }
         }
 
+        // Instead of the default Place Name layer we use special implementation to replace
+        // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
+        final Layer placeNameLayer = layerList.getLayerByName("Place Names");
+        layerList.remove(placeNameLayer);
+
+        final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
+        layerList.add(fixingPlaceNameLayer);
+        fixingPlaceNameLayer.setEnabled(true);
+
         layerList.add(this.selector.getLayer());
 
         layerList.add(new Polygons3DLayer(polygonsLayerModel));
