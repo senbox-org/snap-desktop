@@ -33,7 +33,16 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
-import org.esa.snap.core.layer.*;
+import org.esa.snap.core.layer.GraticuleLayer;
+import org.esa.snap.core.layer.GraticuleLayerType;
+import org.esa.snap.core.layer.ColorBarLayer;
+import org.esa.snap.core.layer.ColorBarLayerType;
+import org.esa.snap.core.layer.MaskCollectionLayerType;
+import org.esa.snap.core.layer.MaskLayerType;
+import org.esa.snap.core.layer.NoDataLayerType;
+import org.esa.snap.core.layer.ProductLayerContext;
+import org.esa.snap.core.layer.RasterImageLayerType;
+import org.esa.snap.core.layer.RgbImageLayerType;
 import org.esa.snap.core.util.PropertyMap;
 
 import java.awt.Color;
