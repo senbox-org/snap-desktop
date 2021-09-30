@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.interactions.ZoomInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,11 +35,11 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 120
+        path = "Toolbars/" + PackageDefaults.ZOOM_TOOL_TOOLBAR_NAME,
+        position = PackageDefaults.ZOOM_TOOL_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_ZoomToolActionText=Zoom",
+                  "CTL_ZoomToolActionText=" + PackageDefaults.ZOOM_TOOL_NAME,
                   "CTL_ZoomToolActionDescription=Zooming tool"
           })
 public class ZoomToolAction extends ToolAction {
@@ -52,7 +53,7 @@ public class ZoomToolAction extends ToolAction {
         super(lookup, new ZoomInteractor());
         putValue(NAME, Bundle.CTL_ZoomToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_ZoomToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/ZoomTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.ZOOM_TOOL_ICON, false));
     }
 
     @Override

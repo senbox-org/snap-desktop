@@ -7,6 +7,7 @@ package org.esa.snap.rcp.actions.file;
 
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -31,14 +32,18 @@ import java.util.stream.Collectors;
 @ActionRegistration(
         displayName = "#CTL_OpenProductActionName",
         menuText = "#CTL_OpenProductActionMenuText",
-        iconBase = "org/esa/snap/rcp/icons/Open.gif"
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.OPEN_PRODUCT_ACTION_ICON
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File", position = 5),
-        @ActionReference(path = "Toolbars/File", position = 10)
+        @ActionReference(
+                path = "Menu/" + PackageDefaults.OPEN_PRODUCT_ACTION_MENU_PATH,
+                position = PackageDefaults.OPEN_PRODUCT_ACTION_MENU_POSITION),
+        @ActionReference(
+                path = "Toolbars/" + PackageDefaults.OPEN_PRODUCT_ACTION_TOOLBAR_NAME,
+                position = PackageDefaults.OPEN_PRODUCT_ACTION_TOOLBAR_POSITION)
 })
 @NbBundle.Messages({
-        "CTL_OpenProductActionName=Open Product",
+        "CTL_OpenProductActionName=" + PackageDefaults.OPEN_PRODUCT_ACTION_NAME,
         "CTL_OpenProductActionMenuText=Open Product...",
         "LBL_NoReaderFoundText=No appropriate product reader found.",
 
