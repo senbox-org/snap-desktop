@@ -30,38 +30,70 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+
 
 /**
  * This action opens a product subset dialog with the initial spatial bounds
  * taken from the currently visible image area, if any.
+ * Enablement: when a product is selected
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including enablement, tooltips and related icon.
+
+
 @ActionID(category = "Raster", id = "CreateSubsetAction")
-@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
-@ActionReferences({@ActionReference(path = "Menu/Raster", position = 50)})
-@NbBundle.Messages({
-        "CTL_CreateSubsetAction_Name=Subset...",
-        "CTL_CreateSubsetAction_Title=Subset"
+@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
+@ActionReferences({
+        @ActionReference(path = "Menu/Raster", position = 50),
+        @ActionReference(path = "Toolbars/Raster", position = 40)
 })
-public class CreateSubsetAction extends AbstractAction {
+@NbBundle.Messages({
+        "CTL_CreateSubsetAction_Name=Subset",
+        "CTL_CreateSubsetAction_ShortDescription=Creates a subset (spatial, subsample, raster) of the current file"
+})
+
+
+
+
+public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
 
     static int subsetNumber;
 
-    private final ProductNode sourceNode;
 
-    public CreateSubsetAction(ProductNode sourceNode) {
-        this.sourceNode = sourceNode;
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Subset24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Subset16.png";
+
+    private Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
+
+
+    public CreateSubsetAction() {
+        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name()+"...");
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_ShortDescription());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
+        this.viewResult = lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
+
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = sourceNode.getProduct();
+        Product product = this.lookup.lookup(ProductNode.class).getProduct();
 
         RasterDataNode rasterDataNode = null;
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
@@ -75,7 +107,6 @@ public class CreateSubsetAction extends AbstractAction {
     }
 
     public static void createSubset(Product sourceProduct, Rectangle bounds, RasterDataNode rdn) {
-
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
 
@@ -89,20 +120,20 @@ public class CreateSubsetAction extends AbstractAction {
         initSubset.addNodeNames(sourceProduct.getTiePointGridNames());
         initSubset.setIgnoreMetadata(false);
         final ProductSubsetDialog subsetDialog = new ProductSubsetDialog(SnapApp.getDefault().getMainFrame(),
-                                                                         sourceProduct, initSubset);
+                sourceProduct, initSubset);
         if (subsetDialog.show() != ProductSubsetDialog.ID_OK) {
             return;
         }
         final ProductSubsetDef subsetDef = subsetDialog.getProductSubsetDef();
         if (subsetDef == null) {
             Dialogs.showInformation(Bundle.CTL_CreateSubsetFromViewAction_Title(),
-                                    "No product subset created.",
-                                    null);
+                    "No product subset created.",
+                    null);
             return;
         }
         try {
             final Product subset = sourceProduct.createSubset(subsetDef, subsetName,
-                                                              sourceProduct.getDescription());
+                    sourceProduct.getDescription());
             SnapApp.getDefault().getProductManager().addProduct(subset);
             CreateSubsetAction.subsetNumber++;
         } catch (Exception e) {
@@ -126,4 +157,31 @@ public class CreateSubsetAction extends AbstractAction {
         }
         return bounds;
     }
+
+
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JMenuItem menuItem = new JMenuItem(this);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JButton button = new JButton(this);
+        button.setText(null);
+        return button;
+    }
+
+
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
+
+    protected void updateEnabledState() {
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null );
+    }
+
+
 }
