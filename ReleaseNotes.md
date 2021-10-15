@@ -43,6 +43,7 @@ tie-points anymore.
 
     [SNAP-1481] ZipUtils does not handle null on root path
     [SNAP-1481] Remove old reference to SeaDAS help
+    [SNAP-1477] Change label to 'Sea of Japan/East Sea
     [SNAP-1476] Label for the sea between Korea and japan should be changed
     [SNAP-1474] Consider write option for ADS when writing NetCDF4-BEAM
     [SNAP-1461] Subset operator: computed spatial region are different for the same original resolution
