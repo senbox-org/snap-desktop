@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.about;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -24,8 +25,8 @@ import java.awt.event.ActionListener;
 @ActionRegistration(displayName = "#CTL_AboutAction_Name" )
 @ActionReference(path = "Menu/Help", position = 1600, separatorBefore = 1550)
 @Messages({
-        "CTL_AboutAction_Name=About SNAP...",
-        "CTL_AboutAction_Title=About SNAP",
+        "CTL_AboutAction_Name=About " + SystemUtils.APPLICATION_NAME + "...",
+        "CTL_AboutAction_Title=About " + SystemUtils.APPLICATION_NAME,
 })
 public final class AboutAction implements ActionListener {
 

@@ -122,6 +122,7 @@ public class SnapApp {
     private final Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
     private Engine engine;
 
+
     /**
      * Gets the SNAP application singleton which provides access to various SNAP APIs and resources.
      * <p>
@@ -214,9 +215,13 @@ public class SnapApp {
         try {
             return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
         } catch (Exception e) {
-            return "SNAP";
+            return SystemUtils.getApplicationName();
         }
     }
+
+
+
+
 
     /**
      * @return The user's application preferences.
@@ -664,14 +669,35 @@ public class SnapApp {
 
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
-
         if (instanceName != null && instanceName.length() > 0) {
+            if (isMainframeTitleIncludeVersion()) {
+                String version = SystemUtils.getReleaseVersion();
+                if (version != null && version.length() > 0) {
+                    return String.format("%s %s", instanceName, version);
+                }
+            }
             return String.format("%s", instanceName);
-        } else {
-            return String.format("[%s]", "Empty");
         }
-
+        return String.format("[%s]", "Empty");
     }
+
+
+    public static boolean isMainframeTitleShowNode() {
+        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.show.node", Boolean.toString(true));
+        return Boolean.parseBoolean(value);
+    }
+
+    public static boolean isMainframeTitleIncludeVersion() {
+        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.include.version", Boolean.toString(true));
+        return Boolean.parseBoolean(value);
+    }
+
+    public static boolean isMainframeTitleAlwaysDisplayAppName() {
+        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.always.display.app.name", Boolean.toString(true));
+        return Boolean.parseBoolean(value);
+    }
+
+
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
         switch (hint) {
@@ -800,7 +826,9 @@ public class SnapApp {
 
         @Override
         public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
-            updateMainFrameTitle(newValue);
+            if (isMainframeTitleShowNode()) {
+                updateMainFrameTitle(newValue);
+            }
         }
     }
 
@@ -808,7 +836,9 @@ public class SnapApp {
 
         @Override
         public void selectionChange(ProductNode oldValue, ProductNode newValue) {
-            updateMainFrameTitle(newValue);
+            if (isMainframeTitleShowNode()) {
+                updateMainFrameTitle(newValue);
+            }
         }
     }
 
@@ -817,7 +847,9 @@ public class SnapApp {
         @Override
         public void nodeChanged(ProductNodeEvent event) {
             if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
-                updateMainFrameTitle(event.getSourceNode());
+                if (isMainframeTitleShowNode()) {
+                    updateMainFrameTitle(event.getSourceNode());
+                }
             }
         }
     }

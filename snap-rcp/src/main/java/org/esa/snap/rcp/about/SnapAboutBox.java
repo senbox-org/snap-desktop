@@ -36,7 +36,7 @@ public class SnapAboutBox extends JPanel {
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
         ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.jpg"));
         JLabel banner = new JLabel(image);
-        versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
+        versionText = new JLabel("<html><b>" + SystemUtils.getApplicationName() + " " + SystemUtils.getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"

@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.about;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.ImageUtilities;
@@ -36,7 +37,11 @@ class AboutPanel extends JPanel {
         FileObject configFile = FileUtil.getConfigFile("AboutBox");
         if (configFile != null) {
             JTabbedPane tabbedPane = new JTabbedPane();
-            tabbedPane.add("SNAP", new SnapAboutBox());
+            if (SystemUtils.isBrandedApplication()) {
+                tabbedPane.add(SystemUtils.getApplicationName(), new SeadasAboutBox());
+            } else {
+                tabbedPane.add(SystemUtils.getApplicationName(), new SnapAboutBox());
+            }
             addAboutBoxPlugins(tabbedPane, configFile);
             tabbedPane.add("Licenses", new LicensesAboutBox());
             add(tabbedPane, BorderLayout.CENTER);
@@ -44,6 +49,8 @@ class AboutPanel extends JPanel {
             add(new SnapAboutBox(), BorderLayout.CENTER);
         }
     }
+
+
 
     private void addAboutBoxPlugins(JTabbedPane tabbedPane, FileObject configFile) {
         FileObject aboutBoxPanels[] = configFile.getChildren();
