@@ -148,6 +148,13 @@
         <folder name="Help">
             <attr name="position" intvalue="9000"/>
             <file name="org-netbeans-core-actions-AboutAction.shadow_hidden"/>
+            <file name="org.esa.snap.rcp.about.AboutAction.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.rcp.about.AboutAction.create"/>
+                <attr name="displayName" bundlevalue="org.netbeans.core.ui.Bundle#CTL_AboutAction_Name"/>
+                <attr name="position" intvalue="1600"/>
+                <attr name="separatorBefore" intvalue="1550"/>
+            </file>
         </folder>
 
         <file name="Spacer.instance">
@@ -216,13 +223,15 @@
     -->
     <folder name="Services">
         <folder name="AutoupdateType">
+
             <file name="snap_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Core"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap/updates.xml.gz"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapUpdate_URL" />
+                <!--                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap/updates.xml.gz"/>-->
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -230,10 +239,20 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-toolboxes/updates.xml.gz"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapToolboxesUpdate_URL"/>
             </file>
-            <file name="seadas_toolbox_update_center.instance">
-                <attr name="displayName" stringvalue="SEADAS Toolbox"/>
+<!--            <file name="org.netbeans.core.ui.Bundle#CTL_SeadasToolboxUpdate_Name">-->
+<!--                &lt;!&ndash;                <attr name="displayName" stringvalue="SEADAS Toolbox"/>&ndash;&gt;-->
+<!--                <attr name="displayName" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SeadasToolbox_Name"/>-->
+<!--                <attr name="enabled" boolvalue="true"/>-->
+<!--                <attr name="instanceCreate"-->
+<!--                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>-->
+<!--                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>-->
+<!--                &lt;!&ndash;                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/seadas-toolbox/updates.xml.gz"/>&ndash;&gt;-->
+<!--                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SeadasToolboxesUpdate_URL"/>-->
+<!--            </file>-->
+            <file name="seadas_toolbox_update_center_test.instance">
+                <attr name="displayName" stringvalue="SEADAS Toolbox Test"/>
                 <attr name="enabled" boolvalue="true"/>
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
@@ -246,7 +265,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-supported-plugins/updates.xml.gz"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapSupportedPlugins_URL"/>
             </file>
             <file name="snap_community_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Community Plugins"/>
@@ -254,7 +273,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap-community-plugins/updates.xml.gz"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapCommunityPlugins_URL"/>
             </file>
         </folder>
     </folder>
@@ -390,16 +409,16 @@
         <file name="General.instance_hidden"/>
         <file name="Advanced.instance_hidden"/>
 
-            <file name="Proxy.instance">
-                <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
-                <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
-                <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
-                <attr intvalue="4" name="position"/>
-                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
-            </file>
+        <file name="Proxy.instance">
+            <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
+            <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
+            <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
+            <attr intvalue="4" name="position"/>
+            <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
+        </file>
 
         <!--<file name="Advanced.instance_hidden"/>-->
 

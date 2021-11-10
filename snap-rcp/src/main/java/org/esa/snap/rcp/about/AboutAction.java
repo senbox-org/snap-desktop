@@ -5,16 +5,15 @@
  */
 package org.esa.snap.rcp.about;
 
-import org.esa.snap.core.util.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle.Messages;
+import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
 
-import javax.swing.JDialog;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 /**
  * Displays the {@link AboutPanel} in a modal dialog.
@@ -22,17 +21,21 @@ import java.awt.event.ActionListener;
  * @author Norman Fomferra
  */
 @ActionID(category = "Help", id = "org.esa.snap.rcp.about.AboutAction" )
-@ActionRegistration(displayName = "#CTL_AboutAction_Name" )
+//@ActionRegistration(displayName = "#CTL_AboutAction_Name" )
 @ActionReference(path = "Menu/Help", position = 1600, separatorBefore = 1550)
-@Messages({
-        "CTL_AboutAction_Name=About " + SystemUtils.APPLICATION_NAME + "...",
-        "CTL_AboutAction_Title=About " + SystemUtils.APPLICATION_NAME,
-})
+//@Messages({
+//        "CTL_AboutAction_Name=About SeaDAS...",
+////        "CTL_AboutAction_Title=About SeaDAS",
+//})
 public final class AboutAction implements ActionListener {
+    public static AboutAction create(Map<String, Object> configuration) {
+        AboutAction aboutAction = new AboutAction();
+        return aboutAction;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JDialog dialog = new JDialog(WindowManager.getDefault().getMainWindow(), Bundle.CTL_AboutAction_Title(), true);
+        JDialog dialog = new JDialog(WindowManager.getDefault().getMainWindow(), NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("CTL_AboutAction_Title"), true);
         dialog.setContentPane(new AboutPanel());
         dialog.pack();
         dialog.setLocationRelativeTo(WindowManager.getDefault().getMainWindow());
