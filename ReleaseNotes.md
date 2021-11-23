@@ -41,7 +41,8 @@ tie-points anymore.
 
 ### Resolved Issues
 
-    [SNAP-1481] ZipUtils does not handle null on root path
+    [SNAP-1485] Provided geoRegion is not considered in subsetting graph if quoted
+    [SNAP-1482] ZipUtils does not handle null on root path
     [SNAP-1481] Remove old reference to SeaDAS help
     [SNAP-1477] Change label to 'Sea of Japan/East Sea
     [SNAP-1476] Label for the sea between Korea and japan should be changed
