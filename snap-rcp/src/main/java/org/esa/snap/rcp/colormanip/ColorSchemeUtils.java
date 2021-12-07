@@ -460,15 +460,28 @@ public class ColorSchemeUtils {
 
         File colorPalettesAuxDir = getColorPalettesAuxDataDir().toFile();
 
+        // Test to see if palettes have been installed based on existence on the core default palette
+        boolean palettesInstalled = false;
+        if (colorPalettesAuxDir != null && colorPalettesAuxDir.exists()) {
+            File defaultPalette = new File (colorPalettesAuxDir, PALETTE_DEFAULT);
+            if (defaultPalette.exists()) {
+                palettesInstalled = true;
+            }
+        }
+
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
             File file = new File(colorPalettesAuxDir, preferenceValue);
-            if (!colorPalettesAuxDir.exists() || (colorPalettesAuxDir.exists() && file.exists())) {
+                if (file.exists()) {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - File does not exist<br>";
+            }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT);
@@ -478,12 +491,16 @@ public class ColorSchemeUtils {
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_STANDARD_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
             File file = new File(colorPalettesAuxDir, preferenceValue);
-            if (!colorPalettesAuxDir.exists() || (colorPalettesAuxDir.exists() && file.exists())) {
+                if (file.exists()) {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - File does not exist<br>";
+            }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
@@ -493,12 +510,16 @@ public class ColorSchemeUtils {
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
             File file = new File(colorPalettesAuxDir, preferenceValue);
-            if (!colorPalettesAuxDir.exists() || (colorPalettesAuxDir.exists() && file.exists())) {
+                if (file.exists()) {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - File does not exist<br>";
+            }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
@@ -508,12 +529,16 @@ public class ColorSchemeUtils {
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
             File file = new File(colorPalettesAuxDir, preferenceValue);
-            if (!colorPalettesAuxDir.exists() || (colorPalettesAuxDir.exists() && file.exists())) {
+                if (file.exists()) {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - File does not exist<br>";
+            }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT);
@@ -925,7 +950,7 @@ public class ColorSchemeUtils {
         boolean  showParameterInfo = true;
         if (showParameterInfo) {
 //            logger.log(Level.INFO, key + "=" + value);
-            System.out.println(key + "=" + value);
+           System.out.println("# " + key + "=" + value);
         }
         //end todo
     }
