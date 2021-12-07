@@ -8,6 +8,7 @@ package org.esa.snap.rcp.about;
 import com.bc.ceres.core.runtime.Version;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.BrowserUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
@@ -20,13 +21,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.net.URL;
 
 /**
  * @author Norman
  */
 public class SnapAboutBox extends JPanel {
 
-    private final static String releaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20";
+    private String releaseNotesUrlString;
     private final JLabel versionText;
     private final ModuleInfo engineModuleInfo;
 
@@ -34,9 +36,15 @@ public class SnapAboutBox extends JPanel {
         super(new BorderLayout(4, 4));
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
-        ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.jpg"));
+
+        URL resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        ImageIcon image = new ImageIcon(resourceUrl);
+
+        releaseNotesUrlString = SystemUtils.getReleaseNotesUrl();
+
+
         JLabel banner = new JLabel(image);
-        versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
+        versionText = new JLabel("<html><b>" + SnapApp.getDefault().getInstanceName() + " " + SystemUtils.getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                                              + "This program is free software: you can redistribute it and/or modify it<br>"
