@@ -3,7 +3,6 @@ package org.esa.snap.rcp.util;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.VersionChecker;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.runtime.EngineConfig;
 import org.openide.awt.CheckForUpdatesProvider;
 import org.openide.util.Lookup;
 import org.openide.windows.OnShowing;
@@ -22,9 +21,9 @@ public class DesktopVersionCheck {
 
     private static final String APPLICATION_HOMEPAGE_URL = SystemUtils.getApplicationHomepageUrl();
     private static final String MSG_UPDATE_INFO =
-            "<html>A new " + SystemUtils.getApplicationName() + " version is available for download!<br>" +
-                    "Currently installed " + SystemUtils.getApplicationName() + " %s, available is " + SystemUtils.getApplicationName() + " %s.<br>" +
-                    "To download, please visit the " + SystemUtils.getApplicationName() + " home page at";
+            "<html>A new " + SnapApp.getDefault().getInstanceName() + " version is available for download!<br>" +
+                    "Currently installed " + SnapApp.getDefault().getInstanceName() + " %s, available is " + SnapApp.getDefault().getInstanceName() + " %s.<br>" +
+                    "To download, please visit the " + SnapApp.getDefault().getInstanceName() + " home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
     private DesktopVersionCheck() {
@@ -60,12 +59,12 @@ public class DesktopVersionCheck {
                 }
             }
             final String message =
-                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of " + SystemUtils.getApplicationName() +
+                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of " + SnapApp.getDefault().getInstanceName() +
             ".\n" +
                             "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
-                            "to get the best " + SystemUtils.getApplicationName() + " experience.\n\n" +
+                            "to get the best " + SnapApp.getDefault().getInstanceName() + " experience.\n\n" +
                             "Press 'Yes', if you want to check for plugin updates now.\n\n";
-            Dialogs.Answer decision = Dialogs.requestDecision(SystemUtils.getApplicationName() + " Update", message, false, "optional.version.check.onstartup");
+            Dialogs.Answer decision = Dialogs.requestDecision(SnapApp.getDefault().getInstanceName() + " Update", message, false, "optional.version.check.onstartup");
             if (Dialogs.Answer.YES.equals(decision)) {
                 final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
                 checkForUpdatesProvider.openCheckForUpdatesWizard(true);

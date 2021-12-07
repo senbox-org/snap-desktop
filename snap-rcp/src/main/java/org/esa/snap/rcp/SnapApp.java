@@ -122,7 +122,6 @@ public class SnapApp {
     private final Map<Class<?>, SelectionSupport<?>> selectionChangeSupports;
     private Engine engine;
 
-
     /**
      * Gets the SNAP application singleton which provides access to various SNAP APIs and resources.
      * <p>
@@ -218,10 +217,6 @@ public class SnapApp {
             return SystemUtils.getApplicationName();
         }
     }
-
-
-
-
 
     /**
      * @return The user's application preferences.
@@ -670,7 +665,7 @@ public class SnapApp {
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
         if (instanceName != null && instanceName.length() > 0) {
-            if (isMainframeTitleIncludeVersion()) {
+            if (SystemUtils.isMainframeTitleIncludeVersion()) {
                 String version = SystemUtils.getReleaseVersion();
                 if (version != null && version.length() > 0) {
                     return String.format("%s %s", instanceName, version);
@@ -682,20 +677,6 @@ public class SnapApp {
     }
 
 
-    public static boolean isMainframeTitleShowNode() {
-        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.show.node", Boolean.toString(true));
-        return Boolean.parseBoolean(value);
-    }
-
-    public static boolean isMainframeTitleIncludeVersion() {
-        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.include.version", Boolean.toString(true));
-        return Boolean.parseBoolean(value);
-    }
-
-    public static boolean isMainframeTitleAlwaysDisplayAppName() {
-        String value = Config.instance().preferences().get(SystemUtils.getApplicationContextId() + ".mainframe.title.always.display.app.name", Boolean.toString(true));
-        return Boolean.parseBoolean(value);
-    }
 
 
 
@@ -826,33 +807,27 @@ public class SnapApp {
 
         @Override
         public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
-            if (isMainframeTitleShowNode()) {
                 updateMainFrameTitle(newValue);
             }
         }
-    }
 
     private class ProductNodeListener implements SelectionSupport.Handler<ProductNode> {
 
         @Override
         public void selectionChange(ProductNode oldValue, ProductNode newValue) {
-            if (isMainframeTitleShowNode()) {
                 updateMainFrameTitle(newValue);
             }
         }
-    }
 
     private class NodeNameListener extends ProductNodeListenerAdapter {
 
         @Override
         public void nodeChanged(ProductNodeEvent event) {
             if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
-                if (isMainframeTitleShowNode()) {
                     updateMainFrameTitle(event.getSourceNode());
                 }
             }
         }
-    }
 
     private class SnapAppGPFOperatorExecutor extends ProgressMonitorSwingWorker<Void, Void> {
 

@@ -22,9 +22,8 @@ public class SeadasAboutBox extends JPanel {
 
     private static String seadasVersion;
 
-    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/docs/release-notes/seadas-platform/8.2.0.md";
-//    private  String RELEASE_NOTES_URL_NAME = "SeaDAS " + seadasVersion + " Release Notes";
-    private  String releaseNotesUrlName;
+    private String releaseNotesUrl;
+    private String releaseNotesUrlName;
 
     private final static String OCEAN_COLOR_WEB_URL = "https://oceancolor.gsfc.nasa.gov/";
     private final static String OCEAN_COLOR_WEB_URL_NAME = "NASA Ocean Color Web";
@@ -40,6 +39,8 @@ public class SeadasAboutBox extends JPanel {
 
         super(new BorderLayout());
 
+
+        releaseNotesUrl = SystemUtils.getReleaseNotesUrl();
 
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
@@ -132,7 +133,7 @@ public class SeadasAboutBox extends JPanel {
 
         gbc.gridy = 1;
         gbc.insets.left = 15;
-        jPanel.add(getUrlJLabel(RELEASE_NOTES_URL, releaseNotesUrlName), gbc);
+        jPanel.add(getUrlJLabel(releaseNotesUrl, releaseNotesUrlName), gbc);
 
         gbc.gridy = 2;
         jPanel.add(getUrlJLabel(SEADAS_WEB_URL, SEADAS_WEB_URL_NAME), gbc);

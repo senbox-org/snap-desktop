@@ -223,7 +223,6 @@
     -->
     <folder name="Services">
         <folder name="AutoupdateType">
-
             <file name="snap_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Core"/>
                 <attr name="enabled" boolvalue="true"/>
@@ -231,7 +230,6 @@
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapUpdate_URL" />
-                <!--                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/snap/updates.xml.gz"/>-->
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -240,24 +238,6 @@
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapToolboxesUpdate_URL"/>
-            </file>
-<!--            <file name="org.netbeans.core.ui.Bundle#CTL_SeadasToolboxUpdate_Name">-->
-<!--                &lt;!&ndash;                <attr name="displayName" stringvalue="SEADAS Toolbox"/>&ndash;&gt;-->
-<!--                <attr name="displayName" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SeadasToolbox_Name"/>-->
-<!--                <attr name="enabled" boolvalue="true"/>-->
-<!--                <attr name="instanceCreate"-->
-<!--                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>-->
-<!--                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>-->
-<!--                &lt;!&ndash;                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/seadas-toolbox/updates.xml.gz"/>&ndash;&gt;-->
-<!--                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SeadasToolboxesUpdate_URL"/>-->
-<!--            </file>-->
-            <file name="seadas_toolbox_update_center_test.instance">
-                <attr name="displayName" stringvalue="SEADAS Toolbox Test"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://oceandata.sci.gsfc.nasa.gov/SeaDAS/updatecenter/8.0/seadas-toolbox/updates.xml.gz"/>
             </file>
             <file name="snap_supported_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Supported Plugins"/>

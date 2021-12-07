@@ -22,11 +22,9 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
-
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 
-import static org.esa.snap.core.util.SystemUtils.getApplicationContextId;
 
 /**
  * This action launches the default browser to display the web page explaining how to best report an issue.
@@ -43,6 +41,7 @@ import static org.esa.snap.core.util.SystemUtils.getApplicationContextId;
 })
 public class ReportIssueAction extends AbstractAction {
 
+
     /**
      * Launches the default browser to display the web page.
      * Invoked when a command action is performed.
@@ -51,6 +50,9 @@ public class ReportIssueAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        DesktopHelper.browse(SystemUtils.getReportAnIssueUrl());
+
+        String reportIssueUrl = SystemUtils.getReportAnIssueUrl();
+
+        DesktopHelper.browse(reportIssueUrl);
     }
 }
