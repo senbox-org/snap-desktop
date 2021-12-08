@@ -902,17 +902,13 @@ public class ColorSchemeUtils {
     }
 
 
-    private static String createPropertyErrorMessage(String propertyKey, String propertyValue, String message) {
-        if (message != null) {
-            return propertyKey + "=" + propertyValue + "<br><br>";
-        } else {
-            return  propertyKey + "=" + propertyValue + "<br>-  " + message +"<br><br>";
-        }
+    private static String createPropertyErrorMessage(String propertyKey, String propertyValue, String message1) {
+            return  propertyKey + "=" + propertyValue + "<br>-  " + message1 +"<br><br>";
     }
 
 
     private static void notifyPropertyError(String msg) {
-        ColorUtils.showErrorDialog("<html>ERROR!: The following invalid values were found in the properties file:<br> " + msg);
+        ColorUtils.showErrorDialog("<html>ERROR!: The following invalid values were found in the properties file:<br><br> " + msg);
     }
 
 
