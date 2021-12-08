@@ -229,7 +229,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapUpdate_URL" />
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapUpdate_URL"/>
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -389,16 +389,16 @@
         <file name="General.instance_hidden"/>
         <file name="Advanced.instance_hidden"/>
 
-            <file name="Proxy.instance">
-                <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
-                <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
-                <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
-                <attr intvalue="4" name="position"/>
-                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
-            </file>
+        <file name="Proxy.instance">
+            <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
+            <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
+            <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
+            <attr intvalue="4" name="position"/>
+            <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
+        </file>
 
         <!--<file name="Advanced.instance_hidden"/>-->
 

@@ -60,7 +60,7 @@ public class DesktopVersionCheck {
             }
             final String message =
                     "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of " + SnapApp.getDefault().getInstanceName() +
-            ".\n" +
+                            ".\n" +
                             "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
                             "to get the best " + SnapApp.getDefault().getInstanceName() + " experience.\n\n" +
                             "Press 'Yes', if you want to check for plugin updates now.\n\n";

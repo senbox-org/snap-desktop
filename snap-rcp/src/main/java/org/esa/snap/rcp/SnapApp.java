@@ -270,11 +270,11 @@ public class SnapApp {
             }
         });
         NotificationDisplayer.getDefault().notify("Error",
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
+                icon,
+                balloonDetails,
+                popupDetails,
+                NotificationDisplayer.Priority.HIGH,
+                NotificationDisplayer.Category.ERROR);
     }
 
     /**
@@ -675,9 +675,6 @@ public class SnapApp {
         }
         return String.format("[%s]", "Empty");
     }
-
-
-
 
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
