@@ -947,7 +947,7 @@ public class ColorSchemeUtils {
 
         // todo the following block isn't operational but could be used in some form if needed in some kind of information page.
         // this is just used during software development to show what parameters are available to be put in the snap.properties file.
-        boolean  showParameterInfo = true;
+        boolean  showParameterInfo = false;
         if (showParameterInfo) {
 //            logger.log(Level.INFO, key + "=" + value);
             System.out.println("# " + key + "=" + value);
