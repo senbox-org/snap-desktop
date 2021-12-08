@@ -158,8 +158,6 @@ public class ColorSchemeUtils {
     }
 
 
-
-
     public static void setImageInfoToGeneralColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
 
         boolean imageInfoSet = false;
@@ -438,7 +436,6 @@ public class ColorSchemeUtils {
     }
 
 
-
     public static void initColorManipulationDefaults() {
 
         String preferenceKey;
@@ -454,7 +451,7 @@ public class ColorSchemeUtils {
         // Test to see if palettes have been installed based on existence on the core default palette
         boolean palettesInstalled = false;
         if (colorPalettesAuxDir != null && colorPalettesAuxDir.exists()) {
-            File defaultPalette = new File (colorPalettesAuxDir, PALETTE_DEFAULT);
+            File defaultPalette = new File(colorPalettesAuxDir, PALETTE_DEFAULT);
             if (defaultPalette.exists()) {
                 palettesInstalled = true;
             }
@@ -478,7 +475,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT);
 
 
-
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_STANDARD_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
@@ -495,7 +491,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
-
 
 
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY);
@@ -516,7 +511,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
 
 
-
         preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
@@ -533,7 +527,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT);
-
 
 
         // Scheme (Default)
@@ -560,7 +553,7 @@ public class ColorSchemeUtils {
                 PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION2;
             } else if (PROPERTY_GENERAL_PALETTE_OPTION3.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION3;
-            }else if (PROPERTY_GENERAL_PALETTE_OPTION4.equalsIgnoreCase(preferenceValue)) {
+            } else if (PROPERTY_GENERAL_PALETTE_OPTION4.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION4;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
@@ -602,8 +595,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_LOG_DEFAULT);
 
 
-
-
         // Scheme (Band Lookup)
 
         preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_AUTO_APPLY_KEY);
@@ -617,7 +608,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_AUTO_APPLY_DEFAULT));
-
 
 
         preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_PALETTE_KEY);
@@ -660,7 +650,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_RANGE_DEFAULT);
 
 
-
         preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_LOG_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
@@ -670,7 +659,7 @@ public class ColorSchemeUtils {
                 PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION2;
             } else if (PROPERTY_SCHEME_LOG_OPTION3.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION3;
-            }else if (PROPERTY_SCHEME_LOG_OPTION4.equalsIgnoreCase(preferenceValue)) {
+            } else if (PROPERTY_SCHEME_LOG_OPTION4.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION4;
             } else {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
@@ -678,9 +667,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_LOG_DEFAULT);
-
-
-
 
 
         // Percentile Range
@@ -702,7 +688,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RANGE_PERCENTILE_DEFAULT));
-
 
 
         preferenceKey = getPreferenceContextKey(PROPERTY_1_SIGMA_BUTTON_KEY);
@@ -744,7 +729,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_3_SIGMA_BUTTON_DEFAULT));
 
 
-
         preferenceKey = getPreferenceContextKey(PROPERTY_95_PERCENT_BUTTON_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
@@ -758,7 +742,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_95_PERCENT_BUTTON_DEFAULT));
 
 
-
         preferenceKey = getPreferenceContextKey(PROPERTY_100_PERCENT_BUTTON_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
@@ -770,9 +753,6 @@ public class ColorSchemeUtils {
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_100_PERCENT_BUTTON_DEFAULT));
-
-
-
 
 
         // Scheme Selector Options
@@ -829,7 +809,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT));
 
 
-
         // Sliders editor Options
 
         preferenceKey = getPreferenceContextKey(PROPERTY_SLIDERS_ZOOM_IN_KEY);
@@ -884,7 +863,6 @@ public class ColorSchemeUtils {
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_INFORMATION_BUTTON_DEFAULT));
 
 
-
         // RGB Options
 
         preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MIN_KEY);
@@ -893,7 +871,7 @@ public class ColorSchemeUtils {
             try {
                 double value = Double.parseDouble(preferenceValue);
                 ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
-            } catch  (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - Invalid number<br>";
             }
@@ -911,9 +889,9 @@ public class ColorSchemeUtils {
                     ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
                 } else {
                     errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - " + PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " +PROPERTY_RGB_OPTIONS_MIN_KEY +  "<br>";
+                    errorMsg += " - " + PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY + "<br>";
                 }
-            } catch  (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
                 errorMsg += " - Invalid number<br>";
             }
@@ -928,18 +906,16 @@ public class ColorSchemeUtils {
     }
 
 
-
     private static String getPreferenceContextKey(String key) {
         return getApplicationContextId() + "." + key;
     }
-
 
 
     private static void showEffectiveDefault(String key, String value) {
 
         // todo the following block isn't operational but could be used in some form if needed in some kind of information page.
         // this is just used during software development to show what parameters are available to be put in the snap.properties file.
-        boolean  showParameterInfo = false;
+        boolean showParameterInfo = false;
         if (showParameterInfo) {
             Logger logger = Logger.getLogger(ColorSchemeUtils.class.getName());
             logger.log(Level.INFO, key + "=" + value);
@@ -961,7 +937,7 @@ public class ColorSchemeUtils {
     }
 
 
-    private static boolean isValidBooleanString(String booleanString)  {
+    private static boolean isValidBooleanString(String booleanString) {
         if (booleanString != null) {
             if (booleanString.trim().equalsIgnoreCase("true") || booleanString.trim().equalsIgnoreCase("false")) {
                 return true;

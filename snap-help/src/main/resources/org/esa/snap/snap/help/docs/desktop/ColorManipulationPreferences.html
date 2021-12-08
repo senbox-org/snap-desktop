@@ -18,7 +18,7 @@
     </tr>
 </table>
 
-<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
+<p>Note: this help page in general uses the spelling "color". Depending on the branding of your
     SNAP application, elsewhere in your application the spelling may be "colour"</p>
 
 <h3>Overview</h3>
@@ -58,7 +58,8 @@
     </li>
 
     <li>
-        <b>STANDARD:</b> The color palette to use if the field "STANDARD" is selected.  This by default is a rainbow spectrum type of palette.
+        <b>STANDARD:</b> The color palette to use if the field "STANDARD" is selected. This by default is a rainbow
+        spectrum type of palette.
     </li>
 
     <li>
@@ -67,12 +68,12 @@
     </li>
 
     <li>
-        <b>ANOMALIES:</b> The color palette to use if the field "ANOMALIES" is selected.  This is intended but not limited to an anomaly
+        <b>ANOMALIES:</b> The color palette to use if the field "ANOMALIES" is selected. This is intended but not
+        limited to an anomaly
         type of palette.
     </li>
 
 </ul>
-
 
 
 <br>
@@ -89,12 +90,14 @@
 
 <br>
 
-<p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being applied.
+<p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being
+    applied.
 </p>
 
 <ul>
     <li><b>Enable</b> - Use the following parameters as a default scheme
-        when opening a band, otherwise use settings from the file reader.  Note: this can be preempted by "Band Lookup Schemes" if
+        when opening a band, otherwise use settings from the file reader. Note: this can be preempted by "Band Lookup
+        Schemes" if
         "Use Band Lookup Schemes" is selected.
     </li>
     <li>
@@ -147,15 +150,13 @@
             </li>
 
             <li>
-                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not
+                contain this field.)
             </li>
         </ul>
     </li>
 
 </ul>
-
-
-
 
 
 <br>
@@ -173,10 +174,9 @@
 <p>This is the behavior regarding applying color schemes when opening a new band or clicking on the reset button. If
     the "Apply Color Schemes Automatically" button is clicked and the bandname matches a regular expression scheme
     lookup (defined in the configuration file ~/.snap/auxdata/color_schemes/color_palette_schemes_lookup.xml) then a
-    color scheme is applied (palette, range, log scaling).  If no match is found, then the Default Scheme or the settings
+    color scheme is applied (palette, range, log scaling). If no match is found, then the Default Scheme or the settings
     in the file reader are applied (see "Default Scheme" on this help page)
 </p>
-
 
 
 <ul>
@@ -245,11 +245,13 @@
 
         <ul>
             <li>
-                <b>From Scheme:</b> Uses the log scaling from the configuration file defined by the parameter "LOG_SCALE".
+                <b>From Scheme:</b> Uses the log scaling from the configuration file defined by the parameter
+                "LOG_SCALE".
             </li>
 
             <li>
-                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not
+                contain this field.)
             </li>
 
             <li>
@@ -266,18 +268,16 @@
 </ul>
 
 
-
-
 <br>
 <hr>
 <h4>Percentile Options</h4><br>
 
 <div align="center">
-<table>
-    <tr>
-        <td align="center" style="border-width:0"><img src="images/ColorManipPref04.png"/></td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref04.png"/></td>
+        </tr>
+    </table>
 </div>
 
 <br>
@@ -288,7 +288,7 @@
 <ul>
     <li>
         <b>Percentile Default: </b> Default palette range based on percentage of pixels in a band. This
-        is used when scheme is disabled or when "From Data" is the specified behavior.  This is also used with
+        is used when scheme is disabled or when "From Data" is the specified behavior. This is also used with
         the "From Data" button.
     </li>
 
@@ -324,10 +324,6 @@
 
 
 </ul>
-
-
-
-
 
 
 <br>
@@ -376,8 +372,6 @@
 </ul>
 
 
-
-
 <br>
 <hr>
 <h4>Sliders Editor Options</h4><br>
@@ -415,8 +409,6 @@
     </li>
 
 </ul>
-
-
 
 
 <br>
@@ -468,15 +460,15 @@
 <h4>Configuration of Preference Defaults</h4>
 
 <p>Many of the default values to the Color Manipulation Preferences are initialized internally to preset
-    SNAP defaults.  However, the above parameters may be initialized either for convenience of
+    SNAP defaults. However, the above parameters may be initialized either for convenience of
     package defaults branding or for ease of presetting certain preference parameters without using the GUI to
     set the parameters.
 
-    This is done within the snap.properties file which is in your home directory.  The following are the
+    This is done within the snap.properties file which is in your home directory. The following are the
     property keys listed in the same order as the GUI preferences display with the SNAP default values.</p>
 
 <p>
-    <pre>
+<pre>
 # snap.color.manipulation.palette.default.gray.scale=gray_scale.cpd
 # snap.color.manipulation.palette.default.standard=oceancolor_standard.cpd
 # snap.color.manipulation.palette.default.universal=universal_bluered.cpd
@@ -509,7 +501,7 @@
 
 <p>For SeaDAS these parameters are set as follows:
 
-    <pre>
+<pre>
 snap.context=seadas
 
 seadas.color.manipulation.palette.default.standard=oceancolor_standard.cpd
@@ -543,11 +535,11 @@ seadas.color.manipulation.rgb.button.max=1.0
 </pre>
 </p>
 <p>
-If the above parameters do not exist in snap.properties or are commented out, then the SNAP package internal default
-values are used.  Note that these are only default preference values, so if you set some of these
-parameters within the Preferences GUI, these values from the snap.properties file will be overridden by your GUI
-preferences.  If you have modified the GUI preferences and wish to restore the values to the snap.properties file
-values then click "Reset To Defaults" in the Color Manipulation Preferences GUI.
+    If the above parameters do not exist in snap.properties or are commented out, then the SNAP package internal default
+    values are used. Note that these are only default preference values, so if you set some of these
+    parameters within the Preferences GUI, these values from the snap.properties file will be overridden by your GUI
+    preferences. If you have modified the GUI preferences and wish to restore the values to the snap.properties file
+    values then click "Reset To Defaults" in the Color Manipulation Preferences GUI.
 </p>
 
 <p>
