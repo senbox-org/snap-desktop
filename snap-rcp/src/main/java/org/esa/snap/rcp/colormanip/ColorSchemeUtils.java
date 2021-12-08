@@ -37,10 +37,6 @@ public class ColorSchemeUtils {
      * @param productSceneView
      */
 
-
-    private static final Logger logger = Logger.getLogger(ColorSchemeUtils.class.getName());
-
-
     public static void setImageInfoToDefaultColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView, boolean resetToDefaults) {
 
 
@@ -440,11 +436,6 @@ public class ColorSchemeUtils {
     public static Path getRgbProfilesAuxDataDir() {
         return SystemUtils.getAuxDataPath().resolve(ColorManipulationDefaults.DIR_NAME_RGB_PROFILES);
     }
-
-
-
-
-
 
 
 
@@ -943,13 +934,15 @@ public class ColorSchemeUtils {
     }
 
 
+
     private static void showEffectiveDefault(String key, String value) {
 
         // todo the following block isn't operational but could be used in some form if needed in some kind of information page.
         // this is just used during software development to show what parameters are available to be put in the snap.properties file.
         boolean  showParameterInfo = false;
         if (showParameterInfo) {
-//            logger.log(Level.INFO, key + "=" + value);
+            Logger logger = Logger.getLogger(ColorSchemeUtils.class.getName());
+            logger.log(Level.INFO, key + "=" + value);
            System.out.println("# " + key + "=" + value);
         }
         //end todo
