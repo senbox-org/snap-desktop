@@ -436,6 +436,11 @@ public class ColorSchemeUtils {
     }
 
 
+    public final static String FILE_DOES_NOT_EXIST = "File does not exist";
+    public final static String INVALID_BOOLEAN = "Invalid boolean value";
+    public final static String INVALID_NUMBER = "Invalid number";
+    public final static String INVALID_TEXT_ENTRY = "Invalid text entry";
+
     public static void initColorManipulationDefaults() {
 
         String preferenceKey;
@@ -465,8 +470,7 @@ public class ColorSchemeUtils {
                 if (file.exists()) {
                     ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - File does not exist<br>";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
                 }
             } else {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
@@ -483,8 +487,7 @@ public class ColorSchemeUtils {
                 if (file.exists()) {
                     ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - File does not exist<br>";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
                 }
             } else {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
@@ -501,8 +504,7 @@ public class ColorSchemeUtils {
                 if (file.exists()) {
                     ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - File does not exist<br>";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
                 }
             } else {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
@@ -519,8 +521,7 @@ public class ColorSchemeUtils {
                 if (file.exists()) {
                     ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - File does not exist<br>";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
                 }
             } else {
                 ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
@@ -537,8 +538,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_GENERAL_CUSTOM_DEFAULT));
@@ -556,8 +556,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_GENERAL_PALETTE_OPTION4.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION4;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_PALETTE_DEFAULT);
@@ -571,8 +570,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_GENERAL_RANGE_OPTION2.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_GENERAL_RANGE_DEFAULT = PROPERTY_GENERAL_RANGE_OPTION2;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_RANGE_DEFAULT);
@@ -588,8 +586,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_GENERAL_LOG_OPTION3.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_GENERAL_LOG_DEFAULT = PROPERTY_GENERAL_LOG_OPTION3;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_LOG_DEFAULT);
@@ -603,8 +600,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_AUTO_APPLY_DEFAULT));
@@ -626,8 +622,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_SCHEME_PALETTE_OPTION6.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION6;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_PALETTE_DEFAULT);
@@ -643,8 +638,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_SCHEME_RANGE_OPTION3.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_SCHEME_RANGE_DEFAULT = PROPERTY_SCHEME_RANGE_OPTION3;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_RANGE_DEFAULT);
@@ -662,8 +656,7 @@ public class ColorSchemeUtils {
             } else if (PROPERTY_SCHEME_LOG_OPTION4.equalsIgnoreCase(preferenceValue)) {
                 PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION4;
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid entry<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
             }
         }
         showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_LOG_DEFAULT);
@@ -679,12 +672,11 @@ public class ColorSchemeUtils {
                 if (value > 0 && value <= 100.0) {
                     ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT = value;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - Percentile must be between 0 and 100<br>";
+                    String msg = "Percentile must be between 0 and 100";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
                 }
             } catch (NumberFormatException ex) {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid number<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
             }
         }
         showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RANGE_PERCENTILE_DEFAULT));
@@ -696,8 +688,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_1_SIGMA_BUTTON_DEFAULT));
@@ -709,8 +700,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_2_SIGMA_BUTTON_DEFAULT));
@@ -722,8 +712,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_3_SIGMA_BUTTON_DEFAULT));
@@ -735,8 +724,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_95_PERCENT_BUTTON_DEFAULT));
@@ -748,8 +736,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_100_PERCENT_BUTTON_DEFAULT));
@@ -763,8 +750,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_VERBOSE_DEFAULT));
@@ -776,8 +762,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_SORT_DEFAULT));
@@ -789,8 +774,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT));
@@ -802,8 +786,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT));
@@ -817,8 +800,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SLIDERS_ZOOM_IN_DEFAULT));
@@ -830,8 +812,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT));
@@ -843,8 +824,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT));
@@ -856,8 +836,7 @@ public class ColorSchemeUtils {
             if (isValidBooleanString(preferenceValue)) {
                 ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
             } else {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid boolean<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
             }
         }
         showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_INFORMATION_BUTTON_DEFAULT));
@@ -872,8 +851,7 @@ public class ColorSchemeUtils {
                 double value = Double.parseDouble(preferenceValue);
                 ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
             } catch (NumberFormatException ex) {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid number<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
             }
         }
         showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
@@ -888,12 +866,11 @@ public class ColorSchemeUtils {
                 if (value > ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
                     ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
                 } else {
-                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                    errorMsg += " - " + PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY + "<br>";
+                    String msg = PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY;
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
                 }
             } catch (NumberFormatException ex) {
-                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue);
-                errorMsg += " - Invalid number<br>";
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
             }
 
         }
@@ -925,10 +902,12 @@ public class ColorSchemeUtils {
     }
 
 
-    private static String createPropertyErrorMessage(String propertyKey, String propertyValue) {
-
-        String msg = propertyKey + "=" + propertyValue + "<br>";
-        return msg;
+    private static String createPropertyErrorMessage(String propertyKey, String propertyValue, String message) {
+        if (message != null) {
+            return propertyKey + "=" + propertyValue + "<br><br>";
+        } else {
+            return  propertyKey + "=" + propertyValue + "<br>-  " + message +"<br><br>";
+        }
     }
 
 
