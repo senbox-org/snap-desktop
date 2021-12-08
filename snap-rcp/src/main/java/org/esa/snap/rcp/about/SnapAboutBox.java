@@ -47,21 +47,21 @@ public class SnapAboutBox extends JPanel {
         versionText = new JLabel("<html><b>" + SnapApp.getDefault().getInstanceName() + " " + SystemUtils.getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
-                                             + "This program is free software: you can redistribute it and/or modify it<br>"
-                                             + "under the terms of the <b>GNU General Public License</b> as published by<br>"
-                                             + "the Free Software Foundation, either version 3 of the License, or<br>"
-                                             + "(at your option) any later version.<br>"
-                                             + "<br>"
-                                             + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
-                                             + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
+                + "This program is free software: you can redistribute it and/or modify it<br>"
+                + "under the terms of the <b>GNU General Public License</b> as published by<br>"
+                + "the Free Software Foundation, either version 3 of the License, or<br>"
+                + "(at your option) any later version.<br>"
+                + "<br>"
+                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
+                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
                 /*
                                              + "<b>Home directory: </b>" + SystemUtils.getApplicationHomeDir() + "<br>"
                                              + "<b>User directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
                                              + "<b>Cache directory: </b>" + SystemUtils.getCacheDir() + "<br>"
                 */
-                                             + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
-                                             + "<b>JVM: </b>" + System.getProperty("java.vm.name") + " by " + System.getProperty("java.vendor") + "<br>"
-                                             + "<b>Memory: </b>" + Math.round(Runtime.getRuntime().maxMemory() / 1024. / 1024.) + " MiB<br>"
+                + "<b>JRE: </b>" + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.version") + "<br>"
+                + "<b>JVM: </b>" + System.getProperty("java.vm.name") + " by " + System.getProperty("java.vendor") + "<br>"
+                + "<b>Memory: </b>" + Math.round(Runtime.getRuntime().maxMemory() / 1024. / 1024.) + " MiB<br>"
         );
 
         Font font = versionText.getFont();

@@ -23,7 +23,7 @@ import java.util.MissingResourceException;
  *
  * @author Norman Fomferra
  */
-@ActionID(category = "Help", id = "org.esa.snap.rcp.about.AboutAction" )
+@ActionID(category = "Help", id = "org.esa.snap.rcp.about.AboutAction")
 //@ActionRegistration(displayName = "#CTL_AboutAction_Name" )
 @ActionReference(path = "Menu/Help", position = 1600, separatorBefore = 1550)
 //@Messages({

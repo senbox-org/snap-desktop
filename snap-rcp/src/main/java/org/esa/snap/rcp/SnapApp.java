@@ -270,11 +270,11 @@ public class SnapApp {
             }
         });
         NotificationDisplayer.getDefault().notify("Error",
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
+                icon,
+                balloonDetails,
+                popupDetails,
+                NotificationDisplayer.Priority.HIGH,
+                NotificationDisplayer.Category.ERROR);
     }
 
     /**
@@ -677,9 +677,6 @@ public class SnapApp {
     }
 
 
-
-
-
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
         switch (hint) {
             case VIEW:
@@ -807,27 +804,27 @@ public class SnapApp {
 
         @Override
         public void selectionChange(ProductSceneView oldValue, ProductSceneView newValue) {
-                updateMainFrameTitle(newValue);
-            }
+            updateMainFrameTitle(newValue);
         }
+    }
 
     private class ProductNodeListener implements SelectionSupport.Handler<ProductNode> {
 
         @Override
         public void selectionChange(ProductNode oldValue, ProductNode newValue) {
-                updateMainFrameTitle(newValue);
-            }
+            updateMainFrameTitle(newValue);
         }
+    }
 
     private class NodeNameListener extends ProductNodeListenerAdapter {
 
         @Override
         public void nodeChanged(ProductNodeEvent event) {
             if (ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName())) {
-                    updateMainFrameTitle(event.getSourceNode());
-                }
+                updateMainFrameTitle(event.getSourceNode());
             }
         }
+    }
 
     private class SnapAppGPFOperatorExecutor extends ProgressMonitorSwingWorker<Void, Void> {
 
