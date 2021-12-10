@@ -78,6 +78,7 @@ often helped to get the right values. For more information and updates on this i
 
 
 ## Resolved Issues
+    [SNAP-1489] Update snap jp2 reader for more 4 bands
     [SNAP-356] Products with PixelGeoCoding extremely slow to open
     [SNAP-494] BigGeoTiff writer should use compression by default.
     [SNAP-791] Write operator writes data more efficiently then ProductIO
