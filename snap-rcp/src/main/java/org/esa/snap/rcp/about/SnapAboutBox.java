@@ -21,7 +21,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.io.File;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author Norman
@@ -37,8 +39,12 @@ public class SnapAboutBox extends JPanel {
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
 
-        URL resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        URL resourceUrl = getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
+        if (resourceUrl == null) {
+            resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        }
         ImageIcon image = new ImageIcon(resourceUrl);
+
 
         releaseNotesUrlString = SystemUtils.getReleaseNotesUrl();
 
@@ -87,6 +93,7 @@ public class SnapAboutBox extends JPanel {
 */
     }
 
+
     private JPanel createVersionPanel() {
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -101,5 +108,70 @@ public class SnapAboutBox extends JPanel {
         releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
         panel.add(releaseNoteLabel);
         return panel;
+    }
+
+
+    // This method acts as a convenience wrapper to the method getResourcePath
+    public static URL getResourceUrl(String moduleName, String path, String filename) {
+        try {
+            String resourcePath = getResourcePath(moduleName, path, filename);
+
+            if (resourcePath != null) {
+                File resourceFile = new File(resourcePath);
+                if (resourceFile != null && resourceFile.toURI() != null) {
+                    if (resourceFile.exists()) {
+                        return resourceFile.toURI().toURL();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        return null;
+    }
+
+    // This method returns the resource path when there is no java method available for getting the resource
+    // (which is the case with the branding module.)  The assumptions are that org.esa.snap is the directory
+    // structure at the parent level within the module and that SnapAboutBox.class.getResource("SNAP_Banner.jpg")
+    // returns a value which can be used as a reference to determine the parent directory structure of the target resource.
+    public static String getResourcePath(String moduleName, String path, String filename) {
+
+        if (moduleName == null || path == null || filename == null) {
+            return null;
+        }
+
+        // Get a known resource from module "snap-rcp"
+        URL knownResourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        if (knownResourceUrl == null) {
+            return null;
+        }
+
+        String knownResourcePath = knownResourceUrl.getPath();
+
+        String fileSeparator = System.getProperty("file.separator");
+
+        String orgEsaSnap = "org" + fileSeparator + "esa" + fileSeparator + "snap";
+
+        String[] splitStr = knownResourcePath.split(orgEsaSnap);
+        if (splitStr.length <= 1) {
+            return null;
+        }
+
+        String knownResourceParentPath = splitStr[0];
+        String targetResourceParentPath = knownResourceParentPath.replace("snap-rcp", moduleName);
+
+        String[] pathArray = path.split(Pattern.quote("."));
+        if (pathArray == null || pathArray.length <= 1) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(targetResourceParentPath);
+        for (String dir : pathArray) {
+            sb.append(dir);
+            sb.append(fileSeparator);
+        }
+        sb.append(filename);
+
+        return sb.toString();
     }
 }
