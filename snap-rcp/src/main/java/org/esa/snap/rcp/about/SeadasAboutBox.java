@@ -14,7 +14,9 @@ import org.openide.modules.Modules;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author Daniel Knowles
@@ -69,7 +71,7 @@ public class SeadasAboutBox extends JPanel {
         System.out.println("******** getUserHomeDir=" + SystemUtils.getUserHomeDir());
 
 
-        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
+        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.png");
         if (resourceUrl == null) {
             resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
         }
