@@ -112,7 +112,7 @@ public class SnapAboutBox extends JPanel {
 
 
     // This method acts as a convenience wrapper to the method getResourcePath
-    public URL getResourceUrl(String moduleName, String path, String filename) {
+    public static URL getResourceUrl(String moduleName, String path, String filename) {
         try {
             String resourcePath = getResourcePath(moduleName, path, filename);
 
@@ -134,7 +134,7 @@ public class SnapAboutBox extends JPanel {
     // (which is the case with the branding module.)  The assumptions are that org.esa.snap is the directory
     // structure at the parent level within the module and that SnapAboutBox.class.getResource("SNAP_Banner.jpg")
     // returns a value which can be used as a reference to determine the parent directory structure of the target resource.
-    public String getResourcePath(String moduleName, String path, String filename) {
+    public static String getResourcePath(String moduleName, String path, String filename) {
 
         if (moduleName == null || path == null || filename == null) {
             return null;
