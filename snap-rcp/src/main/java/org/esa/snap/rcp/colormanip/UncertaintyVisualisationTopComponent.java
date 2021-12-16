@@ -22,6 +22,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -44,9 +45,9 @@ import java.awt.Component;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = true,
-        position = 30
+        mode = PackageDefaults.UNCERTAINTY_MODE,
+        openAtStartup = PackageDefaults.UNCERTAINTY_OPEN,
+        position = PackageDefaults.UNCERTAINTY_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.UncertaintyVisualisationTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows")
@@ -55,7 +56,7 @@ import java.awt.Component;
         preferredID = "UncertaintyVisualisationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_UncertaintyVisualisationTopComponent_Name=Uncertainty Visualisation",
+        "CTL_UncertaintyVisualisationTopComponent_Name=" + PackageDefaults.UNCERTAINTY_NAME,
         "CTL_UncertaintyVisualisationTopComponent_ComponentName=Uncertainty_Visualisation"
 })
 public class UncertaintyVisualisationTopComponent extends TopComponent {

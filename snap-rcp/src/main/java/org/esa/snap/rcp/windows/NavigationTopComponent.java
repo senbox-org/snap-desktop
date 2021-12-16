@@ -33,6 +33,7 @@ import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
 import org.esa.snap.rcp.actions.tools.SyncImageViewsAction;
 import org.esa.snap.rcp.nav.NavigationCanvas;
 import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -73,9 +74,9 @@ import static java.lang.Math.*;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = true,
-        position = 10
+        mode = PackageDefaults.NAVIGATION_MODE,
+        openAtStartup = PackageDefaults.NAVIGATION_OPEN,
+        position = PackageDefaults.NAVIGATION_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.NavigationTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
@@ -84,7 +85,7 @@ import static java.lang.Math.*;
         preferredID = "NavigationTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_NavigationTopComponentName=Navigation",
+        "CTL_NavigationTopComponentName=" + PackageDefaults.NAVIGATION_NAME,
         "CTL_NavigationTopComponentDescription=Navigates through the currently selected image view",
 })
 public class NavigationTopComponent extends TopComponent {
