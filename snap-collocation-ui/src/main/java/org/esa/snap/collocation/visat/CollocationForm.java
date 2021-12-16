@@ -89,7 +89,7 @@ class CollocationForm extends JPanel {
         slaveProductList.setXAxis(false);
 
         renameMasterComponentsCheckBox = new JCheckBox("Rename master components:");
-        renameSlaveComponentsCheckBox = new JCheckBox("Rename slave components:");
+        renameSlaveComponentsCheckBox = new JCheckBox("Rename dependent components:");
         masterComponentPatternField = new JTextField();
         slaveComponentPatternField = new JTextField();
         resamplingComboBoxModel = new DefaultComboBoxModel<>(ResamplingType.values());
@@ -206,7 +206,7 @@ class CollocationForm extends JPanel {
 
         BorderLayout layout1 = new BorderLayout();
         final JPanel slavePanel = new JPanel(layout1);
-        slavePanel.setBorder(BorderFactory.createTitledBorder("Slave Products"));
+        slavePanel.setBorder(BorderFactory.createTitledBorder("Dependent Products"));
         slavePanel.add(listPanel, BorderLayout.CENTER);
         slavePanel.add(panels[1], BorderLayout.EAST);
 

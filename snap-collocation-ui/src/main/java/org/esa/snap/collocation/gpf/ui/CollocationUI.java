@@ -34,7 +34,7 @@ public class CollocationUI extends BaseOperatorUI {
     private JComboBox masterCombo = new JComboBox();
     private JComboBox resampleTypeCombo = new JComboBox();
     private JTextField productTypeField = new JTextField("COLLOCATED");
-    private JTextField slavePatternField = new JTextField("${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}");
+    private JTextField slavePatternField = new JTextField("${ORIGINAL_NAME}_D${DEPENDENT_NUMBER_ID}");
     private JTextField masterPatternField = new JTextField("${ORIGINAL_NAME}_M");
     private JCheckBox renameMasterCheckBox;
     private JCheckBox renameSlaveCheckBox;
