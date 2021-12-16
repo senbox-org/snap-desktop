@@ -14,6 +14,9 @@ import org.openide.modules.Modules;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author Daniel Knowles
@@ -22,9 +25,8 @@ public class SeadasAboutBox extends JPanel {
 
     private static String seadasVersion;
 
-    private final static String RELEASE_NOTES_URL = "https://github.com/seadas/seadas-toolbox/blob/master/docs/release-notes/seadas-platform/8.2.0.md";
-//    private  String RELEASE_NOTES_URL_NAME = "SeaDAS " + seadasVersion + " Release Notes";
-    private  String releaseNotesUrlName;
+    private String releaseNotesUrl;
+    private String releaseNotesUrlName;
 
     private final static String OCEAN_COLOR_WEB_URL = "https://oceancolor.gsfc.nasa.gov/";
     private final static String OCEAN_COLOR_WEB_URL_NAME = "NASA Ocean Color Web";
@@ -33,10 +35,16 @@ public class SeadasAboutBox extends JPanel {
     private final static String SEADAS_WEB_URL_NAME = "SeaDAS Web";
 
     private final ModuleInfo engineModuleInfo;
+    private final JLabel versionText;
 
 
     public SeadasAboutBox() {
+
         super(new BorderLayout());
+
+
+        releaseNotesUrl = SystemUtils.getReleaseNotesUrl();
+
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
 
@@ -45,10 +53,30 @@ public class SeadasAboutBox extends JPanel {
         // Get SeaDAS version from here ... unless better location is determined
         seadasVersion = app.getInstanceName();
 
+        // todo See what this becomes in the package
+        versionText = new JLabel("<html><b>" + SystemUtils.getApplicationName() + " " + SystemUtils.getReleaseVersion() + "</b>");
+
         releaseNotesUrlName = seadasVersion + " Release Notes";
 
 
-        ImageIcon image = new ImageIcon(SeadasAboutBox.class.getResource("about_seadas.png"));
+
+        // todo Testing
+        System.out.println("******** getApplicationHomepageUrl=" + SystemUtils.getApplicationHomepageUrl());
+        System.out.println("******** getReleaseVersion=" + SystemUtils.getReleaseVersion());
+        System.out.println("******** getApplicationName=" + SystemUtils.getApplicationName());
+        System.out.println("******** getApplicationContextId=" + SystemUtils.getApplicationContextId());
+        System.out.println("******** getApplicationRemoteVersionUrl=" + SystemUtils.getApplicationRemoteVersionUrl());
+        System.out.println("******** getApplicationDataDir=" + SystemUtils.getApplicationDataDir());
+        System.out.println("******** getApplicationHomeDir=" + SystemUtils.getApplicationHomeDir());
+        System.out.println("******** getUserHomeDir=" + SystemUtils.getUserHomeDir());
+
+
+        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.png");
+        if (resourceUrl == null) {
+            resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        }
+        ImageIcon image = new ImageIcon(resourceUrl);
+
         JLabel banner = new JLabel(image);
 
 
@@ -69,6 +97,7 @@ public class SeadasAboutBox extends JPanel {
                 + "the <i>GNU General Public License</i> as published by the Free Software Foundation, either<br>"
                 + "version 3 of the License, or (at your option) any later version.<br>&nbsp;<br>"
                 + "<b>SeaDAS version: </b>" + seadasVersion + "<br>"
+                + "<b>(TODO/TEST) version (TODO/TEST): </b>" + versionText + "<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
                 + "<b>SNAP Desktop implementation version: </b>SEADAS 8.2.0 (branded from SNAP 8.0.7)<br>"
@@ -111,7 +140,7 @@ public class SeadasAboutBox extends JPanel {
 
         gbc.gridy = 1;
         gbc.insets.left = 15;
-        jPanel.add(getUrlJLabel(RELEASE_NOTES_URL, releaseNotesUrlName), gbc);
+        jPanel.add(getUrlJLabel(releaseNotesUrl, releaseNotesUrlName), gbc);
 
         gbc.gridy = 2;
         jPanel.add(getUrlJLabel(SEADAS_WEB_URL, SEADAS_WEB_URL_NAME), gbc);
