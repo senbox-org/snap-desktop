@@ -35,6 +35,8 @@ import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.GraticuleLayerType;
+import org.esa.snap.core.layer.ColorBarLayer;
+import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
 import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.core.layer.NoDataLayerType;
@@ -48,6 +50,7 @@ import java.awt.geom.AffineTransform;
 
 
 // SEP2018 - Daniel Knowles - added multiple new properties to the Graticule layer configuration
+// MAY2021 - Daniel Knowles - added mechanisms for Color Bar Legend Layer
 
 public class ProductSceneImage implements ProductLayerContext {
 
@@ -198,6 +201,18 @@ public class ProductSceneImage implements ProductLayerContext {
         }
         return layer;
     }
+
+
+    ColorBarLayer getColorBarLayer(boolean create) {
+        ColorBarLayer layer = (ColorBarLayer) getLayer(ProductSceneView.COLORBAR_LAYER_ID);
+        if (layer == null && create) {
+            layer = createColorBarLayer(getImageToModelTransform());
+            addLayer(0, layer);
+        }
+        return layer;
+    }
+
+
 
     Layer getGcpLayer(boolean create) {
         final Product product = getProduct();
@@ -625,6 +640,367 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
 
+
+    }
+
+
+    private ColorBarLayer createColorBarLayer(AffineTransform i2mTransform) {
+        final LayerType layerType = LayerTypeRegistry.getLayerType(ColorBarLayerType.class);
+        final PropertySet template = layerType.createLayerConfig(null);
+        template.setValue(ColorBarLayerType.PROPERTY_NAME_RASTER, getRaster());
+        final ColorBarLayer colorBarLayer = (ColorBarLayer) layerType.createLayer(null, template);
+        colorBarLayer.setId(ProductSceneView.COLORBAR_LAYER_ID);
+        colorBarLayer.setVisible(false);
+        colorBarLayer.setName(ColorBarLayerType.COLOR_BAR_LAYER_NAME);
+        applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
+        return colorBarLayer;
+    }
+
+    static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer, ImageInfo imageInfo) {
+        final PropertySet layerConfiguration = layer.getConfiguration();
+
+//
+//        // Title Section
+//
+//        addSectionPropertyToLayerConfiguration(configuration, layer,
+//                ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY);
+//
+//
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
+
+
+
+        // Orientation Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT,
+                ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TYPE);
+
+
+
+        // Tick Label Values
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TYPE);
+
+
+
+        // Placement Location Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TYPE);
+
+
+
+
+
+
+        // Size & Scaling Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TYPE);
+
+
+
+
+        // Title Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_COLOR_TYPE);
+
+
+
+
+        // Units Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TYPE);
+
+
+
+        // Tick Label Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TYPE);
+
+
+
+
+        // Tick Marks Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
+
+
+
+
+        // Backdrop Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_TRANSPARENCY_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_BACKDROP_COLOR_TYPE);
+
+
+
+
+        // Palette Border Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_PALETTE_BORDER_COLOR_TYPE);
+
+
+
+        // Legend Border Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TYPE);
 
     }
 
