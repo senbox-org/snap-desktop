@@ -21,6 +21,7 @@ import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
@@ -52,9 +53,9 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = true,
-        position = 50
+        mode = PackageDefaults.WORLD_VIEW_MODE,
+        openAtStartup = PackageDefaults.WORLD_VIEW_OPEN,
+        position = PackageDefaults.WORLD_VIEW_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WWWorldMapToolView")
 @ActionReferences({
@@ -65,7 +66,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
         preferredID = "WWWorldMapToolView"
 )
 @NbBundle.Messages({
-        "CTL_WorldWindTopComponentName=World View",
+        "CTL_WorldWindTopComponentName=" + PackageDefaults.WORLD_VIEW_NAME,
         "CTL_WorldWindTopComponentDescription=WorldWind World View",
 })
 public class WWWorldViewToolView extends WWBaseToolView implements WWView {

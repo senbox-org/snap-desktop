@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.SelectionInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,11 +36,11 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
-        position = 100
+        path = "Toolbars/" + PackageDefaults.SELECT_TOOL_TOOLBAR_NAME,
+        position = PackageDefaults.SELECT_TOOL_TOOLBAR_POSITION
 )
 @Messages({
-                  "CTL_SelectToolActionText=Select",
+                  "CTL_SelectToolActionText=" + PackageDefaults.SELECT_TOOL_NAME,
                   "CTL_SelectToolActionDescription=Selection tool"
           })
 public class SelectToolAction extends ToolAction {
@@ -53,7 +54,7 @@ public class SelectToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_SelectToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_SelectToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/SelectTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.SELECT_TOOL_ICON, false));
 
         Interactor interactor = new SelectionInteractor();
         interactor.addListener(new SelectionInteractorInterceptor());
