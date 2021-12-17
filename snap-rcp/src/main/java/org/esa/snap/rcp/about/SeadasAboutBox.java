@@ -71,7 +71,7 @@ public class SeadasAboutBox extends JPanel {
         System.out.println("******** getUserHomeDir=" + SystemUtils.getUserHomeDir());
 
 
-        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.png");
+        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
         if (resourceUrl == null) {
             resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
         }
