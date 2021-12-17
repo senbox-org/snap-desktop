@@ -35,7 +35,6 @@ public class SeadasAboutBox extends JPanel {
     private final static String SEADAS_WEB_URL_NAME = "SeaDAS Web";
 
     private final ModuleInfo engineModuleInfo;
-    private final JLabel versionText;
 
 
     public SeadasAboutBox() {
@@ -51,24 +50,22 @@ public class SeadasAboutBox extends JPanel {
         SnapApp app = SnapApp.getDefault();
 
         // Get SeaDAS version from here ... unless better location is determined
-        seadasVersion = app.getInstanceName();
+        seadasVersion = SystemUtils.getReleaseVersion();
 
-        // todo See what this becomes in the package
-        versionText = new JLabel("<html><b>" + SystemUtils.getApplicationName() + " " + SystemUtils.getReleaseVersion() + "</b>");
 
         releaseNotesUrlName = seadasVersion + " Release Notes";
 
 
-
-        // todo Testing
-        System.out.println("******** getApplicationHomepageUrl=" + SystemUtils.getApplicationHomepageUrl());
-        System.out.println("******** getReleaseVersion=" + SystemUtils.getReleaseVersion());
-        System.out.println("******** getApplicationName=" + SystemUtils.getApplicationName());
-        System.out.println("******** getApplicationContextId=" + SystemUtils.getApplicationContextId());
-        System.out.println("******** getApplicationRemoteVersionUrl=" + SystemUtils.getApplicationRemoteVersionUrl());
-        System.out.println("******** getApplicationDataDir=" + SystemUtils.getApplicationDataDir());
-        System.out.println("******** getApplicationHomeDir=" + SystemUtils.getApplicationHomeDir());
-        System.out.println("******** getUserHomeDir=" + SystemUtils.getUserHomeDir());
+//
+//        // todo Testing
+//        System.out.println("******** getApplicationHomepageUrl=" + SystemUtils.getApplicationHomepageUrl());
+//        System.out.println("******** getReleaseVersion=" + SystemUtils.getReleaseVersion());
+//        System.out.println("******** getApplicationName=" + SystemUtils.getApplicationName());
+//        System.out.println("******** getApplicationContextId=" + SystemUtils.getApplicationContextId());
+//        System.out.println("******** getApplicationRemoteVersionUrl=" + SystemUtils.getApplicationRemoteVersionUrl());
+//        System.out.println("******** getApplicationDataDir=" + SystemUtils.getApplicationDataDir());
+//        System.out.println("******** getApplicationHomeDir=" + SystemUtils.getApplicationHomeDir());
+//        System.out.println("******** getUserHomeDir=" + SystemUtils.getUserHomeDir());
 
 
         URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
@@ -97,14 +94,13 @@ public class SeadasAboutBox extends JPanel {
                 + "the <i>GNU General Public License</i> as published by the Free Software Foundation, either<br>"
                 + "version 3 of the License, or (at your option) any later version.<br>&nbsp;<br>"
                 + "<b>SeaDAS version: </b>" + seadasVersion + "<br>"
-                + "<b>(TODO/TEST) version (TODO/TEST): </b>" + versionText + "<br>"
-//                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "<br>"
-//                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "<br>"
-                + "<b>SNAP Desktop implementation version: </b>SEADAS 8.2.0 (branded from SNAP 8.0.7)<br>"
-                + "<b>SNAP Desktop git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-8.2.0<br>"
+                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "* (SeaDAS Modified)<br>"
+                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "* (SeaDAS Modified)<br>"
+//                + "<b>SNAP Desktop implementation version: </b>SEADAS-8.2.0 (branded from SNAP 8.0.9)<br>"
+                + "<b>SNAP Desktop git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-" + seadasVersion + "<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
-                + "<b>SNAP Engine implementation version: </b>SEADAS 8.2.0 (branded from SNAP 8.0.7)<br>"
-                + "<b>SNAP Engine git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-8.2.0<br>"
+//                + "<b>SNAP Engine implementation version: </b>SEADAS-8.2.0 (branded from SNAP 8.0.9)<br>"
+                + "<b>SNAP Engine git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-" + seadasVersion + "<br>"
 
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
                 + "<b>Resource directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
