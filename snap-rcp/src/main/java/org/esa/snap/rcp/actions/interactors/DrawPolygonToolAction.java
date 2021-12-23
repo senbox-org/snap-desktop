@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertPolygonFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -52,7 +53,7 @@ public class DrawPolygonToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawPolygonToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolygonToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawPolygonTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_POLYGON_ICON, false));
         Interactor interactor = new InsertPolygonFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

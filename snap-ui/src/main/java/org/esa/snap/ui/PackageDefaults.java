@@ -28,6 +28,16 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String DENSITY_PLOT_ICON = "seadas/ScatterPlot24.png"; // differs from snap
     public static final String CORRELATIVE_PLOT_ICON = "seadas/CorrelativePlot24.png"; // differs from snap
     public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
+    public static final String OVERLAY_WORLD_MAP_ICON = "seadas/WorldMap24.png"; // differs from snap
+    public static final String OVERLAY_NO_DATA_ICON = "seadas/NoDataOverlay24.png"; // differs from snap
+    public static final String OVERLAY_GRATICULE_ICON = "seadas/GraticuleOverlay24.png"; // differs from snap
+    public static final String VECTOR_DATA_NODE_ICON = "seadas/NewVectorContainer.png"; // differs from snap
+    public static final String VECTOR_DATA_NODE_SMALL_ICON = "seadas/NewVectorContainer.png"; // differs from snap
+    public static final String DRAW_RECTANGLE_ICON = "seadas/DrawRectangleTool24.png"; // differs from snap
+    public static final String DRAW_ELLIPSE_ICON = "seadas/DrawEllipseTool24.png"; // differs from snap
+    public static final String DRAW_POLYGON_ICON = "seadas/DrawPolygonTool24.png"; // differs from snap
+    public static final String DRAW_LINE_ICON = "seadas/DrawLineTool24.png"; // differs from snap
+    public static final String DRAW_POLYLINE_ICON = "seadas/DrawPolylineTool24.png"; // differs from snap
 
 
     //---------------------------------------------------------------
@@ -194,114 +204,123 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: OverlayWorldMapLayerAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayWorldMapLayerAction.java
     // General
-    public static final String OVERLAY_WORLD_MAP_NAME = "World Map Overlay";
-    public static final String OVERLAY_WORLD_MAP_DESCRIPTION = "Show/hide world map overlay for the selected image";
-    public static final String OVERLAY_WORLD_MAP_ICON = "seadas/WorldMap24.png"; // differs from snap
-    // Menu
-    public static final String OVERLAY_WORLD_MAP_MENU_PATH = "Layer";
-    public static final int OVERLAY_WORLD_MAP_MENU_POSITION = 50;
-    // Toolbar
-    public static final String OVERLAY_WORLD_MAP_TOOLBAR_NAME = "Overlay";
-    public static final int OVERLAY_WORLD_MAP_TOOLBAR_POSITION = 20;
+//    public static final String OVERLAY_WORLD_MAP_NAME = "World Map Overlay";
+//    public static final String OVERLAY_WORLD_MAP_DESCRIPTION = "Show/hide world map overlay for the selected image";
+//    public static final String OVERLAY_WORLD_MAP_ICON = "seadas/WorldMap24.png"; // differs from snap
+//    // Menu
+//    public static final String OVERLAY_WORLD_MAP_MENU_PATH = "Layer";
+//    public static final int OVERLAY_WORLD_MAP_MENU_POSITION = 50;
+//    // Toolbar
+//    public static final String OVERLAY_WORLD_MAP_TOOLBAR_NAME = "Overlay";
+//    public static final int OVERLAY_WORLD_MAP_TOOLBAR_POSITION = 20;
 
 
     //---------------------------------------------------------------
     // Class: OverlayNoDataLayerAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayNoDataLayerAction.java
     // General
-    public static final String OVERLAY_NO_DATA_NAME = "No-Data Overlay";
-    public static final String OVERLAY_NO_DATA_DESCRIPTION = "Show/hide no-data overlay for the selected image";
-    public static final String OVERLAY_NO_DATA_ICON = "seadas/NoDataOverlay24.png"; // differs from snap
-    // Menu
-    public static final String OVERLAY_NO_DATA_MENU_PATH = "Layer";
-    public static final int OVERLAY_NO_DATA_MENU_POSITION = 0;
-    // Toolbar
-    public static final String OVERLAY_NO_DATA_TOOLBAR_NAME = "Overlay";
-    public static final int OVERLAY_NO_DATA_TOOLBAR_POSITION = 0;
+//    public static final String OVERLAY_NO_DATA_NAME = "No-Data Overlay";
+//    public static final String OVERLAY_NO_DATA_DESCRIPTION = "Show/hide no-data overlay for the selected image";
+//    public static final String OVERLAY_NO_DATA_ICON = "seadas/NoDataOverlay24.png"; // differs from snap
+//    // Menu
+//    public static final String OVERLAY_NO_DATA_MENU_PATH = "Layer";
+//    public static final int OVERLAY_NO_DATA_MENU_POSITION = 0;
+//    // Toolbar
+//    public static final String OVERLAY_NO_DATA_TOOLBAR_NAME = "Overlay";
+//    public static final int OVERLAY_NO_DATA_TOOLBAR_POSITION = 0;
 
 
     //---------------------------------------------------------------
     // Class: OverlayGraticuleLayerAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayGraticuleLayerAction.java
     // General
-    public static final String OVERLAY_GRATICULE_NAME = "Graticule Overlay";
-    public static final String OVERLAY_GRATICULE_DESCRIPTION = "Show/hide graticule overlay for the selected image";
-    public static final String OVERLAY_GRATICULE_ICON = "seadas/GraticuleOverlay24.png"; // differs from snap
-    // Menu
-    public static final String OVERLAY_GRATICULE_MENU_PATH = "Layer";
-    public static final int OVERLAY_GRATICULE_MENU_POSITION = 20;
-    // Toolbar
-    public static final String OVERLAY_GRATICULE_TOOLBAR_NAME = "Overlay";
-    public static final int OVERLAY_GRATICULE_TOOLBAR_POSITION = 10;
+//    public static final String OVERLAY_GRATICULE_NAME = "Graticule Overlay";
+//    public static final String OVERLAY_GRATICULE_DESCRIPTION = "Show/hide graticule overlay for the selected image";
+//    public static final String OVERLAY_GRATICULE_ICON = "seadas/GraticuleOverlay24.png"; // differs from snap
+//    // Menu
+//    public static final String OVERLAY_GRATICULE_MENU_PATH = "Layer";
+//    public static final int OVERLAY_GRATICULE_MENU_POSITION = 20;
+//    // Toolbar
+//    public static final String OVERLAY_GRATICULE_TOOLBAR_NAME = "Overlay";
+//    public static final int OVERLAY_GRATICULE_TOOLBAR_POSITION = 10;
 
 
     //---------------------------------------------------------------
     // Class: CreateVectorDataNodeAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/vector/CreateVectorDataNodeAction.java
     // General
-    public static final String VECTOR_DATA_NODE_NAME = "New Vector Data Container";
-    public static final String VECTOR_DATA_NODE_DESCRIPTION = "New Vector Data Container";
-    public static final String VECTOR_DATA_NODE_ICON = "seadas/NewVectorContainer.png"; // differs from snap
-    public static final String VECTOR_DATA_NODE_SMALL_ICON = "seadas/NewVectorContainer.png"; // differs from snap
-    // Menu
-    public static final String VECTOR_DATA_NODE_MENU_PATH = "Vector";
-    public static final int VECTOR_DATA_NODE_MENU_POSITION = 0;
-    // Toolbar
-    public static final String VECTOR_DATA_NODE_TOOLBAR_NAME = "Geometry";
-    public static final int VECTOR_DATA_NODE_TOOLBAR_POSITION = 0;
+//    public static final String VECTOR_DATA_NODE_NAME = "New Vector Data Container";
+//    public static final String VECTOR_DATA_NODE_DESCRIPTION = "New Vector Data Container";
+//    public static final String VECTOR_DATA_NODE_ICON = "seadas/NewVectorContainer.png"; // differs from snap
+//    public static final String VECTOR_DATA_NODE_SMALL_ICON = "seadas/NewVectorContainer.png"; // differs from snap
+//    // Menu
+//    public static final String VECTOR_DATA_NODE_MENU_PATH = "Vector";
+//    public static final int VECTOR_DATA_NODE_MENU_POSITION = 0;
+//    // Toolbar
+//    public static final String VECTOR_DATA_NODE_TOOLBAR_NAME = "Geometry";
+//    public static final int VECTOR_DATA_NODE_TOOLBAR_POSITION = 0;
 
 
     //---------------------------------------------------------------
     // Class: DrawRectangleToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/DrawRectangleToolAction.java
     // General
-    public static final String DRAW_RECTANGLE_NAME = "Draw Rectangle";
-    public static final String DRAW_RECTANGLE_DESCRIPTION = "Rectangle drawing tool";
-    public static final String DRAW_RECTANGLE_ICON = "seadas/DrawRectangleTool24.png"; // differs from snap
-    // Toolbar
-    public static final String DRAW_RECTANGLE_TOOLBAR_NAME = "Geometry";
-    public static final int DRAW_RECTANGLE_TOOLBAR_POSITION = 10;
+//    public static final String DRAW_RECTANGLE_NAME = "Draw Rectangle";
+//    public static final String DRAW_RECTANGLE_DESCRIPTION = "Rectangle drawing tool";
+//    public static final String DRAW_RECTANGLE_ICON = "seadas/DrawRectangleTool24.png"; // differs from snap
+//    // Toolbar
+//    public static final String DRAW_RECTANGLE_TOOLBAR_NAME = "Geometry";
+//    public static final int DRAW_RECTANGLE_TOOLBAR_POSITION = 10;
 
 
     //---------------------------------------------------------------
     // Class: DrawEllipseToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/DrawEllipseToolAction.java
     // General
-    public static final String DRAW_ELLIPSE_NAME = "Draw Ellipse";
-    public static final String DRAW_ELLIPSE_DESCRIPTION = "Ellipse drawing tool";
-    public static final String DRAW_ELLIPSE_ICON = "seadas/DrawEllipseTool24.png"; // differs from snap
-    // Toolbar
-    public static final String DRAW_ELLIPSE_TOOLBAR_NAME = "Geometry";
-    public static final int DRAW_ELLIPSE_TOOLBAR_POSITION = 20;
+//    public static final String DRAW_ELLIPSE_NAME = "Draw Ellipse";
+//    public static final String DRAW_ELLIPSE_DESCRIPTION = "Ellipse drawing tool";
+//    public static final String DRAW_ELLIPSE_ICON = "seadas/DrawEllipseTool24.png"; // differs from snap
+//    // Toolbar
+//    public static final String DRAW_ELLIPSE_TOOLBAR_NAME = "Geometry";
+//    public static final int DRAW_ELLIPSE_TOOLBAR_POSITION = 20;
 
 
     //---------------------------------------------------------------
     // Class: DrawPolygonToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/DrawPolygonToolAction.java
     // General
-    public static final String DRAW_POLYGON_NAME = "Draw Polygon";
-    public static final String DRAW_POLYGON_DESCRIPTION = "Polygon drawing tool";
-    public static final String DRAW_POLYGON_ICON = "seadas/DrawPolygonTool24.png"; // differs from snap
-    // Toolbar
-    public static final String DRAW_POLYGON_TOOLBAR_NAME = "Geometry";
-    public static final int DRAW_POLYGON_TOOLBAR_POSITION = 30;
+//    public static final String DRAW_POLYGON_NAME = "Draw Polygon";
+//    public static final String DRAW_POLYGON_DESCRIPTION = "Polygon drawing tool";
+//    public static final String DRAW_POLYGON_ICON = "seadas/DrawPolygonTool24.png"; // differs from snap
+//    // Toolbar
+//    public static final String DRAW_POLYGON_TOOLBAR_NAME = "Geometry";
+//    public static final int DRAW_POLYGON_TOOLBAR_POSITION = 30;
 
 
     //---------------------------------------------------------------
     // Class: DrawLineToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/DrawLineToolAction.java
     // General
-    public static final String DRAW_LINE_NAME = "Draw Line";
-    public static final String DRAW_LINE_DESCRIPTION = "Line drawing tool";
-    public static final String DRAW_LINE_ICON = "seadas/DrawLineTool24.png"; // differs from snap
-    // Toolbar
-    public static final String DRAW_LINE_TOOLBAR_NAME = "Geometry Lines";
-    public static final int DRAW_LINE_TOOLBAR_POSITION = 40;
+//    public static final String DRAW_LINE_NAME = "Draw Line";
+//    public static final String DRAW_LINE_DESCRIPTION = "Line drawing tool";
+//    public static final String DRAW_LINE_ICON = "seadas/DrawLineTool24.png"; // differs from snap
+//    // Toolbar
+//    public static final String DRAW_LINE_TOOLBAR_NAME = "Geometry Lines";
+//    public static final int DRAW_LINE_TOOLBAR_POSITION = 40;
 
 
     //---------------------------------------------------------------
     // Class: DrawPolylineToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/DrawPolylineToolAction.java
     // General
-    public static final String DRAW_POLYLINE_NAME = "Draw Polyline";
-    public static final String DRAW_POLYLINE_DESCRIPTION = "Polyline drawing tool";
-    public static final String DRAW_POLYLINE_ICON = "seadas/DrawPolylineTool24.png"; // differs from snap
-    // Toolbar
-    public static final String DRAW_POLYLINE_TOOLBAR_NAME = "Geometry Lines";
-    public static final int DRAW_POLYLINE_TOOLBAR_POSITION = 50;
+//    public static final String DRAW_POLYLINE_NAME = "Draw Polyline";
+//    public static final String DRAW_POLYLINE_DESCRIPTION = "Polyline drawing tool";
+//    public static final String DRAW_POLYLINE_ICON = "seadas/DrawPolylineTool24.png"; // differs from snap
+//    // Toolbar
+//    public static final String DRAW_POLYLINE_TOOLBAR_NAME = "Geometry Lines";
+//    public static final int DRAW_POLYLINE_TOOLBAR_POSITION = 50;
 
 
     //---------------------------------------------------------------
