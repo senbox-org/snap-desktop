@@ -11,7 +11,6 @@ import java.awt.*;
 
 public class PackageDefaults extends PackageDefaultsSnap {
 
-
     //---------------------------------------------------------------
     // Word Spellings
     public static final String COLOR_SPELLING = "Color"; // differs from snap
@@ -22,9 +21,22 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final Color IMAGE_BACKGROUND_COLOR = Color.WHITE; // differs from snap
     public static final Color NO_DATA_LAYER_COLOR = new Color(128, 128, 128); // differs from snap
 
+
     //---------------------------------------------------------------
-    // icons
+    // Toolbar Icons
     public static final String HISTOGRAM_PLOT_ICON = "seadas/Histogram24.png"; // differs from snap
+    public static final String DENSITY_PLOT_ICON = "seadas/ScatterPlot24.png"; // differs from snap
+    public static final String CORRELATIVE_PLOT_ICON = "seadas/CorrelativePlot24.png"; // differs from snap
+    public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
+
+
+    //---------------------------------------------------------------
+    // Tool Window Locations (Modes)
+    public static final String HISTOGRAM_PLOT_WS_MODE = "Statistics";  // differs from snap
+    public static final String DENSITY_PLOT_WS_MODE = "Statistics";  // differs from snap
+    public static final String CORRELATIVE_PLOT_WS_MODE = "Statistics";  // differs from snap
+    public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
+
 
 
     //---------------------------------------------------------------
@@ -67,72 +79,74 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: DensityPlotTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/statistics/DensityPlotTopComponent.java
     // General
-    public static final String DENSITY_PLOT_NAME = "Scatter Plot";
-    public static final String DENSITY_PLOT_ICON = "seadas/ScatterPlot24.png"; // differs from snap
-    // Menu
-    public static final String DENSITY_PLOT_MENU_PATH = "Analysis";
-    public static final int DENSITY_PLOT_MENU_POSITION = 20;
-    // Toolbar
-    public static final String DENSITY_PLOT_TOOLBAR_NAME = "Analysis";
-    public static final int DENSITY_PLOT_TOOLBAR_POSITION = 20; // may differ from snap
-    // Window
-    public static final String DENSITY_PLOT_WS_MODE = "Statistics";  // differs from snap
-    public static final boolean DENSITY_PLOT_WS_OPEN = false;
-    public static final int DENSITY_PLOT_WS_POSITION = 20;  // may differ from snap
+//    public static final String DENSITY_PLOT_NAME = "Scatter Plot";
+//    public static final String DENSITY_PLOT_ICON = "seadas/ScatterPlot24.png"; // differs from snap
+//    // Menu
+//    public static final String DENSITY_PLOT_MENU_PATH = "Analysis";
+//    public static final int DENSITY_PLOT_MENU_POSITION = 20;
+//    // Toolbar
+//    public static final String DENSITY_PLOT_TOOLBAR_NAME = "Analysis";
+//    public static final int DENSITY_PLOT_TOOLBAR_POSITION = 20; // may differ from snap
+//    // Window
+//    public static final String DENSITY_PLOT_WS_MODE = "Statistics";  // differs from snap
+//    public static final boolean DENSITY_PLOT_WS_OPEN = false;
+//    public static final int DENSITY_PLOT_WS_POSITION = 20;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: ScatterPlotTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/statistics/ScatterPlotTopComponent.java
     // General
-    public static final String SCATTER_PLOT_NAME = "Correlative Plot";
-    public static final String SCATTER_PLOT_ICON = "seadas/CorrelativePlot24.png"; // differs from snap
-    // Menu
-    public static final String SCATTER_PLOT_MENU_PATH = "Analysis";
-    public static final int SCATTER_PLOT_MENU_POSITION = 10;
-    // Toolbar
-    public static final String SCATTER_PLOT_TOOLBAR_NAME = "Analysis";
-    public static final int SCATTER_PLOT_TOOLBAR_POSITION = 30; // may differ from snap
-    // Window
-    public static final String SCATTER_PLOT_WS_MODE = "Statistics";  // differs from snap
-    public static final boolean SCATTER_PLOT_WS_OPEN = false;
-    public static final int SCATTER_PLOT_WS_POSITION = 30; // may differ from snap
+//    public static final String SCATTER_PLOT_NAME = "Correlative Plot";
+//    public static final String CORRELATIVE_PLOT_ICON = "seadas/CorrelativePlot24.png"; // differs from snap
+//    // Menu
+//    public static final String SCATTER_PLOT_MENU_PATH = "Analysis";
+//    public static final int SCATTER_PLOT_MENU_POSITION = 10;
+//    // Toolbar
+//    public static final String SCATTER_PLOT_TOOLBAR_NAME = "Analysis";
+//    public static final int SCATTER_PLOT_TOOLBAR_POSITION = 30; // may differ from snap
+//    // Window
+//    public static final String CORRELATIVE_PLOT_WS_MODE = "Statistics";  // differs from snap
+//    public static final boolean SCATTER_PLOT_WS_OPEN = false;
+//    public static final int SCATTER_PLOT_WS_POSITION = 30; // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class:ProfilePlotTopComponent
     // General
-    public static final String PROFILE_PLOT_NAME = "Profile Plot";
-    public static final String PROFILE_PLOT_ICON = "ProfilePlot.gif";
-    // Menu
-    public static final String PROFILE_PLOT_MENU_PATH = "Analysis";
-    public static final int PROFILE_PLOT_MENU_POSITION = 30;
-    // Toolbar
-    public static final String PROFILE_PLOT_TOOLBAR_NAME = "Analysis";
-    public static final int PROFILE_PLOT_TOOLBAR_POSITION = 40; // may differ from snap
-    // Window
+//    public static final String PROFILE_PLOT_NAME = "Profile Plot";
+//    public static final String PROFILE_PLOT_ICON = "ProfilePlot.gif";
+//    // Menu
+//    public static final String PROFILE_PLOT_MENU_PATH = "Analysis";
+//    public static final int PROFILE_PLOT_MENU_POSITION = 30;
+//    // Toolbar
+//    public static final String PROFILE_PLOT_TOOLBAR_NAME = "Analysis";
+//    public static final int PROFILE_PLOT_TOOLBAR_POSITION = 40; // may differ from snap
+//    // Window
     public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
-    public static final boolean PROFILE_PLOT_WS_OPEN = false;
-    public static final int PROFILE_PLOT_WS_POSITION = 40;  // may differ from snap
+//    public static final boolean PROFILE_PLOT_WS_OPEN = false;
+//    public static final int PROFILE_PLOT_WS_POSITION = 40;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class:SpectrumTopComponent
     // General
-    public static final String SPECTRUM_NAME = "Spectrum View";
-    public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
-    // Menu
-    public static final String SPECTRUM_MENU_PATH_1 = "Optical";
-    public static final int SPECTRUM_MENU_POSITION_1 = 0;
-    public static final String SPECTRUM_MENU_PATH_2 = "View/Tool Windows/Optical";
-    public static final int SPECTRUM_MENU_POSITION_2 = 0;
-    // Toolbar
-    public static final String SPECTRUM_TOOLBAR_NAME = "Analysis";
-    public static final int SPECTRUM_TOOLBAR_POSITION = 50; // may differ from snap
-    // Window
-    public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
-    public static final boolean SPECTRUM_WS_OPEN = false;
-    public static final int SPECTRUM_WS_POSITION = 50;  // may differ from snap
+//    public static final String SPECTRUM_NAME = "Spectrum View";
+//    public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
+//    // Menu
+//    public static final String SPECTRUM_MENU_PATH_1 = "Optical";
+//    public static final int SPECTRUM_MENU_POSITION_1 = 0;
+//    public static final String SPECTRUM_MENU_PATH_2 = "View/Tool Windows/Optical";
+//    public static final int SPECTRUM_MENU_POSITION_2 = 0;
+//    // Toolbar
+//    public static final String SPECTRUM_TOOLBAR_NAME = "Analysis";
+//    public static final int SPECTRUM_TOOLBAR_POSITION = 50; // may differ from snap
+//    // Window
+//    public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
+//    public static final boolean SPECTRUM_WS_OPEN = false;
+//    public static final int SPECTRUM_WS_POSITION = 50;  // may differ from snap
 
 
     //---------------------------------------------------------------
