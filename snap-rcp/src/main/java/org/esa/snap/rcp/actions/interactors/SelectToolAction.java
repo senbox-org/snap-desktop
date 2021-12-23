@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.SelectionInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,7 +36,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/" + PackageDefaults.SELECT_TOOL_TOOLBAR_NAME,
         position = 100
 )
 @Messages({

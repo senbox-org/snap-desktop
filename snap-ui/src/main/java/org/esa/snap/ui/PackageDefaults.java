@@ -35,7 +35,14 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String HISTOGRAM_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String DENSITY_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String CORRELATIVE_PLOT_WS_MODE = "Statistics";  // differs from snap
+    public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
+
+
+    // Toolbar Name
+    public static final String SELECT_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+    public static final String ZOOM_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+    public static final String PANNER_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
 
 
 
@@ -115,6 +122,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class:ProfilePlotTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/statistics/ProfilePlotTopComponent.java
     // General
 //    public static final String PROFILE_PLOT_NAME = "Profile Plot";
 //    public static final String PROFILE_PLOT_ICON = "ProfilePlot.gif";
@@ -125,13 +133,14 @@ public class PackageDefaults extends PackageDefaultsSnap {
 //    public static final String PROFILE_PLOT_TOOLBAR_NAME = "Analysis";
 //    public static final int PROFILE_PLOT_TOOLBAR_POSITION = 40; // may differ from snap
 //    // Window
-    public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
+//    public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
 //    public static final boolean PROFILE_PLOT_WS_OPEN = false;
 //    public static final int PROFILE_PLOT_WS_POSITION = 40;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class:SpectrumTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/spectrum/SpectrumTopComponent.java
     // General
 //    public static final String SPECTRUM_NAME = "Spectrum View";
 //    public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
@@ -151,32 +160,36 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: SelectToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/SelectToolAction.java
     // General
-    public static final String SELECT_TOOL_NAME = "Select";
-    public static final String SELECT_TOOL_ICON = "SelectTool24.gif";
-    // Toolbar
-    public static final String SELECT_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
-    public static final int SELECT_TOOL_TOOLBAR_POSITION = 10;  // may differ from snap
+//    public static final String SELECT_TOOL_NAME = "Select";
+//    public static final String SELECT_TOOL_ICON = "SelectTool24.gif";
+//    // Toolbar
+//    public static final String SELECT_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+//    public static final int SELECT_TOOL_TOOLBAR_POSITION = 10;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: ZoomToolAction
-    // General
-    public static final String ZOOM_TOOL_NAME = "Zoom";
-    public static final String ZOOM_TOOL_ICON = "ZoomTool24.gif";
-    // Toolbar
-    public static final String ZOOM_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
-    public static final int ZOOM_TOOL_TOOLBAR_POSITION = 20;  // may differ from snap
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/ZoomToolAction.java
+
+//    // General
+//    public static final String ZOOM_TOOL_NAME = "Zoom";
+//    public static final String ZOOM_TOOL_ICON = "ZoomTool24.gif";
+//    // Toolbar
+//    public static final String ZOOM_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+//    public static final int ZOOM_TOOL_TOOLBAR_POSITION = 20;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: PannerToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/PannerToolAction.java
     // General
-    public static final String PANNER_TOOL_NAME = "Pan";
-    public static final String PANNER_TOOL_ICON = "PannerTool24.gif";
-    // Toolbar
-    public static final String PANNER_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
-    public static final int PANNER_TOOL_TOOLBAR_POSITION = 0;  // may differ from snap
+//    public static final String PANNER_TOOL_NAME = "Pan";
+//    public static final String PANNER_TOOL_ICON = "PannerTool24.gif";
+//    // Toolbar
+//    public static final String PANNER_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+//    public static final int PANNER_TOOL_TOOLBAR_POSITION = 0;  // may differ from snap
 
 
     //---------------------------------------------------------------
