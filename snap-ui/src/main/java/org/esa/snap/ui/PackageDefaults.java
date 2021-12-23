@@ -22,39 +22,47 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final Color IMAGE_BACKGROUND_COLOR = Color.WHITE; // differs from snap
     public static final Color NO_DATA_LAYER_COLOR = new Color(128, 128, 128); // differs from snap
 
+    //---------------------------------------------------------------
+    // icons
+    public static final String HISTOGRAM_PLOT_ICON = "seadas/Histogram24.png"; // differs from snap
+
 
     //---------------------------------------------------------------
     // Class: StatisticsTopComponent
+
+    // snap-rcp/src/main/java/org/esa/snap/rcp/statistics/StatisticsTopComponent.java
     // General
-    public static final String STATISTICS_NAME = "Statistics";
-    public static final String STATISTICS_ICON = "Statistics.gif";
-    // Menu
-    public static final String STATISTICS_MENU_PATH = "Analysis";
-    public static final int STATISTICS_MENU_POSITION = 60;
-    // Toolbar
-    public static final String STATISTICS_TOOLBAR_PATH = "Analysis";
-    public static final int STATISTICS_TOOLBAR_POSITION = 0; // may differ from snap
-    // Window
-    public static final String STATISTICS_WS_MODE = "Statistics";
-    public static final boolean STATISTICS_WS_OPEN = false;
-    public static final int STATISTICS_WS_POSITION = 0;  // may differ from snap
+//    public static final String STATISTICS_NAME = "Statistics";
+//    public static final String STATISTICS_ICON = "Statistics.gif";
+//    // Menu
+//    public static final String STATISTICS_MENU_PATH = "Analysis";
+//    public static final int STATISTICS_MENU_POSITION = 60;
+//    // Toolbar
+//    public static final String STATISTICS_TOOLBAR_PATH = "Analysis";
+//    public static final int STATISTICS_TOOLBAR_POSITION = 0; // may differ from snap
+//    // Window
+//    public static final String STATISTICS_WS_MODE = "Statistics";
+//    public static final boolean STATISTICS_WS_OPEN = false;
+//    public static final int STATISTICS_WS_POSITION = 0;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: HistogramPlotTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/statistics/HistogramPlotTopComponent.java
+
     // General
-    public static final String HISTOGRAM_PLOT_NAME = "Histogram";
-    public static final String HISTOGRAM_PLOT_ICON = "seadas/Histogram24.png"; // differs from snap
-    // Menu
-    public static final String HISTOGRAM_PLOT_MENU_PATH = "Analysis";
-    public static final int HISTOGRAM_PLOT_MENU_POSITION = 50;
-    // Toolbar
-    public static final String HISTOGRAM_PLOT_TOOLBAR_NAME = "Analysis";
-    public static final int HISTOGRAM_PLOT_TOOLBAR_POSITION = 10; // may differ from snap
-    // Window
-    public static final String HISTOGRAM_PLOT_WS_MODE = "Statistics";  // differs from snap
-    public static final boolean HISTOGRAM_PLOT_WS_OPEN = false;
-    public static final int HISTOGRAM_PLOT_WS_POSITION = 10;  // may differ from snap
+//    public static final String HISTOGRAM_PLOT_NAME = "Histogram";
+//    public static final String HISTOGRAM_PLOT_ICON = "seadas/Histogram24.png"; // differs from snap
+//    // Menu
+//    public static final String HISTOGRAM_PLOT_MENU_PATH = "Analysis";
+//    public static final int HISTOGRAM_PLOT_MENU_POSITION = 50;
+//    // Toolbar
+//    public static final String HISTOGRAM_PLOT_TOOLBAR_NAME = "Analysis";
+//    public static final int HISTOGRAM_PLOT_TOOLBAR_POSITION = 10; // may differ from snap
+//    // Window
+//    public static final String HISTOGRAM_PLOT_WS_MODE = "Statistics";  // differs from snap
+//    public static final boolean HISTOGRAM_PLOT_WS_OPEN = false;
+//    public static final int HISTOGRAM_PLOT_WS_POSITION = 10;  // may differ from snap
 
 
     //---------------------------------------------------------------
