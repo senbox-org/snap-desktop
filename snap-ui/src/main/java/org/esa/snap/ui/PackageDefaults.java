@@ -325,6 +325,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: PinManagerTopComponent
+    // snap-rcp/src/main/java/org/esa/snap/rcp/placemark/pin/PinManagerTopComponent.java
     // General
     public static final String PIN_MANAGER_NAME = "Pin Manager";
     public static final String PIN_MANAGER_ICON = "seadas/PinManager.png"; // differs from snap
@@ -341,6 +342,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: PinToolAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/PinToolAction.java
     // General
     public static final String PIN_TOOL_NAME = "Pin Tool";
     public static final String PIN_TOOL_DESCRIPTION = "Pin placing tool";
@@ -352,6 +354,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: OpenProductAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/file/OpenProductAction.java
     // General
     public static final String OPEN_PRODUCT_ACTION_NAME = "Open Product";
     public static final String OPEN_PRODUCT_ACTION_ICON = "seadas/Open24.png"; // differs from snap
@@ -365,6 +368,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: OverlayGeometryLayerAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayGeometryLayerAction.java
     // General
     public static final String OVERLAY_GEOMETRY_NAME = "Geometry Overlay";
     public static final String OVERLAY_GEOMETRY_DESCRIPTION = "Show/hide geometry overlay for the selected image";
@@ -379,6 +383,7 @@ public class PackageDefaults extends PackageDefaultsSnap {
 
     //---------------------------------------------------------------
     // Class: OverlayGcpLayerAction
+    // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayGcpLayerAction.java
     // General
     public static final String OVERLAY_GCP_NAME = "GCP Overlay";
     public static final String OVERLAY_GCP_DESCRIPTION = "Show/hide GCP overlay for the selected image";
