@@ -70,7 +70,12 @@ public class SeadasAboutBox extends JPanel {
 
         URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
         if (resourceUrl == null) {
-            resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+            System.out.println("WARNING! SeaDAS About image not found in branch module, using default image");
+            resourceUrl = SnapAboutBox.class.getResource("about_seadas.png");
+            // todo bug study: then ideally use the following if the branding works consistently in the package
+//            resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        } else {
+            System.out.println("INFO: using branded SeaDAS About image");
         }
         ImageIcon image = new ImageIcon(resourceUrl);
 
