@@ -1367,7 +1367,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 // there is no running thread for the local repository products
                 Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to download the product", false);
                 if (selectedLocalRepositoryFolder != null) {
-                    new AllLocalFolderProductsRepository().saveLocalRepositoryFolder(selectedLocalRepositoryFolder);
                     AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
                     if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                         RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel) selectedRepository;
