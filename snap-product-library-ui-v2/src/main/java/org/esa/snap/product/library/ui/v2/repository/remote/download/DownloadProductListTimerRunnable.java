@@ -130,7 +130,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorMessageDialog(this.repositoryProductListPanel, "Failed to retrieve the product list from " + this.remoteRepositoryName + ".", "Error");
+        onShowErrorMessageDialog(this.repositoryProductListPanel, "Failed to retrieve the product list from " + this.remoteRepositoryName + ".\nReason: " + exception.getMessage(), "Error");
     }
 
     @Override
