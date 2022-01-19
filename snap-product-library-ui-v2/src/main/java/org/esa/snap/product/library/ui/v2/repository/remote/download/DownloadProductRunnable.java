@@ -67,7 +67,12 @@ public abstract class DownloadProductRunnable extends AbstractBackgroundDownload
             //TODO Jean old code to get the product path to open
             //File productFileToOpen = productPath.toFile();
 
-            Product product = ProductIO.readProduct(productFileToOpen);
+            Product product = null;
+            try {
+                product = ProductIO.readProduct(productFileToOpen);
+            } catch (Exception exception){
+                logger.log(Level.WARNING, "Failed to read the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'. " + exception.getMessage());
+            }
             try {
                 saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
                                                                                           this.remoteProductDownloader.getRepositoryName(),
