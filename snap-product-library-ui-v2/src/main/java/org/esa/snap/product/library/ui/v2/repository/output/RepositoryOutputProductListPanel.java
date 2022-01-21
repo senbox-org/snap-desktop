@@ -49,7 +49,6 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private RepositoryProductsTimelinePanel productsTimelinePanel;
     private int visibleProductsPerPage;
     private DownloadProductListTimerRunnable downloadProductListTimerRunnable = null;
-    private Long currentFullResultsListCount = null;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
                                             ActionListener stopButtonListener, int progressBarWidth, boolean showStopDownloadButton) {
@@ -178,7 +177,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     public void setCurrentFullResultsListCount(Long currentFullResultsListCount) {
-        this.currentFullResultsListCount = currentFullResultsListCount;
+        getOutputProductResults().setFullResultsListCount(currentFullResultsListCount);
     }
 
     private boolean downloadsAllPages(){
@@ -387,7 +386,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         OutputProductResults outputProductResults = getOutputProductResults();
         int count = 0;
         if (outputProductResults.getAvailableProductCount() > 0) {
-            long totalCount = downloadsAllPages() || this.currentFullResultsListCount == null ? outputProductResults.getAvailableProductCount() : this.currentFullResultsListCount;
+            long totalCount = outputProductResults.getFullResultsListCount();
             count = (int) (totalCount / this.visibleProductsPerPage);
             if (totalCount % this.visibleProductsPerPage > 0) {
                 count++;
@@ -402,7 +401,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     public void updateProductListCountTitle() {
         int pageProductCount = this.productListPanel.getProductListModel().getProductCount();
-        long totalProductCount = downloadsAllPages() || this.currentFullResultsListCount == null ? getOutputProductResults().getAvailableProductCount() : this.currentFullResultsListCount;
+        long totalProductCount = getOutputProductResults().getFullResultsListCount();
         String text = getTitle() + ": " + Integer.toString(pageProductCount);
         if (totalProductCount > 0) {
             text += " out of " + Long.toString(totalProductCount);

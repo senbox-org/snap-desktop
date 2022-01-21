@@ -71,6 +71,7 @@ public class LoadProductListTimerRunnable extends AbstractProgressTimerRunnable<
     @Override
     protected void onSuccessfullyFinish(List<RepositoryProduct> results) {
         this.repositoryProductListPanel.setProducts(results);
+        this.repositoryProductListPanel.setCurrentFullResultsListCount((long) results.size());
     }
 
     @Override
