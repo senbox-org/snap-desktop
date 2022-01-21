@@ -277,11 +277,11 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 displayPageProducts(1); // display the first page
             } else {
                 refreshPaginationButtons(); // refresh the pagination button after received the products
+                if(!downloadsAllPages() && productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
+                    displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+                }
             }
             this.productsTimelinePanel.refresh(outputProductResults);
-            if(!downloadsAllPages() && productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
-                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
-            }
         }
     }
 
