@@ -1,0 +1,10 @@
+# Color Palette Definition File
+numPoints=3
+color0=0,0,0
+color1=0,0,128
+color2=225,225,255
+sample0=0.0
+sample1=.5
+sample2=1
+autoDistribute=true
+isLogScaled=false
