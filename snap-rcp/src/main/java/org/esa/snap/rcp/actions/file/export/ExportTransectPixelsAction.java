@@ -149,7 +149,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
 
         if (transect == null) {
             Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                    ERR_MSG_BASE + "There is no transect defined in the selected band.");
+                              ERR_MSG_BASE + "There is no selected transect defined in the selected band.");
             return;
         }
 
@@ -217,17 +217,17 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         final SwingWorker<Exception, Object> swingWorker = new SwingWorker<Exception, Object>() {
 
             @Override
-            protected Exception doInBackground() throws Exception {
+            protected Exception doInBackground() {
                 Exception returnValue = null;
                 ProgressMonitor pm = new DialogProgressMonitor(SnapApp.getDefault().getMainFrame(), Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
-                        Dialog.ModalityType.APPLICATION_MODAL);
+                                                               Dialog.ModalityType.APPLICATION_MODAL);
                 try {
                     final boolean mustCreateHeader = createHeaderBox.isSelected();
                     final boolean mustExportWavelengthsAndSF = exportWavelengthsAndSFBox.isSelected();
                     final boolean mustExportTiePoints = exportTiePointsBox.isSelected();
                     TransectExporter exporter = new TransectExporter(mustCreateHeader, mustExportWavelengthsAndSF, mustExportTiePoints);
                     boolean success = exporter.exportTransectPixels(out, view,
-                            transectProfileData,
+                                                                    transectProfileData,
                             numTransectPixels,
                             pm);
                     if (success && clipboardText != null) {
@@ -382,10 +382,9 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
         }
 
         private void writeFileHeader(PrintWriter out, Band[] bands) {
-
             ProductData.UTC utc = ProductData.UTC.create(new Date(), 0);
             out.printf("# Exported transect on %s%n", utc.format());
-            if (bands.length >= 0) {
+            if (bands.length > 0) {
                 Product product = bands[0].getProduct();
                 out.printf("# Product name: %s%n", product.getName());
                 if (product.getFileLocation() != null) {
@@ -393,7 +392,6 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                 }
             }
             out.println();
-
         }
 
         private void writeTableHeader(final PrintWriter out,
@@ -464,18 +462,18 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
 
             // Compute the geo position according to the raster resolution
             final PixelPos pixelPosForGeo = new PixelPos(x + 0.5f, y + 0.5f);
-            out.print(String.valueOf(pixelPosForGeo.x));
+            out.print(pixelPosForGeo.x);
             out.print("\t");
-            out.print(String.valueOf(pixelPosForGeo.y));
+            out.print(pixelPosForGeo.y);
 
             final RasterDataNode viewRaster = view.getRaster();
             final GeoCoding rasterGeocoding = viewRaster.getGeoCoding();
             if (rasterGeocoding != null) {
                 out.print("\t");
                 final GeoPos geoPosForPrint = rasterGeocoding.getGeoPos(pixelPosForGeo, null);
-                out.print(String.valueOf(geoPosForPrint.lon));
+                out.print(geoPosForPrint.lon);
                 out.print("\t");
-                out.print(String.valueOf(geoPosForPrint.lat));
+                out.print(geoPosForPrint.lat);
             }
 
             // Compute the scene position (only for multi-size product)
