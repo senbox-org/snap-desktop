@@ -404,8 +404,16 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     public void updateProductListCountTitle() {
         int pageProductCount = this.productListPanel.getProductListModel().getProductCount();
+        int pageNr = getOutputProductResults().getCurrentPageNumber();
+        pageNr = pageNr < 1 ? 0 : pageNr - 1;
+        int pageProductStartIndex = this.visibleProductsPerPage * pageNr;
+        int pageProductEndIndex = pageProductStartIndex + pageProductCount;
         long totalProductCount = getOutputProductResults().getFullResultsListCount();
-        String text = getTitle() + ": " + Integer.toString(pageProductCount);
+        String intervalText = Integer.toString(pageProductEndIndex);
+        if(pageProductCount > 0){
+            intervalText = Integer.toString(pageProductStartIndex + 1) + " -> " + intervalText;
+        }
+        String text = getTitle() + ": " + intervalText;
         if (totalProductCount > 0) {
             text += " out of " + Long.toString(totalProductCount);
         }
