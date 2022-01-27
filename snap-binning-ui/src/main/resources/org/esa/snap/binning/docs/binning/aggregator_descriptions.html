@@ -1,0 +1,180 @@
+<!--
+  ~ Copyright (c) 2021 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Level 3 Binning Aggregator Descriptions</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Level 3 Binning Aggregator Descriptions
+        </td>
+        <td class="header" align="right"><a
+                href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border=0></a>
+        </td>
+    </tr>
+</table>
+
+<h3>The Aggregation Algorithms</h3>
+
+<h4>AVG</h4>
+
+<i>AggregatorAverage</i>: This aggregator implements a weighted averaging with per overflight weighting as described in the referring NASA
+publication listed in the overview section. This aggregation method is well suited for satellite data acquired
+in the visible and NIR by integrating over the pixel area. It offers three parameters: <br/>
+<ul>
+    <li>Weight coefficient: the weighting coefficient (float). A value of 0.0 disables weighting, default value is 1.0</li>
+    <li>Output counts: if selected, the measurement counts per bin-cell are stored in the output</li>
+    <li>Output sums: if selected, the measurement value sums per bin-cell are stored in the output instead of mean values.
+        This feature allows a continuous aggregation of data over a longer period when not all input data is available at once. </li>
+</ul>
+<br/>
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_mean: the weighted mean value</li>
+    <li>xxx_sigma: the weighted standard deviation</li>
+    <li>xxx_counts: the measurement counts (optional)</li>
+</ul>
+If <i>Output sums</i> is selected:
+<ul>
+    <li>xxx_sum: the weighted sum of the input measurements</li>
+    <li>xxx_sum_sq: the weighted sum of the squares of the input measurements</li>
+    <li>xxx_weights: the aggregated weights</li>
+    <li>xxx_counts: the measurement counts (optional)</li>
+</ul>
+
+<!--
+
+<h4>AVG_ML</h4>
+<i>AggregatorAverageML</i>: implements a maximum likelihood averaging by aggregating the logarithm of the measurement data.
+The parameters available are:
+<ul>
+    <li>Weight coefficient: the weighting coefficient (float). Defines the aggregation weight which is calculated as the
+        weight to the power of the number of measurements, default value is 0.5</li>
+    <li>Output sums: if selected, the measurement value sums per bin-cell are stored in the output instead of mean values.
+        This feature allows a continuous aggregation of data over a longer period when not all input data is available at once.</li>
+</ul>
+Output bands are:
+<ul>
+    <li>xxx_mean: the weighted mean value</li>
+    <li>xxx_sigma: the weighted standard deviation</li>
+    <li>xxx_median: the median of the data</li>
+    <li>xxx_mode: the mode of the data</li>
+</ul>
+If <i>Output sums</i> is selected:
+<ul>
+    <li>xxx_sum: the weighted sum of the input measurements</li>
+    <li>xxx_sum_sq: the weighted sum of the squares of the input measurements</li>
+    <li>xxx_weights: the aggregated weights</li>
+</ul>
+
+-->
+
+<h4>AVG_OUTLIER</h4>
+<i>AggregatorAverageOutlierAware</i>: implements an "outlier aware" averaging. It realises this by first calculating a mean and standard-deviation
+for the complete set of input measurements. Then the algorithm removes all measurements that are more than <i>n</i> standard deviations away from
+the mean value, where <i>n</i> is the so called "deviation factor". The remaining data is averaged using an unweighted version
+of the standard "AVG" aggregation described above. Parameters:
+
+<ul>
+    <li>Deviation Factor: the deviation factor (float). Defines the distance to the mean value beyond which data is considered as outlier,
+        distance = deviationFactor * standardDeviation. Default value is 1.0</li>
+</ul>
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_mean: the weighted mean value</li>
+    <li>xxx_sigma: the weighted standard deviation</li>
+    <li>xxx_counts: the measurement counts</li>
+</ul>
+
+
+<h4>MEAN_OBS</h4>
+<i>AggregatorMeanObs</i>: calculates the standard, unweighted mean and standard deviation using all input measurements per cell.
+This aggregation method is suited for input data consisting of discrete measurements, e.g. number of detected fires.
+The aggregator has no public parameters.
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_mean: the mean value</li>
+    <li>xxx_sigma: the standard deviation</li>
+    <li>xxx_counts: the measurement counts</li>
+</ul>
+
+
+<h4>MIN_MAX</h4>
+<i>AggregatorMinMax</i>: an aggregator tracking the minimum and maximum value of the measurements over the binning period.
+This algorithm can be used to detect data ranges.
+The aggregator has no public parameters.
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_min: the smallest value in the grid cell</li>
+    <li>xxx_max: the largest value in the grid cell</li>
+</ul>
+
+<h4>ON_MAX_SET</h4>
+<i>AggregatorOnMaxSet</i>: this aggregator selects input data from a list of input variables under the condition that
+another band has the maximum value in the aggregation input set. For example it allows implementing the output of all
+radiance data under the condition that the sensor-zenith angle is maximal. A tracling for minimal value is possible by
+defining a virtual variable that contains the negative of the variable to be tracked.
+Parameters are:
+
+<ul>
+    <li>Maximum Band Name: selects the band that is tracked for the maximal value</li>
+    <li>Source band Names: select a list of input band names. The values of these bands are written to the output if the Maximum Band has the peak value</li>
+</ul>
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_max: the largest value of the <i>Maximum Band</i>in the input data</li>
+    <li>xxx_mjd: the Modified Julian Day value of the maximm value measurement</li>
+    <li>source_bands: all source band values defined in the parameter <i>Source band Names</i></li>
+</ul>
+
+<h4>PERCENTILE</h4>
+<i>AggregatorPercentile</i>: an aggregator that computes the p-th percentile, i.e. the value of a variable below which a
+certain percent (p) of observations fall.
+Parameters are:
+
+<ul>
+    <li>Percentile: the precentile value (integer). Value must be between 0 and 100, default is 90.</li>
+</ul>
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_p: the percentile value of the input data</li>
+</ul>
+
+
+<h4>SUM</h4>
+<i>AggregatorSum</i>: this aggregator sums up all input measurements per gris cell. It has no public parameters.
+<br/>
+Output bands are:
+<ul>
+    <li>xxx_sum: the sum of the input data</li>
+</ul>
+
+<hr>
+</body>
+</html>

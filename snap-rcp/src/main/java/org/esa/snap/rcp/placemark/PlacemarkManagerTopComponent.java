@@ -4,7 +4,6 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
-import org.locationtech.jts.geom.Coordinate;
 import org.esa.snap.core.dataio.placemark.PlacemarkData;
 import org.esa.snap.core.dataio.placemark.PlacemarkIO;
 import org.esa.snap.core.datamodel.Band;
@@ -45,6 +44,7 @@ import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
 import org.esa.snap.ui.product.BandChooser;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayer;
+import org.locationtech.jts.geom.Coordinate;
 import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
@@ -97,7 +97,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 /**
  * @author Tonio Fincke
@@ -542,7 +542,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 placemark = createTransferrablePlacemark(placemark, targetProduct);
             }
 
-            final PixelPos pixelPos = placemark.getPixelPos();
+            PixelPos pixelPos = placemark.getPixelPos();
             boolean productContainsPixelPos = targetProduct.containsPixel(pixelPos);
             if (!canGetPixelPos && isPin && !productContainsPixelPos) {
                 numInvalids++;
@@ -552,7 +552,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
             // from here on we only handle GCPs and valid Pins
 
             if (canGetPixelPos && adjustPinGeoPos) {
-                placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
+                pixelPos = placemarkDescriptor.updatePixelPos(geoCoding, placemark.getGeoPos(), pixelPos);
             }
 
             if (!productContainsPixelPos && isPin) {

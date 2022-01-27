@@ -20,13 +20,12 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
-import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -42,8 +41,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
+/**
+ * The window displaying the world map.
+ */
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
         iconBase = "org/esa/snap/icons/earth.png",
@@ -66,9 +68,6 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         "CTL_WorldWindTopComponentName=World View",
         "CTL_WorldWindTopComponentDescription=WorldWind World View",
 })
-/**
- * The window displaying the world map.
- */
 public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
     public static String useFlatEarth = "snap.worldwind.useFlatEarth";
@@ -108,9 +107,9 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
     private void initialize(final JPanel mainPane) {
         final WWView toolView = this;
 
-        final SwingWorker worker = new SwingWorker() {
+        final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
             @Override
-            protected Object doInBackground() throws Exception {
+            protected Object doInBackground() {
                 // Create the WorldWindow.
                 try {
                     createWWPanel(null, includeStatusBar, flatWorld, true);
@@ -135,18 +134,21 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                         }
                     }
 
+                    // Instead of the default Place Name layer we use special implementation to replace
+                    // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
                     final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-                    placeNameLayer.setEnabled(true);
+                    layerList.remove(placeNameLayer);
+
+                    final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
+                    layerList.add(fixingPlaceNameLayer);
+                    fixingPlaceNameLayer.setEnabled(true);
 
                     SnapApp.getDefault().getProductManager().addListener(new WWProductManagerListener(toolView));
-                    SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
-                        @Override
-                        public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                            if (newValue != null) {
-                                setSelectedProduct(newValue.getProduct());
-                            } else {
-                                setSelectedProduct(null);
-                            }
+                    SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+                        if (newValue != null) {
+                            setSelectedProduct(newValue.getProduct());
+                        } else {
+                            setSelectedProduct(null);
                         }
                     });
 

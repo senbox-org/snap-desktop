@@ -5,6 +5,7 @@ import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryP
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
 import org.esa.snap.product.library.ui.v2.repository.timeline.RepositoryProductsTimelinePanel;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsPersistence;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
@@ -35,8 +36,6 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     public static final byte ASCENDING_SORTING_TYPE = 1;
     public static final byte DESCENDING_SORTING_TYPE = 2;
 
-    public static final byte VISIBLE_PRODUCTS_PER_PAGE = 20;
-
     private final JLabel titleLabel;
     private final JLabel sortByLabel;
     private final ProgressBarHelperImpl progressBarHelper;
@@ -53,7 +52,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
         super(new BorderLayout(0, componentDimension.getGapBetweenRows()));
 
-        this.visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
+        this.visibleProductsPerPage = RepositoriesCredentialsPersistence.VISIBLE_PRODUCTS_PER_PAGE;
 
         this.titleLabel = new JLabel(getTitle());
 

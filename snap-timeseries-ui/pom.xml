@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>8.0.3.6cv</version>
+        <version>8.0.9.1cv</version>
     </parent>
 
     <artifactId>snap-timeseries-ui</artifactId>
@@ -99,4 +99,3 @@
         </plugins>
     </build>
 </project>
-

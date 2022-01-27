@@ -20,13 +20,13 @@
     <mapID target="envisatProducts" url="general/envisat-products/index.html"/>
 
     <!-- Target IDs can be found when putting a breakpoint at L506 in class org.netbeans.modules.autoupdate.ui.PluginManagerUI -->
-    <mapID target="org.netbeans.modules.autoupdate.ui.SettingsTab" url="desktop/plugins.html"/>
-    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.UPDATE" url="desktop/plugins.html"/>
-    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.AVAILABLE" url="desktop/plugins.html"/>
-    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.LOCAL" url="desktop/plugins.html"/>
-    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.INSTALLED" url="desktop/plugins.html"/>
+    <mapID target="org.netbeans.modules.autoupdate.ui.SettingsTab" url="desktop/Plugins.html"/>
+    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.UPDATE" url="desktop/Plugins.html"/>
+    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.AVAILABLE" url="desktop/Plugins.html"/>
+    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.LOCAL" url="desktop/Plugins.html"/>
+    <mapID target="org.netbeans.modules.autoupdate.ui.UnitTab.INSTALLED" url="desktop/Plugins.html"/>
 
-    <mapID target="plugins" url="desktop/plugins.html"/>
+    <mapID target="plugins" url="desktop/Plugins.html"/>
 
     <mapID target="gpf.option.controller" url="desktop/Gpf.html"/>
 
@@ -64,7 +64,6 @@
     <mapID target="importLandsatProduct" url="desktop/ImportLandsat.html"/>
     <mapID target="importAVHRR" url="desktop/ImportAVHRR.html"/>
     <mapID target="importAvnir2Product" url="desktop/ImportAVNIR2.html"/>
-    <mapID target="importNasaObpgProduct" url="desktop/ImportNasaObpgHDF.html"/>
     <mapID target="importPrismProduct" url="desktop/ImportPRISM.html"/>
     <mapID target="importNetCdfProduct" url="desktop/ImportNetCDF.html"/>
     <mapID target="importSpotVgtProduct" url="desktop/ImportSpotVgt.html"/>

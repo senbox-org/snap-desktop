@@ -1,10 +1,9 @@
 package org.esa.snap.product.library.ui.v2;
 
-import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsController;
-import org.esa.snap.product.library.ui.v2.preferences.model.RemoteRepositoryCredentials;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsPersistence;
+import org.esa.snap.product.library.v2.preferences.model.RemoteRepositoryCredentials;
 import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
-import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
-import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadRemoteProductsHelper;
 import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;
@@ -32,8 +31,8 @@ public class LoadInputDataRunnable extends AbstractRunnable<LocalParameterValues
 
     @Override
     protected LocalParameterValues execute() throws Exception {
-        int visibleProductsPerPage = RepositoryOutputProductListPanel.VISIBLE_PRODUCTS_PER_PAGE;
-        boolean uncompressedDownloadedProducts = DownloadRemoteProductsHelper.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
+        int visibleProductsPerPage = RepositoriesCredentialsPersistence.VISIBLE_PRODUCTS_PER_PAGE;
+        boolean uncompressedDownloadedProducts = RepositoriesCredentialsPersistence.UNCOMPRESSED_DOWNLOADED_PRODUCTS;
         List<RemoteRepositoryCredentials> repositoriesCredentials = null;
         try {
             RepositoriesCredentialsController controller = RepositoriesCredentialsController.getInstance();

@@ -60,11 +60,13 @@ public class FileModel extends BaseFileModel implements FileTableModel {
                 data[0] = product.getName();
                 data[1] = product.getProductType();
 
-                final MetadataElement absRoot = AbstractMetadata.getAbstractedMetadata(product);
-                if (absRoot != null) {
-                    data[2] = OperatorUtils.getAcquisitionDate(absRoot);
-                    data[3] = String.valueOf(absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, 0));
-                    data[4] = String.valueOf(absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, 0));
+                if(AbstractMetadata.hasAbstractedMetadata(product)) {
+                    final MetadataElement absRoot = AbstractMetadata.getAbstractedMetadata(product);
+                    if (absRoot != null) {
+                        data[2] = OperatorUtils.getAcquisitionDate(absRoot);
+                        data[3] = String.valueOf(absRoot.getAttributeInt(AbstractMetadata.REL_ORBIT, 0));
+                        data[4] = String.valueOf(absRoot.getAttributeInt(AbstractMetadata.ABS_ORBIT, 0));
+                    }
                 }
             }
         }

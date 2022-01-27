@@ -98,11 +98,11 @@ import java.beans.PropertyChangeListener;
 public class ExportImageAction extends AbstractExportImageAction {
 
     private final static String[][] SCENE_IMAGE_FORMAT_DESCRIPTIONS = {
-            BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
+            GEOTIFF_FORMAT_DESCRIPTION,
             JPEG_FORMAT_DESCRIPTION,
             TIFF_FORMAT_DESCRIPTION,
-            GEOTIFF_FORMAT_DESCRIPTION,
+            BMP_FORMAT_DESCRIPTION,
     };
     private static final String HELP_ID = "exportImageFile";
     private static final String AC_VIEW_RES = "viewRes";
