@@ -389,7 +389,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         OutputProductResults outputProductResults = getOutputProductResults();
         int count = 0;
         if (outputProductResults.getAvailableProductCount() > 0) {
-            long totalCount = outputProductResults.getFullResultsListCount();
+            long totalCount = outputProductResults.getAvailableProductCount();
             count = (int) (totalCount / this.visibleProductsPerPage);
             if (totalCount % this.visibleProductsPerPage > 0) {
                 count++;
