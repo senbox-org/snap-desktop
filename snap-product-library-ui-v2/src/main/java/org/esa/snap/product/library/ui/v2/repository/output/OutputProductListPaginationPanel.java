@@ -69,11 +69,10 @@ public class OutputProductListPaginationPanel extends JPanel {
     }
 
     public void refreshPaginationButtons(boolean previousPageEnabled, boolean nextPageEnabled, String text) {
-        boolean downloadAllPages = RepositoriesCredentialsController.getInstance().downloadsAllPages();
-        this.firstPageButton.setEnabled(previousPageEnabled && downloadAllPages);
+        this.firstPageButton.setEnabled(previousPageEnabled);
         this.previousPageButton.setEnabled(previousPageEnabled);
         this.nextPageButton.setEnabled(nextPageEnabled);
-        this.lastPageButton.setEnabled(nextPageEnabled && downloadAllPages);
+        this.lastPageButton.setEnabled(nextPageEnabled);
         this.totalPagesTextField.setText(text);
     }
 
