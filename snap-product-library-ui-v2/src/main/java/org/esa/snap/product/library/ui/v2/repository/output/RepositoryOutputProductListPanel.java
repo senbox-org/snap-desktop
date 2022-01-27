@@ -342,13 +342,16 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         if (endIndex >= outputProductResults.getAvailableProductCount()) {
             endIndex = outputProductResults.getAvailableProductCount() - 1;
         }
-        List<RepositoryProduct> pageProducts = new ArrayList<>((endIndex - startIndex));
-        for (int i = startIndex; i <= endIndex; i++) {
-            pageProducts.add(outputProductResults.getProductAt(i));
+        final int size = endIndex - startIndex;
+        if(size > 0){
+            List<RepositoryProduct> pageProducts = new ArrayList<>(size);
+            for (int i = startIndex; i <= endIndex; i++) {
+                pageProducts.add(outputProductResults.getProductAt(i));
+            }
+            outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
+            this.productListPanel.setProducts(pageProducts);
+            firePageProductChanged();
         }
-        outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
-        this.productListPanel.setProducts(pageProducts);
-        firePageProductChanged();
     }
 
     private void clearPageProducts() {
