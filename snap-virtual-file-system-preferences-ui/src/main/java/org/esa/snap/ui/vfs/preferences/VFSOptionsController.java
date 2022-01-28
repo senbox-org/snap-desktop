@@ -151,8 +151,8 @@ public class VFSOptionsController extends DefaultConfigController {
                 vfsRemoteFileRepositoriesController.saveProperties();
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, "VFS Remote File Repositories Properties saved successfully. Please restart SNAP to take effect.", "Save VFS Remote file repositories configurations", JOptionPane.INFORMATION_MESSAGE));
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage(), ex);
-                JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE, "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE);
+                logger.log(Level.WARNING, SAVE_ERROR_MESSAGE + " Details: " + ex.getMessage());
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(remoteRepositoriesConfigsPanel, SAVE_ERROR_MESSAGE + "\nReason: " + ex.getMessage(), "Error saving VFS Remote file repositories configurations", JOptionPane.ERROR_MESSAGE));
             }
         }
     }
