@@ -37,10 +37,13 @@ incorporated in the products as masks and should be considered when using the da
 available which makes MERIS 4th reprocessing data data compatible with already existing operators. This allows to use
 the new data set with older operators. In SNAP8 the pixel-based geo-coding has been reimplemented, in this release
 further improvements have been achieved. Now the Sentinel-3 data uses the pixel-based geo-coding by default and not the
-tie-points anymore.
+tie-points anymore. Support for Landsat Collection-2 has been implemented. Supported are Level-1 and Level-2 data.
 
 ### Resolved Issues
 
+    [SNAP-1498] ProductIO does not rewrite header if product has changed during writing
+    [SNAP-1497] ProductNodeListener could be null
+    [SNAP-1494] Older "Slice" products (SENTINEL_SAFE format) not able to be opened in SNAP 8.0
     [SNAP-1485] Provided geoRegion is not considered in subsetting graph if quoted
     [SNAP-1482] ZipUtils does not handle null on root path
     [SNAP-1481] Remove old reference to SeaDAS help
@@ -75,6 +78,9 @@ tie-points anymore.
     [SNAP-1072] Update SVVP wiki page
     [SNAP-1057] Make land/sea mask compatible with multi-size products
     [SNAP-611] S2 Masks can't be used in Band Math in Graph Builder
+    [SNAP-1496] Product Library - improvements
+    [SNAP-1495] Improve error message of Product Library
+    [SNAP-1489] Update snap jp2 reader for more 4 bands
     [SNAP-1464] Set only GCP and Pin layer to visible by default
     [SNAP-1462] Improve JAI tile cache handling when writing data
     [SNAP-1456] Support ASTER v3
