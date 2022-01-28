@@ -41,6 +41,7 @@ tie-points anymore. Support for Landsat Collection-2 has been implemented. Suppo
 
 ### Resolved Issues
 
+    [SNAP-1499] Prevent adding masks with same name as an existing node
     [SNAP-1498] ProductIO does not rewrite header if product has changed during writing
     [SNAP-1497] ProductNodeListener could be null
     [SNAP-1494] Older "Slice" products (SENTINEL_SAFE format) not able to be opened in SNAP 8.0
