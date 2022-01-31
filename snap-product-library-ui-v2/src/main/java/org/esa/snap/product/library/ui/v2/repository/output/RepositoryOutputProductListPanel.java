@@ -285,20 +285,23 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     private boolean productListPageDownloaded(int pageNumber){
-        return pageNumber <= getOutputProductResults().getAvailableProductCount() / this.visibleProductsPerPage + (getOutputProductResults().getAvailableProductCount() % this.visibleProductsPerPage > 0 ? 1 : 0);
+        return !this.downloadProductListTimerRunnable.isFinished() && pageNumber <= getOutputProductResults().getAvailableProductCount() / this.visibleProductsPerPage + (getOutputProductResults().getAvailableProductCount() % this.visibleProductsPerPage > 0 ? 1 : 0);
     }
 
     private void displayNextPageProducts() {
         int totalPageCount = computeTotalPageCount();
         OutputProductResults outputProductResults = getOutputProductResults();
         if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
+            displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+        } else {
             if(!downloadsAllPages() && this.downloadProductListTimerRunnable != null && !productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
                 this.downloadProductListTimerRunnable.downloadProductListNextPage();
-            }else {
-                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+                if(this.downloadProductListTimerRunnable.isFinished()){
+                    refreshPaginationButtons();
+                }
+            } else {
+                throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber() + " must be < than the total page count " + totalPageCount + ".");
             }
-        } else {
-            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
         }
     }
 
@@ -338,14 +341,14 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         }
         OutputProductResults outputProductResults = getOutputProductResults();
         int startIndex = (newCurrentPageNumber-1) * this.visibleProductsPerPage;
-        int endIndex = startIndex + this.visibleProductsPerPage - 1;
+        int endIndex = startIndex + this.visibleProductsPerPage;
         if (endIndex >= outputProductResults.getAvailableProductCount()) {
-            endIndex = outputProductResults.getAvailableProductCount() - 1;
+            endIndex = outputProductResults.getAvailableProductCount();
         }
         final int size = endIndex - startIndex;
         if(size > 0){
             List<RepositoryProduct> pageProducts = new ArrayList<>(size);
-            for (int i = startIndex; i <= endIndex; i++) {
+            for (int i = startIndex; i < endIndex; i++) {
                 pageProducts.add(outputProductResults.getProductAt(i));
             }
             outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
@@ -367,6 +370,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         int totalPageCount = computeTotalPageCount();
         boolean previousPageEnabled = false;
         boolean nextPageEnabled = false;
+        boolean lastPageEnabled = false;
         String text = "";
         if (totalPageCount > 0) {
             OutputProductResults outputProductResults = getOutputProductResults();
@@ -375,14 +379,19 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 if (outputProductResults.getCurrentPageNumber() > 1) {
                     previousPageEnabled = true;
                 }
-                if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
+                if (outputProductResults.getCurrentPageNumber() < totalPageCount ) {
                     nextPageEnabled = true;
+                    lastPageEnabled = true;
+                } else {
+                    if(!downloadsAllPages() && this.downloadProductListTimerRunnable != null && !productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
+                        nextPageEnabled = true;
+                    }
                 }
             } else {
                 throw new IllegalStateException("The current page number is 0.");
             }
         }
-        this.productListPaginationPanel.refreshPaginationButtons(previousPageEnabled, nextPageEnabled, text);
+        this.productListPaginationPanel.refreshPaginationButtons(previousPageEnabled, nextPageEnabled, lastPageEnabled, text);
     }
 
     private int computeTotalPageCount() {
