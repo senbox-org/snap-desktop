@@ -464,18 +464,18 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
 
             // Compute the geo position according to the raster resolution
             final PixelPos pixelPosForGeo = new PixelPos(x + 0.5f, y + 0.5f);
-            out.print(String.valueOf(pixelPosForGeo.x));
+            out.print(pixelPosForGeo.x);
             out.print("\t");
-            out.print(String.valueOf(pixelPosForGeo.y));
+            out.print(pixelPosForGeo.y);
 
             final RasterDataNode viewRaster = view.getRaster();
             final GeoCoding rasterGeocoding = viewRaster.getGeoCoding();
             if (rasterGeocoding != null) {
                 out.print("\t");
                 final GeoPos geoPosForPrint = rasterGeocoding.getGeoPos(pixelPosForGeo, null);
-                out.print(String.valueOf(geoPosForPrint.lon));
+                out.print(geoPosForPrint.lon);
                 out.print("\t");
-                out.print(String.valueOf(geoPosForPrint.lat));
+                out.print(geoPosForPrint.lat);
             }
 
             // Compute the scene position (only for multi-size product)
