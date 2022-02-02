@@ -7,6 +7,15 @@ The SNAP 9 release provides several new tools and features and also bug fixes to
 highlighted in the following sections. For the full list of changes check our issue
 tracker: https://bit.ly/snap9_changelog
 
+### New ZNAP Data Format.
+
+With SNAP 8, we provided a first look on the newly developed data format. Now we are considering it as feature complete.
+This new format shall replace the BEAM-DIMAP format as SNAPs default format. For now BEAM-DIMAP is still the default.
+The ZNAP format has some benefits. Smaller footprint on disk, faster writing, and it uses a single file or directory for
+storing the data. As format for the binary data Zarr is used by default. This allows Python developer to read the data
+easily with Xarray, for example. Even binary data format can be configured and GeoTiff or NetCDF can be used to store
+the binary data.
+
 ### Improved Colour Manipulation Tool
 
 Our friends from the NASA OBPG who develop SeaDAS, have improved the Colour Manipulation Tool. Some points which have
@@ -18,16 +27,19 @@ been enhanced are:
 * Some new RGB profiles and Colour Palettes
 * New auto-range adjustment buttons
 
-### New ZNAP Data Format.
+## Sentinel-2 Toolbox
 
-With SNAP 8, we provided a first look on the newly developed data format. Now we are considering it as feature complete.
-This new format shall replace the BEAM-DIMAP format as SNAPs default format. For now BEAM-DIMAP is still the default.
-The ZNAP format has some benefits. Smaller footprint on disk, faster writing, and it uses a single file or directory for
-storing the data. As format for the binary data Zarr is used by default. This allows Python developer to read the data
-easily with Xarray, for example. Even binary data format can be configured and GeoTiff or NetCDF can be used to store
-the binary data.
+The GDAL version is updated from 3.0.0 to 3.2.1. Also, a plugin for COG writer is added. Corrections made for visual
+artifacts noticed in produced images when writing in parallel, from multiple threads. Allow setting which installed GDAL
+distribution is used by SNAP (when the user desires to use and installed distribution instead of the internal one, and
+there are several GDAL versions installed). Solved operators whose UI was not well functioning in Graph Builder. Updates
+made for operators: Reflectance to Radiance, Spectral Angle Mapper, Multi-size Mosaic, GeFolki Co-registration. Windowed
+Reading of Products available now in Graph Builder. It allows specifying in Graph Builder, for read operation, a
+window (spatial subset) of either pixel coordinates or geographical coordinates, so that, the reader will read directly
+the region of interest as a full-fledged product. New plugin adapter for MAJA 4.2.1 and Sen2Cor 2.9 are added in SNAP
+menu.
 
-### Sentinel-3 Toolbox
+## Sentinel-3 Toolbox
 
 The Sentinel-3 Toolbox offers some new operators which are mainly dedicated for the preprocessing of Sentinel-3 data.
 There is the OLCI Anomaly Detection operator which can detect and flag anomalous pixels, an operator which harmonises
