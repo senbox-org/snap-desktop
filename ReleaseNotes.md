@@ -27,6 +27,10 @@ been enhanced are:
 * Some new RGB profiles and Colour Palettes
 * New auto-range adjustment buttons
 
+### Copernicus 90m and 30m DEM
+
+The new Copernicus DEM replaces the SRTM as the default free and open Digital Elevation Model.
+
 ## Sentinel-2 Toolbox
 
 The GDAL version is updated from 3.0.0 to 3.2.1. Also, a plugin for COG writer is added. Corrections made for visual
