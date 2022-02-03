@@ -27,6 +27,19 @@ been enhanced are:
 * Some new RGB profiles and Colour Palettes
 * New auto-range adjustment buttons
 
+### Copernicus 90m and 30m DEM
+
+The new Copernicus DEM replaces the SRTM as the default free and open Digital Elevation Model.
+
+## Sentinel-1 Toolbox
+
+The Sentinel-1 Toolbox continues to support most SAR missions with updates to the Sentinel-1 format and support for 
+Cosmo-Skymed SG, Gaofen-3 and Spacety. ARD functionality has been enhanced with the addition of a Noise Power Image 
+and Gamma-to-Sigma ratio image in Terrain Flattening and the estimation of noise equivalent beta0, sigma0 and gamma0 
+in Thermal Noise Removal. InSAR functionality now includes ionospheric estimation and correction using a splitbandwidth 
+approach and retrieval of Vertical and E W motion components from a pair of interferograms. Polarimetric processing now
+includes Kennaugh Matrix, and Huynen, Krogager, Cameron, Yang decompositions as well as Radar Vegetation Indices.
+
 ## Sentinel-2 Toolbox
 
 The GDAL version is updated from 3.0.0 to 3.2.1. Also, a plugin for COG writer is added. Corrections made for visual
