@@ -20,8 +20,6 @@ import org.openide.util.WeakListeners;
 
 import javax.swing.Action;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +29,7 @@ import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
-import static org.esa.snap.rcp.nodes.PNNodeSupport.*;
+import static org.esa.snap.rcp.nodes.PNNodeSupport.performUndoableProductNodeEdit;
 
 /**
  * A node that represents a {@link Product} (=P).
@@ -73,7 +71,7 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
     }
 
     @Override
-    public void destroy() throws IOException {
+    public void destroy() {
         new CloseProductAction(Collections.singletonList(getProduct())).execute();
     }
 
@@ -178,7 +176,7 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
             }
 
             @Override
-            public void setValue(String s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            public void setValue(String s) throws IllegalArgumentException {
                 Product.AutoGrouping oldValue = getProduct().getAutoGrouping();
                 Product.AutoGrouping newValue = Product.AutoGrouping.parse(s);
                 performUndoableProductNodeEdit("Edit Band-Grouping",
@@ -236,34 +234,6 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
         return SnapApp.getDefault().getPreferences().getBoolean(GroupByNodeTypeAction.PREFERENCE_KEY,
                                                                 GroupByNodeTypeAction.PREFERENCE_DEFAULT_VALUE);
     }
-
-    /*
-    @Override
-    public NewType[] getNewTypes() {
-        return new NewType[] {
-                new NewType() {
-                    @Override
-                    public String getName() {
-                        return "Calculated Band";
-                    }
-
-                    @Override
-                    public void create() throws IOException {
-                    }
-                },
-                new NewType() {
-                    @Override
-                    public String getName() {
-                        return "Filtered Band";
-                    }
-
-                    @Override
-                    public void create() throws IOException {
-                    }
-                }
-        };
-    }
-    */
 
     /**
      * A child factory for nodes below a {@link PNode} that holds a {@link Product}.
