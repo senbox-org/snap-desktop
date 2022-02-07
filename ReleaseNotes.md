@@ -3,9 +3,8 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 9.0.0
 
-The SNAP 9 release provides several new tools and features and also bug fixes to the users. The noteworthy news are
-highlighted in the following sections. For the full list of changes check our issue
-tracker: https://bit.ly/snap9_changelog
+The SNAP 9 release provides several new tools, features, and bug fixes to the users. The noteworthy news is highlighted
+in the following sections. For the full list of changes check our issue tracker: https://bit.ly/snap9_changelog
 
 ### New ZNAP Data Format.
 
@@ -33,10 +32,10 @@ The new Copernicus DEM replaces the SRTM as the default free and open Digital El
 
 ## Sentinel-1 Toolbox
 
-The Sentinel-1 Toolbox continues to support most SAR missions with updates to the Sentinel-1 format and support for 
-Cosmo-Skymed SG, Gaofen-3 and Spacety. ARD functionality has been enhanced with the addition of a Noise Power Image 
-and Gamma-to-Sigma ratio image in Terrain Flattening and the estimation of noise equivalent beta0, sigma0 and gamma0 
-in Thermal Noise Removal. InSAR functionality now includes ionospheric estimation and correction using a splitbandwidth 
+The Sentinel-1 Toolbox continues to support most SAR missions with updates to the Sentinel-1 format and support for
+Cosmo-Skymed SG, Gaofen-3 and Spacety. ARD functionality has been enhanced with the addition of a Noise Power Image and
+Gamma-to-Sigma ratio image in Terrain Flattening and the estimation of noise equivalent beta0, sigma0 and gamma0 in
+Thermal Noise Removal. InSAR functionality now includes ionospheric estimation and correction using a splitbandwidth
 approach and retrieval of Vertical and E W motion components from a pair of interferograms. Polarimetric processing now
 includes Kennaugh Matrix, and Huynen, Krogager, Cameron, Yang decompositions as well as Radar Vegetation Indices.
 
@@ -58,14 +57,15 @@ The Sentinel-3 Toolbox offers some new operators which are mainly dedicated for 
 There is the OLCI Anomaly Detection operator which can detect and flag anomalous pixels, an operator which harmonises
 the data of OLCI A and B and an operator which can perform Dark Object Subtraction (DOS) on optical data.  
 For OLCI L2 Land and Water data the Quality Working Group (QWG) have defined recommended flags. They are now
-incorporated in the products as masks and should be considered when using the data. In addition an operators is now
-available which makes MERIS 4th reprocessing data data compatible with already existing operators. This allows to use
-the new data set with older operators. In SNAP8 the pixel-based geo-coding has been reimplemented, in this release
-further improvements have been achieved. Now the Sentinel-3 data uses the pixel-based geo-coding by default and not the
+incorporated in the products as masks and should be considered when using the data. In addition, an operator is now
+available which makes MERIS 4th reprocessing data compatible with already existing operators. This allows to use the new
+data set with older operators. In SNAP8 the pixel-based geo-coding has been reimplemented, in this release further
+improvements have been achieved. Now the Sentinel-3 data uses the pixel-based geo-coding by default and not the
 tie-points anymore. Support for Landsat Collection-2 has been implemented. Supported are Level-1 and Level-2 data.
 
 ### Resolved Issues
 
+    [SNAP-1503] Displayed name in Product Explorer is not updated if wavelength is changed
     [SNAP-1499] Prevent adding masks with same name as an existing node
     [SNAP-1498] ProductIO does not rewrite header if product has changed during writing
     [SNAP-1497] ProductNodeListener could be null
@@ -160,72 +160,80 @@ SNAP, a Python 3 environment will be required. Here we just highlight the main i
 issues (>200) solved for SNAP 8 in our issue database: https://bit.ly/SNAP8_changelog
 
 ### Performance improvements
-In order to increase the performance of SNAP and improve the user experience some tasks have been performed.
-The reading and writing performance of the BEAM-DIMAP format has been significantly improved. In some cases opening an 
-image in SNAP took up to 5 minutes. Now, it only  takes seconds. Similar magnitude of improvement has been 
-achieved for the writing.
-A first experimental step has also been made to lower the memory consumption. An experimental Tile Cache Operator has 
-been implemented which gives more control of the memory usage. Please see the separate topic below for more details.
+
+In order to increase the performance of SNAP and improve the user experience some tasks have been performed. The reading
+and writing performance of the BEAM-DIMAP format has been significantly improved. In some cases opening an image in SNAP
+took up to 5 minutes. Now, it only takes seconds. Similar magnitude of improvement has been achieved for the writing. A
+first experimental step has also been made to lower the memory consumption. An experimental Tile Cache Operator has been
+implemented which gives more control of the memory usage. Please see the separate topic below for more details.
 
 ### Reworked Product Library
 
-The Product Library has been upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical, atmospheric, etc.).
-In addition, the display / interaction of / with product frames or quicklooks can be done on a 3D visualisation of Earth (NASA WorldWind).
-The possibility to access (and search for) remote data was introduced by regarding remote data sources as independent SNAP plugins.
-Besides, the parametrized search (with parameters in the form of values), it also handles the selection of the area of 
-interest on the 3D visualisation of Earth.
-New remote data repositories were added:
-    * Copernicus Scientific Data Hub (SciHub): for Sentinel-1, Sentinel-2 and Sentinel-3 data
-    * Amazon Web Services (AWS): for Sentinel-2 and Landsat-8 data
-    * Alaska Satellite Facility (ASF): for Sentinel-1 and ALOS data
-    * US Geological Survey (USGS): for Landsat-8 data
+The Product Library has been upgraded so that it can accommodate in a flexible way any type of sensor (radar, optical,
+atmospheric, etc.). In addition, the display / interaction of / with product frames or quicklooks can be done on a 3D
+visualisation of Earth (NASA WorldWind). The possibility to access (and search for) remote data was introduced by
+regarding remote data sources as independent SNAP plugins. Besides, the parametrized search (with parameters in the form
+of values), it also handles the selection of the area of interest on the 3D visualisation of Earth. New remote data
+repositories were added:
+
+* Copernicus Scientific Data Hub (SciHub): for Sentinel-1, Sentinel-2 and Sentinel-3 data * Amazon Web Services (AWS):
+  for Sentinel-2 and Landsat-8 data * Alaska Satellite Facility (ASF): for Sentinel-1 and ALOS data * US Geological
+  Survey (USGS): for Landsat-8 data
 
 ### Windowed Reading of Products
-Allows specifying a window (spatial subset) of either pixel coordinates or geographical coordinates, so that,
-instead of first opening a full product and then subsetting it to a region of interest,
-the reader will open directly the region of interest as a full-fledged product.
+
+Allows specifying a window (spatial subset) of either pixel coordinates or geographical coordinates, so that, instead of
+first opening a full product and then subsetting it to a region of interest, the reader will open directly the region of
+interest as a full-fledged product.
 
 ### New NetCDF Library Version
-We now use version 5.3 of the NetCDF library. If you use the NetCDF API directly exposed through SNAP you might be 
-interested in the changes of the library.
-You can check the documentation provided by unidata at https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html. 
-A specific migration guide is provided (https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/upgrade_to_50.html).
-We also removed the support for writing NetCDF3. They can still be read but not written anymore. If you still used the 
-old format names 'NetCDF-CF' or 'NetCDF-BEAM' you should switch to NetCDF-CF or NetCDF-BEAM. You will benefit from 
-smaller file sizes. 
+
+We now use version 5.3 of the NetCDF library. If you use the NetCDF API directly exposed through SNAP you might be
+interested in the changes of the library. You can check the documentation provided by unidata
+at https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/index.html. A specific migration guide is
+provided (https://docs.unidata.ucar.edu/netcdf-java/5.3/userguide/upgrade_to_50.html). We also removed the support for
+writing NetCDF3. They can still be read but not written anymore. If you still used the old format names 'NetCDF-CF' or '
+NetCDF-BEAM' you should switch to NetCDF-CF or NetCDF-BEAM. You will benefit from smaller file sizes.
 
 ### New Reimplemented GeoCoding
-The pixel-based GeoCoding had some issues in the past. It was slow, and in some situations it just didn't work and 
-produced artifacts. These problems affect especially Sentinel-3 data. With SNAP 8 we now use a new implementation. 
-While it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
+
+The pixel-based GeoCoding had some issues in the past. It was slow, and in some situations it just didn't work and
+produced artifacts. These problems affect especially Sentinel-3 data. With SNAP 8 we now use a new implementation. While
+it is now faster and more accurate you might notice slight differences to in geo-location to previous SNAP versions.
 
 ### Experimental Tile Cache Operator
-To further improve the memory management, especially during data processing, we introduced a special operator which can 
-be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general cache 
-is disabled the amount of used memory can be reduced. The idea is that the cache memory is done automatically in the 
-long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback too. 
-More information can be found in the wiki. https://senbox.atlassian.net/wiki/x/VQCTLw 
+
+To further improve the memory management, especially during data processing, we introduced a special operator which can
+be used in processing graphs. This operator will cache only the data of its input. If this is used, and the general
+cache is disabled the amount of used memory can be reduced. The idea is that the cache memory is done automatically in
+the long-term, but to do so we need some experience on when data needs to be cached. Here we would need your feedback
+too. More information can be found in the wiki. https://senbox.atlassian.net/wiki/x/VQCTLw
 
 ### Sensor specific improvements by Toolboxes
-Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for Radarsat-2/RCM. 
-Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (Fire-Radiative-Products) are supported.
+
+Capella and SAOCOM are now supported, and the support for RCM has been updated. There is a new Soil Moisture Toolkit for
+Radarsat-2/RCM. Sentinel-3 SLSTR L1 oblique view is now correctly handled. The Sentinel-3 L2 FRP (
+Fire-Radiative-Products) are supported.
 
 ### New Internal Default Data Format.
-With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just 
-provide a BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system 
-or for operational services. But we would like to get your feedback on this new development, to further improve it. 
-More information will be provided with the release of the plugin.
+
+With SNAP 8, we also want to introduce a new data format which will replace the BEAM-DIMAP. First we will just provide a
+BETA version as plugin shortly after the SNAP release. The version should not be used in a productive system or for
+operational services. But we would like to get your feedback on this new development, to further improve it. More
+information will be provided with the release of the plugin.
 
 ### Known Issues
 
 #### SRTM 3 sec DEM
-During testing we observed sometimes wrong values provided by the SRTM data.
-Instead of the expected elevation the DEM is rturning the elevation of an adjacent pixel.
-This is not always happening but depends on the download and on the operating system.
-It has been only observed on latest Unix systems. Deleting and redownloading the DEM file 
-often helped to get the right values. For more information and updates on this issue please see https://senbox.atlassian.net/browse/SNAP-1344
+
+During testing we observed sometimes wrong values provided by the SRTM data. Instead of the expected elevation the DEM
+is rturning the elevation of an adjacent pixel. This is not always happening but depends on the download and on the
+operating system. It has been only observed on latest Unix systems. Deleting and redownloading the DEM file often helped
+to get the right values. For more information and updates on this issue please
+see https://senbox.atlassian.net/browse/SNAP-1344
 
 ### Resolved Issues
+
     [SNAP-356] Products with PixelGeoCoding extremely slow to open
     [SNAP-494] BigGeoTiff writer should use compression by default.
     [SNAP-791] Write operator writes data more efficiently then ProductIO
@@ -310,20 +318,19 @@ often helped to get the right values. For more information and updates on this i
     [SNAP-1325] Improve read performance of DIMAP
     [SNAP-1326] Provide snap-jython as seperate plugin
 
-A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12702)
-
 
 # New in SNAP 7.0.3
 
     [SNAP-1169] Subset not working if input is multi-resolution
-    
 
 # New in SNAP 7.2
 
 No issues fied in this release.
 
 # New in SNAP 7.1
+
     [SNAP-1129] The output directory is not considered when loading parameters into the GUI of PixEx
     [SNAP-1152] Subsetting in graph does not consider tie-point grids correctly
     [SNAP-1153] Empty radiation_wavelength attribute causes exception
@@ -337,10 +344,9 @@ No issues fied in this release.
 
 # New in SNAP 7.0
 
-The naming of attribute features of ESRI shapefiles has changed: 
-Threshold variable names are shortened by getting rid of the threshold name part 
-altogether (e.g., p_90_threshold now becomes simply p_90) and indexes are not 
-incremented per measure, but correspond to a band name or a time interval
+The naming of attribute features of ESRI shapefiles has changed:
+Threshold variable names are shortened by getting rid of the threshold name part altogether (e.g., p_90_threshold now
+becomes simply p_90) and indexes are not incremented per measure, but correspond to a band name or a time interval
 (e.g., vrg_4_2 will correspond to the average of band 4 during time interval 2).
 
     [STEP-3] Virtual File System for Remote Data Access
@@ -398,33 +404,33 @@ incremented per measure, but correspond to a band name or a time interval
 # New in SNAP 6.0.9
 
     SNAP-1086 Link to changelog not correct in plugin description for SNAP
-    
+
 # New in SNAP 6.0.8
-    
+
     [SNAP-1084] DateTimeUtils does not consider UTC
     [SNAP-1083] Error while adjusting mosaic bounds to input products
     [SNAP-1082] Angle too high when opening DIMAP product (multi-size)
     [SNAP-1078] Module updates shall come with release notes / changelog
     [SNAP-1079] Saved NetCDF files can not be read by ncdump
     [SNAP-1061] Update performance parameters help
-    
 
 # New in SNAP 6.0.7
+
     [SNAP-1008] ResamplingOp fails if downsampling method is different from default value 'First'
     [SNAP-1060] Downsampling fails with ArrayIndexOutOfBoundsException
     [SNAP-1065] Consider alignment of grids when resampling
     [SNAP-1064] Handling of no-data-values during aggregation is not correct
 	[SNAP-1077] Performance improvements to geo2xyzWGS84 for improved terrain flattening
-    
 
 # New in SNAP 6.0.6
-Error in version of snap-engine and snap-desktop. Unfortunately only snap-engine has been set to version 6.0.6. 
-The version of snap-desktop is still 6.0.5. But this version glitch does not affect the functionality of SNAP.
+
+Error in version of snap-engine and snap-desktop. Unfortunately only snap-engine has been set to version 6.0.6. The
+version of snap-desktop is still 6.0.5. But this version glitch does not affect the functionality of SNAP.
 
     [SNAP-1067] Fix SRTM 3sec remote url
 
- 
 # New in SNAP 6.0.5
+
     [SNAP-934] No products considered when they don't have time informatin
     [SNAP-931] NPE when using products without time information in StatisticsOp
     [SNAP-929] Modules not loaded when snappy is not started from the system drive
@@ -433,37 +439,42 @@ The version of snap-desktop is still 6.0.5. But this version glitch does not aff
     [SNAP-900] NPE in GLCM
 
 # New in SNAP 6.0.4
+
     [SNAP-921] Setting snap.jai.tileCacheSize to higher value than 2000 leads to 0 sized cache
     [SNAP-919] To many approximations created for some products
     [SNAP-918] When writing out statistics to a csv file, entries will be written multiple times
     [SNAP-868] Using LAT and LON in BandMaths operator leads to wrong results
 
 # New in SNAP 6.0.3
+
     [SNAP-911] Scatterplot can not be computed
     [SNAP-910] Merge operator shows internal parameter in help
     [SNAP-908] It shall be possible to turn off temporal aggregation in the StatisticsOp  
     [SNAP-907] Statistics Op shall be able to retrieve categoric statistics for integer bands
     [SNAP-905] Property for controlling the creation of MERIS pixel-based Geo-Coding not correctly read
     [SNAP-880] Update WMS URLs in Layer Manager
-    
+
 # New in SNAP 6.0.2
+
     [SNAP-901] XMLSupport leaves stream open
     [SNAP-897] Resampling yields different results in desktop and gpt
     [SNAP-893] Land/Sea Mask operator is not working when using a vector with some space in the name
     [SNAP-892] Number of approximation tiles should not depend on degrees spanned on globe
     [SNAP-891] Export of pins to shapefile does not work with certain CRS
-            
+
 # New in SNAP 6.0.1
+
     [SNAP-878] Operator Import-Vector fails with products which have a pixel-based GeoCoding
     [SNAP-874] Allow to switch between INCLUDE and INTERSECT with bbox when searching for products
     [SNAP-867] Classify by raster issues
 
-    
 # New in SNAP 6.0
-More than 100 bugs and improvements have been solved or implemented for SNAP 6.0.
-Beside these general improvements also each Toolbox has got it's own improvements.
-  
+
+More than 100 bugs and improvements have been solved or implemented for SNAP 6.0. Beside these general improvements also
+each Toolbox has got it's own improvements.
+
 ##### Some of the noteworthy improvements are:
+
     [SNAP-227] - GPT memory configuration
     [SNAP-371] - Smart installer does not allow execution of user-defined graphs
     [SNAP-650] - Provide progress on the command line
@@ -475,14 +486,15 @@ Beside these general improvements also each Toolbox has got it's own improvement
     |SNAP-783] - Module updates are not correctly considered by snappy
     [SNAP-807] - Export of pins to Google Earth KMZ format
 
-A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=12200)
 
-
 # New in SNAP v5.0
-The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes. 
- 
+
+The SNAP release concentrates on bug fixes and improvements. New features are mainly implemented in the Toolboxes.
+
 ##### Some of the noteworthy improvements are:
+
     [SNAP-373] - Export Sentinel-1 data to HDF5 is not working
     [SNAP-396] - Cannot open multiple products if progress dialog is shown
     [SNAP-398] - Names of operators shall be handeled case insensitive by gpt
@@ -492,19 +504,22 @@ The SNAP release concentrates on bug fixes and improvements. New features are ma
     [SNAP-559] - Can not open multiple products at once
     [SNAP-591] - Resample and Reprojection are not user friendly in GraphBuilder
     [SNAP-634] - Scene View should create default layers automatically
- 
-A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+
+A comprehensive list of all issues resolved in this version of SNAP can be found in our
 [issue tracking system](https://senbox.atlassian.net/secure/ReleaseNote.jspa?projectId=10100&version=11503)
 
 # New in SNAP v4.0
 
 ### New Features and Important Changes
+
 * Supervised Classification - Random Forest, KNN, Maximum Likelihood, Minimum Distance
 * Fractional Land/Water Mask operator has been integrated into SNAP
 * It is now possible to import multiple shape files at once
 
 ### Solved issues
+
 #### Bugs
+
     [SNAP-186] - Metadata Table View incorrectly renders UTC attributes
     [SNAP-357] - Message needed: source product not found and operator finished
     [SNAP-358] - Sen2Cor operator is disapearing when restarting SNAP
@@ -540,9 +555,13 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
     [SNAP-517] - NullPointerException occurs when when using PixelGeoCoding with OLCI data
     [SNAP-519] - Graph builder does not remember the name of the current graph when saving a graph.
     [SNAP-524] - Pixel Extraction writes only the lower 16 bit of a flag band
+
 #### Task
+
     [SNAP-489] - Integrate Fractional Land/Water Mask operator into SNAP
+
 #### Improvement
+
     [SNAP-404] - There is no easy way to have optional parameters on an adapter
     [SNAP-450] - NodeId should be included in exception message
     [SNAP-452] - STA: external tools menu appears even if there are no tools
@@ -556,34 +575,32 @@ A comprehensive list of all issues resolved in this version of SNAP can be found
     [SNAP-515] - STA: folders are not supported as processor parameters
     [SNAP-523] - STA: processors with no input and no output declared show an "almost" empty I/O Pannel
 
-
-A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our
 [issue tracking system](https://senbox.atlassian.net/issues/?filter=11700)
-
 
 # New in SNAP v3.0
 
 ### New Features and Important Changes
-* A new Resampling Operator has been introduced. Its main purpose is to make the bands of a multi-size 
-product equal in size. It is possible to choose for the resampling different aggregation and 
-interpolation methods. If a user invokes an action which can not handle multi-size products the user is 
-asked to resample the product.   
-* New function *bit_set(bandName, bitNumber)* in Band Maths available. The method tests if the bit at 
-the specified number is set or not.
-* GPF operators can now compute multi-size target products. To do so the computeTile(band, tile) must 
-be implemented. In order to reflect a dynamic state created in the initialize() method (the source 
-and therefore the target is single-size) the methods *boolean canComputeTile()* and 
-*boolean canComputeTileStack()* can be overridden.
-* GPF operators can now access a product manager *Operator.getProductManager()*. This is useful to 
-provide auxiliary products to other operators in the graph. 
+
+* A new Resampling Operator has been introduced. Its main purpose is to make the bands of a multi-size product equal in
+  size. It is possible to choose for the resampling different aggregation and interpolation methods. If a user invokes
+  an action which can not handle multi-size products the user is asked to resample the product.
+* New function *bit_set(bandName, bitNumber)* in Band Maths available. The method tests if the bit at the specified
+  number is set or not.
+* GPF operators can now compute multi-size target products. To do so the computeTile(band, tile) must be implemented. In
+  order to reflect a dynamic state created in the initialize() method (the source and therefore the target is
+  single-size) the methods *boolean canComputeTile()* and
+  *boolean canComputeTileStack()* can be overridden.
+* GPF operators can now access a product manager *Operator.getProductManager()*. This is useful to provide auxiliary
+  products to other operators in the graph.
 * Support for quicklooks have been integrated in Products Explorer and Product Library
 * Operations to perform land masking have been added.
 * The operator LinearTodB has been renamed to LinearToFromdB
 
-A comprehensive list of all issues resolved in this version of SNAP can be found in our 
+A comprehensive list of all issues resolved in this version of SNAP can be found in our
 [issue tracking system](https://senbox.atlassian.net/issues/?filter=11500)
 
-#Release notes of former versions
+# Release notes of former versions
 
 * [Resolved issues in version 2.x](https://senbox.atlassian.net/issues/?filter=11501)
 * [Resolved issues in version 2.0](https://senbox.atlassian.net/issues/?filter=11502)
