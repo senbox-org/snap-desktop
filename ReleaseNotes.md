@@ -101,6 +101,7 @@ tie-points anymore. Support for Landsat Collection-2 has been implemented. Suppo
     [SNAP-1301] Error creating product subset using Subset operator
     [SNAP-1267] Super-sampling has no effect in binning
     [SNAP-1167] Geotiff writer geocoding is using wrong geocoding in some cases
+    [SNAP-1183] Export of transect pixels does not show correct values
     [SNAP-1072] Update SVVP wiki page
     [SNAP-1057] Make land/sea mask compatible with multi-size products
     [SNAP-611] S2 Masks can't be used in Band Math in Graph Builder
