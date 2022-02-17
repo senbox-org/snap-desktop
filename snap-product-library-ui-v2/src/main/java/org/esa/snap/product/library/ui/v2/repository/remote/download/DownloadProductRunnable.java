@@ -67,7 +67,12 @@ public abstract class DownloadProductRunnable extends AbstractBackgroundDownload
             //TODO Jean old code to get the product path to open
             //File productFileToOpen = productPath.toFile();
 
-            Product product = ProductIO.readProduct(productFileToOpen);
+            Product product = null;
+            try {
+                product = ProductIO.readProduct(productFileToOpen);
+            } catch (Exception exception){
+                logger.log(Level.WARNING, "Failed to read the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'. " + exception.getMessage());
+            }
             try {
                 saveProductData = this.allLocalFolderProductsRepository.saveRemoteProduct(this.remoteProductDownloader.getProductToDownload(), productPath,
                                                                                           this.remoteProductDownloader.getRepositoryName(),
@@ -85,13 +90,14 @@ public abstract class DownloadProductRunnable extends AbstractBackgroundDownload
             RemoteMission remoteMission = repositoryProduct.getRemoteMission();
             logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + remoteMission.getName() + "', remote pository '" + remoteMission.getRepositoryName() + "'.");
         } catch (IOException exception) {
-            downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
                 downloadStatus = DownloadProgressStatus.NOT_AVAILABLE; // the product to download is not online
             }
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } catch (Exception exception) {
-            downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING;
+            if (exception.getMessage().contains("403") || exception.getMessage().contains("401")){
+                downloadStatus = DownloadProgressStatus.FAILED_DOWNLOADING_UNAUTHORIZED;
+            }
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);
         } finally {
             finishRunning(saveProductData, downloadStatus, productPath);

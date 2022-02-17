@@ -154,8 +154,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                     throw new NullPointerException("The remote mission is null");
                 }
                 this.remoteInputParameterValues = new RemoteInputParameterValues(parameterValues, selectedMission);
-                return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
-                                                             remoteRepositoriesSemaphore, productResultsPanel, getRepositoryName(), selectedMission, parameterValues);
+                return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener, productResultsPanel, getRepositoryName(), selectedMission, parameterValues);
             }
         }
         return null;

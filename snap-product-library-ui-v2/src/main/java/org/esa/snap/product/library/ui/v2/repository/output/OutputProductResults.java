@@ -31,6 +31,7 @@ public class OutputProductResults {
     private final Map<RepositoryProduct, DownloadProgressStatus> downloadedProductsProgress;
 
     private int currentPageNumber;
+    private long fullResultsListCount;
 
     public OutputProductResults() {
         this.scaledQuickLookImages = new HashMap<>();
@@ -39,6 +40,7 @@ public class OutputProductResults {
         this.availableProducts = new ArrayList<>();
 
         this.currentPageNumber = 0;
+        this.fullResultsListCount = 0;
     }
 
     public boolean canOpenDownloadedProducts(RepositoryProduct[] productsToCheck) {
@@ -89,6 +91,14 @@ public class OutputProductResults {
 
     public int getCurrentPageNumber() {
         return this.currentPageNumber;
+    }
+
+    public long getFullResultsListCount() {
+        return fullResultsListCount;
+    }
+
+    public void setFullResultsListCount(long fullResultsListCount) {
+        this.fullResultsListCount = fullResultsListCount;
     }
 
     public int getAvailableProductCount() {

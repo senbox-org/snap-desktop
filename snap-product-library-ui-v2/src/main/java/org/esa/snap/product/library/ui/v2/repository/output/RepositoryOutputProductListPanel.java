@@ -49,7 +49,6 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     private RepositoryProductsTimelinePanel productsTimelinePanel;
     private int visibleProductsPerPage;
     private DownloadProductListTimerRunnable downloadProductListTimerRunnable = null;
-    private Long currentFullResultsListCount = null;
 
     public RepositoryOutputProductListPanel(RepositorySelectionPanel repositorySelectionPanel, ComponentDimension componentDimension,
                                             ActionListener stopButtonListener, int progressBarWidth, boolean showStopDownloadButton) {
@@ -178,7 +177,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     public void setCurrentFullResultsListCount(Long currentFullResultsListCount) {
-        this.currentFullResultsListCount = currentFullResultsListCount;
+        getOutputProductResults().setFullResultsListCount(currentFullResultsListCount);
     }
 
     private boolean downloadsAllPages(){
@@ -230,6 +229,7 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         resetOutputProducts();
         if (products.size() > 0) {
             getOutputProductResults().addProducts(products);
+            setCurrentFullResultsListCount((long) products.size());
             displayPageProducts(1); // display the first page
         } else {
             // no products to display
@@ -277,11 +277,11 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
                 displayPageProducts(1); // display the first page
             } else {
                 refreshPaginationButtons(); // refresh the pagination button after received the products
+                if(!downloadsAllPages() && productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
+                    displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+                }
             }
             this.productsTimelinePanel.refresh(outputProductResults);
-            if(!downloadsAllPages() && productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
-                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
-            }
         }
     }
 
@@ -290,26 +290,29 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     private void displayNextPageProducts() {
-        int totalPageCount = computeTotalPageCount();
+        int availablePagesCount = computeAvailablePagesCount();
         OutputProductResults outputProductResults = getOutputProductResults();
-        if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
+        if (outputProductResults.getCurrentPageNumber() < availablePagesCount) {
+            displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+        } else {
             if(!downloadsAllPages() && this.downloadProductListTimerRunnable != null && !productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)){
                 this.downloadProductListTimerRunnable.downloadProductListNextPage();
-            }else {
-                displayPageProducts(outputProductResults.getCurrentPageNumber() + 1);
+                if(this.downloadProductListTimerRunnable.isFinished()){
+                    refreshPaginationButtons();
+                }
+            } else {
+                throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber() + " must be < than the total page count " + availablePagesCount + ".");
             }
-        } else {
-            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
         }
     }
 
     private void displayLastPageProducts() {
         OutputProductResults outputProductResults = getOutputProductResults();
-        int totalPageCount = computeTotalPageCount();
-        if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
-            displayPageProducts(totalPageCount);
+        int availablePagesCount = computeAvailablePagesCount();
+        if (outputProductResults.getCurrentPageNumber() < availablePagesCount) {
+            displayPageProducts(availablePagesCount);
         } else {
-            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
+            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + availablePagesCount + ".");
         }
     }
 
@@ -318,8 +321,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         if (outputProductResults.getCurrentPageNumber() > 1) {
             displayPageProducts(1);
         } else {
-            int totalPageCount = computeTotalPageCount();
-            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
+            int availablePagesCount = computeAvailablePagesCount();
+            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + availablePagesCount + ".");
         }
     }
 
@@ -328,8 +331,8 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         if (outputProductResults.getCurrentPageNumber() > 1) {
             displayPageProducts(outputProductResults.getCurrentPageNumber() - 1);
         } else {
-            int totalPageCount = computeTotalPageCount();
-            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + totalPageCount + ".");
+            int availablePagesCount = computeAvailablePagesCount();
+            throw new IllegalStateException("The current page number " + outputProductResults.getCurrentPageNumber()+" must be < than the total page count " + availablePagesCount + ".");
         }
     }
 
@@ -339,17 +342,20 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         }
         OutputProductResults outputProductResults = getOutputProductResults();
         int startIndex = (newCurrentPageNumber-1) * this.visibleProductsPerPage;
-        int endIndex = startIndex + this.visibleProductsPerPage - 1;
+        int endIndex = startIndex + this.visibleProductsPerPage;
         if (endIndex >= outputProductResults.getAvailableProductCount()) {
-            endIndex = outputProductResults.getAvailableProductCount() - 1;
+            endIndex = outputProductResults.getAvailableProductCount();
         }
-        List<RepositoryProduct> pageProducts = new ArrayList<>((endIndex - startIndex));
-        for (int i = startIndex; i <= endIndex; i++) {
-            pageProducts.add(outputProductResults.getProductAt(i));
+        final int size = endIndex - startIndex;
+        if(size > 0){
+            List<RepositoryProduct> pageProducts = new ArrayList<>(size);
+            for (int i = startIndex; i < endIndex; i++) {
+                pageProducts.add(outputProductResults.getProductAt(i));
+            }
+            outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
+            this.productListPanel.setProducts(pageProducts);
+            firePageProductChanged();
         }
-        outputProductResults.setCurrentPageNumber(newCurrentPageNumber);
-        this.productListPanel.setProducts(pageProducts);
-        firePageProductChanged();
     }
 
     private void clearPageProducts() {
@@ -362,32 +368,54 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
     }
 
     private void refreshPaginationButtons() {
-        int totalPageCount = computeTotalPageCount();
+        int availablePagesCount = computeAvailablePagesCount();
+        int totalPagesCount = computeTotalPagesCount();
         boolean previousPageEnabled = false;
         boolean nextPageEnabled = false;
+        boolean lastPageEnabled = false;
         String text = "";
-        if (totalPageCount > 0) {
+        if (availablePagesCount > 0) {
             OutputProductResults outputProductResults = getOutputProductResults();
             if (outputProductResults.getCurrentPageNumber() > 0) {
-                text = Integer.toString(outputProductResults.getCurrentPageNumber()) + " / " + Integer.toString(totalPageCount);
+                text = Integer.toString(outputProductResults.getCurrentPageNumber()) + " / " + Integer.toString(totalPagesCount);
                 if (outputProductResults.getCurrentPageNumber() > 1) {
                     previousPageEnabled = true;
                 }
-                if (outputProductResults.getCurrentPageNumber() < totalPageCount) {
-                    nextPageEnabled = true;
+                if(outputProductResults.getCurrentPageNumber() < totalPagesCount) {
+                    if (outputProductResults.getCurrentPageNumber() < availablePagesCount) {
+                        nextPageEnabled = true;
+                        lastPageEnabled = true;
+                    } else {
+                        if (!downloadsAllPages() && this.downloadProductListTimerRunnable != null && !productListPageDownloaded(outputProductResults.getCurrentPageNumber() + 1)) {
+                            nextPageEnabled = true;
+                        }
+                    }
                 }
             } else {
                 throw new IllegalStateException("The current page number is 0.");
             }
         }
-        this.productListPaginationPanel.refreshPaginationButtons(previousPageEnabled, nextPageEnabled, text);
+        this.productListPaginationPanel.refreshPaginationButtons(previousPageEnabled, nextPageEnabled, lastPageEnabled, text);
     }
 
-    private int computeTotalPageCount() {
+    private int computeAvailablePagesCount() {
         OutputProductResults outputProductResults = getOutputProductResults();
         int count = 0;
         if (outputProductResults.getAvailableProductCount() > 0) {
-            long totalCount = downloadsAllPages() || this.currentFullResultsListCount == null ? outputProductResults.getAvailableProductCount() : this.currentFullResultsListCount;
+            long totalCount = outputProductResults.getAvailableProductCount();
+            count = (int) (totalCount / this.visibleProductsPerPage);
+            if (totalCount % this.visibleProductsPerPage > 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int computeTotalPagesCount() {
+        OutputProductResults outputProductResults = getOutputProductResults();
+        int count = 0;
+        if (outputProductResults.getAvailableProductCount() > 0) {
+            long totalCount = outputProductResults.getFullResultsListCount();
             count = (int) (totalCount / this.visibleProductsPerPage);
             if (totalCount % this.visibleProductsPerPage > 0) {
                 count++;
@@ -402,8 +430,16 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
 
     public void updateProductListCountTitle() {
         int pageProductCount = this.productListPanel.getProductListModel().getProductCount();
-        long totalProductCount = downloadsAllPages() || this.currentFullResultsListCount == null ? getOutputProductResults().getAvailableProductCount() : this.currentFullResultsListCount;
-        String text = getTitle() + ": " + Integer.toString(pageProductCount);
+        int pageNr = getOutputProductResults().getCurrentPageNumber();
+        pageNr = pageNr < 1 ? 0 : pageNr - 1;
+        int pageProductStartIndex = this.visibleProductsPerPage * pageNr;
+        int pageProductEndIndex = pageProductStartIndex + pageProductCount;
+        long totalProductCount = getOutputProductResults().getFullResultsListCount();
+        String intervalText = Integer.toString(pageProductEndIndex);
+        if(pageProductCount > 0){
+            intervalText = Integer.toString(pageProductStartIndex + 1) + " -> " + intervalText;
+        }
+        String text = getTitle() + ": " + intervalText;
         if (totalProductCount > 0) {
             text += " out of " + Long.toString(totalProductCount);
         }

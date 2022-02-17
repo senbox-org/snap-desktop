@@ -22,6 +22,7 @@ public class DownloadProgressStatus {
     public static final byte FAIL_OPENED_MISSING_PRODUCT_READER = 11;
     public static final byte SAVED = 12;
     public static final byte QUEUED = 13;
+    public static final byte FAILED_DOWNLOADING_UNAUTHORIZED = 14;
 
     private short value;
     private byte status;
@@ -111,6 +112,10 @@ public class DownloadProgressStatus {
 
     public boolean isQueued() {
         return (this.status == QUEUED);
+    }
+
+    public boolean isFailedDownloadUnauthorized() {
+        return (this.status == FAILED_DOWNLOADING_UNAUTHORIZED);
     }
 
 }

@@ -35,12 +35,10 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
     private final RepositoryOutputProductListPanel repositoryProductListPanel;
     private final RemoteProductsRepositoryProvider productsRepositoryProvider;
     private final ThreadListener threadListener;
-    private final RemoteRepositoriesSemaphore remoteRepositoriesSemaphore;
     private final Object lock = new Object();
 
     public DownloadProductListTimerRunnable(ProgressBarHelper progressPanel, int threadId, Credentials credentials,
-                                            RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener,
-                                            RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel,
+                                            RemoteProductsRepositoryProvider productsRepositoryProvider, ThreadListener threadListener, RepositoryOutputProductListPanel repositoryProductListPanel,
                                             String remoteRepositoryName, String mission, Map<String, Object> parameterValues) {
 
         super(progressPanel, threadId, 500);
@@ -52,7 +50,6 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
         this.credentials = credentials;
         this.threadListener = threadListener;
         this.repositoryProductListPanel = repositoryProductListPanel;
-        this.remoteRepositoriesSemaphore = remoteRepositoriesSemaphore;
     }
 
     private boolean downloadsAllPages() {
@@ -65,51 +62,46 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected Void execute() throws Exception {
-        this.remoteRepositoriesSemaphore.acquirePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
+        if (isFinished()) {
+            return null; // nothing to return
+        }
+
         try {
-            if (isFinished()) {
-                return null; // nothing to return
-            }
-
-            try {
-                ProductListDownloaderListener downloaderListener = new ProductListDownloaderListener() {
-                    @Override
-                    public void notifyProductCount(long totalProductCount) {
-                        if (!isFinished()) {
-                            updateProductListSizeLater(totalProductCount);
-                        }
+            ProductListDownloaderListener downloaderListener = new ProductListDownloaderListener() {
+                @Override
+                public void notifyProductCount(long totalProductCount) {
+                    if (!isFinished()) {
+                        updateProductListSizeLater(totalProductCount);
                     }
-
-                    @Override
-                    public void notifyPageProducts(int pageNumber, List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
-                        if (!isFinished()) {
-                            updatePageProductsLater(pageResults, totalProductCount, retrievedProductCount);
-                            if (!downloadsAllPages() && retrievedProductCount < totalProductCount) {
-                                hideProgressPanelLater();
-                                synchronized (lock) {
-                                    try {
-                                        lock.wait();
-                                    } catch (InterruptedException e) {
-                                        Thread.currentThread().interrupt();
-                                    }
-                                }
-                                showProgressPanelLater();
-                            }
-                        }
-                    }
-                };
-                this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, getPageSize(), this.parameterValues, downloaderListener, this);
-                if (this.parameterValues.containsKey("username") && this.parameterValues.containsKey("password")) {
-                    String username = (String) this.parameterValues.get("username");
-                    String password = (String) this.parameterValues.get("password");
-                    RepositoriesCredentialsController.getInstance().saveRepositoryCollectionCredential(this.remoteRepositoryName, this.mission, new UsernamePasswordCredentials(username, password));
                 }
-            } catch (java.lang.InterruptedException exception) {
-                logger.log(Level.FINE, "Stop searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
-                return null; // nothing to return
+
+                @Override
+                public void notifyPageProducts(int pageNumber, List<RepositoryProduct> pageResults, long totalProductCount, int retrievedProductCount) {
+                    if (!isFinished()) {
+                        updatePageProductsLater(pageResults, totalProductCount, retrievedProductCount);
+                        if (!downloadsAllPages() && retrievedProductCount < totalProductCount) {
+                            hideProgressPanelLater();
+                            synchronized (lock) {
+                                try {
+                                    lock.wait();
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            }
+                            showProgressPanelLater();
+                        }
+                    }
+                }
+            };
+            this.productsRepositoryProvider.downloadProductList(this.credentials, this.mission, getPageSize(), this.parameterValues, downloaderListener, this);
+            if (this.parameterValues.containsKey("username") && this.parameterValues.containsKey("password")) {
+                String username = (String) this.parameterValues.get("username");
+                String password = (String) this.parameterValues.get("password");
+                RepositoriesCredentialsController.getInstance().saveRepositoryCollectionCredential(this.remoteRepositoryName, this.mission, new UsernamePasswordCredentials(username, password));
             }
-        } finally {
-            this.remoteRepositoriesSemaphore.releasePermission(this.productsRepositoryProvider.getRepositoryName(), this.credentials);
+        } catch (java.lang.InterruptedException exception) {
+            logger.log(Level.FINE, "Stop searching the product list on the '" + this.remoteRepositoryName+"' remote repository using the '" +this.mission+"' mission.");
+            return null; // nothing to return
         }
         return null; // nothing to return
     }
@@ -138,7 +130,7 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
 
     @Override
     protected void onFailed(Exception exception) {
-        onShowErrorMessageDialog(this.repositoryProductListPanel, "Failed to retrieve the product list from " + this.remoteRepositoryName + ".", "Error");
+        onShowErrorMessageDialog(this.repositoryProductListPanel, "Failed to retrieve the product list from " + this.remoteRepositoryName + ".\nReason: " + exception.getMessage(), "Error");
     }
 
     @Override

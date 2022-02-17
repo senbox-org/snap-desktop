@@ -114,6 +114,7 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
                     @Override
                     protected void startRunning() {
                         super.startRunning();
+                        new AllLocalFolderProductsRepository().saveLocalRepositoryFolder(localRepositoryFolderPath);
                         startRunningDownloadProductThreadLater(this);
                     }
 
