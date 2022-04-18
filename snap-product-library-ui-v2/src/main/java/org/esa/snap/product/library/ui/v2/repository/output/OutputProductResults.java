@@ -43,6 +43,20 @@ public class OutputProductResults {
         this.fullResultsListCount = 0;
     }
 
+    public boolean canDownloadProducts(RepositoryProduct[] productsToCheck){
+        if(!canOpenDownloadedProducts(productsToCheck)){
+            boolean canDownloadProducts = true;
+            for (int i=0; i<productsToCheck.length && canDownloadProducts; i++) {
+                if (productsToCheck[i].getURL() == null || productsToCheck[i].getURL().isEmpty()) {
+                    // there is at leat one selected product which is not downloaded
+                    canDownloadProducts = false;
+                }
+            }
+            return canDownloadProducts;
+        }
+        return false;
+    }
+
     public boolean canOpenDownloadedProducts(RepositoryProduct[] productsToCheck) {
         boolean canOpenProducts = true;
         for (int i=0; i<productsToCheck.length && canOpenProducts; i++) {

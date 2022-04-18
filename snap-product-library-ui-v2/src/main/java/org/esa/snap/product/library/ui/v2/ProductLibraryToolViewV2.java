@@ -601,7 +601,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
             @Override
             public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
-                return !visibleProductsRepositoryPanel.getOutputProductResults().canOpenDownloadedProducts(selectedProducts);
+                return visibleProductsRepositoryPanel.getOutputProductResults().canDownloadProducts(selectedProducts);
             }
         };
         ProductLibraryV2Action openDownloadedRemoteProductListener = new ProductLibraryV2Action("Open") {
