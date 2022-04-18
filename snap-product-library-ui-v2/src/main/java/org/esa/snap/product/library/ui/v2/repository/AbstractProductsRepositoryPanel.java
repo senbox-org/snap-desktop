@@ -72,7 +72,6 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     private void addInputParameterComponentsToPanel(){
         ParametersPanel parametersPanel = getInputParameterComponentsPanel();
         RepositoryQueryParameter areaOfInterestParameter = getAreaOfInterestParameter();
-        JPanel areaParameterComponent = getAreaParameterComponent(areaOfInterestParameter);
         int gapBetweenColumns = 5;
         int visibleDividerSize = gapBetweenColumns - 2;
         int dividerMargins = 0;
@@ -82,8 +81,11 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         parametersScrollPanel.setBorder(null);
         parametersScrollPanel.setMinimumSize(new Dimension(300, 200));
         parametersSplitPane.setTopComponent(parametersScrollPanel);
-        areaParameterComponent.setMinimumSize(new Dimension(300, 200));
-        parametersSplitPane.setBottomComponent(areaParameterComponent);
+        if(areaOfInterestParameter != null) {
+            JPanel areaParameterComponent = getAreaParameterComponent(areaOfInterestParameter);
+            areaParameterComponent.setMinimumSize(new Dimension(300, 200));
+            parametersSplitPane.setBottomComponent(areaParameterComponent);
+        }
         add(parametersSplitPane, BorderLayout.CENTER);
     }
 
