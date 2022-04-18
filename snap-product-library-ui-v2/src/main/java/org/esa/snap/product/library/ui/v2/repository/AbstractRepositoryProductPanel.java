@@ -149,7 +149,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         }
 
         this.nameLabel.setText(repositoryProduct.getName());
-        this.urlLabel.setText(buildAttributeLabelText("URL", repositoryProduct.getURL()));
+        this.urlLabel.setText(buildUrlLabelText(repositoryProduct.getURL()));
         // if the product was downloaded and has a remote mission, display this remote mission
         // otherwise, (it means it's an existing folder imported as local repository), use the metadata mission
         String mission = (repositoryProduct.getRemoteMission() == null) ? repositoryProduct.getMetadataMission() : repositoryProduct.getRemoteMission().getName();
@@ -257,6 +257,10 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         }
         this.firstAttributeLabel.setText(firstLabelText);
         this.secondAttributeLabel.setText(secondLabelText);
+    }
+
+    private static String buildUrlLabelText(String url){
+        return buildAttributeLabelText("URL", (url == null || StringUtils.isBlank(url) ? "N/A" : url));
     }
 
     private static String buildAttributeLabelText(String attributeDisplayName, String attributeValue) {
