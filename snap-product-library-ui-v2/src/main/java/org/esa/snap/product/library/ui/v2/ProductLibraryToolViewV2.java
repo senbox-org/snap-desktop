@@ -1141,13 +1141,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         RepositoryProduct[] selectedProducts = this.repositoryOutputProductListPanel.getProductListPanel().getSelectedProducts();
         int totalPathCount = 0;
         for (int i = 0; i < selectedProducts.length; i++) {
-            totalPathCount += selectedProducts[i].getPolygon().getPathCount();
+            if (selectedProducts[i].getPolygon() != null) {
+                totalPathCount += selectedProducts[i].getPolygon().getPathCount();
+            }
         }
         Path2D.Double[] polygonPaths = new Path2D.Double[totalPathCount];
         for (int i = 0, index=0; i < selectedProducts.length; i++) {
-            AbstractGeometry2D productGeometry = selectedProducts[i].getPolygon();
-            for (int p=0; p<productGeometry.getPathCount(); p++) {
-                polygonPaths[index++] = productGeometry.getPathAt(p);
+            if (selectedProducts[i].getPolygon() != null) {
+                AbstractGeometry2D productGeometry = selectedProducts[i].getPolygon();
+                for (int p = 0; p < productGeometry.getPathCount(); p++) {
+                    polygonPaths[index++] = productGeometry.getPathAt(p);
+                }
             }
         }
         this.worldWindowPanel.highlightPolygons(polygonPaths);
@@ -1345,8 +1349,11 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         calendar.add(Calendar.DAY_OF_MONTH, 14);
                         Date endDate = new Date(calendar.getTimeInMillis());
 
-                        Path2D.Double productAreaPath = selectedProducts[0].getPolygon().getPathAt(0);
-                        Rectangle2D.Double areaOfInterestToSelect = convertProductAreaPathToRectangle(productAreaPath);
+                        Rectangle2D.Double areaOfInterestToSelect = null;
+                        if (selectedProducts[0].getPolygon() != null) {
+                            Path2D.Double productAreaPath = selectedProducts[0].getPolygon().getPathAt(0);
+                            areaOfInterestToSelect = convertProductAreaPathToRectangle(productAreaPath);
+                        }
 
                         setHorizontalSplitPaneLeftComponent(selectedProductsRepositoryPanel);
                         selectedProductsRepositoryPanel.addInputParameterComponents();
