@@ -65,6 +65,9 @@ tie-points anymore. Support for Landsat Collection-2 has been implemented. Suppo
 
 ### Resolved Issues
 
+    [SNAP-1520] Add file association for znap format as option to installer
+    [SNAP-1514] Remote Execution operator - slave graph does not execute on remote linux machine
+    [SNAP-1508] Race condition when creating directory in Getasse30 reader
     [SNAP-1503] Displayed name in Product Explorer is not updated if wavelength is changed
     [SNAP-1499] Prevent adding masks with same name as an existing node
     [SNAP-1498] ProductIO does not rewrite header if product has changed during writing
