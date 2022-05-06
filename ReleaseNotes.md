@@ -48,7 +48,7 @@ there are several GDAL versions installed). Solved operators whose UI was not we
 made for operators: Reflectance to Radiance, Spectral Angle Mapper, Multi-size Mosaic, GeFolki Co-registration. Windowed
 Reading of Products available now in Graph Builder. It allows specifying in Graph Builder, for read operation, a
 window (spatial subset) of either pixel coordinates or geographical coordinates, so that, the reader will read directly
-the region of interest as a full-fledged product. New plugin adapter for MAJA 4.2.1 and Sen2Cor 2.9 are added in SNAP
+the region of interest as a full-fledged product. New plugin adapter for MAJA 4.5.3 and Sen2Cor 2.9 are added in SNAP
 menu.
 
 ## Sentinel-3 Toolbox
