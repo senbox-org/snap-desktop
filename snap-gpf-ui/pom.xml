@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>9.0.0-SNAPSHOT</version>
+        <version>9.0.0</version>
     </parent>
 
     <artifactId>snap-gpf-ui</artifactId>
@@ -188,4 +188,3 @@
         </plugins>
     </build>
 </project>
-
