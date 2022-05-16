@@ -17,10 +17,22 @@
 <h1>Subset Operator Description</h1>
 <h2>Overview</h2>
 <table>
-  <tr><td><b>Name:</b></td><td><code>Subset</code></td></tr>
-  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.core.gpf.common.SubsetOp</code></td></tr>
-  <tr><td><b>Purpose:</b></td><td>Create a spatial and/or spectral subset of a data product.</td></tr>
-  <tr><td><b>Version:</b></td><td>1.2</td></tr>
+    <tr>
+        <td><b>Name:</b></td>
+        <td><code>Subset</code></td>
+    </tr>
+    <tr>
+        <td><b>Full name:</b></td>
+        <td><code>org.esa.snap.core.gpf.common.SubsetOp</code></td>
+    </tr>
+    <tr>
+        <td><b>Purpose:</b></td>
+        <td>Create a spatial and/or spectral subset of a data product.</td>
+    </tr>
+    <tr>
+        <td><b>Version:</b></td>
+        <td>1.3</td>
+    </tr>
 </table>
 <h2>Description</h2>
 This operator is used to create either spatial and/or spectral subsets of a data product.
@@ -40,38 +52,51 @@ This operator is used to create either spatial and/or spectral subsets of a data
 </table>
 <h2>Parameters</h2>
 <table>
-<tr>
-  <th>Name</th>
-  <th>Data Type</th>
-  <th>Default</th>
-  <th>Description</th>
-  <th>Constraints</th>
-</tr>
-<tr>
-  <td><code>sourceBands</code></td>
-  <td><code>String[]</code></td>
-  <td><code></code></td>
-  <td>The list of source bands.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>region</code></td>
-  <td><code>Rectangle</code></td>
-  <td><code></code></td>
-  <td>The subset region in pixel coordinates.
-Use the following format: <x>,<y>,<width>,<height>
-If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this parameter.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>referenceBand</code></td>
-  <td><code>String</code></td>
-  <td><code></code></td>
-  <td>The band used to indicate the pixel coordinates.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>geoRegion</code></td>
+    <tr>
+        <th>Name</th>
+        <th>Data Type</th>
+        <th>Default</th>
+        <th>Description</th>
+        <th>Constraints</th>
+    </tr>
+    <tr>
+        <td><code>sourceBands</code></td>
+        <td><code>String[]</code></td>
+        <td><code></code></td>
+        <td>The list of source bands.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>tiePointGrids</code></td>
+        <td><code>String[]</code></td>
+        <td><code></code></td>
+        <td>The list of tie-point grid names.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>region</code></td>
+        <td><code>Rectangle</code></td>
+        <td><code></code></td>
+        <td>The subset region in pixel coordinates.
+            Use the following format:
+            <x>,
+                <y>,
+                    <width>,
+                        <height>
+                            If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this
+                            parameter.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>referenceBand</code></td>
+        <td><code>String</code></td>
+        <td><code></code></td>
+        <td>The band used to indicate the pixel coordinates.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>geoRegion</code></td>
   <td><code>Geometry</code></td>
   <td><code></code></td>
   <td>The subset region in geographical coordinates using WKT-format,
@@ -99,14 +124,6 @@ If not given, the entire scene is used.</td>
   <td><code>boolean</code></td>
   <td><code>false</code></td>
   <td>Forces the operator to extend the subset region to the full swath.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>tiePointGridNames</code></td>
-  <td><code>String[]</code></td>
-  <td><code></code></td>
-  <td>The comma-separated list of names of tie-point grids to be copied. 
-If not given, all bands are copied.</td>
   <td></td>
 </tr>
 <tr>

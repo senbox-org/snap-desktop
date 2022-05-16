@@ -49,25 +49,25 @@ An operator that is used to compute statistics for any number of source products
 </table>
 <h2>Parameters</h2>
 <table>
-<tr>
-  <th>Name</th>
-  <th>Data Type</th>
-  <th>Default</th>
-  <th>Description</th>
-  <th>Constraints</th>
-</tr>
-<tr>
-  <td><code>sourceProductPaths</code></td>
-  <td><code>String[]</code></td>
-  <td><code></code></td>
-  <td>A comma-separated list of file paths specifying the source products.
-Each path may contain the wildcards '**' (matches recursively any directory),
-      '*' (matches any character sequence in path names) and
-      '?' (matches any single character).
-      If, for example, all NetCDF files under /eodata/ shall be considered, use '/eodata/**/*.nc'.
-  </td>
-    <td></td>
-</tr>
+    <tr>
+        <th>Name</th>
+        <th>Data Type</th>
+        <th>Default</th>
+        <th>Description</th>
+        <th>Constraints</th>
+    </tr>
+    <tr>
+        <td><code>sourceProductPaths</code></td>
+        <td><code>String[]</code></td>
+        <td><code></code></td>
+        <td>A comma-separated list of file paths specifying the source products.
+            Each path may contain the wildcards '**' (matches recursively any directory),
+            '*' (matches any character sequence in path names) and
+            '?' (matches any single character).
+            If, for example, all NetCDF files under /eodata/ shall be considered, use '/eodata/**/*.nc'.
+        </td>
+        <td></td>
+    </tr>
     <tr>
         <td><code>shapefile</code></td>
         <td><code>File</code></td>
@@ -97,26 +97,30 @@ Each path may contain the wildcards '**' (matches recursively any directory),
         <td>format: yyyy-MM-dd HH:mm:ss</td>
     </tr>
     <tr>
-  <td><code>endDate</code></td>
-  <td><code>UTC</code></td>
-  <td><code></code></td>
-  <td>The end date. If not given, taken from the 'youngest' source product. Products that have an end date after the end date given by this parameter are not considered.</td>
-  <td>format: yyyy-MM-dd HH:mm:ss</td>
-</tr>
-<tr>
-  <td><code>bandConfigurations</code></td>
-  <td><code>BandConfiguration[]</code></td>
-  <td><code></code></td>
-  <td>The band configurations. These configurations determine the input of the operator.</td>
-  <td>not null</td>
-</tr>
-<tr>
-  <td><code>outputShapefile</code></td>
-  <td><code>File</code></td>
-  <td><code></code></td>
-  <td>The target file for shapefile output. Shapefile output will only be written if this parameter is set. The band mapping file will have the suffix _band_mapping.txt.</td>
-  <td></td>
-</tr>
+        <td><code>endDate</code></td>
+        <td><code>UTC</code></td>
+        <td><code></code></td>
+        <td>The end date. If not given, taken from the 'youngest' source product. Products that have an end date after
+            the end date given by this parameter are not considered.
+        </td>
+        <td>format: yyyy-MM-dd HH:mm:ss</td>
+    </tr>
+    <tr>
+        <td><code>bandConfigurations</code></td>
+        <td><code>BandConfiguration[]</code></td>
+        <td><code></code></td>
+        <td>The band configurations. These configurations determine the input of the operator.</td>
+        <td>not null</td>
+    </tr>
+    <tr>
+        <td><code>outputShapefile</code></td>
+        <td><code>File</code></td>
+        <td><code></code></td>
+        <td>The target file for shapefile output. Shapefile output will only be written if this parameter is set. The
+            band mapping file will have the suffix _band_mapping.txt.
+        </td>
+        <td></td>
+    </tr>
 <tr>
   <td><code>outputAsciiFile</code></td>
   <td><code>File</code></td>
