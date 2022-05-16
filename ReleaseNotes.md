@@ -45,11 +45,12 @@ The GDAL version is updated from 3.0.0 to 3.2.1. Also, a plugin for COG writer i
 artifacts noticed in produced images when writing in parallel, from multiple threads. Allow setting which installed GDAL
 distribution is used by SNAP (when the user desires to use and installed distribution instead of the internal one, and
 there are several GDAL versions installed). Solved operators whose UI was not well functioning in Graph Builder. Updates
-made for operators: Reflectance to Radiance, Spectral Angle Mapper, Multi-size Mosaic, GeFolki Co-registration. Windowed
+made for operators: Reflectance to Radiance, Spectral Angle Mapper, Multi-size Mosaic, GeFolki Co-registration, Biophysical processor. Windowed
 Reading of Products available now in Graph Builder. It allows specifying in Graph Builder, for read operation, a
 window (spatial subset) of either pixel coordinates or geographical coordinates, so that, the reader will read directly
 the region of interest as a full-fledged product. New plugin adapter for MAJA 4.5.3 and Sen2Cor 2.9 are added in SNAP
-menu.
+menu. A new change vector analysis operator allows to compare two geolocalized images at different dates. Support for the third party sentinel-2 Products: Landsat processed by ESA, Landsat L2 (L2H, L2F, L8H, L8F, L9H, L9F) is available.
+
 
 ## Sentinel-3 Toolbox
 
