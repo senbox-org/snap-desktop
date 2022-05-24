@@ -39,10 +39,8 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -176,22 +174,6 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-        if (sourceProductSelector != null) {
-            final Product prod = sourceProductSelector.getSelectedProduct();
-            if (prod != null && prod.getFileLocation() != null) {
-                File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
-                paramMap.put(FILE_PARAMETER, prod.getFileLocation());
-                if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
-                    // sourceProducts from BaseOperatorUI should be populated in order to be able to later obtain getBandNames(), getGeometries(),
-                    // therefore calling setSourceProduct(prod); would not be enough, setSourceProducts() is needed
-                    setSourceProducts(new Product[]{prod});
-                    OperatorUIUtils.initParamList(bandList, getBandNames());
-                    OperatorUIUtils.initParamList(maskList, getGeometries());
-                    pixelPanelChanged();
-                    geoCodingChange();
-                }
-            }
-        }
         String selectedFormat = (String) formatNameComboBox.getSelectedItem();
         if (selectedFormat != null && selectedFormat.equals(ANY_FORMAT)) {
             selectedFormat = null;
@@ -212,30 +194,85 @@ public class SourceUI extends BaseOperatorUI {
     public void updateAdvancedOptionsUIAtProductChange() {
         if (sourceProductSelector != null) {
             advancedOptionsBtn.setEnabled(sourceProductSelector.getSelectedProduct() != null);
+            if (paramMap.get(USE_ADVANCED_OPTIONS_PARAMETER) != null) {
+                advancedOptionsPanel.setVisible((Boolean) paramMap.get(USE_ADVANCED_OPTIONS_PARAMETER));
+            }
 
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {
                 File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
+                paramMap.put(FILE_PARAMETER, prod.getFileLocation());
                 if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
+                    setSourceProducts(new Product[]{prod});
                     // for same types of products (with identical band names) the selected bands/masks are kept, therefore clear the selection when input product changes
                     bandList.clearSelection();
                     maskList.clearSelection();
-
+                    OperatorUIUtils.initParamList(bandList, getBandNames());
+                    OperatorUIUtils.initParamList(maskList, getGeometries());
                     // reset default visible coords panel
                     pixelCoordRadio.setSelected(true);
                     pixelPanel.setVisible(true);
                     geoPanel.setVisible(false);
 
-                    // also reset pixel coords
-                    pixelCoordXSpinner.setValue(0);
-                    pixelCoordYSpinner.setValue(0);
-                    pixelCoordWidthSpinner.setValue(Integer.MAX_VALUE);
-                    pixelCoordHeightSpinner.setValue(Integer.MAX_VALUE);
+                    if (paramMap.get(BAND_LIST_PARAMETER) != null) {
+                        final Map<String, Boolean> bandMapValuesToSelect = new HashMap<>();
+                        for (String bandValueToSelect : (String[]) paramMap.get(BAND_LIST_PARAMETER)) {
+                            bandMapValuesToSelect.put(bandValueToSelect, true);
+                        }
+                        List<Integer> indicesToSelect = new ArrayList<>();
+                        for (int i = 0; i < bandList.getModel().getSize(); i++) {
+                            if (bandMapValuesToSelect.containsKey((String) bandList.getModel().getElementAt(i))) {
+                                indicesToSelect.add(i);
+                            }
+                        }
+                        bandList.setSelectedIndices(indicesToSelect.stream().mapToInt(i -> i).toArray());
+                    }
 
-                    // trigger the calculation of product bounds
-                    pixelPanelChanged();
-                    // sync geo coords
-                    syncLatLonWithXYParams();
+                    if (paramMap.get(MASK_LIST_PARAMETER) != null) {
+                        final Map<String, Boolean> maskMapValuesToSelect = new HashMap<>();
+                        for (String maskValueToSelect : (String[]) paramMap.get(MASK_LIST_PARAMETER)) {
+                            maskMapValuesToSelect.put(maskValueToSelect, true);
+                        }
+                        List<Integer> indicesToSelect = new ArrayList<>();
+                        for (int i = 0; i < maskList.getModel().getSize(); i++) {
+                            if (maskMapValuesToSelect.containsKey((String) maskList.getModel().getElementAt(i))) {
+                                indicesToSelect.add(i);
+                            }
+                        }
+                        maskList.setSelectedIndices(indicesToSelect.stream().mapToInt(i -> i).toArray());
+                    }
+
+                    // also reset pixel coords
+                    if (paramMap.get(PIXEL_REGION_PARAMETER) != null) {
+                        Rectangle pixelRegion = (Rectangle) paramMap.get(PIXEL_REGION_PARAMETER);
+                        pixelCoordXSpinner.setValue(pixelRegion.x);
+                        pixelCoordYSpinner.setValue(pixelRegion.y);
+                        pixelCoordWidthSpinner.setValue(pixelRegion.width);
+                        pixelCoordHeightSpinner.setValue(pixelRegion.height);
+                    } else {
+                        pixelCoordXSpinner.setValue(0);
+                        pixelCoordYSpinner.setValue(0);
+                        pixelCoordWidthSpinner.setValue(Integer.MAX_VALUE);
+                        pixelCoordHeightSpinner.setValue(Integer.MAX_VALUE);
+                    }
+
+                    if (paramMap.get(COPY_METADATA_PARAMETER) != null) {
+                        copyMetadata.setSelected((Boolean) paramMap.get(COPY_METADATA_PARAMETER));
+                    }
+
+                    if (paramMap.get(GEOMETRY_REGION_PARAMETER) != null) {
+                        Geometry geometryRegion = (Geometry) paramMap.get(GEOMETRY_REGION_PARAMETER);
+                        geoCoordNorthLatSpinner.setValue(geometryRegion.getCoordinates()[0].x);
+                        geoCoordWestLongSpinner.setValue(geometryRegion.getCoordinates()[0].y);
+                        geoCoordSouthLatSpinner.setValue(geometryRegion.getCoordinates()[1].x);
+                        geoCoordEastLongSpinner.setValue(geometryRegion.getCoordinates()[1].y);
+                        geoCodingChange();
+                    } else {
+                        // trigger the calculation of product bounds
+                        pixelPanelChanged();
+                        // sync geo coords
+                        syncLatLonWithXYParams();
+                    }
                 }
             }
         }
