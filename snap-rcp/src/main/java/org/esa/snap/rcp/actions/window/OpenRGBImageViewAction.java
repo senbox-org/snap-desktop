@@ -36,8 +36,8 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
-import org.openide.util.*;
-import org.openide.util.actions.Presenter;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,62 +49,33 @@ import java.util.stream.Collectors;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
- * Enablement: when a product is selected which contains at least 1 band
  *
  * @author Marco Peters
- * @author Daniel Knowles
- * @author Bing Yang
  */
-//Apr2019 - Knowles/Yang - Added access to this tool in the "Image" toolbar including enablement, tooltips and related icon.
-
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
-        displayName = "#CTL_OpenRGBImageViewAction_Name",
-        lazy = false
+        displayName = "#CTL_OpenRGBImageViewAction_MenuText",
+        popupText = "#CTL_OpenRGBImageViewAction_MenuText",
+        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
+        lazy = true
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
-        @ActionReference(path = "Toolbars/Image", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_Name=RGB Image",
-        "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
+        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",
+        "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
 })
-public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
-
-    private final Product product;
+public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "rgbImageProfile";
-
-    private Lookup lookup;
-    private final Lookup.Result<ProductNode> viewResult;
-
-    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
-    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
-    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
-
-
-
-    // Governs enablement of the RGB GUI access
-    private final int MINUMUM_NUM_BANDS = 1;
-
-
-    public OpenRGBImageViewAction() {this(null);}
+    private final Product product;
 
     public OpenRGBImageViewAction(ProductNode node) {
-        super(Bundle.CTL_OpenRGBImageViewAction_Name());
+        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
         product = node.getProduct();
-        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
-
-        Lookup lookup = Utilities.actionsGlobalContext();
-        this.lookup = lookup;
-        this.viewResult = lookup.lookupResult(ProductNode.class);
-        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
-        updateEnabledState();
+        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
     }
 
     @Override
@@ -379,28 +350,4 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
         return nameBuilder.toString();
     }
-
-
-    @Override
-    public JMenuItem getMenuPresenter() {
-        JMenuItem menuItem = new JMenuItem(this);
-        return menuItem;
-    }
-
-    @Override
-    public Component getToolbarPresenter() {
-        JButton button = new JButton(this);
-        button.setText(null);
-        return button;
-    }
-
-    public void resultChanged(LookupEvent ignored) {
-        updateEnabledState();
-    }
-
-    protected void updateEnabledState() {
-        ProductNode productNode = this.lookup.lookup(ProductNode.class);
-        setEnabled(productNode != null && productNode.getProduct().getNumBands() > MINUMUM_NUM_BANDS);
-    }
-
 }
