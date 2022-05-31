@@ -31,7 +31,14 @@ import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.*;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.DEFAULT_COMPRESSION_LEVEL;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.DEFAULT_COMPRESSOR_ID;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.DEFAULT_USE_ZIP_ARCHIVE;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.PROPERTY_NAME_BINARY_FORMAT;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.PROPERTY_NAME_COMPRESSION_LEVEL;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.PROPERTY_NAME_COMPRESSOR_ID;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.PROPERTY_NAME_USE_ZIP_ARCHIVE;
+import static org.esa.snap.dataio.znap.preferences.ZnapPreferencesConstants.ZLIB_COMPRESSION_LEVELS;
 
 final class WriterPanel extends javax.swing.JPanel {
 
@@ -167,7 +174,7 @@ final class WriterPanel extends javax.swing.JPanel {
             compressionLevelCombo.addItem(item);
         }
 
-        createZipArchiveLabel = new JLabel("Create zip arcive:");
+        createZipArchiveLabel = new JLabel("Create zip archive:");
         createZipArchiveCheck = new JCheckBox();
 
         setBorder(new TitledBorder("ZNAP Options"));
