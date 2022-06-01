@@ -100,7 +100,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    protected void addInputParameterComponentsToPanel() {
+    protected ParametersPanel getInputParameterComponentsPanel() {
         ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
         int gapBetweenRows = this.componentDimension.getGapBetweenRows();
@@ -122,13 +122,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         int startRowIndex = 2;
         this.parameterComponents = panel.addParameterComponents(parameters, startRowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
-        RepositoryQueryParameter areaOfInterestParameter = null;
         RepositoryQueryParameter attributesParameter = null;
         for (int i = 0; i < parameters.size(); i++) {
             RepositoryQueryParameter param = parameters.get(i);
-            if (param.getType() == areaOfInterestClass) {
-                areaOfInterestParameter = param;
-            } else if (param.getType() == attributesClass) {
+            if (param.getType() == attributesClass) {
                 attributesParameter = param;
             }
         }
@@ -150,12 +147,21 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             c = SwingUtils.buildConstraints(1, nextRowIndex, GridBagConstraints.BOTH, GridBagConstraints.WEST, 1, 1, gapBetweenRows, gapBetweenColumns);
             panel.add(attributesParameterComponent.getComponent(), c);
         }
+        return panel;
+    }
 
-        add(panel, BorderLayout.NORTH);
-
-        if (areaOfInterestParameter != null) {
-            addAreaParameterComponent(areaOfInterestParameter);
+    @Override
+    protected RepositoryQueryParameter getAreaOfInterestParameter(){
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        List<RepositoryQueryParameter> parameters = this.allLocalFolderProductsRepository.getParameters();
+        RepositoryQueryParameter areaOfInterestParameter = null;
+        for (int i=0; i<parameters.size(); i++) {
+            RepositoryQueryParameter param = parameters.get(i);
+            if (param.getType() == areaOfInterestClass) {
+                areaOfInterestParameter = param;
+            }
         }
+        return areaOfInterestParameter;
     }
 
     @Override

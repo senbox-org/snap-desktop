@@ -137,10 +137,10 @@ class GeoCodingPanel extends PagePanel {
         final RasterDataNode raster = getRaster();
         final Product product = getProduct();
 
-        boolean usingUniformGeoCodings = false;
+        boolean usingMultiGeoCodings = false;
         GeoCoding sceneGeoCoding = null;
         if (product != null) {
-            usingUniformGeoCodings = product.isUsingSingleGeoCoding();
+            usingMultiGeoCodings = isUsingMultiGeoCoding(product);
             sceneGeoCoding = product.getSceneGeoCoding();
         }
 
@@ -152,7 +152,7 @@ class GeoCodingPanel extends PagePanel {
         String nodeType = "";
 
         if (product != null) {
-            if (!usingUniformGeoCodings) {
+            if (usingMultiGeoCodings) {
                 addEmptyRow();
                 addRow("Some bands come with an individual geo-coding that differs from the geo-coding of the product. Select a band to see the bands individual geo-coding.");
                 addEmptyRow();
@@ -167,7 +167,7 @@ class GeoCodingPanel extends PagePanel {
             sceneLR = new PixelPos(product.getSceneRasterWidth() - 1 + 0.5f,
                                    product.getSceneRasterHeight() - 1 + 0.5f);
         }
-        if (raster != null && !usingUniformGeoCodings) {
+        if (raster != null && usingMultiGeoCodings) {
             nodeType = "band";
             geoCoding = raster.getGeoCoding();
             if (sceneGeoCoding != null && geoCoding == sceneGeoCoding) {
@@ -184,6 +184,22 @@ class GeoCodingPanel extends PagePanel {
                                    raster.getRasterHeight() - 1 + 0.5);
         }
         writeGeoCoding(geoCoding, sceneCenter, sceneUL, sceneUR, sceneLL, sceneLR, nodeType);
+    }
+
+    public boolean isUsingMultiGeoCoding(Product product) {
+        final GeoCoding geoCoding = product.getSceneGeoCoding();
+        if (geoCoding == null) {
+            return false;
+        }
+
+        final List<RasterDataNode> rasterDataNodes = product.getRasterDataNodes();
+        for (RasterDataNode rasterDataNode : rasterDataNodes) {
+            if (geoCoding != rasterDataNode.getGeoCoding()) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     private void writeGeoCoding(final GeoCoding geoCoding,

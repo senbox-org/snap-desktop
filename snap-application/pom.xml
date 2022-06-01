@@ -185,7 +185,7 @@
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
-            <artifactId>snap-zarr-ui</artifactId>
+            <artifactId>snap-znap-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -207,12 +207,14 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
         int totalPathCount = 0;
         for (int i=0; i<this.productListModel.getProductCount(); i++) {
             AbstractGeometry2D productGeometry = this.productListModel.getProductAt(i).getPolygon();
-            totalPathCount += productGeometry.getPathCount();
+            if (productGeometry != null) {
+                totalPathCount += productGeometry.getPathCount();
+            }
         }
         Path2D.Double[] polygonPaths = new Path2D.Double[totalPathCount];
         for (int i=0, index=0; i<this.productListModel.getProductCount(); i++) {
             AbstractGeometry2D productGeometry = this.productListModel.getProductAt(i).getPolygon();
-            for (int p=0; p<productGeometry.getPathCount(); p++) {
+            for (int p = 0; productGeometry != null && p < productGeometry.getPathCount(); p++) {
                 polygonPaths[index++] = productGeometry.getPathAt(p);
             }
         }
@@ -226,7 +228,7 @@ public class OutputProductListPanel extends VerticalScrollablePanel implements R
             AbstractRepositoryProductPanel foundRepositoryProductPanel = null;
             for (int i=0; i<productListSize && foundRepositoryProductPanel == null; i++) {
                 AbstractGeometry2D productGeometry = this.productListModel.getProductAt(i).getPolygon();
-                for (int p=0; p<productGeometry.getPathCount(); p++) {
+                for (int p=0; productGeometry != null && p<productGeometry.getPathCount(); p++) {
                     if (productGeometry.getPathAt(p) == polygonPaths.get(k)) {
                         foundRepositoryProductPanel = (AbstractRepositoryProductPanel) getComponent(i);
                         break;

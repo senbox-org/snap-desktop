@@ -4,6 +4,7 @@ import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.ProductLibraryV2Action;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
+import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.input.SelectionAreaParameterComponent;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
@@ -15,12 +16,14 @@ import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
+import org.esa.snap.ui.loading.CustomSplitPane;
+import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +55,9 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     public abstract String getRepositoryName();
 
-    protected abstract void addInputParameterComponentsToPanel();
+    protected abstract ParametersPanel getInputParameterComponentsPanel();
+
+    protected abstract RepositoryQueryParameter getAreaOfInterestParameter();
 
     public abstract boolean refreshInputParameterComponentValues();
 
@@ -63,6 +68,26 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
 
     public abstract AbstractProgressTimerRunnable<?> buildSearchProductListThread(ProgressBarHelper progressPanel, int threadId, ThreadListener threadListener,
                                                                                   RemoteRepositoriesSemaphore remoteRepositoriesSemaphore, RepositoryOutputProductListPanel repositoryProductListPanel);
+
+    private void addInputParameterComponentsToPanel(){
+        ParametersPanel parametersPanel = getInputParameterComponentsPanel();
+        RepositoryQueryParameter areaOfInterestParameter = getAreaOfInterestParameter();
+        int gapBetweenColumns = 5;
+        int visibleDividerSize = gapBetweenColumns - 2;
+        int dividerMargins = 0;
+        float initialDividerLocationPercent = 0.5f;
+        CustomSplitPane parametersSplitPane = new CustomSplitPane(JSplitPane.VERTICAL_SPLIT, visibleDividerSize, dividerMargins, initialDividerLocationPercent, SwingUtils.TRANSPARENT_COLOR);
+        JScrollPane parametersScrollPanel = new JScrollPane(parametersPanel);
+        parametersScrollPanel.setBorder(null);
+        parametersScrollPanel.setMinimumSize(new Dimension(300, 200));
+        parametersSplitPane.setTopComponent(parametersScrollPanel);
+        if(areaOfInterestParameter != null) {
+            JPanel areaParameterComponent = getAreaParameterComponent(areaOfInterestParameter);
+            areaParameterComponent.setMinimumSize(new Dimension(300, 200));
+            parametersSplitPane.setBottomComponent(areaParameterComponent);
+        }
+        add(parametersSplitPane, BorderLayout.CENTER);
+    }
 
     public JButton[] getTopBarButton() {
         return null;
@@ -124,7 +149,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
     }
 
     protected final Map<String, Object> getParameterValues() {
-        Map<String, Object> parameterValues = new HashMap<>();
+        Map<String, Object> parameterValues = new LinkedHashMap<>();
         for (int i=0; i<this.parameterComponents.size(); i++) {
             AbstractParameterComponent<?> parameterComponent = this.parameterComponents.get(i);
             Boolean result = parameterComponent.hasValidValue();
@@ -180,7 +205,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         }
     }
 
-    protected final void addAreaParameterComponent(RepositoryQueryParameter areaOfInterestParameter) {
+    protected final JPanel getAreaParameterComponent(RepositoryQueryParameter areaOfInterestParameter) {
         this.worlWindPanel.clearSelectedArea();
         SelectionAreaParameterComponent selectionAreaParameterComponent = new SelectionAreaParameterComponent(this.worlWindPanel, areaOfInterestParameter.getName(), areaOfInterestParameter.getLabel(), areaOfInterestParameter.isRequired());
         this.parameterComponents.add(selectionAreaParameterComponent);
@@ -192,6 +217,6 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(this.componentDimension.getGapBetweenColumns(), 0));
         centerPanel.add(label, BorderLayout.WEST);
         centerPanel.add(selectionAreaParameterComponent.getComponent(), BorderLayout.CENTER);
-        add(centerPanel, BorderLayout.CENTER);
+        return centerPanel;
     }
 }

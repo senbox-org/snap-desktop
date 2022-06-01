@@ -58,7 +58,6 @@
     <mapID target="importMermaid" url="desktop/ImportMermaid.html"/>
     <mapID target="importSeaDASTrack" url="desktop/ImportSeaDASTrack.html"/>
     <mapID target="importShapefile" url="desktop/ImportShapefile.html"/>
-    <mapID target="importNasaObpgProduct" url="desktop/ImportNasaObpgHDF.html"/>
     <mapID target="importNetCdfProduct" url="desktop/ImportNetCDF.html"/>
     <mapID target="exportDimapProduct" url="desktop/ExportDimapProduct.html"/>
     <mapID target="exportNetCdfProduct" url="desktop/ExportNetCdfProduct.html"/>

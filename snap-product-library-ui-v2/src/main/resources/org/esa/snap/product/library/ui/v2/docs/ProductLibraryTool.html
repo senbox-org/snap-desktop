@@ -73,6 +73,7 @@
 		</span>
 		<ul>
 			<li>auto-uncompress of compressed products after download</li>
+			<li>download all pages of search results</li>
 			<li>the number of entries on results page</li>
 		</ul>
 		
@@ -87,6 +88,10 @@
 			<li>Start Date</li>
 			<li>End Date</li>
 			<li>Area of Interest (AOI)</li>
+			<li>Username and Password when the remote repository uses another authentication for query, and not uses the download credentials. </li>
+			<p class="inote">
+				<b>Note</b>: The credentials used as search parameters will be saved securely on the Product Library config file for later usage (will be prefilled), when the search operation succeeds. <br/>
+			</p>
 		</ul>
 		
 		<img alt="search-results" src="images/search-results.png">
@@ -121,6 +126,9 @@
 		<p>
 			To download products press the mouse right button on the selected products and select the Download option. Then select
 			the local folder used to save the products. After downloading a product into a local folder, the product can be opened in the application.
+		</p>
+		<p>
+			Some remote repositories may produce the product on the fly, to download, so the download process will start after some time, when the product is ready to be downloaded. The Product Library will try to download the product from time to time, at some interval (initially 10 seconds and increase by 10 seconds on every try), and the status of downloading product will appear as 'queued' until the actual download is done.
 		</p>
 
 		<h4>Local repository</h4>

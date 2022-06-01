@@ -16,6 +16,7 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.core.datamodel.Product;
+import org.locationtech.jts.awt.PointShapeFactory.X;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -29,6 +30,9 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -51,8 +55,8 @@ public class SubsetUI extends BaseOperatorUI {
     private final JTextField regionY = new JTextField("");
     private final JTextField width = new JTextField("");
     private final JTextField height = new JTextField("");
-    private final JTextField subSamplingX = new JTextField("");
-    private final JTextField subSamplingY = new JTextField("");
+    private final JSpinner subSamplingX = new JSpinner();
+    private final JSpinner subSamplingY = new JSpinner();
     private final JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
 
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
@@ -64,11 +68,38 @@ public class SubsetUI extends BaseOperatorUI {
     private final JTextField geoText = new JTextField("");
     private final JButton geoUpdateButton = new JButton("Update");
     private Geometry geoRegion = null;
+    private static final int MIN_SUBSET_SIZE = 1;
+
+    private int getRasterReferenceWidth()
+    {
+        int w=1;
+        if(sourceProducts!=null && referenceCombo.getSelectedItem()!=null) {
+            if(sourceProducts[0].isMultiSize()) {
+                w = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+            } else {
+                w = sourceProducts[0].getSceneRasterWidth();
+            }
+        }
+        return w;
+    }
+    private int getRasterReferenceHeight()
+    {
+        int h = 1;
+        if(sourceProducts!=null && referenceCombo.getSelectedItem()!=null) {
+            if(sourceProducts[0].isMultiSize()) {
+                h = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                h = sourceProducts[0].getSceneRasterHeight();
+            }
+        }
+        return h;
+    }
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         initializeOperatorUI(operatorName, parameterMap);
+
         final JComponent panel = createPanel();
 
         initParameters();
@@ -85,13 +116,52 @@ public class SubsetUI extends BaseOperatorUI {
                 updateGeoRegion();
             }
         });
-
+        width.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateROIx();
+            }
+        });
+        height.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateROIy();
+            }
+        });
+        regionX.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateROIx();
+            }
+        });
+        regionY.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateROIy();
+            }
+        });
+        //enable or disable referenceCombo depending on sourceProduct
+        referenceCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateParametersReferenceBand();
+            }
+        });
+        subSamplingX.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                updateParametersSubSamplingX();
+            }
+        });
+        subSamplingY.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                updateParametersSubSamplingY();
+            }
+        });
         return new JScrollPane(panel);
     }
 
     @Override
     public void initParameters() {
-
         OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("bandNames"));
         OperatorUIUtils.initParamList(tiePointGridList, getTiePointGridNames(), (Object[])paramMap.get("tiePointGridNames"));
 
@@ -110,7 +180,6 @@ public class SubsetUI extends BaseOperatorUI {
         } else {
             referenceCombo.setEnabled(true);
         }
-
 
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {
@@ -133,13 +202,12 @@ public class SubsetUI extends BaseOperatorUI {
 
         Integer subSamplingXVal = (Integer) paramMap.get("subSamplingX");
         if(subSamplingXVal != null) {
-            subSamplingX.setText(subSamplingXVal.toString());
+            subSamplingX.setValue(subSamplingXVal);
         }
         Integer subSamplingYVal = (Integer) paramMap.get("subSamplingY");
         if(subSamplingYVal != null) {
-            subSamplingY.setText(subSamplingYVal.toString());
+            subSamplingY.setValue(subSamplingYVal);
         }
-
         geoRegion = (Geometry) paramMap.get("geoRegion");
         if (geoRegion != null) {
 
@@ -153,6 +221,12 @@ public class SubsetUI extends BaseOperatorUI {
             pixelPanel.setVisible(false);
             geoPanel.setVisible(true);
         }
+        //enable or disable referenceCombo depending on sourceProduct
+        if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {
+            referenceCombo.setEnabled(false);
+        } else {
+            referenceCombo.setEnabled(true);
+        }
     }
 
     @Override
@@ -162,7 +236,6 @@ public class SubsetUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
-
         OperatorUIUtils.updateParamList(bandList, paramMap, "bandNames");
 
         paramMap.remove("referenceBand");
@@ -176,14 +249,37 @@ public class SubsetUI extends BaseOperatorUI {
         }
         OperatorUIUtils.updateParamList(tiePointGridList, paramMap, "tiePointGridNames");
 
-        final String subSamplingXStr = subSamplingX.getText();
+        int x=0, y=0, rasterReferenceWidth=1, rasterReferenceHeight=1,w=1,h=1;
+        if(sourceProducts!=null && referenceCombo.getSelectedItem()!=null) {
+            if(sourceProducts[0].isMultiSize()) {
+                rasterReferenceWidth = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                rasterReferenceHeight = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                rasterReferenceWidth = sourceProducts[0].getSceneRasterWidth();
+                rasterReferenceHeight = sourceProducts[0].getSceneRasterHeight();
+            }
+        }
+        Integer subSamplingXVal = (Integer) paramMap.get("subSamplingX");
+        Integer subSamplingYVal = (Integer) paramMap.get("subSamplingY");
+
+        SpinnerModel subSamplingXmodel = new SpinnerNumberModel(1,1, rasterReferenceWidth/MIN_SUBSET_SIZE+1,1);
+        subSamplingX.setModel(subSamplingXmodel);
+        SpinnerModel subSamplingYmodel = new SpinnerNumberModel(1,1, rasterReferenceHeight/MIN_SUBSET_SIZE+1,1);
+        subSamplingY.setModel(subSamplingYmodel);
+        if(subSamplingXVal != null) {
+            subSamplingX.setValue(subSamplingXVal);
+        }
+        if(subSamplingYVal != null) {
+            subSamplingY.setValue(subSamplingYVal);
+        }
+        final String subSamplingXStr = subSamplingX.getValue().toString();
+      
         if (subSamplingXStr != null && !subSamplingXStr.isEmpty())
             paramMap.put("subSamplingX", Integer.parseInt(subSamplingXStr));
-        final String subSamplingYStr = subSamplingY.getText();
+        final String subSamplingYStr = subSamplingY.getValue().toString();
         if (subSamplingYStr != null && !subSamplingYStr.isEmpty())
             paramMap.put("subSamplingY", Integer.parseInt(subSamplingYStr));
 
-        int x=0, y=0, w=0, h=0;
         final String regionXStr = regionX.getText();
         if (regionXStr != null && !regionXStr.isEmpty())
             x = Integer.parseInt(regionXStr);
@@ -205,8 +301,173 @@ public class SubsetUI extends BaseOperatorUI {
         } else {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
+    }
+
+    public void updateROIorGeoRegion(int x, int y, int w, int h)
+    {
+        paramMap.remove("geoRegion");
+        paramMap.remove("region");
+        getGeoRegion();
+        if (geoCoordRadio.isSelected() && geoRegion != null) {
+            paramMap.put("geoRegion", geoRegion);
+        } else {
+            paramMap.put("region", new Rectangle(x,y,w,h));
+        }
 
         paramMap.put("copyMetadata", copyMetadata.isSelected());
+    }
+
+    public void updateParametersSubSamplingX() {
+        final String subSamplingXStr = subSamplingX.getValue().toString();
+        if (subSamplingXStr != null && !subSamplingXStr.isEmpty()){
+            paramMap.put("subSamplingX", Integer.parseInt(subSamplingXStr));
+        }
+    }
+    public void updateParametersSubSamplingY() {
+        final String subSamplingYStr = subSamplingY.getValue().toString();
+        if (subSamplingYStr != null && !subSamplingYStr.isEmpty()){
+            paramMap.put("subSamplingY", Integer.parseInt(subSamplingYStr));
+        }
+    }
+
+    public void updateROIx() {
+        int rasterRefWidth = getRasterReferenceWidth();
+        int w = rasterRefWidth;
+        int h = getRasterReferenceHeight();
+        int x = 0, y=0;
+        final String widthStr = width.getText();
+        if (widthStr != null && !widthStr.isEmpty())
+            w = Integer.parseInt(widthStr);
+        final String regionXStr = regionX.getText();
+        if (regionXStr != null && !regionXStr.isEmpty())
+            x = Integer.parseInt(regionXStr);
+        if (w < 1) {
+            w = 1;
+        }
+        if (x > w - 2) {
+            x = w - 2;
+        }
+        if(w+x>rasterRefWidth)
+            w=rasterRefWidth-x;
+        width.setText(String.valueOf(w));
+        regionX.setText(String.valueOf(x));
+        final String regionYStr = regionY.getText();
+        if (regionYStr != null && !regionYStr.isEmpty())
+            y = Integer.parseInt(regionYStr);
+        final String heightStr = height.getText();
+        if (heightStr != null && !heightStr.isEmpty())
+            h = Integer.parseInt(heightStr);
+        updateROIorGeoRegion(x,y,w,h);
+    }
+
+    public void updateROIy() {
+        int rasterRefHeight = getRasterReferenceHeight();
+        int h = rasterRefHeight;
+        int w = getRasterReferenceWidth();
+        int y = 0, x = 0;
+        final String heightStr = height.getText();
+        if (heightStr != null && !heightStr.isEmpty())
+            h = Integer.parseInt(heightStr);
+        final String regionYStr = regionY.getText();
+        if (regionYStr != null && !regionYStr.isEmpty())
+            y = Integer.parseInt(regionYStr);
+        if (h < 1) {
+            h = 1;
+        }
+        if (y > h - 2) {
+            y = h - 2;
+        }
+        if(h+y>rasterRefHeight)
+            h=rasterRefHeight-y;
+
+        height.setText(String.valueOf(h));
+        regionY.setText(String.valueOf(y));
+        final String regionXStr = regionX.getText();
+        if (regionXStr != null && !regionXStr.isEmpty())
+            x = Integer.parseInt(regionXStr);
+        final String widthStr = width.getText();
+        if (widthStr != null && !widthStr.isEmpty())
+            w = Integer.parseInt(widthStr);
+        updateROIorGeoRegion(x,y,w,h);
+    }
+
+
+    public void updateParametersReferenceBand() {
+        paramMap.remove("referenceBand");
+        if(sourceProducts != null ) {
+            for (Product prod : sourceProducts) {
+                if (prod.isMultiSize()) {
+                    paramMap.put("referenceBand", (String) referenceCombo.getSelectedItem());
+                    break;
+                }
+            }
+        }
+
+        int x=0, y=0, w=1, h=1;
+        if(sourceProducts!=null && referenceCombo.getSelectedItem()!=null) {
+            if(sourceProducts[0].isMultiSize()) {
+                w = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                h = sourceProducts[0].getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                w = sourceProducts[0].getSceneRasterWidth();
+                h = sourceProducts[0].getSceneRasterHeight();
+            }
+        }
+        Integer subSamplingXVal = (Integer) paramMap.get("subSamplingX");
+        Integer subSamplingYVal = (Integer) paramMap.get("subSamplingY");
+        SpinnerModel subSamplingXmodel = new SpinnerNumberModel(1,1, w/MIN_SUBSET_SIZE+1,1);
+        subSamplingX.setModel(subSamplingXmodel);
+        SpinnerModel subSamplingYmodel = new SpinnerNumberModel(1,1, h/MIN_SUBSET_SIZE+1,1);
+        subSamplingY.setModel(subSamplingYmodel);
+        if(subSamplingXVal != null) {
+            subSamplingX.setValue(subSamplingXVal);
+        }
+        if(subSamplingYVal != null) {
+            subSamplingY.setValue(subSamplingYVal);
+        }
+        paramMap.remove("geoRegion");
+        paramMap.remove("region");
+        final String regionXStr = regionX.getText();
+        if (regionXStr != null && !regionXStr.isEmpty())
+            x = Integer.parseInt(regionXStr);
+        final String regionYStr = regionY.getText();
+        if (regionYStr != null && !regionYStr.isEmpty())
+            y = Integer.parseInt(regionYStr);
+
+        getGeoRegion();
+        if (geoCoordRadio.isSelected() && geoRegion != null) {
+            paramMap.put("geoRegion", geoRegion);
+        } else {
+            paramMap.put("region", new Rectangle(x,y,w-x,h-y));
+        }
+        paramMap.put("copyMetadata", copyMetadata.isSelected());
+        final Rectangle region = (Rectangle)paramMap.get("region");
+        if(region != null) {
+            regionX.setText(String.valueOf(x));
+            regionY.setText(String.valueOf(y));
+            width.setText(String.valueOf(w-x));
+            height.setText(String.valueOf(h-y));
+        }
+        if (sourceProducts != null && sourceProducts.length > 0) {
+            worldMapUI.getModel().setAutoZoomEnabled(true);
+            worldMapUI.getModel().setProducts(sourceProducts);
+            worldMapUI.getModel().setSelectedProduct(sourceProducts[0]);
+            worldMapUI.getWorlMapPane().zoomToProduct(sourceProducts[0]);
+        }
+
+        geoRegion = (Geometry) paramMap.get("geoRegion");
+        if (geoRegion != null) {
+
+            final Coordinate coord[] = geoRegion.getCoordinates();
+            worldMapUI.setSelectionStart((float) coord[0].y, (float) coord[0].x);
+            worldMapUI.setSelectionEnd((float) coord[2].y, (float) coord[2].x);
+
+            getGeoRegion();
+
+            geoCoordRadio.setSelected(true);
+            pixelPanel.setVisible(false);
+            geoPanel.setVisible(true);
+        }
     }
 
     private JComponent createPanel() {
@@ -235,8 +496,6 @@ public class SubsetUI extends BaseOperatorUI {
         gbc.gridx = 1;
         contentPane.add(geoCoordRadio, gbc);
 
-
-
         gbc.gridy++;
         gbc.gridx = 0;
         contentPane.add(new JLabel("Reference band:"), gbc);
@@ -262,6 +521,10 @@ public class SubsetUI extends BaseOperatorUI {
         addComponent(pixelPanel, pixgbc, "Width:", width, 0);
         addComponent(pixelPanel, pixgbc, "height:", height, 2);
         pixgbc.gridy++;
+        SpinnerModel subSamplingXmodel = new SpinnerNumberModel(1,1, 2,1);
+        subSamplingX.setModel(subSamplingXmodel);
+        SpinnerModel subSamplingYmodel = new SpinnerNumberModel(1,1, 2,1);
+        subSamplingY.setModel(subSamplingYmodel);
         addComponent(pixelPanel, pixgbc, "Sub-sampling X:", subSamplingX, 0);
         addComponent(pixelPanel, pixgbc, "Sub-sampling Y:", subSamplingY, 2);
         pixelPanel.add(new JPanel(), pixgbc);

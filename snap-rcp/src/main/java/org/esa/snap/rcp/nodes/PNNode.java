@@ -15,11 +15,11 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.StringUtils;
@@ -33,7 +33,7 @@ import org.esa.snap.rcp.actions.window.OpenPlacemarkViewAction;
 import org.esa.snap.rcp.actions.window.OpenQuicklookViewAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.ProgressHandleMonitor;
-import org.netbeans.api.progress.ProgressUtils;
+import org.netbeans.api.progress.BaseProgressUtils;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openide.awt.UndoRedo;
@@ -42,13 +42,13 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
@@ -78,6 +78,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
     public T getProductNode() {
         return productNode;
+    }
+
+    void updateDisplayName(T productNode) {
+        setDisplayName(productNode.getName());
     }
 
     @Override
@@ -216,7 +220,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                                               WeakHashMap<RasterDataNode, Integer> newNodes,
                                               WeakHashMap<RasterDataNode, Integer> oldNodes) {
         ArrayList<RasterDataNode> nodes = new ArrayList<>(newNodes.keySet());
-        Collections.sort(nodes, (n1, n2) -> newNodes.get(n1) - newNodes.get(n2));
+        nodes.sort(Comparator.comparingInt(newNodes::get));
         for (RasterDataNode node : nodes) {
             band.addAncillaryVariable(node);
         }
@@ -246,11 +250,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                         Dialogs.showError(e.getMessage());
                     }
                 };
-                ProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
-                                                                  pm.getProgressHandle(),
-                                                                  true,
-                                                                  50,  // time in ms after which wait cursor is shown
-                                                                  1000);  // time in ms after which dialog with "Cancel" button is shown
+                BaseProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
+                                                                      pm.getProgressHandle(),
+                                                                      true,
+                                                                      50,  // time in ms after which wait cursor is shown
+                                                                      1000);  // time in ms after which dialog with "Cancel" button is shown
             }
         }
 
@@ -280,7 +284,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getParentElement().getElementGroup(),
                               getProductNode());
@@ -310,7 +314,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getIndexCodingGroup(),
                               getProductNode());
@@ -340,7 +344,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getFlagCodingGroup(),
                               getProductNode());
@@ -371,7 +375,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getVectorDataGroup(),
                               getProductNode());
@@ -463,7 +467,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getTiePointGridGroup(),
                               getProductNode());
@@ -522,7 +526,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getMaskGroup(),
                               getProductNode());
@@ -552,14 +556,32 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             } else {
                 setIconBaseWithExtension("org/esa/snap/rcp/icons/RsBandAsSwath.gif");
             }
+            updateDisplayName(band);
+            setShortDescription(createToolTip(band));
+        }
+
+        void updateDisplayName(Band band) {
+            super.updateDisplayName(band);
             if (band.getSpectralWavelength() > 0.0) {
-                if (band.getSpectralWavelength() == Math.round(band.getSpectralWavelength())) {
-                    setDisplayName(String.format("%s (%d nm)", band.getName(), (int) band.getSpectralWavelength()));
-                } else {
-                    setDisplayName(String.format("%s (%s nm)", band.getName(), String.valueOf(band.getSpectralWavelength())));
+                setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+            }
+        }
+
+        @Override
+        public void nodeChanged(ProductNodeEvent event) {
+            if (event.getSourceNode() == getProductNode()) {
+                if (mustUpdateDisplayName(event)) {
+                    updateDisplayName(getProductNode());
+                }
+                if (ProductNode.PROPERTY_NAME_DESCRIPTION.equals(event.getPropertyName())) {
+                    setShortDescription(getProductNode().getDescription());
                 }
             }
-            setShortDescription(createToolTip(band));
+        }
+
+        private boolean mustUpdateDisplayName(ProductNodeEvent event) {
+            return ProductNode.PROPERTY_NAME_NAME.equals(event.getPropertyName()) ||
+                    Band.PROPERTY_NAME_SPECTRAL_WAVELENGTH.equals(event.getPropertyName());
         }
 
         @Override
@@ -568,7 +590,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getBandGroup(),
                               getProductNode());
@@ -775,7 +797,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         }
 
         @Override
-        public void destroy() throws IOException {
+        public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
                               getProductNode().getProduct().getQuicklookGroup(),
                               getProductNode());
@@ -937,7 +959,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public void setValue(Boolean newValue) {
-            Boolean oldValue = raster.isNoDataValueUsed();
+            boolean oldValue = raster.isNoDataValueUsed();
             performUndoableProductNodeEdit("Edit No-Data Value Used",
                                            raster,
                                            node -> {

@@ -202,47 +202,47 @@ in each source data product, so that it can be used as input for the binning.</t
   <td><code>outputBands</code></td>
   <td><code>BandConfiguration[]</code></td>
   <td><code></code></td>
-  <td>Configures the target bands. Not needed if output type 'Product' is chosen.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>productCustomizer</code></td>
-  <td><code>ProductCustomizerConfig</code></td>
-  <td><code></code></td>
-  <td></td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>outputBinnedData</code></td>
-  <td><code>boolean</code></td>
-  <td><code>false</code></td>
-    <td>If true, a SeaDAS-style, binned data NetCDF file is written in addition to the
-        target product. The output file name will be
-        <target>-bins.nc
-    </td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>outputMappedProduct</code></td>
-  <td><code>boolean</code></td>
-  <td><code>true</code></td>
-  <td>If true, a mapped product is written. Set this to 'false' if only a binned product is needed.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>metadataPropertiesFile</code></td>
-  <td><code>File</code></td>
-  <td><code>./metadata.properties</code></td>
-  <td>The name of the file containing metadata key-value pairs (google "Java Properties file format").</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>metadataTemplateDir</code></td>
-  <td><code>File</code></td>
-  <td><code>.</code></td>
-  <td>The name of the directory containing metadata templates (google "Apache Velocity VTL format").</td>
+    <td>Configures the target bands. Not needed if output type 'Product' is chosen.</td>
     <td></td>
 </tr>
+    <tr>
+        <td><code>productCustomizer</code></td>
+        <td><code>ProductCustomizerConfig</code></td>
+        <td><code></code></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>outputBinnedData</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>If true, a SeaDAS-style, binned data NetCDF file is written in addition to the
+            target product. The output file name will be
+            <target>-bins.nc
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>outputMappedProduct</code></td>
+        <td><code>boolean</code></td>
+        <td><code>true</code></td>
+        <td>If true, a mapped product is written. Set this to 'false' if only a binned product is needed.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>metadataPropertiesFile</code></td>
+        <td><code>File</code></td>
+        <td><code>./metadata.properties</code></td>
+        <td>The name of the file containing metadata key-value pairs (google "Java Properties file format").</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>metadataTemplateDir</code></td>
+        <td><code>File</code></td>
+        <td><code>.</code></td>
+        <td>The name of the directory containing metadata templates (google "Apache Velocity VTL format").</td>
+        <td></td>
+    </tr>
     <tr>
         <td><code>metadataAggregatorName</code></td>
         <td><code>String</code></td>

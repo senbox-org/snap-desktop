@@ -31,6 +31,7 @@ public class OutputProductResults {
     private final Map<RepositoryProduct, DownloadProgressStatus> downloadedProductsProgress;
 
     private int currentPageNumber;
+    private long fullResultsListCount;
 
     public OutputProductResults() {
         this.scaledQuickLookImages = new HashMap<>();
@@ -39,6 +40,21 @@ public class OutputProductResults {
         this.availableProducts = new ArrayList<>();
 
         this.currentPageNumber = 0;
+        this.fullResultsListCount = 0;
+    }
+
+    public boolean canDownloadProducts(RepositoryProduct[] productsToCheck){
+        if(!canOpenDownloadedProducts(productsToCheck)){
+            boolean canDownloadProducts = true;
+            for (int i=0; i<productsToCheck.length && canDownloadProducts; i++) {
+                if (productsToCheck[i].getURL() == null || productsToCheck[i].getURL().isEmpty()) {
+                    // there is at leat one selected product which is not downloaded
+                    canDownloadProducts = false;
+                }
+            }
+            return canDownloadProducts;
+        }
+        return false;
     }
 
     public boolean canOpenDownloadedProducts(RepositoryProduct[] productsToCheck) {
@@ -89,6 +105,14 @@ public class OutputProductResults {
 
     public int getCurrentPageNumber() {
         return this.currentPageNumber;
+    }
+
+    public long getFullResultsListCount() {
+        return fullResultsListCount;
+    }
+
+    public void setFullResultsListCount(long fullResultsListCount) {
+        this.fullResultsListCount = fullResultsListCount;
     }
 
     public int getAvailableProductCount() {

@@ -601,7 +601,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
             @Override
             public boolean canAddItemToPopupMenu(AbstractProductsRepositoryPanel visibleProductsRepositoryPanel, RepositoryProduct[] selectedProducts) {
-                return !visibleProductsRepositoryPanel.getOutputProductResults().canOpenDownloadedProducts(selectedProducts);
+                return visibleProductsRepositoryPanel.getOutputProductResults().canDownloadProducts(selectedProducts);
             }
         };
         ProductLibraryV2Action openDownloadedRemoteProductListener = new ProductLibraryV2Action("Open") {
@@ -1141,13 +1141,17 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         RepositoryProduct[] selectedProducts = this.repositoryOutputProductListPanel.getProductListPanel().getSelectedProducts();
         int totalPathCount = 0;
         for (int i = 0; i < selectedProducts.length; i++) {
-            totalPathCount += selectedProducts[i].getPolygon().getPathCount();
+            if (selectedProducts[i].getPolygon() != null) {
+                totalPathCount += selectedProducts[i].getPolygon().getPathCount();
+            }
         }
         Path2D.Double[] polygonPaths = new Path2D.Double[totalPathCount];
         for (int i = 0, index=0; i < selectedProducts.length; i++) {
-            AbstractGeometry2D productGeometry = selectedProducts[i].getPolygon();
-            for (int p=0; p<productGeometry.getPathCount(); p++) {
-                polygonPaths[index++] = productGeometry.getPathAt(p);
+            if (selectedProducts[i].getPolygon() != null) {
+                AbstractGeometry2D productGeometry = selectedProducts[i].getPolygon();
+                for (int p = 0; p < productGeometry.getPathCount(); p++) {
+                    polygonPaths[index++] = productGeometry.getPathAt(p);
+                }
             }
         }
         this.worldWindowPanel.highlightPolygons(polygonPaths);
@@ -1318,42 +1322,51 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         RepositoryProduct[] selectedProducts = productListPanel.getSelectedProducts();
         if (selectedProducts.length > 0) {
             // there are selected products into the output table
-            if (selectedProducts.length > 1) {
-                throw new IllegalStateException("Only one selected product is allowed.");
-            } else {
-                RemoteMission remoteMission = selectedProducts[0].getRemoteMission();
-                if (remoteMission == null) {
-                    throw new NullPointerException("The remote mission is null.");
-                }
-                Date acquisitionDate = selectedProducts[0].getAcquisitionDate();
-                if (acquisitionDate == null) {
-                    throw new NullPointerException("The product acquisition date is null.");
-                }
-
-                cancelSearchingProductList();
-
-                RemoteProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.selectRemoteProductsRepositoryPanelByName(remoteMission);
-                if (selectedProductsRepositoryPanel == null) {
-                    throw new IllegalStateException("The remote products repository '"+remoteMission.getRepositoryName()+"' is missing.");
+            try {
+                if (selectedProducts.length > 1) {
+                    throw new IllegalStateException("Only one selected product is allowed.");
                 } else {
-                    // the remote products repository exists and it is selected
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(acquisitionDate);
-                    calendar.add(Calendar.DAY_OF_MONTH, -7); // one week ago
-                    Date startDate = new Date(calendar.getTimeInMillis());
-                    calendar.add(Calendar.DAY_OF_MONTH, 14);
-                    Date endDate = new Date(calendar.getTimeInMillis());
+                    RemoteMission remoteMission = selectedProducts[0].getRemoteMission();
+                    if (remoteMission == null) {
+                        throw new NullPointerException("The remote mission is missing.");
+                    }
+                    Date acquisitionDate = selectedProducts[0].getAcquisitionDate();
+                    if (acquisitionDate == null) {
+                        throw new NullPointerException("The product acquisition date is missing.");
+                    }
 
-                    Path2D.Double productAreaPath = selectedProducts[0].getPolygon().getPathAt(0);
-                    Rectangle2D.Double areaOfInterestToSelect = convertProductAreaPathToRectangle(productAreaPath);
+                    cancelSearchingProductList();
 
-                    setHorizontalSplitPaneLeftComponent(selectedProductsRepositoryPanel);
-                    selectedProductsRepositoryPanel.addInputParameterComponents();
-                    selectedProductsRepositoryPanel.updateInputParameterValues(remoteMission.getName(), startDate, endDate, areaOfInterestToSelect);
-                    this.repositoryOutputProductListPanel.clearOutputList(true);
+                    RemoteProductsRepositoryPanel selectedProductsRepositoryPanel = this.repositorySelectionPanel.selectRemoteProductsRepositoryPanelByName(remoteMission);
+                    if (selectedProductsRepositoryPanel == null) {
+                        throw new IllegalStateException("The remote products repository '"+remoteMission.getRepositoryName()+"' is missing.");
+                    } else {
+                        // the remote products repository exists and it is selected
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(acquisitionDate);
+                        calendar.add(Calendar.DAY_OF_MONTH, -7); // one week ago
+                        Date startDate = new Date(calendar.getTimeInMillis());
+                        calendar.add(Calendar.DAY_OF_MONTH, 14);
+                        Date endDate = new Date(calendar.getTimeInMillis());
 
-                    searchProductListLater();
+                        Rectangle2D.Double areaOfInterestToSelect = null;
+                        if (selectedProducts[0].getPolygon() != null) {
+                            Path2D.Double productAreaPath = selectedProducts[0].getPolygon().getPathAt(0);
+                            areaOfInterestToSelect = convertProductAreaPathToRectangle(productAreaPath);
+                        }
+
+                        setHorizontalSplitPaneLeftComponent(selectedProductsRepositoryPanel);
+                        selectedProductsRepositoryPanel.addInputParameterComponents();
+                        selectedProductsRepositoryPanel.updateInputParameterValues(remoteMission.getName(), startDate, endDate, areaOfInterestToSelect);
+                        this.repositoryOutputProductListPanel.clearOutputList(true);
+
+                        searchProductListLater();
+                    }
                 }
+            } catch (NullPointerException ex){
+                showMessageDialog("Joint search", "Cannot perform joint search!\nReason: " + ex.getMessage() + "", JOptionPane.WARNING_MESSAGE);
+            } catch (IllegalStateException ex){
+                showMessageDialog("Joint search", "Cannot perform joint search!\nReason: " + ex.getMessage() + "", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -1367,7 +1380,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                 // there is no running thread for the local repository products
                 Path selectedLocalRepositoryFolder = showDialogToSelectLocalFolder("Select folder to download the product", false);
                 if (selectedLocalRepositoryFolder != null) {
-                    new AllLocalFolderProductsRepository().saveLocalRepositoryFolder(selectedLocalRepositoryFolder);
                     AbstractProductsRepositoryPanel selectedRepository = this.repositorySelectionPanel.getSelectedProductsRepositoryPanel();
                     if (selectedRepository instanceof RemoteProductsRepositoryPanel) {
                         RemoteProductsRepositoryPanel remoteProductsRepositoryPanel = (RemoteProductsRepositoryPanel) selectedRepository;

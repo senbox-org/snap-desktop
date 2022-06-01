@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.output;
 
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.ui.loading.CustomButton;
 import org.esa.snap.ui.loading.SwingUtils;
 
@@ -64,14 +65,14 @@ public class OutputProductListPaginationPanel extends JPanel {
         add(Box.createHorizontalStrut(componentDimension.getGapBetweenColumns()));
         add(this.lastPageButton);
 
-        refreshPaginationButtons(false, false, "");
+        refreshPaginationButtons(false, false, false, "");
     }
 
-    public void refreshPaginationButtons(boolean previousPageEnabled, boolean nextPageEnabled, String text) {
+    public void refreshPaginationButtons(boolean previousPageEnabled, boolean nextPageEnabled, boolean lastPageEnabled, String text) {
         this.firstPageButton.setEnabled(previousPageEnabled);
         this.previousPageButton.setEnabled(previousPageEnabled);
         this.nextPageButton.setEnabled(nextPageEnabled);
-        this.lastPageButton.setEnabled(nextPageEnabled);
+        this.lastPageButton.setEnabled(lastPageEnabled);
         this.totalPagesTextField.setText(text);
     }
 

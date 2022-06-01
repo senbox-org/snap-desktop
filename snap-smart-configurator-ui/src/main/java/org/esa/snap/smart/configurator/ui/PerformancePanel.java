@@ -450,8 +450,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
         defaultTileSizeValues.append("512");
         defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
-        defaultTileSizeValues.append("*");
-        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
 
         //return defaultTileSizeValues.toString();
         return JAI.getDefaultTileSize().width + "," + JAI.getDefaultTileSize().height;
@@ -465,8 +463,6 @@ final class PerformancePanel extends javax.swing.JPanel {
         defaultTileSizeValues.append("256");
         defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
         defaultTileSizeValues.append("512");
-        defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
-        defaultTileSizeValues.append("*");
         defaultTileSizeValues.append(BENCHMARK_SEPARATOR);
 
         return defaultTileSizeValues.toString();

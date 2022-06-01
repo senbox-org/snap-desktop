@@ -40,20 +40,20 @@ Reads the specified file as product. This operator may serve as a source node in
 <p><i>This operator does not have any sources.</i>
 <h2>Parameters</h2>
 <table>
-<tr>
-  <th>Name</th>
-  <th>Data Type</th>
-  <th>Default</th>
-  <th>Description</th>
-  <th>Constraints</th>
-</tr>
-<tr>
-  <td><code>file</code></td>
-  <td><code>File</code></td>
-    <td><code></code></td>
-    <td>The file from which the data product is read.</td>
-    <td>not null; non empty</td>
-</tr>
+    <tr>
+        <th>Name</th>
+        <th>Data Type</th>
+        <th>Default</th>
+        <th>Description</th>
+        <th>Constraints</th>
+    </tr>
+    <tr>
+        <td><code>file</code></td>
+        <td><code>File</code></td>
+        <td><code></code></td>
+        <td>The file from which the data product is read.</td>
+        <td>not null; non empty</td>
+    </tr>
     <tr>
         <td><code>formatName</code></td>
         <td><code>String</code></td>
@@ -106,6 +106,13 @@ Reads the specified file as product. This operator may serve as a source node in
                                     <geometry>).
                                         If not given, the entire scene is used.
         </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>useAdvancedOptions</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td>Whether to use advanced options for reading of the source product.</td>
         <td></td>
     </tr>
     <tr>

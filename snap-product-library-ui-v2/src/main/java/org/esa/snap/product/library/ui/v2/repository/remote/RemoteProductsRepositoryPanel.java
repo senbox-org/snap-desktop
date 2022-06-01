@@ -1,6 +1,7 @@
 package org.esa.snap.product.library.ui.v2.repository.remote;
 
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.MissionParameterListener;
@@ -18,6 +19,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadPro
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
@@ -25,10 +27,7 @@ import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -155,8 +154,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                     throw new NullPointerException("The remote mission is null");
                 }
                 this.remoteInputParameterValues = new RemoteInputParameterValues(parameterValues, selectedMission);
-                return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener,
-                                                             remoteRepositoriesSemaphore, productResultsPanel, getRepositoryName(), selectedMission, parameterValues);
+                return new DownloadProductListTimerRunnable(progressPanel, threadId, selectedCredentials, this.productsRepositoryProvider, threadListener, productResultsPanel, getRepositoryName(), selectedMission, parameterValues);
             }
         }
         return null;
@@ -170,7 +168,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     @Override
-    protected void addInputParameterComponentsToPanel() {
+    protected ParametersPanel getInputParameterComponentsPanel() {
         ParametersPanel panel = new ParametersPanel();
         int gapBetweenColumns = this.componentDimension.getGapBetweenColumns();
 
@@ -197,10 +195,29 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         Class<?>[] classesToIgnore = new Class<?>[] {areaOfInterestClass};
         String selectedMission = getSelectedMission();
         List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
+        Credentials savedCredentials = RepositoriesCredentialsController.getInstance().getRepositoryCollectionCredential(this.productsRepositoryProvider.getRepositoryName(), selectedMission);
         // filter the UI displayed parameters (those having a proper label)
         List<RepositoryQueryParameter> parametersForUI = parameters.stream().filter(p -> StringUtils.isNotNullAndNotEmpty(p.getLabel())).collect(Collectors.toList());
         this.parameterComponents = panel.addParameterComponents(parametersForUI, rowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
+        if (savedCredentials != null) {
+            for (AbstractParameterComponent<?> parameterComponent : this.parameterComponents) {
+                if (parameterComponent.getParameterName().contentEquals("username")) {
+                    parameterComponent.setParameterValue(savedCredentials.getUserPrincipal().getName());
+                }
+                if (parameterComponent.getParameterName().contentEquals("password")) {
+                    parameterComponent.setParameterValue(savedCredentials.getPassword());
+                }
+            }
+        }
+        return panel;
+    }
+
+    @Override
+    protected RepositoryQueryParameter getAreaOfInterestParameter(){
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        String selectedMission = getSelectedMission();
+        List<RepositoryQueryParameter> parameters = this.productsRepositoryProvider.getMissionParameters(selectedMission);
         RepositoryQueryParameter areaOfInterestParameter = null;
         for (int i=0; i<parameters.size(); i++) {
             RepositoryQueryParameter param = parameters.get(i);
@@ -208,12 +225,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
                 areaOfInterestParameter = param;
             }
         }
-
-        add(panel, BorderLayout.NORTH);
-
-        if (areaOfInterestParameter != null) {
-            addAreaParameterComponent(areaOfInterestParameter);
-        }
+        return areaOfInterestParameter;
     }
 
     @Override
@@ -262,8 +274,28 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         this.downloadingProductProgressCallback = downloadingProductProgressCallback;
     }
 
+    private Credentials getSearchCredentials() {
+        String username = null;
+        String password = null;
+        for (AbstractParameterComponent<?> parameterComponent : this.parameterComponents) {
+            if (parameterComponent.getParameterName().contentEquals("username")) {
+                username = (String) parameterComponent.getParameterValue();
+            }
+            if (parameterComponent.getParameterName().contentEquals("password")) {
+                password = (String) parameterComponent.getParameterValue();
+            }
+        }
+        if (StringUtils.isNotNullAndNotEmpty(username) && StringUtils.isNotNullAndNotEmpty(password)) {
+            return new UsernamePasswordCredentials(username, password);
+        }
+        return null;
+    }
+
     public Credentials getSelectedAccount() {
-        Credentials selectedCredentials = null;
+        Credentials selectedCredentials = getSearchCredentials();
+        if (selectedCredentials != null) {
+            return selectedCredentials;
+        }
         if (this.userAccountsComboBox != null) {
             // the repository provider requires authentication
             selectedCredentials = (Credentials) this.userAccountsComboBox.getSelectedItem();

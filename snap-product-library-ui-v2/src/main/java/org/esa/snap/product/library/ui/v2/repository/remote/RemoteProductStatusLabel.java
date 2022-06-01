@@ -37,6 +37,9 @@ public class RemoteProductStatusLabel extends JLabel {
             } else if (downloadProgressStatus.isFailedDownload()) {
                 percentText = "Downloading: " + Integer.toString(downloadProgressStatus.getValue()) + "% (failed)";
                 foregroundColor = Color.RED;
+            } else if (downloadProgressStatus.isFailedDownloadUnauthorized()) {
+                percentText = "Downloading: " + Integer.toString(downloadProgressStatus.getValue()) + "% (unauthorized)";
+                foregroundColor = Color.RED;
             } else if (downloadProgressStatus.isFailedOpen()) {
                 percentText = "Downloaded (failed open)";
                 foregroundColor = Color.GREEN;
@@ -52,7 +55,10 @@ public class RemoteProductStatusLabel extends JLabel {
             } else if (downloadProgressStatus.isOpened()) {
                 percentText = "Downloaded (opened)";
                 foregroundColor = Color.GREEN;
-            } else {
+            } else if (downloadProgressStatus.isQueued()) {
+                percentText = "Download queued";
+                foregroundColor = Color.ORANGE;
+            }else {
                 throw new IllegalStateException("The percent progress status is unknown. The value is " + downloadProgressStatus.getValue()+".");
             }
         }

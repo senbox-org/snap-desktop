@@ -55,7 +55,6 @@
                 <tocitem text="Optical Sensors">
                     <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
                     <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
-                    <tocitem text="NASA Ocean Color" target="importNasaObpgProduct"/>
                 </tocitem>
             </tocitem>
             <tocitem text="Import Vector Data">
