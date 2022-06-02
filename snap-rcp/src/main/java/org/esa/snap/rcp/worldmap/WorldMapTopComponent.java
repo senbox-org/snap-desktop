@@ -45,7 +45,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
+        mode = PackageDefaults.WORLD_MAP_MODE,
         openAtStartup = PackageDefaults.WORLD_MAP_OPEN,
         position = 40
 )

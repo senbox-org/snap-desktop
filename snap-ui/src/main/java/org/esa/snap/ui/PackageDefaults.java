@@ -9,7 +9,7 @@ import java.awt.*;
  * @version $Revision$ $Date$
  */
 
-public class PackageDefaults extends PackageDefaultsSnap {
+public class PackageDefaults  {
 
     //---------------------------------------------------------------
     // Word Spellings
@@ -38,7 +38,11 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String DRAW_POLYGON_ICON = "seadas/DrawPolygonTool24.png"; // differs from snap
     public static final String DRAW_LINE_ICON = "seadas/DrawLineTool24.png"; // differs from snap
     public static final String DRAW_POLYLINE_ICON = "seadas/DrawPolylineTool24.png"; // differs from snap
-
+    public static final String PIN_MANAGER_ICON = "seadas/PinManager.png"; // differs from snap
+    public static final String PIN_TOOL_ICON = "seadas/PinPlacer24.png"; // differs from snap
+    public static final String OPEN_PRODUCT_ACTION_ICON = "seadas/Open24.png"; // differs from snap
+    public static final String GCP_MANAGER_ICON = "seadas/GcpManager24.png"; // differs from snap
+    public static final String GCP_TOOL_ACTION_ICON = "seadas/GcpTool24.png"; // differs from snap
 
     //---------------------------------------------------------------
     // Tool Window Locations (Modes)
@@ -47,12 +51,56 @@ public class PackageDefaults extends PackageDefaultsSnap {
     public static final String CORRELATIVE_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
+    public static final String MASK_MANAGER_MODE = "properties";  // differs from SNAP
+    public static final String LAYER_MANAGER_MODE = "properties"; // differs from SNAP
+    public static final String PIXEL_INFO_MODE = "properties"; // differs from SNAP
+    public static final String LAYER_EDITOR_MODE = "explorer";  // differs from SNAP
+    public static final String WORLD_MAP_MODE = "explorer";  // differs from SNAP
 
 
     // Toolbar Name
     public static final String SELECT_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
     public static final String ZOOM_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
     public static final String PANNER_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
+
+    public static final String MAGIC_WAND_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+    public static final String RANGE_FINDER_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+    public static final String METADATA_PLOT_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+    public static final String GEO_CODING_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+
+    public static final String INFORMATION_TOOLBAR_NAME = "Info"; // differs from snap
+
+    public static final String PIN_MANAGER_TOOLBAR_NAME = "Pins"; // differs from snap
+    public static final String PIN_TOOL_TOOLBAR_NAME = "Pins"; // differs from snap
+    public static final String OVERLAY_PINS_TOOLBAR_NAME = "Pins"; // differs from snap
+
+    public static final String GCP_TOGGLE_TOOLBAR = "Ground Control Points"; // differs from snap
+    public static final String GCP_TOOL_ACTION_TOOLBAR = "Ground Control Points"; // differs from snap
+    public static final String GCP_MANAGER_TOOLBAR = "Ground Control Points"; // differs from snap
+
+    public static final String NEW_GEOMETRY_CONTAINER_TOOLBAR = "Geometry"; // differs from snap
+    public static final String GEOMETRY_TOGGLE_TOOLBAR = "Geometry"; // differs from snap
+    public static final String DRAW_RECTANGLE_TOOLBAR = "Geometry"; // differs from snap
+    public static final String DRAW_ELLIPSE_TOOLBAR = "Geometry"; // differs from snap
+    public static final String DRAW_POLYGON_TOOLBAR = "Geometry"; // differs from snap
+
+    public static final String DRAW_LINE_ICON_TOOLBAR = "Geometry Lines"; // differs from snap
+    public static final String DRAW_POLYLINE_TOOLBAR = "Geometry Lines"; // differs from snap
+
+    public static final String GPT_GRAPH_BUILDER_TOOLBAR = "GPT Processing"; // differs from snap
+    public static final String GPT_BATCH_PROCESSING_TOOLBAR = "GPT Processing"; // differs from snap
+
+
+
+    // Tool Names
+    public static final String PRODUCT_EXPLORER_NAME = "File Manager"; // differs from SNAP
+
+
+    // Tool Window Open Status
+    public static final boolean WORLD_MAP_OPEN = true; // differs from SNAP
+    public static final boolean LAYER_EDITOR_OPEN = true; // differs from SNAP
+    public static final boolean PRODUCT_LIBRARY_OPEN = false; // differs from SNAP
+
 
 
 
@@ -327,121 +375,121 @@ public class PackageDefaults extends PackageDefaultsSnap {
     // Class: PinManagerTopComponent
     // snap-rcp/src/main/java/org/esa/snap/rcp/placemark/pin/PinManagerTopComponent.java
     // General
-    public static final String PIN_MANAGER_NAME = "Pin Manager";
-    public static final String PIN_MANAGER_ICON = "seadas/PinManager.png"; // differs from snap
-    // Menu
-    public static final String PIN_MANAGER_MENU_PATH = "View/Tool Windows";
-    // Toolbar
-    public static final String PIN_MANAGER_TOOLBAR_NAME = "Pins"; // differs from snap
-    public static final int PIN_MANAGER_TOOLBAR_POSITION = 0; // differs from snap
-    // Window
-    public static final String PIN_MANAGER_WS_MODE = "output";
-    public static final boolean PIN_MANAGER_WS_OPEN = false;
-    public static final int PIN_MANAGER_WS_POSITION = 10;
+//    public static final String PIN_MANAGER_NAME = "Pin Manager";
+//    public static final String PIN_MANAGER_ICON = "seadas/PinManager.png"; // differs from snap
+//    // Menu
+//    public static final String PIN_MANAGER_MENU_PATH = "View/Tool Windows";
+//    // Toolbar
+//    public static final String PIN_MANAGER_TOOLBAR_NAME = "Pins"; // differs from snap
+//    public static final int PIN_MANAGER_TOOLBAR_POSITION = 0; // differs from snap
+//    // Window
+//    public static final String PIN_MANAGER_WS_MODE = "output";
+//    public static final boolean PIN_MANAGER_WS_OPEN = false;
+//    public static final int PIN_MANAGER_WS_POSITION = 10;
 
 
     //---------------------------------------------------------------
     // Class: PinToolAction
     // snap-rcp/src/main/java/org/esa/snap/rcp/actions/interactors/PinToolAction.java
     // General
-    public static final String PIN_TOOL_NAME = "Pin Tool";
-    public static final String PIN_TOOL_DESCRIPTION = "Pin placing tool";
-    public static final String PIN_TOOL_ICON = "seadas/PinPlacer24.png"; // differs from snap
-    // Toolbar
-    public static final String PIN_TOOL_TOOLBAR_NAME = "Pins"; // differs from snap
-    public static final int PIN_TOOL_TOOLBAR_POSITION = 10; // may differ from snap
+//    public static final String PIN_TOOL_NAME = "Pin Tool";
+//    public static final String PIN_TOOL_DESCRIPTION = "Pin placing tool";
+//    public static final String PIN_TOOL_ICON = "seadas/PinPlacer24.png"; // differs from snap
+//    // Toolbar
+//    public static final String PIN_TOOL_TOOLBAR_NAME = "Pins"; // differs from snap
+//    public static final int PIN_TOOL_TOOLBAR_POSITION = 10; // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: OpenProductAction
     // snap-rcp/src/main/java/org/esa/snap/rcp/actions/file/OpenProductAction.java
     // General
-    public static final String OPEN_PRODUCT_ACTION_NAME = "Open Product";
-    public static final String OPEN_PRODUCT_ACTION_ICON = "seadas/Open24.png"; // differs from snap
-    // Menu
-    public static final String OPEN_PRODUCT_ACTION_MENU_PATH = "File";
-    public static final int OPEN_PRODUCT_ACTION_MENU_POSITION = 5;
-    // Toolbar
-    public static final String OPEN_PRODUCT_ACTION_TOOLBAR_NAME = "File";
-    public static final int OPEN_PRODUCT_ACTION_TOOLBAR_POSITION = 10; // differs from snap
+//    public static final String OPEN_PRODUCT_ACTION_NAME = "Open Product";
+//    public static final String OPEN_PRODUCT_ACTION_ICON = "seadas/Open24.png"; // differs from snap
+//    // Menu
+//    public static final String OPEN_PRODUCT_ACTION_MENU_PATH = "File";
+//    public static final int OPEN_PRODUCT_ACTION_MENU_POSITION = 5;
+//    // Toolbar
+//    public static final String OPEN_PRODUCT_ACTION_TOOLBAR_NAME = "File";
+//    public static final int OPEN_PRODUCT_ACTION_TOOLBAR_POSITION = 10; // differs from snap
 
 
     //---------------------------------------------------------------
     // Class: OverlayGeometryLayerAction
     // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayGeometryLayerAction.java
     // General
-    public static final String OVERLAY_GEOMETRY_NAME = "Geometry Overlay";
-    public static final String OVERLAY_GEOMETRY_DESCRIPTION = "Show/hide geometry overlay for the selected image";
-    public static final String OVERLAY_GEOMETRY_ICON = "ShapeOverlay24.gif";
-    // Menu
-    public static final String OVERLAY_GEOMETRY_MENU_PATH = "Layer";
-    public static final int OVERLAY_GEOMETRY_MENU_POSITION = 10;
-    // Toolbar
-    public static final String OVERLAY_GEOMETRY_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int OVERLAY_GEOMETRY_TOOLBAR_POSITION = 0;  // may differ from snap
+//    public static final String OVERLAY_GEOMETRY_NAME = "Geometry Overlay";
+//    public static final String OVERLAY_GEOMETRY_DESCRIPTION = "Show/hide geometry overlay for the selected image";
+//    public static final String OVERLAY_GEOMETRY_ICON = "ShapeOverlay24.gif";
+//    // Menu
+//    public static final String OVERLAY_GEOMETRY_MENU_PATH = "Layer";
+//    public static final int OVERLAY_GEOMETRY_MENU_POSITION = 10;
+//    // Toolbar
+//    public static final String OVERLAY_GEOMETRY_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int OVERLAY_GEOMETRY_TOOLBAR_POSITION = 0;  // may differ from snap
 
 
     //---------------------------------------------------------------
     // Class: OverlayGcpLayerAction
     // snap-rcp/src/main/java/org/esa/snap/rcp/actions/layer/overlay/OverlayGcpLayerAction.java
     // General
-    public static final String OVERLAY_GCP_NAME = "GCP Overlay";
-    public static final String OVERLAY_GCP_DESCRIPTION = "Show/hide GCP overlay for the selected image";
-    public static final String OVERLAY_GCP_ICON = "GcpOverlay24.gif";
-    // Menu
-    public static final String OVERLAY_GCP_MENU_PATH = "Layer";
-    public static final int OVERLAY_GCP_MENU_POSITION = 40;
-    // Toolbar
-    public static final String OVERLAY_GCP_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int OVERLAY_GCP_TOOLBAR_POSITION = 10;  // may differ from snap
+//    public static final String OVERLAY_GCP_NAME = "GCP Overlay";
+//    public static final String OVERLAY_GCP_DESCRIPTION = "Show/hide GCP overlay for the selected image";
+//    public static final String OVERLAY_GCP_ICON = "GcpOverlay24.gif";
+//    // Menu
+//    public static final String OVERLAY_GCP_MENU_PATH = "Layer";
+//    public static final int OVERLAY_GCP_MENU_POSITION = 40;
+//    // Toolbar
+//    public static final String OVERLAY_GCP_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int OVERLAY_GCP_TOOLBAR_POSITION = 10;  // may differ from snap
+//
+//
+//
+//    public static final String OVERLAY_PINS_NAME = "Pin Overlay";
+//    public static final String OVERLAY_PINS_ICON = "PinOverlay24.gif";
+//    public static final String OVERLAY_PINS_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int OVERLAY_PINS_TOOLBAR_POSITION = 20;  // differs from snap
+//
+//    public static final String MAGIC_WAND_NAME = "Magic Wand";
+//    public static final String MAGIC_WAND_ICON = "MagicWand22.png";
+//    public static final String MAGIC_WAND_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int MAGIC_WAND_TOOLBAR_POSITION = 30;  // differs from snap
+//
+//    public static final String RANGE_FINDER_NAME = "Range Finder";
+//    public static final String RANGE_FINDER_ICON = "RangeFinder24.gif";
+//    public static final String RANGE_FINDER_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int RANGE_FINDER_TOOLBAR_POSITION = 40;  // differs from snap
+//
+//    public static final String METADATA_PLOT_NAME = "Metadata Plot";
+//    public static final String METADATA_PLOT_ICON = "MetadataPlot24.png";
+//    public static final String METADATA_PLOT_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int METADATA_PLOT_TOOLBAR_POSITION = 50;  // differs from snap
+//
+//
+//    public static final String GEO_CODING_NAME = "Geo-Coding";
+//    public static final String GEO_CODING_ICON = "PhiLam.gif";
+//    public static final String GEO_CODING_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+//    public static final int GEO_CODING_TOOLBAR_POSITION = 60;  // differs from snap
 
 
-
-    public static final String OVERLAY_PINS_NAME = "Pin Overlay";
-    public static final String OVERLAY_PINS_ICON = "PinOverlay24.gif";
-    public static final String OVERLAY_PINS_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int OVERLAY_PINS_TOOLBAR_POSITION = 20;  // differs from snap
-
-    public static final String MAGIC_WAND_NAME = "Magic Wand";
-    public static final String MAGIC_WAND_ICON = "MagicWand22.png";
-    public static final String MAGIC_WAND_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int MAGIC_WAND_TOOLBAR_POSITION = 30;  // differs from snap
-
-    public static final String RANGE_FINDER_NAME = "Range Finder";
-    public static final String RANGE_FINDER_ICON = "RangeFinder24.gif";
-    public static final String RANGE_FINDER_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int RANGE_FINDER_TOOLBAR_POSITION = 40;  // differs from snap
-
-    public static final String METADATA_PLOT_NAME = "Metadata Plot";
-    public static final String METADATA_PLOT_ICON = "MetadataPlot24.png";
-    public static final String METADATA_PLOT_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int METADATA_PLOT_TOOLBAR_POSITION = 50;  // differs from snap
-
-
-    public static final String GEO_CODING_NAME = "Geo-Coding";
-    public static final String GEO_CODING_ICON = "PhiLam.gif";
-    public static final String GEO_CODING_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final int GEO_CODING_TOOLBAR_POSITION = 60;  // differs from snap
-
-
-    public static final String INFORMATION_NAME = "Information";
-    public static final String INFORMATION_ICON = "Information.gif";
-    public static final String INFORMATION_TOOLBAR_NAME = "Info"; // differs from snap
-    public static final int INFORMATION_TOOLBAR_POSITION = 0;
-    public static final String INFORMATION_MODE = "Information";
-    public static final int INFORMATION_POSITION = 30;
-    public static final boolean INFORMATION_OPEN = false;
-
-
-    public static final String GCP_TOOL_ACTION_NAME = "GCP Tool";
-    public static final String GCP_TOOL_ACTION_ICON = "seadas/GcpTool24.png"; // differs from snap
-    public static final String GCP_TOOL_ACTION_TOOLBAR_NAME = "Ground Control Points"; // differs from snap
-    public static final int GCP_TOOL_ACTION_TOOLBAR_POSITION = 10;
-
-    public static final String GCP_MANAGER_NAME = "GCP Manager";
-    public static final String GCP_MANAGER_ICON = "seadas/GcpManager24.png"; // differs from snap
-    public static final String GCP_MANAGER_TOOLBAR_NAME = "Ground Control Points"; // differs from snap
-    public static final int GCP_MANAGER_TOOLBAR_POSITION = 0;
+//    public static final String INFORMATION_NAME = "Information";
+//    public static final String INFORMATION_ICON = "Information.gif";
+//    public static final String INFORMATION_TOOLBAR_NAME = "Info"; // differs from snap
+//    public static final int INFORMATION_TOOLBAR_POSITION = 0;
+//    public static final String INFORMATION_MODE = "Information";
+//    public static final int INFORMATION_POSITION = 30;
+//    public static final boolean INFORMATION_OPEN = false;
+//
+//
+//    public static final String GCP_TOOL_ACTION_NAME = "GCP Tool";
+//    public static final String GCP_TOOL_ACTION_ICON = "seadas/GcpTool24.png"; // differs from snap
+//    public static final String GCP_TOOL_ACTION_TOOLBAR_NAME = "Ground Control Points"; // differs from snap
+//    public static final int GCP_TOOL_ACTION_TOOLBAR_POSITION = 10;
+//
+//    public static final String GCP_MANAGER_NAME = "GCP Manager";
+//    public static final String GCP_MANAGER_ICON = "seadas/GcpManager24.png"; // differs from snap
+//    public static final String GCP_MANAGER_TOOLBAR_NAME = "Ground Control Points"; // differs from snap
+//    public static final int GCP_MANAGER_TOOLBAR_POSITION = 0;
 
 
 //    public static final String COLOR_MANIPULATION_NAME = "Color Manager";
@@ -449,55 +497,55 @@ public class PackageDefaults extends PackageDefaultsSnap {
 //    public static final int COLOR_MANIPULATION_POSITION = 20;
 //    public static final boolean COLOR_MANIPULATION_OPEN = true;
 
-    public static final String PRODUCT_EXPLORER_NAME = "File Manager"; // differs from SNAP
-    public static final String PRODUCT_EXPLORER_MODE = "explorer";
-    public static final int PRODUCT_EXPLORER_POSITION = 10;
-    public static final boolean PRODUCT_EXPLORER_OPEN = true;
-
-    public static final String MASK_MANAGER_NAME = "Mask Manager";
-    public static final String MASK_MANAGER_MODE = "properties";  // differs from SNAP
-    public static final int MASK_MANAGER_POSITION = 10; // differs from SNAP
-    public static final boolean MASK_MANAGER_OPEN = true;
-
-    public static final String LAYER_MANAGER_NAME = "Layer Manager";
-    public static final String LAYER_MANAGER_MODE = "properties"; // differs from SNAP
-    public static final int LAYER_MANAGER_POSITION = 20; // differs from SNAP
-    public static final boolean LAYER_MANAGER_OPEN = true;
-
-    public static final String PIXEL_INFO_NAME = "Pixel Info";
-    public static final String PIXEL_INFO_MODE = "properties"; // differs from SNAP
-    public static final int PIXEL_INFO_POSITION = 30; // differs from SNAP
-    public static final boolean PIXEL_INFO_OPEN = true;
-
-    public static final String WORLD_MAP_NAME = "World Map";
-    public static final String WORLD_MAP_MODE = "navigator";
-    public static final int WORLD_MAP_POSITION = 40;
-    public static final boolean WORLD_MAP_OPEN = true; // differs from SNAP
-
-    public static final String WORLD_VIEW_NAME = "World View";
-    public static final String WORLD_VIEW_MODE = "navigator";
-    public static final int WORLD_VIEW_POSITION = 50;
-    public static final boolean WORLD_VIEW_OPEN = true;
-
-    public static final String UNCERTAINTY_NAME = "Uncertainty Visualisation";
-    public static final String UNCERTAINTY_MODE = "navigator";
-    public static final int UNCERTAINTY_POSITION = 30;
-    public static final boolean UNCERTAINTY_OPEN = false;
-
-    public static final String NAVIGATION_NAME = "Navigation";
-    public static final String NAVIGATION_MODE = "navigator";
-    public static final int NAVIGATION_POSITION = 10;
-    public static final boolean NAVIGATION_OPEN = true;
-
-    public static final String PRODUCT_LIBRARY_NAME = "Product Library";
-    public static final String PRODUCT_LIBRARY_MODE = "rightSlidingSide";
-    public static final int PRODUCT_LIBRARY_POSITION = 0;
-    public static final boolean PRODUCT_LIBRARY_OPEN = false;
-
-    public static final String LAYER_EDITOR_NAME = "Layer Editor";
-    public static final String LAYER_EDITOR_MODE = "explorer";  // differs from SNAP
-    public static final int LAYER_EDITOR_POSITION = 30; // differs from SNAP
-    public static final boolean LAYER_EDITOR_OPEN = true; // differs from SNAP
+//    public static final String PRODUCT_EXPLORER_NAME = "File Manager"; // differs from SNAP
+//    public static final String PRODUCT_EXPLORER_MODE = "explorer";
+//    public static final int PRODUCT_EXPLORER_POSITION = 10;
+//    public static final boolean PRODUCT_EXPLORER_OPEN = true;
+//
+//    public static final String MASK_MANAGER_NAME = "Mask Manager";
+//    public static final String MASK_MANAGER_MODE = "properties";  // differs from SNAP
+//    public static final int MASK_MANAGER_POSITION = 10; // differs from SNAP
+//    public static final boolean MASK_MANAGER_OPEN = true;
+//
+//    public static final String LAYER_MANAGER_NAME = "Layer Manager";
+//    public static final String LAYER_MANAGER_MODE = "properties"; // differs from SNAP
+//    public static final int LAYER_MANAGER_POSITION = 20; // differs from SNAP
+//    public static final boolean LAYER_MANAGER_OPEN = true;
+//
+//    public static final String PIXEL_INFO_NAME = "Pixel Info";
+//    public static final String PIXEL_INFO_MODE = "properties"; // differs from SNAP
+//    public static final int PIXEL_INFO_POSITION = 30; // differs from SNAP
+//    public static final boolean PIXEL_INFO_OPEN = true;
+//
+//    public static final String WORLD_MAP_NAME = "World Map";
+//    public static final String WORLD_MAP_MODE = "navigator";
+//    public static final int WORLD_MAP_POSITION = 40;
+//    public static final boolean WORLD_MAP_OPEN = true; // differs from SNAP
+//
+//    public static final String WORLD_VIEW_NAME = "World View";
+//    public static final String WORLD_VIEW_MODE = "navigator";
+//    public static final int WORLD_VIEW_POSITION = 50;
+//    public static final boolean WORLD_VIEW_OPEN = true;
+//
+//    public static final String UNCERTAINTY_NAME = "Uncertainty Visualisation";
+//    public static final String UNCERTAINTY_MODE = "navigator";
+//    public static final int UNCERTAINTY_POSITION = 30;
+//    public static final boolean UNCERTAINTY_OPEN = false;
+//
+//    public static final String NAVIGATION_NAME = "Navigation";
+//    public static final String NAVIGATION_MODE = "navigator";
+//    public static final int NAVIGATION_POSITION = 10;
+//    public static final boolean NAVIGATION_OPEN = true;
+//
+//    public static final String PRODUCT_LIBRARY_NAME = "Product Library";
+//    public static final String PRODUCT_LIBRARY_MODE = "rightSlidingSide";
+//    public static final int PRODUCT_LIBRARY_POSITION = 0;
+//    public static final boolean PRODUCT_LIBRARY_OPEN = false;
+//
+//    public static final String LAYER_EDITOR_NAME = "Layer Editor";
+//    public static final String LAYER_EDITOR_MODE = "explorer";  // differs from SNAP
+//    public static final int LAYER_EDITOR_POSITION = 30; // differs from SNAP
+//    public static final boolean LAYER_EDITOR_OPEN = true; // differs from SNAP
 
 
     // todo ADD THIS

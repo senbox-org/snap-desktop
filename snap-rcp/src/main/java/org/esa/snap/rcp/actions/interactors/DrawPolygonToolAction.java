@@ -36,7 +36,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/" + PackageDefaults.DRAW_POLYGON_TOOLBAR,
         position = 180
 )
 @Messages({

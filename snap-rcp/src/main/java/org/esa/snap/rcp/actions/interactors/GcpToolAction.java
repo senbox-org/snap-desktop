@@ -37,7 +37,7 @@ import javax.swing.*;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/" + PackageDefaults.GCP_TOOL_ACTION_TOOLBAR_NAME,
+        path = "Toolbars/" + PackageDefaults.GCP_TOOL_ACTION_TOOLBAR,
         position = 140
 )
 @Messages({

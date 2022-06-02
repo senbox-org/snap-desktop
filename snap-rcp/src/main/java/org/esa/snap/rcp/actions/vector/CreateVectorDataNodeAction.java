@@ -66,7 +66,7 @@ import java.text.MessageFormat;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Vector", position = 0),
-        @ActionReference(path = "Toolbars/Tools", position = 191)
+        @ActionReference(path = "Toolbars/" + PackageDefaults.NEW_GEOMETRY_CONTAINER_TOOLBAR, position = 191)
 })
 @Messages({
         "CTL_CreateVectorDataNodeActionText=New Vector Data Container",

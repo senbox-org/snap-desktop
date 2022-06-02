@@ -52,7 +52,7 @@ import java.text.DecimalFormat;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.gcp.GcpManagerTopComponent")
 @ActionReferences({
                           @ActionReference(path = "Menu/View/Tool Windows"),
-                          @ActionReference(path = "Toolbars/" + PackageDefaults.GCP_MANAGER_TOOLBAR_NAME)
+                          @ActionReference(path = "Toolbars/" + PackageDefaults.GCP_MANAGER_TOOLBAR)
                   })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GcpManagerTopComponent_Name",

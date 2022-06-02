@@ -22,7 +22,7 @@ import org.openide.util.NbBundle;
 @ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 40),
-        @ActionReference(path = "Toolbars/" + PackageDefaults.OVERLAY_GCP_TOOLBAR_NAME, position = 40)
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GCP_TOGGLE_TOOLBAR, position = 40)
 })
 @NbBundle.Messages({
         "CTL_OverlayGcpLayerActionName=GCP Overlay",
