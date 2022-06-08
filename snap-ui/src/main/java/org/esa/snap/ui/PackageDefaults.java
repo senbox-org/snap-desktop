@@ -44,6 +44,9 @@ public class PackageDefaults  {
     public static final String GCP_MANAGER_ICON = "seadas/GcpManager24.png"; // differs from snap
     public static final String GCP_TOOL_ACTION_ICON = "seadas/GcpTool24.png"; // differs from snap
 
+
+
+
     //---------------------------------------------------------------
     // Tool Window Locations (Modes)
     public static final String HISTOGRAM_PLOT_WS_MODE = "Statistics";  // differs from snap
@@ -51,11 +54,23 @@ public class PackageDefaults  {
     public static final String CORRELATIVE_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String PROFILE_PLOT_WS_MODE = "Statistics";  // differs from snap
     public static final String SPECTRUM_WS_MODE = "Statistics";  // differs from snap
+
     public static final String MASK_MANAGER_MODE = "properties";  // differs from SNAP
     public static final String LAYER_MANAGER_MODE = "properties"; // differs from SNAP
     public static final String PIXEL_INFO_MODE = "properties"; // differs from SNAP
-    public static final String LAYER_EDITOR_MODE = "explorer";  // differs from SNAP
+
+
+    public static final String PRODUCT_EXPLORER_MODE = "explorer";
+    public static final int PRODUCT_EXPLORER_POSITION = 10;
     public static final String WORLD_MAP_MODE = "explorer";  // differs from SNAP
+    public static final int WORLD_MAP_POSITION = 30;  // differs from SNAP
+    public static final String WORLD_VIEW_MODE = "explorer";  // differs from SNAP
+    public static final int WORLD_VIEW_POSITION = 40;  // differs from SNAP
+
+
+
+    public static final String LAYER_EDITOR_MODE = "navigator";
+    public static final int LAYER_EDITOR_POSITION = 40;  // differs from SNAP
 
 
     // Toolbar Name
@@ -100,6 +115,7 @@ public class PackageDefaults  {
     public static final boolean WORLD_MAP_OPEN = true; // differs from SNAP
     public static final boolean LAYER_EDITOR_OPEN = true; // differs from SNAP
     public static final boolean PRODUCT_LIBRARY_OPEN = false; // differs from SNAP
+    public static final boolean UNCERTAINTY_TOOL_OPEN = false; // differs from SNAP
 
 
 

@@ -47,7 +47,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 @TopComponent.Registration(
         mode = PackageDefaults.WORLD_MAP_MODE,
         openAtStartup = PackageDefaults.WORLD_MAP_OPEN,
-        position = 40
+        position = PackageDefaults.WORLD_MAP_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.worldmap.WorldMapTopComponent")
 @ActionReferences({

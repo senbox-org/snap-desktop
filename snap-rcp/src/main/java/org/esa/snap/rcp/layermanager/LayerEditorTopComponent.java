@@ -37,7 +37,7 @@ import java.beans.PropertyChangeEvent;
 @TopComponent.Registration(
         mode = PackageDefaults.LAYER_EDITOR_MODE,
         openAtStartup = PackageDefaults.LAYER_EDITOR_OPEN,
-        position = 1
+        position = PackageDefaults.LAYER_EDITOR_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.layermanager.LayerEditorTopComponent")
 @ActionReferences({

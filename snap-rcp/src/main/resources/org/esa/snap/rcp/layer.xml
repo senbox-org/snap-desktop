@@ -30,6 +30,7 @@
             </folder>
         </folder>
 
+
         <folder name="Edit">
             <attr name="position" intvalue="200"/>
             <!--A CallbackSystemAction, allows to search for something (e.g. in text files), Only enabled if key is mapped to an implementation -->
@@ -67,6 +68,9 @@
                 <attr name="position" intvalue="200"/>
             </file>
         </folder>
+
+
+
 
         <folder name="Analysis">
             <attr name="position" intvalue="400"/>
@@ -223,9 +227,7 @@
             <attr name="position" intvalue="630"/>
         </folder>
 
-        <folder name="Masks">
-            <attr name="position" intvalue="635"/>
-        </folder>
+
 
         <folder name="Memory">
             <attr name="position" intvalue="640"/>
@@ -261,6 +263,10 @@
 
         <folder name="Raster">
             <attr name="position" intvalue="670"/>
+        </folder>
+
+        <folder name="SeaDAS Toolbox">
+            <attr name="position" intvalue="635"/>
         </folder>
 
         <folder name="Tool Windows">

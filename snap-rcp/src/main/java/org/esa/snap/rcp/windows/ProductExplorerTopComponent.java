@@ -54,9 +54,9 @@ import java.util.logging.Level;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "explorer",
+        mode = PackageDefaults.PRODUCT_EXPLORER_MODE,
         openAtStartup = true,
-        position = 10)
+        position = PackageDefaults.PRODUCT_EXPLORER_POSITION)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.ProductExplorerTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
