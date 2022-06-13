@@ -163,20 +163,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                     wwjPanel.addLayerPanelLayer();
                     wwjPanel.addElevation();
 
-                    final MSVirtualEarthLayer virtualEarthLayerA = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_AERIAL);
-                    virtualEarthLayerA.setName("MS Bing Aerial");
-                    insertTiledLayer(getWwd(), virtualEarthLayerA);
-
-                    final MSVirtualEarthLayer virtualEarthLayerR = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_ROADS);
-                    virtualEarthLayerR.setName("MS Bing Roads");
-                    virtualEarthLayerR.setEnabled(false);
-                    insertTiledLayer(getWwd(), virtualEarthLayerR);
-
-                    final MSVirtualEarthLayer virtualEarthLayerH = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_HYBRID);
-                    virtualEarthLayerH.setName("MS Bing Hybrid");
-                    virtualEarthLayerH.setEnabled(false);
-                    insertTiledLayer(getWwd(), virtualEarthLayerH);
-
                     final OSMMapnikLayer streetLayer = new OSMMapnikLayer();
                     streetLayer.setOpacity(0.7);
                     streetLayer.setEnabled(false);
@@ -208,6 +194,8 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                     layerList.add(fixingPlaceNameLayer);
                     fixingPlaceNameLayer.setEnabled(true);
 
+                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
+                    bingLayer.setEnabled(true);
 
                     // Put the pieces together.
                     mainPane.add(wwjPanel, BorderLayout.CENTER);

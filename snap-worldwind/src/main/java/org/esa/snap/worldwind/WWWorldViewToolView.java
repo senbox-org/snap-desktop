@@ -15,7 +15,6 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
@@ -37,9 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Window;
+import java.awt.*;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -119,9 +116,8 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
                     final LayerList layerList = getWwd().getModel().getLayers();
 
-                    final MSVirtualEarthLayer virtualEarthLayerA = new MSVirtualEarthLayer(MSVirtualEarthLayer.LAYER_AERIAL);
-                    virtualEarthLayerA.setName("MS Bing Aerial");
-                    layerList.add(virtualEarthLayerA);
+                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
+                    bingLayer.setEnabled(true);
 
                     final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
                     for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {

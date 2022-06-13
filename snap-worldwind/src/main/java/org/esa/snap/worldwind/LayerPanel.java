@@ -73,7 +73,8 @@ class LayerPanel extends JPanel {
         for (Layer layer : wwd.getModel().getLayers()) {
 
             if (layer.getName().equalsIgnoreCase("Atmosphere") || layer.getName().equalsIgnoreCase("World Map") ||
-                    layer.getName().equalsIgnoreCase("Scale bar") || layer.getName().equalsIgnoreCase("Compass"))
+                    layer.getName().equalsIgnoreCase("Scale bar") || layer.getName().equalsIgnoreCase("Compass") ||
+                    layer.getName().equalsIgnoreCase("Stars"))
                 continue;
 
             final LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
