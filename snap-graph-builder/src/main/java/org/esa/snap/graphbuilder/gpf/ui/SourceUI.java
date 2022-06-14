@@ -162,6 +162,7 @@ public class SourceUI extends BaseOperatorUI {
         } else {
             formatNameComboBox.setSelectedItem(ANY_FORMAT);
         }
+        updateAdvancedOptionsUIAtProductChange();
     }
 
     @Override
