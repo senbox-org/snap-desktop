@@ -208,7 +208,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final int PARAM_MAXVAL_SPREADSHEET_DECIMAL_PLACES = 20;
 
 
-    public static final String PARAM_LABEL_COL_BREAKS_ENABLED = "Include Column Breaks";
+    public static final String PARAM_LABEL_COL_BREAKS_ENABLED = "Include Column Group Breaks";
     public static final String PARAM_KEY_COL_BREAKS_ENABLED = "statistics.columnBreaks.enabled";
     public static final boolean PARAM_DEFVAL_COL_BREAKS_ENABLED = true;
 

@@ -371,6 +371,7 @@ public class StatisticsCriteriaPanel {
 
         percentThresholdsLabel = new JLabel(StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS);
         percentThresholdsTextField = new JTextField(14);
+        percentThresholdsTextField.setMinimumSize(percentThresholdsTextField.getPreferredSize());
         percentThresholdsTextField.setName(StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS);
 
 
@@ -990,6 +991,11 @@ public class StatisticsCriteriaPanel {
         tabbedPane.addTab("View", getViewPanel());
         tabbedPane.setToolTipTextAt(4, "View options");
 
+        int width = (int) (tabbedPane.getPreferredSize().width * 1.2);
+        Dimension preferredSize = new Dimension(width, tabbedPane.getPreferredSize().height);
+        tabbedPane.setPreferredSize(preferredSize);
+        tabbedPane.setMinimumSize(preferredSize);
+        
         return  tabbedPane;
 
     }

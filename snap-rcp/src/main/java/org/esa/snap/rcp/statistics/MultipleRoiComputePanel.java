@@ -57,6 +57,8 @@ class MultipleRoiComputePanel extends JPanel {
     private int[] indexesInQualityMaskNameList;
     private int[] indexesInBandNameList;
 
+    private boolean qualityMaskSelectAllCheckBoxCanFire = true;
+
     //Careful this needs to sync up with MaskGroupingToolTips
     public enum MaskGrouping {
         COMPLEMENT("COMPLEMENT"),
@@ -182,10 +184,10 @@ class MultipleRoiComputePanel extends JPanel {
         includeFullSceneCheckBox.setPreferredSize(includeFullSceneCheckBox.getPreferredSize());
 
         gbc.insets.top = 5;
-        gbc.gridy += 1;
-        panel.add(includeFullSceneCheckBox, gbc);
+//        gbc.gridy += 1;
+//        panel.add(includeFullSceneCheckBox, gbc);
 
-        gbc.gridy++;
+        gbc.gridy = 0;
         panel.add(getMaskAndBandTabbedPane(), gbc);
 
         GridBagConstraints gbcMain = GridBagUtils.createConstraints();
@@ -230,6 +232,10 @@ class MultipleRoiComputePanel extends JPanel {
         tabbedPane.addTab("Criteria", criteriaPanel);
         tabbedPane.setToolTipTextAt(3, "Specify statistical criteria and formatting");
 
+        int width = (int) (tabbedPane.getPreferredSize().width * 1.2);
+        Dimension preferredSize = new Dimension(width, tabbedPane.getPreferredSize().height);
+        tabbedPane.setPreferredSize(preferredSize);
+        tabbedPane.setMinimumSize(preferredSize);
         return tabbedPane;
 
     }
@@ -689,7 +695,10 @@ class MultipleRoiComputePanel extends JPanel {
         indexesInBandNameList = new int[allNames.length];
         for (int i = 0; i < allNames.length; i++) {
             String name = allNames[i];
-            if (StringUtils.contains(currentSelectedBandNames, name)) {
+            // The commented out line would retain selected bands
+//                if (StringUtils.contains(currentSelectedBandNames, name)) {
+
+            if (name != null && name.equals(raster.getName())) {
                 bandNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
             }
             indexesInBandNameList[i] = i;
@@ -705,13 +714,13 @@ class MultipleRoiComputePanel extends JPanel {
             useRoiCheckBox.setEnabled(hasMasks);
             regionMaskNameSearchField.setEnabled(canSelectMasks);
             regionMaskNameList.setEnabled(canSelectMasks);
-            regionMaskSelectAllCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length < regionMaskNameList.getModel().getSize());
-            regionMaskSelectNoneCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length > 0);
+//            regionMaskSelectAllCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length < regionMaskNameList.getModel().getSize());
+//            regionMaskSelectNoneCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
             qualityMaskNameSearchField.setEnabled(canSelectMasks);
             qualityMaskNameList.setEnabled(canSelectMasks);
-            qualityMaskSelectAllCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length < qualityMaskNameList.getModel().getSize());
-            qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
+//            qualityMaskSelectAllCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length < qualityMaskNameList.getModel().getSize());
+//            qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
 
             refreshButton.setEnabled(raster != null);
@@ -900,10 +909,13 @@ class MultipleRoiComputePanel extends JPanel {
     private void selectAndEnableRegionCheckBoxes() {
         final int numEntries = regionMaskNameList.getModel().getSize();
         final int numSelected = regionMaskNameList.getCheckBoxListSelectedIndices().length;
-        regionMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
-        regionMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
-        regionMaskSelectNoneCheckBox.setSelected(numSelected == 0);
-        regionMaskSelectAllCheckBox.setSelected(numSelected == numEntries);
+//        regionMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
+//        regionMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
+//        regionMaskSelectNoneCheckBox.setSelected(numSelected == 0);
+
+        regionMaskSelectAllCheckBox.setEnabled(false);
+        regionMaskSelectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
+        regionMaskSelectAllCheckBox.setEnabled(true);
 
         regionalMaskGroupingComboBoxLabel.setVisible(numSelected > 0);
         regionalMaskGroupingComboBox.setVisible(numSelected > 0);
@@ -1094,14 +1106,22 @@ class MultipleRoiComputePanel extends JPanel {
 
     private JPanel getRegionSelectAllNonePanel() {
 
-        regionMaskSelectAllCheckBox = new JCheckBox("Select All");
+        regionMaskSelectAllCheckBox = new JCheckBox("Select All/None");
+        regionMaskSelectAllCheckBox.setToolTipText("Select all/none toggle");
+
+        regionMaskSelectAllCheckBox.setSelected(false);
         regionMaskSelectAllCheckBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (regionMaskSelectAllCheckBox.isSelected()) {
-                    regionMaskNameList.selectAll();
+                if (regionMaskSelectAllCheckBox.isEnabled()) {
+                    if (regionMaskSelectAllCheckBox.isSelected()) {
+                        regionMaskNameList.selectAll();
+                    } else {
+                        regionMaskNameList.selectNone();
+                    }
                 }
                 selectAndEnableRegionCheckBoxes();
+
             }
         });
         regionMaskSelectAllCheckBox.setMinimumSize(regionMaskSelectAllCheckBox.getPreferredSize());
@@ -1142,10 +1162,13 @@ class MultipleRoiComputePanel extends JPanel {
     private void selectAndEnableQualityCheckBoxes() {
         final int numEntries = qualityMaskNameList.getModel().getSize();
         final int numSelected = qualityMaskNameList.getCheckBoxListSelectedIndices().length;
-        qualityMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
-        qualityMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
-        qualityMaskSelectNoneCheckBox.setSelected(numSelected == 0);
-        qualityMaskSelectAllCheckBox.setSelected(numSelected == numEntries);
+//        qualityMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
+//        qualityMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
+//        qualityMaskSelectNoneCheckBox.setSelected(numSelected == 0);
+
+        qualityMaskSelectAllCheckBox.setEnabled(false);
+        qualityMaskSelectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
+        qualityMaskSelectAllCheckBox.setEnabled(true);
 
         qualityMaskGroupingComboBoxLabel.setVisible(numSelected > 0);
         qualityMaskGroupingComboBox.setVisible(numSelected > 0);
@@ -1322,12 +1345,17 @@ class MultipleRoiComputePanel extends JPanel {
 
     private JPanel getQualitySelectAllNonePanel() {
 
-        qualityMaskSelectAllCheckBox = new JCheckBox("Select All");
+        qualityMaskSelectAllCheckBox = new JCheckBox("Select All/None");
+        qualityMaskSelectAllCheckBox.setToolTipText("Select all/none toggle");
         qualityMaskSelectAllCheckBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (qualityMaskSelectAllCheckBox.isSelected()) {
-                    qualityMaskNameList.selectAll();
+                if (qualityMaskSelectAllCheckBox.isEnabled()) {
+                    if (qualityMaskSelectAllCheckBox.isSelected()) {
+                        qualityMaskNameList.selectAll();
+                    } else {
+                        qualityMaskNameList.selectNone();
+                    }
                 }
                 selectAndEnableQualityCheckBoxes();
             }
@@ -1451,10 +1479,15 @@ class MultipleRoiComputePanel extends JPanel {
     private void selectAndEnableBandNameCheckBoxes() {
         final int numEntries = bandNameList.getModel().getSize();
         final int numSelected = bandNameList.getCheckBoxListSelectedIndices().length;
-        bandNameselectNoneCheckBox.setEnabled(numSelected > 0);
-        bandNameselectAllCheckBox.setEnabled(numSelected < numEntries);
-        bandNameselectNoneCheckBox.setSelected(numSelected == 0);
-        bandNameselectAllCheckBox.setSelected(numSelected == numEntries);
+
+        bandNameselectAllCheckBox.setEnabled(false);
+        bandNameselectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
+        bandNameselectAllCheckBox.setEnabled(true);
+
+//        bandNameselectNoneCheckBox.setEnabled(numSelected > 0);
+//        bandNameselectAllCheckBox.setEnabled(numSelected < numEntries);
+//        bandNameselectNoneCheckBox.setSelected(numSelected == 0);
+//        bandNameselectAllCheckBox.setSelected(numSelected == numEntries);
     }
 
     private String[] getSelectedBandNames() {
@@ -1580,12 +1613,18 @@ class MultipleRoiComputePanel extends JPanel {
 
     private JPanel getBandNameSelectAllNonePanel() {
 
-        bandNameselectAllCheckBox = new JCheckBox("Select All");
+        bandNameselectAllCheckBox = new JCheckBox("Select All/None");
+        bandNameselectAllCheckBox.setToolTipText("Select all/none toggle");
+
         bandNameselectAllCheckBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (bandNameselectAllCheckBox.isSelected()) {
-                    bandNameList.selectAll();
+                if (bandNameselectAllCheckBox.isEnabled()) {
+                    if (bandNameselectAllCheckBox.isSelected()) {
+                        bandNameList.selectAll();
+                    } else {
+                        bandNameList.selectNone();
+                    }
                 }
                 selectAndEnableBandNameCheckBoxes();
             }
