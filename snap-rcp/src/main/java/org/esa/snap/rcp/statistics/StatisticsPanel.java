@@ -386,6 +386,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                                                     @Override
                                                     public void actionPerformed(ActionEvent e) {
                                                         statisticsCriteriaPanel.reset();
+                                                        computePanel.reset();
                                                     }
                                                 }
         );

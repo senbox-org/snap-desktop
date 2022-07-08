@@ -199,6 +199,13 @@ public final class StatisticsController extends DefaultConfigController {
                 key = StatisticsTopComponent.PARAM_KEY_STATS_SPREADSHEET_ENABLED)
         boolean showStatsSpreadSheet = StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED;
 
+
+        @Preference(label = StatisticsTopComponent.PARAM_LABEL_SCROLL_MAX_LINES,
+                key = StatisticsTopComponent.PARAM_KEY_SCROLL_MAX_LINES,
+        description = StatisticsTopComponent.PARAM_SCROLL_MAX_LINES_DESC)
+        int scrollHeightFactor = StatisticsTopComponent.PARAM_DEFVAL_SCROLL_MAX_LINES;
+
+
         // Restore Defaults
 
         @Preference(label = PROPERTY_RESTORE_SECTION_LABEL,
@@ -247,6 +254,9 @@ public final class StatisticsController extends DefaultConfigController {
         initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_PERCENT_PLOT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_PERCENT_PLOT_ENABLED);
         initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_STATS_LIST_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_LIST_ENABLED);
         initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_STATS_SPREADSHEET_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED);
+
+
+        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_SCROLL_MAX_LINES, StatisticsTopComponent.PARAM_DEFVAL_SCROLL_MAX_LINES);
 
 //        restoreDefaults =  initPropertyDefaults(context, "statistics.restore.defaults.apply", false);
         restoreDefaults = initPropertyDefaults(context, PROPERTY_RESTORE_DEFAULTS_NAME, PROPERTY_RESTORE_DEFAULTS_DEFAULT);

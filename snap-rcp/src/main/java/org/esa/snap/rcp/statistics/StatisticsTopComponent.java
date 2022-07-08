@@ -240,6 +240,15 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final boolean PARAM_DEFVAL_BIN_WIDTH_ENABLED = false;
 
 
+
+    public static final String PARAM_KEY_SCROLL_MAX_LINES = "statistics.scroll.max.lines";
+    public static final String PARAM_LABEL_SCROLL_MAX_LINES = "Scroll List Max Lines";
+    public static final int PARAM_DEFVAL_SCROLL_MAX_LINES = 16;
+    public static final int PARAM_MINVAL_SCROLL_MAX_LINES = 4;
+    public static final int PARAM_MAXVAL_SCROLL_MAX_LINES = 30;
+    public static final String PARAM_SCROLL_MAX_LINES_DESC = "Scroll list (bands and masks) maximum lines visible";
+
+
     public static final String PARAM_KEY_RESET_TO_DEFAULTS = "statistics.resetToDefaults.enabled";
 
     // Restore to defaults

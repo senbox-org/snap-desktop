@@ -19,6 +19,7 @@ package org.esa.snap.rcp.statistics;
 import com.jidesoft.swing.CheckBoxList;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -39,6 +40,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 
 /**
@@ -56,6 +58,12 @@ class MultipleRoiComputePanel extends JPanel {
     private int[] indexesInRegionMaskNameList;
     private int[] indexesInQualityMaskNameList;
     private int[] indexesInBandNameList;
+    private JScrollPane bandNameScrollPane;
+    private JScrollPane regionNameScrollPane;
+    private  JScrollPane qualityMaskNameScrollPane;
+
+    private JPanel maskQualityNameListPane;
+    private int SCROLL_ROWS_MINIMUM = 4;
 
     private boolean qualityMaskSelectAllCheckBoxCanFire = true;
 
@@ -119,9 +127,6 @@ class MultipleRoiComputePanel extends JPanel {
     private JCheckBox qualityMaskSelectAllCheckBox;
     private JCheckBox bandNameselectAllCheckBox;
 
-    private JCheckBox regionMaskSelectNoneCheckBox;
-    private JCheckBox qualityMaskSelectNoneCheckBox;
-    private JCheckBox bandNameselectNoneCheckBox;
 
     private JComboBox qualityMaskGroupingComboBox;
     private JComboBox regionalMaskGroupingComboBox;
@@ -314,7 +319,7 @@ class MultipleRoiComputePanel extends JPanel {
 
 
         JPanel maskFilterPane = getQualityFilterPanel();
-        JPanel maskNameListPane = getQualityNameListPanel();
+        maskQualityNameListPane = getQualityNameListPanel();
         JPanel checkBoxPane = getQualitySelectAllNonePanel();
 
 
@@ -339,10 +344,12 @@ class MultipleRoiComputePanel extends JPanel {
 
         gbc.insets.top = 0;
         gbc.gridy++;
-        panel.add(maskNameListPane, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(maskQualityNameListPane, gbc);
 
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(checkBoxPane, gbc);
         gbc.anchor = GridBagConstraints.WEST;
 
@@ -583,15 +590,21 @@ class MultipleRoiComputePanel extends JPanel {
                         product.addProductNodeListener(productNodeListener);
                     }
                 }
-                resetRegionMaskListState();
-                resetQualityMaskListState();
+                resetRegionMaskListState(false);
+                resetQualityMaskListState(false);
                 resetBandNameListState();
                 refreshButton.setEnabled(raster != null);
             }
         }
     }
 
-    private void resetRegionMaskListState() {
+    public void reset() {
+        resetRegionMaskListState(true);
+        resetQualityMaskListState(true);
+        resetBandNameListState();
+    }
+
+    private void resetRegionMaskListState(boolean hardReset) {
         regionMaskNameListModel = new DefaultListModel<>();
         final String[] currentSelectedMaskNames = getSelectedRegionMaskNames();
         if (product != null && raster != null) {
@@ -629,15 +642,36 @@ class MultipleRoiComputePanel extends JPanel {
         indexesInRegionMaskNameList = new int[allNames.length];
         for (int i = 0; i < allNames.length; i++) {
             String name = allNames[i];
-            if (StringUtils.contains(currentSelectedMaskNames, name)) {
-                regionMaskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
+            if (!hardReset) {
+                if (StringUtils.contains(currentSelectedMaskNames, name)) {
+                    regionMaskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
+                }
             }
             indexesInRegionMaskNameList[i] = i;
         }
+
+
+
+        int numLines = allNames.length;
+        int maxLines = getScrollListMaxLines();
+        int prefLines = (numLines < maxLines) ? numLines : maxLines;
+        if (prefLines < SCROLL_ROWS_MINIMUM) {
+            prefLines = SCROLL_ROWS_MINIMUM;
+        }
+
+        int minLines = (prefLines < SCROLL_ROWS_MINIMUM) ? prefLines : SCROLL_ROWS_MINIMUM;
+
+        regionMaskNameList.setVisibleRowCount(minLines);
+        regionNameScrollPane.setMinimumSize(regionNameScrollPane.getPreferredSize());
+        regionMaskNameList.setVisibleRowCount(prefLines);
+        regionNameScrollPane.setPreferredSize(regionNameScrollPane.getPreferredSize());
+        regionNameScrollPane.setMaximumSize(regionNameScrollPane.getPreferredSize());
+
+
         updateEnablement();
     }
 
-    private void resetQualityMaskListState() {
+    private void resetQualityMaskListState(boolean hardReset) {
         qualityMaskNameListModel = new DefaultListModel<>();
         final String[] currentSelectedMaskNames = getSelectedQualityMaskNames();
         if (product != null && raster != null) {
@@ -669,12 +703,33 @@ class MultipleRoiComputePanel extends JPanel {
         indexesInQualityMaskNameList = new int[allNames.length];
         for (int i = 0; i < allNames.length; i++) {
             String name = allNames[i];
-            if (StringUtils.contains(currentSelectedMaskNames, name)) {
-                qualityMaskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
+            if (!hardReset) {
+                if (StringUtils.contains(currentSelectedMaskNames, name)) {
+                    qualityMaskNameList.getCheckBoxListSelectionModel().addSelectionInterval(i, i);
+                }
             }
             indexesInQualityMaskNameList[i] = i;
         }
         updateEnablement();
+
+
+        int numLines = allNames.length;
+        int maxLines = getScrollListMaxLines();
+        int prefLines = (numLines < maxLines) ? numLines : maxLines;
+        if (prefLines < SCROLL_ROWS_MINIMUM) {
+            prefLines = SCROLL_ROWS_MINIMUM;
+        }
+
+        int minLines = (prefLines < SCROLL_ROWS_MINIMUM) ? prefLines : SCROLL_ROWS_MINIMUM;
+
+        qualityMaskNameList.setVisibleRowCount(minLines);
+        qualityMaskNameScrollPane.setMinimumSize(qualityMaskNameScrollPane.getPreferredSize());
+        qualityMaskNameList.setVisibleRowCount(prefLines);
+        qualityMaskNameScrollPane.setPreferredSize(qualityMaskNameScrollPane.getPreferredSize());
+        qualityMaskNameScrollPane.setMaximumSize(qualityMaskNameScrollPane.getPreferredSize());
+
+//        qualityMaskNameScrollPane.repaint();
+//        maskQualityNameListPane.repaint();
     }
 
     private void resetBandNameListState() {
@@ -703,6 +758,24 @@ class MultipleRoiComputePanel extends JPanel {
             }
             indexesInBandNameList[i] = i;
         }
+
+
+        int numLines = allNames.length;
+        int maxLines = getScrollListMaxLines();
+        int prefLines = (numLines < maxLines) ? numLines : maxLines;
+        if (prefLines < SCROLL_ROWS_MINIMUM) {
+            prefLines = SCROLL_ROWS_MINIMUM;
+        }
+
+        int minLines = (prefLines < SCROLL_ROWS_MINIMUM) ? prefLines : SCROLL_ROWS_MINIMUM;
+
+        bandNameList.setVisibleRowCount(minLines);
+        bandNameScrollPane.setMinimumSize(bandNameScrollPane.getPreferredSize());
+        bandNameList.setVisibleRowCount(prefLines);
+        bandNameScrollPane.setPreferredSize(bandNameScrollPane.getPreferredSize());
+        bandNameScrollPane.setMaximumSize(bandNameScrollPane.getPreferredSize());
+
+
         updateEnablement();
     }
 
@@ -715,12 +788,10 @@ class MultipleRoiComputePanel extends JPanel {
             regionMaskNameSearchField.setEnabled(canSelectMasks);
             regionMaskNameList.setEnabled(canSelectMasks);
 //            regionMaskSelectAllCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length < regionMaskNameList.getModel().getSize());
-//            regionMaskSelectNoneCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
             qualityMaskNameSearchField.setEnabled(canSelectMasks);
             qualityMaskNameList.setEnabled(canSelectMasks);
 //            qualityMaskSelectAllCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length < qualityMaskNameList.getModel().getSize());
-//            qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
 
             refreshButton.setEnabled(raster != null);
@@ -811,8 +882,8 @@ class MultipleRoiComputePanel extends JPanel {
                         @Override
                         public void run() {
 //                            resetBandNameListState();
-                            resetRegionMaskListState();
-                            resetQualityMaskListState();
+                            resetRegionMaskListState(false);
+                            resetQualityMaskListState(false);
                         }
                     });
 
@@ -909,9 +980,7 @@ class MultipleRoiComputePanel extends JPanel {
     private void selectAndEnableRegionCheckBoxes() {
         final int numEntries = regionMaskNameList.getModel().getSize();
         final int numSelected = regionMaskNameList.getCheckBoxListSelectedIndices().length;
-//        regionMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
 //        regionMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
-//        regionMaskSelectNoneCheckBox.setSelected(numSelected == 0);
 
         regionMaskSelectAllCheckBox.setEnabled(false);
         regionMaskSelectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
@@ -1088,16 +1157,14 @@ class MultipleRoiComputePanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(regionMaskNameList);
-        scrollPane.setMinimumSize(scrollPane.getPreferredSize());
-        scrollPane.setPreferredSize(scrollPane.getPreferredSize());
-
+        regionMaskNameList.setVisibleRowCount(getScrollListMaxLines());
+        regionNameScrollPane = new JScrollPane(regionMaskNameList);
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(scrollPane, gbc);
+        panel.add(regionNameScrollPane, gbc);
 
         return panel;
 
@@ -1127,28 +1194,13 @@ class MultipleRoiComputePanel extends JPanel {
         regionMaskSelectAllCheckBox.setMinimumSize(regionMaskSelectAllCheckBox.getPreferredSize());
         regionMaskSelectAllCheckBox.setPreferredSize(regionMaskSelectAllCheckBox.getPreferredSize());
 
-        regionMaskSelectNoneCheckBox = new JCheckBox("Select None");
-        regionMaskSelectNoneCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (regionMaskSelectNoneCheckBox.isSelected()) {
-                    regionMaskNameList.selectNone();
-                }
-                selectAndEnableRegionCheckBoxes();
-            }
-        });
-        regionMaskSelectNoneCheckBox.setMinimumSize(regionMaskSelectNoneCheckBox.getPreferredSize());
-        regionMaskSelectNoneCheckBox.setPreferredSize(regionMaskSelectNoneCheckBox.getPreferredSize());
 
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        gbc.anchor = GridBagConstraints.CENTER;
+//        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(regionMaskSelectAllCheckBox, gbc);
-
-        gbc.gridx++;
-        panel.add(regionMaskSelectNoneCheckBox, gbc);
 
         return panel;
     }
@@ -1162,9 +1214,7 @@ class MultipleRoiComputePanel extends JPanel {
     private void selectAndEnableQualityCheckBoxes() {
         final int numEntries = qualityMaskNameList.getModel().getSize();
         final int numSelected = qualityMaskNameList.getCheckBoxListSelectedIndices().length;
-//        qualityMaskSelectNoneCheckBox.setEnabled(numSelected > 0);
 //        qualityMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
-//        qualityMaskSelectNoneCheckBox.setSelected(numSelected == 0);
 
         qualityMaskSelectAllCheckBox.setEnabled(false);
         qualityMaskSelectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
@@ -1327,21 +1377,26 @@ class MultipleRoiComputePanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(qualityMaskNameList);
-        scrollPane.setMinimumSize(scrollPane.getPreferredSize());
-        scrollPane.setPreferredSize(scrollPane.getPreferredSize());
 
+        qualityMaskNameList.setVisibleRowCount(getScrollListMaxLines());
+        qualityMaskNameScrollPane = new JScrollPane(qualityMaskNameList);
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(scrollPane, gbc);
+        panel.add(qualityMaskNameScrollPane, gbc);
 
         return panel;
 
     }
 
+
+
+    public int getScrollListMaxLines() {
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+        return preferences.getInt(StatisticsTopComponent.PARAM_KEY_SCROLL_MAX_LINES, StatisticsTopComponent.PARAM_DEFVAL_SCROLL_MAX_LINES);
+    }
 
     private JPanel getQualitySelectAllNonePanel() {
 
@@ -1363,28 +1418,12 @@ class MultipleRoiComputePanel extends JPanel {
         qualityMaskSelectAllCheckBox.setMinimumSize(qualityMaskSelectAllCheckBox.getPreferredSize());
         qualityMaskSelectAllCheckBox.setPreferredSize(qualityMaskSelectAllCheckBox.getPreferredSize());
 
-        qualityMaskSelectNoneCheckBox = new JCheckBox("Select None");
-        qualityMaskSelectNoneCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (qualityMaskSelectNoneCheckBox.isSelected()) {
-                    qualityMaskNameList.selectNone();
-                }
-                selectAndEnableQualityCheckBoxes();
-            }
-        });
-        qualityMaskSelectNoneCheckBox.setMinimumSize(qualityMaskSelectNoneCheckBox.getPreferredSize());
-        qualityMaskSelectNoneCheckBox.setPreferredSize(qualityMaskSelectNoneCheckBox.getPreferredSize());
-
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        gbc.anchor = GridBagConstraints.CENTER;
+//        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(qualityMaskSelectAllCheckBox, gbc);
-
-        gbc.gridx++;
-        panel.add(qualityMaskSelectNoneCheckBox, gbc);
 
         return panel;
     }
@@ -1484,9 +1523,7 @@ class MultipleRoiComputePanel extends JPanel {
         bandNameselectAllCheckBox.setSelected(numEntries > 0 && numSelected == numEntries);
         bandNameselectAllCheckBox.setEnabled(true);
 
-//        bandNameselectNoneCheckBox.setEnabled(numSelected > 0);
 //        bandNameselectAllCheckBox.setEnabled(numSelected < numEntries);
-//        bandNameselectNoneCheckBox.setSelected(numSelected == 0);
 //        bandNameselectAllCheckBox.setSelected(numSelected == numEntries);
     }
 
@@ -1525,6 +1562,8 @@ class MultipleRoiComputePanel extends JPanel {
                     }
                 }
             }
+
+
         });
     }
 
@@ -1596,16 +1635,15 @@ class MultipleRoiComputePanel extends JPanel {
             }
         });
 
-        JScrollPane scrollPane = new JScrollPane(bandNameList);
-        scrollPane.setMinimumSize(scrollPane.getPreferredSize());
-        scrollPane.setPreferredSize(scrollPane.getPreferredSize());
 
+        bandNameList.setVisibleRowCount(getScrollListMaxLines());
+        bandNameScrollPane = new JScrollPane(bandNameList);
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(scrollPane, gbc);
+        panel.add(bandNameScrollPane, gbc);
 
         return panel;
 
@@ -1632,28 +1670,13 @@ class MultipleRoiComputePanel extends JPanel {
         bandNameselectAllCheckBox.setMinimumSize(bandNameselectAllCheckBox.getPreferredSize());
         bandNameselectAllCheckBox.setPreferredSize(bandNameselectAllCheckBox.getPreferredSize());
 
-        bandNameselectNoneCheckBox = new JCheckBox("Select None");
-        bandNameselectNoneCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (bandNameselectNoneCheckBox.isSelected()) {
-                    bandNameList.selectNone();
-                }
-                selectAndEnableBandNameCheckBoxes();
-            }
-        });
-        bandNameselectNoneCheckBox.setMinimumSize(bandNameselectNoneCheckBox.getPreferredSize());
-        bandNameselectNoneCheckBox.setPreferredSize(bandNameselectNoneCheckBox.getPreferredSize());
 
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        gbc.anchor = GridBagConstraints.CENTER;
+//        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(bandNameselectAllCheckBox, gbc);
-
-        gbc.gridx++;
-        panel.add(bandNameselectNoneCheckBox, gbc);
 
         return panel;
     }
