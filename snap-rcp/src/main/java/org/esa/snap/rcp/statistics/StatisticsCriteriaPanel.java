@@ -47,38 +47,38 @@ public class StatisticsCriteriaPanel {
     // "Fields" Tab Variables and Components
 
     private boolean handlersEnabled = true; //todo this may be temporary and not needed
-    private String percentThresholds = StatisticsTopComponent.PARAM_DEFVAL_PERCENT_THRESHOLDS;
+    private String percentThresholds = StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_DEFAULT;
     private java.util.List<Integer> percentThresholdsList = null;
     private JTextField percentThresholdsTextField = null;
     private JLabel percentThresholdsLabel = null;
 
-    private boolean includeTotalPixels = StatisticsTopComponent.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED;
+    private boolean includeTotalPixels = StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_DEFAULT;
     private JCheckBox includeTotalPixelsCheckBox = null;
 
-    private boolean includeMedian = StatisticsTopComponent.PARAM_DEFVAL_MEDIAN_ENABLED;
+    private boolean includeMedian = StatisticsTopComponent.PROPERTY_MEDIAN_DEFAULT;
     private JCheckBox includeMedianCheckBox = null;
 
-    private boolean includeMinMax = StatisticsTopComponent.PARAM_DEFVAL_MINMAX_ENABLED;
+    private boolean includeMinMax = StatisticsTopComponent.PROPERTY_MINMAX_DEFAULT;
     private JCheckBox includeMinMaxCheckBox = null;
 
-    private boolean includeHistogramStats = StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED;
+    private boolean includeHistogramStats = StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_DEFAULT;
     private JCheckBox includeHistogramStatsCheckBox = null;
 
     private boolean includeFileRefNo = true;
     private boolean includeBandName = true;
     private boolean includeMaskName = true;
 
-    private boolean includeFileMetaData = StatisticsTopComponent.PARAM_DEFVAL_FILE_METADATA_ENABLED;
+    private boolean includeFileMetaData = StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT;
     private JCheckBox includeFileMetaDataCheckBox = null;
 
-    private boolean includeMaskMetaData = StatisticsTopComponent.PARAM_DEFVAL_MASK_METADATA_ENABLED;
+    private boolean includeMaskMetaData = StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT;
     private JCheckBox includeMaskMetaDataCheckBox = null;
 
 
-    private boolean includeBandMetaData = StatisticsTopComponent.PARAM_DEFVAL_BAND_METADATA_ENABLED;
+    private boolean includeBandMetaData = StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT;
     private JCheckBox includeBandMetaDataCheckBox = null;
 
-    private boolean includeBinningInfo = StatisticsTopComponent.PARAM_DEFVAL_BINNING_INFO_ENABLED;
+    private boolean includeBinningInfo = StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT;
     private JCheckBox includeBinningInfoCheckBox = null;
 
     private boolean includeTimeSeriesMetaData = StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED;
@@ -344,23 +344,39 @@ public class StatisticsCriteriaPanel {
 
 
         // "Fields" Tab Variables and Components
-        includeTotalPixelsCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED);
+        includeTotalPixelsCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_LABEL);
+        includeTotalPixelsCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_TOOLTIP);
 
-        includeMedianCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_MEDIAN_ENABLED);
-        includeMedianCheckBox.setToolTipText(StatisticsTopComponent.PARAM_TOOLTIP_MEDIAN_ENABLED);
+        includeMedianCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_MEDIAN_LABEL);
+        includeMedianCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_MEDIAN_TOOLTIP);
 
-        includeMinMaxCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_MINMAX_ENABLED);
-        includeMinMaxCheckBox.setToolTipText(StatisticsTopComponent.PARAM_TOOLTIP_MINMAX_ENABLED);
+        includeMinMaxCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_MINMAX_LABEL);
+        includeMinMaxCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_MINMAX_TOOLTIP);
 
-        includeHistogramStatsCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_HISTOGRAM_STATS_ENABLED);
+        percentThresholdsLabel = new JLabel(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL);
+        percentThresholdsLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_TOOLTIP);
+        percentThresholdsTextField = new JTextField(14);
+        percentThresholdsTextField.setMinimumSize(percentThresholdsTextField.getPreferredSize());
+        percentThresholdsTextField.setName(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL);
+        percentThresholdsTextField.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_TOOLTIP);
 
-        includeFileMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_FILE_METADATA_ENABLED);
+        includeBinningInfoCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_BINNING_INFO_LABEL);
+        includeBinningInfoCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_BINNING_INFO_TOOLTIP);
 
-        includeMaskMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_MASK_METADATA_ENABLED);
+        includeHistogramStatsCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_LABEL);
+        includeHistogramStatsCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_TOOLTIP);
 
-        includeBandMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_BAND_METADATA_ENABLED);
+        includeBandMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_BAND_METADATA_LABEL);
+        includeBandMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_BAND_METADATA_TOOLTIP);
 
-        includeBinningInfoCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_BINNING_INFO_ENABLED);
+        includeFileMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_FILE_METADATA_LABEL);
+        includeFileMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_FILE_METADATA_TOOLTIP);
+
+        includeMaskMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_MASK_METADATA_LABEL);
+        includeMaskMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_MASK_METADATA_TOOLTIP);
+
+
+
 
         includeTimeMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_TIME_METADATA_ENABLED);
 
@@ -369,10 +385,7 @@ public class StatisticsCriteriaPanel {
 
         includeProjectionParametersCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED);
 
-        percentThresholdsLabel = new JLabel(StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS);
-        percentThresholdsTextField = new JTextField(14);
-        percentThresholdsTextField.setMinimumSize(percentThresholdsTextField.getPreferredSize());
-        percentThresholdsTextField.setName(StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS);
+
 
 
 
@@ -718,7 +731,7 @@ public class StatisticsCriteriaPanel {
     private void textfieldHandlerAction(final JTextField textField) {
 
         if (handlersEnabled) {
-            if (StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS.equals(textField.getName())) {
+            if (StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL.equals(textField.getName())) {
                 percentThresholds = textField.getText().toString();
             }
         }
@@ -837,7 +850,7 @@ public class StatisticsCriteriaPanel {
                         value = Integer.parseInt(threshold);
                         if (value < 0 || value > 100) {
                             JOptionPane.showMessageDialog(getParentDialogContentPane,
-                                    "ERROR: Valid " + StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS + " range is (0 to 100)",
+                                    "ERROR: Valid " + StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL + " range is (0 to 100)",
                                     "Invalid Input",
                                     JOptionPane.ERROR_MESSAGE);
                             return null;
@@ -847,7 +860,7 @@ public class StatisticsCriteriaPanel {
                         }
                     } catch (NumberFormatException exception) {
                         JOptionPane.showMessageDialog(getParentDialogContentPane,
-                                StatisticsTopComponent.PARAM_LABEL_PERCENT_THRESHOLDS + "field " + exception.toString(),
+                                StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL + "field " + exception.toString(),
                                 "Invalid Input",
                                 JOptionPane.ERROR_MESSAGE);
                         return null;
@@ -1598,48 +1611,48 @@ public class StatisticsCriteriaPanel {
 
     public String getPreferencesPercentThresholds() {
 
-        return preferences.get(StatisticsTopComponent.PARAM_KEY_PERCENT_THRESHOLDS, StatisticsTopComponent.PARAM_DEFVAL_PERCENT_THRESHOLDS);
+        return preferences.get(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_KEY, StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_DEFAULT);
     }
 
     public boolean getPreferencesFileMetaDataEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_FILE_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_FILE_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_FILE_METADATA_KEY, StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT);
     }
 
     public boolean getPreferencesMedianEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_MEDIAN_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_MEDIAN_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MEDIAN_KEY, StatisticsTopComponent.PROPERTY_MEDIAN_DEFAULT);
     }
 
     public boolean getPreferencesMinMaxEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_MINMAX_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_MINMAX_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MINMAX_KEY, StatisticsTopComponent.PROPERTY_MINMAX_DEFAULT);
     }
 
     public boolean getPreferencesTotalPixelsEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_KEY, StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_DEFAULT);
     }
 
     public boolean getPreferencesHistogramStatsEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_HISTOGRAM_STATS_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_DEFAULT);
     }
 
     public boolean getPreferencesMaskMetaDataEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_MASK_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_MASK_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MASK_METADATA_KEY, StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT);
     }
 
 
     public boolean getPreferencesBandMetaDataEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_BAND_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_BAND_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT);
     }
 
     public boolean getPreferencesBinningInfoEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_BINNING_INFO_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_BINNING_INFO_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BINNING_INFO_KEY, StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT);
     }
 
     public boolean getPreferencesProjectionParametersEnabled() {

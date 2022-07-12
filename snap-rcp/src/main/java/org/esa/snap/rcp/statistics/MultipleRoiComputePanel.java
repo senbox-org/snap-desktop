@@ -1395,7 +1395,7 @@ class MultipleRoiComputePanel extends JPanel {
 
     public int getScrollListMaxLines() {
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        return preferences.getInt(StatisticsTopComponent.PARAM_KEY_SCROLL_MAX_LINES, StatisticsTopComponent.PARAM_DEFVAL_SCROLL_MAX_LINES);
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_SCROLL_LINES_KEY, StatisticsTopComponent.PROPERTY_SCROLL_LINES_DEFAULT);
     }
 
     private JPanel getQualitySelectAllNonePanel() {

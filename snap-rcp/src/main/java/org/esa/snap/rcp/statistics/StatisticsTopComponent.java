@@ -33,6 +33,7 @@ import org.openide.windows.TopComponent;
 })
 /**
  * @author Tonio Fincke
+ * @author Daniel Knowles
  */
 public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
@@ -81,9 +82,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final String PARAM_KEY_STATS_SPREADSHEET_ENABLED = "statistics.statsSpreadSheet.enabled";
     public static final boolean PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED = true;
 
-    public static final String PARAM_LABEL_PERCENT_THRESHOLDS = "Include Thresholds";
-    public static final String PARAM_KEY_PERCENT_THRESHOLDS = "statistics.percentThresholds";
-    public static final String PARAM_DEFVAL_PERCENT_THRESHOLDS = "80,85,90,95,98";
+
 
     public static final String PARAM_LABEL_NUM_BINS = "Total Bins";
     public static final String PARAM_KEY_NUM_BINS = "statistics.numBins";
@@ -94,53 +93,77 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
 
 
-    public static final String PARAM_LABEL_MEDIAN_ENABLED = "Include Median";
-    public static final String PARAM_TOOLTIP_MEDIAN_ENABLED = "Calculation of median will increase computation time";
-    public static final String PARAM_KEY_MEDIAN_ENABLED = "statistics.median.enabled";
-    public static final boolean PARAM_DEFVAL_MEDIAN_ENABLED = false;
-
-    public static final String PARAM_LABEL_MINMAX_ENABLED = "Include Min/Max";
-    public static final String PARAM_TOOLTIP_MINMAX_ENABLED = "";
-    public static final String PARAM_KEY_MINMAX_ENABLED = "statistics.minMax.enabled";
-    public static final boolean PARAM_DEFVAL_MINMAX_ENABLED = false;
-
-    public static final String PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED = "Include Total Pixel Count";
-    public static final String PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED = "statistics.totalPixelCount.enabled";
-    public static final boolean PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED = true;
-
-    public static final String PARAM_LABEL_HISTOGRAM_STATS_ENABLED = "Include Histogram Statistics";
-    public static final String PARAM_KEY_HISTOGRAM_STATS_ENABLED = "statistics.histogramStats.enabled";
-    public static final boolean PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED = false;
-
-    public static final String PARAM_LABEL_FILE_METADATA_ENABLED = "Include File MetaData";
-    public static final String PARAM_KEY_FILE_METADATA_ENABLED = "statistics.fileMetaData.enabled";
-    public static final boolean PARAM_DEFVAL_FILE_METADATA_ENABLED = true;
-
-    public static final String PARAM_LABEL_MASK_METADATA_ENABLED = "Include Mask MetaData";
-    public static final String PARAM_KEY_MASK_METADATA_ENABLED = "statistics.maskMetaData.enabled";
-    public static final boolean PARAM_DEFVAL_MASK_METADATA_ENABLED = true;
-
-    public static final String PARAM_LABEL_BAND_METADATA_ENABLED = "Include Band MetaData";
-    public static final String PARAM_KEY_BAND_METADATA_ENABLED = "statistics.bandMetaData.enabled";
-    public static final boolean PARAM_DEFVAL_BAND_METADATA_ENABLED = true;
 
 
-    public static final String PARAM_LABEL_BINNING_INFO_ENABLED = "Include Binning Info";
-    public static final String PARAM_KEY_BINNING_INFO_ENABLED = "statistics.binningInfo.enabled";
-    public static final boolean PARAM_DEFVAL_BINNING_INFO_ENABLED = true;
 
-    public static final String PARAM_LABEL_TIME_SERIES_METADATA_ENABLED = "Include Time Series MetaData";
+    // FIELDS
+
+    public static final String PROPERTY_TOTAL_PIXEL_COUNT_KEY = "statistics.include.total.pixel.count";
+    public static final String PROPERTY_TOTAL_PIXEL_COUNT_LABEL = "Include Total Pixel Count";
+    public static final String PROPERTY_TOTAL_PIXEL_COUNT_TOOLTIP = "Include total pixel count in statistics results";
+    public static final boolean PROPERTY_TOTAL_PIXEL_COUNT_DEFAULT = true;
+
+    public static final String PROPERTY_MEDIAN_KEY = "statistics.include.median";
+    public static final String PROPERTY_MEDIAN_LABEL = "Include Median";
+    public static final String PROPERTY_MEDIAN_TOOLTIP = "<html>Include median in statistics results<br>Note: calculation of median will increase computation time</html>";
+    public static final boolean PROPERTY_MEDIAN_DEFAULT = false;
+
+    public static final String PROPERTY_MINMAX_KEY = "statistics.include.min.max";
+    public static final String PROPERTY_MINMAX_LABEL = "Include Min/Max";
+    public static final String PROPERTY_MINMAX_TOOLTIP = "Include min and max field in statistics results";
+    public static final boolean PROPERTY_MINMAX_DEFAULT = false;
+
+    public static final String PROPERTY_PERCENT_THRESHOLDS_KEY = "statistics.include.percent.thresholds";
+    public static final String PROPERTY_PERCENT_THRESHOLDS_LABEL = "Include Thresholds";
+    public static final String PROPERTY_PERCENT_THRESHOLDS_TOOLTIP = "Include histogram percent thresholds in statistics results";
+    public static final String PROPERTY_PERCENT_THRESHOLDS_DEFAULT = "80,85,90,95,98";
+
+    public static final String PROPERTY_BINNING_INFO_KEY = "statistics.include.binning.info";
+    public static final String PROPERTY_BINNING_INFO_LABEL = "Include Binning Info";
+    public static final String PROPERTY_BINNING_INFO_TOOLTIP = "Include binning info in statistics results";
+    public static final boolean PROPERTY_BINNING_INFO_DEFAULT = true;
+
+    public static final String PROPERTY_HISTOGRAM_STATS_KEY = "statistics.include.histogram.stats";
+    public static final String PROPERTY_HISTOGRAM_STATS_LABEL = "Include Histogram Statistics";
+    public static final String PROPERTY_HISTOGRAM_STATS_TOOLTIP = "Include histogram statistics in statistics results";
+    public static final boolean PROPERTY_HISTOGRAM_STATS_DEFAULT = false;
+
+    public static final String PROPERTY_BAND_METADATA_KEY = "statistics.include.band.metadata";
+    public static final String PROPERTY_BAND_METADATA_LABEL = "Include Band MetaData";
+    public static final String PROPERTY_BAND_METADATA_TOOLTIP = "Include band metadata in statistics results";
+    public static final boolean PROPERTY_BAND_METADATA_DEFAULT = true;
+
+    public static final String PROPERTY_FILE_METADATA_KEY = "statistics.include.file.metadata";
+    public static final String PROPERTY_FILE_METADATA_LABEL = "Include File MetaData";
+    public static final String PROPERTY_FILE_METADATA_TOOLTIP = "Include file metadata in statistics results";
+    public static final boolean PROPERTY_FILE_METADATA_DEFAULT = true;
+
+    public static final String PROPERTY_MASK_METADATA_KEY = "statistics.include.mask.metadata";
+    public static final String PROPERTY_MASK_METADATA_LABEL = "Include Mask MetaData";
+    public static final String PROPERTY_MASK_METADATA_TOOLTIP = "Include mask metadata in statistics results";
+    public static final boolean PROPERTY_MASK_METADATA_DEFAULT = true;
+
+
+    // todo
+
+    public static final String PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED = "statistics.projectionParameters.enabled";
+    public static final String PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED = "Include Projection Parameters";
+    public static final boolean PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED = false;
+
+    public static final String PARAM_KEY_TIME_METADATA_ENABLED = "statistics.timeMetaData.enabled";
+    public static final String PARAM_LABEL_TIME_METADATA_ENABLED = "Include Time MetaData";
+    public static final boolean PARAM_DEFVAL_TIME_METADATA_ENABLED = true;
+
     public static final String PARAM_KEY_TIME_SERIES_METADATA_ENABLED = "statistics.timeSeriesMetaData.enabled";
+    public static final String PARAM_LABEL_TIME_SERIES_METADATA_ENABLED = "Include Time Series MetaData";
     public static final boolean PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED = false;
     public static final String PARAM_TOOLTIPS_TIME_SERIES_METADATA_ENABLED = "See preferences for time series option";
 
-    public static final String PARAM_LABEL_TIME_METADATA_ENABLED = "Include Time MetaData";
-    public static final String PARAM_KEY_TIME_METADATA_ENABLED = "statistics.timeMetaData.enabled";
-    public static final boolean PARAM_DEFVAL_TIME_METADATA_ENABLED = true;
 
-    public static final String PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED = "Include Projection Parameters";
-    public static final String PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED = "statistics.projectionParameters.enabled";
-    public static final boolean PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED = false;
+
+
+
+
 
     public static final String PARAM_LABEL_PLOTS_THRESH_DOMAIN_LOW = "Plot Domain Low Threshold";
     public static final String PARAM_SHORTLABEL_PLOTS_THRESH_DOMAIN_LOW = "Low";
@@ -241,12 +264,12 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
 
 
-    public static final String PARAM_KEY_SCROLL_MAX_LINES = "statistics.scroll.max.lines";
-    public static final String PARAM_LABEL_SCROLL_MAX_LINES = "Scroll List Max Lines";
-    public static final int PARAM_DEFVAL_SCROLL_MAX_LINES = 16;
-    public static final int PARAM_MINVAL_SCROLL_MAX_LINES = 4;
-    public static final int PARAM_MAXVAL_SCROLL_MAX_LINES = 30;
-    public static final String PARAM_SCROLL_MAX_LINES_DESC = "Scroll list (bands and masks) maximum lines visible";
+    public static final String PROPERTY_SCROLL_LINES_KEY = "statistics.scroll.lines";
+    public static final String PROPERTY_SCROLL_LINES_LABEL = "Scroll List Preferred Lines";
+    public static final String PROPERTY_SCROLL_LINES_TOOLTIP = "Scroll list (bands and masks) preferred lines visible";
+    public static final int PROPERTY_SCROLL_LINES_DEFAULT = 16;
+    public static final int PROPERTY_SCROLL_LINES_MIN = 4;
+    public static final int PROPERTY_SCROLL_LINES_MAX = 30;
 
 
     public static final String PARAM_KEY_RESET_TO_DEFAULTS = "statistics.resetToDefaults.enabled";
