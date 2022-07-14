@@ -128,9 +128,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     RasterDataNode noNanBandRaster = null;
 
 
-    private int plotMinHeight = 300;
-    private int plotMinWidth = 300;
-
     private Product currProduct = null;
     private RasterDataNode currRaster = null;
     boolean fieldsInitialized = false;
@@ -1415,8 +1412,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             histogramPanel.setPreferredSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
             histogramPanel.setMaximumSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
         } else {
-            histogramPanel.setMinimumSize(new Dimension(plotMinWidth, plotMinHeight));
-            histogramPanel.setPreferredSize(new Dimension(plotMinWidth, plotMinHeight));
+            histogramPanel.setMinimumSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
+            histogramPanel.setPreferredSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
         }
 
         XIntervalSeries percentileSeries = new XIntervalSeries("Percentile");
@@ -1541,8 +1538,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             percentilePanel.setPreferredSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
             percentilePanel.setMaximumSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
         } else {
-            percentilePanel.setMinimumSize(new Dimension(plotMinWidth, plotMinHeight));
-            percentilePanel.setPreferredSize(new Dimension(plotMinWidth, plotMinHeight));
+            percentilePanel.setMinimumSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
+            percentilePanel.setPreferredSize(new Dimension(statisticsCriteriaPanel.plotSizeWidth(), statisticsCriteriaPanel.plotSizeHeight()));
         }
 
         int size = raster.getRasterHeight() * raster.getRasterWidth();

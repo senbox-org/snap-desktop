@@ -66,6 +66,16 @@ public class TextFieldContainer {
     }
 
 
+    public void setToolTipText(String toolTipText) {
+        if (textfield != null) {
+            textfield.setToolTipText(toolTipText);
+        }
+
+        if (label != null) {
+            label.setToolTipText(toolTipText);
+        }
+
+    }
     private void textfieldHandler() {
 
         getTextfield().getDocument().addDocumentListener(new DocumentListener() {

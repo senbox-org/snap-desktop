@@ -25,10 +25,10 @@ public class StatisticsCriteriaPanel {
 
     // "Bins" Tab Variables and Components
 
-    private int numBins = StatisticsTopComponent.PARAM_DEFVAL_NUM_BINS;
+    private int numBins = StatisticsTopComponent.PROPERTY_TOTAL_BINS_DEFAULT;
     private TextFieldContainer numBinsTextfieldContainer = null;
 
-    private double binWidth = StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH;
+    private double binWidth = StatisticsTopComponent.PROPERTY_BIN_WIDTH_DEFAULT;
     private TextFieldContainer binWidthTextfieldContainer = null;
 
     private JCheckBox binWidthEnabledCheckBox = null;
@@ -38,8 +38,8 @@ public class StatisticsCriteriaPanel {
 
 
     private JCheckBox binMinMaxCheckBox = null;
-    double binMin = StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN;
-    double binMax = StatisticsTopComponent.PARAM_DEFVAL_BIN_MAX;
+    double binMin = StatisticsTopComponent.PROPERTY_BIN_MIN_DEFAULT;
+    double binMax = StatisticsTopComponent.PROPERTY_BIN_MAX_DEFAULT;
     private TextFieldContainer binMinTextfieldContainer = null;
     private TextFieldContainer binMaxTextfieldContainer = null;
 
@@ -81,13 +81,13 @@ public class StatisticsCriteriaPanel {
     private boolean includeBinningInfo = StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT;
     private JCheckBox includeBinningInfoCheckBox = null;
 
-    private boolean includeTimeSeriesMetaData = StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED;
+    private boolean includeTimeSeriesMetaData = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_DEFAULT;
     private JCheckBox includeTimeSeriesMetaDataCheckBox = null;
 
-    private boolean includeTimeMetaData = StatisticsTopComponent.PARAM_DEFVAL_TIME_METADATA_ENABLED;
+    private boolean includeTimeMetaData = StatisticsTopComponent.PROPERTY_TIME_METADATA_DEFAULT;
     private JCheckBox includeTimeMetaDataCheckBox = null;
 
-    private boolean includeProjectionParameters = StatisticsTopComponent.PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED;;
+    private boolean includeProjectionParameters = StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_DEFAULT;;
     private JCheckBox includeProjectionParametersCheckBox = null;
 
 
@@ -95,39 +95,39 @@ public class StatisticsCriteriaPanel {
 
     // "Text" Tab Variables and Components
 
-    private static final int COL_WIDTH_DEFAULT = StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH;
+    private static final int COL_WIDTH_DEFAULT = StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_DEFAULT;
     private int colCharWidth = COL_WIDTH_DEFAULT;
     private TextFieldContainer spreadsheetColWidthTextfieldContainer = null;
 
-    private int decimalPlaces = StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES;
+    private int decimalPlaces = StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_DEFAULT;
     private TextFieldContainer decimalPlacesTextfieldContainer = null;
 
-    private boolean includeColBreaks = StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED;
+    private boolean includeColBreaks = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_DEFAULT;
     private JCheckBox includeColBreaksCheckBox = null;
 
 
 
     // "Plots" Tab Variables and Components
 
-    private boolean plotsThreshDomainSpan = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_SPAN;
-    private double plotsThreshDomainLow = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_LOW;
-    private double plotsThreshDomainHigh = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_HIGH;
+    private boolean plotsThreshDomainSpan = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_DEFAULT;
+    private double plotsThreshDomainLow = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_DEFAULT;
+    private double plotsThreshDomainHigh = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_DEFAULT;
 
     private JCheckBox plotsThreshDomainSpanCheckBox = null;
     private TextFieldContainer plotsThreshDomainLowTextfieldContainer = null;
     private TextFieldContainer plotsThreshDomainHighTextfieldContainer = null;
 
-    private boolean plotsDomainSpan = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_SPAN;
-    private double plotsDomainLow = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_LOW;
-    private double plotsDomainHigh = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_HIGH;
+    private boolean plotsDomainSpan = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_DEFAULT;
+    private double plotsDomainLow = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_LOW_DEFAULT;
+    private double plotsDomainHigh = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_DEFAULT;
 
     private JCheckBox plotsDomainSpanCheckBox = null;
     private TextFieldContainer plotsDomainLowTextfieldContainer = null;
     private TextFieldContainer plotsDomainHighTextfieldContainer = null;
 
-    private boolean exactPlotSize = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE;
-    private int plotSizeHeight = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE_HEIGHT;
-    private int plotSizeWidth = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE_WIDTH;
+    private boolean exactPlotSize = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT;
+    private int plotSizeHeight = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT;
+    private int plotSizeWidth = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_DEFAULT;
 
     private JCheckBox plotsSizeCheckBox = null;
     private TextFieldContainer plotsSizeHeightTextfieldContainer = null;
@@ -136,10 +136,10 @@ public class StatisticsCriteriaPanel {
 
     // "View" Tab Variables and Components
 
-    private boolean showPercentPlots = StatisticsTopComponent.PARAM_DEFVAL_PERCENT_PLOT_ENABLED;
-    private boolean showHistogramPlots = StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_PLOT_ENABLED;
-    private boolean showStatsList = StatisticsTopComponent.PARAM_DEFVAL_STATS_LIST_ENABLED;
-    private boolean showStatsSpreadSheet = StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED;
+    private boolean showPercentPlots = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT;
+    private boolean showHistogramPlots = StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT;
+    private boolean showStatsList = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_DEFAULT;
+    private boolean showStatsSpreadSheet = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_DEFAULT;
 
     private JCheckBox showPercentPlotCheckBox = null;
     private JCheckBox showHistogramPlotCheckBox = null;
@@ -165,19 +165,23 @@ public class StatisticsCriteriaPanel {
         initPreferencesAndDefaults();
         updateComponents();
 
+        // toggle each checkbox to force event change in listeners and hence establish all proper initial enablement
+        plotsSizeCheckBox.setSelected(!plotsSizeCheckBox.isSelected());
+        plotsSizeCheckBox.setSelected(!plotsSizeCheckBox.isSelected());
 
-        // toggle each checkbox to force event change in listeners and hence establishe all proper initial enablement
-        plotsSizeCheckBox.setSelected(!StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE);
-        plotsSizeCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE);
-        plotsDomainSpanCheckBox.setSelected(!StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_SPAN);
-        plotsDomainSpanCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_SPAN);
-        plotsThreshDomainSpanCheckBox.setSelected(!StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_SPAN);
-        plotsThreshDomainSpanCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_SPAN);
-        binWidthEnabledCheckBox.setSelected(!StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH_ENABLED);
-        binWidthEnabledCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH_ENABLED);
-        binMinMaxCheckBox.setSelected(!StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN_MAX_ENABLED);
-        binMinMaxCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN_MAX_ENABLED);
+        // These 2 fields are codependent
+        boolean initial_plotsThreshDomainSpanCheckBox = plotsThreshDomainSpanCheckBox.isSelected();
+        boolean initial_plotsDomainSpanCheckBox = plotsDomainSpanCheckBox.isSelected();
+        plotsDomainSpanCheckBox.setSelected(!initial_plotsDomainSpanCheckBox);
+        plotsThreshDomainSpanCheckBox.setSelected(!initial_plotsThreshDomainSpanCheckBox);
+        plotsDomainSpanCheckBox.setSelected(initial_plotsDomainSpanCheckBox);
+        plotsThreshDomainSpanCheckBox.setSelected(initial_plotsThreshDomainSpanCheckBox);
 
+
+        binWidthEnabledCheckBox.setSelected(!binWidthEnabledCheckBox.isSelected());
+        binWidthEnabledCheckBox.setSelected(!binWidthEnabledCheckBox.isSelected());
+        binMinMaxCheckBox.setSelected(!binMinMaxCheckBox.isSelected());
+        binMinMaxCheckBox.setSelected(!binMinMaxCheckBox.isSelected());
     }
 
 
@@ -186,11 +190,11 @@ public class StatisticsCriteriaPanel {
 
         numBins = getPreferencesNumBins();
 
-        binWidth = StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH;
-        binMin = StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN;
-        binMax = StatisticsTopComponent.PARAM_DEFVAL_BIN_MAX;
+        binWidth = StatisticsTopComponent.PROPERTY_BIN_WIDTH_DEFAULT;
+        binMin = StatisticsTopComponent.PROPERTY_BIN_MIN_DEFAULT;
+        binMax = StatisticsTopComponent.PROPERTY_BIN_MAX_DEFAULT;
 
-        logMode = false;
+        logMode = getPreferencesLogScaledBins();
 
 
         // Fields
@@ -218,17 +222,18 @@ public class StatisticsCriteriaPanel {
 
 
         // Plots
-        plotsThreshDomainSpan = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_SPAN;
+        plotsThreshDomainSpan = getPreferencesPlotDomainThresh();
         plotsThreshDomainLow = getPreferencesPlotDomainThreshLow();
         plotsThreshDomainHigh = getPreferencesPlotDomainThreshHigh();
 
-        plotsDomainSpan = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_SPAN;
-        plotsDomainLow = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_LOW;
-        plotsDomainHigh = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_DOMAIN_HIGH;
+        plotsDomainSpan = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_DEFAULT;
+        plotsDomainLow = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_LOW_DEFAULT;
+        plotsDomainHigh = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_DEFAULT;
 
-        exactPlotSize = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE;
-        plotSizeHeight = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE_HEIGHT;
-        plotSizeWidth = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE_WIDTH;
+
+        exactPlotSize = getPreferencesSetPlotSize();
+        plotSizeHeight = getPreferencesPlotSizeHeight();
+        plotSizeWidth = getPreferencesPlotSizeWidth();
 
 
         // View
@@ -247,8 +252,8 @@ public class StatisticsCriteriaPanel {
         binWidthTextfieldContainer.reset(binWidth);
         binMinTextfieldContainer.reset(binMin);
         binMaxTextfieldContainer.reset(binMax);
-        binWidthEnabledCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH_ENABLED);
-        binMinMaxCheckBox.setSelected(StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN_MAX_ENABLED);
+        binWidthEnabledCheckBox.setSelected(StatisticsTopComponent.PROPERTY_USE_BIN_WIDTH_DEFAULT);
+        binMinMaxCheckBox.setSelected(StatisticsTopComponent.PROPERTY_BIN_SPAN_DEFAULT);
         logModeCheckBox.setSelected(logMode);
 
 
@@ -305,45 +310,51 @@ public class StatisticsCriteriaPanel {
 
         // "Bins" Tab Variables and Components
 
-        numBinsTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_NUM_BINS,
+        numBinsTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_TOTAL_BINS_LABEL,
                 numBins,
-                StatisticsTopComponent.PARAM_MINVAL_NUM_BINS,
-                StatisticsTopComponent.PARAM_MAXVAL_NUM_BINS,
+                StatisticsTopComponent.PROPERTY_TOTAL_BINS_MIN,
+                StatisticsTopComponent.PROPERTY_TOTAL_BINS_MAX,
                 TextFieldContainer.NumType.INT,
                 7,
                 getParentDialogContentPane);
+        numBinsTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_TOTAL_BINS_TOOLTIP);
 
 
-        binWidthEnabledCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_BIN_WIDTH_ENABLED);
+        binWidthEnabledCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_USE_BIN_WIDTH_LABEL);
+        binWidthEnabledCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_USE_BIN_WIDTH_TOOLTIP);
 
-        binWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_BIN_WIDTH,
-                StatisticsTopComponent.PARAM_DEFVAL_BIN_WIDTH,
+        binWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_BIN_WIDTH_LABEL,
+                StatisticsTopComponent.PROPERTY_BIN_WIDTH_DEFAULT,
                 TextFieldContainer.NumType.DOUBLE,
                 5,
                 getParentDialogContentPane);
+        binWidthTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_BIN_WIDTH_TOOLTIP);
 
 
+        binMinMaxCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_BIN_SPAN_LABEL);
+        binMinMaxCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_BIN_SPAN_TOOLTIP);
 
-        binMinMaxCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_BIN_MIN_MAX_ENABLED);
-
-        binMinTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_BIN_MIN,
-                StatisticsTopComponent.PARAM_DEFVAL_BIN_MIN,
+        binMinTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_BIN_MIN_LABEL_SHORT,
+                StatisticsTopComponent.PROPERTY_BIN_MIN_DEFAULT,
                 TextFieldContainer.NumType.DOUBLE,
                 5,
                 getParentDialogContentPane);
+        binMinTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_BIN_MIN_TOOLTIP);
 
 
-        binMaxTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_BIN_MAX,
-                StatisticsTopComponent.PARAM_DEFVAL_BIN_MAX,
+        binMaxTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_BIN_MAX_LABEL_SHORT,
+                StatisticsTopComponent.PROPERTY_BIN_MAX_DEFAULT,
                 TextFieldContainer.NumType.DOUBLE,
                 5,
                 getParentDialogContentPane);
+        binMaxTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_BIN_MAX_TOOLTIP);
 
-
-        logModeCheckBox = new JCheckBox("Log Scaled Bins");
+        logModeCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_LABEL);
+        logModeCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_TOOLTIP);
 
 
         // "Fields" Tab Variables and Components
+
         includeTotalPixelsCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_LABEL);
         includeTotalPixelsCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_TOOLTIP);
 
@@ -375,108 +386,128 @@ public class StatisticsCriteriaPanel {
         includeMaskMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_MASK_METADATA_LABEL);
         includeMaskMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_MASK_METADATA_TOOLTIP);
 
+        includeProjectionParametersCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_LABEL);
+        includeProjectionParametersCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_TOOLTIP);
+
+        includeTimeMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_TIME_METADATA_LABEL);
+        includeTimeMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_TIME_METADATA_TOOLTIP);
+
+        includeTimeSeriesMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_LABEL);
+        includeTimeSeriesMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_TOOLTIP);
 
 
 
-        includeTimeMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_TIME_METADATA_ENABLED);
-
-        includeTimeSeriesMetaDataCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_TIME_SERIES_METADATA_ENABLED);
-        includeTimeSeriesMetaDataCheckBox.setToolTipText(StatisticsTopComponent.PARAM_TOOLTIPS_TIME_SERIES_METADATA_ENABLED);
-
-        includeProjectionParametersCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED);
 
 
 
 
+        // "FORMAT" Tab Variables and Components
 
-        // "Text" Tab Variables and Components
-        spreadsheetColWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_SPREADSHEET_COL_WIDTH,
-                StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH,
-                StatisticsTopComponent.PARAM_MINVAL_SPREADSHEET_COL_WIDTH,
-                StatisticsTopComponent.PARAM_MAXVAL_SPREADSHEET_COL_WIDTH,
+        decimalPlacesTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_LABEL,
+                StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_DEFAULT,
+                StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_MIN,
+                StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_MAX,
                 TextFieldContainer.NumType.INT,
                 2,
                 getParentDialogContentPane);
+        decimalPlacesTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_TOOLTIP);
 
-
-        decimalPlacesTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_SPREADSHEET_DECIMAL_PLACES,
-                StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES,
-                StatisticsTopComponent.PARAM_MINVAL_SPREADSHEET_DECIMAL_PLACES,
-                StatisticsTopComponent.PARAM_MAXVAL_SPREADSHEET_DECIMAL_PLACES,
+        spreadsheetColWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_LABEL,
+                StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_DEFAULT,
+                StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_MIN,
+                StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_MAX,
                 TextFieldContainer.NumType.INT,
                 2,
                 getParentDialogContentPane);
+        spreadsheetColWidthTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_TOOLTIP);
 
-
-        includeColBreaksCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_COL_BREAKS_ENABLED);
+        includeColBreaksCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_COL_BREAKS_LABEL);
         includeColBreaksCheckBox.setSelected(includeColBreaks);
+        includeColBreaksCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_COL_BREAKS_TOOLTIP);
+
+
 
 
 
         // "Plots" Tab Variables and Components
-        plotsThreshDomainSpanCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_THRESH_DOMAIN_SPAN);
+        plotsThreshDomainSpanCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LABEL);
+        plotsThreshDomainSpanCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_TOOLTIP);
 
-        plotsThreshDomainLowTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_THRESH_DOMAIN_LOW,
+        plotsThreshDomainLowTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_LABEL_SHORT,
                 plotsThreshDomainLow,
-                StatisticsTopComponent.PARAM_MINVAL_PLOTS_THRESH_DOMAIN_LOW,
-                StatisticsTopComponent.PARAM_MAXVAL_PLOTS_THRESH_DOMAIN_LOW,
+                StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_MIN,
+                StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_MAX,
                 TextFieldContainer.NumType.DOUBLE,
                 4,
                 getParentDialogContentPane);
+        plotsThreshDomainLowTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_TOOLTIP);
 
-
-        plotsThreshDomainHighTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_THRESH_DOMAIN_HIGH,
+        plotsThreshDomainHighTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_LABEL_SHORT,
                 plotsThreshDomainHigh,
-                StatisticsTopComponent.PARAM_MINVAL_PLOTS_THRESH_DOMAIN_HIGH,
-                StatisticsTopComponent.PARAM_MAXVAL_PLOTS_THRESH_DOMAIN_HIGH,
+                StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_MIN,
+                StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_MAX,
                 TextFieldContainer.NumType.DOUBLE,
                 4,
                 getParentDialogContentPane);
+        plotsThreshDomainHighTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_TOOLTIP);
 
 
+        plotsDomainSpanCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_LABEL);
+        plotsDomainSpanCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_TOOLTIP);
 
-        plotsDomainSpanCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_DOMAIN_SPAN);
-
-        plotsDomainLowTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_PLOTS_DOMAIN_LOW,
+        plotsDomainLowTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_LOW_LABEL,
                 plotsDomainLow,
                 TextFieldContainer.NumType.DOUBLE,
                 4,
                 getParentDialogContentPane);
+        plotsDomainLowTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_LOW_TOOLTIP);
 
-        plotsDomainHighTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_LABEL_PLOTS_DOMAIN_HIGH,
+        plotsDomainHighTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_LABEL,
                 plotsDomainHigh,
                 TextFieldContainer.NumType.DOUBLE,
                 4,
                 getParentDialogContentPane);
+        plotsDomainHighTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_TOOLTIP);
 
 
+        plotsSizeCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_LABEL);
+        plotsSizeCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_TOOLTIP);
 
-        plotsSizeCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_SIZE);
-
-        plotsSizeHeightTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_SIZE_HEIGHT,
+        plotsSizeHeightTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_LABEL_SHORT,
                 plotSizeHeight,
-                StatisticsTopComponent.PARAM_MINVAL_PLOTS_SIZE_HEIGHT,
-                StatisticsTopComponent.PARAM_MAXVAL_PLOTS_SIZE_HEIGHT,
+                StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_MIN,
+                StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_MAX,
                 TextFieldContainer.NumType.INT,
                 4,
                 getParentDialogContentPane);
+        plotsSizeHeightTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_TOOLTIP);
 
-        plotsSizeWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PARAM_SHORTLABEL_PLOTS_SIZE_WIDTH,
+        plotsSizeWidthTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_LABEL_SHORT,
                 plotSizeWidth,
-                StatisticsTopComponent.PARAM_MINVAL_PLOTS_SIZE_WIDTH,
-                StatisticsTopComponent.PARAM_MAXVAL_PLOTS_SIZE_WIDTH,
+                StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_MIN,
+                StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_MAX,
                 TextFieldContainer.NumType.INT,
                 4,
                 getParentDialogContentPane);
-
+        plotsSizeWidthTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_TOOLTIP);
 
 
 
         // "View" Tab Variables and Components
-        showStatsListCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_STATS_LIST_ENABLED);
-        showStatsSpreadSheetCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_STATS_SPREADSHEET_ENABLED);
-        showPercentPlotCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_PERCENT_PLOT_ENABLED);
-        showHistogramPlotCheckBox = new JCheckBox(StatisticsTopComponent.PARAM_LABEL_HISTOGRAM_PLOT_ENABLED);
+
+        showHistogramPlotCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_LABEL);
+        showHistogramPlotCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_TOOLTIP);
+
+        showPercentPlotCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_LABEL);
+        showPercentPlotCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_TOOLTIP);
+
+        showStatsListCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_LABEL);
+        showStatsListCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_TOOLTIP);
+
+        showStatsSpreadSheetCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_LABEL);
+        showStatsSpreadSheetCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_TOOLTIP);
+
+
 
 
 
@@ -1200,7 +1231,17 @@ public class StatisticsCriteriaPanel {
         gbc.gridy += 1;
         panel.add(getPlotsDomainSpanPanel(), gbc);
 
-        // todo PlotSize
+
+        gbc.gridy += 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets.right = 10;
+        gbc.insets.left = 10;
+        panel.add(new JSeparator(), gbc);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets.right = 0;
+        gbc.insets.left = 0;
+
+
         gbc.gridy += 1;
         panel.add(getPlotsSizePanel(), gbc);
 
@@ -1541,7 +1582,7 @@ public class StatisticsCriteriaPanel {
     }
 
     private boolean validNumBins() {
-        if (numBins < StatisticsTopComponent.PARAM_MINVAL_NUM_BINS || numBins > StatisticsTopComponent.PARAM_MAXVAL_NUM_BINS) {
+        if (numBins < StatisticsTopComponent.PROPERTY_TOTAL_BINS_MIN || numBins > StatisticsTopComponent.PROPERTY_TOTAL_BINS_MAX) {
             return false;
         }
 
@@ -1560,72 +1601,80 @@ public class StatisticsCriteriaPanel {
 
     public int getPreferencesDecimalPlaces() {
 
-        return preferences.getInt(StatisticsTopComponent.PARAM_KEY_SPREADSHEET_DECIMAL_PLACES, StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES);
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_KEY, StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_DEFAULT);
     }
 
     public int getPreferencesColWidth() {
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_KEY, StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_DEFAULT);
+    }
 
-        return preferences.getInt(StatisticsTopComponent.PARAM_KEY_SPREADSHEET_COL_WIDTH, StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH);
+    public boolean getPreferencesPlotDomainThresh() {
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_DEFAULT);
     }
 
     public double getPreferencesPlotDomainThreshLow() {
-
-        return preferences.getDouble(StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_LOW, StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_LOW);
-
+        return preferences.getDouble(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_DEFAULT);
     }
 
     public double getPreferencesPlotDomainThreshHigh() {
-
-        return preferences.getDouble(StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_HIGH, StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_HIGH);
-
+        return preferences.getDouble(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_DEFAULT);
     }
+
+
+    public boolean getPreferencesSetPlotSize() {
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT);
+    }
+
+    public int getPreferencesPlotSizeWidth() {
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_DEFAULT);
+    }
+
+    public int getPreferencesPlotSizeHeight() {
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT);
+    }
+
+
 
 
     public int getPreferencesNumBins() {
-
-        return preferences.getInt(StatisticsTopComponent.PARAM_KEY_NUM_BINS, StatisticsTopComponent.PARAM_DEFVAL_NUM_BINS);
-
+        return preferences.getInt(StatisticsTopComponent.PROPERTY_TOTAL_BINS_KEY, StatisticsTopComponent.PROPERTY_TOTAL_BINS_DEFAULT);
     }
 
+    public boolean getPreferencesLogScaledBins() {
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_KEY, StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_DEFAULT);
+    }
+
+
     public boolean getPreferencesHistogramPlotEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_HISTOGRAM_PLOT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_PLOT_ENABLED);
-
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT);
     }
 
     public boolean getPreferencesPercentPlotEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_PERCENT_PLOT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_PERCENT_PLOT_ENABLED);
-
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_KEY, StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT);
     }
 
     public boolean getPreferencesStatsListEnabled() {
 
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_STATS_LIST_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_LIST_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_KEY, StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_DEFAULT);
     }
 
     public boolean getPreferencesStatsSpreadSheetEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_STATS_SPREADSHEET_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_KEY, StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_DEFAULT);
     }
 
     public String getPreferencesPercentThresholds() {
-
         return preferences.get(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_KEY, StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_DEFAULT);
     }
 
     public boolean getPreferencesFileMetaDataEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_FILE_METADATA_KEY, StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT);
     }
 
     public boolean getPreferencesMedianEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MEDIAN_KEY, StatisticsTopComponent.PROPERTY_MEDIAN_DEFAULT);
     }
 
     public boolean getPreferencesMinMaxEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MINMAX_KEY, StatisticsTopComponent.PROPERTY_MINMAX_DEFAULT);
     }
 
@@ -1635,47 +1684,39 @@ public class StatisticsCriteriaPanel {
     }
 
     public boolean getPreferencesHistogramStatsEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_DEFAULT);
     }
 
     public boolean getPreferencesMaskMetaDataEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_MASK_METADATA_KEY, StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT);
     }
 
 
     public boolean getPreferencesBandMetaDataEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT);
     }
 
     public boolean getPreferencesBinningInfoEnabled() {
-
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BINNING_INFO_KEY, StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT);
     }
 
     public boolean getPreferencesProjectionParametersEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_KEY, StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_DEFAULT);
     }
 
 
     public boolean getPreferencesColumnBreaksEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_COL_BREAKS_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_COL_BREAKS_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_COL_BREAKS_KEY, StatisticsTopComponent.PROPERTY_COL_BREAKS_DEFAULT);
     }
 
 
 
     public boolean getPreferencesTimeSeriesMetaDataEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_TIME_SERIES_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_KEY, StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_DEFAULT);
     }
 
     public boolean getPreferencesFileTimeMetaDataEnabled() {
-
-        return preferences.getBoolean(StatisticsTopComponent.PARAM_KEY_TIME_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_TIME_METADATA_ENABLED);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_TIME_METADATA_KEY, StatisticsTopComponent.PROPERTY_TIME_METADATA_DEFAULT);
     }
 
 

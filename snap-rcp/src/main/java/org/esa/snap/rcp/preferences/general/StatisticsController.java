@@ -78,10 +78,11 @@ public final class StatisticsController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
 //        initPropertyDefaults(context,  PARAM_KEY_RESET_TO_DEFAULTS, false);
-        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BINS_DEFAULT_SECTION_KEY, true);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_NUM_BINS, StatisticsTopComponent.PARAM_DEFVAL_NUM_BINS);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BINS_SECTION_KEY, true);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_TOTAL_BINS_KEY, StatisticsTopComponent.PROPERTY_TOTAL_BINS_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_KEY, StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_DEFAULT);
 
-        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FIELDS_DEFAULT_SECTION_KEY, true);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FIELDS_SECTION_KEY, true);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_KEY, StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_MEDIAN_KEY, StatisticsTopComponent.PROPERTY_MEDIAN_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_MINMAX_KEY, StatisticsTopComponent.PROPERTY_MINMAX_DEFAULT);
@@ -91,25 +92,29 @@ public final class StatisticsController extends DefaultConfigController {
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FILE_METADATA_KEY, StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_MASK_METADATA_KEY, StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_TIME_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_TIME_METADATA_ENABLED);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_TIME_SERIES_METADATA_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_KEY, StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_TIME_METADATA_KEY, StatisticsTopComponent.PROPERTY_TIME_METADATA_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_KEY, StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_DEFAULT);
 
-        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FORMAT_DEFAULT_SECTION_KEY, true);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_SPREADSHEET_DECIMAL_PLACES, StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_SPREADSHEET_COL_WIDTH, StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_COL_BREAKS_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_COL_BREAKS_ENABLED);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FORMAT_SECTION_KEY, true);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_KEY, StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_KEY, StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_COL_BREAKS_KEY, StatisticsTopComponent.PROPERTY_COL_BREAKS_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SCROLL_LINES_KEY, StatisticsTopComponent.PROPERTY_SCROLL_LINES_DEFAULT);
 
-        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_DEFAULT_SECTION_KEY, true);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_LOW, StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_LOW);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_HIGH, StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_HIGH);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_SECTION_KEY, true);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT);
 
-        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_VIEW_DEFAULT_SECTION_KEY, true);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_HISTOGRAM_PLOT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_PLOT_ENABLED);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_PERCENT_PLOT_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_PERCENT_PLOT_ENABLED);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_STATS_LIST_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_LIST_ENABLED);
-        initPropertyDefaults(context, StatisticsTopComponent.PARAM_KEY_STATS_SPREADSHEET_ENABLED, StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_VIEW_SECTION_KEY, true);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_KEY, StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_KEY, StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_KEY, StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_DEFAULT);
 
 
 //        restoreDefaults =  initPropertyDefaults(context, "statistics.restore.defaults.apply", false);
@@ -314,21 +319,32 @@ public final class StatisticsController extends DefaultConfigController {
     static class GeneralLayerBean {
         // Default Bins
 
-        @Preference(label = StatisticsTopComponent.PROPERTY_BINS_DEFAULT_SECTION_LABEL,
-                key = StatisticsTopComponent.PROPERTY_BINS_DEFAULT_SECTION_KEY,
-                description = StatisticsTopComponent.PROPERTY_BINS_DEFAULT_SECTION_TOOLTIP)
+        @Preference(label = StatisticsTopComponent.PROPERTY_BINS_SECTION_LABEL,
+                key = StatisticsTopComponent.PROPERTY_BINS_SECTION_KEY,
+                description = StatisticsTopComponent.PROPERTY_BINS_SECTION_TOOLTIP)
         boolean defaultBinsSection = true;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_NUM_BINS,
-                key = StatisticsTopComponent.PARAM_KEY_NUM_BINS)
-        int numBins = StatisticsTopComponent.PARAM_DEFVAL_NUM_BINS;
+        @Preference(label = StatisticsTopComponent.PROPERTY_TOTAL_BINS_LABEL,
+                key = StatisticsTopComponent.PROPERTY_TOTAL_BINS_KEY,
+        description = StatisticsTopComponent.PROPERTY_TOTAL_BINS_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_TOTAL_BINS_MIN + "," + StatisticsTopComponent.PROPERTY_TOTAL_BINS_MAX + "]"
+        )
+        int totalBins = StatisticsTopComponent.PROPERTY_TOTAL_BINS_DEFAULT;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_LABEL,
+                key = StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_KEY,
+                description = StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_TOOLTIP
+        )
+        boolean logScaledBins = StatisticsTopComponent.PROPERTY_LOG_SCALED_BINS_DEFAULT;
+
+
 
 
         // Fields Options
 
-        @Preference(label = StatisticsTopComponent.PROPERTY_FIELDS_DEFAULT_SECTION_LABEL,
-                key = StatisticsTopComponent.PROPERTY_FIELDS_DEFAULT_SECTION_KEY,
-                description = StatisticsTopComponent.PROPERTY_FIELDS_DEFAULT_SECTION_TOOLTIP)
+        @Preference(label = StatisticsTopComponent.PROPERTY_FIELDS_SECTION_LABEL,
+                key = StatisticsTopComponent.PROPERTY_FIELDS_SECTION_KEY,
+                description = StatisticsTopComponent.PROPERTY_FIELDS_SECTION_TOOLTIP)
         boolean defaultFieldsSection = true;
 
         @Preference(label = StatisticsTopComponent.PROPERTY_TOTAL_PIXEL_COUNT_LABEL,
@@ -372,44 +388,54 @@ public final class StatisticsController extends DefaultConfigController {
         description = StatisticsTopComponent.PROPERTY_FILE_METADATA_TOOLTIP)
         boolean includeFileMetadata = StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT;
 
-
-
         @Preference(label = StatisticsTopComponent.PROPERTY_MASK_METADATA_LABEL,
                 key = StatisticsTopComponent.PROPERTY_MASK_METADATA_KEY,
         description = StatisticsTopComponent.PROPERTY_MASK_METADATA_TOOLTIP)
         boolean includeMaskMetadata = StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED)
-        boolean includeProjectionParameters = StatisticsTopComponent.PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_KEY,
+        description = StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_TOOLTIP)
+        boolean includeProjectionMetadata = StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_TIME_METADATA_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_TIME_METADATA_ENABLED)
-        boolean includeTimeMetadata = StatisticsTopComponent.PARAM_DEFVAL_TIME_METADATA_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_TIME_METADATA_LABEL,
+                key = StatisticsTopComponent.PROPERTY_TIME_METADATA_KEY,
+        description = StatisticsTopComponent.PROPERTY_TIME_METADATA_TOOLTIP)
+        boolean includeTimeMetadata = StatisticsTopComponent.PROPERTY_TIME_METADATA_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_TIME_SERIES_METADATA_ENABLED,
-                description = StatisticsTopComponent.PARAM_TOOLTIPS_TIME_SERIES_METADATA_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_TIME_SERIES_METADATA_ENABLED)
-        boolean includeTimeSeriesMetadata = StatisticsTopComponent.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_LABEL,
+                description = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_TOOLTIP,
+                key = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_KEY)
+        boolean includeTimeSeriesMetadata = StatisticsTopComponent.PROPERTY_TIME_SERIES_METADATA_DEFAULT;
+
+
+
 
         //Format Options
 
-        @Preference(label = StatisticsTopComponent.PROPERTY_FORMAT_DEFAULT_SECTION_LABEL,
-                key = StatisticsTopComponent.PROPERTY_FORMAT_DEFAULT_SECTION_KEY,
-                description = StatisticsTopComponent.PROPERTY_FORMAT_DEFAULT_SECTION_TOOLTIP)
+        @Preference(label = StatisticsTopComponent.PROPERTY_FORMAT_SECTION_LABEL,
+                key = StatisticsTopComponent.PROPERTY_FORMAT_SECTION_KEY,
+                description = StatisticsTopComponent.PROPERTY_FORMAT_SECTION_TOOLTIP)
         boolean defaultFormatSection = true;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_SPREADSHEET_DECIMAL_PLACES,
-                key = StatisticsTopComponent.PARAM_KEY_SPREADSHEET_DECIMAL_PLACES)
-        int decimalPlaces = StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES;
+        @Preference(label = StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_LABEL,
+                key = StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_KEY,
+        description = StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_MIN + "," + StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_MAX + "]"
+        )
+        int decimalPlaces = StatisticsTopComponent.PROPERTY_DECIMAL_PLACES_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_SPREADSHEET_COL_WIDTH,
-                key = StatisticsTopComponent.PARAM_KEY_SPREADSHEET_COL_WIDTH)
-        int colCharWidth = StatisticsTopComponent.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH;
+        @Preference(label = StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_LABEL,
+                key = StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_KEY,
+        description = StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_MIN + "," + StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_MAX + "]"
+        )
+        int colWidth = StatisticsTopComponent.PROPERTY_SPREADSHEET_COL_WIDTH_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_COL_BREAKS_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_COL_BREAKS_ENABLED)
-        boolean includeColBreaks = StatisticsTopComponent.PARAM_DEFVAL_COL_BREAKS_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_COL_BREAKS_LABEL,
+                key = StatisticsTopComponent.PROPERTY_COL_BREAKS_KEY,
+        description = StatisticsTopComponent.PROPERTY_COL_BREAKS_TOOLTIP)
+        boolean includeColBreaks = StatisticsTopComponent.PROPERTY_COL_BREAKS_DEFAULT;
 
         @Preference(
                 key = StatisticsTopComponent.PROPERTY_SCROLL_LINES_KEY,
@@ -422,41 +448,83 @@ public final class StatisticsController extends DefaultConfigController {
 
         //Plots Options
 
-        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_DEFAULT_SECTION_LABEL,
-                key = StatisticsTopComponent.PROPERTY_PLOTS_DEFAULT_SECTION_KEY,
-                description = StatisticsTopComponent.PROPERTY_PLOTS_DEFAULT_SECTION_TOOLTIP)
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_SECTION_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_SECTION_KEY,
+                description = StatisticsTopComponent.PROPERTY_PLOTS_SECTION_TOOLTIP)
         boolean defaultPlotsSection = true;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_PLOTS_THRESH_DOMAIN_LOW,
-                key = StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_LOW)
-        double plotsThreshDomainLow = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_LOW;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_PLOTS_THRESH_DOMAIN_HIGH,
-                key = StatisticsTopComponent.PARAM_KEY_PLOTS_THRESH_DOMAIN_HIGH)
-        double plotsThreshDomainHigh = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_THRESH_DOMAIN_HIGH;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_KEY,
+                description = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_TOOLTIP)
+        boolean plotsThreshDomain = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_DEFAULT;
+
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_KEY,
+        description = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_MIN + "," + StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_MAX + "]"
+        )
+        double plotsThreshDomainLow = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_LOW_DEFAULT;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_KEY,
+        description = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_MIN + "," + StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_MAX + "]"
+        )
+        double plotsThreshDomainHigh = StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_THRESH_HIGH_DEFAULT;
+
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_KEY,
+        description = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_TOOLTIP)
+        boolean plotsSetSize = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_KEY,
+        description = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_MIN + "," + StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_MAX + "]"
+        )
+        int plotsSizeWidth = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_DEFAULT;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_LABEL,
+                key = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_KEY,
+                description = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_TOOLTIP,
+                interval = "[" + StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_MIN + "," + StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_MAX + "]"
+        )
+        int plotsSizeHeight = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT;
+
+
+
+
 
         //View Options
 
-        @Preference(label = StatisticsTopComponent.PROPERTY_VIEW_DEFAULT_SECTION_LABEL,
-                key = StatisticsTopComponent.PROPERTY_VIEW_DEFAULT_SECTION_KEY,
-                description = StatisticsTopComponent.PROPERTY_VIEW_DEFAULT_SECTION_TOOLTIP)
+        @Preference(label = StatisticsTopComponent.PROPERTY_VIEW_SECTION_LABEL,
+                key = StatisticsTopComponent.PROPERTY_VIEW_SECTION_KEY,
+                description = StatisticsTopComponent.PROPERTY_VIEW_SECTION_TOOLTIP)
         boolean defaultViewSection = true;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_HISTOGRAM_PLOT_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_HISTOGRAM_PLOT_ENABLED)
-        boolean showHistogramPlots = StatisticsTopComponent.PARAM_DEFVAL_HISTOGRAM_PLOT_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_LABEL,
+                key = StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_KEY,
+        description = StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_TOOLTIP)
+        boolean showHistogramPlots = StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_PERCENT_PLOT_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_PERCENT_PLOT_ENABLED)
-        boolean showPercentPlots = StatisticsTopComponent.PARAM_DEFVAL_PERCENT_PLOT_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_LABEL,
+                key = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_KEY,
+        description = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_TOOLTIP)
+        boolean showPercentPlots = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_STATS_LIST_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_STATS_LIST_ENABLED)
-        boolean showStatsList = StatisticsTopComponent.PARAM_DEFVAL_STATS_LIST_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_LABEL,
+                key = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_KEY,
+        description = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_TOOLTIP)
+        boolean showStatsList = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_DEFAULT;
 
-        @Preference(label = StatisticsTopComponent.PARAM_LABEL_STATS_SPREADSHEET_ENABLED,
-                key = StatisticsTopComponent.PARAM_KEY_STATS_SPREADSHEET_ENABLED)
-        boolean showStatsSpreadSheet = StatisticsTopComponent.PARAM_DEFVAL_STATS_SPREADSHEET_ENABLED;
+        @Preference(label = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_LABEL,
+                key = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_KEY,
+        description = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_TOOLTIP)
+        boolean showStatsSpreadSheet = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_DEFAULT;
 
 
         // Restore Defaults
