@@ -113,6 +113,8 @@ public class GraphExecuter extends Observable {
     String getOperatorCategory(String alias) {
         final OperatorSpiRegistry registry = gpf.getOperatorSpiRegistry();
         final OperatorSpi operatorSpi = registry.getOperatorSpi(alias);
+        // todo - here OperatorDescriptor should be used too, but OperatorDescriptor is missing the category accessor
+        // see https://senbox.atlassian.net/browse/SNAP-1541
         final OperatorMetadata operatorMetadata = operatorSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
         if (operatorMetadata != null)
             return operatorMetadata.category();
