@@ -38,7 +38,7 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.*;
+import javax.swing.SwingWorker;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -107,8 +107,7 @@ public class GraphExecuter extends Observable {
     boolean isOperatorInternal(String alias) {
         final OperatorSpiRegistry registry = gpf.getOperatorSpiRegistry();
         final OperatorSpi operatorSpi = registry.getOperatorSpi(alias);
-        final OperatorMetadata operatorMetadata = operatorSpi.getOperatorClass().getAnnotation(OperatorMetadata.class);
-        return !(operatorMetadata != null && !operatorMetadata.internal());
+        return operatorSpi.getOperatorDescriptor().isInternal();
     }
 
     String getOperatorCategory(String alias) {
