@@ -47,7 +47,7 @@ public class StatisticsCriteriaPanel {
     // "Fields" Tab Variables and Components
 
     private boolean handlersEnabled = true; //todo this may be temporary and not needed
-    private String percentThresholds = StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_DEFAULT;
+    private String percentThresholds = StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_DEFAULT;
     private java.util.List<Integer> percentThresholdsList = null;
     private JTextField percentThresholdsTextField = null;
     private JLabel percentThresholdsLabel = null;
@@ -125,7 +125,7 @@ public class StatisticsCriteriaPanel {
     private TextFieldContainer plotsDomainLowTextfieldContainer = null;
     private TextFieldContainer plotsDomainHighTextfieldContainer = null;
 
-    private boolean exactPlotSize = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT;
+    private boolean exactPlotSize = StatisticsTopComponent.PROPERTY_PLOTS_EXACT_SIZE_DEFAULT;
     private int plotSizeHeight = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT;
     private int plotSizeWidth = StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_DEFAULT;
 
@@ -136,8 +136,8 @@ public class StatisticsCriteriaPanel {
 
     // "View" Tab Variables and Components
 
-    private boolean showPercentPlots = StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT;
-    private boolean showHistogramPlots = StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT;
+    private boolean showPercentPlots = StatisticsTopComponent.PROPERTY_SHOW_PERCENTILE_PLOT_DEFAULT;
+    private boolean showHistogramPlots = StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_DEFAULT;
     private boolean showStatsList = StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_DEFAULT;
     private boolean showStatsSpreadSheet = StatisticsTopComponent.PROPERTY_SHOW_SPREADSHEET_DEFAULT;
 
@@ -364,12 +364,12 @@ public class StatisticsCriteriaPanel {
         includeMinMaxCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_MINMAX_LABEL);
         includeMinMaxCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_MINMAX_TOOLTIP);
 
-        percentThresholdsLabel = new JLabel(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL);
-        percentThresholdsLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_TOOLTIP);
+        percentThresholdsLabel = new JLabel(StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_LABEL);
+        percentThresholdsLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_TOOLTIP);
         percentThresholdsTextField = new JTextField(14);
         percentThresholdsTextField.setMinimumSize(percentThresholdsTextField.getPreferredSize());
-        percentThresholdsTextField.setName(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL);
-        percentThresholdsTextField.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_TOOLTIP);
+        percentThresholdsTextField.setName(StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_LABEL);
+        percentThresholdsTextField.setToolTipText(StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_TOOLTIP);
 
         includeBinningInfoCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_BINNING_INFO_LABEL);
         includeBinningInfoCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_BINNING_INFO_TOOLTIP);
@@ -470,8 +470,8 @@ public class StatisticsCriteriaPanel {
         plotsDomainHighTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_TOOLTIP);
 
 
-        plotsSizeCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_LABEL);
-        plotsSizeCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_TOOLTIP);
+        plotsSizeCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_PLOTS_EXACT_SIZE_LABEL);
+        plotsSizeCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_EXACT_SIZE_TOOLTIP);
 
         plotsSizeHeightTextfieldContainer = new TextFieldContainer(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_LABEL_SHORT,
                 plotSizeHeight,
@@ -498,8 +498,8 @@ public class StatisticsCriteriaPanel {
         showHistogramPlotCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_LABEL);
         showHistogramPlotCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_TOOLTIP);
 
-        showPercentPlotCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_LABEL);
-        showPercentPlotCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_TOOLTIP);
+        showPercentPlotCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_PERCENTILE_PLOT_LABEL);
+        showPercentPlotCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_PERCENTILE_PLOT_TOOLTIP);
 
         showStatsListCheckBox = new JCheckBox(StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_LABEL);
         showStatsListCheckBox.setToolTipText(StatisticsTopComponent.PROPERTY_SHOW_STATISTICS_LIST_TOOLTIP);
@@ -762,7 +762,7 @@ public class StatisticsCriteriaPanel {
     private void textfieldHandlerAction(final JTextField textField) {
 
         if (handlersEnabled) {
-            if (StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL.equals(textField.getName())) {
+            if (StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_LABEL.equals(textField.getName())) {
                 percentThresholds = textField.getText().toString();
             }
         }
@@ -881,7 +881,7 @@ public class StatisticsCriteriaPanel {
                         value = Integer.parseInt(threshold);
                         if (value < 0 || value > 100) {
                             JOptionPane.showMessageDialog(getParentDialogContentPane,
-                                    "ERROR: Valid " + StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL + " range is (0 to 100)",
+                                    "ERROR: Valid " + StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_LABEL + " range is (0 to 100)",
                                     "Invalid Input",
                                     JOptionPane.ERROR_MESSAGE);
                             return null;
@@ -891,7 +891,7 @@ public class StatisticsCriteriaPanel {
                         }
                     } catch (NumberFormatException exception) {
                         JOptionPane.showMessageDialog(getParentDialogContentPane,
-                                StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_LABEL + "field " + exception.toString(),
+                                StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_LABEL + "field " + exception.toString(),
                                 "Invalid Input",
                                 JOptionPane.ERROR_MESSAGE);
                         return null;
@@ -1622,7 +1622,7 @@ public class StatisticsCriteriaPanel {
 
 
     public boolean getPreferencesSetPlotSize() {
-        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_DEFAULT);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_PLOTS_EXACT_SIZE_KEY, StatisticsTopComponent.PROPERTY_PLOTS_EXACT_SIZE_DEFAULT);
     }
 
     public int getPreferencesPlotSizeWidth() {
@@ -1646,11 +1646,11 @@ public class StatisticsCriteriaPanel {
 
 
     public boolean getPreferencesHistogramPlotEnabled() {
-        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_PLOT_DEFAULT);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_KEY, StatisticsTopComponent.PROPERTY_SHOW_HISTOGRAM_PLOT_DEFAULT);
     }
 
     public boolean getPreferencesPercentPlotEnabled() {
-        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_KEY, StatisticsTopComponent.PROPERTY_SHOW_PERCENT_PLOT_DEFAULT);
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_SHOW_PERCENTILE_PLOT_KEY, StatisticsTopComponent.PROPERTY_SHOW_PERCENTILE_PLOT_DEFAULT);
     }
 
     public boolean getPreferencesStatsListEnabled() {
@@ -1663,7 +1663,7 @@ public class StatisticsCriteriaPanel {
     }
 
     public String getPreferencesPercentThresholds() {
-        return preferences.get(StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_KEY, StatisticsTopComponent.PROPERTY_PERCENT_THRESHOLDS_DEFAULT);
+        return preferences.get(StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_KEY, StatisticsTopComponent.PROPERTY_PERCENTILE_THRESHOLDS_DEFAULT);
     }
 
     public boolean getPreferencesFileMetaDataEnabled() {

@@ -46,6 +46,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     // BINS Tab
 
     private static final String PROPERTY_BINS_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".bins";
+
     public static final String PROPERTY_BINS_SECTION_KEY = PROPERTY_BINS_KEY_SUFFIX + ".section";
     public static final String PROPERTY_BINS_SECTION_LABEL = "Bins";
     public static final String PROPERTY_BINS_SECTION_TOOLTIP = "Bins";
@@ -89,14 +90,10 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
 
 
-
-
-
-
-
     // FIELDS
 
     private static final String PROPERTY_FIELDS_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".fields";
+
     public static final String PROPERTY_FIELDS_SECTION_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".section";
     public static final String PROPERTY_FIELDS_SECTION_LABEL = "Fields";
     public static final String PROPERTY_FIELDS_SECTION_TOOLTIP = "Fields";
@@ -116,10 +113,10 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final String PROPERTY_MINMAX_TOOLTIP = "Include min and max field in statistics results";
     public static final boolean PROPERTY_MINMAX_DEFAULT = false;
 
-    public static final String PROPERTY_PERCENT_THRESHOLDS_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".include.percent.thresholds";
-    public static final String PROPERTY_PERCENT_THRESHOLDS_LABEL = "Include Thresholds";
-    public static final String PROPERTY_PERCENT_THRESHOLDS_TOOLTIP = "Include histogram percent thresholds in statistics results";
-    public static final String PROPERTY_PERCENT_THRESHOLDS_DEFAULT = "80,85,90,95,98";
+    public static final String PROPERTY_PERCENTILE_THRESHOLDS_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".include.percentile.thresholds";
+    public static final String PROPERTY_PERCENTILE_THRESHOLDS_LABEL = "Include Percentile Thresholds";
+    public static final String PROPERTY_PERCENTILE_THRESHOLDS_TOOLTIP = "Include histogram percentile thresholds in statistics results";
+    public static final String PROPERTY_PERCENTILE_THRESHOLDS_DEFAULT = "80,85,90,95,98";
 
     public static final String PROPERTY_BINNING_INFO_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".include.binning.info";
     public static final String PROPERTY_BINNING_INFO_LABEL = "Include Binning Info";
@@ -167,6 +164,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     // FORMAT TAB
 
     private static final String PROPERTY_FORMAT_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".format";
+
     public static final String PROPERTY_FORMAT_SECTION_KEY = PROPERTY_FORMAT_KEY_SUFFIX + ".section";
     public static final String PROPERTY_FORMAT_SECTION_LABEL = "Format";
     public static final String PROPERTY_FORMAT_SECTION_TOOLTIP = "Format";
@@ -201,6 +199,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     // PLOTS Tab
 
     private static final String PROPERTY_PLOTS_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".plots";
+
     public static final String PROPERTY_PLOTS_SECTION_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".section";
     public static final String PROPERTY_PLOTS_SECTION_LABEL = "Plots";
     public static final String PROPERTY_PLOTS_SECTION_TOOLTIP = "Plots";
@@ -240,10 +239,10 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final double PROPERTY_PLOTS_DOMAIN_VALUE_HIGH_DEFAULT = Double.NaN;
 
 
-    public static final String PROPERTY_PLOTS_SIZE_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".set.plot.size";
-    public static final String PROPERTY_PLOTS_SIZE_LABEL = "Set Exact Size (includes labels)";
-    public static final String PROPERTY_PLOTS_SIZE_TOOLTIP = "Set size of plots (includes labels)";
-    public static final boolean PROPERTY_PLOTS_SIZE_DEFAULT = false;
+    public static final String PROPERTY_PLOTS_EXACT_SIZE_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".set.plot.size";
+    public static final String PROPERTY_PLOTS_EXACT_SIZE_LABEL = "Set Exact Size (includes labels)";
+    public static final String PROPERTY_PLOTS_EXACT_SIZE_TOOLTIP = "Set exact size of plots (includes labels)";
+    public static final boolean PROPERTY_PLOTS_EXACT_SIZE_DEFAULT = false;
 
     public static final String PROPERTY_PLOTS_SIZE_WIDTH_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".plot.size.width";
     public static final String PROPERTY_PLOTS_SIZE_WIDTH_LABEL = "Plot Size (Width)";
@@ -266,6 +265,7 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     // VIEW Tab
 
     private static final String PROPERTY_VIEW_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".view";
+
     public static final String PROPERTY_VIEW_SECTION_KEY = PROPERTY_VIEW_KEY_SUFFIX + ".section";
     public static final String PROPERTY_VIEW_SECTION_LABEL = "View";
     public static final String PROPERTY_VIEW_SECTION_TOOLTIP = "View";
@@ -273,12 +273,12 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final String PROPERTY_SHOW_HISTOGRAM_PLOT_KEY = PROPERTY_VIEW_KEY_SUFFIX + ".show.histogram.plot";
     public static final String PROPERTY_SHOW_HISTOGRAM_PLOT_LABEL = "Show Histogram Plot";
     public static final String PROPERTY_SHOW_HISTOGRAM_PLOT_TOOLTIP = "Show histogram plot in results window";
-    public static final boolean PROPERTY_HISTOGRAM_PLOT_DEFAULT = true;
+    public static final boolean PROPERTY_SHOW_HISTOGRAM_PLOT_DEFAULT = true;
 
-    public static final String PROPERTY_SHOW_PERCENT_PLOT_KEY = PROPERTY_VIEW_KEY_SUFFIX + ".show.percent.plot";
-    public static final String PROPERTY_SHOW_PERCENT_PLOT_LABEL = "Show Percentile Plot";
-    public static final String PROPERTY_SHOW_PERCENT_PLOT_TOOLTIP = "Show percentile plot in results window";
-    public static final boolean PROPERTY_SHOW_PERCENT_PLOT_DEFAULT = true;
+    public static final String PROPERTY_SHOW_PERCENTILE_PLOT_KEY = PROPERTY_VIEW_KEY_SUFFIX + ".show.percent.plot";
+    public static final String PROPERTY_SHOW_PERCENTILE_PLOT_LABEL = "Show Percentile Plot";
+    public static final String PROPERTY_SHOW_PERCENTILE_PLOT_TOOLTIP = "Show percentile plot in results window";
+    public static final boolean PROPERTY_SHOW_PERCENTILE_PLOT_DEFAULT = true;
 
     public static final String PROPERTY_SHOW_STATISTICS_LIST_KEY = PROPERTY_VIEW_KEY_SUFFIX + ".show.statistics.list";
     public static final String PROPERTY_SHOW_STATISTICS_LIST_LABEL = "Show Statistics List";
@@ -293,9 +293,6 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
 
 
 
-
-    public static final String PARAM_KEY_RESET_TO_DEFAULTS = "statistics.resetToDefaults.enabled";
-
     // Restore to defaults
 
     private static final String PROPERTY_RESTORE_KEY_SUFFIX = PROPERTY_ROOT_KEY + ".restore.defaults";
@@ -309,9 +306,15 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final String PROPERTY_RESTORE_DEFAULTS_TOOLTIP = "Restore all " + NamingConvention.COLOR_LOWER_CASE + " preferences to the original default";
     public static final boolean PROPERTY_RESTORE_DEFAULTS_DEFAULT = false;
 
+
     @Override
     protected PagePanel createPagePanel() {
-        return new StatisticsPanel(this, Bundle.CTL_StatisticsTopComponent_HelpId());
+        PagePanel pagePanel = new StatisticsPanel(this, Bundle.CTL_StatisticsTopComponent_HelpId());
+        setMinimumSize(pagePanel.getMinimumSize());
+        setPreferredSize(pagePanel.getPreferredSize());
+        int minWidth = getMinimumSize().width;
+        int prefWidth = getPreferredSize().width;
+        return pagePanel;
     }
 
     @Override

@@ -221,7 +221,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
     public StatisticsPanel(final TopComponent parentDialog, String helpID) {
         super(parentDialog, helpID, TITLE_PREFIX);
-        setMinimumSize(new Dimension(1000, 390));
+
+
+
         resultText = new StringBuilder();
         popupHandler = new PopupHandler();
         if (snapApp != null) {
@@ -230,6 +232,36 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         this.parentDialog = parentDialog;
         this.helpID = helpID;
+
+        // Adjust to not be over 90% of screen size
+        double minWidth = 1000;
+        double minHeight = 1000;
+        double prefWidth = 1000;
+        double prefHeight = 1000;
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double screenSizeWidth = screenSize.getWidth();
+        double screenSizeHeight = screenSize.getHeight();
+
+        if (minWidth > screenSizeWidth * .9) {
+            minWidth = screenSizeWidth * .9;
+        }
+
+        if (minHeight > screenSizeHeight * .9) {
+            minHeight = screenSizeHeight * .9;
+        }
+
+        if (prefWidth > screenSizeWidth * .9) {
+            prefWidth = screenSizeWidth * .9;
+        }
+
+        if (prefHeight > screenSizeHeight * .9) {
+            prefHeight = screenSizeHeight * .9;
+        }
+
+
+//        setMinimumSize(new Dimension((int) minWidth, (int) minHeight));
+        setPreferredSize(new Dimension((int) prefWidth, (int) prefHeight));
 
     }
 
@@ -344,11 +376,45 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         add(layeredPane);
 
 
-        int minWidth = leftPanel.getMinimumSize().width + rightPanel.getMinimumSize().width;
-        int minHeight = Math.max(leftPanel.getMinimumSize().height, rightPanel.getMinimumSize().height);
-        setMinimumSize(new Dimension(minWidth, minHeight));
+        // Set size of initial statistics GUI
+
+        // Determine sub component dimension
+        double minWidth = leftPanel.getMinimumSize().width + rightPanel.getMinimumSize().width;
+        double prefWidth = leftPanel.getPreferredSize().width + rightPanel.getPreferredSize().width;
+        double minHeight = Math.max(leftPanel.getMinimumSize().height, rightPanel.getMinimumSize().height);
+        double prefHeight = Math.max(leftPanel.getPreferredSize().height, rightPanel.getPreferredSize().height);
+
+        // Adjust bigger if too small
+        minWidth = (minWidth < 1000)  ? 1000 : minWidth;
+        minHeight = (minHeight < 1000) ? 1000: minHeight;
+
+        prefWidth = (prefWidth < 1000)  ? 1000 : prefWidth;
+        prefHeight = (prefHeight < 1000) ? 1000: prefHeight;
+
+        // Adjust to not be over 90% of screen size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double screenSizeWidth = screenSize.getWidth();
+        double screenSizeHeight = screenSize.getHeight();
+
+        if (minWidth > screenSizeWidth * .9) {
+            minWidth = screenSizeWidth * .9;
+        }
+
+        if (minHeight > screenSizeHeight * .9) {
+            minHeight = screenSizeHeight * .9;
+        }
+
+        if (prefWidth > screenSizeWidth * .9) {
+            prefWidth = screenSizeWidth * .9;
+        }
+
+        if (prefHeight > screenSizeHeight * .9) {
+            prefHeight = screenSizeHeight * .9;
+        }
 
 
+//        setMinimumSize(new Dimension((int) minWidth, (int) minHeight));
+        setPreferredSize(new Dimension((int) prefWidth, (int) prefHeight));
     }
 
 
