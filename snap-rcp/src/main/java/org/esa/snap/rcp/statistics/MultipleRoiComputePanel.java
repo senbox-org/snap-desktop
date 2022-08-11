@@ -153,7 +153,7 @@ class MultipleRoiComputePanel extends JPanel {
 
     private JPanel criteriaPanel = GridBagUtils.createPanel();;
 
-    // todo Danny right now this is complicated by creation of a MathBand (bands have been added since initialization)
+    // This is complicated by creation of a MathBand (bands have been added since initialization)
     // in which case reset is needed so for now setting this to true which is probably better anyway
     // this forces a reset when another band view window is opened
     public boolean forceUpdate = true;

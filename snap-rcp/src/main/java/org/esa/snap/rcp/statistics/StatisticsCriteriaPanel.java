@@ -717,8 +717,6 @@ public class StatisticsCriteriaPanel {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 showStatsSpreadSheet = showStatsSpreadSheetCheckBox.isSelected();
-                // todo Danny this listener needs to be outside in the calling program
-                //            updateLeftPanel();
             }
         });
 

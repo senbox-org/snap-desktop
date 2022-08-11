@@ -601,8 +601,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         fixedHistDomainAllPlotsInitialized = false;
 
 
-        // todo Danny really this is trying to do isAnotherBand selected it could be renamed and inverted appropriately or maybe gotten rid of
-
         if (selectedBands != null && selectedBands.length > 0 && selectedBands[0] != null) {
             if (selectedBands.length == 1) {
                 if (getRaster() != null) {
@@ -763,33 +761,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 return null;
             }
 
-            // todo Danny Testing this
-//            @Override
-//            protected void process(List<ComputeResult> chunks) {
-//
-//
-//
-//                for (ComputeResult result : chunks) {
-//
-//                    final Stx stx = result.stx;
-//                    final Mask mask = result.mask;
-//
-//                    if (resultText.length() > 0) {
-//                        resultText.append("\n");
-//                    }
-//                    resultText.append(createText(stx, mask));
-//
-//                    JPanel statPanel = createStatPanel(stx, mask, currRow);
-//                    contentPanel.add(statPanel);
-//                    contentPanel.revalidate();
-//                    contentPanel.repaint();
-//                    backgroundPanel.revalidate();
-//                    backgroundPanel.repaint();
-//                    currRow++;
-//                }
-//
-//
-//            }
 
             @Override
             protected void done() {
@@ -1189,62 +1160,35 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     }
 
 
-    // todo Danny creates a band with no no-data in order to get full pixel count
-//    private void addRawTotalToStx(RasterDataNode raster, ProgressMonitor pm, Mask mask, Stx stx) {
-//        Product prod = raster.getProduct();
-//        final int width = prod.getSceneRasterWidth();
-//        final int height = prod.getSceneRasterHeight();
-//
-//        String tmp = raster.getName() + "_tmpBand";
-//        Band band = new Band(tmp, ProductData.TYPE_FLOAT32, width, height);
-//        prod.addBand(band);
-//        band.setSourceImage(VirtualBand.createVirtualSourceImage(band, "1"));
-//        RasterDataNode fullRaster = prod.getRasterDataNode(band.getName());
-//        int fullPixelCount = getFullPixelCount(fullRaster, pm, mask);
-//        prod.removeBand(band);
-//        stx.setRawTotal(fullPixelCount);
-//    }
 
-    // todo Danny creates a band with no no-data in order to get full pixel count
+    // get full pixel count of ROI (including any NaN pixels)
     private void addRawTotalToStx(RasterDataNode raster, ProgressMonitor pm, Mask mask, Stx stx) {
 
         if (raster != null) {
             Product prod = raster.getProduct();
 
             if (prod != null) {
-                //     addNoNanBand(prod);
+                boolean addedNoNanBandRaster = false;
+                if (noNanBandRaster == null) {
+                    addNoNanBand(prod);
+                    addedNoNanBandRaster = true;
+                }
 
                 if (noNanBandRaster != null) {
                     int fullPixelCount = getFullPixelCount(noNanBandRaster, pm, mask);
                     stx.setRawTotal(fullPixelCount);
 
-                    //     removeNoNanBand(prod);
+                    if (addedNoNanBandRaster) {
+                        removeNoNanBand(prod);
+                    }
                 }
             }
         }
     }
 
-    // todo Danny creates a band with no no-data in order to get full pixel count
-    private void addNoNanBand(RasterDataNode raster) {
-        if (raster != null) {
-            Product prod = raster.getProduct();
 
-            if (prod != null) {
-                final int width = prod.getSceneRasterWidth();
-                final int height = prod.getSceneRasterHeight();
 
-                Band band = new Band(NO_NAN_BANDNAME, ProductData.TYPE_FLOAT32, width, height);
-
-                if (band != null) {
-                    prod.addBand(band);
-                    band.setSourceImage(VirtualBand.createSourceImage(band, "1"));
-                    noNanBandRaster = prod.getRasterDataNode(band.getName());
-                }
-            }
-        }
-    }
-
-    // todo Danny creates a band with no no-data in order to get full pixel count
+    // creates a band "noNanBandRaster" which contains a value of "1" in every pixel.  Used to assess total number of pixels in a ROI
     private void addNoNanBand(Product prod) {
 
         if (prod != null) {
@@ -1262,22 +1206,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     }
 
 
-    // todo Danny delete band with no no-data
-    private void removeNoNanBand(RasterDataNode raster) {
-        if (raster != null) {
-            Product prod = raster.getProduct();
-            if (prod != null && noNanBandRaster != null) {
-                Band band = prod.getBand(noNanBandRaster.getName());
-
-                if (band != null) {
-                    prod.removeBand(band);
-                }
-            }
-        }
-    }
 
 
-    // todo Danny delete band with no no-data
+    //  deletes band "noNanBandRaster" which contains a value of "1" in every pixel.
     private void removeNoNanBand(Product prod) {
         if (prod != null && noNanBandRaster != null) {
             Band band = prod.getBand(noNanBandRaster.getName());
@@ -2350,7 +2281,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     }
 
 
-    // todo This part has not been updated by Danny
+    // todo Possibly delete this method as it has been replaced ...
     private String createText(final Stx stx, final Mask mask) {
 
         if (stx.getSampleCount() == 0) {
@@ -2532,17 +2463,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         xyPlot.setAxisOffset(new RectangleInsets(5, 5, 5, 10));
         // xyPlot.setInsets(new RectangleInsets(0,0,0,0));
 
-        // todo Danny set bounds here
-
-//        if (domainBounds[0] != domainBounds[1]) {
-//            xyPlot.getDomainAxis().setLowerBound(domainBounds[0]);
-//            xyPlot.getDomainAxis().setUpperBound(domainBounds[1]);
-//        }
-//
-//        if (rangeBounds[0] != rangeBounds[1]) {
-//            xyPlot.getRangeAxis().setLowerBound(rangeBounds[0]);
-//            xyPlot.getRangeAxis().setUpperBound(rangeBounds[1]);
-//        }
 
 
         if (!Double.isNaN(domainBounds[0])) {
@@ -2570,17 +2490,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         renderer.setBarPainter(painter);
 
         ChartPanel chartPanel = new ChartPanel(chart);
-//// todo Danny testing out height/width ratio preservation
-//        double histChartHeightWidthRatio = chartPanel.getPreferredSize().height / chartPanel.getPreferredSize().width;
-//        double plotSizeReduction = 1;
-//        Number preferredHeight = chartPanel.getPreferredSize().height * plotSizeReduction;
-//        Number preferredWidth = chartPanel.getPreferredSize().width * plotSizeReduction;
-//
-//        chartPanel.setPreferredSize(new Dimension(preferredWidth.intValue(), preferredHeight.intValue()));
 
-        //  chartPanel.setPreferredSize(new Dimension(300, 200));
-
-//        chartPanel.getPopupMenu().add(createCopyDataToClipboardMenuItem());
         return chartPanel;
     }
 
@@ -2603,17 +2513,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         xyPlot.setAxisOffset(new RectangleInsets(5, 5, 5, 10));
 
 
-        // todo Danny set bounds here
-
-//        if (domainBounds[0] != domainBounds[1]) {
-//            xyPlot.getDomainAxis().setLowerBound(domainBounds[0]);
-//            xyPlot.getDomainAxis().setUpperBound(domainBounds[1]);
-//        }
-//
-//        if (rangeBounds[0] != rangeBounds[1]) {
-//            xyPlot.getRangeAxis().setLowerBound(rangeBounds[0]);
-//            xyPlot.getRangeAxis().setUpperBound(rangeBounds[1]);
-//        }
 
         if (!Double.isNaN(domainBounds[0])) {
             xyPlot.getDomainAxis().setLowerBound(domainBounds[0]);
@@ -2723,8 +2622,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         return true;
     }
 
-
-    // todo Danny copied this from InformationPanel perhaps that could be called directly by making it public
+    // todo - make this a method in ProductReader and ProductWriter
     private static String getProductFormatName(final Product product) {
         final ProductReader productReader = product.getProductReader();
         if (productReader == null) {
