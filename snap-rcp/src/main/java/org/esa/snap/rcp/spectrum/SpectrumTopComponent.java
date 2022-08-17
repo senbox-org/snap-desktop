@@ -17,6 +17,7 @@ package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
+import org.esa.snap.ui.*;
 import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.DataNode;
@@ -38,10 +39,6 @@ import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.ui.GridBagUtils;
-import org.esa.snap.ui.ModalDialog;
-import org.esa.snap.ui.PixelPositionListener;
-import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.product.spectrum.SpectrumBand;
@@ -108,8 +105,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif")
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
+@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
+@TopComponent.Registration(mode = PackageDefaults.SPECTRUM_WS_MODE, openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),
