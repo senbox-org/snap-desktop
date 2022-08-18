@@ -258,7 +258,7 @@ public class ReprojectionUI extends BaseOperatorUI {
         paramRetainValidPixelExpression.getProperties().setLabel("RetainValidPixelExpression"); /*I18N*/
         paramRetainValidPixelExpression.addParamChangeListener(paramChangeListener);
 
-        paramNoDataValue = new Parameter("bandNodataValue", paramMap.get("bandNodataValue"));
+        paramNoDataValue = new Parameter("noDataValue", paramMap.get("noDataValue"));
         paramNoDataValue.getProperties().setValueSetBound(false);
         paramNoDataValue.getProperties().setLabel("No-Data Value"); /*I18N*/
         paramNoDataValue.addParamChangeListener(paramChangeListener);
