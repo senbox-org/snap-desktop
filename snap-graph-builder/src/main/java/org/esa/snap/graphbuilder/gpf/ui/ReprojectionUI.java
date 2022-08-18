@@ -1,12 +1,27 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 
+import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.ImageGeometry;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorSpi;
+import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
+import org.esa.snap.core.gpf.common.BandMathsOp;
+import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
+import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
+import org.esa.snap.core.param.ParamChangeEvent;
+import org.esa.snap.core.param.ParamChangeListener;
+import org.esa.snap.core.param.ParamProperties;
+import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
@@ -39,6 +54,14 @@ public class ReprojectionUI extends BaseOperatorUI {
 
     private static final String[] RESAMPLING_IDENTIFIER = {"Nearest", "Bilinear", "Bicubic"};
 
+    private static final String _PARAM_NAME_REPROJECT = "reproject";
+    private Parameter paramResamplingName = null;
+    private Parameter paramIncludeTiePointGrids = null;
+    private Parameter paramAddDeltaBands = null;
+    private Parameter paramNoDataValue = null;
+    private Parameter paramMaskExpression = null;
+    private Parameter paramApplyValidPixelExpression = null;
+    private Parameter paramRetainValidPixelExpression = null;
     private JScrollPane scrollPane;
 
     private boolean orthoMode = false;
@@ -84,6 +107,7 @@ public class ReprojectionUI extends BaseOperatorUI {
 
 
         initializeOperatorUI(operatorName, parameterMap);
+        initVariables();
         final JComponent panel = createPanel();
 
         initParameters();
@@ -95,6 +119,29 @@ public class ReprojectionUI extends BaseOperatorUI {
     //called when sourceProduct is set
     @Override
     public void initParameters() {
+        if (!propertySet.getValue("orientation").equals(0.0) ||
+                propertySet.getValue("easting") != null ||
+                propertySet.getValue("northing") != null ||
+                propertySet.getValue("pixelSizeX") != null ||
+                propertySet.getValue("pixelSizeY") != null ||
+                propertySet.getValue("referencePixelX") != null ||
+                propertySet.getValue("referencePixelY") != null ||
+                propertySet.getValue("width") != null ||
+                propertySet.getValue("height") != null) {
+            preserveResolutionCheckBox.setSelected(false);
+        }
+
+//        try {
+//            paramResamplingName.setValueAsText(String.valueOf(paramMap.get("resampling")));
+//            paramIncludeTiePointGrids.setValueAsText(String.valueOf(paramMap.get("includeTiePointGrids")));
+//            paramAddDeltaBands.setValueAsText(String.valueOf(paramMap.get("addDeltaBands")));
+//            paramNoDataValue.setValueAsText(String.valueOf(paramMap.get("noDataValue")));
+//            paramMaskExpression.setValueAsText(String.valueOf(paramMap.get("maskExpression")));
+//            paramApplyValidPixelExpression.setValueAsText(String.valueOf(paramMap.get("applyValidPixelExpression")));
+//            paramRetainValidPixelExpression.setValueAsText(String.valueOf(paramMap.get("retainValidPixelExpression")));
+//        } catch(Exception e) {
+//            SystemUtils.LOG.warning(e.getMessage());
+//        }
         if(hasSourceProducts() && sourceProducts[0] != null) {
             crsSelectionPanel.setReferenceProduct(sourceProducts[0]);
             if((sourceProducts[0].getBand("longitude") != null && sourceProducts[0].getBand("latitude") != null) || (sourceProducts[0].getTiePointGrid("longitude") != null && sourceProducts[0].getTiePointGrid("latitude") != null)) {
@@ -104,7 +151,9 @@ public class ReprojectionUI extends BaseOperatorUI {
             }
         }
         updateCRS();
-        updateParameters();
+
+//        updateUIState(_PARAM_NAME_REPROJECT);
+//        updateParameters();
 
     }
 
@@ -116,12 +165,23 @@ public class ReprojectionUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
 
-
-        paramMap.clear();
-        paramMap.put("resamplingName", resampleComboBox.getSelectedItem().toString());
+        if (!propertySet.getValue("orientation").equals(0.0) ||
+                propertySet.getValue("easting") != null ||
+                propertySet.getValue("northing") != null ||
+                propertySet.getValue("pixelSizeX") != null ||
+                propertySet.getValue("pixelSizeY") != null ||
+                propertySet.getValue("referencePixelX") != null ||
+                propertySet.getValue("referencePixelY") != null ||
+                propertySet.getValue("width") != null ||
+                propertySet.getValue("height") != null) {
+            preserveResolutionCheckBox.setSelected(false);
+        }
+//            paramMap.clear();
+        paramMap.put("resampling", resampleComboBox.getSelectedItem().toString());
         paramMap.put("includeTiePointGrids", includeTPcheck.isSelected());
         paramMap.put("addDeltaBands", addDeltaBandsCheckBox.isSelected());
         paramMap.put("noDataValue", Double.parseDouble(noDataField.getText()));
+
         // if (!collocationCrsUI.getRadioButton().isSelected()) {
         CoordinateReferenceSystem selectedCrs = getSelectedCrs();
         if (selectedCrs != null) {
@@ -163,21 +223,55 @@ public class ReprojectionUI extends BaseOperatorUI {
             paramMap.put("height", container.getValue("height"));
         }
 
-
-        applyValidPixelExpression = applyValidPixelExpressionCheckBox.isSelected();
-        paramMap.put("applyValidPixelExpression", applyValidPixelExpression);
-
-        retainValidPixelExpression = retainValidPixelExpressionCheckBox.isSelected();
-        paramMap.put("retainValidPixelExpression", retainValidPixelExpression);
-
+        paramMap.put("applyValidPixelExpression", applyValidPixelExpressionCheckBox.isSelected());
+        paramMap.put("retainValidPixelExpression", retainValidPixelExpressionCheckBox.isSelected());
         if (expressionArea.getText() != null) {
             paramMap.put("maskExpression", expressionArea.getText());
         }
-
-
-
     }
 
+    private void initVariables() {
+        final ParamChangeListener paramChangeListener = createParamChangeListener();
+
+        paramResamplingName = new Parameter("resampling", paramMap.get("resampling"));
+        paramResamplingName.getProperties().setValueSetBound(false);
+        paramResamplingName.getProperties().setLabel("ResamplingName"); /*I18N*/
+        paramResamplingName.addParamChangeListener(paramChangeListener);
+
+        paramIncludeTiePointGrids = new Parameter("includeTiePointGrids", paramMap.get("includeTiePointGrids"));
+        paramIncludeTiePointGrids.getProperties().setValueSetBound(false);
+        paramIncludeTiePointGrids.getProperties().setLabel("IncludeTiePointGrids"); /*I18N*/
+        paramIncludeTiePointGrids.addParamChangeListener(paramChangeListener);
+
+        paramAddDeltaBands = new Parameter("addDeltaBands", paramMap.get("addDeltaBands"));
+        paramAddDeltaBands.getProperties().setValueSetBound(false);
+        paramAddDeltaBands.getProperties().setLabel("AddDeltaBands"); /*I18N*/
+        paramAddDeltaBands.addParamChangeListener(paramChangeListener);
+
+        paramApplyValidPixelExpression = new Parameter("applyValidPixelExpression", paramMap.get("applyValidPixelExpression"));
+        paramApplyValidPixelExpression.getProperties().setValueSetBound(false);
+        paramApplyValidPixelExpression.getProperties().setLabel("ApplyValidPixelExpression"); /*I18N*/
+        paramApplyValidPixelExpression.addParamChangeListener(paramChangeListener);
+
+        paramRetainValidPixelExpression = new Parameter("retainValidPixelExpression", paramMap.get("retainValidPixelExpression"));
+        paramRetainValidPixelExpression.getProperties().setValueSetBound(false);
+        paramRetainValidPixelExpression.getProperties().setLabel("RetainValidPixelExpression"); /*I18N*/
+        paramRetainValidPixelExpression.addParamChangeListener(paramChangeListener);
+
+        paramNoDataValue = new Parameter("bandNodataValue", paramMap.get("bandNodataValue"));
+        paramNoDataValue.getProperties().setValueSetBound(false);
+        paramNoDataValue.getProperties().setLabel("No-Data Value"); /*I18N*/
+        paramNoDataValue.addParamChangeListener(paramChangeListener);
+
+        paramMaskExpression = new Parameter("maskExpressiong", paramMap.get("maskExpression"));
+        paramMaskExpression.getProperties().setLabel("Mask Expression"); /*I18N*/
+        paramMaskExpression.getProperties().setDescription("Mask expression"); /*I18N*/
+        paramMaskExpression.getProperties().setNumRows(5);
+//        paramExpression.getProperties().setEditorClass(ArithmetikExpressionEditor.class);
+//        paramExpression.getProperties().setValidatorClass(BandArithmeticExprValidator.class);
+
+//        setArithmetikValues();
+    }
 
     private JComponent createPanel() {
         final JPanel parameterPanel = new JPanel();
@@ -452,6 +546,9 @@ public class ReprojectionUI extends BaseOperatorUI {
         resamplingMethodLabel.setToolTipText(PROPERTY_RESAMPLING_METHOD_TOOLTIP);
         resampleComboBox = new JComboBox<>(PROPERTY_RESAMPLING_METHOD_OPTIONS);
         String resamplingMethodPreference = preferences.get(PROPERTY_RESAMPLING_METHOD_KEY, PROPERTY_RESAMPLING_METHOD_DEFAULT);
+        if (paramResamplingName.getValueAsText() != null) {
+            resamplingMethodPreference = paramResamplingName.getValueAsText();
+        }
         resampleComboBox.setPrototypeDisplayValue(resamplingMethodPreference);
         resampleComboBox.setSelectedItem(resamplingMethodPreference);
         resampleComboBox.setToolTipText(PROPERTY_RESAMPLING_METHOD_TOOLTIP);
@@ -480,8 +577,12 @@ public class ReprojectionUI extends BaseOperatorUI {
 
         JLabel noDataLabel = new JLabel(PROPERTY_NO_DATA_VALUE_LABEL);
         noDataLabel.setToolTipText(PROPERTY_NO_DATA_VALUE_TOOLTIP);
-        Double noDataPreference = preferences.getDouble(PROPERTY_NO_DATA_VALUE_KEY, PROPERTY_NO_DATA_VALUE_DEFAULT);
-        noDataField = new JTextField(Double.toString(noDataPreference), 8);
+        String noDataPreference = Double.toString(preferences.getDouble(PROPERTY_NO_DATA_VALUE_KEY, PROPERTY_NO_DATA_VALUE_DEFAULT));
+        if (paramNoDataValue.getValue() != null) {
+            noDataPreference = paramNoDataValue.getValueAsText();
+        }
+//        noDataField = new JTextField(Double.toString(noDataPreference), 8);
+        noDataField = new JTextField(noDataPreference, 8);
         noDataField.setToolTipText(PROPERTY_NO_DATA_VALUE_TOOLTIP);
         noDataPanel.add(noDataLabel);
         noDataPanel.add(noDataField);
@@ -493,13 +594,21 @@ public class ReprojectionUI extends BaseOperatorUI {
         //Retain valid pixel expression
         retainValidPixelExpressionCheckBox = new JCheckBox(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_LABEL);
         boolean retainValidPixelExpressionPreference = preferences.getBoolean(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_KEY, PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_DEFAULT);
+        if (paramRetainValidPixelExpression.getValue() != null) {
+            retainValidPixelExpressionPreference = (Boolean) paramRetainValidPixelExpression.getValue();
+        }
         retainValidPixelExpressionCheckBox.setSelected(retainValidPixelExpressionPreference);
         retainValidPixelExpressionCheckBox.setToolTipText(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_TOOLTIP);
         outputSettingsPanel.add(retainValidPixelExpressionCheckBox);
 
         // Tie-point grids
         includeTPcheck = new JCheckBox(PROPERTY_INCLUDE_TIE_POINT_GRIDS_LABEL);
-        includeTPcheck.setSelected(preferences.getBoolean(PROPERTY_INCLUDE_TIE_POINT_GRIDS_KEY, PROPERTY_INCLUDE_TIE_POINT_GRIDS_DEFAULT));
+        boolean includeTPcheckPreference = preferences.getBoolean(PROPERTY_INCLUDE_TIE_POINT_GRIDS_KEY, PROPERTY_INCLUDE_TIE_POINT_GRIDS_DEFAULT);
+        if (paramIncludeTiePointGrids.getValue() != null) {
+            includeTPcheckPreference = (Boolean) paramIncludeTiePointGrids.getValue();
+        }
+//        includeTPcheck.setSelected(preferences.getBoolean(PROPERTY_INCLUDE_TIE_POINT_GRIDS_KEY, PROPERTY_INCLUDE_TIE_POINT_GRIDS_DEFAULT));
+        includeTPcheck.setSelected(includeTPcheckPreference);
         includeTPcheck.setToolTipText(PROPERTY_INCLUDE_TIE_POINT_GRIDS_TOOLTIP);
         outputSettingsPanel.add(includeTPcheck);
 
@@ -510,6 +619,9 @@ public class ReprojectionUI extends BaseOperatorUI {
         // Add delta bands component
         addDeltaBandsCheckBox = new JCheckBox(PROPERTY_ADD_DELTA_BANDS_LABEL);
         boolean addDeltaBandsPreference = preferences.getBoolean(PROPERTY_ADD_DELTA_BANDS_KEY, PROPERTY_ADD_DELTA_BANDS_DEFAULT);
+        if (paramAddDeltaBands.getValue() != null) {
+            addDeltaBandsPreference = (Boolean) paramAddDeltaBands.getValue();
+        }
         addDeltaBandsCheckBox.setSelected(addDeltaBandsPreference);
         addDeltaBandsCheckBox.setToolTipText(PROPERTY_ADD_DELTA_BANDS_TOOLTIP);
         outputSettingsPanel.add(addDeltaBandsCheckBox);
@@ -557,9 +669,15 @@ public class ReprojectionUI extends BaseOperatorUI {
         expressionArea.setToolTipText( PROPERTY_MASK_EXPRESSION_TOOLTIP);
 
         String maskExpressionText = preferences.get(PROPERTY_MASK_EXPRESSION_KEY, PROPERTY_MASK_EXPRESSION_DEFAULT);
+        if (paramMaskExpression.getValueAsText() != null) {
+            maskExpressionText = paramMaskExpression.getValueAsText();
+        }
         expressionArea.setText(maskExpressionText);
 
         boolean applyValidPixelExpression = preferences.getBoolean(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_KEY, PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_DEFAULT);
+        if (paramApplyValidPixelExpression.getValue() != null) {
+            applyValidPixelExpression = (Boolean) paramApplyValidPixelExpression.getValue();
+        }
         applyValidPixelExpressionCheckBox = new JCheckBox(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_LABEL);
         applyValidPixelExpressionCheckBox.setToolTipText(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_TOOLTIP);
         applyValidPixelExpressionCheckBox.setSelected(applyValidPixelExpression);
@@ -607,10 +725,15 @@ public class ReprojectionUI extends BaseOperatorUI {
             ProductExpressionPane pep = ProductExpressionPane.createBooleanExpressionPane(new Product[]{getSourceProduct()},
                     getSourceProduct(),
                     appContext.getPreferences());
-            pep.setCode(expressionArea.getText());
+//            pep.setCode(expressionArea.getText());
+            pep.setCode(paramMaskExpression.getValueAsText());
             final int i = pep.showModalDialog(parentWindow, "Mask Expression Editor");
             if (i == ModalDialog.ID_OK) {
                 expressionArea.setText(pep.getCode());
+                paramMaskExpression.setValue(pep.getCode(), null);
+                Debug.trace("MaskExpressionDialog: expression is: " + pep.getCode());
+
+//                maskExpression = paramMaskExpression.getValueAsText();
             }
 
         }
@@ -642,13 +765,23 @@ public class ReprojectionUI extends BaseOperatorUI {
                 OutputGeometryFormModel workCopy;
                 if (outputGeometryModel != null) {
                     workCopy = new OutputGeometryFormModel(outputGeometryModel);
-                } else {
+                } else if (!propertySet.getValue("orientation").equals(0.0) ||
+                        propertySet.getValue("easting") != null ||
+                        propertySet.getValue("northing") != null ||
+                        propertySet.getValue("pixelSizeX") != null ||
+                        propertySet.getValue("pixelSizeY") != null ||
+                        propertySet.getValue("referencePixelX") != null ||
+                        propertySet.getValue("referencePixelY") != null ||
+                        propertySet.getValue("width") != null ||
+                        propertySet.getValue("height") != null) {
                     // final Product collocationProduct = collocationCrsUI.getCollocationProduct();
                     // if (collocationCrsUI.getRadioButton().isSelected() && collocationProduct != null) {
                     //    workCopy = new OutputGeometryFormModel(sourceProduct, collocationProduct);
                     // } else {
-                    workCopy = new OutputGeometryFormModel(sourceProduct, crs);
+                    workCopy = new OutputGeometryFormModel(sourceProduct, crs, propertySet);
                     // }
+                } else {
+                    workCopy = new OutputGeometryFormModel(sourceProduct, crs);
                 }
                 final OutputGeometryForm form = new OutputGeometryForm(workCopy);
                 final ModalDialog outputParametersDialog = new OutputParametersDialog(appContext.getApplicationWindow(),
@@ -695,4 +828,44 @@ public class ReprojectionUI extends BaseOperatorUI {
             outputGeometryFormModel.resetToDefaults(imageGeometry);
         }
     }
+
+    private ParamChangeListener createParamChangeListener() {
+        return new ParamChangeListener() {
+
+            public void parameterValueChanged(ParamChangeEvent event) {
+                updateUIState(event.getParameter().getName());
+            }
+        };
+    }
+
+    private void updateUIState(String parameterName) {
+
+        if (parameterName == null) {
+            return;
+        }
+
+        if (parameterName.equals(_PARAM_NAME_REPROJECT)) {
+//            final boolean b = targetProduct != null;
+            paramResamplingName.setUIEnabled(true);
+            editExpressionButton.setEnabled(true);
+            paramIncludeTiePointGrids.setUIEnabled(true);
+            paramAddDeltaBands.setUIEnabled(true);
+            paramNoDataValue.setUIEnabled(true);
+            paramMaskExpression.setUIEnabled(true);
+            paramApplyValidPixelExpression.setUIEnabled(true);
+            paramRetainValidPixelExpression.setUIEnabled(true);
+//            if (b) {
+//                setArithmetikValues();
+//            }
+//
+//            final String selectedBandName = paramBand.getValueAsText();
+//            if (b) {
+//                if (selectedBandName != null && selectedBandName.length() > 0) {
+//                    targetBand = targetProduct.getBand(selectedBandName);
+//                }
+//            }
+        }
+    }
 }
+
+

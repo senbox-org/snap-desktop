@@ -48,10 +48,10 @@ public class OutputGeometryFormModel {
 
     public OutputGeometryFormModel(PropertySet sourcePropertySet) {
         init(null,
-             null,
-             getFitProductSize(sourcePropertySet),
-             getReferencePixelLocation(sourcePropertySet),
-             sourcePropertySet);
+                null,
+                getFitProductSize(sourcePropertySet),
+                getReferencePixelLocation(sourcePropertySet),
+                sourcePropertySet);
     }
 
     public OutputGeometryFormModel(Product sourceProduct, Product collocationProduct) {
@@ -60,24 +60,37 @@ public class OutputGeometryFormModel {
 
     public OutputGeometryFormModel(Product sourceProduct, CoordinateReferenceSystem targetCrs) {
         this(sourceProduct, ImageGeometry.createTargetGeometry(sourceProduct, targetCrs,
-                                                               null, null, null, null,
-                                                               null, null, null, null, null));
+                null, null, null, null,
+                null, null, null, null, null));
+    }
+
+    public OutputGeometryFormModel(Product sourceProduct, CoordinateReferenceSystem targetCrs, PropertySet ps) {
+        this(sourceProduct, ImageGeometry.createTargetGeometry(sourceProduct, targetCrs,
+                ps.getValue("pixelSizeX"),
+                ps.getValue("pixelSizeY"),
+                ps.getValue("width"),
+                ps.getValue("height"),
+                ps.getValue("orientation"),
+                ps.getValue("easting"),
+                ps.getValue("northing"),
+                ps.getValue("referencePixelX"),
+                ps.getValue("referencePixelY")));
     }
 
     public OutputGeometryFormModel(OutputGeometryFormModel formModel) {
         init(formModel.sourceProduct,
-             formModel.targetCrs,
-             formModel.fitProductSize,
-             formModel.referencePixelLocation,
-             formModel.getPropertySet());
+                formModel.targetCrs,
+                formModel.fitProductSize,
+                formModel.referencePixelLocation,
+                formModel.getPropertySet());
     }
 
     private OutputGeometryFormModel(Product sourceProduct, ImageGeometry imageGeometry) {
         init(sourceProduct,
-             imageGeometry.getMapCrs(),
-             FIT_PRODUCT_SIZE_DEFAULT,
-             REFERENCE_PIXEL_DEFAULT,
-             PropertyContainer.createObjectBacked(imageGeometry));
+                imageGeometry.getMapCrs(),
+                FIT_PRODUCT_SIZE_DEFAULT,
+                REFERENCE_PIXEL_DEFAULT,
+                PropertyContainer.createObjectBacked(imageGeometry));
     }
 
     private void init(Product sourceProduct, CoordinateReferenceSystem targetCrs, boolean fitProductSize, int referencePixelLocation,
