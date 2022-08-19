@@ -1,0 +1,79 @@
+<!--
+  ~ Copyright (C) 2021 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Level 3 Binning Operator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Level 3 Binning Operator
+        </td>
+        <td class="header" align="right"><a
+                href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border=0></a>
+        </td>
+    </tr>
+</table>
+
+<h3>Spatial Data-Day</h3>
+<p>The spatial data-day approach has been introduced in the frame of the GlobColour project. It is used to spatially and
+    temporally filter observed pixels during the L3 creation process. This shall avoid mixing pixels with observation
+    times that are too far apart.<br>
+    This type of filtering increases the duration of a day to include data from the previous and next day. This
+    extension
+    allows to select pixels with the lowest temporal discrepancy for the same spatial area.<br>
+    More detailed information can be found in the
+    <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+        <param name="content" value="https://www.globcolour.info/CDR_Docs/GlobCOLOUR_PUG_v4.1.pdf">
+        <param name="text"
+               value="<html>GlobColour Product User Guide in section <i>3.4 'The GlobColour data-day approach'</html>">
+        <param name="textFontSize" value="bigger">
+    </object>
+</p>
+<p>As parametrisation in SNAP the <b><i>minDataHour</i></b> needs to be specified. This value is sensor dependent.
+    In the GlobColour PUG this value is named the crossing nodal time (CNT). This CNT value is equal to the equator
+    crossing time (ECT) which is more commonly used.
+</p>
+
+<p>Values for some sensors are provided in the table below. For other sensors the ECT value can be looked up from
+    the sensor specification pages.
+</p>
+<table style="text-align: center;">
+    <tr>
+        <th>Instrument</th>
+        <th>MODIS (Aqua) <br> VIIRS (NPP)</th>
+        <th>SeaWiFS (SeaStar)</th>
+        <th>MERIS (Envisat) <br> OLCI (Sentinel-3)</th>
+    </tr>
+    <tr>
+        <th>CNT/ECT</th>
+        <td>13.5</td>
+        <td>12.0</td>
+        <td>10.0</td>
+    </tr>
+</table>
+
+
+<hr>
+</body>
+</html>

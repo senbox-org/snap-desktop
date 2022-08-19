@@ -8,5 +8,6 @@
     <mapID target="binning_overview" url="binning/overview.html"/>
     <mapID target="binning_user_interface" url="binning/user_interface.html"/>
     <mapID target="aggregator_descriptions" url="binning/aggregator_descriptions.html"/>
+    <mapID target="spatial_data_day" url="binning/SpatialDataDay.html"/>
 
 </map>

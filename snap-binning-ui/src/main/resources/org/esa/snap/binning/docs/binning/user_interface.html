@@ -99,13 +99,16 @@ The <b>Plus</b>-button allows to add products to the binning process.
 <p>
     The method that is used to decide which source pixels are used with respect to their observation time.
 <ul>
-    <li>NONE: ignore pixel observation time, use all source pixels.
-    <li>TIME_RANGE: use all pixels that have been acquired in the given binning period.
+    <li>NONE: ignore pixel observation time, use all source pixels.</li>
+    <li>TIME_RANGE: use all pixels that have been acquired in the given binning period.</li>
     <li>SPATIOTEMPORAL_DATADAY: use a sensor-dependent, spatial "data-day" definition with the goal to minimise the tim
         between the first and last observation contributing to the same bin in the given binning period.<br>
         The decision whether a source pixel contributes to a bin or not, is a function of the pixel's observation
         longitude and time<br>
-        Requires the parameter 'minDataHour'.
+        Requires the parameter 'minDataHour'.<br>
+        For detailed information see the <a href="SpatialDataDay.html">Spatial Data-Day</a> page.
+    </li>
+
 </ul>
 
 <h4>Configuration</h4>
