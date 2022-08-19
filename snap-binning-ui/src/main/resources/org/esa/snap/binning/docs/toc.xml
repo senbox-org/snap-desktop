@@ -10,6 +10,7 @@
                 <tocitem text="Level 3 Binning Operator" target="binning_overview">
                     <tocitem text="User Interface" target="binning_user_interface"/>
                     <tocitem text="Aggregation Algorithms" target="aggregator_descriptions"/>
+                    <tocitem text="Spatial Data-Day" target="spatial_data_day"/>
                 </tocitem>
             </tocitem>
         </tocitem>
