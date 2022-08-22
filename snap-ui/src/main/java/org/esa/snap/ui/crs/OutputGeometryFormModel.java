@@ -97,8 +97,26 @@ public class OutputGeometryFormModel {
                       PropertySet sourcePropertySet) {
         this.sourceProduct = sourceProduct;
         this.targetCrs = targetCrs;
-        this.fitProductSize = fitProductSize;
-        this.referencePixelLocation = referencePixelLocation;
+//        this.fitProductSize = fitProductSize;
+//        this.referencePixelLocation = referencePixelLocation;
+
+        double referencePixelX = sourcePropertySet.getValue("referencePixelX");
+        double referencePixelY = sourcePropertySet.getValue("referencePixelY");
+        int width = sourcePropertySet.getValue("width");
+        int height =  sourcePropertySet.getValue("height");
+        if (referencePixelX == 0.5  && referencePixelY == 0.5) {
+            this.referencePixelLocation = REFERENCE_PIXEL_UPPER_LEFT;
+        } else if (referencePixelX == width/2.0 && referencePixelY == height/2.0) {
+            this.referencePixelLocation = REFERENCE_PIXEL_SCENE_CENTER;
+        } else {
+            this.referencePixelLocation = REFERENCE_PIXEL_USER;
+        }
+
+        if (width == sourceProduct.getSceneRasterHeight() && height == sourceProduct.getSceneRasterHeight()) {
+            this.fitProductSize = true;
+        } else {
+            this.fitProductSize = false;
+        }
 
         this.propertyContainer = PropertyContainer.createValueBacked(ImageGeometry.class);
         configurePropertyContainer(propertyContainer);

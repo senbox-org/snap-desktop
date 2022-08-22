@@ -131,17 +131,7 @@ public class ReprojectionUI extends BaseOperatorUI {
             preserveResolutionCheckBox.setSelected(false);
         }
 
-//        try {
-//            paramResamplingName.setValueAsText(String.valueOf(paramMap.get("resampling")));
-//            paramIncludeTiePointGrids.setValueAsText(String.valueOf(paramMap.get("includeTiePointGrids")));
-//            paramAddDeltaBands.setValueAsText(String.valueOf(paramMap.get("addDeltaBands")));
-//            paramNoDataValue.setValueAsText(String.valueOf(paramMap.get("noDataValue")));
-//            paramMaskExpression.setValueAsText(String.valueOf(paramMap.get("maskExpression")));
-//            paramApplyValidPixelExpression.setValueAsText(String.valueOf(paramMap.get("applyValidPixelExpression")));
-//            paramRetainValidPixelExpression.setValueAsText(String.valueOf(paramMap.get("retainValidPixelExpression")));
-//        } catch(Exception e) {
-//            SystemUtils.LOG.warning(e.getMessage());
-//        }
+
         if(hasSourceProducts() && sourceProducts[0] != null) {
             crsSelectionPanel.setReferenceProduct(sourceProducts[0]);
             if((sourceProducts[0].getBand("longitude") != null && sourceProducts[0].getBand("latitude") != null) || (sourceProducts[0].getTiePointGrid("longitude") != null && sourceProducts[0].getTiePointGrid("latitude") != null)) {
