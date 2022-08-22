@@ -1,6 +1,13 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.1
+
+    [SNAP-1551] Improve binning documentation about spatial data-day
+    [SNAP-1549] Evaluation of implemented methods happens too late for Python operators
+    [SNAP-1545] Flags might be wrong when reading from GeoTiff
+    [SNAP-1533] Bing Aerial layers not working in WorlWind view 
+
 # New in SNAP 9.0.0
 
 The SNAP 9 release provides several new tools, features, and bug fixes to the users. The noteworthy news is highlighted
