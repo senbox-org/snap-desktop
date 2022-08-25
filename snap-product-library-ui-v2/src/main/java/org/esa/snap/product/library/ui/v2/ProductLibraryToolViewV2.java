@@ -26,6 +26,7 @@ import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
+import org.esa.snap.product.library.v2.activator.ProductLibraryActivator;
 import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
@@ -163,6 +164,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     @Override
     protected void componentOpened() {
         if (this.downloadRemoteProductsHelper == null) {
+            // Improve SNAP startup time by initialising Product Library on first usage
+            ProductLibraryActivator.start();
             initialize();
         }
     }
