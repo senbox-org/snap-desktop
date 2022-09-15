@@ -273,6 +273,9 @@ public final class ModulePackager {
         while (enumEntries.hasMoreElements()) {
             JarEntry file = (JarEntry) enumEntries.nextElement();
             File f = new File(unpackFolder, file.getName());
+            if (!f.toPath().normalize().startsWith(unpackFolder.toPath().normalize())) {
+                throw new IOException("Bad zip entry");
+            }
             if (file.isDirectory()) {
                 Files.createDirectories(f.toPath());
                 continue;
