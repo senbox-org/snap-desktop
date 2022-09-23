@@ -58,7 +58,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
         implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
-    private final Lookup.Result<Product> result;
+    private final Lookup.Result<ProductNode> result;
     private VectorDataNodeImporter importer;
     private static final String vector_data_type = "CSV";
 
@@ -68,7 +68,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
 
     public ImportVectorDataNodeFromCsvAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(Product.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
@@ -100,8 +100,8 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
     @Override
     public void actionPerformed(ActionEvent e) {
         final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
-                                                         new String[]{".txt", ".dat", ".csv"},
-                                                         "Plain text");
+                new String[]{".txt", ".dat", ".csv"},
+                "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new DefaultVectorDataNodeReader(), "Import CSV file", "csv.io.dir");
         importer.importGeometry(SnapApp.getDefault());
     }
@@ -125,7 +125,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
                 CoordinateReferenceSystem modelCrs = product.getSceneCRS();
                 reader = new FileReader(file);
                 return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
-                                                 modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);
+                        modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);
             } finally {
                 if (reader != null) {
                     reader.close();

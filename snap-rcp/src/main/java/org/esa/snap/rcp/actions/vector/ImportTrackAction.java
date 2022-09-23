@@ -106,7 +106,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.AUTO;
 public class ImportTrackAction extends AbstractSnapAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
-    private final Lookup.Result<Product> result;
+    private final Lookup.Result<ProductNode> result;
 
     public ImportTrackAction() {
         this(Utilities.actionsGlobalContext());
@@ -114,7 +114,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
 
     public ImportTrackAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(Product.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
@@ -193,7 +193,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         while ((record = csvReader.readDoubleRecord()) != null) {
             if (record.length < 3) {
                 throw new IOException("Illegal track file format.\n" +
-                                              "Expecting tab-separated lines containing 3 values: lat, lon, data.");
+                        "Expecting tab-separated lines containing 3 values: lat, lon, data.");
             }
 
             float lat = (float) record[0];
