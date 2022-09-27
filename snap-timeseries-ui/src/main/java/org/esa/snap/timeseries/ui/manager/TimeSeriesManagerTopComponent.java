@@ -64,7 +64,7 @@ import java.util.WeakHashMap;
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.manager.TimeSeriesManagerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows/Time Series", position = 1210, separatorBefore = 1200),
+        @ActionReference(path = "Menu/Raster/Time Series", position = 1210, separatorBefore = 1200),
         @ActionReference(path = "Toolbars/Time Series", position = 10)
 })
 @NbBundle.Messages({

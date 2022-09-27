@@ -71,7 +71,7 @@ import java.util.List;
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.player.TimeSeriesPlayerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows/Time Series", position = 1230),
+        @ActionReference(path = "Menu/Raster/Time Series", position = 1230),
         @ActionReference(path = "Toolbars/Time Series", position = 30)
 })
 @NbBundle.Messages({
