@@ -22,40 +22,21 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.rcp.actions.view.OpenImageViewAction;
+import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
-import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
-import org.esa.snap.timeseries.core.timeseries.datamodel.AxisMapping;
-import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
-import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocationType;
-import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
-import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesListener;
-import org.esa.snap.timeseries.ui.DefaultProductLocationsPaneModel;
-import org.esa.snap.timeseries.ui.DefaultVariableSelectionPaneModel;
-import org.esa.snap.timeseries.ui.ProductLocationsPane;
-import org.esa.snap.timeseries.ui.ProductLocationsPaneModel;
-import org.esa.snap.timeseries.ui.Variable;
-import org.esa.snap.timeseries.ui.VariableSelectionPane;
-import org.esa.snap.timeseries.ui.VariableSelectionPaneModel;
+import org.esa.snap.timeseries.core.timeseries.datamodel.*;
+import org.esa.snap.timeseries.ui.*;
 import org.esa.snap.timeseries.ui.assistant.TimeSeriesAssistantAction;
 import org.esa.snap.ui.NamesAssociationDialog;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.AbstractListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URL;
@@ -196,7 +177,7 @@ class TimeSeriesManagerForm {
         final Product tsProduct = timeSeries.getTsProduct();
 
         nameField.setText(tsProduct.getDisplayName());
-        crsField.setText(tsProduct.getGeoCoding().getMapCRS().getName().getCode());
+        crsField.setText(tsProduct.getSceneGeoCoding().getMapCRS().getName().getCode());
         final String startTime = dateFormat.format(tsProduct.getStartTime().getAsDate());
         startField.setText(startTime);
         String endTime = dateFormat.format(tsProduct.getEndTime().getAsDate());
@@ -466,7 +447,7 @@ class TimeSeriesManagerForm {
         public void addDirectory(File directory, boolean recursive) {
             timeSeries.addProductLocation(
                     new ProductLocation(recursive ? ProductLocationType.DIRECTORY_REC : ProductLocationType.DIRECTORY,
-                                        directory.getAbsolutePath()));
+                            directory.getAbsolutePath()));
             final int index = timeSeries.getProductLocations().size() - 1;
             fireIntervalAdded(this, index, index);
         }

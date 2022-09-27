@@ -4,25 +4,22 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
 import org.esa.snap.timeseries.core.insitu.csv.InsituRecord;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AxisMapping;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
-import org.esa.snap.util.ProductUtils;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 
-import javax.swing.SwingWorker;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 class TimeSeriesGraphUpdater extends SwingWorker<List<TimeSeries>, Void> {
@@ -143,8 +140,8 @@ class TimeSeriesGraphUpdater extends SwingWorker<List<TimeSeries>, Void> {
         for (InsituRecord insituRecord : insituRecords) {
             final ProductData.UTC startTime = ProductData.UTC.create(insituRecord.time, 0);
             final Millisecond timePeriod = new Millisecond(startTime.getAsDate(),
-                                                           ProductData.UTC.UTC_TIME_ZONE,
-                                                           Locale.getDefault());
+                    ProductData.UTC.UTC_TIME_ZONE,
+                    Locale.getDefault());
             timeSeries.addOrUpdate(timePeriod, insituRecord.value);
         }
         return timeSeries;
@@ -162,8 +159,8 @@ class TimeSeriesGraphUpdater extends SwingWorker<List<TimeSeries>, Void> {
             if (timeCoding != null) {
                 final ProductData.UTC startTime = timeCoding.getStartTime();
                 final Millisecond timePeriod = new Millisecond(startTime.getAsDate(),
-                                                               ProductData.UTC.UTC_TIME_ZONE,
-                                                               Locale.getDefault());
+                        ProductData.UTC.UTC_TIME_ZONE,
+                        Locale.getDefault());
                 final double value = getValue(band, pixelX, pixelY, currentLevel);
                 timeSeries.add(new TimeSeriesDataItem(timePeriod, value));
             }
@@ -177,12 +174,12 @@ class TimeSeriesGraphUpdater extends SwingWorker<List<TimeSeries>, Void> {
             final RenderedImage validMask = band.getValidMaskImage().getImage(currentLevel);
             final Raster validMaskData = validMask.getData(pixelRect);
             if (validMaskData.getSample(pixelX, pixelY, 0) > 0) {
-                return ProductUtils.getGeophysicalSampleDouble(band, pixelX, pixelY, currentLevel);
+                return ProductUtils.getGeophysicalSampleAsDouble(band, pixelX, pixelY, currentLevel);
             } else {
                 return band.getNoDataValue();
             }
         } else {
-            return ProductUtils.getGeophysicalSampleDouble(band, pixelX, pixelY, currentLevel);
+            return ProductUtils.getGeophysicalSampleAsDouble(band, pixelX, pixelY, currentLevel);
         }
     }
 

@@ -21,16 +21,9 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.glevel.MultiLevelSource;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Mask;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.product.ProductSceneImage;
-import org.esa.snap.core.ui.product.ProductSceneView;
-import org.esa.snap.glevel.BandImageMultiLevelSource;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
@@ -40,7 +33,8 @@ import org.esa.snap.timeseries.core.TimeSeriesModule;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesListener;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.ui.product.ProductSceneImage;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -48,10 +42,10 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -166,7 +160,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
     private void reconfigureBaseImageLayer(ProductSceneView sceneView) {
         final Layer rootLayer = currentView.getRootLayer();
         final ImageLayer baseImageLayer = (ImageLayer) LayerUtils.getChildLayerById(rootLayer,
-                                                                                    ProductSceneView.BASE_IMAGE_LAYER_ID);
+                ProductSceneView.BASE_IMAGE_LAYER_ID);
         final List<Band> bandList = form.getBandList(currentView.getRaster().getName());
         final Band band = (Band) sceneView.getRaster();
         int nextIndex = bandList.indexOf(band) + 1;
@@ -176,9 +170,9 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
 
         if (!(baseImageLayer instanceof BlendImageLayer)) {
             final Band nextBand = bandList.get(nextIndex);
-            MultiLevelSource nextLevelSource = BandImageMultiLevelSource.create(nextBand, ProgressMonitor.NULL);
+            MultiLevelSource nextLevelSource = ColoredBandImageMultiLevelSource.create(nextBand, ProgressMonitor.NULL);
             final BlendImageLayer blendLayer = new BlendImageLayer(baseImageLayer.getMultiLevelSource(),
-                                                                   nextLevelSource);
+                    nextLevelSource);
 
             final List<Layer> children = rootLayer.getChildren();
             final int baseIndex = children.indexOf(baseImageLayer);
@@ -227,8 +221,8 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
 
     private void maybeUpdateCurrentView(ProductSceneView view, String viewProductType) {
         if (!view.isRGB() &&
-            viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
-            TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null) {
+                viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
+                TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null) {
             setCurrentView(view);
         }
     }
@@ -256,8 +250,8 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
                 value = currentValue;
                 final int firstBandIndex = MathUtils.floorInt(currentValue / (float) stepsPerTimespan);
                 final int secondBandIndex = MathUtils.ceilInt(currentValue / (float) stepsPerTimespan);
-                BandImageMultiLevelSource newSource =
-                        BandImageMultiLevelSource.create(bandList.get(secondBandIndex), ProgressMonitor.NULL);
+                ColoredBandImageMultiLevelSource newSource =
+                        ColoredBandImageMultiLevelSource.create(bandList.get(secondBandIndex), ProgressMonitor.NULL);
                 if (secondBandIndex == firstBandIndex) {
                     exchangeRasterInProductSceneView(bandList.get(firstBandIndex));
                     blendLayer.setBaseLayer(newSource);
@@ -282,7 +276,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
         @Override
         public void timeSeriesChanged(TimeSeriesChangeEvent event) {
             if (event.getType() == TimeSeriesChangeEvent.PROPERTY_PRODUCT_LOCATIONS ||
-                event.getType() == TimeSeriesChangeEvent.PROPERTY_EO_VARIABLE_SELECTION) {
+                    event.getType() == TimeSeriesChangeEvent.PROPERTY_EO_VARIABLE_SELECTION) {
                 form.configureTimeSlider(currentView.getRaster());
             }
         }

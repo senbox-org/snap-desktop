@@ -58,7 +58,7 @@
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
         <!--<module>snap-scripting</module>-->
-        <!--<module>snap-timeseries-ui</module>-->
+        <module>snap-timeseries-ui</module>
     </modules>
 
     <dependencyManagement>

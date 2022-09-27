@@ -16,8 +16,8 @@
 
 package org.esa.snap.timeseries.ui.assistant;
 
-import org.esa.snap.core.ui.assistant.AssistantPane;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
+import org.esa.snap.ui.assistant.AssistantPane;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;

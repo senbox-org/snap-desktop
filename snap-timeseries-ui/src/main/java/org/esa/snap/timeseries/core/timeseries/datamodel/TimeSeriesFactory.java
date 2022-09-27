@@ -19,8 +19,8 @@ package org.esa.snap.timeseries.core.timeseries.datamodel;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
-import org.esa.snap.util.ProductUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +78,8 @@ public class TimeSeriesFactory {
 
             final Product referenceProduct = getFirstReprojectedSourceProduct(productLocations);
             final Product timeSeriesProduct = new Product(timeSeriesName, TimeSeriesImpl.TIME_SERIES_PRODUCT_TYPE,
-                                                          referenceProduct.getSceneRasterWidth(),
-                                                          referenceProduct.getSceneRasterHeight());
+                    referenceProduct.getSceneRasterWidth(),
+                    referenceProduct.getSceneRasterHeight());
             timeSeriesProduct.setDescription("A time series product");
             ProductUtils.copyGeoCoding(referenceProduct, timeSeriesProduct);
             timeSeriesProduct.setPreferredTileSize(referenceProduct.getPreferredTileSize());

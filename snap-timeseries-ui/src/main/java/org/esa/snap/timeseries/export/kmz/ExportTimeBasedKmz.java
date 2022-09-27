@@ -18,31 +18,23 @@ package org.esa.snap.timeseries.export.kmz;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.MapGeoCoding;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
-import org.esa.snap.core.ui.product.ProductSceneView;
-import org.esa.snap.jai.ImageManager;
+import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.io.SnapFileFilter;
+import org.esa.snap.core.util.kmz.KmlFeature;
+import org.esa.snap.core.util.kmz.KmlFolder;
+import org.esa.snap.core.util.kmz.KmlGroundOverlay;
+import org.esa.snap.core.util.kmz.KmzExporter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.snap.timeseries.export.util.TimeSeriesExportHelper;
-import org.esa.snap.util.io.SnapFileFilter;
-import org.esa.snap.util.kmz.KmlFeature;
-import org.esa.snap.util.kmz.KmlFolder;
-import org.esa.snap.util.kmz.KmlGroundOverlay;
-import org.esa.snap.util.kmz.KmzExporter;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -50,16 +42,9 @@ import org.opengis.geometry.BoundingBox;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
 import java.io.BufferedOutputStream;
@@ -69,7 +54,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipOutputStream;
 
-import static org.esa.snap.timeseries.export.util.TimeSeriesExportHelper.*;
+import static org.esa.snap.timeseries.export.util.TimeSeriesExportHelper.getOutputFileWithLevelOption;
 
 @ActionID(
         category = "File",
@@ -114,7 +99,7 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
     @Override
     public void actionPerformed(ActionEvent e) {
         view = SnapApp.getDefault().getSelectedProductSceneView();
-        final GeoCoding geoCoding = view.getProduct().getGeoCoding();
+        final GeoCoding geoCoding = view.getProduct().getSceneGeoCoding();
         boolean isGeographic = false;
         if (geoCoding instanceof MapGeoCoding) {
             MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
@@ -138,18 +123,18 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
             worker.executeWithBlocking();
         } else {
             String message = "Product must be in ''Geographic Lat/Lon'' projection.";
-            SnapDialogs.showInformation(message, null);
+            Dialogs.showInformation(message, null);
         }
     }
 
 
     protected File fetchOutputFile(ProductSceneView sceneView) {
         TimeSeriesExportHelper.FileWithLevel fileWithLevel = getOutputFileWithLevelOption(sceneView.getRaster(),
-                                                                                          "Export time series as time based KMZ",
-                                                                                          "time_series_",
-                                                                                          IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                                                                                          kmzFileFilter,
-                                                                                          HELP_ID);
+                "Export time series as time based KMZ",
+                "time_series_",
+                IMAGE_EXPORT_DIR_PREFERENCES_KEY,
+                kmzFileFilter,
+                HELP_ID);
         level = fileWithLevel.level;
         return fileWithLevel.file;
     }
@@ -172,8 +157,8 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
         for (RasterDataNode raster : bands) {
             final GeoCoding geoCoding = raster.getGeoCoding();
             final PixelPos upperLeftPP = new PixelPos(0, 0);
-            final PixelPos lowerRightPP = new PixelPos(raster.getSceneRasterWidth(),
-                                                       raster.getSceneRasterHeight());
+            final PixelPos lowerRightPP = new PixelPos(raster.getRasterWidth(),
+                    raster.getRasterHeight());
             final GeoPos upperLeftGP = geoCoding.getGeoPos(upperLeftPP, null);
             final GeoPos lowerRightGP = geoCoding.getGeoPos(lowerRightPP, null);
             double north = upperLeftGP.getLat();
@@ -185,7 +170,7 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
             }
 
             final BoundingBox referencedEnvelope = new ReferencedEnvelope(west, east, north, south,
-                                                                          DefaultGeographicCRS.WGS84);
+                    DefaultGeographicCRS.WGS84);
 
             TimeCoding timeCoding = timeSeries.getRasterTimeMap().get(raster);
             if (timeCoding != null) {
@@ -242,8 +227,8 @@ public class ExportTimeBasedKmz extends AbstractAction implements ContextAwareAc
             }
             if (exception != null) {
                 String message = String.format("Error occurred while exporting to KMZ.%n%s",
-                                               exception.getMessage());
-                SnapDialogs.showError(title, message);
+                        exception.getMessage());
+                Dialogs.showError(title, message);
             }
 
         }

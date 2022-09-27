@@ -20,27 +20,18 @@ import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.FolderChooser;
 import org.esa.snap.core.dataio.ProductIOPlugIn;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocationType;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.SnapFileChooser;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Iterator;
@@ -92,7 +83,7 @@ public class ProductLocationsPane extends JPanel {
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                                                           boolean cellHasFocus) {
                 final JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
-                                                                                 cellHasFocus);
+                        cellHasFocus);
                 if (value instanceof ProductLocation) {
                     final ProductLocation location = (ProductLocation) value;
                     String path = location.getPath();
@@ -201,7 +192,7 @@ public class ProductLocationsPane extends JPanel {
                 SnapFileFilter productFileFilter = plugIn.getProductFileFilter();
                 fileChooser.addChoosableFileFilter(productFileFilter);
                 if (!ALL_FILES.equals(lastFormat) &&
-                    productFileFilter.getFormatName().equals(lastFormat)) {
+                        productFileFilter.getFormatName().equals(lastFormat)) {
                     actualFileFilter = productFileFilter;
                 }
             }

@@ -16,12 +16,12 @@
 
 package org.esa.snap.timeseries.ui.assistant;
 
-import org.esa.snap.core.ui.assistant.AssistantPage;
 import org.esa.snap.timeseries.ui.Variable;
 import org.esa.snap.timeseries.ui.VariableSelectionPane;
 import org.esa.snap.timeseries.ui.VariableSelectionPaneModel;
+import org.esa.snap.ui.assistant.AssistantPage;
 
-import java.awt.Component;
+import java.awt.*;
 
 class TimeSeriesAssistantPage_VariableSelection extends AbstractTimeSeriesAssistantPage {
 

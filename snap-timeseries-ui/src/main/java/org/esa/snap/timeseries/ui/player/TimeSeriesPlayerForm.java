@@ -20,26 +20,16 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.product.ProductSceneView;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.snap.timeseries.export.animations.AnimatedGifExport;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.HelpCtx;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.Timer;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -177,7 +167,7 @@ class TimeSeriesPlayerForm extends JPanel {
                 setUIEnabled(true);
                 labelTable.put(0, new JLabel(createSliderLabelFormattedText(bandList, 0)));
                 labelTable.put(maximum,
-                               new JLabel(createSliderLabelFormattedText(bandList, maximum / stepsPerTimespan)));
+                        new JLabel(createSliderLabelFormattedText(bandList, maximum / stepsPerTimespan)));
                 timeSlider.setLabelTable(labelTable);
             } else {
                 timeSlider.setLabelTable(null);
@@ -356,7 +346,7 @@ class TimeSeriesPlayerForm extends JPanel {
         exportButton.setToolTipText("Export as animated gif");
         exportButton.addActionListener(e -> {
             final AnimatedGifExport export = new AnimatedGifExport(TimeSeriesPlayerForm.this,
-                                                                   "Export time series as animated gif");
+                    "Export time series as animated gif");
             final String varName = AbstractTimeSeries.rasterToVariableName(currentView.getRaster().getName());
             export.createFrames(timeSeries.getBandsForVariable(varName));
             export.executeWithBlocking();

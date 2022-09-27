@@ -21,11 +21,9 @@ import com.bc.ceres.glevel.MultiLevelSource;
 import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
-import org.esa.snap.glevel.BandImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
@@ -52,12 +50,12 @@ class BlendImageLayer extends ImageLayer {
         return getBaseMultiLevelSource();
     }
 
-    public BandImageMultiLevelSource getBaseMultiLevelSource() {
-        return (BandImageMultiLevelSource) baseLayer.getMultiLevelSource();
+    public ColoredBandImageMultiLevelSource getBaseMultiLevelSource() {
+        return (ColoredBandImageMultiLevelSource) baseLayer.getMultiLevelSource();
     }
 
-    public BandImageMultiLevelSource getBlendMultiLevelSource() {
-        return (BandImageMultiLevelSource) blendLayer.getMultiLevelSource();
+    public ColoredBandImageMultiLevelSource getBlendMultiLevelSource() {
+        return (ColoredBandImageMultiLevelSource) blendLayer.getMultiLevelSource();
     }
 
     @Override
@@ -123,11 +121,11 @@ class BlendImageLayer extends ImageLayer {
         blendLayer.dispose();
     }
 
-    void setBaseLayer(BandImageMultiLevelSource multiLevelSource) {
+    void setBaseLayer(ColoredBandImageMultiLevelSource multiLevelSource) {
         baseLayer = new ImageLayer(multiLevelSource);
     }
 
-    void setBlendLayer(BandImageMultiLevelSource multiLevelSource) {
+    void setBlendLayer(ColoredBandImageMultiLevelSource multiLevelSource) {
         blendLayer = new ImageLayer(multiLevelSource);
     }
 

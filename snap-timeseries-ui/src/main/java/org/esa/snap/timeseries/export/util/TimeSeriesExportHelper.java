@@ -1,22 +1,15 @@
 package org.esa.snap.timeseries.export.util;
 
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.SnapFileChooser;
 import org.openide.util.HelpCtx;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.Enumeration;
 
@@ -112,9 +105,9 @@ public class TimeSeriesExportHelper {
     }
 
     public static boolean promptForOverwrite(File file) {
-        return !file.exists() || SnapDialogs.Answer.YES == SnapDialogs.requestDecision("File Exists",
-                                                                                       "The file\n" + "'" + file.getPath() + "'\n" + "already exists.\n\n" + "Do you really want to overwrite it?\n",
-                                                                                       false, null);
+        return !file.exists() || Dialogs.Answer.YES == Dialogs.requestDecision("File Exists",
+                "The file\n" + "'" + file.getPath() + "'\n" + "already exists.\n\n" + "Do you really want to overwrite it?\n",
+                false, null);
     }
 
     private static int parseLevel(ButtonGroup buttonGroup) {

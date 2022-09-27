@@ -24,7 +24,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
-import org.esa.snap.util.Guardian;
+import org.esa.snap.core.util.Guardian;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -68,10 +68,10 @@ public abstract class AbstractTimeSeries {
 
     public static boolean isPixelValid(Product tsProduct, PixelPos pixelPos) {
         return pixelPos.isValid() &&
-               pixelPos.x < tsProduct.getSceneRasterWidth() &&
-               pixelPos.x >= 0 &&
-               pixelPos.y < tsProduct.getSceneRasterHeight() &&
-               pixelPos.y >= 0;
+                pixelPos.x < tsProduct.getSceneRasterWidth() &&
+                pixelPos.x >= 0 &&
+                pixelPos.y < tsProduct.getSceneRasterHeight() &&
+                pixelPos.y >= 0;
     }
 
     public abstract List<String> getEoVariables();

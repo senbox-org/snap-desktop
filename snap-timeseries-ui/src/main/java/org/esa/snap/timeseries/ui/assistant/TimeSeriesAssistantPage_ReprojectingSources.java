@@ -4,31 +4,20 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.MapGeoCoding;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductFilter;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.ui.CollocationCrsForm;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
-import org.esa.snap.core.ui.AppContext;
-import org.esa.snap.core.ui.assistant.AssistantPage;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.snap.timeseries.ui.ProductLocationsPaneModel;
-import org.esa.snap.util.ProductUtils;
+import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.assistant.AssistantPage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeListener;
@@ -119,7 +108,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
         public CoordinateReferenceSystem getCRS(GeoPos referencePos) {
             Product collocationProduct = collocateProductSelector.getSelectedProduct();
             if (collocationProduct != null) {
-                return collocationProduct.getGeoCoding().getMapCRS();
+                return collocationProduct.getSceneGeoCoding().getMapCRS();
             }
             return null;
         }
@@ -188,7 +177,7 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
                 }
             }
             setErrorMessage("You need to specify a projected product as collocation product.\n" +
-                            "At least one product within the time series needs to intersect the collocation product.");
+                    "At least one product within the time series needs to intersect the collocation product.");
             return false;
         }
 
@@ -197,12 +186,12 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
         }
 
         private boolean productsIntersect(Product timeSeriesSourceProduct, Product collocationProduct) {
-            if (collocationProduct.getGeoCoding() == null) {
+            if (collocationProduct.getSceneGeoCoding() == null) {
                 return false;
             }
-            final GeoCoding geoCoding = collocationProduct.getGeoCoding();
+            final GeoCoding geoCoding = collocationProduct.getSceneGeoCoding();
             if (geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos()
-                && ((geoCoding instanceof CrsGeoCoding)||(geoCoding instanceof MapGeoCoding))) {
+                    && ((geoCoding instanceof CrsGeoCoding)||(geoCoding instanceof MapGeoCoding))) {
                 final GeneralPath[] sourcePaths = ProductUtils.createGeoBoundaryPaths(timeSeriesSourceProduct);
                 final GeneralPath[] collocationPaths = ProductUtils.createGeoBoundaryPaths(collocationProduct);
                 for (GeneralPath sourcePath : sourcePaths) {

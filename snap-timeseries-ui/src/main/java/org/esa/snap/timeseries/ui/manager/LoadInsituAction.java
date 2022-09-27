@@ -16,17 +16,16 @@
 
 package org.esa.snap.timeseries.ui.manager;
 
-import org.esa.snap.core.ui.UIUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.insitu.InsituLoader;
 import org.esa.snap.timeseries.core.insitu.InsituLoaderFactory;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
+import org.esa.snap.ui.SnapFileChooser;
+import org.esa.snap.ui.UIUtils;
 
-import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;

@@ -17,32 +17,14 @@
 package org.esa.snap.ui;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.ui.ModalDialog;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.AbstractListModel;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -326,7 +308,7 @@ public class NamesAssociationDialog extends ModalDialog {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-        // todo - don't allow the the user to select center/right names which are already selected for another alias
+            // todo - don't allow the the user to select center/right names which are already selected for another alias
             final ArrayList<Integer> selectedIndices = new ArrayList<>();
             for (int index : variableNames.getSelectedIndices()) {
                 selectedIndices.add(index);

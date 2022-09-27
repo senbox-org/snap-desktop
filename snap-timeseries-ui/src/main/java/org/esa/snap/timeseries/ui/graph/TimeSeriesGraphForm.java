@@ -17,22 +17,17 @@
 package org.esa.snap.timeseries.ui.graph;
 
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.product.ProductSceneView;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.openide.util.HelpCtx;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
 
 
 class TimeSeriesGraphForm {
@@ -70,8 +65,8 @@ class TimeSeriesGraphForm {
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                    BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         mainPanel.add(chartPanel);
         mainPanel.add(createButtonPanel(helpID));
         mainPanel.add(validatorUI.createUI());
@@ -84,7 +79,7 @@ class TimeSeriesGraphForm {
 
     private JPanel createButtonPanel(final String helpID) {
         showTimeSeriesForSelectedPinsButton = ToolButtonFactory.createButton(
-                    UIUtils.loadImageIcon("icons/SelectedPinSpectra24.gif"), true);
+                UIUtils.loadImageIcon("icons/SelectedPinSpectra24.gif"), true);
         showTimeSeriesForSelectedPinsButton.addActionListener(e -> {
             if (graphModel.isShowingAllPins()) {
                 showTimeSeriesForAllPinsButton.setSelected(false);
@@ -98,7 +93,7 @@ class TimeSeriesGraphForm {
         //////////////////////////////////////////
 
         showTimeSeriesForAllPinsButton = ToolButtonFactory.createButton(
-                    UIUtils.loadImageIcon("icons/PinSpectra24.gif"), true);
+                UIUtils.loadImageIcon("icons/PinSpectra24.gif"), true);
         showTimeSeriesForAllPinsButton.addActionListener(e -> {
             if (graphModel.isShowingSelectedPins()) {
                 showTimeSeriesForSelectedPinsButton.setSelected(false);
@@ -112,7 +107,7 @@ class TimeSeriesGraphForm {
         //////////////////////////////////////////
 
         showCursorTimeSeriesButton = ToolButtonFactory.createButton(
-                    UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
+                UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showCursorTimeSeriesButton.addActionListener(e -> graphModel.setIsShowingCursorTimeSeries(showCursorTimeSeriesButton.isSelected()));
         showCursorTimeSeriesButton.setToolTipText("Show time series for cursor");
         showCursorTimeSeriesButton.setSelected(true);
@@ -120,8 +115,8 @@ class TimeSeriesGraphForm {
         //////////////////////////////////////////
 
         exportTimeSeriesButton = ToolButtonFactory.createButton(
-                    UIUtils.loadImageIcon("icons/Export24.gif"),
-                    false);
+                UIUtils.loadImageIcon("icons/Export24.gif"),
+                false);
         exportTimeSeriesButton.addActionListener(e -> {
             final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
 

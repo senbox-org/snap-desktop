@@ -208,6 +208,10 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         }
     }
 
+    public void openProductSceneView() {
+        openProductSceneView(rasterDataNode);
+    }
+
     private void openProductSceneView(RasterDataNode rasterDataNode) {
         SnapApp snapApp = SnapApp.getDefault();
         snapApp.setStatusBarMessage("Opening image view...");
@@ -270,8 +274,8 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getDefault().getPreferencesPropertyMap(),
-                                                   SubProgressMonitor.create(pm, 1));
+                        SnapApp.getDefault().getPreferencesPropertyMap(),
+                        SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();
             sceneImage.initMaskCollectionLayer();
