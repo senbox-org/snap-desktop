@@ -1,6 +1,10 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.2
+    [SNAP-1234] Image-Filter operator consumes to much memory
+    [SNAP-254] Align FilterOperator with Image Filters from GUI
+
 # New in SNAP 9.0.1
 
     [SNAP-1551] Improve binning documentation about spatial data-day
