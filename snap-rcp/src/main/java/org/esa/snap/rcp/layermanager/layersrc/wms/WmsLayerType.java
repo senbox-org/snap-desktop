@@ -33,7 +33,6 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.data.wms.request.GetMapRequest;
 import org.geotools.data.wms.response.GetMapResponse;
@@ -41,7 +40,7 @@ import org.geotools.ows.ServiceException;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -134,7 +133,8 @@ public class WmsLayerType extends ImageLayer.Type {
             mapRequest.setSRS(crsEnvelope.getEPSGCode()); // e.g. "EPSG:4326" = Geographic CRS
             mapRequest.setBBox(crsEnvelope);
             mapRequest.setFormat("image/png");
-            final PlanarImage image = PlanarImage.wrapRenderedImage(downloadWmsImage(mapRequest, wmsServer));
+            BufferedImage renderedImage = downloadWmsImage(mapRequest, wmsServer);
+            final PlanarImage image = PlanarImage.wrapRenderedImage(renderedImage);
             RasterDataNode raster = configuration.getValue(WmsLayerType.PROPERTY_NAME_RASTER);
 
             final int sceneWidth = raster.getRasterWidth();
@@ -155,7 +155,7 @@ public class WmsLayerType extends ImageLayer.Type {
     }
 
     private static WebMapServer getWmsServer(PropertySet configuration) throws IOException, ServiceException {
-        return new WebMapServer(configuration.<WMSCapabilities>getValue(WmsLayerType.PROPERTY_NAME_URL));
+        return new WebMapServer(configuration.<URL>getValue(WmsLayerType.PROPERTY_NAME_URL));
     }
 
     private static BufferedImage downloadWmsImage(GetMapRequest mapRequest, WebMapServer wms) throws IOException,
