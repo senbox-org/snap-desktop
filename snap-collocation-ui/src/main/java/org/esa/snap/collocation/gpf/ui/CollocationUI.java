@@ -3,7 +3,6 @@ package org.esa.snap.collocation.gpf.ui;
 import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.collocation.ResamplingType;
@@ -13,14 +12,19 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
-import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.GridLayout;
 import java.util.Map;
 
 /**
@@ -28,14 +32,13 @@ import java.util.Map;
  */
 public class CollocationUI extends BaseOperatorUI {
 
-    private OperatorDescriptor operatorDescriptor;
-    //private OperatorParameterSupport parameterSupport;
+    private final JComboBox<String> masterCombo = new JComboBox<>();
+    private final JComboBox<ResamplingType> resampleTypeCombo = new JComboBox<>();
+    private final JTextField productTypeField = new JTextField("COLLOCATED");
+    private final JTextField slavePatternField = new JTextField("${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}");
+    private final JTextField masterPatternField = new JTextField("${ORIGINAL_NAME}_M");
 
-    private JComboBox masterCombo = new JComboBox();
-    private JComboBox resampleTypeCombo = new JComboBox();
-    private JTextField productTypeField = new JTextField("COLLOCATED");
-    private JTextField slavePatternField = new JTextField("${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}");
-    private JTextField masterPatternField = new JTextField("${ORIGINAL_NAME}_M");
+    private JCheckBox copySecMetadataCheckBox;
     private JCheckBox renameMasterCheckBox;
     private JCheckBox renameSlaveCheckBox;
 
@@ -46,12 +49,6 @@ public class CollocationUI extends BaseOperatorUI {
         if (operatorSpi == null) {
             throw new IllegalArgumentException("No SPI found for operator name '" + operatorName + "'");
         }
-
-        operatorDescriptor = operatorSpi.getOperatorDescriptor();
-
-        //parameterSupport = new OperatorParameterSupport(operatorDescriptor);
-        //final PropertySet propertySet = parameterSupport.getPropertySet();
-
 
         initializeOperatorUI(operatorName, parameterMap);
         final JComponent panel = createPanel();
@@ -78,30 +75,31 @@ public class CollocationUI extends BaseOperatorUI {
     public void updateParameters() {
 
         String masterNameSelected = (String) masterCombo.getSelectedItem();
-        if(hasSourceProducts()) {
+        if (hasSourceProducts()) {
             masterCombo.removeAllItems();
-            for(Product product : sourceProducts) {
-                if(!product.isMultiSize()) {
+            for (Product product : sourceProducts) {
+                if (!product.isMultiSize()) {
                     masterCombo.addItem(product.getName());
                 }
             }
-            if(masterCombo.getItemCount() >0 ) {
+            if (masterCombo.getItemCount() > 0) {
                 masterCombo.setSelectedItem(masterCombo.getItemAt(0));
             }
         }
-        if(masterNameSelected != null && masterNameSelected.length() > 0) {
+        if (masterNameSelected != null && masterNameSelected.length() > 0) {
             masterCombo.setSelectedItem(masterNameSelected);
         }
 
         paramMap.clear();
-        paramMap.put("masterProductName", (String) masterCombo.getSelectedItem());
+        paramMap.put("masterProductName", masterCombo.getSelectedItem());
         paramMap.put("targetProductName", "_collocated");
         paramMap.put("targetProductType", productTypeField.getText());
+        paramMap.put("copySecondaryMetadata", copySecMetadataCheckBox.isSelected());
         paramMap.put("renameMasterComponents", renameMasterCheckBox.isSelected());
         paramMap.put("renameSlaveComponents", renameSlaveCheckBox.isSelected());
         paramMap.put("masterComponentPattern", masterPatternField.getText());
         paramMap.put("slaveComponentPattern", slavePatternField.getText());
-        paramMap.put("resamplingType", (ResamplingType) resampleTypeCombo.getSelectedItem());
+        paramMap.put("resamplingType", resampleTypeCombo.getSelectedItem());
 
     }
 
@@ -157,6 +155,13 @@ public class CollocationUI extends BaseOperatorUI {
         productTypePanel.add(productTypeLabel);
         productTypePanel.add(productTypeField);
 
+        JPanel secMetaPanel = new JPanel(new GridLayout(1, 1));
+        PropertyDescriptor descriptorSecMetadata = propertySet.getProperty("copySecondaryMetadata").getDescriptor();
+        copySecMetadataCheckBox = new JCheckBox(descriptorSecMetadata.getAttribute("displayName").toString());
+        copySecMetadataCheckBox.setSelected(true);
+        copySecMetadataCheckBox.setToolTipText(descriptorProductType.getAttribute("description").toString());
+        secMetaPanel.add(copySecMetadataCheckBox);
+
         JPanel renameMasterPanel = new JPanel(new GridLayout(1, 1));
         PropertyDescriptor descriptorRenameMaster = propertySet.getProperty("renameMasterComponents").getDescriptor();
         renameMasterCheckBox = new JCheckBox(descriptorRenameMaster.getAttribute("displayName").toString());
@@ -195,7 +200,7 @@ public class CollocationUI extends BaseOperatorUI {
         final JPanel parametersPanel = new JPanel(tableLayout);
         parametersPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         parametersPanel.add(masterSelectionPanel);
-        parametersPanel.add(productTypePanel);
+        parametersPanel.add(secMetaPanel);
         parametersPanel.add(renameMasterPanel);
         parametersPanel.add(renameSlavePanel);
         parametersPanel.add(masterPatternPanel);

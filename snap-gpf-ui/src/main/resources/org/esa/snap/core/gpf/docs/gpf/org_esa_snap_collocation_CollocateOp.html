@@ -9,8 +9,8 @@
     <tr class="header">
         <td class="header">&nbsp;Collocate Operator</td>
         <td class="header" align="right">
-            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
-                <img src="images/snap_header.jpg" border="0"/></a>
+          <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+            <img src="images/snap_header.jpg" border="0"/></a>
         </td>
     </tr>
 </table>
@@ -75,24 +75,31 @@ This operator is used to spatially collocate two data products. It requires two 
   <td>The name of the target product</td>
   <td></td>
 </tr>
-<tr>
-  <td><code>targetProductType</code></td>
-  <td><code>String</code></td>
-  <td><code>COLLOCATED</code></td>
-  <td>The product type string for the target product (informal)</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>renameMasterComponents</code></td>
-  <td><code>boolean</code></td>
-  <td><code>true</code></td>
-  <td>Whether or not components of the master product shall be renamed in the target product.</td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>renameSlaveComponents</code></td>
-  <td><code>boolean</code></td>
-  <td><code>true</code></td>
+  <tr>
+    <td><code>targetProductType</code></td>
+    <td><code>String</code></td>
+    <td><code>COLLOCATED</code></td>
+    <td>The product type string for the target product (informal)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>copySecondaryMetadata</code></td>
+    <td><code>boolean</code></td>
+    <td><code>false</code></td>
+    <td>Copies also the metadata of the secondary (slave) products to the target</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>renameMasterComponents</code></td>
+    <td><code>boolean</code></td>
+    <td><code>true</code></td>
+    <td>Whether or not components of the master product shall be renamed in the target product.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>renameSlaveComponents</code></td>
+    <td><code>boolean</code></td>
+    <td><code>true</code></td>
   <td>Whether or not components of the slave product shall be renamed in the target product.</td>
   <td></td>
 </tr>
