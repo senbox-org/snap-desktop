@@ -2,6 +2,7 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 9.0.2
+    [SNAP-1561] Connection to WMS service cannot be established 
     [SNAP-1560] Memory leak in ceres-binio
     [SNAP-1234] Image-Filter operator consumes to much memory
     [SNAP-254]  Align FilterOperator with Image Filters from GUI
