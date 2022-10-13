@@ -30,7 +30,14 @@ import org.esa.snap.core.gpf.ui.TargetProductSelector;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.SourceProductList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
@@ -46,17 +53,18 @@ class CollocationForm extends JPanel {
 
     private static final String DEFAULT_TARGET_PRODUCT_NAME = "collocate";
 
-    private SourceProductSelector masterProductSelector;
-    private SourceProductList slaveProductList;
+    private final SourceProductSelector masterProductSelector;
+    private final SourceProductList slaveProductList;
 
-    private JCheckBox renameMasterComponentsCheckBox;
-    private JCheckBox renameSlaveComponentsCheckBox;
-    private JTextField masterComponentPatternField;
-    private JTextField slaveComponentPatternField;
-    private JComboBox<ResamplingType> resamplingComboBox;
-    private DefaultComboBoxModel<ResamplingType> resamplingComboBoxModel;
-    private TargetProductSelector targetProductSelector;
-    private BindingContext sbc;
+    private final JCheckBox copySecondaryMetadata;
+    private final JCheckBox renameMasterComponentsCheckBox;
+    private final JCheckBox renameSlaveComponentsCheckBox;
+    private final JTextField masterComponentPatternField;
+    private final JTextField slaveComponentPatternField;
+    private final JComboBox<ResamplingType> resamplingComboBox;
+    private final DefaultComboBoxModel<ResamplingType> resamplingComboBoxModel;
+    private final TargetProductSelector targetProductSelector;
+    private final BindingContext sbc;
 
     public CollocationForm(PropertySet propertySet, TargetProductSelector targetProductSelector, AppContext appContext) {
         this.targetProductSelector = targetProductSelector;
@@ -88,6 +96,7 @@ class CollocationForm extends JPanel {
         slaveProductList.addChangeListener(changeListener);
         slaveProductList.setXAxis(false);
 
+        copySecondaryMetadata = new JCheckBox("Include metadata of slaves in result");
         renameMasterComponentsCheckBox = new JCheckBox("Rename master components:");
         renameSlaveComponentsCheckBox = new JCheckBox("Rename slave components:");
         masterComponentPatternField = new JTextField();
@@ -181,6 +190,7 @@ class CollocationForm extends JPanel {
 
     private void bindComponents(PropertySet propertySet) {
         //final BindingContext sbc = new BindingContext(propertySet);
+        sbc.bind("copySecondaryMetadata", copySecondaryMetadata);
         sbc.bind("renameMasterComponents", renameMasterComponentsCheckBox);
         sbc.bind("renameSlaveComponents", renameSlaveComponentsCheckBox);
         sbc.bind("masterComponentPattern", masterComponentPatternField);
@@ -209,8 +219,7 @@ class CollocationForm extends JPanel {
         slavePanel.setBorder(BorderFactory.createTitledBorder("Slave Products"));
         slavePanel.add(listPanel, BorderLayout.CENTER);
         slavePanel.add(panels[1], BorderLayout.EAST);
-
-
+        slavePanel.add(copySecondaryMetadata, BorderLayout.SOUTH);
 
         final TableLayout layout = new TableLayout(1);
         layout.setRowWeightX(0, 1.0);
