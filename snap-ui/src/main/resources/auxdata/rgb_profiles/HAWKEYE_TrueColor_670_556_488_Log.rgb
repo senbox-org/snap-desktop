@@ -1,0 +1,10 @@
+# RGB-Image Configuration Profile
+# HAWKEYE_TrueColor_(670,556,488)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=HAWKEYE_TrueColor_(670,556,488)_Log
+red=if (rhos_670 \!\= NaN and rhos_556 \!\= NaN and rhos_488 \!\= NaN) then (log(rhos_670/0.01)/log(1/0.01)) else NaN
+green=if (rhos_670 \!\= NaN and rhos_556 \!\= NaN and rhos_488 \!\= NaN) then (log(rhos_556/0.01)/log(1/0.01)) else NaN
+blue=if (rhos_670 \!\= NaN and rhos_556 \!\= NaN and rhos_488 \!\= NaN) then (log(rhos_488/0.01)/log(1/0.01)) else NaN
