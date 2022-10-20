@@ -54,6 +54,7 @@
         <module>snap-virtual-file-system-preferences-ui</module>
         <module>snap-remote-execution-ui</module>
         <module>snap-znap-ui</module>
+        <module>lib-gdal-preferences-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
