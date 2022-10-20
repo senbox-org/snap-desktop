@@ -19,7 +19,7 @@
 
         <Toolbar name="Ground Control Points" visible="false"/>
         <!--<Toolbar name="Tools" visible="false"/>-->
-        <Toolbar name="Image" visible="false"/>
+        <Toolbar name="Image" visible="true"/>
         <Toolbar name="Info" visible="false"/>
         <Toolbar name="Memory" visible="false" align="right"/>
         <Toolbar name="Miscellaneous" visible="false"/>
