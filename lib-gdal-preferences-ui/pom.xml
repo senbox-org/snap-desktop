@@ -33,6 +33,7 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>lib-gdal</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <!-- NetBeans Platform -->
         <dependency>
