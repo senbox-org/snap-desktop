@@ -54,13 +54,13 @@ class CollocationForm extends JPanel {
     private static final String DEFAULT_TARGET_PRODUCT_NAME = "collocate";
 
     private final SourceProductSelector masterProductSelector;
-    private final SourceProductList slaveProductList;
+    private final SourceProductList dependentProductList;
 
     private final JCheckBox copySecondaryMetadata;
     private final JCheckBox renameMasterComponentsCheckBox;
-    private final JCheckBox renameSlaveComponentsCheckBox;
+    private final JCheckBox renameDependentComponentsCheckBox;
     private final JTextField masterComponentPatternField;
-    private final JTextField slaveComponentPatternField;
+    private final JTextField dependentComponentPatternField;
     private final JComboBox<ResamplingType> resamplingComboBox;
     private final DefaultComboBoxModel<ResamplingType> resamplingComboBoxModel;
     private final TargetProductSelector targetProductSelector;
@@ -75,7 +75,7 @@ class CollocationForm extends JPanel {
 
             @Override
             public void contentsChanged(ListDataEvent event) {
-                final Product[] sourceProducts = slaveProductList.getSourceProducts();
+                final Product[] sourceProducts = dependentProductList.getSourceProducts();
                 propertySet.setValue("sourceProducts", sourceProducts);
             }
 
@@ -92,15 +92,15 @@ class CollocationForm extends JPanel {
 
         propertySet.addProperty(createTransientProperty("sourceProducts", Product[].class));
 
-        slaveProductList = new SourceProductList(appContext);
-        slaveProductList.addChangeListener(changeListener);
-        slaveProductList.setXAxis(false);
+        dependentProductList = new SourceProductList(appContext);
+        dependentProductList.addChangeListener(changeListener);
+        dependentProductList.setXAxis(false);
 
-        copySecondaryMetadata = new JCheckBox("Include metadata of slaves in result");
+        copySecondaryMetadata = new JCheckBox("Include metadata of dependents in result");
         renameMasterComponentsCheckBox = new JCheckBox("Rename master components:");
-        renameSlaveComponentsCheckBox = new JCheckBox("Rename slave components:");
+        renameDependentComponentsCheckBox = new JCheckBox("Rename dependent components:");
         masterComponentPatternField = new JTextField();
-        slaveComponentPatternField = new JTextField();
+        dependentComponentPatternField = new JTextField();
         resamplingComboBoxModel = new DefaultComboBoxModel<>(ResamplingType.values());
         resamplingComboBox = new JComboBox<>(resamplingComboBoxModel);
 
@@ -118,7 +118,7 @@ class CollocationForm extends JPanel {
             @Override
             public void contentsChanged(ListDataEvent e) {
                 boolean validPixelExpressionUsed = false;
-                for (Product product : slaveProductList.getSourceProducts()){
+                for (Product product : dependentProductList.getSourceProducts()){
                     if(isValidPixelExpressionUsed(product)) {
                         validPixelExpressionUsed = true;
                         break;
@@ -127,7 +127,7 @@ class CollocationForm extends JPanel {
                 adaptResamplingComboBoxModel(resamplingComboBoxModel, validPixelExpressionUsed);
             }
         };
-        slaveProductList.addChangeListener(myListener);
+        dependentProductList.addChangeListener(myListener);
 
         createComponents();
         sbc = new BindingContext(propertySet);
@@ -165,8 +165,8 @@ class CollocationForm extends JPanel {
         return null;
     }
 
-    Product[] getSlaveProducts() {
-        return slaveProductList.getSourceProducts();
+    Product[] getDependentProducts() {
+        return dependentProductList.getSourceProducts();
     }
 
 
@@ -192,13 +192,13 @@ class CollocationForm extends JPanel {
         //final BindingContext sbc = new BindingContext(propertySet);
         sbc.bind("copySecondaryMetadata", copySecondaryMetadata);
         sbc.bind("renameMasterComponents", renameMasterComponentsCheckBox);
-        sbc.bind("renameSlaveComponents", renameSlaveComponentsCheckBox);
+        sbc.bind("renameDependentComponents", renameDependentComponentsCheckBox);
         sbc.bind("masterComponentPattern", masterComponentPatternField);
-        sbc.bind("slaveComponentPattern", slaveComponentPatternField);
+        sbc.bind("dependentComponentPattern", dependentComponentPatternField);
         sbc.bind("resamplingType", resamplingComboBox);
-        sbc.bind("sourceProductPaths", slaveProductList);
+        sbc.bind("sourceProductPaths", dependentProductList);
         sbc.bindEnabledState("masterComponentPattern", true, "renameMasterComponents", true);
-        sbc.bindEnabledState("slaveComponentPattern", true, "renameSlaveComponents", true);
+        sbc.bindEnabledState("dependentComponentPattern", true, "renameDependentComponents", true);
     }
 
     private JPanel createSourceProductPanel() {
@@ -209,17 +209,17 @@ class CollocationForm extends JPanel {
         masterPanel.add(masterProductSelector.getProductNameComboBox(), BorderLayout.CENTER);
         masterPanel.add(masterProductSelector.getProductFileChooserButton(), BorderLayout.EAST);
 
-        JComponent[] panels = slaveProductList.getComponents();
+        JComponent[] panels = dependentProductList.getComponents();
         JPanel listPanel = new JPanel(new BorderLayout());
 
         listPanel.add(panels[0], BorderLayout.CENTER);
 
         BorderLayout layout1 = new BorderLayout();
-        final JPanel slavePanel = new JPanel(layout1);
-        slavePanel.setBorder(BorderFactory.createTitledBorder("Slave Products"));
-        slavePanel.add(listPanel, BorderLayout.CENTER);
-        slavePanel.add(panels[1], BorderLayout.EAST);
-        slavePanel.add(copySecondaryMetadata, BorderLayout.SOUTH);
+        final JPanel dependentPanel = new JPanel(layout1);
+        dependentPanel.setBorder(BorderFactory.createTitledBorder("Dependent Products"));
+        dependentPanel.add(listPanel, BorderLayout.CENTER);
+        dependentPanel.add(panels[1], BorderLayout.EAST);
+        dependentPanel.add(copySecondaryMetadata, BorderLayout.SOUTH);
 
         final TableLayout layout = new TableLayout(1);
         layout.setRowWeightX(0, 1.0);
@@ -232,7 +232,7 @@ class CollocationForm extends JPanel {
         final JPanel panel = new JPanel(layout);
         panel.setBorder(BorderFactory.createTitledBorder("Source Products"));
         panel.add(masterPanel);
-        panel.add(slavePanel);
+        panel.add(dependentPanel);
 
         return panel;
     }
@@ -255,8 +255,8 @@ class CollocationForm extends JPanel {
         panel.setBorder(BorderFactory.createTitledBorder("Renaming of Source Product Components"));
         panel.add(renameMasterComponentsCheckBox);
         panel.add(masterComponentPatternField);
-        panel.add(renameSlaveComponentsCheckBox);
-        panel.add(slaveComponentPatternField);
+        panel.add(renameDependentComponentsCheckBox);
+        panel.add(dependentComponentPatternField);
 
         return panel;
     }
