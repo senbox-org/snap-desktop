@@ -214,7 +214,7 @@ public class SnapApp {
         try {
             return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
         } catch (Exception e) {
-            return "SNAP";
+            return SystemUtils.getApplicationName();
         }
     }
 
@@ -270,11 +270,11 @@ public class SnapApp {
             }
         });
         NotificationDisplayer.getDefault().notify("Error",
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
+                icon,
+                balloonDetails,
+                popupDetails,
+                NotificationDisplayer.Priority.HIGH,
+                NotificationDisplayer.Category.ERROR);
     }
 
     /**
@@ -664,14 +664,18 @@ public class SnapApp {
 
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
-
         if (instanceName != null && instanceName.length() > 0) {
+            if (SystemUtils.isMainframeTitleIncludeVersion()) {
+                String version = SystemUtils.getReleaseVersion();
+                if (version != null && version.length() > 0) {
+                    return String.format("%s %s", instanceName, version);
+                }
+            }
             return String.format("%s", instanceName);
-        } else {
-            return String.format("[%s]", "Empty");
         }
-
+        return String.format("[%s]", "Empty");
     }
+
 
     private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
         switch (hint) {
