@@ -26,6 +26,7 @@
         <Toolbar name="Projects" visible="false"/>
         <Toolbar name="Radar Tool Windows" visible="false"/>
         <Toolbar name="Tool Windows" visible="false"/>
+        <Toolbar name="Time Series" visible="false"/>
         <Toolbar name="Clipboard" visible="false"/>
         <Toolbar name="UndoRedo" visible="false"/>
         <Toolbar name="Window Arrangement" visible="false"/>
