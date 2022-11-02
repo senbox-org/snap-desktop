@@ -279,7 +279,7 @@
                     <detectJavaApiLink>true</detectJavaApiLink>
                     <detectLinks>true</detectLinks>
                     <links>
-                        <link>http://step.esa.int/docs/v6.0/apidoc/engine/</link>
+                        <link>https://step.esa.int/docs/v9.0/apidoc/engine/</link>
                     </links>
                 </configuration>
             </plugin>
