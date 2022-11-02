@@ -1,6 +1,10 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.3
+    [SNAP-1570] Shapefile import should be more lenient    
+    [SNAP-1539] If errors in shapefile are detected, exception should be thrown
+
 # New in SNAP 9.0.2
     [SNAP-1568] Metadata of product is not written to NetCDF-CF format    
     [SNAP-1562] Collocation operator should copy metadata of secondary products
