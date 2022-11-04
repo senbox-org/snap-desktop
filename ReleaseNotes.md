@@ -1,6 +1,9 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.4
+    [snap-1573] NetCDF expects distinct names within metadata groups    
+
 # New in SNAP 9.0.3
     [SNAP-1570] Shapefile import should be more lenient    
     [SNAP-1539] If errors in shapefile are detected, exception should be thrown
