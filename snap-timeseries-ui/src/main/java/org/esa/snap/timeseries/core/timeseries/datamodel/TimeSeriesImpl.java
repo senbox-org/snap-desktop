@@ -18,42 +18,19 @@ package org.esa.snap.timeseries.core.timeseries.datamodel;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.MetadataAttribute;
-import org.esa.snap.core.datamodel.MetadataElement;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.PlacemarkGroup;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.util.Guardian;
+import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.timeseries.core.insitu.InsituSource;
-import org.esa.snap.util.Guardian;
-import org.esa.snap.util.ProductUtils;
-import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.SystemUtils;
 
 import java.io.File;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -190,14 +167,14 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
                 }
             }
             fireChangeEvent(new TimeSeriesChangeEvent(TimeSeriesChangeEvent.PROPERTY_PRODUCT_LOCATIONS,
-                                                      productLocationList, this));
+                    productLocationList, this));
         }
     }
 
     private void addProductMetadata(Map.Entry<String, Product> productEntry) {
         MetadataElement productElement = tsProduct.getMetadataRoot().
-                    getElement(TIME_SERIES_ROOT_NAME).
-                    getElement(SOURCE_PRODUCT_PATHS);
+                getElement(TIME_SERIES_ROOT_NAME).
+                getElement(SOURCE_PRODUCT_PATHS);
         ProductData productPath = ProductData.createInstance(productEntry.getKey());
         int length = productElement.getElements().length + 1;
         MetadataElement elem = new MetadataElement(String.format("%s.%s", SOURCE_PRODUCT_PATHS, Integer.toString(length)));
@@ -231,7 +208,7 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
         productLocationList.remove(productLocation);
 
         fireChangeEvent(new TimeSeriesChangeEvent(TimeSeriesChangeEvent.PROPERTY_PRODUCT_LOCATIONS,
-                                                  productLocationList, this));
+                productLocationList, this));
     }
 
     private void removeAttributeWithValue(String attributeName, String value, MetadataElement parentElement) {
@@ -453,7 +430,7 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
     @Override
     public boolean isProductCompatible(Product product, String rasterName) {
         return product.containsRasterDataNode(rasterName) &&
-               tsProduct.isCompatibleProduct(product, LAT_LON_EPSILON);
+                tsProduct.isCompatibleProduct(product, LAT_LON_EPSILON);
     }
 
     @Override
@@ -559,8 +536,8 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
 
     private MetadataElement[] getVariableMetadataElements() {
         MetadataElement variableListElement = tsProduct.getMetadataRoot().
-                    getElement(TIME_SERIES_ROOT_NAME).
-                    getElement(VARIABLES);
+                getElement(TIME_SERIES_ROOT_NAME).
+                getElement(VARIABLES);
         return variableListElement.getElements();
     }
 
@@ -655,14 +632,14 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
 
     private void addProductLocationMetadata(ProductLocation productLocation) {
         MetadataElement productLocationsElement = tsProduct.getMetadataRoot().
-                    getElement(TIME_SERIES_ROOT_NAME).
-                    getElement(PRODUCT_LOCATIONS);
+                getElement(TIME_SERIES_ROOT_NAME).
+                getElement(PRODUCT_LOCATIONS);
         // @todo - nur produkt pfade, keine Verzeichnisse
         ProductData productPath = ProductData.createInstance(productLocation.getPath());
         ProductData productType = ProductData.createInstance(productLocation.getProductLocationType().toString());
         int length = productLocationsElement.getElements().length + TimeSeriesChangeEvent.BAND_TO_BE_REMOVED;
         MetadataElement elem = new MetadataElement(
-                    String.format("%s.%s", PRODUCT_LOCATIONS, Integer.toString(length)));
+                String.format("%s.%s", PRODUCT_LOCATIONS, Integer.toString(length)));
         elem.addAttribute(new MetadataAttribute(PL_PATH, productPath, true));
         elem.addAttribute(new MetadataAttribute(PL_TYPE, productType, true));
         productLocationsElement.addElement(elem);
@@ -698,8 +675,8 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
 
     private void addVariableToMetadata(String variable) {
         MetadataElement variableListElement = tsProduct.getMetadataRoot().
-                    getElement(TIME_SERIES_ROOT_NAME).
-                    getElement(VARIABLES);
+                getElement(TIME_SERIES_ROOT_NAME).
+                getElement(VARIABLES);
         final ProductData variableName = ProductData.createInstance(variable);
         final ProductData isSelected = ProductData.createInstance(Boolean.toString(false));
         int length = variableListElement.getElements().length + 1;
@@ -744,7 +721,7 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
 
     private Band addBand(RasterDataNode raster, TimeCoding rasterTimeCoding, String bandName) {
         final Band band = new Band(bandName, raster.getDataType(), tsProduct.getSceneRasterWidth(),
-                                   tsProduct.getSceneRasterHeight());
+                tsProduct.getSceneRasterHeight());
         band.setSourceImage(raster.getSourceImage());
         ProductUtils.copyRasterDataNodeProperties(raster, band);
 //                todo copy also referenced band in valid pixel expression
@@ -787,8 +764,8 @@ final class TimeSeriesImpl extends AbstractTimeSeries {
         @Override
         public void nodeChanged(ProductNodeEvent event) {
             if ("sourceImage".equals(event.getPropertyName()) &&
-                event.getOldValue() != null &&
-                event.getNewValue() == null) {
+                    event.getOldValue() != null &&
+                    event.getNewValue() == null) {
                 ProductNode productNode = event.getSourceNode();
                 if (productNode instanceof Band) {
                     Band destBand = (Band) productNode;

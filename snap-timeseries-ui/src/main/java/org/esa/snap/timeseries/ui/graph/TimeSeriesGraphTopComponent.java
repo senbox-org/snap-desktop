@@ -17,19 +17,15 @@
 package org.esa.snap.timeseries.ui.graph;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.PixelPositionListener;
-import org.esa.snap.core.ui.product.ProductSceneView;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.TimeSeriesModule;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesChangeEvent;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesListener;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.XYPlot;
@@ -40,12 +36,12 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries.*;
+import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries.rasterToVariableName;
 
 /**
  * Main class for the graph tool.
@@ -70,7 +66,7 @@ import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeri
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.graph.TimeSeriesGraphTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows/Time Series", position = 1220),
+        @ActionReference(path = "Menu/Raster/Time Series", position = 1220),
         @ActionReference(path = "Toolbars/Time Series", position = 20)
 })
 @NbBundle.Messages({"CTL_TimeSeriesGraphTopComponentName=Time Series Graph"})
@@ -107,9 +103,9 @@ public class TimeSeriesGraphTopComponent extends TopComponent {
         final boolean showTooltips = true;
         final boolean showUrls = false;
         chart = ChartFactory.createTimeSeriesChart(null,
-                                                   DEFAULT_DOMAIN_LABEL,
-                                                   DEFAULT_RANGE_LABEL,
-                                                   null, displayLegend, showTooltips, showUrls);
+                DEFAULT_DOMAIN_LABEL,
+                DEFAULT_RANGE_LABEL,
+                null, displayLegend, showTooltips, showUrls);
         graphModel = new TimeSeriesGraphModel(chart.getXYPlot(), validator);
         graphForm = new TimeSeriesGraphForm(graphModel, chart, validator, HELP_ID);
         setDisplayName(Bundle.CTL_TimeSeriesGraphTopComponentName());
@@ -142,9 +138,9 @@ public class TimeSeriesGraphTopComponent extends TopComponent {
     private void maySetCurrentView(ProductSceneView view) {
         final String viewProductType = view.getProduct().getProductType();
         if (view != currentView &&
-            !view.isRGB() &&
-            viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
-            TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null) {
+                !view.isRGB() &&
+                viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
+                TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null) {
             setCurrentView(view);
         }
     }
@@ -259,7 +255,7 @@ public class TimeSeriesGraphTopComponent extends TopComponent {
         public void nodeChanged(ProductNodeEvent event) {
             String propertyName = event.getPropertyName();
             if (propertyName.equals(Placemark.PROPERTY_NAME_PIXELPOS)
-                        || propertyName.equals(Placemark.PROPERTY_NAME_LABEL)) {
+                    || propertyName.equals(Placemark.PROPERTY_NAME_LABEL)) {
                 graphModel.updateTimeSeries(null, TimeSeriesType.PIN);
                 graphModel.updateTimeSeries(null, TimeSeriesType.INSITU);
             }

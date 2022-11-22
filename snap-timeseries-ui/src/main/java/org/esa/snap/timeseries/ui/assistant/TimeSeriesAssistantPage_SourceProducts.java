@@ -20,13 +20,13 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.ui.assistant.AssistantPage;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
 import org.esa.snap.timeseries.ui.ProductLocationsPane;
 import org.esa.snap.timeseries.ui.ProductLocationsPaneModel;
 import org.esa.snap.timeseries.ui.Variable;
+import org.esa.snap.ui.assistant.AssistantPage;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

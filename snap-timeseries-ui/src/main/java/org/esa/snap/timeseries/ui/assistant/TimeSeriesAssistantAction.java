@@ -16,8 +16,8 @@
 
 package org.esa.snap.timeseries.ui.assistant;
 
-import org.esa.snap.core.ui.assistant.AssistantPane;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
+import org.esa.snap.ui.assistant.AssistantPane;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_TimeSeriesAssistantActionName",
         iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-new.gif"
 )
-@ActionReference(path = "Menu/File", position = 20)
+@ActionReference(path = "Menu/Raster/Time Series", position = 20)
 @NbBundle.Messages({
         "CTL_TimeSeriesAssistantActionName=New Time Series",
         "CTL_TimeSeriesAssistantActionDescription=Create a new time series",

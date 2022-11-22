@@ -2,15 +2,11 @@ package org.esa.snap.timeseries.ui.matrix;
 
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.jai.ImageManager;
+import org.esa.snap.core.image.ImageManager;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.text.DecimalFormat;
 
 import static java.lang.Math.*;
@@ -36,8 +32,8 @@ class MatrixCellRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
         final JLabel label = (JLabel) super.getTableCellRendererComponent(table, value,
-                                                                          isSelected, hasFocus,
-                                                                          row, column);
+                isSelected, hasFocus,
+                row, column);
         Double rasterValue = (Double) value;
         final RasterDataNode raster = tableModel.getBand();
         final String labelText;
@@ -123,8 +119,7 @@ class MatrixCellRenderer extends DefaultTableCellRenderer {
 
     private static int getColorDifference(Color color1, Color color2) {
         return max(color1.getRed(), color2.getRed()) - min(color1.getRed(), color2.getRed()) +
-               max(color1.getGreen(), color2.getGreen()) - min(color1.getGreen(), color2.getGreen()) +
-               max(color1.getBlue(), color2.getBlue()) - min(color1.getBlue(), color2.getBlue());
+                max(color1.getGreen(), color2.getGreen()) - min(color1.getGreen(), color2.getGreen()) +
+                max(color1.getBlue(), color2.getBlue()) - min(color1.getBlue(), color2.getBlue());
     }
-
 }

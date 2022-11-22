@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option)
@@ -9,7 +9,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
@@ -19,22 +19,18 @@ package org.esa.snap.timeseries.ui.matrix;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.swing.TableLayout;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.PixelPositionListener;
-import org.esa.snap.core.ui.UIUtils;
-import org.esa.snap.core.ui.product.ProductSceneView;
-import org.esa.snap.core.ui.tool.ToolButtonFactory;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesListener;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -42,17 +38,8 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.SpinnerNumberModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -85,7 +72,7 @@ import java.util.List;
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.matrix.TimeSeriesMatrixTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows/Time Series", position = 1240, separatorAfter = 1250),
+        @ActionReference(path = "Menu/Raster/Time Series", position = 1240, separatorAfter = 1250),
         @ActionReference(path = "Toolbars/Time Series", position = 40)
 })
 @NbBundle.Messages({ "CTL_TimeSeriesMatrixTopComponentName=Time Series Matrix" })
@@ -126,8 +113,8 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
 
         dateLabel = new JLabel(String.format(DATE_PREFIX + " %s", getStartDateString()));
         matrixSizeSpinner = new JSpinner(new SpinnerNumberModel(MATRIX_DEFAULT_VALUE,
-                                                                MATRIX_MINIMUM, MATRIX_MAXIMUM,
-                                                                MATRIX_STEP_SIZE));
+                MATRIX_MINIMUM, MATRIX_MAXIMUM,
+                MATRIX_STEP_SIZE));
         final JComponent editor = matrixSizeSpinner.getEditor();
         if (editor instanceof JSpinner.DefaultEditor) {
             ((JSpinner.DefaultEditor) editor).getTextField().setEditable(false);
@@ -293,8 +280,8 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
             final RasterDataNode viewRaster = view.getRaster();
             final String viewProductType = viewRaster.getProduct().getProductType();
             return !view.isRGB() &&
-                   viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
-                   TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null;
+                    viewProductType.equals(AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE) &&
+                    TimeSeriesMapper.getInstance().getTimeSeries(view.getProduct()) != null;
         }
         return false;
     }
@@ -338,7 +325,7 @@ public class TimeSeriesMatrixTopComponent extends TopComponent {
                 AffineTransform m2iTransform = imageLayer.getModelToImageTransform();
                 Point2D levelZeroP = m2iTransform.transform(modelP, null);
                 matrixModel.setCenterPixel(MathUtils.floorInt(levelZeroP.getX()),
-                                           MathUtils.floorInt(levelZeroP.getY()));
+                        MathUtils.floorInt(levelZeroP.getY()));
             }
         }
 

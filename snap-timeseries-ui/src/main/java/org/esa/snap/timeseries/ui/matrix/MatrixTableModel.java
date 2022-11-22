@@ -1,11 +1,11 @@
 package org.esa.snap.timeseries.ui.matrix;
 
 import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.util.ProductUtils;
-import org.esa.snap.util.math.MathUtils;
+import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.math.MathUtils;
 
 import javax.swing.table.AbstractTableModel;
-import java.awt.Rectangle;
+import java.awt.*;
 
 class MatrixTableModel extends AbstractTableModel {
 
@@ -45,10 +45,10 @@ class MatrixTableModel extends AbstractTableModel {
         final int centerOffset = MathUtils.floorInt(size / 2.0);
         int pixelX = centerPixelX - centerOffset + columnIndex;
         int pixelY = centerPixelY - centerOffset + rowIndex;
-        final Rectangle imageRectangle = new Rectangle(band.getSceneRasterWidth(), band.getSceneRasterHeight());
+        final Rectangle imageRectangle = new Rectangle(band.getRasterWidth(), band.getRasterHeight());
         if (imageRectangle.contains(pixelX, pixelY)) {
             if (band.isPixelValid(pixelX, pixelY)) {
-                return ProductUtils.getGeophysicalSampleDouble(band, pixelX, pixelY, 0);
+                return ProductUtils.getGeophysicalSampleAsDouble(band, pixelX, pixelY, 0);
             } else {
                 return Double.NaN;
             }

@@ -2,37 +2,27 @@ package org.esa.snap.timeseries.core;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.dataio.dimap.DimapProductConstants;
-import org.esa.snap.dataio.dimap.DimapProductReader;
-import org.esa.snap.dataio.dimap.DimapProductReaderPlugIn;
-import org.esa.snap.dataio.dimap.DimapProductWriter;
-import org.esa.snap.dataio.dimap.DimapProductWriterPlugIn;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.dataio.ProductWriterPlugIn;
-import org.esa.snap.core.datamodel.MetadataAttribute;
-import org.esa.snap.core.datamodel.MetadataElement;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.dataio.dimap.*;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeSeriesFactory;
-import org.esa.snap.util.io.FileUtils;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 
-import java.awt.Window;
+import java.awt.*;
 import java.io.File;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
-import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries.*;
+import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries.TIME_SERIES_PRODUCT_TYPE;
 
 public class TimeSeriesModule {
 
@@ -43,7 +33,7 @@ public class TimeSeriesModule {
     private static final DimapProductReader.ReaderExtender readerExtender = createReaderExtender();
 
 
-        @OnStart
+    @OnStart
     public static class StartOp implements Runnable {
 
         @Override
@@ -66,7 +56,7 @@ public class TimeSeriesModule {
         }
     }
 
-        @OnStop
+    @OnStop
     public static class StopOp implements Runnable {
 
         @Override
@@ -192,7 +182,7 @@ public class TimeSeriesModule {
 
                         private void handleError(Throwable theCause) {
                             snapApp.getLogger().log(Level.SEVERE, theCause.getMessage());
-                            SnapDialogs.showError("Could not load time series", theCause.getMessage());
+                            Dialogs.showError("Could not load time series", theCause.getMessage());
                         }
 
                         @Override

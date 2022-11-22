@@ -20,27 +20,24 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.util.io.SnapFileFilter;
 import org.w3c.dom.Node;
 
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
+import javax.imageio.*;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.esa.snap.timeseries.export.util.TimeSeriesExportHelper.*;
+import static org.esa.snap.timeseries.export.util.TimeSeriesExportHelper.FileWithLevel;
+import static org.esa.snap.timeseries.export.util.TimeSeriesExportHelper.getOutputFileWithLevelOption;
 
 public class AnimatedGifExport extends ProgressMonitorSwingWorker<Void, Void> {
 
@@ -86,7 +83,7 @@ public class AnimatedGifExport extends ProgressMonitorSwingWorker<Void, Void> {
                 RenderedImage currentImage = frames[i];
                 ImageWriteParam writeParameters = imageWriter.getDefaultWriteParam();
                 IIOMetadata metadata = imageWriter.getDefaultImageMetadata(new ImageTypeSpecifier(currentImage),
-                                                                           writeParameters);
+                        writeParameters);
 
                 configure(metadata, delayTime, i);
                 IIOImage image = new IIOImage(currentImage, null, metadata);
@@ -152,11 +149,11 @@ public class AnimatedGifExport extends ProgressMonitorSwingWorker<Void, Void> {
         final RasterDataNode currentRaster = SnapApp.getDefault().getSelectedProductSceneView().getRaster();
         SnapFileFilter gifFilter = new SnapFileFilter("gif", "gif", "Animated GIF");
         return getOutputFileWithLevelOption(currentRaster,
-                                            "Export time series as animated GIF",
-                                            "time_series_",
-                                            EXPORT_DIR_PREFERENCES_KEY,
-                                            gifFilter,
-                                            null);
+                "Export time series as animated GIF",
+                "time_series_",
+                EXPORT_DIR_PREFERENCES_KEY,
+                gifFilter,
+                null);
     }
 
 }

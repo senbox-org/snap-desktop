@@ -16,23 +16,16 @@
 
 package org.esa.snap.timeseries.ui.graph;
 
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.ui.product.ProductSceneView;
+import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.TimeSeriesMapper;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AxisMapping;
 import org.esa.snap.timeseries.core.timeseries.datamodel.TimeCoding;
-import org.esa.snap.util.StringUtils;
-import org.esa.snap.util.SystemUtils;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.axis.NumberAxis;
@@ -47,20 +40,11 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -293,7 +277,7 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
     private TimeSeriesGraphUpdater.PositionSupport createPositionSupport() {
         return new TimeSeriesGraphUpdater.PositionSupport() {
 
-            private final GeoCoding geoCoding = getTimeSeries().getTsProduct().getGeoCoding();
+            private final GeoCoding geoCoding = getTimeSeries().getTsProduct().getSceneGeoCoding();
             private final PixelPos pixelPos = new PixelPos();
 
             @Override

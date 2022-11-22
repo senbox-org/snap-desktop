@@ -4,7 +4,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.ui.ModalDialog;
+import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.core.timeseries.datamodel.GridTimeCoding;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
@@ -201,7 +201,7 @@ class EditTimeSpanAction extends AbstractAction {
                     }
                     if (varTimeCoding != null) {
                         autoStartTime = getMinStartTime(autoStartTime,
-                                                        varTimeCoding.getStartTime());
+                                varTimeCoding.getStartTime());
                         autoEndTime = getMaxEndTime(autoEndTime, varTimeCoding.getEndTime());
                     }
                 }

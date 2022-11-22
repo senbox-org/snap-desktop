@@ -16,42 +16,26 @@
 
 package org.esa.snap.timeseries.ui.graph;
 
-import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.jexp.Parser;
-import org.esa.snap.core.jexp.Symbol;
-import org.esa.snap.core.jexp.Term;
-import org.esa.snap.core.jexp.Variable;
+import org.esa.snap.core.jexp.*;
 import org.esa.snap.core.jexp.impl.DefaultNamespace;
 import org.esa.snap.core.jexp.impl.ParserImpl;
 import org.esa.snap.core.jexp.impl.SymbolFactory;
-import org.esa.snap.core.ui.ExpressionPane;
-import org.esa.snap.core.ui.ModalDialog;
+import org.esa.snap.core.util.DefaultPropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AxisMapping;
-import org.esa.snap.util.PropertyMap;
+import org.esa.snap.ui.ExpressionPane;
+import org.esa.snap.ui.ModalDialog;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 
-import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Sabine Embacher
@@ -267,7 +251,7 @@ class TimeSeriesValidator implements TimeSeriesGraphForm.ValidatorUI, TimeSeries
     private class MyExpressionPane extends ExpressionPane {
 
         public MyExpressionPane() {
-            super(true, null, new PropertyMap());
+            super(true, null, new DefaultPropertyMap());
             initParser();
             initLeftAccessory();
         }

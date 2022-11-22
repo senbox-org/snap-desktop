@@ -64,7 +64,7 @@ import java.util.WeakHashMap;
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.manager.TimeSeriesManagerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows/Time Series", position = 1210, separatorBefore = 1200),
+        @ActionReference(path = "Menu/Raster/Time Series", position = 1210, separatorBefore = 1200),
         @ActionReference(path = "Toolbars/Time Series", position = 10)
 })
 @NbBundle.Messages({
@@ -102,7 +102,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
 
         prefixTitle = Bundle.CTL_TimeSeriesManagerTopComponent_Name();
 
-        setSelectedProduct(SnapApp.getDefault().getSelectedProduct());
+        setSelectedProduct(SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO));
 
         realizeActiveForm();
         updateTitle();
@@ -212,7 +212,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
         }
 
         final Product tsProduct = timeSeries.getTsProduct();
-        final GeoCoding geoCoding = tsProduct.getGeoCoding();
+        final GeoCoding geoCoding = tsProduct.getSceneGeoCoding();
 
         final PixelPos pixelPos = new PixelPos();
         for (GeoPos geoPos : geoPoses) {
@@ -259,7 +259,7 @@ public class TimeSeriesManagerTopComponent extends TopComponent {
         public void timeSeriesChanged(TimeSeriesChangeEvent event) {
             final int type = event.getType();
             if (type == TimeSeriesChangeEvent.START_TIME_PROPERTY_NAME ||
-                type == TimeSeriesChangeEvent.END_TIME_PROPERTY_NAME) {
+                    type == TimeSeriesChangeEvent.END_TIME_PROPERTY_NAME) {
                 activeForm.updateFormControl(getSelectedProduct());
             } else if (type == TimeSeriesChangeEvent.PROPERTY_INSITU_VARIABLE_SELECTION) {
                 updateInsituPins();

@@ -22,25 +22,19 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkGroup;
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.help.HelpSys;
-import org.esa.snap.core.ui.SelectExportMethodDialog;
+import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.SnapDialogs;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeries;
 import org.esa.snap.timeseries.export.util.TimeSeriesExportHelper;
-import org.esa.snap.util.SystemUtils;
-import org.esa.snap.util.io.SnapFileChooser;
-import org.esa.snap.util.io.SnapFileFilter;
+import org.esa.snap.ui.SelectExportMethodDialog;
+import org.esa.snap.ui.SnapFileChooser;
+import org.openide.util.HelpCtx;
 
-import javax.swing.JFileChooser;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +88,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
             errorMessage = e.getMessage();
         }
         if (errorMessage != null) {
-            SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + errorMessage);
+            Dialogs.showError(DLG_TITLE, ERR_MSG_BASE + errorMessage);
         } else {
             if (clipboardText != null) {
                 SystemUtils.copyToClipboard(clipboardText.toString());
@@ -107,7 +101,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
         // Get export method from user
         final String questionText = "How do you want to export the pixel values?\n"; /*I18N*/
         final int method = SelectExportMethodDialog.run(SnapApp.getDefault().getMainFrame(),
-                                                        DLG_TITLE, questionText, helpID);
+                DLG_TITLE, questionText, helpID);
 
         final PrintWriter writer;
         final StringBuffer clipboardText;
@@ -127,7 +121,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
             try {
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
-                SnapDialogs.showError(DLG_TITLE, ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
+                Dialogs.showError(DLG_TITLE, ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
                 return; // Error
             }
             writer = new PrintWriter(new BufferedWriter(fileWriter, initialBufferSize));
@@ -145,7 +139,7 @@ public class ExportTimeBasedText extends ProgressMonitorSwingWorker<String, Void
         final File currentDir = new File(lastDir);
 
         final SnapFileChooser fileChooser = new SnapFileChooser();
-        HelpSys.enableHelpKey(fileChooser, helpID);
+        HelpCtx.setHelpIDString(fileChooser, helpID);
         fileChooser.setCurrentDirectory(currentDir);
         fileChooser.addChoosableFileFilter(csvFileFilter);
         fileChooser.setAcceptAllFileFilterUsed(false);
