@@ -5,14 +5,18 @@ import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Histogram;
 import org.esa.snap.core.util.math.Range;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.util.SystemUtils.getApplicationContextId;
 
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
@@ -152,8 +156,6 @@ public class ColorSchemeUtils {
 
         return null;
     }
-
-
 
 
     public static void setImageInfoToGeneralColor(PropertyMap configuration, ImageInfo defaultImageInfo, ProductSceneView productSceneView) {
@@ -434,4 +436,489 @@ public class ColorSchemeUtils {
     }
 
 
+    public final static String FILE_DOES_NOT_EXIST = "File does not exist";
+    public final static String INVALID_BOOLEAN = "Invalid boolean value";
+    public final static String INVALID_NUMBER = "Invalid number";
+    public final static String INVALID_TEXT_ENTRY = "Invalid text entry";
+
+    public static void initColorManipulationDefaults() {
+
+        String preferenceKey;
+        String preferenceValue;
+
+        String errorMsg = "";
+
+
+        // Palettes (Default)
+
+        File colorPalettesAuxDir = getColorPalettesAuxDataDir().toFile();
+
+        // Test to see if palettes have been installed based on existence on the core default palette
+        boolean palettesInstalled = false;
+        if (colorPalettesAuxDir != null && colorPalettesAuxDir.exists()) {
+            File defaultPalette = new File(colorPalettesAuxDir, PALETTE_DEFAULT);
+            if (defaultPalette.exists()) {
+                palettesInstalled = true;
+            }
+        }
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
+                File file = new File(colorPalettesAuxDir, preferenceValue);
+                if (file.exists()) {
+                    ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
+                } else {
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
+                }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT = preferenceValue;
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_GRAY_SCALE_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_STANDARD_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
+                File file = new File(colorPalettesAuxDir, preferenceValue);
+                if (file.exists()) {
+                    ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
+                } else {
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
+                }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT = preferenceValue;
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
+                File file = new File(colorPalettesAuxDir, preferenceValue);
+                if (file.exists()) {
+                    ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
+                } else {
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
+                }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT = preferenceValue;
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_PALETTE_DEFAULT_ANOMALIES_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (palettesInstalled) {
+                File file = new File(colorPalettesAuxDir, preferenceValue);
+                if (file.exists()) {
+                    ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
+                } else {
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, FILE_DOES_NOT_EXIST);
+                }
+            } else {
+                ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT = preferenceValue;
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_PALETTE_DEFAULT_ANOMALIES_DEFAULT);
+
+
+        // Scheme (Default)
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_GENERAL_CUSTOM_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_GENERAL_CUSTOM_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_GENERAL_PALETTE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_GENERAL_PALETTE_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION1;
+            } else if (PROPERTY_GENERAL_PALETTE_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION2;
+            } else if (PROPERTY_GENERAL_PALETTE_OPTION3.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION3;
+            } else if (PROPERTY_GENERAL_PALETTE_OPTION4.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_PALETTE_DEFAULT = PROPERTY_GENERAL_PALETTE_OPTION4;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_PALETTE_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_GENERAL_RANGE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_GENERAL_RANGE_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_RANGE_DEFAULT = PROPERTY_GENERAL_RANGE_OPTION1;
+            } else if (PROPERTY_GENERAL_RANGE_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_RANGE_DEFAULT = PROPERTY_GENERAL_RANGE_OPTION2;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_RANGE_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_GENERAL_LOG_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_GENERAL_LOG_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_LOG_DEFAULT = PROPERTY_GENERAL_LOG_OPTION1;
+            } else if (PROPERTY_GENERAL_LOG_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_LOG_DEFAULT = PROPERTY_GENERAL_LOG_OPTION2;
+            } else if (PROPERTY_GENERAL_LOG_OPTION3.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_GENERAL_LOG_DEFAULT = PROPERTY_GENERAL_LOG_OPTION3;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_GENERAL_LOG_DEFAULT);
+
+
+        // Scheme (Band Lookup)
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_AUTO_APPLY_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_AUTO_APPLY_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_PALETTE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_SCHEME_PALETTE_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION1;
+            } else if (PROPERTY_SCHEME_PALETTE_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION2;
+            } else if (PROPERTY_SCHEME_PALETTE_OPTION3.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION3;
+            } else if (PROPERTY_SCHEME_PALETTE_OPTION4.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION4;
+            } else if (PROPERTY_SCHEME_PALETTE_OPTION5.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION5;
+            } else if (PROPERTY_SCHEME_PALETTE_OPTION6.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_PALETTE_DEFAULT = PROPERTY_SCHEME_PALETTE_OPTION6;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_PALETTE_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_RANGE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_SCHEME_RANGE_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_RANGE_DEFAULT = PROPERTY_SCHEME_RANGE_OPTION1;
+            } else if (PROPERTY_SCHEME_RANGE_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_RANGE_DEFAULT = PROPERTY_SCHEME_RANGE_OPTION2;
+            } else if (PROPERTY_SCHEME_RANGE_OPTION3.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_RANGE_DEFAULT = PROPERTY_SCHEME_RANGE_OPTION3;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_RANGE_DEFAULT);
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_LOG_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (PROPERTY_SCHEME_LOG_OPTION1.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION1;
+            } else if (PROPERTY_SCHEME_LOG_OPTION2.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION2;
+            } else if (PROPERTY_SCHEME_LOG_OPTION3.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION3;
+            } else if (PROPERTY_SCHEME_LOG_OPTION4.equalsIgnoreCase(preferenceValue)) {
+                PROPERTY_SCHEME_LOG_DEFAULT = PROPERTY_SCHEME_LOG_OPTION4;
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_TEXT_ENTRY);
+            }
+        }
+        showEffectiveDefault(preferenceKey, PROPERTY_SCHEME_LOG_DEFAULT);
+
+
+        // Percentile Range
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_RANGE_PERCENTILE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            try {
+                double value = Double.parseDouble(preferenceValue);
+                if (value > 0 && value <= 100.0) {
+                    ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT = value;
+                } else {
+                    String msg = "Percentile must be between 0 and 100";
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
+                }
+            } catch (NumberFormatException ex) {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RANGE_PERCENTILE_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_1_SIGMA_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_1_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_1_SIGMA_BUTTON_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_2_SIGMA_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_2_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_2_SIGMA_BUTTON_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_3_SIGMA_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_3_SIGMA_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_3_SIGMA_BUTTON_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_95_PERCENT_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_95_PERCENT_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_95_PERCENT_BUTTON_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_100_PERCENT_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_100_PERCENT_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_100_PERCENT_BUTTON_DEFAULT));
+
+
+        // Scheme Selector Options
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_VERBOSE_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_VERBOSE_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_SORT_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_SORT_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SCHEME_SHOW_DISABLED_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT));
+
+
+        // Sliders editor Options
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SLIDERS_ZOOM_IN_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SLIDERS_ZOOM_IN_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_SLIDERS_SHOW_INFORMATION_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_ZOOM_VERTICAL_BUTTONS_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_ZOOM_VERTICAL_BUTTONS_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_INFORMATION_BUTTON_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            if (isValidBooleanString(preferenceValue)) {
+                ColorManipulationDefaults.PROPERTY_INFORMATION_BUTTON_DEFAULT = Boolean.parseBoolean(preferenceValue);
+            } else {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_BOOLEAN);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Boolean.toString(PROPERTY_INFORMATION_BUTTON_DEFAULT));
+
+
+        // RGB Options
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MIN_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            try {
+                double value = Double.parseDouble(preferenceValue);
+                ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
+            } catch (NumberFormatException ex) {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
+            }
+        }
+        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+
+
+        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MAX_KEY);
+        preferenceValue = Config.instance().preferences().get(preferenceKey, null);
+        if (preferenceValue != null && preferenceValue.length() > 0) {
+            try {
+                double value = Double.parseDouble(preferenceValue);
+
+                if (value > ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
+                    ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
+                } else {
+                    String msg = PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY;
+                    errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
+                }
+            } catch (NumberFormatException ex) {
+                errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
+            }
+
+        }
+        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+
+
+        if (errorMsg != null && errorMsg.length() > 0) {
+            notifyPropertyError(errorMsg);
+        }
+    }
+
+
+    private static String getPreferenceContextKey(String key) {
+        return getApplicationContextId() + "." + key;
+    }
+
+
+    private static void showEffectiveDefault(String key, String value) {
+
+        // todo the following block isn't operational but could be used in some form if needed in some kind of information page.
+        // this is just used during software development to show what parameters are available to be put in the snap.properties file.
+        boolean showParameterInfo = false;
+        if (showParameterInfo) {
+            Logger logger = Logger.getLogger(ColorSchemeUtils.class.getName());
+            logger.log(Level.INFO, key + "=" + value);
+            System.out.println("# " + key + "=" + value);
+        }
+        //end todo
+    }
+
+
+    private static String createPropertyErrorMessage(String propertyKey, String propertyValue, String message1) {
+            return  "WARNING!!: " + message1 + "<br>" + propertyKey + "=" + propertyValue +"<br><br>";
+    }
+
+
+    private static void notifyPropertyError(String msg) {
+        ColorUtils.showErrorDialog("<html>The following invalid values were found in the properties file:<br><br> " + msg);
+    }
+
+
+    private static boolean isValidBooleanString(String booleanString) {
+        if (booleanString != null) {
+            if (booleanString.trim().equalsIgnoreCase("true") || booleanString.trim().equalsIgnoreCase("false")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
