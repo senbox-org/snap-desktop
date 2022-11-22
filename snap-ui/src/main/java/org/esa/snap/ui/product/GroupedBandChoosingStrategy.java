@@ -90,6 +90,10 @@ public class GroupedBandChoosingStrategy implements BandChoosingStrategy {
                 description.append(" (");
                 description.append(((Band) rasterDataNode).getSpectralWavelength());
                 description.append(" nm)");
+            } else if (((Band) rasterDataNode).getDate() != null) {
+                description.append(" (");
+                description.append(((Band) rasterDataNode).getDate());
+                description.append(")");
             }
         }
         description.append(")");
