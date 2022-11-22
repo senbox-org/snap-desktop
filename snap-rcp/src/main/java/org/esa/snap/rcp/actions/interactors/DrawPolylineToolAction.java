@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertPolylineFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,7 +36,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/" + PackageDefaults.DRAW_POLYLINE_TOOLBAR,
         position = 160
 )
 @Messages({
@@ -52,7 +53,7 @@ public class DrawPolylineToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawPolylineToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawPolylineToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawPolylineTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_POLYLINE_ICON, false));
         Interactor interactor = new InsertPolylineFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);

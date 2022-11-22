@@ -19,6 +19,7 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.swing.selection.AbstractSelectionContext;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.support.DefaultSelection;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -35,7 +36,7 @@ import java.util.WeakHashMap;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "rightSlidingSide",
+        mode = PackageDefaults.LAYER_MANAGER_MODE,
         openAtStartup = true,
         position = 10
 )
