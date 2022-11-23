@@ -111,7 +111,7 @@ import java.util.Map;
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Optical"),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Toolbars/Optical")
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent")
 @NbBundle.Messages({"CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
