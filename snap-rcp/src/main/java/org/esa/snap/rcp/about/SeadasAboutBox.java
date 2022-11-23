@@ -98,10 +98,10 @@ public class SeadasAboutBox extends JPanel {
                 + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "* (SeaDAS Modified)<br>"
                 + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "* (SeaDAS Modified)<br>"
 //                + "<b>SNAP Desktop implementation version: </b>SEADAS-8.2.0 (branded from SNAP 8.0.9)<br>"
-                + "<b>SNAP Desktop git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-" + seadasVersion + "<br>"
 //                + "<b>SNAP Desktop implementation version: </b>" + desktopModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
 //                + "<b>SNAP Engine implementation version: </b>SEADAS-8.2.0 (branded from SNAP 8.0.9)<br>"
-                + "<b>SNAP Engine git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-" + seadasVersion + "<br>"
+                + "<b>SNAP Engine git repository tag: </b>https://github.com/senbox-org/snap-engine/releases/tag/SEADAS-" + seadasVersion + "<br>"
+                + "<b>SNAP Desktop git repository tag: </b>https://github.com/senbox-org/snap-desktop/releases/tag/SEADAS-" + seadasVersion + "<br>"
 
 //                + "<b>SNAP Engine implementation version: </b>" + engineModuleInfo.getImplementationVersion() + "-seadas" + SEADAS_VERSION +"<br>"
                 + "<b>Resource directory: </b>" + SystemUtils.getApplicationDataDir() + "<br>"
