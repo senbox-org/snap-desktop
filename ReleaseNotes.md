@@ -2,7 +2,8 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 9.0.4
-    [snap-1573] NetCDF expects distinct names within metadata groups    
+    [SNAP-1573] NetCDF expects distinct names within metadata groups    
+	[SNAP-1576] SRTM 1S HGT has incorrect nodata value
 
 # New in SNAP 9.0.3
     [SNAP-1570] Shapefile import should be more lenient    
