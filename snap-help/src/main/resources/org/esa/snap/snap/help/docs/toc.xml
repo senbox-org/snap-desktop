@@ -53,8 +53,21 @@
                     <tocitem text="NetCDF" target="importNetCdfProduct"/>
                 </tocitem>
                 <tocitem text="Optical Sensors">
+<<<<<<< Updated upstream
                     <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
                     <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
+=======
+                    <!--                    <tocitem text="ATSR" target="importAtsrProduct"/>-->
+                    <!--                    <tocitem text="ALOS/AVNIR-2" target="importAvnir2Product"/>-->
+                    <!--                    <tocitem text="ALOS/PRISM" target="importPrismProduct"/>-->
+                    <tocitem text="ENVISAT MERIS" target="importEnvisatProduct"/>
+                    <tocitem text="ERS1/2 ATSR" target="importErsProduct"/>
+                    <!--                    <tocitem text="LANDSAT" target="importLandsatProduct"/>-->
+                    <!--                    <tocitem text="MERIS Binned Level-3" target="importMerisBinnedL3Product"/>-->
+                    <!--                    <tocitem text="MODIS" target="importModisProduct"/>-->
+                    <!--                    <tocitem text="NOAA-AVHRR/3 Level-1b" target="importAVHRR"/>-->
+                    <!--                    <tocitem text="SPOT VEGETATION" target="importSpotVgtProduct"/>-->
+>>>>>>> Stashed changes
                 </tocitem>
             </tocitem>
             <tocitem text="Import Vector Data">
