@@ -200,8 +200,8 @@ public abstract class ChartPagePanel extends PagePanel {
         GridBagUtils.addToPanel(extendedOptionsPanel, new JSeparator(), extendedOptionsPanelConstraints, "insets.left=4,insets.right=2,gridy=5,anchor=SOUTHWEST");
 
         final SimpleScrollPane optionsScrollPane = new SimpleScrollPane(extendedOptionsPanel,
-                                                                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                                                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         optionsScrollPane.setBorder(null);
         optionsScrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
