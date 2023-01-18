@@ -67,6 +67,9 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+//JUN2021 - Daniel Knowles - Minor renaming due to revisions of color bar and color bar layer tools
+
+
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportKmzFileAction"
@@ -296,10 +299,10 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private static ImageLegend initImageLegend(RasterDataNode raster) {
         ImageLegend imageLegend = new ImageLegend(raster.getImageInfo(), raster);
 
-        imageLegend.setHeaderText(getLegendHeaderText(raster));
+        imageLegend.setTitleText(getLegendHeaderText(raster));
         imageLegend.setOrientation(ImageLegend.VERTICAL);
-        imageLegend.setBackgroundTransparency(0.0f);
-        imageLegend.setBackgroundTransparencyEnabled(true);
+        imageLegend.setBackdropTransparency(0.0f);
+        imageLegend.setTransparencyEnabled(true);
         imageLegend.setAntialiasing(true);
 
         return imageLegend;
