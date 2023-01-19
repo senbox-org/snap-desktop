@@ -1,4 +1,4 @@
-package org.esa.s2tbx.dataio.gdal.preferences;
+package org.esa.snap.dataio.gdal.preferences;
 
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -15,12 +15,18 @@ import java.beans.PropertyChangeSupport;
  * @author Adrian Draghici
  */
 @OptionsPanelController.SubRegistration(
-        location = "S2TBX",
-        displayName = "GDAL Library Loader",
-        keywords = "S2TBX, GDAL",
-        keywordsCategory = "S2TBX",
-        position = 3
+        location = "GeneralPreferences",
+        displayName = "#Options_DisplayName_GDAL_Library_Loader",
+        keywords = "#Options_Keywords_GDAL_Library_Loader",
+        keywordsCategory = "GDAL Library Loader",
+        id = "GDAL",
+        position = 14
 )
+@org.openide.util.NbBundle.Messages({
+        "Options_DisplayName_GDAL_Library_Loader=GDAL Library Loader",
+        "Options_Keywords_GDAL_Library_Loader=gdal, library, loader" })
+
+
 public class GDALOptionsPanelController extends OptionsPanelController {
     private GDALOptionsPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);

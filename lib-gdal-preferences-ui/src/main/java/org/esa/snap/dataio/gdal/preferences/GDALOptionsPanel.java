@@ -1,4 +1,4 @@
-package org.esa.s2tbx.dataio.gdal.preferences;
+package org.esa.snap.dataio.gdal.preferences;
 
 import org.esa.snap.dataio.gdal.GDALLoaderConfig;
 import org.esa.snap.dataio.gdal.GDALVersion;
