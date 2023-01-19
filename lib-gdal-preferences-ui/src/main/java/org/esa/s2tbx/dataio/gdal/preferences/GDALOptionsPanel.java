@@ -1,7 +1,7 @@
 package org.esa.s2tbx.dataio.gdal.preferences;
 
-import org.esa.s2tbx.dataio.gdal.GDALLoaderConfig;
-import org.esa.s2tbx.dataio.gdal.GDALVersion;
+import org.esa.snap.dataio.gdal.GDALLoaderConfig;
+import org.esa.snap.dataio.gdal.GDALVersion;
 import org.openide.awt.Mnemonics;
 
 import javax.swing.*;
