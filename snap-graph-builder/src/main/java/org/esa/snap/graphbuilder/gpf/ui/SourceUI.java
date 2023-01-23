@@ -200,6 +200,8 @@ public class SourceUI extends BaseOperatorUI {
         paramMap.put(USE_ADVANCED_OPTIONS_PARAMETER, advancedOptionsPanel.isVisible());
         OperatorUIUtils.updateParamList(bandList, paramMap, BAND_LIST_PARAMETER);
         OperatorUIUtils.updateParamList(maskList, paramMap, MASK_LIST_PARAMETER);
+        paramMap.remove(PIXEL_REGION_PARAMETER);
+        paramMap.remove(GEOMETRY_REGION_PARAMETER);
         if (pixelCoordRadio.isSelected()) {
             paramMap.put(PIXEL_REGION_PARAMETER, new Rectangle(((Number) pixelCoordXSpinner.getValue()).intValue(), ((Number) pixelCoordYSpinner.getValue()).intValue(), ((Number) pixelCoordWidthSpinner.getValue()).intValue(), ((Number) pixelCoordHeightSpinner.getValue()).intValue()));
         }
