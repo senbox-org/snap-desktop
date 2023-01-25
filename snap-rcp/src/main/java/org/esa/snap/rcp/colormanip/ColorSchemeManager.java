@@ -38,7 +38,9 @@ public class ColorSchemeManager {
     private ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = new ArrayList<ColorSchemeLookupInfo>();
 
     private File colorSchemesFile = null;
-    private File colorSchemeLutFile = null;
+    private File colorSchemesUserFile = null;
+    private File colorSchemeLookupFile = null;
+    private File colorSchemeLookupUserFile = null;
 
     private JComboBox jComboBox = null;
     private boolean jComboBoxShouldFire = true;
@@ -101,9 +103,11 @@ public class ColorSchemeManager {
             }
 
             colorSchemesFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEMES_FILENAME);
-            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME);
+            colorSchemesUserFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEMES_USER_FILENAME);
+            colorSchemeLookupFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME);
+            colorSchemeLookupUserFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_USER_FILENAME);
 
-            if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
+            if (colorSchemesFile.exists() && colorSchemeLookupFile.exists()) {
                 createPrimaryAndAdditionalColorSchemeInfos();
 
                 setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
@@ -122,8 +126,6 @@ public class ColorSchemeManager {
             setjComboBoxShouldFire(true);
         }
     }
-
-
 
 
     private void addSchemeOrganizedInfos(boolean useAll, boolean primary, boolean sort, boolean verbose) {
@@ -152,8 +154,6 @@ public class ColorSchemeManager {
     }
 
 
-
-
     private void updateOrganizedColorSchemeInfo(boolean dual, boolean verbose, boolean sort) {
 
         colorSchemeOrganizedInfos.clear();
@@ -172,11 +172,6 @@ public class ColorSchemeManager {
             addSchemeOrganizedInfos(true, false, sort, verbose);
         }
     }
-
-
-
-
-
 
 
     public void checkPreferences(PropertyMap configuration) {
@@ -313,8 +308,8 @@ public class ColorSchemeManager {
 
         jComboBox = new JComboBox();
         jComboBox.setEditable(false);
-        if (colorSchemeLutFile != null) {
-            jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemesFile.getName());
+        if (colorSchemeLookupFile != null) {
+            jComboBox.setToolTipText("To add a user defined scheme see file: " + colorSchemesAuxDir + "/" + colorSchemesUserFile.getName());
         }
 
         jComboBox.setMaximumRowCount(15);
@@ -344,133 +339,25 @@ public class ColorSchemeManager {
     private boolean createPrimaryAndAdditionalColorSchemeInfos() {
 
         Document dom = getFileDocument(colorSchemesFile);
-
         Element rootElement = dom.getDocumentElement();
         NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
 
-
         if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
             for (int i = 0; i < schemeNodeList.getLength(); i++) {
-
                 Element schemeElement = (Element) schemeNodeList.item(i);
+                addPrimaryAndAdditionalColorSchemeInfos(schemeElement);
+            }
+        }
 
-                if (schemeElement != null) {
-                    String id = schemeElement.getAttribute("name");
-                    String description = getTextValue(schemeElement, "DESCRIPTION");
-                    String displayName = getTextValue(schemeElement, "VERBOSE_NAME");
-                    String colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
-                    String colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
-                    String minStr = getTextValue(schemeElement, "MIN");
-                    String maxStr = getTextValue(schemeElement, "MAX");
-                    String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
-                    String standardCpdFilename = getTextValue(schemeElement, "STANDARD_FILENAME");
-                    String universalCpdFilename = getTextValue(schemeElement, "UNIVERSAL_FILENAME");
-                    String dividerString = getTextValue(schemeElement, "DIVIDER");
-                    String primarySchemeString = getTextValue(schemeElement, "PRIMARY");
+        if (colorSchemesUserFile.exists()) {
+            Document domCustom = getFileDocument(colorSchemesUserFile);
+            Element rootElementCustom = domCustom.getDocumentElement();
+            NodeList schemeNodeListCustom = rootElementCustom.getElementsByTagName("Scheme");
 
-                    boolean validEntry = true;
-                    boolean fieldsInitialized = false;
-
-                    Double min;
-                    Double max;
-                    boolean logScaled;
-                    File standardCpdFile;
-                    File colorBlindCpdFile;
-                    boolean enabled;
-                    boolean divider;
-                    boolean primaryScheme;
-
-
-                    if (minStr != null && minStr.length() > 0) {
-                        min = Double.valueOf(minStr);
-                    } else {
-                        min = ColorManipulationDefaults.DOUBLE_NULL;
-                    }
-
-                    if (maxStr != null && maxStr.length() > 0) {
-                        max = Double.valueOf(maxStr);
-                    } else {
-                        max = ColorManipulationDefaults.DOUBLE_NULL;
-                    }
-
-                    logScaled = false;
-                    if (logScaledStr != null && logScaledStr.length() > 0 && logScaledStr.toLowerCase().equals("true")) {
-                        logScaled = true;
-                    }
-
-                    divider = false;
-                    if (dividerString != null && dividerString.length() > 0 && dividerString.toLowerCase().equals("true")) {
-                        divider = true;
-                    }
-
-                    primaryScheme = false;
-                    if (primarySchemeString != null && primarySchemeString.length() > 0 && primarySchemeString.toLowerCase().equals("true")) {
-                        primaryScheme = true;
-                    }
-
-                    if (id != null && id.length() > 0) {
-                        fieldsInitialized = true;
-                    }
-
-                    if (fieldsInitialized) {
-
-                        if (!testMinMax(min, max, logScaled)) {
-                            validEntry = false;
-                        }
-
-                        if (validEntry) {
-                            if (standardCpdFilename != null) {
-                                standardCpdFile = new File(colorPaletteAuxDir, standardCpdFilename);
-                                if (standardCpdFile == null || !standardCpdFile.exists()) {
-                                    validEntry = false;
-                                }
-                            } else {
-                                validEntry = false;
-                            }
-                        }
-
-                        if (validEntry) {
-                            if (universalCpdFilename != null) {
-                                colorBlindCpdFile = new File(colorPaletteAuxDir, universalCpdFilename);
-                                if (colorBlindCpdFile == null || !colorBlindCpdFile.exists()) {
-                                    validEntry = false;
-                                }
-                            } else {
-                                validEntry = false;
-                            }
-                        }
-
-
-                        ColorSchemeInfo colorSchemeInfo = null;
-
-                        enabled = validEntry;
-
-                        colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
-
-                        if (!colorSchemeInfo.isEnabled()) {
-                            description = checkScheme(colorSchemeInfo);
-                            colorSchemeInfo.setDescription(description);
-                        }
-
-
-                        if (colorSchemeInfo != null) {
-                            // determine if this is a duplicate entry
-                            if (!colorSchemeInfo.isDuplicateEntry()) {
-                                for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeStoredInfos) {
-                                    if (id.equals(storedColorSchemeInfo.getName())) {
-                                        colorSchemeInfo.setDuplicateEntry(true);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (colorSchemeInfo.isDuplicateEntry()) {
-                                colorSchemeInfo.setDescription("WARNING!: duplicate scheme entry");
-                            }
-
-                            colorSchemeStoredInfos.add(colorSchemeInfo);
-                        }
-                    }
+            if (schemeNodeListCustom != null && schemeNodeListCustom.getLength() > 0) {
+                for (int i = 0; i < schemeNodeListCustom.getLength(); i++) {
+                    Element schemeElement = (Element) schemeNodeListCustom.item(i);
+                    addPrimaryAndAdditionalColorSchemeInfos(schemeElement);
                 }
             }
         }
@@ -479,54 +366,197 @@ public class ColorSchemeManager {
     }
 
 
+    private void addPrimaryAndAdditionalColorSchemeInfos(Element schemeElement) {
+
+        if (schemeElement != null) {
+            String id = schemeElement.getAttribute("name");
+            String description = getTextValue(schemeElement, "DESCRIPTION");
+            String displayName = getTextValue(schemeElement, "VERBOSE_NAME");
+            String colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
+            String colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
+            String minStr = getTextValue(schemeElement, "MIN");
+            String maxStr = getTextValue(schemeElement, "MAX");
+            String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
+            String standardCpdFilename = getTextValue(schemeElement, "STANDARD_FILENAME");
+            String universalCpdFilename = getTextValue(schemeElement, "UNIVERSAL_FILENAME");
+            String dividerString = getTextValue(schemeElement, "DIVIDER");
+            String primarySchemeString = getTextValue(schemeElement, "PRIMARY");
+
+            boolean validEntry = true;
+            boolean fieldsInitialized = false;
+
+            Double min;
+            Double max;
+            boolean logScaled;
+            File standardCpdFile;
+            File colorBlindCpdFile;
+            boolean enabled;
+            boolean divider;
+            boolean primaryScheme;
+
+
+            if (minStr != null && minStr.length() > 0) {
+                min = Double.valueOf(minStr);
+            } else {
+                min = ColorManipulationDefaults.DOUBLE_NULL;
+            }
+
+            if (maxStr != null && maxStr.length() > 0) {
+                max = Double.valueOf(maxStr);
+            } else {
+                max = ColorManipulationDefaults.DOUBLE_NULL;
+            }
+
+            logScaled = false;
+            if (logScaledStr != null && logScaledStr.length() > 0 && logScaledStr.toLowerCase().equals("true")) {
+                logScaled = true;
+            }
+
+            divider = false;
+            if (dividerString != null && dividerString.length() > 0 && dividerString.toLowerCase().equals("true")) {
+                divider = true;
+            }
+
+            primaryScheme = false;
+            if (primarySchemeString != null && primarySchemeString.length() > 0 && primarySchemeString.toLowerCase().equals("true")) {
+                primaryScheme = true;
+            }
+
+            if (id != null && id.length() > 0) {
+                fieldsInitialized = true;
+            }
+
+            if (fieldsInitialized) {
+
+                if (!testMinMax(min, max, logScaled)) {
+                    validEntry = false;
+                }
+
+                if (validEntry) {
+                    if (standardCpdFilename != null) {
+                        standardCpdFile = new File(colorPaletteAuxDir, standardCpdFilename);
+                        if (standardCpdFile == null || !standardCpdFile.exists()) {
+                            validEntry = false;
+                        }
+                    } else {
+                        validEntry = false;
+                    }
+                }
+
+                if (validEntry) {
+                    if (universalCpdFilename != null) {
+                        colorBlindCpdFile = new File(colorPaletteAuxDir, universalCpdFilename);
+                        if (colorBlindCpdFile == null || !colorBlindCpdFile.exists()) {
+                            validEntry = false;
+                        }
+                    } else {
+                        validEntry = false;
+                    }
+                }
+
+
+                ColorSchemeInfo colorSchemeInfo = null;
+
+                enabled = validEntry;
+
+                colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+
+                if (!colorSchemeInfo.isEnabled()) {
+                    description = checkScheme(colorSchemeInfo);
+                    colorSchemeInfo.setDescription(description);
+                }
+
+
+                if (colorSchemeInfo != null) {
+                    // determine if this is a duplicate entry
+                    if (!colorSchemeInfo.isDuplicateEntry()) {
+                        for (ColorSchemeInfo storedColorSchemeInfo : colorSchemeStoredInfos) {
+                            if (id.equals(storedColorSchemeInfo.getName())) {
+                                colorSchemeInfo.setDuplicateEntry(true);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (colorSchemeInfo.isDuplicateEntry()) {
+                        colorSchemeInfo.setDescription("WARNING!: duplicate scheme entry");
+                    }
+
+                    colorSchemeStoredInfos.add(colorSchemeInfo);
+                }
+            }
+        }
+
+
+    }
+
+
     private void initColorSchemeLookup() {
 
-        Document dom = getFileDocument(colorSchemeLutFile);
-
+        Document dom = getFileDocument(colorSchemeLookupFile);
         Element rootElement = dom.getDocumentElement();
         NodeList keyNodeList = rootElement.getElementsByTagName("KEY");
 
         if (keyNodeList != null && keyNodeList.getLength() > 0) {
 
             for (int i = 0; i < keyNodeList.getLength(); i++) {
-                boolean checksOut = true;
-
                 Element schemeElement = (Element) keyNodeList.item(i);
+                addColorSchemeLookup(schemeElement);
+            }
+        }
 
-                if (schemeElement != null) {
-                    String regex = schemeElement.getAttribute("REGEX");
-                    String schemeId = getTextValue(schemeElement, "SCHEME_ID");
-                    String description = getTextValue(schemeElement, "DESCRIPTION");
+        if (colorSchemeLookupUserFile.exists()) {
+            Document domCustom = getFileDocument(colorSchemeLookupUserFile);
+            Element rootElementCustom = domCustom.getDocumentElement();
+            NodeList keyNodeListCustom = rootElementCustom.getElementsByTagName("KEY");
 
-
-                    if (regex == null || regex.length() == 0) {
-                        checksOut = false;
-                    }
-
-                    if (schemeId == null || schemeId.length() == 0) {
-                        schemeId = regex;
-                    }
-
-                    if (schemeId == null || schemeId.length() == 0) {
-                        checksOut = false;
-                    }
-
-                    ColorSchemeInfo colorSchemeInfo = getColorSchemeInfoBySchemeId(schemeId);
-                    if (colorSchemeInfo == null) {
-                        checksOut = false;
-                    }
-
-                    if (checksOut) {
-                        ColorSchemeLookupInfo colorSchemeLookupInfo = new ColorSchemeLookupInfo(regex, schemeId, description, colorSchemeInfo);
-
-                        if (colorSchemeLookupInfo != null) {
-                            colorSchemeLookupInfos.add(colorSchemeLookupInfo);
-                        }
-                    }
+            if (keyNodeListCustom != null && keyNodeListCustom.getLength() > 0) {
+                for (int i = 0; i < keyNodeListCustom.getLength(); i++) {
+                    Element schemeElement = (Element) keyNodeListCustom.item(i);
+                    addColorSchemeLookup(schemeElement);
                 }
             }
         }
     }
+
+
+    private void addColorSchemeLookup(Element schemeElement) {
+
+        boolean checksOut = true;
+        if (schemeElement != null) {
+            String regex = schemeElement.getAttribute("REGEX");
+            String schemeId = getTextValue(schemeElement, "SCHEME_ID");
+            String description = getTextValue(schemeElement, "DESCRIPTION");
+
+
+            if (regex == null || regex.length() == 0) {
+                checksOut = false;
+            }
+
+            if (schemeId == null || schemeId.length() == 0) {
+                schemeId = regex;
+            }
+
+            if (schemeId == null || schemeId.length() == 0) {
+                checksOut = false;
+            }
+
+            ColorSchemeInfo colorSchemeInfo = getColorSchemeInfoBySchemeId(schemeId);
+            if (colorSchemeInfo == null) {
+                checksOut = false;
+            }
+
+            if (checksOut) {
+                ColorSchemeLookupInfo colorSchemeLookupInfo = new ColorSchemeLookupInfo(regex, schemeId, description, colorSchemeInfo);
+
+                if (colorSchemeLookupInfo != null) {
+                    colorSchemeLookupInfos.add(colorSchemeLookupInfo);
+                }
+            }
+        }
+
+    }
+
 
     public ColorSchemeInfo getColorSchemeInfoBySchemeId(String schemeId) {
         if (schemeId != null && schemeId.length() > 0) {
