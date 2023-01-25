@@ -100,8 +100,8 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
     @Override
     public void actionPerformed(ActionEvent e) {
         final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
-                new String[]{".txt", ".dat", ".csv"},
-                "Plain text");
+                                                         new String[]{".txt", ".dat", ".csv"},
+                                                         "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new DefaultVectorDataNodeReader(), "Import CSV file", "csv.io.dir");
         importer.importGeometry(SnapApp.getDefault());
     }
@@ -125,7 +125,7 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
                 CoordinateReferenceSystem modelCrs = product.getSceneCRS();
                 reader = new FileReader(file);
                 return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
-                        modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);
+                                                 modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);
             } finally {
                 if (reader != null) {
                     reader.close();

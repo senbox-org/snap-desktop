@@ -193,7 +193,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         while ((record = csvReader.readDoubleRecord()) != null) {
             if (record.length < 3) {
                 throw new IOException("Illegal track file format.\n" +
-                        "Expecting tab-separated lines containing 3 values: lat, lon, data.");
+                                              "Expecting tab-separated lines containing 3 values: lat, lon, data.");
             }
 
             float lat = (float) record[0];

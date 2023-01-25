@@ -98,8 +98,8 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
     @Override
     public void actionPerformed(ActionEvent event) {
         final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
-                new String[]{".txt", ".dat", ".csv"},
-                "Plain text");
+                                                         new String[]{".txt", ".dat", ".csv"},
+                                                         "Plain text");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new MermaidReader(), "Import MERMAID Extraction File", "csv.io.dir");
         importer.importGeometry(SnapApp.getDefault());
     }
@@ -125,7 +125,7 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
 
                 char delimiterChar = ';';
                 return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
-                        modelCrs, delimiterChar, pm);
+                                                 modelCrs, delimiterChar, pm);
             } finally {
                 if (reader != null) {
                     reader.close();

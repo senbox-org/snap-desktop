@@ -101,8 +101,8 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
     @Override
     public void actionPerformed(ActionEvent event) {
         final SnapFileFilter filter = new SnapFileFilter(getVectorDataType(),
-                new String[]{".shp"},
-                "ESRI Shapefiles");
+                                                         new String[]{".shp"},
+                                                         "ESRI Shapefiles");
         importer = new VectorDataNodeImporter(getHelpId(), filter, new VdnShapefileReader(), "Import Shapefile", "shape.io.dir");
         importer.importGeometry(SnapApp.getDefault());
     }
@@ -123,13 +123,13 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
         public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
 
             DefaultFeatureCollection featureCollection = FeatureUtils.loadShapefileForProduct(file,
-                    product,
-                    crsProvider,
-                    pm);
+                                                                                              product,
+                                                                                              crsProvider,
+                                                                                              pm);
             Style[] styles = SLDUtils.loadSLD(file);
             ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
             String name = VectorDataNodeImporter.findUniqueVectorDataNodeName(featureCollection.getSchema().getName().getLocalPart(),
-                    vectorDataGroup);
+                                                                              vectorDataGroup);
             if (styles.length > 0) {
                 SimpleFeatureType featureType = SLDUtils.createStyledFeatureType(featureCollection.getSchema());
 
