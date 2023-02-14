@@ -75,6 +75,7 @@ stages:
   - build
   - test
   - quality
+  - security
   - package
   - deploy
   - release
@@ -118,6 +119,26 @@ Sonarqube:
   only:
     - master # or the name of your main branch
     - merge_requests
+
+secret_detection:
+  stage: security
+  tags:
+    - build
+
+sast:
+  stage: security
+  tags:
+    - build
+
+license_scanning:
+  stage: security
+  tags:
+    - build
+
+dependency_scanning:
+  stage: security
+  tags:
+    - build
 
 Package: 
   tags: 
