@@ -19,6 +19,7 @@
         <netbeans.version>RELEASE82</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
     </properties>
 
     <modules>
