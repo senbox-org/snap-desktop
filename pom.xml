@@ -19,6 +19,9 @@
         <netbeans.version>RELEASE82</netbeans.version>
         <doc-windows.version>1.0</doc-windows.version>
         <user.language>en</user.language>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.java.binaries>**/classes</sonar.java.binaries>
+        <sonar.exclusions>*/src</sonar.exclusions>
     </properties>
 
     <modules>
@@ -42,7 +45,6 @@
         <module>snap-help</module>
         <module>snap-land-cover-ui</module>
         <module>snap-pixel-extraction-ui</module>
-        <!--module>snap-product-library-ui</module-->
         <module>snap-product-library-ui-v2</module>
         <module>snap-raster-ui</module>
         <module>snap-ui</module>
