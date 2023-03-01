@@ -28,6 +28,7 @@ public class PackageDefaults  {
     public static final String DENSITY_PLOT_ICON = "seadas/ScatterPlot24.png"; // differs from snap
     public static final String CORRELATIVE_PLOT_ICON = "seadas/CorrelativePlot24.png"; // differs from snap
     public static final String SPECTRUM_ICON = "seadas/Spectrum24.png"; // differs from snap
+    public static final String ANGULAR_ICON = "seadas/Spectrum24.png"; // differs from snap
     public static final String OVERLAY_WORLD_MAP_ICON = "seadas/WorldMap24.png"; // differs from snap
     public static final String OVERLAY_NO_DATA_ICON = "seadas/NoDataOverlay24.png"; // differs from snap
     public static final String OVERLAY_GRATICULE_ICON = "seadas/GraticuleOverlay24.png"; // differs from snap
