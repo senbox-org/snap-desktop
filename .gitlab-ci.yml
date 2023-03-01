@@ -16,7 +16,7 @@ include:
 # variables
 variables:
   MAVEN_IMAGE: "registry.hub.docker.com/library/maven:3.6.3-jdk-8"
-
+  MVN_FORBID_SNAPSHOT_DEPENDENCIES_DISABLED: "true"
 
 # your pipeline stages
 stages:
