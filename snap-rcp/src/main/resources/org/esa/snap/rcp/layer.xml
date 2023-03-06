@@ -187,6 +187,10 @@
             <attr name="position" intvalue="100"/>
         </folder>
 
+        <folder name="Angular">
+            <attr name="position" intvalue="150"/>
+        </folder>
+
         <folder name="Clipboard"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="200"/>
         </folder>
@@ -238,10 +242,13 @@
         </folder>
 
 
+        <folder name="Optical">
+            <attr name="position" intvalue="648"/>
+        </folder>
+
         <folder name="Overlay">
             <attr name="position" intvalue="650"/>
         </folder>
-
 
         <folder name="Pins">
             <attr name="position" intvalue="655"/>
