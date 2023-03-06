@@ -76,14 +76,14 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 
-@TopComponent.Description(preferredID = "AngularTopComponent")
-//        , iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
-@TopComponent.Registration(mode = PackageDefaults.SPECTRUM_WS_MODE, openAtStartup = false, position = 80)
+@TopComponent.Description(preferredID = "AngularTopComponent"
+        , iconBase = "org/esa/snap/rcp/icons/AngularView.png")
+@TopComponent.Registration(mode = "Statistics", openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.AngularTopComponent")
 @ActionReferences({
 //        @ActionReference(path = "Menu/Optical", position = 0),
-        @ActionReference(path = "Menu/View/Tool Windows/Optical"),
-//        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows/Angular"),
+        @ActionReference(path = "Toolbars/Angular")
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AngularTopComponent_Name", preferredID = "AngularTopComponent")
 @NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularWnd"})
