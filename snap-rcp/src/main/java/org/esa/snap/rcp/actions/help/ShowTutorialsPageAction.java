@@ -37,7 +37,7 @@ import java.awt.event.ActionEvent;
         "CTL_ShowTutorialsPageAction_ShortDescription=Browse the SNAP Toolboxes tutorials web page"
 })
 public class ShowTutorialsPageAction extends AbstractAction {
-    private static final String DEFAULT_PAGE_URL = "http://step.esa.int/main/tutorials";
+    private static final String DEFAULT_PAGE_URL = "https://step.esa.int/main/tutorials";
 
     /**
      * Launches the default browser to display the tutorials.

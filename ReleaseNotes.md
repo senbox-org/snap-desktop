@@ -1,7 +1,16 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.4
+    [SNAP-1573] NetCDF expects distinct names within metadata groups    
+	[SNAP-1576] SRTM 1S HGT has incorrect nodata value
+
+# New in SNAP 9.0.3
+    [SNAP-1570] Shapefile import should be more lenient    
+    [SNAP-1539] If errors in shapefile are detected, exception should be thrown
+
 # New in SNAP 9.0.2
+    [SNAP-1568] Metadata of product is not written to NetCDF-CF format    
     [SNAP-1562] Collocation operator should copy metadata of secondary products
     [SNAP-1561] Connection to WMS service cannot be established 
     [SNAP-1560] Memory leak in ceres-binio
