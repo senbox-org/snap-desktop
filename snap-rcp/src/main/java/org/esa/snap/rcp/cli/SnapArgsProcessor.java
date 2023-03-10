@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.cli;
 
-import org.esa.snap.python.PyBridge;
+import org.esa.snap.esasnappy.PyBridge;
 import org.esa.snap.rcp.session.SessionManager;
 import org.netbeans.api.sendopts.CommandException;
 import org.netbeans.spi.sendopts.Arg;
@@ -76,7 +76,7 @@ public class SnapArgsProcessor implements ArgsProcessor {
         SnapArgs.getDefault().setFileList(fileList);
     }
 
-    private static void processPython(String[] args) throws CommandException {
+    static void processPython(String[] args) throws CommandException {
         int errorExitCode = 200;
 
         Path pythonExecutable = null;
