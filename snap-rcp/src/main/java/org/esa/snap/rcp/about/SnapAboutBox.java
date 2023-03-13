@@ -5,7 +5,6 @@
  */
 package org.esa.snap.rcp.about;
 
-import com.bc.ceres.core.runtime.Version;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.BrowserUtils;
@@ -26,7 +25,7 @@ import java.awt.Font;
  */
 public class SnapAboutBox extends JPanel {
 
-    private final static String releaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20";
+    private final static String releaseNotesUrlString = "https://github.com/senbox-org/snap-desktop/blob/master/ReleaseNotes.md";
     private final JLabel versionText;
     private final ModuleInfo engineModuleInfo;
 
@@ -84,13 +83,9 @@ public class SnapAboutBox extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         panel.add(versionText);
 
-        Version specVersion = Version.parseVersion(engineModuleInfo.getSpecificationVersion().toString());
-        String versionString = String.format("%s.%s.%s", specVersion.getMajor(), specVersion.getMinor(), specVersion.getMicro());
-        String changelogUrl = releaseNotesUrlString + versionString;
-
-        final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + changelogUrl + "\">Release Notes</a>");
+        final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + releaseNotesUrlString + "\">Release Notes</a>");
         releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
+        releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(releaseNotesUrlString));
         panel.add(releaseNoteLabel);
         return panel;
     }
