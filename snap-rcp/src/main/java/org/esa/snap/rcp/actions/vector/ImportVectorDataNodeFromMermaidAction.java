@@ -56,7 +56,7 @@ import java.io.IOException;
 public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorDataNodeAction implements ContextAwareAction, LookupListener {
 
     private Lookup lookup;
-    private final Lookup.Result<Product> result;
+    private final Lookup.Result<ProductNode> result;
     private VectorDataNodeImporter importer;
     private static final String vector_data_type = "CSV";
 
@@ -66,7 +66,7 @@ public class ImportVectorDataNodeFromMermaidAction extends AbstractImportVectorD
 
     public ImportVectorDataNodeFromMermaidAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(Product.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();
