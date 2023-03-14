@@ -33,14 +33,14 @@ import java.beans.PropertyChangeListener;
  */
 public class OutputGeometryFormModel {
 
-    private static final int REFERENCE_PIXEL_USER = 2;
-    private static final int REFERENCE_PIXEL_UPPER_LEFT = 0;
-    private static final int REFERENCE_PIXEL_SCENE_CENTER = 1;
+    public static final int REFERENCE_PIXEL_USER = 2;
+    public static final int REFERENCE_PIXEL_UPPER_LEFT = 0;
+    public static final int REFERENCE_PIXEL_SCENE_CENTER = 1;
     private static final int REFERENCE_PIXEL_DEFAULT = REFERENCE_PIXEL_SCENE_CENTER;
     private static final boolean FIT_PRODUCT_SIZE_DEFAULT = true;
 
-    private int referencePixelLocation;
-    private boolean fitProductSize;
+    public int referencePixelLocation;
+    public boolean fitProductSize;
 
     private transient Product sourceProduct;
     private transient CoordinateReferenceSystem targetCrs;
@@ -48,10 +48,10 @@ public class OutputGeometryFormModel {
 
     public OutputGeometryFormModel(PropertySet sourcePropertySet) {
         init(null,
-             null,
-             getFitProductSize(sourcePropertySet),
-             getReferencePixelLocation(sourcePropertySet),
-             sourcePropertySet);
+                null,
+                getFitProductSize(null, sourcePropertySet, targetCrs),
+                getReferencePixelLocation(sourcePropertySet),
+                sourcePropertySet);
     }
 
     public OutputGeometryFormModel(Product sourceProduct, Product collocationProduct) {
@@ -60,32 +60,45 @@ public class OutputGeometryFormModel {
 
     public OutputGeometryFormModel(Product sourceProduct, CoordinateReferenceSystem targetCrs) {
         this(sourceProduct, ImageGeometry.createTargetGeometry(sourceProduct, targetCrs,
-                                                               null, null, null, null,
-                                                               null, null, null, null, null));
+                null, null, null, null,
+                null, null, null, null, null));
+    }
+
+    public OutputGeometryFormModel(Product sourceProduct, CoordinateReferenceSystem targetCrs, PropertySet ps) {
+        this(sourceProduct, ImageGeometry.createTargetGeometry(sourceProduct, targetCrs,
+                ps.getValue("pixelSizeX"),
+                ps.getValue("pixelSizeY"),
+                ps.getValue("width"),
+                ps.getValue("height"),
+                ps.getValue("orientation"),
+                ps.getValue("easting"),
+                ps.getValue("northing"),
+                ps.getValue("referencePixelX"),
+                ps.getValue("referencePixelY")));
     }
 
     public OutputGeometryFormModel(OutputGeometryFormModel formModel) {
         init(formModel.sourceProduct,
-             formModel.targetCrs,
-             formModel.fitProductSize,
-             formModel.referencePixelLocation,
-             formModel.getPropertySet());
+                formModel.targetCrs,
+                formModel.fitProductSize,
+                formModel.referencePixelLocation,
+                formModel.getPropertySet());
     }
 
     private OutputGeometryFormModel(Product sourceProduct, ImageGeometry imageGeometry) {
         init(sourceProduct,
-             imageGeometry.getMapCrs(),
-             FIT_PRODUCT_SIZE_DEFAULT,
-             REFERENCE_PIXEL_DEFAULT,
-             PropertyContainer.createObjectBacked(imageGeometry));
+                imageGeometry.getMapCrs(),
+                FIT_PRODUCT_SIZE_DEFAULT,
+                REFERENCE_PIXEL_DEFAULT,
+                PropertyContainer.createObjectBacked(imageGeometry));
     }
 
     private void init(Product sourceProduct, CoordinateReferenceSystem targetCrs, boolean fitProductSize, int referencePixelLocation,
                       PropertySet sourcePropertySet) {
         this.sourceProduct = sourceProduct;
         this.targetCrs = targetCrs;
-        this.fitProductSize = fitProductSize;
-        this.referencePixelLocation = referencePixelLocation;
+        this.fitProductSize = getFitProductSize(sourceProduct, sourcePropertySet, targetCrs);
+        this.referencePixelLocation = getReferencePixelLocation(sourcePropertySet);
 
         this.propertyContainer = PropertyContainer.createValueBacked(ImageGeometry.class);
         configurePropertyContainer(propertyContainer);
@@ -169,18 +182,46 @@ public class OutputGeometryFormModel {
         propertyContainer.setValue("referencePixelY", referencePixelY);
     }
 
-    private static boolean getFitProductSize(PropertySet sourcePropertySet) {
+    private static boolean getFitProductSize(Product sourceProduct, PropertySet sourcePropertySet, CoordinateReferenceSystem targetCrs) {
         // if either width or height is set then don't set fit product size
-        return !(sourcePropertySet.getProperty("width") != null || sourcePropertySet.getProperty("height") != null);
+        if (sourceProduct != null) {
+            int width = sourcePropertySet.getValue("width");
+            int height =  sourcePropertySet.getValue("height");
+
+            ImageGeometry iGeometry;
+            iGeometry = ImageGeometry.createTargetGeometry(sourceProduct, targetCrs,
+                    null, null, null, null,
+                    null, null, null, null,
+                    null);
+
+            // }
+            Rectangle imageRect = iGeometry.getImageRect();
+
+            if (width == imageRect.width && height == imageRect.height) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return !(sourcePropertySet.getProperty("width") != null || sourcePropertySet.getProperty("height") != null);
+        }
     }
 
     private static int getReferencePixelLocation(PropertySet sourcePropertySet) {
-        double referencePixelX = sourcePropertySet.getValue("referencePixelX");
-        double referencePixelY = sourcePropertySet.getValue("referencePixelY");
-        if (referencePixelX == 0.5 && referencePixelY == 0.5) {
-            return REFERENCE_PIXEL_UPPER_LEFT;
+        if (sourcePropertySet != null) {
+            double referencePixelX = sourcePropertySet.getValue("referencePixelX");
+            double referencePixelY = sourcePropertySet.getValue("referencePixelY");
+            int width = sourcePropertySet.getValue("width");
+            int height = sourcePropertySet.getValue("height");
+            if (referencePixelX == 0.5 && referencePixelY == 0.5) {
+                return REFERENCE_PIXEL_UPPER_LEFT;
+            } else if (referencePixelX == width / 2.0 && referencePixelY == height / 2.0) {
+                return REFERENCE_PIXEL_SCENE_CENTER;
+            } else {
+                return REFERENCE_PIXEL_USER;
+            }
         } else {
-            return REFERENCE_PIXEL_USER;
+            return REFERENCE_PIXEL_DEFAULT;
         }
     }
 
@@ -190,11 +231,14 @@ public class OutputGeometryFormModel {
         public void propertyChange(PropertyChangeEvent event) {
             String propertyName = event.getPropertyName();
 
-            if (fitProductSize && propertyName.startsWith("pixelSize")) {
-                updateProductSize();
-                updateReferencePixel();
-            }
-            if (propertyName.startsWith("referencePixelLocation")) {
+            if (fitProductSize) {
+                if (propertyName.startsWith("pixelSize") || propertyName.startsWith("fitProductSize")) {
+                    updateProductSize();
+                    updateReferencePixel();
+                }
+            } else if (propertyName.startsWith("referencePixelLocation")
+                    || ((propertyName.startsWith("width") || propertyName.startsWith("height"))
+                    && referencePixelLocation == REFERENCE_PIXEL_SCENE_CENTER)) {
                 updateReferencePixel();
             }
         }
