@@ -100,7 +100,7 @@ public class SnapArgsProcessor implements ArgsProcessor {
         try {
             System.out.flush();
             System.out.println("Configuring SNAP-Python interface...");
-            Path snappyDir = PyBridge.installPythonModule(pythonExecutable, pythonModuleInstallDir, true);
+            Path snappyDir = PyBridge.installPythonModule(pythonExecutable, pythonModuleInstallDir, null, true);
             System.out.flush();
             System.out.printf("Done. The SNAP-Python interface is located in '%s'%n", snappyDir);
             System.out.printf("When using SNAP from Python, either do: sys.path.append('%s')%n", snappyDir.getParent().toString().replace("\\", "\\\\"));
