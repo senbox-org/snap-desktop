@@ -8,11 +8,11 @@ package org.esa.snap.rcp.windows;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
+import eu.esa.snap.netbeans.docwin.DocumentTopComponent;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.netbeans.docwin.DocumentTopComponent;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.actions.edit.SelectionActions;
 import org.esa.snap.rcp.util.ContextGlobalExtender;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -21,16 +21,10 @@ import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.JLayer;
+import javax.swing.*;
 import javax.swing.plaf.LayerUI;
 import javax.swing.text.DefaultEditorKit;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -49,7 +43,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     private static final Logger LOG = Logger.getLogger(ProductSceneViewTopComponent.class.getName());
 
     private final ProductSceneView view;
-    private UndoRedo undoRedo;
+    private final UndoRedo undoRedo;
     private final ProductNodeListenerAdapter nodeRenameHandler;
     private Selection selection;
 
@@ -88,6 +82,7 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
 
     /**
      * Retrieves the ProductSceneView displayed.
+     *
      * @return the scene view, never null
      */
     public ProductSceneView getView() {

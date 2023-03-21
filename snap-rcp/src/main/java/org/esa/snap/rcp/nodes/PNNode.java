@@ -5,27 +5,14 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.FlagCoding;
-import org.esa.snap.core.datamodel.IndexCoding;
-import org.esa.snap.core.datamodel.Mask;
-import org.esa.snap.core.datamodel.MetadataElement;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.TiePointGrid;
-import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
+import eu.esa.snap.netbeans.docwin.DocumentWindow;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.netbeans.docwin.DocumentWindow;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
 import org.esa.snap.rcp.actions.window.OpenMetadataViewAction;
@@ -42,7 +29,7 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyEditor;
 import java.io.IOException;
@@ -126,9 +113,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             public void setValue(String newValue) {
                 String oldValue = productNode.getName();
                 performUndoableProductNodeEdit("Rename",
-                                               productNode,
-                                               node -> node.setName(newValue),
-                                               node -> node.setName(oldValue)
+                        productNode,
+                        node -> node.setName(newValue),
+                        node -> node.setName(oldValue)
                 );
             }
         });
@@ -142,9 +129,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             public void setValue(String newValue) {
                 String oldValue = productNode.getDescription();
                 performUndoableProductNodeEdit("Edit Description",
-                                               productNode,
-                                               node -> node.setDescription(newValue),
-                                               node -> node.setDescription(oldValue)
+                        productNode,
+                        node -> node.setDescription(newValue),
+                        node -> node.setDescription(oldValue)
                 );
             }
         });
@@ -251,10 +238,10 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     }
                 };
                 BaseProgressUtils.runOffEventThreadWithProgressDialog(operation, title,
-                                                                      pm.getProgressHandle(),
-                                                                      true,
-                                                                      50,  // time in ms after which wait cursor is shown
-                                                                      1000);  // time in ms after which dialog with "Cancel" button is shown
+                        pm.getProgressHandle(),
+                        true,
+                        50,  // time in ms after which wait cursor is shown
+                        1000);  // time in ms after which dialog with "Cancel" button is shown
             }
         }
 
@@ -286,8 +273,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getParentElement().getElementGroup(),
-                              getProductNode());
+                    getProductNode().getParentElement().getElementGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -316,8 +303,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getIndexCodingGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getIndexCodingGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -346,8 +333,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getFlagCodingGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getFlagCodingGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -377,8 +364,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getVectorDataGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getVectorDataGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -394,14 +381,14 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
             set.setDisplayName("Vector Data Properties");
             set.put(new PropertySupport.ReadOnly<String>("featureType", String.class, "Feature type",
-                                                         "The feature type schema used for all features in the collection") {
+                    "The feature type schema used for all features in the collection") {
                 @Override
                 public String getValue() {
                     return vdn.getFeatureType().getTypeName();
                 }
             });
             set.put(new PropertySupport.ReadOnly<String>("featureGeomType", String.class, "Feature geometry type",
-                                                         "The geometry type used used for all feature geometries in the collection") {
+                    "The geometry type used used for all feature geometries in the collection") {
                 @Override
                 public String getValue() {
                     Class<?> binding;
@@ -415,7 +402,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 }
             });
             set.put(new PropertySupport.ReadOnly<String>("featureCRS", String.class, "Feature geometry CRS",
-                                                         "The coordinate reference system used used for all feature geometries in the collection") {
+                    "The coordinate reference system used used for all feature geometries in the collection") {
                 @Override
                 public String getValue() {
                     CoordinateReferenceSystem crs;
@@ -429,7 +416,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 }
             });
             set.put(new PropertySupport.ReadOnly<Integer>("featureCount", Integer.class, "Feature count",
-                                                          "The number of features in this collection") {
+                    "The number of features in this collection") {
                 @Override
                 public Integer getValue() {
                     return vdn.getFeatureCollection().size();
@@ -443,7 +430,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             final StringBuilder tooltip = new StringBuilder();
             append(tooltip, vectorDataNode.getDescription());
             append(tooltip, String.format("type %s, %d feature(s)", vectorDataNode.getFeatureType().getTypeName(),
-                                          vectorDataNode.getFeatureCollection().size()));
+                    vectorDataNode.getFeatureCollection().size()));
             return tooltip.toString();
         }
     }
@@ -469,8 +456,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getTiePointGridGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getTiePointGridGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -499,8 +486,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             StringBuilder tooltip = new StringBuilder();
             append(tooltip, tiePointGrid.getDescription());
             append(tooltip, String.format("%d x %d --> %d x %d pixels",
-                                          tiePointGrid.getGridWidth(), tiePointGrid.getGridHeight(),
-                                          tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight()));
+                    tiePointGrid.getGridWidth(), tiePointGrid.getGridHeight(),
+                    tiePointGrid.getRasterWidth(), tiePointGrid.getRasterHeight()));
             if (tiePointGrid.getUnit() != null) {
                 append(tooltip, String.format(" (%s)", tiePointGrid.getUnit()));
             }
@@ -528,8 +515,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getMaskGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getMaskGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -592,8 +579,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getBandGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getBandGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -635,7 +622,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             if (band instanceof VirtualBand) {
                 final VirtualBand virtualBand = (VirtualBand) band;
                 set.put(new PropertySupport.ReadWrite<String>("expression", String.class, "Pixel-Value Expression",
-                                                              "Mathematical expression used to compute the raster's pixel values") {
+                        "Mathematical expression used to compute the raster's pixel values") {
                     @Override
                     public String getValue() {
                         return virtualBand.getExpression();
@@ -645,15 +632,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     public void setValue(String newValue) {
                         String oldValue = virtualBand.getExpression();
                         performUndoableProductNodeEdit("Edit Pixel-Value Expression",
-                                                       virtualBand,
-                                                       node -> {
-                                                           node.setExpression(newValue);
-                                                           updateImages(node, false);
-                                                       },
-                                                       node -> {
-                                                           node.setExpression(oldValue);
-                                                           updateImages(node, false);
-                                                       }
+                                virtualBand,
+                                node -> {
+                                    node.setExpression(newValue);
+                                    updateImages(node, false);
+                                },
+                                node -> {
+                                    node.setExpression(oldValue);
+                                    updateImages(node, false);
+                                }
                         );
                     }
                 });
@@ -663,7 +650,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             set.put(new NoDataValueProperty(band));
 
             set.put(new PropertySupport.ReadWrite<Float>("spectralWavelength", Float.class, "Spectral Wavelength",
-                                                         "The spectral wavelength in nanometers") {
+                            "The spectral wavelength in nanometers") {
                         @Override
                         public Float getValue() {
                             return band.getSpectralWavelength();
@@ -673,15 +660,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                         public void setValue(Float newValue) {
                             float oldValue = band.getSpectralWavelength();
                             performUndoableProductNodeEdit("Edit Spectral Wavelength",
-                                                           band,
-                                                           node -> node.setSpectralWavelength(newValue),
-                                                           node -> node.setSpectralWavelength(oldValue));
+                                    band,
+                                    node -> node.setSpectralWavelength(newValue),
+                                    node -> node.setSpectralWavelength(oldValue));
                         }
                     }
 
             );
             set.put(new PropertySupport.ReadWrite<Float>("spectralBandWidth", Float.class, "Spectral Bandwidth",
-                                                         "The spectral bandwidth in nanometers") {
+                            "The spectral bandwidth in nanometers") {
                         @Override
                         public Float getValue() {
                             return band.getSpectralBandwidth();
@@ -691,17 +678,17 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                         public void setValue(Float newValue) {
                             float oldValue = band.getSpectralBandwidth();
                             performUndoableProductNodeEdit("Edit Spectral Bandwidth",
-                                                           band,
-                                                           node -> node.setSpectralBandwidth(newValue),
-                                                           node -> node.setSpectralBandwidth(oldValue));
+                                    band,
+                                    node -> node.setSpectralBandwidth(newValue),
+                                    node -> node.setSpectralBandwidth(oldValue));
                         }
                     }
 
             );
             Property<RasterDataNode[]> ancillaryVariables = new PropertySupport.ReadWrite<RasterDataNode[]>("ancillaryVariables",
-                                                                                                            RasterDataNode[].class,
-                                                                                                            "Ancillary Variables",
-                                                                                                            "Other rasters that are ancillary variables for this raster (NetCDF-U 'ancillary_variables' attribute)") {
+                    RasterDataNode[].class,
+                    "Ancillary Variables",
+                    "Other rasters that are ancillary variables for this raster (NetCDF-U 'ancillary_variables' attribute)") {
                 private WeakReference<RastersPropertyEditor> propertyEditorRef;
 
                 @Override
@@ -714,9 +701,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     WeakHashMap<RasterDataNode, Integer> oldNodes = toWeakMap(band.getAncillaryVariables());
                     WeakHashMap<RasterDataNode, Integer> newNodes = toWeakMap(newValue);
                     performUndoableProductNodeEdit("Edit Ancillary Variables",
-                                                   band,
-                                                   node -> setAncillaryVariables(node, newNodes, oldNodes),
-                                                   node -> setAncillaryVariables(node, oldNodes, newNodes));
+                            band,
+                            node -> setAncillaryVariables(node, newNodes, oldNodes),
+                            node -> setAncillaryVariables(node, oldNodes, newNodes));
                 }
 
                 @Override
@@ -735,9 +722,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             set.put(ancillaryVariables);
 
             set.put(new PropertySupport.ReadWrite<String[]>("ancillaryRelations",
-                                                            String[].class,
-                                                            "Ancillary Relations",
-                                                            "Relation names if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
+                            String[].class,
+                            "Ancillary Relations",
+                            "Relation names if this raster is an ancillary variable (NetCDF-U 'rel' attribute)") {
                         @Override
                         public String[] getValue() {
                             return band.getAncillaryRelations();
@@ -747,9 +734,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                         public void setValue(String[] newValue) {
                             String[] oldValue = band.getAncillaryRelations();
                             performUndoableProductNodeEdit("Edit Ancillary Relations",
-                                                           band,
-                                                           node -> node.setAncillaryRelations(newValue),
-                                                           node -> node.setAncillaryRelations(oldValue));
+                                    band,
+                                    node -> node.setAncillaryRelations(newValue),
+                                    node -> node.setAncillaryRelations(oldValue));
                         }
                     }
 
@@ -799,8 +786,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         @Override
         public void destroy() {
             deleteProductNode(getProductNode().getProduct(),
-                              getProductNode().getProduct().getQuicklookGroup(),
-                              getProductNode());
+                    getProductNode().getProduct().getQuicklookGroup(),
+                    getProductNode());
         }
 
         @Override
@@ -857,9 +844,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public void setValue(String newValue) {
             String oldValue = raster.getUnit();
             performUndoableProductNodeEdit("Edit Unit",
-                                           raster,
-                                           node -> node.setUnit(newValue),
-                                           node -> node.setUnit(oldValue)
+                    raster,
+                    node -> node.setUnit(newValue),
+                    node -> node.setUnit(oldValue)
             );
         }
     }
@@ -895,15 +882,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 } else {
                     String oldValue = raster.getValidPixelExpression();
                     performUndoableProductNodeEdit("Edit Valid-Pixel Expression",
-                                                   raster,
-                                                   node -> {
-                                                       node.setValidPixelExpression(newValue);
-                                                       updateImages(node, true);
-                                                   },
-                                                   node -> {
-                                                       node.setValidPixelExpression(oldValue);
-                                                       updateImages(node, true);
-                                                   }
+                            raster,
+                            node -> {
+                                node.setValidPixelExpression(newValue);
+                                updateImages(node, true);
+                            },
+                            node -> {
+                                node.setValidPixelExpression(oldValue);
+                                updateImages(node, true);
+                            }
                     );
                 }
             } catch (ParseException e) {
@@ -930,15 +917,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public void setValue(Double newValue) {
             double oldValue = raster.getNoDataValue();
             performUndoableProductNodeEdit("Edit No-Data Value",
-                                           raster,
-                                           node -> {
-                                               node.setNoDataValue(newValue);
-                                               updateImages(node, true);
-                                           },
-                                           node -> {
-                                               node.setNoDataValue(oldValue);
-                                               updateImages(node, true);
-                                           }
+                    raster,
+                    node -> {
+                        node.setNoDataValue(newValue);
+                        updateImages(node, true);
+                    },
+                    node -> {
+                        node.setNoDataValue(oldValue);
+                        updateImages(node, true);
+                    }
             );
         }
     }
@@ -961,15 +948,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         public void setValue(Boolean newValue) {
             boolean oldValue = raster.isNoDataValueUsed();
             performUndoableProductNodeEdit("Edit No-Data Value Used",
-                                           raster,
-                                           node -> {
-                                               node.setNoDataValueUsed(newValue);
-                                               updateImages(node, true);
-                                           },
-                                           node -> {
-                                               node.setNoDataValueUsed(oldValue);
-                                               updateImages(node, true);
-                                           }
+                    raster,
+                    node -> {
+                        node.setNoDataValueUsed(newValue);
+                        updateImages(node, true);
+                    },
+                    node -> {
+                        node.setNoDataValueUsed(oldValue);
+                        updateImages(node, true);
+                    }
             );
         }
     }

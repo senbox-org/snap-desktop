@@ -15,24 +15,17 @@
  */
 package org.esa.snap.rcp.actions.window;
 
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
@@ -86,7 +79,7 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
 
     private void setEnableState() {
         ProductNode productNode = lookup.lookup(ProductNode.class);
-        setEnabled(productNode != null && productNode instanceof MetadataElement);
+        setEnabled(productNode instanceof MetadataElement);
     }
 
 
@@ -103,10 +96,9 @@ public class OpenMetadataViewAction extends AbstractAction implements ContextAwa
         openDocumentWindow(element);
     }
 
-    private MetadataViewTopComponent openDocumentWindow(final MetadataElement element) {
+    private void openDocumentWindow(final MetadataElement element) {
         final MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(element);
         DocumentWindowManager.getDefault().openWindow(metadataViewTopComponent);
         metadataViewTopComponent.requestSelected();
-        return metadataViewTopComponent;
     }
 }

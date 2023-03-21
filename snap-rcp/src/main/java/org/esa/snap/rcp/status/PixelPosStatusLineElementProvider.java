@@ -2,13 +2,9 @@ package org.esa.snap.rcp.status;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.math.SphericalDistance;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -17,14 +13,8 @@ import org.opengis.referencing.datum.Ellipsoid;
 import org.openide.awt.StatusLineElementProvider;
 import org.openide.util.lookup.ServiceProvider;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -34,10 +24,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_DEFAULT_SHOW_PIXEL_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_GEO_POS_DECIMALS;
-import static org.esa.snap.rcp.pixelinfo.PixelInfoView.PREFERENCE_KEY_SHOW_PIXEL_POS_DECIMALS;
+import static org.esa.snap.rcp.pixelinfo.PixelInfoView.*;
 
 /**
  * Displays current pixel position in the status bar.
@@ -236,7 +223,7 @@ public class PixelPosStatusLineElementProvider
                 pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, imageP.getX(), imageP.getY()));
             } else {
                 pixelPosLabel.setText(String.format(PIXEL_POS_FORMAT, (int) Math.floor(imageP.getX()),
-                                                    (int) Math.floor(imageP.getY())));
+                        (int) Math.floor(imageP.getY())));
             }
 
             LayerCanvas layerCanvas = (LayerCanvas) e.getSource();
@@ -252,8 +239,8 @@ public class PixelPosStatusLineElementProvider
             zoomLevelLabel.setText(String.format(ZOOM_LEVEL_FORMAT, scaleStr, currentLevel));
             if (longitudeResolutionInMeter != Double.NaN && latitudeResolutionInMeter != Double.NaN)
                 pixelSpacingLabel.setText(String.format(PIXEL_SIZE_FORMAT,
-                                                        decimalFormat.format(latitudeResolutionInMeter),
-                                                        decimalFormat.format(longitudeResolutionInMeter)));
+                        decimalFormat.format(latitudeResolutionInMeter),
+                        decimalFormat.format(longitudeResolutionInMeter)));
 
         } else {
             setDefault();

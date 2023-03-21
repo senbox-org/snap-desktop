@@ -1,6 +1,6 @@
 package org.esa.snap.rcp.nodes;
 
-import org.esa.snap.netbeans.docwin.WindowUtilities;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.windows.ProductExplorerTopComponent;
 import org.openide.nodes.Node;
 

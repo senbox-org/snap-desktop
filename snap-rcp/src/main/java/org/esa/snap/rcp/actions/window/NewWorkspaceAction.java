@@ -6,8 +6,8 @@
 package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
-import org.esa.snap.netbeans.docwin.WorkspaceTopComponent;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import eu.esa.snap.netbeans.docwin.WorkspaceTopComponent;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -33,15 +33,15 @@ import java.awt.event.ActionEvent;
         popupText = "#CTL_NewWorkspaceActionMenuText"
 )
 @ActionReferences({
-                          @ActionReference(path = "Menu/Window", position = 20050, separatorAfter = 20075),
-                          @ActionReference(path = "Shortcuts", name = "D-W")
-                  })
+        @ActionReference(path = "Menu/Window", position = 20050, separatorAfter = 20075),
+        @ActionReference(path = "Shortcuts", name = "D-W")
+})
 @Messages({
-                  "CTL_NewWorkspaceActionName=New Workspace",
-                  "CTL_NewWorkspaceActionMenuText=New Workspace...",
-                  "LBL_NewWorkspaceActionName=Name:",
-                  "VAL_NewWorkspaceActionValue=Workspace"
-          })
+        "CTL_NewWorkspaceActionName=New Workspace",
+        "CTL_NewWorkspaceActionMenuText=New Workspace...",
+        "LBL_NewWorkspaceActionName=Name:",
+        "VAL_NewWorkspaceActionValue=Workspace"
+})
 public final class NewWorkspaceAction extends AbstractAction implements HelpCtx.Provider {
 
     public NewWorkspaceAction() {
@@ -51,9 +51,9 @@ public final class NewWorkspaceAction extends AbstractAction implements HelpCtx.
     @Override
     public void actionPerformed(ActionEvent e) {
         String defaultName = WindowUtilities.getUniqueTitle(Bundle.VAL_NewWorkspaceActionValue(),
-                                                            WorkspaceTopComponent.class);
+                WorkspaceTopComponent.class);
         NotifyDescriptor.InputLine d = new NotifyDescriptor.InputLine(Bundle.LBL_NewWorkspaceActionName(),
-                                                                      Bundle.CTL_NewWorkspaceActionName());
+                Bundle.CTL_NewWorkspaceActionName());
         d.setInputText(defaultName);
         Object result = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.OK_OPTION.equals(result)) {
