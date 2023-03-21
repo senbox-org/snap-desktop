@@ -45,7 +45,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     private static final int band_name_index = 1;
     private static final int band_description_index = 2;
     private static final int band_wavelength_index = 3;
-    private static final int band_bandwidth_ndex = 4;
+    private static final int band_bandwidth_index = 4;
     private static final int band_unit_index = 5;
     private final String[] band_columns =
             new String[]{"", "Band name", "Band description", "View Angle", "View Angle", "Unit"};
@@ -240,7 +240,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
             angularViewData[i][band_name_index] = angularBand.getName();
             angularViewData[i][band_description_index] = angularBand.getDescription();
             angularViewData[i][band_wavelength_index] = angularBand.getAngularValue();
-//            angularViewData[i][band_bandwidth_ndex] = angularBand.getSpectralBandwidth();
+            angularViewData[i][band_bandwidth_index] = angularBand.getSpectralBandwidth();
             angularViewData[i][band_unit_index] = angularBand.getUnit();
         }
         final BandTableModel bandTableModel = new BandTableModel(angularViewData, band_columns);
@@ -275,7 +275,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         final TableColumn wavelengthColumn = bandsTable.getColumnModel().getColumn(band_wavelength_index);
         wavelengthColumn.setCellRenderer(new DecimalTableCellRenderer(new DecimalFormat("###0.0##")));
 
-        final TableColumn bandwidthColumn = bandsTable.getColumnModel().getColumn(band_bandwidth_ndex);
+        final TableColumn bandwidthColumn = bandsTable.getColumnModel().getColumn(band_bandwidth_index);
         bandwidthColumn.setCellRenderer(new DecimalTableCellRenderer(new DecimalFormat("###0.0##")));
 
         return bandsTable;

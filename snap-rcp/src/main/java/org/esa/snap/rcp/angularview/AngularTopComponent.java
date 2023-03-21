@@ -255,6 +255,10 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
         setScatteringZenithBands(angularViewBands);
+        if (angularViewBands.isEmpty()) {
+            Dialogs.showWarning("<html>Angular View Tool <br>requires bands with View Angle property,<br>" +
+                    "such as PACE OCI, HARP2,and SPEXone bands</html>");
+        }
         return angularViewBands.toArray(new AngularBand[angularViewBands.size()]);
     }
 
@@ -284,8 +288,8 @@ public class AngularTopComponent extends ToolTopComponent {
 
     private void initUI() {
         final JFreeChart chart = ChartFactory.createXYLineChart(Bundle.CTL_AngularTopComponent_Name(),
-                                                                "View Angle", "", null, PlotOrientation.VERTICAL,
-                                                                true, true, false);
+                "View Angle", "", null, PlotOrientation.VERTICAL,
+                true, true, false);
         chart.getXYPlot().getRangeAxis().addChangeListener(axisChangeEvent -> {
             if (!isCodeInducedAxisChange) {
                 rangeAxisAdjustmentIsFrozen = !((ValueAxis) axisChangeEvent.getAxis()).isAutoRange();
@@ -343,7 +347,7 @@ public class AngularTopComponent extends ToolTopComponent {
         showAngularViewsForSelectedPinsButton.setToolTipText("Show AngularViews for selected pins.");
 
         showAngularViewsForAllPinsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/PinSpectra24.gif"),
-                                                                     true);
+                true);
         showAngularViewsForAllPinsButton.addActionListener(e -> {
             if (isShowingAngularViewsForSelectedPins()) {
                 showAngularViewsForSelectedPinsButton.setSelected(false);
@@ -417,7 +421,7 @@ public class AngularTopComponent extends ToolTopComponent {
         angleButtonPanel.add(useScatteringAngleButton);
 
         AbstractButton exportAngularViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Export24.gif"),
-                                                                            false);
+                false);
         exportAngularViewsButton.addActionListener(new AngularViewsExportAction(this));
         exportAngularViewsButton.setToolTipText("Export angular Views to text file.");
         exportAngularViewsButton.setName("exportAngularViewsButton");
@@ -594,6 +598,11 @@ public class AngularTopComponent extends ToolTopComponent {
                 List<AngularBand> ungroupedBandsList = new ArrayList<>();
                 for (AngularBand availableAngularBand : availableAngularBands) {
                     final String bandName = availableAngularBand.getName();
+                    if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+                        availableAngularBand.setSelected(true);
+                    } else {
+                        availableAngularBand.setSelected(false);
+                    }
                     final int angularViewIndex = autoGrouping.indexOf(bandName);
                     if (angularViewIndex != -1) {
                         autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
@@ -606,7 +615,7 @@ public class AngularTopComponent extends ToolTopComponent {
                 } else {
                     final DisplayableAngularview[] angularViewsFromUngroupedBands =
                             createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[ungroupedBandsList.size()]),
-                                                            AngularViewShapeProvider.getValidIndex(i, false), i);
+                                    AngularViewShapeProvider.getValidIndex(i, false), i);
                     angularViews = new DisplayableAngularview[autoGroupingAngularViews.length + angularViewsFromUngroupedBands.length];
                     System.arraycopy(autoGroupingAngularViews, 0, angularViews, 0, autoGroupingAngularViews.length);
                     System.arraycopy(angularViewsFromUngroupedBands, 0, angularViews, autoGroupingAngularViews.length, angularViewsFromUngroupedBands.length);
@@ -1135,7 +1144,7 @@ public class AngularTopComponent extends ToolTopComponent {
                 }
             }
             return scattering_angle;
-    }
+        }
 
         private double get_sensor_azimuth(double view_angle) {
             double sensor_azimuth = 0.0;
@@ -1179,7 +1188,7 @@ public class AngularTopComponent extends ToolTopComponent {
                 return angularBand.getGeophysicalNoDataValue();
             }
             final Point2D.Double modelPoint = new Point2D.Double(((Point) pinGeometry).getCoordinate().x,
-                                                                 ((Point) pinGeometry).getCoordinate().y);
+                    ((Point) pinGeometry).getCoordinate().y);
             final MultiLevelModel multiLevelModel = angularBand.getMultiLevelModel();
             int level = getLevel(multiLevelModel);
             final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(level);
@@ -1286,9 +1295,9 @@ public class AngularTopComponent extends ToolTopComponent {
             Stroke lineStyle = angularView.getLineStyle();
             Shape symbol = angularView.getScaledShape();
             return new LegendItem(legendLabel, legendLabel, legendLabel, legendLabel,
-                                  true, symbol, false,
-                                  paint, true, paint, outlineStroke,
-                                  true, lineShape, lineStyle, paint);
+                    true, symbol, false,
+                    paint, true, paint, outlineStroke,
+                    true, lineShape, lineStyle, paint);
         }
 
     }
