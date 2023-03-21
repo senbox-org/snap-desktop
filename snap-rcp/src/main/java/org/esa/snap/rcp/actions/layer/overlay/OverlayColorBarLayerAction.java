@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -46,7 +47,7 @@ public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionEnabledState(ProductSceneView view) {
-        return ProductUtils.canGetPixelPos(view.getRaster());
+        return (view.getRaster() != null);
     }
 
     @Override
