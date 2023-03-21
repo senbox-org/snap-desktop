@@ -17,7 +17,7 @@
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
-        <doc-windows.version>1.0</doc-windows.version>
+        <snap-gui-lib.version>1.0</snap-gui-lib.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.java.binaries>**/classes</sonar.java.binaries>
@@ -117,7 +117,6 @@
                 <version>${netbeans.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-actions</artifactId>
@@ -195,9 +194,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.esa.snap.netbeans</groupId>
-                <artifactId>doc-windows</artifactId>
-                <version>${doc-windows.version}</version>
+                <groupId>eu.esa.snap.netbeans</groupId>
+                <artifactId>snap-gui-lib</artifactId>
+                <version>${snap-gui-lib.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
