@@ -112,6 +112,7 @@
     <mapID target="options-quicklook" url="desktop/OptionsDialog.html#quicklooks"/>
     <mapID target="options-rgb" url="desktop/OptionsDialog.html#rgbprofiles"/>
     <mapID target="options-uibehavior" url="desktop/OptionsDialog.html#uibehavior"/>
+    <mapID target="options-gdalLibraryLoader" url="desktop/OptionsDialog.html#GDALLibraryLoaderConfig"/>
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
     <mapID target="resampleAction" url="desktop/Resample.html"/>
