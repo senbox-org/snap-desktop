@@ -93,13 +93,13 @@ public class GDALOptionsPanelController extends OptionsPanelController {
     }
 
     /**
-     * Get current help context asociated with this panel.
+     * Get current help context associated with this panel.
      *
      * @return the current help context
      */
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("s2tbxoptionshelp"); // new HelpCtx("...ID") if you have a help set
+        return new HelpCtx("options-gdalLibraryLoader"); // new HelpCtx("...ID") if you have a help set
     }
 
     /**
