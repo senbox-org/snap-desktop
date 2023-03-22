@@ -124,6 +124,12 @@
             <artifactId>snap-virtual-file-system-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Dependency for lib-gdal-preferences-ui ar used to fix problem with pulling this new module during update of SNAP -->
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>lib-gdal-preferences-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
