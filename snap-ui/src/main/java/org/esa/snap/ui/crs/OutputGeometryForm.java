@@ -26,14 +26,17 @@ import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
 /**
@@ -43,9 +46,15 @@ import java.awt.GridBagConstraints;
 public class OutputGeometryForm extends JPanel {
 
     private final BindingContext context;
+    private JCheckBox fitProductSizeCheckBox;
+    private JTextField widthTextfield;
+    private JTextField heightTextfield;
+
+    private final OutputGeometryFormModel model;
 
     public OutputGeometryForm(OutputGeometryFormModel model) {
         context = new BindingContext(model.getPropertySet());
+        this.model = model;
         createUI();
     }
 
@@ -66,7 +75,13 @@ public class OutputGeometryForm extends JPanel {
         context.bind("referencePixelLocation", g);
         context.bindEnabledState("referencePixelX", true, "referencePixelLocation", 2);
         context.bindEnabledState("referencePixelY", true, "referencePixelLocation", 2);
-
+        if (model.isReferencePixelLocationSetTo(OutputGeometryFormModel.REFERENCE_PIXEL_UPPER_LEFT)) {
+            pixelRefULeftButton.setSelected(true);
+        } else if (model.isReferencePixelLocationSetTo(OutputGeometryFormModel.REFERENCE_PIXEL_SCENE_CENTER)) {
+            pixelRefCenterButton.setSelected(true);
+        } else {
+            pixelRefOtherButton.setSelected(true);
+        }
         gbc.gridy = ++line;
         GridBagUtils.addToPanel(dialogPane, pixelRefULeftButton, gbc, "fill=HORIZONTAL,weightx=1");
         gbc.gridy = ++line;
@@ -80,18 +95,32 @@ public class OutputGeometryForm extends JPanel {
         GridBagUtils.addToPanel(dialogPane, components[1], gbc, "insets.top=1,gridwidth=1,fill=NONE,weightx=0");
         GridBagUtils.addToPanel(dialogPane, components[0], gbc, "fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(dialogPane, unitcomponent, gbc, "fill=NONE,weightx=0");
+        JTextField referencePixelXTextfield = (JTextField) components[0];
+        if (pixelRefCenterButton.isSelected()) {
+            referencePixelXTextfield.setEnabled(false);
+        }
         gbc.gridy = ++line;
         components = createComponents("referencePixelY");
         unitcomponent = createUnitComponent("referencePixelY");
         GridBagUtils.addToPanel(dialogPane, components[1], gbc, "insets.top=3");
         GridBagUtils.addToPanel(dialogPane, components[0], gbc, "fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(dialogPane, unitcomponent, gbc, "fill=NONE,weightx=0");
+        JTextField referencePixelYTextfield = (JTextField) components[0];
+        if (pixelRefCenterButton.isSelected()) {
+            referencePixelYTextfield.setEnabled(false);
+        }
         gbc.gridy = ++line;
         components = createComponents("easting");
         unitcomponent = createUnitComponent("easting");
         GridBagUtils.addToPanel(dialogPane, components[1], gbc, "insets.top=12");
         GridBagUtils.addToPanel(dialogPane, components[0], gbc, "fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(dialogPane, unitcomponent, gbc, "fill=NONE,weightx=0");
+        JTextField eastingTextfield = (JTextField) components[0];
+        String original = eastingTextfield.getText();
+        eastingTextfield.setText("0.01234567890123456789");
+        Dimension size = eastingTextfield.getPreferredSize();
+        eastingTextfield.setText(original);
+        eastingTextfield.setPreferredSize(size);
         gbc.gridy = ++line;
         components = createComponents("northing");
         unitcomponent = createUnitComponent("northing");
@@ -120,20 +149,48 @@ public class OutputGeometryForm extends JPanel {
         components = createComponents("fitProductSize");
         context.bindEnabledState("width", false, "fitProductSize", true);
         context.bindEnabledState("height", false, "fitProductSize", true);
-        GridBagUtils.addToPanel(dialogPane, components[0], gbc, "insets.top=12, gridwidth=3,fill=HORIZONTAL,weightx=1");
+        fitProductSizeCheckBox = ((JCheckBox) components[0]);
+        GridBagUtils.addToPanel(dialogPane, fitProductSizeCheckBox, gbc, "insets.top=12, gridwidth=3,fill=HORIZONTAL,weightx=1");
         gbc.gridy = ++line;
         components = createComponents("width");
         unitcomponent = createUnitComponent("width");
         GridBagUtils.addToPanel(dialogPane, components[1], gbc, "insets.top=3, gridwidth=1,fill=NONE,weightx=0");
         GridBagUtils.addToPanel(dialogPane, components[0], gbc, "fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(dialogPane, unitcomponent, gbc, "fill=NONE,weightx=0");
+        widthTextfield = (JTextField) components[0];
+        if (model.isFitProductSize()) {
+            widthTextfield.setEnabled(false);
+        }
+
         gbc.gridy = ++line;
         components = createComponents("height");
         unitcomponent = createUnitComponent("height");
         GridBagUtils.addToPanel(dialogPane, components[1], gbc);
         GridBagUtils.addToPanel(dialogPane, components[0], gbc, "fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(dialogPane, unitcomponent, gbc, "fill=NONE,weightx=0");
+        heightTextfield = (JTextField) components[0];
+        if (model.isFitProductSize()) {
+            heightTextfield.setEnabled(false);
+        }
 
+        //Add Listener
+        fitProductSizeCheckBox.addActionListener(e -> {
+                    if (fitProductSizeCheckBox.isSelected()) {
+                        // reset width and height
+                        // disable width and height
+                        widthTextfield.setEnabled(false);
+                        heightTextfield.setEnabled(false);
+                    } else {
+                        // don't reset width and height
+                        // enable width and height
+                        widthTextfield.setEnabled(true);
+                        heightTextfield.setEnabled(true);
+                    }
+                }
+        );
+        if (model.isFitProductSize()) {
+            fitProductSizeCheckBox.setSelected(true);
+        }
         add(dialogPane);
     }
 
@@ -168,11 +225,6 @@ public class OutputGeometryForm extends JPanel {
         jFrame.setSize(400, 600);
         jFrame.setLocationRelativeTo(null);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                jFrame.setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> jFrame.setVisible(true));
     }
 }

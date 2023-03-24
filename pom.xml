@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-engine</artifactId>
-        <version>9.0.3.1cv</version>
+        <version>9.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-desktop</artifactId>
@@ -54,6 +54,7 @@
         <module>snap-virtual-file-system-preferences-ui</module>
         <module>snap-remote-execution-ui</module>
         <module>snap-znap-ui</module>
+        <module>lib-gdal-preferences-ui</module>
 
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<module>snap-opendap-ui</module>-->
@@ -279,7 +280,7 @@
                     <detectJavaApiLink>true</detectJavaApiLink>
                     <detectLinks>true</detectLinks>
                     <links>
-                        <link>http://step.esa.int/docs/v6.0/apidoc/engine/</link>
+                        <link>https://step.esa.int/docs/v9.0/apidoc/engine/</link>
                     </links>
                 </configuration>
             </plugin>

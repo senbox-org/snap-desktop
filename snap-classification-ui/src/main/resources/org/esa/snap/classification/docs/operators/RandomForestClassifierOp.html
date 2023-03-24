@@ -1,84 +1,52 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Help - Random Forest Classification</title>
+<html>
+<head><title>Help - Random Forest Classification</title>
 
 
-
-
-    <link rel="stylesheet" href="../style.css"></head><body>
+    <link href="../style.css" rel="stylesheet">
+</head>
+<body>
 <table class="header">
     <tbody>
     <tr class="header">
         <td class="header">&nbsp; Random Forest Classification<br>
         </td>
-        <td class="header" align="right"><a href="../general/Overview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
+        <td align="right" class="header"><a href="../general/Overview.html"><img border="0"
+                                                                                 src="../images/snap_header.jpg"></a></td>
     </tr>
     </tbody>
-</table><br><a href="SupervisedClassification.html">Supervised Classification</a><br>
+</table>
+<br><a href="SupervisedClassification.html">Supervised Classification</a><br>
 <br>
 
 
-<p class="MsoNormal" style="margin-bottom: 0.0001pt;"><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">Random Forest (RF) is a classification and regression tree technique
-invented by Breiman</span><!--[if supportFields]><span style='font-family:"Times-Roman","serif";
-mso-bidi-font-family:Times-Roman;mso-ansi-language:EN-CA;mso-fareast-language:
-EN-CA'><span style='mso-element:field-begin'></span> REF _Ref446748925 \r \h <span
-style='mso-spacerun:yes'> </span>\* MERGEFORMAT <span style='mso-element:field-separator'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">[R-1]<!--[if gte mso 9]><xml>
- <w:data>08D0C9EA79F9BACE118C8200AA004BA90B02000000080000000E0000005F005200650066003400340036003700340038003900320035000000</w:data>
-</xml><![endif]--></span><!--[if supportFields]><span style='font-family:"Times-Roman","serif";
-mso-bidi-font-family:Times-Roman;mso-ansi-language:EN-CA;mso-fareast-language:
-EN-CA'><span style='mso-element:field-end'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">. A RF randomly and
-iteratively samples the data and variables to generate a large group, or
-forest, of classification and regression trees. The classification output from
-RF represents the statistical mode of many decision trees achieving a more
-robust model than a single classification tree produced by a single model run (Breiman</span><!--[if supportFields]><span
-style='font-family:"Times-Roman","serif";mso-bidi-font-family:Times-Roman;
-mso-ansi-language:EN-CA;mso-fareast-language:EN-CA'><span style='mso-element:
-field-begin'></span> REF _Ref446748925 \r \h <span
-style='mso-spacerun:yes'> </span>\* MERGEFORMAT <span style='mso-element:field-separator'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">[R-1]<!--[if gte mso 9]><xml>
- <w:data>08D0C9EA79F9BACE118C8200AA004BA90B02000000080000000E0000005F005200650066003400340036003700340038003900320035000000</w:data>
-</xml><![endif]--></span><!--[if supportFields]><span style='font-family:"Times-Roman","serif";
-mso-bidi-font-family:Times-Roman;mso-ansi-language:EN-CA;mso-fareast-language:
-EN-CA'><span style='mso-element:field-end'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">). Regression output from
-RF represents the average of all the regression trees grown in parallel without
-pruning. Three useful properties of RF are internal error estimates, the
-ability to estimate variable importance, and the capacity to handle weak
-explanatory variables. The iterative nature of RF affords it a distinct
-advantage over the other methods as this effectively bootstraps (by feeding
-random subsets of training data) the data for more robust predictions. This
-helps in reducing correlation between trees. Random subsets of predictor
-variables allow derivations of variable importance measures and prevent problems
-associated with correlated variables and over fitting (Breiman</span><!--[if supportFields]><span
-style='font-family:"Times-Roman","serif";mso-bidi-font-family:Times-Roman;
-mso-ansi-language:EN-CA;mso-fareast-language:EN-CA'><span style='mso-element:
-field-begin'></span> REF _Ref446748925 \r \h <span
-style='mso-spacerun:yes'> </span>\* MERGEFORMAT <span style='mso-element:field-separator'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">[R-1]<!--[if gte mso 9]><xml>
- <w:data>08D0C9EA79F9BACE118C8200AA004BA90B02000000080000000E0000005F005200650066003400340036003700340038003900320035000000</w:data>
-</xml><![endif]--></span><!--[if supportFields]><span style='font-family:"Times-Roman","serif";
-mso-bidi-font-family:Times-Roman;mso-ansi-language:EN-CA;mso-fareast-language:
-EN-CA'><span style='mso-element:field-end'></span></span><![endif]--><span style="font-family: &quot;Times-Roman&quot;,&quot;serif&quot;;">).<o:p></o:p></span></p>
-
-
-
-
-
-
-
-
-<br>
-<a href="https://en.wikipedia.org/wiki/Random_forest">https://en.wikipedia.org/wiki/Random_forest</a><br>
-
-
+<p>Random Forest (RF) is a classification and regression tree technique
+    invented by Breiman. A RF randomly and iteratively samples the data and variables to generate a large group, or
+    forest, of classification and regression trees. The classification output from
+    RF represents the statistical mode of many decision trees achieving a more
+    robust model than a single classification tree produced by a single model run (Breiman). Regression output from
+    RF represents the average of all the regression trees grown in parallel without
+    pruning. Three useful properties of RF are internal error estimates, the
+    ability to estimate variable importance, and the capacity to handle weak
+    explanatory variables. The iterative nature of RF affords it a distinct
+    advantage over the other methods as this effectively bootstraps (by feeding
+    random subsets of training data) the data for more robust predictions. This
+    helps in reducing correlation between trees. Random subsets of predictor
+    variables allow derivations of variable importance measures and prevent problems
+    associated with correlated variables and over fitting (Breiman).</p>
 <br>
 
-<p class="Reference" style=""><a name="_Ref446748925"><!--[if !supportLists]--><span style="">[R-1]<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><!--[endif]-->Breiman, L. 2001. Random forests. Machine Learning 45:
-5-32.</a><o:p></o:p></p>
+<object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+    <param name="content" value="https://en.wikipedia.org/wiki/Random_forest">
+    <param name="text" value="<html><u>https://en.wikipedia.org/wiki/Random_forest</u></html>">
+</object>
+<br>
 
+<p>[R-1] Breiman, L. 2001. Random forests. Machine Learning 45: 5-32.</p>
+<p>[R-2] Breiman, L., Cutler, A., Liaw, A. and Wiener, M. 2006. Breiman and Cutler's Random forests for classification
+    and regression. CRAN Project.</p>
 
-<p class="Reference" style=""><a name="_Ref446748942"><!--[if !supportLists]--><span style="">[R-2]<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><!--[endif]-->Breiman, L., Cutler, A., Liaw, A. and Wiener, M. 2006.
-Breiman and Cutler's Random forests for classification and regression. CRAN
-Project.</a><o:p></o:p></p>
-
-
-<br><hr>
-</body></html>
+<br>
+<hr>
+</body>
+</html>

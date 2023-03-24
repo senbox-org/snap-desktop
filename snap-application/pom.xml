@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>9.0.3.1cv</version>
+        <version>9.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-application</artifactId>
@@ -202,6 +202,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-remote-execution-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>lib-gdal-preferences-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
 
