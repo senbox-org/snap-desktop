@@ -5,5 +5,7 @@ include:
 mvn-build:
   artifacts:
     paths:
-      - "${MAVEN_PROJECT_DIR}/**/target"
+      - "${MAVEN_PROJECT_DIR}/**/target/*.jar"
+      - "${MAVEN_PROJECT_DIR}/**/target/classes"
+      - "${MAVEN_PROJECT_DIR}/**/target/*.nbm"
       - "${MAVEN_PROJECT_DIR}/snap-smart-configurator-ui/src/main/resources/org/esa/snap/smart/configurator/ui/Performance32.png"
