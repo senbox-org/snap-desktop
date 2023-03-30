@@ -32,8 +32,6 @@
         <module>snap-main</module>
         <module>snap-virtual-file-system-ui</module>
         <module>nbexec</module>
-<!--        <module>tiled-editors</module>-->
-<!--        <module>doc-windows</module>-->
 
         <module>snap-binning-ui</module>
         <module>snap-change-detection-ui</module>
