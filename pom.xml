@@ -17,7 +17,7 @@
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
-        <doc-windows.version>1.0</doc-windows.version>
+        <snap-gui-lib.version>1.0</snap-gui-lib.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.java.binaries>**/classes</sonar.java.binaries>
@@ -32,8 +32,6 @@
         <module>snap-main</module>
         <module>snap-virtual-file-system-ui</module>
         <module>nbexec</module>
-        <module>tiled-editors</module>
-        <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
         <module>snap-change-detection-ui</module>
@@ -195,9 +193,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.esa.snap.netbeans</groupId>
-                <artifactId>doc-windows</artifactId>
-                <version>${doc-windows.version}</version>
+                <groupId>eu.esa.snap.netbeans</groupId>
+                <artifactId>snap-gui-lib</artifactId>
+                <version>${snap-gui-lib.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>

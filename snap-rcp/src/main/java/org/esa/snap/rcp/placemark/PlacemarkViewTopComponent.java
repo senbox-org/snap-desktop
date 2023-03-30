@@ -1,11 +1,11 @@
 package org.esa.snap.rcp.placemark;
 
+import eu.esa.snap.netbeans.docwin.DocumentTopComponent;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.netbeans.docwin.DocumentTopComponent;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.ui.product.ProductPlacemarkView;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class PlacemarkViewTopComponent extends DocumentTopComponent<VectorDataNode, ProductPlacemarkView> {
 
@@ -27,7 +27,7 @@ public class PlacemarkViewTopComponent extends DocumentTopComponent<VectorDataNo
 
     private void updateDisplayName() {
         setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getDisplayName(),
-                                                      PlacemarkViewTopComponent.class));
+                PlacemarkViewTopComponent.class));
     }
 
 }

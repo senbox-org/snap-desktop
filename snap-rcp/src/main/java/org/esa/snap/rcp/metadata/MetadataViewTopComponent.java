@@ -1,20 +1,18 @@
 package org.esa.snap.rcp.metadata;
 
+import eu.esa.snap.netbeans.docwin.DocumentTopComponent;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.MetadataElement;
-import org.esa.snap.netbeans.docwin.DocumentTopComponent;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.ui.product.metadata.MetadataTableInnerElement;
 import org.netbeans.swing.outline.Outline;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.OutlineView;
 import org.openide.nodes.Node;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 
 public class MetadataViewTopComponent extends DocumentTopComponent<MetadataElement, OutlineView> implements ExplorerManager.Provider {
 
@@ -72,7 +70,7 @@ public class MetadataViewTopComponent extends DocumentTopComponent<MetadataEleme
 
     private void updateDisplayName() {
         setDisplayName(WindowUtilities.getUniqueTitle(getDocument().getDisplayName(),
-                                                      MetadataViewTopComponent.class));
+                MetadataViewTopComponent.class));
     }
 
     @Override
