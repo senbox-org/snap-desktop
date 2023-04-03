@@ -1,13 +1,17 @@
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.TextFieldContainer;
+import org.openide.awt.ColorComboBox;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -133,6 +137,17 @@ public class StatisticsCriteriaPanel {
     private TextFieldContainer plotsSizeHeightTextfieldContainer = null;
     private TextFieldContainer plotsSizeWidthTextfieldContainer = null;
 
+    private Color plotColor = StatisticsTopComponent.PROPERTY_PLOTS_COLOR_DEFAULT;
+    private Color plotBackgroundColor = StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_DEFAULT;
+    private Color plotLabelColor = StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_DEFAULT;
+
+    private JLabel plotsColorLabel = null;
+    private JLabel plotsBackgroundColorLabel = null;
+    private JLabel plotsLabelColorLabel = null;
+    private ColorComboBox plotsColorComboBox = null;
+    private ColorComboBox plotsBackgroundColorComboBox = null;
+    private ColorComboBox plotsLabelColorComboBox = null;
+
 
     // "View" Tab Variables and Components
 
@@ -235,6 +250,12 @@ public class StatisticsCriteriaPanel {
         plotSizeHeight = getPreferencesPlotSizeHeight();
         plotSizeWidth = getPreferencesPlotSizeWidth();
 
+//        plotColor = StatisticsTopComponent.PROPERTY_PLOTS_COLOR_DEFAULT;
+//        plotBackgroundColor = StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_DEFAULT;
+
+        plotColor = getPreferencesPlotColor();
+        plotBackgroundColor = getPreferencesPlotBackgroundColor();
+        plotLabelColor = getPreferencesPlotLabelColor();
 
         // View
         showHistogramPlots = getPreferencesHistogramPlotEnabled();
@@ -296,6 +317,10 @@ public class StatisticsCriteriaPanel {
         plotsSizeCheckBox.setSelected(exactPlotSize);
         plotsSizeHeightTextfieldContainer.reset(plotSizeHeight);
         plotsSizeWidthTextfieldContainer.reset(plotSizeWidth);
+
+        plotsColorComboBox.setSelectedColor(plotColor);
+        plotsBackgroundColorComboBox.setSelectedColor(plotBackgroundColor);
+        plotsLabelColorComboBox.setSelectedColor(plotLabelColor);
 
 
         // View
@@ -491,7 +516,29 @@ public class StatisticsCriteriaPanel {
                 getParentDialogContentPane);
         plotsSizeWidthTextfieldContainer.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_WIDTH_TOOLTIP);
 
+        plotsColorLabel = new JLabel(StatisticsTopComponent.PROPERTY_PLOTS_COLOR_LABEL);
+        plotsColorLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_COLOR_TOOLTIP);
 
+        plotsColorComboBox = new ColorComboBox();
+        plotsColorComboBox.setSelectedColor(StatisticsTopComponent.PROPERTY_PLOTS_COLOR_DEFAULT);
+        plotsColorComboBox.setPreferredSize(plotsColorComboBox.getPreferredSize());
+        plotsColorComboBox.setMinimumSize(plotsColorComboBox.getPreferredSize());
+
+        plotsBackgroundColorLabel = new JLabel(StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_LABEL);
+        plotsBackgroundColorLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_TOOLTIP);
+
+        plotsBackgroundColorComboBox = new ColorComboBox();
+        plotsBackgroundColorComboBox.setSelectedColor(StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_DEFAULT);
+        plotsBackgroundColorComboBox.setPreferredSize(plotsBackgroundColorComboBox.getPreferredSize());
+        plotsBackgroundColorComboBox.setMinimumSize(plotsBackgroundColorComboBox.getPreferredSize());
+
+        plotsLabelColorLabel = new JLabel(StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_LABEL);
+        plotsLabelColorLabel.setToolTipText(StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_TOOLTIP);
+
+        plotsLabelColorComboBox = new ColorComboBox();
+        plotsLabelColorComboBox.setSelectedColor(StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_DEFAULT);
+        plotsLabelColorComboBox.setPreferredSize(plotsLabelColorComboBox.getPreferredSize());
+        plotsLabelColorComboBox.setMinimumSize(plotsLabelColorComboBox.getPreferredSize());
 
         // "View" Tab Variables and Components
 
@@ -703,6 +750,26 @@ public class StatisticsCriteriaPanel {
         });
 
 
+        plotsColorComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                plotColor = plotsColorComboBox.getSelectedColor();
+            }
+        });
+
+        plotsBackgroundColorComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                plotBackgroundColor = plotsBackgroundColorComboBox.getSelectedColor();
+            }
+        });
+
+        plotsLabelColorComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                plotLabelColor = plotsLabelColorComboBox.getSelectedColor();
+            }
+        });
 
         // "View" Tab Variables and Components
 
@@ -841,12 +908,13 @@ public class StatisticsCriteriaPanel {
         return plotSizeWidth;
     }
 
+    public Color plotColor() { return plotColor; }
 
+    public Color plotBackgroundColor() { return plotBackgroundColor; }
 
-
+    public Color plotLabelColor() { return plotLabelColor; }
 
     // "Fields" Tab Variables and Components
-
 
     public boolean includeMedian() {
         return includeMedian;
@@ -1037,7 +1105,7 @@ public class StatisticsCriteriaPanel {
         Dimension preferredSize = new Dimension(width, tabbedPane.getPreferredSize().height);
         tabbedPane.setPreferredSize(preferredSize);
         tabbedPane.setMinimumSize(preferredSize);
-        
+
         return  tabbedPane;
 
     }
@@ -1244,6 +1312,15 @@ public class StatisticsCriteriaPanel {
         panel.add(getPlotsSizePanel(), gbc);
 
 
+        gbc.gridy += 1;
+        panel.add(getPlotsColorPanel(), gbc);
+
+        gbc.gridy += 1;
+        panel.add(getPlotsBackgroundColorPanel(), gbc);
+
+        gbc.gridy += 1;
+        panel.add(getPlotsLabelColorPanel(), gbc);
+
         // Add filler panel at bottom which expands as needed to force all components within this panel to the top
         gbc = GridBagUtils.restoreConstraints(gbc);
         gbc.weighty = 1;
@@ -1423,6 +1500,53 @@ public class StatisticsCriteriaPanel {
 
     }
 
+    private JPanel getPlotsColorPanel() {
+
+        JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbcChild = GridBagUtils.createConstraints();
+
+        gbcChild.insets.right = 3;
+        panel.add(plotsColorLabel, gbcChild);
+        gbcChild = GridBagUtils.restoreConstraints(gbcChild);
+
+        gbcChild.gridx += 1;
+        panel.add(plotsColorComboBox, gbcChild);
+
+        return panel;
+
+    }
+
+    private JPanel getPlotsBackgroundColorPanel() {
+
+        JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbcChild = GridBagUtils.createConstraints();
+
+        gbcChild.insets.right = 3;
+        panel.add(plotsBackgroundColorLabel, gbcChild);
+        gbcChild = GridBagUtils.restoreConstraints(gbcChild);
+
+        gbcChild.gridx += 1;
+        panel.add(plotsBackgroundColorComboBox, gbcChild);
+
+        return panel;
+
+    }
+
+    private JPanel getPlotsLabelColorPanel() {
+
+        JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbcChild = GridBagUtils.createConstraints();
+
+        gbcChild.insets.right = 3;
+        panel.add(plotsLabelColorLabel, gbcChild);
+        gbcChild = GridBagUtils.restoreConstraints(gbcChild);
+
+        gbcChild.gridx += 1;
+        panel.add(plotsLabelColorComboBox, gbcChild);
+
+        return panel;
+
+    }
 
     //
     //------------------------------- VALIDATION -------------------------------------
@@ -1501,6 +1625,9 @@ public class StatisticsCriteriaPanel {
 //            plotSizeWidth = StatisticsTopComponent.PARAM_DEFVAL_PLOTS_SIZE_WIDTH;
         }
 
+        plotColor = plotsColorComboBox.getSelectedColor();
+        plotBackgroundColor = plotsBackgroundColorComboBox.getSelectedColor();
+        plotLabelColor = plotsLabelColorComboBox.getSelectedColor();
 
         if (plotsDomainSpanCheckBox.isSelected()) {
             if (plotsDomainLowTextfieldContainer != null && plotsDomainLowTextfieldContainer.isValid(true) && plotsDomainLowTextfieldContainer.getValue() != null) {
@@ -1631,8 +1758,17 @@ public class StatisticsCriteriaPanel {
         return preferences.getInt(StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_KEY, StatisticsTopComponent.PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT);
     }
 
+    public Color getPreferencesPlotColor() {
+        return StringUtils.parseColor(preferences.get(StatisticsTopComponent.PROPERTY_PLOTS_COLOR_KEY, StringUtils.formatColor(StatisticsTopComponent.PROPERTY_PLOTS_COLOR_DEFAULT)));
+    }
 
+    public Color getPreferencesPlotBackgroundColor() {
+        return StringUtils.parseColor(preferences.get(StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_KEY, StringUtils.formatColor(StatisticsTopComponent.PROPERTY_PLOTS_BACKGROUND_COLOR_DEFAULT)));
+    }
 
+    public Color getPreferencesPlotLabelColor() {
+        return StringUtils.parseColor(preferences.get(StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_KEY, StringUtils.formatColor(StatisticsTopComponent.PROPERTY_PLOTS_LABEL_COLOR_DEFAULT)));
+    }
 
     public int getPreferencesNumBins() {
         return preferences.getInt(StatisticsTopComponent.PROPERTY_TOTAL_BINS_KEY, StatisticsTopComponent.PROPERTY_TOTAL_BINS_DEFAULT);

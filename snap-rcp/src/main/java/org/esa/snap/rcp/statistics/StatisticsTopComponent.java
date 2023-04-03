@@ -8,6 +8,8 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import java.awt.*;
+
 @TopComponent.Description(
         preferredID = "StatisticsTopComponent",
         iconBase = "org/esa/snap/rcp/icons/Statistics.gif",
@@ -259,6 +261,19 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final int PROPERTY_PLOTS_SIZE_HEIGHT_DEFAULT = 300;
     public static final int PROPERTY_PLOTS_SIZE_HEIGHT_MIN = 50;
     public static final int PROPERTY_PLOTS_SIZE_HEIGHT_MAX = 2000;
+
+    public static final String PROPERTY_PLOTS_COLOR_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".plot.color";
+    public static final String PROPERTY_PLOTS_COLOR_LABEL = "Plot Color";
+    public static final String PROPERTY_PLOTS_COLOR_TOOLTIP = "Plot Color";
+    public static final Color PROPERTY_PLOTS_COLOR_DEFAULT = Color.BLACK;
+    public static final String PROPERTY_PLOTS_BACKGROUND_COLOR_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".plot.backgroundcolor";
+    public static final String PROPERTY_PLOTS_BACKGROUND_COLOR_LABEL = "Plot Backgound Color";
+    public static final String PROPERTY_PLOTS_BACKGROUND_COLOR_TOOLTIP = "Plot Backgound Color";
+    public static final Color PROPERTY_PLOTS_BACKGROUND_COLOR_DEFAULT = Color.WHITE;
+    public static final String PROPERTY_PLOTS_LABEL_COLOR_KEY = PROPERTY_PLOTS_KEY_SUFFIX + ".plot.labelcolor";
+    public static final String PROPERTY_PLOTS_LABEL_COLOR_LABEL = "Plot Label Color";
+    public static final String PROPERTY_PLOTS_LABEL_COLOR_TOOLTIP = "Plot Label Color";
+    public static final Color PROPERTY_PLOTS_LABEL_COLOR_DEFAULT = Color.BLACK;
 
 
 

@@ -1397,7 +1397,10 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         ChartPanel histogramPanel = createChartPanel(histogramSeries,
                 logTitle + raster.getName() + " (" + raster.getUnit() + ")",
                 "Frequency in #Pixels",
-                new Color(0, 0, 127),
+                statisticsCriteriaPanel.plotColor(),
+                statisticsCriteriaPanel.plotBackgroundColor(),
+                statisticsCriteriaPanel.plotLabelColor(),
+//                new Color(0, 0, 127),
                 histDomainBounds, histRangeBounds);
 
 
@@ -1499,7 +1502,12 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             percentileRangeBounds[0] = 0;
             percentileRangeBounds[1] = 100;
 
-            percentilePanel = createScatterChartPanel(percentileSeries, logTitle + raster.getName() + " (" + raster.getUnit() + ")", "Percent Threshold", new Color(0, 0, 0), percentileDomainBounds, percentileRangeBounds);
+            percentilePanel = createScatterChartPanel(percentileSeries, logTitle + raster.getName() + " (" + raster.getUnit() + ")", "Percent Threshold",
+                    statisticsCriteriaPanel.plotColor(),
+                    statisticsCriteriaPanel.plotBackgroundColor(),
+                    statisticsCriteriaPanel.plotLabelColor(),
+                    percentileDomainBounds,
+                    percentileRangeBounds);
 
         } else {
             percentileSeries.add(0,
@@ -1524,7 +1532,12 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             percentileRangeBounds[0] = histDomainBounds[0];
             percentileRangeBounds[1] = histDomainBounds[1];
 
-            percentilePanel = createScatterChartPanel(percentileSeries, "Percent_Threshold", logTitle + raster.getName() + " (" + raster.getUnit() + ")", new Color(0, 0, 0), percentileDomainBounds, percentileRangeBounds);
+            percentilePanel = createScatterChartPanel(percentileSeries, "Percent_Threshold", logTitle + raster.getName() + " (" + raster.getUnit() + ")",
+                    statisticsCriteriaPanel.plotColor(),
+                    statisticsCriteriaPanel.plotBackgroundColor(),
+                    statisticsCriteriaPanel.plotLabelColor(),
+                    percentileDomainBounds,
+                    percentileRangeBounds);
 
 
         }
@@ -2153,7 +2166,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         if (plotContainerPanel != null) {
             plotsPane = GridBagUtils.createPanel();
-            plotsPane.setBackground(Color.WHITE);
+            plotsPane.setBackground(statisticsCriteriaPanel.plotBackgroundColor());
+//            plotsPane.setBackground(Color.WHITE);
             //    plotsPane.setBorder(UIUtils.createGroupBorder(" ")); /*I18N*/
             GridBagConstraints gbcPlots = GridBagUtils.createConstraints("");
             gbcPlots.gridy = 0;
@@ -2433,20 +2447,19 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         hideAndShowButton.setBounds(getWidth() - hideAndShowButton.getWidth() - 12, 6, 24, 24);
     }
 
-
-    private static ChartPanel createChartPanel(XIntervalSeries percentileSeries, String xAxisLabel, String yAxisLabel, Color color, double domainBounds[], double rangeBounds[]) {
+    private static ChartPanel createChartPanel(XIntervalSeries percentileSeries, String xAxisLabel, String yAxisLabel, Color color, Color backgroundColor, Color labelColor,double domainBounds[], double rangeBounds[]) {
         XIntervalSeriesCollection percentileDataset = new XIntervalSeriesCollection();
         percentileDataset.addSeries(percentileSeries);
-        return getHistogramPlotPanel(percentileDataset, xAxisLabel, yAxisLabel, color, domainBounds, rangeBounds);
+        return getHistogramPlotPanel(percentileDataset, xAxisLabel, yAxisLabel, color, backgroundColor, labelColor, domainBounds, rangeBounds);
     }
 
-    private static ChartPanel createScatterChartPanel(XIntervalSeries percentileSeries, String xAxisLabel, String yAxisLabel, Color color, double domainBounds[], double rangeBounds[]) {
+    private static ChartPanel createScatterChartPanel(XIntervalSeries percentileSeries, String xAxisLabel, String yAxisLabel, Color color, Color backgroundColor, Color labelColor, double domainBounds[], double rangeBounds[]) {
         XIntervalSeriesCollection percentileDataset = new XIntervalSeriesCollection();
         percentileDataset.addSeries(percentileSeries);
-        return getScatterPlotPanel(percentileDataset, xAxisLabel, yAxisLabel, color, domainBounds, rangeBounds);
+        return getScatterPlotPanel(percentileDataset, xAxisLabel, yAxisLabel, color, backgroundColor, labelColor, domainBounds, rangeBounds);
     }
 
-    private static ChartPanel getHistogramPlotPanel(XIntervalSeriesCollection dataset, String xAxisLabel, String yAxisLabel, Color color, double domainBounds[], double rangeBounds[]) {
+    private static ChartPanel getHistogramPlotPanel(XIntervalSeriesCollection dataset, String xAxisLabel, String yAxisLabel, Color color, Color backgoundColor, Color labelColor, double domainBounds[], double rangeBounds[]) {
         JFreeChart chart = ChartFactory.createHistogram(
                 null,
                 xAxisLabel,
@@ -2459,7 +2472,12 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         );
         final XYPlot xyPlot = chart.getXYPlot();
         //xyPlot.setForegroundAlpha(0.85f);
+        xyPlot.setBackgroundPaint(backgoundColor);
         xyPlot.setNoDataMessage("No data");
+        xyPlot.getDomainAxis().setLabelPaint(labelColor);
+        xyPlot.getDomainAxis().setTickLabelPaint(labelColor);
+        xyPlot.getRangeAxis().setLabelPaint(labelColor);
+        xyPlot.getRangeAxis().setTickLabelPaint(labelColor);
         xyPlot.setAxisOffset(new RectangleInsets(5, 5, 5, 10));
         // xyPlot.setInsets(new RectangleInsets(0,0,0,0));
 
@@ -2494,7 +2512,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         return chartPanel;
     }
 
-    private static ChartPanel getScatterPlotPanel(XIntervalSeriesCollection dataset, String xAxisLabel, String yAxisLabel, Color color, double domainBounds[], double rangeBounds[]) {
+    private static ChartPanel getScatterPlotPanel(XIntervalSeriesCollection dataset, String xAxisLabel, String yAxisLabel, Color color, Color backgroundColor, Color labelColor, double domainBounds[], double rangeBounds[]) {
         //  JFreeChart chart = ChartFactory.createScatterPlot(
         JFreeChart chart = ChartFactory.createXYLineChart(
                 null,
@@ -2507,9 +2525,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 false   // url
         );
         final XYPlot xyPlot = chart.getXYPlot();
-        //   xyPlot.setForegroundAlpha(0.85f);
-        xyPlot.setBackgroundAlpha(0.0f);
+        xyPlot.setBackgroundPaint(backgroundColor);
+//        xyPlot.setBackgroundAlpha(0.0f);
         xyPlot.setNoDataMessage("No data");
+        xyPlot.getDomainAxis().setLabelPaint(labelColor);
+        xyPlot.getDomainAxis().setTickLabelPaint(labelColor);
+        xyPlot.getRangeAxis().setLabelPaint(labelColor);
+        xyPlot.getRangeAxis().setTickLabelPaint(labelColor);
         xyPlot.setAxisOffset(new RectangleInsets(5, 5, 5, 10));
 
 
