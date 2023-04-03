@@ -148,15 +148,9 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
         if (filter.getOperation() == Filter.Operation.CONVOLVE) {
             targetBand = new ConvolutionFilterBand(bandName, sourceRaster, getKernel(filter), iterationCount);
-            if (sourceRaster instanceof Band) {
-                ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
-            }
         } else {
             GeneralFilterBand.OpType opType = getOpType(filter.getOperation());
             targetBand = new GeneralFilterBand(bandName, sourceRaster, opType, getKernel(filter), iterationCount);
-            if (sourceRaster instanceof Band) {
-                ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
-            }
         }
 
         targetBand.setDescription(String.format("Filter '%s' (=%s) applied to '%s'", filter.getName(), filter.getOperation(), sourceRaster.getName()));
