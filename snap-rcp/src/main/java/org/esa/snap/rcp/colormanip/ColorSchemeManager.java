@@ -338,17 +338,6 @@ public class ColorSchemeManager {
 
     private boolean createPrimaryAndAdditionalColorSchemeInfos() {
 
-        Document dom = getFileDocument(colorSchemesFile);
-        Element rootElement = dom.getDocumentElement();
-        NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
-
-        if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
-            for (int i = 0; i < schemeNodeList.getLength(); i++) {
-                Element schemeElement = (Element) schemeNodeList.item(i);
-                addPrimaryAndAdditionalColorSchemeInfos(schemeElement);
-            }
-        }
-
         if (colorSchemesUserFile.exists()) {
             Document domCustom = getFileDocument(colorSchemesUserFile);
             Element rootElementCustom = domCustom.getDocumentElement();
@@ -361,6 +350,19 @@ public class ColorSchemeManager {
                 }
             }
         }
+        
+        Document dom = getFileDocument(colorSchemesFile);
+        Element rootElement = dom.getDocumentElement();
+        NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
+
+        if (schemeNodeList != null && schemeNodeList.getLength() > 0) {
+            for (int i = 0; i < schemeNodeList.getLength(); i++) {
+                Element schemeElement = (Element) schemeNodeList.item(i);
+                addPrimaryAndAdditionalColorSchemeInfos(schemeElement);
+            }
+        }
+
+
 
         return true;
     }
