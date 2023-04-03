@@ -86,7 +86,7 @@ import static java.lang.Math.abs;
         @ActionReference(path = "Toolbars/Angular")
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AngularTopComponent_Name", preferredID = "AngularTopComponent")
-@NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularWnd"})
+@NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularViewWnd"})
 /**
  * A window which displays AngularViews at selected pixel positions.
  */
