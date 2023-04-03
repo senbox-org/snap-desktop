@@ -493,18 +493,6 @@ public class ColorSchemeManager {
 
     private void initColorSchemeLookup() {
 
-        Document dom = getFileDocument(colorSchemeLookupFile);
-        Element rootElement = dom.getDocumentElement();
-        NodeList keyNodeList = rootElement.getElementsByTagName("KEY");
-
-        if (keyNodeList != null && keyNodeList.getLength() > 0) {
-
-            for (int i = 0; i < keyNodeList.getLength(); i++) {
-                Element schemeElement = (Element) keyNodeList.item(i);
-                addColorSchemeLookup(schemeElement);
-            }
-        }
-
         if (colorSchemeLookupUserFile.exists()) {
             Document domCustom = getFileDocument(colorSchemeLookupUserFile);
             Element rootElementCustom = domCustom.getDocumentElement();
@@ -517,6 +505,19 @@ public class ColorSchemeManager {
                 }
             }
         }
+
+        Document dom = getFileDocument(colorSchemeLookupFile);
+        Element rootElement = dom.getDocumentElement();
+        NodeList keyNodeList = rootElement.getElementsByTagName("KEY");
+
+        if (keyNodeList != null && keyNodeList.getLength() > 0) {
+
+            for (int i = 0; i < keyNodeList.getLength(); i++) {
+                Element schemeElement = (Element) keyNodeList.item(i);
+                addColorSchemeLookup(schemeElement);
+            }
+        }
+
     }
 
 
