@@ -22,6 +22,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-1562] Collocation operator should copy metadata of secondary products
     [SNAP-1561] Connection to WMS service cannot be established 
     [SNAP-1560] Memory leak in ceres-binio
+    [SNAP-1552] Improve SNAP startup time by initialising Product Library on first usage
     [SNAP-1234] Image-Filter operator consumes to much memory
     [SNAP-254]  Align FilterOperator with Image Filters from GUI
 

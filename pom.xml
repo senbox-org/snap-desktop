@@ -17,7 +17,7 @@
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
-        <doc-windows.version>1.0</doc-windows.version>
+        <snap-gui-lib.version>1.0</snap-gui-lib.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.java.binaries>**/classes</sonar.java.binaries>
@@ -32,8 +32,6 @@
         <module>snap-main</module>
         <module>snap-virtual-file-system-ui</module>
         <module>nbexec</module>
-        <module>tiled-editors</module>
-        <module>doc-windows</module>
 
         <module>snap-binning-ui</module>
         <module>snap-change-detection-ui</module>
@@ -56,11 +54,8 @@
         <module>snap-virtual-file-system-preferences-ui</module>
         <module>snap-remote-execution-ui</module>
         <module>snap-znap-ui</module>
+        <module>lib-gdal-preferences-ui</module>
 
-        <!-- disabled: these modules don't have the required maturity right now. -->
-        <!--<module>snap-opendap-ui</module>-->
-        <!--<module>snap-scripting</module>-->
-        <!--<module>snap-timeseries-ui</module>-->
     </modules>
 
     <dependencyManagement>
@@ -194,9 +189,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.esa.snap.netbeans</groupId>
-                <artifactId>doc-windows</artifactId>
-                <version>${doc-windows.version}</version>
+                <groupId>eu.esa.snap.netbeans</groupId>
+                <artifactId>snap-gui-lib</artifactId>
+                <version>${snap-gui-lib.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -248,7 +243,7 @@
         <repository>
             <id>snap-repo-public</id>
             <name>Public Maven Repository for SNAP</name>
-            <url>https://snap-build-server.tilaa.cloud/nexus/repository/snap-maven-public/</url>
+            <url>https://nexus.snap-ci.ovh/repository/snap-maven-public/</url>
             <releases>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
@@ -318,6 +313,30 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>1.19</version>
             </plugin>
+            <!-- .............................................................. -->
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>10.0</version>
+                            <vendor>OpenJDK</vendor>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+            -->
+            <!-- .............................................................. -->
         </plugins>
     </build>
 </project>

@@ -122,9 +122,11 @@ Requires the parameter 'minDataHour'.</td>
   <td><code>minDataHour</code></td>
   <td><code>Double</code></td>
   <td><code></code></td>
-  <td>A sensor-dependent constant given in hours of a day (0 to 24)
-at which a sensor has a minimum number of observations at the date line (the 180 degree meridian).
-Only used if parameter 'dataDayMode' is set to 'SPATIOTEMPORAL_DATADAY'.</td>
+    <td>A sensor-dependent constant given in hours of a day (0 to 24)
+        at which a sensor has a minimum number of observations at the date line (the 180 degree meridian).
+        Only used if parameter 'dataDayMode' is set to 'SPATIOTEMPORAL_DATADAY'. This is usually the equator crossing
+        time (ECT)
+    </td>
   <td>interval: [0,24]</td>
 </tr>
 <tr>
@@ -195,16 +197,16 @@ in each source data product, so that it can be used as input for the binning.</t
   <td><code>outputFormat</code></td>
   <td><code>String</code></td>
   <td><code>BEAM-DIMAP</code></td>
-  <td></td>
-  <td></td>
-</tr>
-<tr>
-  <td><code>outputBands</code></td>
-  <td><code>BandConfiguration[]</code></td>
-  <td><code></code></td>
-    <td>Configures the target bands. Not needed if output type 'Product' is chosen.</td>
+    <td></td>
     <td></td>
 </tr>
+    <tr>
+        <td><code>outputBands</code></td>
+        <td><code>BandConfiguration[]</code></td>
+        <td><code></code></td>
+        <td>Configures the target bands. Not needed if output type 'Product' is chosen.</td>
+        <td></td>
+    </tr>
     <tr>
         <td><code>productCustomizer</code></td>
         <td><code>ProductCustomizerConfig</code></td>

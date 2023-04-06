@@ -1,20 +1,7 @@
 package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.PinDescriptor;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.PlainFeatureFactory;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.actions.vector.VectorDataNodeImporter;
@@ -24,11 +11,10 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.*;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,10 +22,7 @@ import java.util.ArrayList;
 
 import static org.esa.snap.core.datamodel.PlainFeatureFactory.createPlainFeature;
 import static org.esa.snap.core.datamodel.PlainFeatureFactory.createPlainFeatureType;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Marco Peters
@@ -76,11 +59,11 @@ public class ExportGeometryActionTest {
     @Test
     public void testWritingShapeFile_Pins() throws Exception {
         Placemark pin = Placemark.createPointPlacemark(PinDescriptor.getInstance(),
-                                                       "name1",
-                                                       "label1",
-                                                       "",
-                                                       new PixelPos(0, 0), new GeoPos(52.0, 10.0),
-                                                       null);
+                "name1",
+                "label1",
+                "",
+                new PixelPos(0, 0), new GeoPos(52.0, 10.0),
+                null);
 
         ArrayList<SimpleFeature> features = new ArrayList<>();
         features.add(pin.getFeature());
@@ -132,14 +115,14 @@ public class ExportGeometryActionTest {
         }
     }
 
-    private VectorDataNode readIn(File file, Product product) throws IOException, FactoryException, TransformException {
+    private VectorDataNode readIn(File file, Product product) throws IOException {
         DefaultFeatureCollection featureCollection = FeatureUtils.loadShapefileForProduct(file,
-                                                                                          product,
-                                                                                          new DummyFeatureCrsProvider(),
-                                                                                          ProgressMonitor.NULL);
+                product,
+                new DummyFeatureCrsProvider(),
+                ProgressMonitor.NULL);
         ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
         String name = VectorDataNodeImporter.findUniqueVectorDataNodeName(featureCollection.getSchema().getName().getLocalPart(),
-                                                                          vectorDataGroup);
+                vectorDataGroup);
         return new VectorDataNode(name, featureCollection);
     }
 

@@ -5,41 +5,24 @@
  */
 package org.esa.snap.rcp.actions.file;
 
+import eu.esa.snap.netbeans.docwin.DocumentWindow;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.dataio.ProductReader;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.netbeans.docwin.DocumentWindow;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
-import org.openide.util.WeakSet;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -148,11 +131,11 @@ public final class CloseProductAction extends AbstractAction implements ContextA
                 Product firstSourceProduct = findFirstSourceProduct(productToBeClosed, stillOpenProducts);
                 if (firstSourceProduct != null) {
                     Dialogs.showInformation("Close Not Possible",
-                                            String.format("Can't close product '%s' because it is in use%n" +
-                                                          "by product '%s'.%n" +
-                                                          "Please close the latter first.",
-                                                          productToBeClosed.getName(),
-                                                          firstSourceProduct.getName()), null);
+                            String.format("Can't close product '%s' because it is in use%n" +
+                                            "by product '%s'.%n" +
+                                            "Please close the latter first.",
+                                    productToBeClosed.getName(),
+                                    firstSourceProduct.getName()), null);
                     return false;
                 }
             }
@@ -161,9 +144,9 @@ public final class CloseProductAction extends AbstractAction implements ContextA
         for (Product product : products) {
             if (product.isModified()) {
                 Dialogs.Answer answer = Dialogs.requestDecision(Bundle.CTL_OpenProductActionName(),
-                                                                MessageFormat.format("Product ''{0}'' has been modified.\n" +
-                                                                                     "Do you want to save it?",
-                                                                                     product.getName()), true, null);
+                        MessageFormat.format("Product ''{0}'' has been modified.\n" +
+                                        "Do you want to save it?",
+                                product.getName()), true, null);
                 if (answer == Dialogs.Answer.YES) {
                     saveList.add(product);
                 } else if (answer == Dialogs.Answer.CANCELLED) {

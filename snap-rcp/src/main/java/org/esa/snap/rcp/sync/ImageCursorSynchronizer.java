@@ -17,12 +17,12 @@
 package org.esa.snap.rcp.sync;
 
 import com.bc.ceres.glayer.support.ImageLayer;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager.Predicate;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.tools.SyncImageCursorsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -65,7 +65,7 @@ public class ImageCursorSynchronizer implements Runnable {
 
     private boolean isActive() {
         return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_CURSORS,
-                                                                SyncImageCursorsAction.PREFERENCE_DEFAULT_VALUE);
+                SyncImageCursorsAction.PREFERENCE_DEFAULT_VALUE);
     }
 
     public void updateCursorOverlays(GeoPos geoPos, ProductSceneView sourceView) {
