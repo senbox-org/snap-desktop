@@ -450,6 +450,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
         @Override
         public void run() {
             try {
+                operator.execute(null);
                 callbackMethod.accept(operator.getTargetProduct());
             } catch (Throwable t) {
                 if (operator instanceof ToolAdapterOp) {
