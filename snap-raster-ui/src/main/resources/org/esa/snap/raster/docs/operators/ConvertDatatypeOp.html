@@ -27,19 +27,28 @@ following ways:<br>
 <ul>
     <li>no value scaling (truncation)</li>
     <li>linear scaling using slope and intercept: new value = slope * old value + intercept</li>
-    <li>linear scaling between min. and max. pixel values or &#8216;clipped&#8217; (%) histogram</li>
+    <li>&#8216;clipped&#8217; histogram, keeping only the middle 95% of the histogram, leaving 2.5% off of each end</li>
+    <li>modified clipping that removes the bottom 2.5% of the histogram, and values with 10 or fewer occurrences from the top</li>
     <li>logarithmic scaling using slope and intercept: new value = 10**(slope * old value + intercept)</li>
-    <li>Look-Up Table defined by the user containing the mapping</li>
 </ul>
 <br>This will make it possible to be able to convert between the following data types:<br>
 <ul>
     <li>8-bit integer</li>
     <li>16-bit integer</li>
     <li>32-bit integer</li>
+    <li>8-bit unsigned integer</li>
+    <li>16-bit unsigned integer</li>
+    <li>32-bit unsigned integer</li>
     <li>32-bit float</li>
-    <li>complex integer (16 bits + 16 bits)</li>
-    <li>complex float (32 bits + 32 bits)</li>
+    <li>64-bit float</li>
 </ul>
+<br>Such conversions can be used to decrease the file size of a product, by converting to
+a smaller data type. For example, converting from a 16-bit encoding to an 8-bit encoding would
+roughly cut the file size in half, as each pixel only takes up half as much space on the hard drive.
+Obviously, it also cuts down the precision of the observed values, in this case by a factor of
+2<sup>8</sup> or 256, as we lose 8 bits of precision. In general, the tool scales values between
+the newly selected type's minimum and maximum values, so a value of 127 in a signed 8-bit encoding
+would become 256 in an unsigned 8-bit encoding, as that is the maximum value in both cases.
 <hr>
 </body>
 </html>
