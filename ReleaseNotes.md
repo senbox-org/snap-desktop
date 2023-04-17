@@ -8,6 +8,14 @@ Release Notes - Sentinel Application Platform
     [SNAP-3488] Error opening any S2 product (which contains JP2 files) after installing the updates (9.0.5) and GDAL is not installed on the system
     [SNAP-3489] Filtered images yield wrong result
 
+# New in SNAP 9.0.5
+    [SNAP-793]  Links to external pages in classifier help don't work
+	[SNAP-1584] Graph Builder - Windowed reading - Read operator generates both pixelRegion and geometryRegion in graph xml
+	[SNAP-3436] GPT hangs when running a S2 processing graph
+	[SNAP-3458] Update SNAP & toolboxes AboutBox with proper release notes links
+	[SNAP-3459] JP2OpenJPEG EPSG:4326 - axis order different depending OpenJPEG version
+	[SNAP-3467] The vector import tools are sometimes disabled in the menu
+
 # New in SNAP 9.0.4
     [SNAP-1573] NetCDF expects distinct names within metadata groups    
 	[SNAP-1576] SRTM 1S HGT has incorrect nodata value
