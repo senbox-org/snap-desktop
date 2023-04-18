@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
  */
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.reproject.OrthorectificationAction")
 @ActionRegistration(displayName = "#CTL_OrthorectificationAction_Name")
-@ActionReference(path = "Menu/Optical/Geometric")
+@ActionReference(path = "Menu/Optical/Geometric", position = 10)
 @NbBundle.Messages("CTL_OrthorectificationAction_Name=Orthorectification")
 public class OrthorectificationAction extends AbstractSnapAction {
 

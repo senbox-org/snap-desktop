@@ -19,7 +19,6 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
 import gov.nasa.worldwind.layers.Earth.OSMMapnikLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -74,7 +73,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WWAnalysisToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 70),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(

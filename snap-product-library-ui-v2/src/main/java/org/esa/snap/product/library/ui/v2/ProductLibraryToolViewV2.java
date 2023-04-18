@@ -26,11 +26,22 @@ import org.esa.snap.engine_utilities.util.Pair;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.graphbuilder.rcp.utils.ClipboardUtils;
-import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.product.library.ui.v2.preferences.RepositoriesCredentialsControllerUI;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.RepositorySelectionPanel;
-import org.esa.snap.product.library.ui.v2.repository.local.*;
+import org.esa.snap.product.library.ui.v2.repository.local.AddLocalRepositoryFolderTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.AllLocalProductsRepositoryPanel;
+import org.esa.snap.product.library.ui.v2.repository.local.AttributesParameterComponent;
+import org.esa.snap.product.library.ui.v2.repository.local.CopyLocalProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.DeleteAllLocalRepositoriesTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.DeleteLocalProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ExportLocalProductListPathsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.LocalParameterValues;
+import org.esa.snap.product.library.ui.v2.repository.local.MoveLocalProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.OpenLocalProductsRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ReadLocalProductsTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ScanAllLocalRepositoryFoldersTimerRunnable;
+import org.esa.snap.product.library.ui.v2.repository.local.ScanLocalRepositoryOptionsDialog;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListModel;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductListPanel;
 import org.esa.snap.product.library.ui.v2.repository.output.RepositoryOutputProductListPanel;
@@ -55,6 +66,7 @@ import org.esa.snap.product.library.v2.database.DataAccess;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
+import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -76,13 +88,28 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
@@ -95,8 +122,12 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,7 +149,7 @@ import static java.lang.Math.min;
 )
 @ActionID(category = "Window", id = "org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 12),
         @ActionReference(path = "Menu/File", position = 17)
 })
 @TopComponent.OpenActionRegistration(

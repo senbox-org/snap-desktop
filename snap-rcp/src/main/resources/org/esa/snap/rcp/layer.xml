@@ -51,6 +51,9 @@
             <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
             <folder name="Tool Windows">
                 <attr name="position" intvalue="0"/>
+                <folder name="Developer">
+                    <attr name="position" intvalue="0"/>
+                </folder>
                 <!-- Action to open a properties window, moved here from Window/Tools menu-->
                 <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
                     <attr name="originalFile"

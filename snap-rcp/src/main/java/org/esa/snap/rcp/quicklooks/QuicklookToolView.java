@@ -40,8 +40,23 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.media.jai.JAI;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -68,7 +83,7 @@ import java.util.TreeSet;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.quicklooks.QuicklookToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 50),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(

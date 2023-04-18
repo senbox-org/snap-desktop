@@ -34,12 +34,12 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 
 @ActionID(category = "Raster", id = "org.esa.snap.raster.rcp.actions.AmplitudeToIntensityAction")
 @ActionRegistration(displayName = "#CTL_AmplitudeToIntensityAction_Text")
-@ActionReference(path = "Menu/Raster/Data Conversion", position = 200)
+@ActionReference(path = "Menu/Raster/Data Conversion", position = 250)
 @NbBundle.Messages({
         "CTL_AmplitudeToIntensityAction_Text=Amplitude to/from Intensity",
         "CTL_AmplitudeToIntensityAction_Description=Creates a virtual band from an Amplitude or Intensity band"

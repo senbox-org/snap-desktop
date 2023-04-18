@@ -37,7 +37,7 @@ import java.awt.BorderLayout;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.ColorManipulationTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 40),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(

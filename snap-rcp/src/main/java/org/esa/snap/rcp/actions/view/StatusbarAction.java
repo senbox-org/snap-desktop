@@ -15,8 +15,8 @@ import org.openide.util.NbBundle;
  * @author Norman
  */
 @ActionID(category = "View", id = "StatusbarAction" )
-@ActionRegistration(displayName = "#CTL_StatusbarAction_Text", lazy = false )
-@ActionReference(path = "Menu/View", position = 300)
+@ActionRegistration(displayName = "#CTL_StatusbarAction_Text", lazy = false)
+@ActionReference(path = "Menu/View", position = 301)
 @NbBundle.Messages({
         "CTL_StatusbarAction_Text=Statusbar",
         "CTL_StatusbarAction_ToolTip=Change visibility of the Statusbar."

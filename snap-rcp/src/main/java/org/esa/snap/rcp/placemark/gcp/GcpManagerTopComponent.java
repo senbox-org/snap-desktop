@@ -50,17 +50,17 @@ import java.text.DecimalFormat;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.gcp.GcpManagerTopComponent")
 @ActionReferences({
-                          @ActionReference(path = "Menu/View/Tool Windows"),
-                          @ActionReference(path = "Toolbars/Tool Windows")
-                  })
+        @ActionReference(path = "Menu/View/Tool Windows", position = 31),
+        @ActionReference(path = "Toolbars/Tool Windows")
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GcpManagerTopComponent_Name",
         preferredID = "GcpManagerTopComponent"
 )
 @NbBundle.Messages({
-                           "CTL_GcpManagerTopComponent_Name=GCP Manager",
-                           "CTL_GcpManagerTopComponent_HelpId=showGcpManagerWnd"
-                   })
+        "CTL_GcpManagerTopComponent_Name=GCP Manager",
+        "CTL_GcpManagerTopComponent_HelpId=showGcpManagerWnd"
+})
 /**
  * A dialog used to manage the list of pins associated with a selected product.
  */

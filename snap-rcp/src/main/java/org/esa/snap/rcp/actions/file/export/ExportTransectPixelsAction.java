@@ -84,8 +84,8 @@ import java.util.logging.Level;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File/Export/Other", position = 60),
-        @ActionReference(path = "Menu/Raster/Export", position = 200),
+        @ActionReference(path = "Menu/File/Export/Other", position = 65),
+        @ActionReference(path = "Menu/Raster/Export", position = 205),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 50, separatorAfter = 55),
         @ActionReference(path = "Context/ProductSceneView", position = 40)
 })

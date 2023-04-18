@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 @TopComponent.Description(
         preferredID = "WorldMapTopComponent",
@@ -50,7 +50,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.worldmap.WorldMapTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 60),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(

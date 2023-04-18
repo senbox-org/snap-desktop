@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 @ActionID(category = "Processing", id = "org.esa.snap.processor.watermask.ui.WatermaskAction" )
 @ActionRegistration(displayName = "#CTL_WatermaskAction_Text")
-@ActionReference(path = "Menu/Raster/Masks", position = 300)
+@ActionReference(path = "Menu/Raster/Masks", position = 400)
 @NbBundle.Messages({"CTL_WatermaskAction_Text=Fractional Land/Water Mask"})
 public class WatermaskAction extends AbstractSnapAction {
 

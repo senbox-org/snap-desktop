@@ -77,7 +77,7 @@ import java.util.zip.ZipOutputStream;
         lazy = false
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/File/Export/Other", position = 80),
+        @ActionReference(path = "Menu/File/Export/Other", position = 85),
         @ActionReference(path = "Context/ProductSceneView", position = 60)
 })
 @NbBundle.Messages({

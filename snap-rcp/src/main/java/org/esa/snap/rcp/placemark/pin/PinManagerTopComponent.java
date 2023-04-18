@@ -21,7 +21,7 @@ import org.openide.windows.TopComponent;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.pin.PinManagerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Menu/View/Tool Windows", position = 30),
         @ActionReference(path = "Toolbars/Tool Windows")
 })
 @TopComponent.OpenActionRegistration(

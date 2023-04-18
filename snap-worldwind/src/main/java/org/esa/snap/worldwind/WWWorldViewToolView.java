@@ -36,7 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Window;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -55,7 +57,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 )
 @ActionID(category = "Window", id = "org.esa.snap.worldwind.WWWorldMapToolView")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows", position = 71)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WorldWindTopComponentName",
