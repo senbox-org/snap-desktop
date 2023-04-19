@@ -249,18 +249,10 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         return result;
     }
 
-    private void openTargetProducts(final List<File> fileList) {
-        if (!fileList.isEmpty()) {
-            for (File file : fileList) {
-                try {
-
-                    final Product product = CommonReaders.readProduct(file);
-                    if (product != null) {
-                        appContext.getProductManager().addProduct(product);
-                    }
-                } catch (Exception e) {
-                    showErrorDialog(e.getMessage());
-                }
+    private void openTargetProducts(final List<Product> products) {
+        if (!products.isEmpty()) {
+            for (final Product product : products) {
+                appContext.getProductManager().addProduct(product);
             }
         }
     }
@@ -329,7 +321,6 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
                     graphEx.initGraph();
 
                     graphEx.executeGraph(SubProgressMonitor.create(pm, 100));
-                    graphEx.disposeGraphContext();
                 }
 
             } catch (Exception e) {
@@ -365,10 +356,14 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
 
                 if (ioPanel.isOpenInAppSelected()) {
                     final GraphExecuter graphEx = graphExecuterList.get(graphExecuterList.size() - 1);
-                    openTargetProducts(graphEx.getProductsToOpenInDAT());
+                    openTargetProducts(graphEx.getProductsToOpen());
                 }
             }
             cleanUpTempFiles();
+
+            for (GraphExecuter graphEx : graphExecuterList) {
+                graphEx.disposeGraphContext();
+            }
         }
     }
 

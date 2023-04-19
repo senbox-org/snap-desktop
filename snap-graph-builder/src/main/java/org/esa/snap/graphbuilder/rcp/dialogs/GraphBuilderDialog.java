@@ -675,9 +675,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 errorOccured = true;
             } finally {
                 isProcessing = false;
-                graphEx.disposeGraphContext();
-                // free cache
-                SystemUtils.freeAllMemory();
 
                 pm.done();
             }
@@ -696,30 +693,26 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 final File[] files = fileList.toArray(new File[0]);
                 notifyMSG(ProcessingListener.MSG.DONE, files);
 
-                ProcessingStats stats = openTargetProducts(files);
+                ProcessingStats stats = openTargetProducts(graphEx.getProductsToOpen());
                 statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds, stats.totalBytes, stats.totalPixels));
                 if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
+            graphEx.disposeGraphContext();
+            // free cache
+            SystemUtils.freeAllMemory();
         }
     }
 
-    private ProcessingStats openTargetProducts(final File[] fileList) {
-        ProcessingStats stats = new ProcessingStats();
-        if (fileList.length != 0) {
-            for (File file : fileList) {
-                try {
-                    final Product product = CommonReaders.readProduct(file);
-                    if (product != null) {
-                        appContext.getProductManager().addProduct(product);
+    private ProcessingStats openTargetProducts(final List<Product> products) {
+        final ProcessingStats stats = new ProcessingStats();
+        if (!products.isEmpty()) {
+            for (final Product product : products) {
+                appContext.getProductManager().addProduct(product);
 
-                        stats.totalBytes += ProductFunctions.getRawStorageSize(product);
-                        stats.totalPixels = ProductFunctions.getTotalPixels(product);
-                    }
-                } catch (IOException e) {
-                    showErrorDialog(e.getMessage());
-                }
+                stats.totalBytes += ProductFunctions.getRawStorageSize(product);
+                stats.totalPixels = ProductFunctions.getTotalPixels(product);
             }
         }
         return stats;

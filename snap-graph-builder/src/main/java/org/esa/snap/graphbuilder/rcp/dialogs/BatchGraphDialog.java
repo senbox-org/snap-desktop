@@ -221,7 +221,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     private void notifyMSG(final BatchProcessListener.BatchMSG msg) {
         for (final BatchProcessListener listener : listenerList) {
-            listener.notifyMSG(msg, productSetPanel.getFileList(), getAllBatchProcessedTargetProducts());
+            listener.notifyMSG(msg, productSetPanel.getFileList(), getAllBatchProcessedTargetProductsFiles());
         }
     }
 
@@ -394,19 +394,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         return result;
     }
 
-    private void openTargetProducts() {
-        final File[] fileList = getAllBatchProcessedTargetProducts();
-        if (fileList != null && fileList.length > 0) {
-            for (File file : fileList) {
-                try {
-
-                    final Product product = CommonReaders.readProduct(file);
-                    if (product != null) {
-                        appContext.getProductManager().addProduct(product);
-                    }
-                } catch (IOException e) {
-                    showErrorDialog(e.getMessage());
-                }
+    private void openTargetProducts(final List<Product> products) {
+        if (!products.isEmpty()) {
+            for (final Product product : products) {
+                appContext.getProductManager().addProduct(product);
             }
         }
     }
@@ -570,12 +561,20 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
     }
 
-    private File[] getAllBatchProcessedTargetProducts() {
+    private File[] getAllBatchProcessedTargetProductsFiles() {
         final List<File> targetFileList = new ArrayList<>();
         for (GraphExecuter graphEx : graphExecutorList) {
             targetFileList.addAll(graphEx.getProductsToOpenInDAT());
         }
         return targetFileList.toArray(new File[0]);
+    }
+
+    private List<Product> getAllBatchProcessedTargetProducts() {
+        final List<Product> targetProductsList = new ArrayList<>();
+        for (GraphExecuter graphEx : graphExecutorList) {
+            targetProductsList.addAll(graphEx.getProductsToOpen());
+        }
+        return targetProductsList;
     }
 
     /////
@@ -627,8 +626,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
                             graphEx.executeGraph(SubProgressMonitor.create(pm, 1));
 
-                            graphEx.disposeGraphContext();
-                            SystemUtils.freeAllMemory();
                         }
 
                     } catch (Exception e) {
@@ -676,7 +673,7 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         public void done() {
             if (!errorOccured) {
                 if (openProcessedProducts) {
-                    openTargetProducts();
+                    openTargetProducts(getAllBatchProcessedTargetProducts());
                 }
                 bottomStatusLabel.setText("");
             }
@@ -696,6 +693,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
             if (SnapApp.getDefault().getPreferences().getBoolean(GPF.BEEP_AFTER_PROCESSING_PROPERTY, false)) {
                 Toolkit.getDefaultToolkit().beep();
+            }
+
+            for (GraphExecuter graphEx : graphExecutorList) {
+                graphEx.disposeGraphContext();
+                SystemUtils.freeAllMemory();
             }
         }
 

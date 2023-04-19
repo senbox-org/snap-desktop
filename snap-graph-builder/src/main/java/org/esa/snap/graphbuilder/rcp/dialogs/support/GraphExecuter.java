@@ -20,6 +20,7 @@ import com.bc.ceres.binding.dom.XppDomElement;
 import com.bc.ceres.core.ProgressMonitor;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.apache.commons.math3.util.FastMath;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
@@ -423,6 +424,10 @@ public class GraphExecuter extends Observable {
 
     public void setGraphDescription(final String text) {
         graphDescription = text;
+    }
+
+    public List<Product> getProductsToOpen() {
+        return Arrays.asList(this.graphContext.getOutputProducts());
     }
 
     public List<File> getProductsToOpenInDAT() {
