@@ -17,26 +17,14 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.ColorManipulationDefaults;
-import org.esa.snap.core.datamodel.ColorPaletteDef;
-import org.esa.snap.core.datamodel.ColorSchemeInfo;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.ResourceInstaller;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
@@ -50,25 +38,8 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -422,7 +393,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
 
-
     @Override
     public void installToolButtons(boolean installAllButtons) {
 
@@ -467,8 +437,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         gbc.gridy += 1;
         toolButtonsPanel.add(helpButton, gbc);
     }
-
-
 
 
 //    @Override
@@ -580,10 +548,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
     private void resetToDefaults() {
         if (getFormModel().isValid()) {
-                PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
+            PropertyMap configuration = getFormModel().getProductSceneView().getSceneImage().getConfiguration();
 
-                ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView(), true);
-                getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
+            ColorSchemeUtils.setImageInfoToDefaultColor(configuration, createDefaultImageInfo(), getFormModel().getProductSceneView(), true);
+            getFormModel().setModifiedImageInfo(getFormModel().getProductSceneView().getImageInfo());
 
             getChildForm().resetFormModel(getFormModel());
         }
@@ -865,7 +833,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             return;
         }
         final SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setDialogTitle("Export " +  NamingConvention.COLOR_MIXED_CASE + " Palette"); /*I18N*/
+        fileChooser.setDialogTitle("Export " + NamingConvention.COLOR_MIXED_CASE + " Palette"); /*I18N*/
         fileChooser.setFileFilter(getOrCreateCpdFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreatePalFileFilter());
         fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
@@ -971,7 +939,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     }
 
 
-
     // Installs the RGB profile resources
     private class InstallRGBAuxFiles implements Runnable {
 
@@ -994,7 +961,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             }
         }
     }
-
 
 
     public Path getColorPalettesAuxDataSourceDir() {

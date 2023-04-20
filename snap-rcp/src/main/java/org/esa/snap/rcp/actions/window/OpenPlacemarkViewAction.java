@@ -15,30 +15,23 @@
  */
 package org.esa.snap.rcp.actions.window;
 
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.placemark.PlacemarkViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
-@ActionID(category = "View", id = "OpenPlacemarkViewAction" )
+@ActionID(category = "View", id = "OpenPlacemarkViewAction")
 @ActionRegistration(
         displayName = "#CTL_OpenPlacemarkViewAction_MenuText",
         iconBase = "org/esa/snap/rcp/icons/RsVector16.gif"

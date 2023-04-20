@@ -15,29 +15,18 @@
  */
 package org.esa.snap.rcp.pixelinfo;
 
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.CollapsibleItemsPanel;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
@@ -87,11 +76,11 @@ public class PixelInfoView extends JPanel {
     private static final int UNIT_COLUMN = 2;
     private boolean showGeoPosDecimals;
 
-     static final int POSITION_INDEX = 0;
-     static final int TIME_INDEX = 1;
-     static final int BANDS_INDEX = 2;
-     static final int TIE_POINT_GRIDS_INDEX = 3;
-     static final int FLAGS_INDEX = 4;
+    static final int POSITION_INDEX = 0;
+    static final int TIME_INDEX = 1;
+    static final int BANDS_INDEX = 2;
+    static final int TIE_POINT_GRIDS_INDEX = 3;
+    static final int FLAGS_INDEX = 4;
 
     private final PropertyChangeListener displayFilterListener;
     private final ProductNodeListener productNodeListener;
@@ -124,10 +113,10 @@ public class PixelInfoView extends JPanel {
         tiePointGridsTableModel = new PixelInfoViewTableModel(new String[]{"Tie-Point Grid", "Value", "Unit"});
         flagsTableModel = new PixelInfoViewTableModel(new String[]{"Flag", "Value",});
         modelUpdater = new PixelInfoViewModelUpdater(this, positionTableModel,
-                                                     timeTableModel,
-                                                     bandsTableModel,
-                                                     tiePointGridsTableModel,
-                                                     flagsTableModel
+                timeTableModel,
+                bandsTableModel,
+                tiePointGridsTableModel,
+                flagsTableModel
         );
         updateService = new PixelInfoUpdateService(modelUpdater);
         setDisplayFilter(new DisplayFilter());
@@ -310,8 +299,8 @@ public class PixelInfoView extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(collapsibleItemsPanel,
-                                                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPane, BorderLayout.CENTER);
     }

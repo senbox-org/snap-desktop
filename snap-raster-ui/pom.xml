@@ -57,9 +57,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.esa.snap.netbeans</groupId>
-            <artifactId>doc-windows</artifactId>
-            <version>${doc-windows.version}</version>
+            <groupId>eu.esa.snap.netbeans</groupId>
+            <artifactId>snap-gui-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

@@ -203,13 +203,8 @@
         <!-- SNAP NetBeans Goodies -->
 
         <dependency>
-            <groupId>org.esa.snap.netbeans</groupId>
-            <artifactId>tiled-editors</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.esa.snap.netbeans</groupId>
-            <artifactId>doc-windows</artifactId>
+            <groupId>eu.esa.snap.netbeans</groupId>
+            <artifactId>snap-gui-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -15,25 +15,19 @@
  */
 package org.esa.snap.raster.rcp.actions;
 
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.core.datamodel.MetadataAttribute;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.graphbuilder.rcp.dialogs.PromptDialog;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.metadata.MetadataViewTopComponent;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

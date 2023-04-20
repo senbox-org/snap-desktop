@@ -80,13 +80,8 @@ Reads the specified file as product. This operator may serve as a source node in
         <td><code>Rectangle</code></td>
         <td><code></code></td>
         <td>The subset region in pixel coordinates.
-            Use the following format:
-            <x>,
-                <y>,
-                    <width>,
-                        <height>
-                            If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this
-                            parameter.
+            Use the following format: {x>,{y>,{width>,{height>
+            If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this parameter.
         </td>
         <td></td>
     </tr>
@@ -95,16 +90,9 @@ Reads the specified file as product. This operator may serve as a source node in
         <td><code>Geometry</code></td>
         <td><code></code></td>
         <td>The subset region in geographical coordinates using WKT-format,
-            e.g. POLYGON((
-            <lon1>
-                <lat1>,
-                    <lon2>
-                        <lat2>, ...,
-                            <lon1>
-                                <lat1>))
-                                    (make sure to quote the option due to spaces in
-                                    <geometry>).
-                                        If not given, the entire scene is used.
+            e.g. POLYGON(({lon1} {lat1}, {lon2} {lat2}, ..., {lon1} {lat1}))
+            (make sure to quote the option due to spaces in {geometry}).
+            If not given, the entire scene is used.
         </td>
         <td></td>
     </tr>

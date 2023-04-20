@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Specification-Version: 1.0.2.0
-AutoUpdate-Essential-Module: true
-AutoUpdate-Show-In-Client: false

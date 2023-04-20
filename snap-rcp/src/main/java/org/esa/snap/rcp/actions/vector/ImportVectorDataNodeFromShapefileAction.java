@@ -60,7 +60,7 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
 
     private VectorDataNodeImporter importer;
     private Lookup lookup;
-    private final Lookup.Result<Product> result;
+    private final Lookup.Result<ProductNode> result;
     private static final String vector_data_type = "SHAPEFILE";
 
     public ImportVectorDataNodeFromShapefileAction() {
@@ -69,7 +69,7 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
 
     public ImportVectorDataNodeFromShapefileAction(Lookup lookup) {
         this.lookup = lookup;
-        result = lookup.lookupResult(Product.class);
+        result = lookup.lookupResult(ProductNode.class);
         result.addLookupListener(
                 WeakListeners.create(LookupListener.class, this, result));
         setEnableState();

@@ -27,7 +27,7 @@ import org.junit.Test;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import java.awt.Window;
+import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +46,8 @@ public class SourceUITest {
     private AppContext appContext;
     private final Map<String, Object> parameterMap = new HashMap<>(5);
     private static final String FILE_PARAMETER = "file";
+    private static final String PIXEL_REGION_PARAMETER = "pixelRegion";
+    private static final String GEOMETRY_REGION_PARAMETER = "geometryRegion";
 
     @Before
     public void setUp() throws Exception {
@@ -90,6 +92,8 @@ public class SourceUITest {
 
         File path = (File) parameterMap.get(FILE_PARAMETER);
         assertTrue(path.getAbsolutePath().equals(defaultProducts[0].getFileLocation().getAbsolutePath()));
+        assertNotNull(parameterMap.get(PIXEL_REGION_PARAMETER));
+        assertNull(parameterMap.get(GEOMETRY_REGION_PARAMETER));
     }
 
     private class MockAppContext implements AppContext {

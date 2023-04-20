@@ -17,41 +17,27 @@
 package org.esa.snap.rcp.actions.raster;
 
 import com.bc.ceres.glevel.MultiLevelImage;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.FilterBand;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /**
  * Converts a virtual band into a "real" band.
  *
  * @author marcoz
  */
-@ActionID(category = "Tools", id = "ConvertComputedBandIntoBandAction" )
+@ActionID(category = "Tools", id = "ConvertComputedBandIntoBandAction")
 @ActionRegistration(
         displayName = "#CTL_ConvertComputedBandIntoBandAction_MenuText",
         popupText = "#CTL_ConvertComputedBandIntoBandAction_MenuText"
@@ -142,7 +128,7 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
     MultiLevelImage createSourceImage(Band computedBand, Band realBand) {
         if (computedBand instanceof VirtualBand) {
             return VirtualBand.createSourceImage(realBand, ((VirtualBand) computedBand).getExpression());
-        }else {
+        } else {
             return computedBand.getSourceImage();
         }
     }

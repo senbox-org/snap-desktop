@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.sync;
 
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.product.ProductSceneView;
 
@@ -45,12 +45,12 @@ public class DefaultCursorSynchronizer {
             final ProductSceneView view = entry.getKey();
             ImageCursorOverlay overlay = entry.getValue();
             if (overlay == null) {
-                    overlay = new ImageCursorOverlay(view, geoPos);
-                    psvOverlayMap.put(view, overlay);
-                    view.getLayerCanvas().addOverlay(overlay);
+                overlay = new ImageCursorOverlay(view, geoPos);
+                psvOverlayMap.put(view, overlay);
+                view.getLayerCanvas().addOverlay(overlay);
             } else {
-                    overlay.setGeoPosition(geoPos);
-                    view.getLayerCanvas().repaint();
+                overlay.setGeoPosition(geoPos);
+                view.getLayerCanvas().repaint();
             }
         }
     }

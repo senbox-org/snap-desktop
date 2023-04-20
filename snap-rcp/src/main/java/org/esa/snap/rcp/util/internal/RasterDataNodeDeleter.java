@@ -16,26 +16,14 @@
 package org.esa.snap.rcp.util.internal;
 
 import com.bc.ceres.core.Assert;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Mask;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.datamodel.Mask.ImageType;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.TiePointGrid;
-import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -121,11 +109,11 @@ public class RasterDataNodeDeleter {
                 WindowUtilities.getOpened(ProductSceneViewTopComponent.class).
                         filter(topComponent -> raster == topComponent.getView().getRaster()).
                         forEach(new Consumer<ProductSceneViewTopComponent>() {
-                    @Override
-                    public void accept(ProductSceneViewTopComponent productSceneViewTopComponent) {
-                        productSceneViewTopComponent.close();
-                    }
-                });
+                            @Override
+                            public void accept(ProductSceneViewTopComponent productSceneViewTopComponent) {
+                                productSceneViewTopComponent.close();
+                            }
+                        });
                 if (raster.hasRasterData()) {
                     raster.unloadRasterData();
                 }

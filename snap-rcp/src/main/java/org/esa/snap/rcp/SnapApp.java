@@ -4,12 +4,9 @@ import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.core.dataio.ProductReader;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -17,7 +14,6 @@ import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.actions.file.SaveProductAction;
 import org.esa.snap.rcp.cli.SnapArgs;
@@ -38,11 +34,7 @@ import org.openide.awt.UndoRedo;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
-import org.openide.util.ContextGlobalProvider;
-import org.openide.util.Lookup;
-import org.openide.util.NbBundle;
-import org.openide.util.NbPreferences;
-import org.openide.util.Utilities;
+import org.openide.util.*;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
@@ -50,25 +42,15 @@ import org.openide.windows.WindowManager;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import java.awt.Desktop;
-import java.awt.Frame;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -270,11 +252,11 @@ public class SnapApp {
             }
         });
         NotificationDisplayer.getDefault().notify("Error",
-                                                  icon,
-                                                  balloonDetails,
-                                                  popupDetails,
-                                                  NotificationDisplayer.Priority.HIGH,
-                                                  NotificationDisplayer.Category.ERROR);
+                icon,
+                balloonDetails,
+                popupDetails,
+                NotificationDisplayer.Priority.HIGH,
+                NotificationDisplayer.Category.ERROR);
     }
 
     /**

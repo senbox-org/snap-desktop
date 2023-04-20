@@ -17,32 +17,19 @@ package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.Debug;
-import org.esa.snap.netbeans.docwin.DocumentWindowManager;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
-import org.openide.awt.UndoRedo;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.awt.*;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -270,8 +257,8 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
                 sceneImage = new ProductSceneImage(raster,
-                                                   SnapApp.getDefault().getPreferencesPropertyMap(),
-                                                   SubProgressMonitor.create(pm, 1));
+                        SnapApp.getDefault().getPreferencesPropertyMap(),
+                        SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();
             sceneImage.initMaskCollectionLayer();

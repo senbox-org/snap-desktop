@@ -1,66 +1,74 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Help - KNN Classification</title>
+<html>
+<head><title>Help - KNN Classification</title>
 
 
-<link rel="stylesheet" href="../style.css"></head><body>
+    <link href="../style.css" rel="stylesheet">
+</head>
+<body>
 <table class="header">
-<tbody>
-<tr class="header">
-<td class="header">&nbsp; K-Nearest Neighbour
-Classification<br>
-</td>
-<td class="header" align="right"><a href="../general/Overview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
-</tr>
-</tbody>
+    <tbody>
+    <tr class="header">
+        <td class="header">&nbsp; K-Nearest Neighbour
+            Classification<br>
+        </td>
+        <td align="right" class="header"><a href="../general/Overview.html"><img border="0"
+                                                                                 src="../images/snap_header.jpg"></a></td>
+    </tr>
+    </tbody>
 </table>
 <br><a href="SupervisedClassification.html">Supervised Classification</a><br><br>
 
-<p class="MsoNormal"><span style="" lang="EN-GB">T</span><span lang="EN-GB">he k-nearest neighbour algorithm (k-NN) is a non-parametric</span><span style="" lang="EN-GB"> classification</span><span lang="EN-GB"> method </span><span style="" lang="EN-GB">which</span><span lang="EN-GB"> classif</span><span style="" lang="EN-GB">ies</span><span lang="EN-GB"> objects based on </span><span style="" lang="EN-GB">the </span><span lang="EN-GB">closest training examples in the feature
-space. k-NN is a type of instance-based learning, or lazy learning where the
-function is only approximated locally and all computation is deferred until
-classification. The k-nearest neighbour algorithm is amongst the simplest of
-all machine learning algorithms: an object is classified by a majority vote of
-its neighbours, with the object being assigned to the class most common amongst
-its k nearest neighbours (k is a positive integer, typically small).</span><span style="" lang="EN-GB"><o:p></o:p></span></p>
+<p>The k-nearest neighbour algorithm (k-NN) is a non-parametric classification method which classifies objects based on
+    the closest training examples in the feature space. k-NN is a type of instance-based learning, or lazy learning
+    where the
+    function is only approximated locally and all computation is deferred until
+    classification. The k-nearest neighbour algorithm is amongst the simplest of
+    all machine learning algorithms: an object is classified by a majority vote of
+    its neighbours, with the object being assigned to the class most common amongst
+    its k nearest neighbours (k is a positive integer, typically small).</p>
 
 
-<p class="MsoNormal"><span style="" lang="EN-GB">For the
-application of SAR image classification, t</span><span lang="EN-GB">he training
-examples are </span><span style="" lang="EN-GB">image
-data for user selected pixels</span><span lang="EN-GB">, each with a class label.
-The training phase of the algorithm consists only of storing the </span><span style="" lang="EN-GB">image data</span><span lang="EN-GB"> and class labels of the training samples.</span><span style="" lang="EN-GB"><o:p></o:p></span></p>
+<p>For the
+    application of SAR image classification, the training
+    examples are image
+    data for user selected pixels, each with a class label.
+    The training phase of the algorithm consists only of storing the image data and class labels of the training
+    samples.</p>
 
 
-<p class="MsoNormal"><span lang="EN-GB">In the classification phase, an unlabeled </span><span style="" lang="EN-GB">pixel </span><span lang="EN-GB">is
-classified by assigning the label which is most frequent among the k training
-samples </span><span style="" lang="EN-GB">clos</span><span lang="EN-GB">est to </span><span style="" lang="EN-GB">the
-pixel</span><span lang="EN-GB">.</span><span style="" lang="EN-GB"> Here </span><span lang="EN-GB">k is a user-defined constant</span><span style="" lang="EN-GB">.<o:p></o:p></span></p>
+<p>In the classification phase, an unlabeled pixel is
+    classified by assigning the label which is most frequent among the k training
+    samples closest to the
+    pixel. Here k is a user-defined constant.</p>
 
 
-<p class="MsoNormal"><span style="" lang="EN-GB">C</span><span lang="EN-GB">ommonly used distance metric</span><span style="" lang="EN-GB">s include</span><span lang="EN-GB"> Euclidean
-distance</span><span style="" lang="EN-GB">,
-Mahalanobis distance and Diagonal Mahalanobis distance</span><span lang="EN-GB">.
-Often, the classification accuracy of k-NN can be improved significantly if the
-distance metric is learned with specialized algorithms such as Large Margin
-Nearest Neighbour or Neighbourhood components analysis.</span><span style="" lang="EN-GB"><o:p></o:p></span></p>
+<p>Commonly used distance metrics include Euclidean
+    distance,
+    Mahalanobis distance and Diagonal Mahalanobis distance.
+    Often, the classification accuracy of k-NN can be improved significantly if the
+    distance metric is learned with specialized algorithms such as Large Margin
+    Nearest Neighbour or Neighbourhood components analysis.</p>
 
 
-<p class="MsoNormal"><span lang="EN-GB">A drawback of the basic "majority
-voting" classification occurs when the class distribution is skewed. That
-is, examples of a more frequent class tend to dominate the prediction of the
-new example, because they tend to be common among the k nearest neighbours due
-to their large number. </span><span style="" lang="EN-GB">To overcome this problem, different kinds of weight functions are
-introduced. The goal of weight functions is to cause distant neighbours to have
-less effect on the majority vote than the closer neighbours.<o:p></o:p></span></p>
+<p>A drawback of the basic "majority
+    voting" classification occurs when the class distribution is skewed. That
+    is, examples of a more frequent class tend to dominate the prediction of the
+    new example, because they tend to be common among the k nearest neighbours due
+    to their large number. To overcome this problem, different kinds of weight functions are
+    introduced. The goal of weight functions is to cause distant neighbours to have
+    less effect on the majority vote than the closer neighbours.</p>
 
 
-<p class="MsoNormal"><span style="" lang="EN-GB">After
-the k nearest neighbours of a test sample is found, these can be evaluated
-using different weighting methods. For each neighbouring pixel, the pixel&#8217;s
-weight is added to the total weight of that pixel&#8217;s class. At the end, the
-class with the largest total weight wins. Commonly used weight functions
-include Fraction, Stairs, Inverse distance and Inverse square distance.<o:p></o:p></span></p>
+<p>After
+    the k nearest neighbours of a test sample is found, these can be evaluated
+    using different weighting methods. For each neighbouring pixel, the pixel&#8217;s
+    weight is added to the total weight of that pixel&#8217;s class. At the end, the
+    class with the largest total weight wins. Commonly used weight functions
+    include Fraction, Stairs, Inverse distance and Inverse square distance.</p>
 <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">
 
-https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm</a><br><br><br><hr>
-</body></html>
+    https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm</a><br><br><br>
+<hr>
+</body>
+</html>

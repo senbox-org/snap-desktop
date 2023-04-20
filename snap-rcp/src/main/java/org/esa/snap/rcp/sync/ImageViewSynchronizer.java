@@ -3,7 +3,7 @@ package org.esa.snap.rcp.sync;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.swing.LayerCanvasModel;
 import com.bc.ceres.grender.Viewport;
-import org.esa.snap.netbeans.docwin.WindowUtilities;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.tools.SyncImageViewsAction;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
@@ -64,7 +64,7 @@ public class ImageViewSynchronizer implements Runnable {
 
     private boolean isActive() {
         return SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_KEY_AUTO_SYNC_VIEWS,
-                                                                SyncImageViewsAction.PREFERENCE_DEFAULT_VALUE);
+                SyncImageViewsAction.PREFERENCE_DEFAULT_VALUE);
     }
 
     private class LayerCanvasModelChangeHandler implements LayerCanvasModel.ChangeListener {

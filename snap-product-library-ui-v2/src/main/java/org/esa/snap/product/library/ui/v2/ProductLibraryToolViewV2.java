@@ -161,13 +161,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     @Override
-    protected void componentOpened() {
-        if (this.downloadRemoteProductsHelper == null) {
-            initialize();
-        }
-    }
-
-    @Override
     public void addNotify() {
         if (this.downloadRemoteProductsHelper == null) {
             initialize();
