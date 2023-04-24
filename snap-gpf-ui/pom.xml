@@ -149,6 +149,7 @@
                     <value>Java Virtual Machine Specification</value>
                 </property>
             </activation>
+            <!--
             <dependencies>
                 <dependency>
                     <groupId>com.sun</groupId>
@@ -158,6 +159,7 @@
                     <systemPath>${jdkToolsPath}</systemPath>
                 </dependency>
             </dependencies>
+            -->
         </profile>
     </profiles>
 

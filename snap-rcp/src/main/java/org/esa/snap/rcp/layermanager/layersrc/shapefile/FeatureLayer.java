@@ -22,9 +22,9 @@ import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.grender.Rendering;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.map.DefaultMapContext;
-import org.geotools.map.MapContext;
-import org.geotools.map.MapLayer;
+import org.geotools.map.MapContent;
+import org.geotools.map.MapViewport;
+import org.geotools.map.StyleLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.label.LabelCacheImpl;
 import org.geotools.renderer.lite.LabelCache;
@@ -61,7 +61,8 @@ import java.util.Map;
  */
 public class FeatureLayer extends Layer {
 
-    private MapContext mapContext;
+    private final MapContent mapContent;
+    //private MapContext mapContext;
     private CoordinateReferenceSystem crs;
 
     private StreamingRenderer renderer;
@@ -82,14 +83,31 @@ public class FeatureLayer extends Layer {
         final ReferencedEnvelope envelope = new ReferencedEnvelope(fc.getBounds(), crs);
         modelBounds = new Rectangle2D.Double(envelope.getMinX(), envelope.getMinY(),
                                              envelope.getWidth(), envelope.getHeight());
-        mapContext = new DefaultMapContext(crs);
-        final Style style = (Style) configuration.getValue(FeatureLayerType.PROPERTY_NAME_SLD_STYLE);
-        mapContext.addLayer(fc, style);
+
+        final MapViewport viewport = new MapViewport();
+        viewport.setBounds(envelope);
+        viewport.setCoordinateReferenceSystem(crs);
+        //viewport.setScreenArea((Rectangle) modelBounds);  // @todo 1 tb/tb is this correct? 2023-04-24
+        // the renderer should know this and clip correctly
+
+        mapContent = new MapContent();
+        mapContent.setViewport(viewport);
+
+        final Style style = configuration.getValue(FeatureLayerType.PROPERTY_NAME_SLD_STYLE);
+        org.geotools.map.FeatureLayer featureLayer = new org.geotools.map.FeatureLayer(fc, style);
+        mapContent.addLayer(featureLayer);
+
+        // @todo 1 tb/tb this is the old geoTools code
+        // for the new one we're missing the CRS her -> check how this works tb 2023-04-24
+        //mapContext = new DefaultMapContext(crs);
+        //mapContext.addLayer(fc, style);
+
         renderer = new StreamingRenderer();
         workaroundLabelCacheBug();
         style.accept(new RetrievingStyleVisitor());
-        renderer.setContext(mapContext);
-
+        // @todo 1 tb/tb this is the old geoTools code
+        //renderer.setContext(mapContext);
+        renderer.setMapContent(mapContent);
     }
 
     @Override
@@ -161,7 +179,8 @@ public class FeatureLayer extends Layer {
         final AffineTransform v2mTransform = rendering.getViewport().getViewToModelTransform();
         Rectangle2D bounds2D = v2mTransform.createTransformedShape(bounds).getBounds2D();
         ReferencedEnvelope mapArea = new ReferencedEnvelope(bounds2D, crs);
-        mapContext.setAreaOfInterest(mapArea);
+        //mapContext.setAreaOfInterest(mapArea);
+        mapContent.getViewport().setBounds(mapArea);
 
         labelCache.clear();  // workaround for labelCache bug
         final AffineTransform modelToViewTransform = rendering.getViewport().getModelToViewTransform();
@@ -169,7 +188,7 @@ public class FeatureLayer extends Layer {
     }
 
     private void applyOpacity() {
-        final MapLayer layer = mapContext.getLayer(0);
+        final StyleLayer layer = (StyleLayer) mapContent.layers().get(0);
         if (layer != null) {
             Style style = layer.getStyle();
             DuplicatingStyleVisitor copyStyle = new ApplyingStyleVisitor();
