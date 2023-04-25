@@ -46,7 +46,6 @@
         <module>snap-product-library-ui-v2</module>
         <module>snap-raster-ui</module>
         <module>snap-ui</module>
-        <module>snap-unmix-ui</module>
         <module>snap-watermask-ui</module>
         <module>snap-worldwind</module>
         <module>snap-sta-ui</module>
