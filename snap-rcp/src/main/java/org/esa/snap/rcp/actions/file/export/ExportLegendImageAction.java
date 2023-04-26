@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.glayer.Layer;
+import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ImageLegend;
 import org.esa.snap.core.datamodel.RasterDataNode;
@@ -29,6 +30,7 @@ import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.colormanip.ColorSchemeUtils;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SnapFileChooser;
@@ -181,6 +183,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     private int legendWidth;
     private boolean useLegendWidth;
     private boolean discrete;
+    private static boolean lengendInitialized;
 
 
     private ParamChangeListener paramChangeListener;
@@ -242,6 +245,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         discrete = SnapApp.getDefault().getSelectedProductSceneView().getImageInfo().getColorPaletteDef().isDiscrete();
+
+        lengendInitialized = false;
 
 
         if (showEditorFirst == true) {
@@ -366,6 +371,124 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         final RasterDataNode raster = view.getRaster();
         PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+//        imageLegend.initLegendWithPreferences(configuration, raster);
+
+//         todo Color Schemes
+        boolean autoApplySchemes = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
+        if (!lengendInitialized) {
+            if (autoApplySchemes) {  //auto-apply
+                ColorSchemeInfo schemeInfo = ColorSchemeUtils.getColorPaletteInfoByBandNameLookup(view);
+                if (schemeInfo.getColorBarLabels() != null && schemeInfo.getColorBarLabels().trim().length() > 1) {
+                    configuration.setPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.DISTRIB_MANUAL_STR);
+                    configuration.setPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, schemeInfo.getColorBarLabels());
+                    configuration.setPropertyBool(ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, true);
+                }
+                String colorBarTitle = schemeInfo.getColorBarTitle();
+                boolean colorBarTitleReplaceFailed = false;
+                String description = schemeInfo.getDescription();
+                String bandname = raster.getName();
+                float wavelength = raster.getProduct().getBand(raster.getName()).getSpectralWavelength();
+                String wvlStr = "";
+                if (wavelength > 0.0) {
+                    if (Math.ceil(wavelength) == Math.round(wavelength)) {
+                        wvlStr = String.valueOf(Math.round(wavelength));
+                    } else {
+                        wvlStr = String.valueOf(wavelength);
+                    }
+                }
+                if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
+                    if (colorBarTitle.contains("[WAVELENGTH]")) {
+                        if (wavelength > 0.0) {
+                            while (colorBarTitle.contains("[WAVELENGTH]")) {
+                                colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
+                            }
+                        } else {
+                            colorBarTitleReplaceFailed = true;
+                        }
+                    }
+                    if (!colorBarTitleReplaceFailed) {
+                        while (colorBarTitle.contains("[DESCRIPTION]")) {
+                            colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
+                        }
+                        while (colorBarTitle.contains("[BANDNAME]")) {
+                            colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
+                        }
+                        if (colorBarTitle.length() == 0) {
+                            colorBarTitleReplaceFailed = true;
+                        }
+                    }
+                } else {
+                    colorBarTitleReplaceFailed = true;
+                }
+                if (colorBarTitleReplaceFailed) {
+                    colorBarTitle = schemeInfo.getColorBarTitleAlt();
+                    colorBarTitleReplaceFailed = false;
+                    if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
+                        if (colorBarTitle.contains("[WAVELENGTH]")) {
+                            if (wavelength > 0.0) {
+                                while (colorBarTitle.contains("[WAVELENGTH]")) {
+                                    colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
+                                }
+                            } else {
+                                colorBarTitleReplaceFailed = true;
+                            }
+                        }
+                        if (!colorBarTitleReplaceFailed) {
+                            while(colorBarTitle.contains("[DESCRIPTION]")) {
+                                colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
+                            }
+                            while(colorBarTitle.contains("[BANDNAME]")) {
+                                colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
+                            }
+                            if (colorBarTitle.length() == 0) {
+                                colorBarTitleReplaceFailed = true;
+                            }
+                        }
+                    } else {
+                        colorBarTitleReplaceFailed = true;
+                    }
+                }
+                if (colorBarTitleReplaceFailed) {
+                    colorBarTitle = raster.getName();
+                }
+                configuration.setPropertyString(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, colorBarTitle);
+                if (schemeInfo.getColorBarUnits() != null && schemeInfo.getColorBarUnits().trim().length() > 0) {
+                    configuration.setPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, schemeInfo.getColorBarUnits());
+                } else {
+                    String unit = raster.getUnit();
+                    String unitsText;
+                    if (unit != null && unit.length() > 0) {
+                        unitsText = "(" + raster.getUnit() + ")";
+                    } else {
+                        unitsText = "";
+                    }
+                    configuration.setPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, unitsText);
+                }
+                if (schemeInfo.getColorBarLengthStr() != null && schemeInfo.getColorBarLengthStr().trim().length() > 0) {
+                    configuration.setPropertyInt(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY, Integer.valueOf(schemeInfo.getColorBarLengthStr()));
+                }
+                if (schemeInfo.getColorBarLabelScalingStr() != null && schemeInfo.getColorBarLabelScalingStr().trim().length() > 0) {
+                    configuration.setPropertyDouble(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, Double.valueOf(schemeInfo.getColorBarLabelScalingStr()));
+                }
+            } else {
+//                configuration.setPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+//                configuration.setPropertyString(ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
+//                configuration.setPropertyBool(ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
+//                configuration.setPropertyInt(ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY, ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT);
+//                configuration.setPropertyDouble(ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
+                configuration.setPropertyString(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, raster.getName());
+                String unit = raster.getUnit();
+                String unitsText;
+                if (unit != null && unit.length() > 0) {
+                    unitsText = "(" + raster.getUnit() + ")";
+                } else {
+                    unitsText = "";
+                }
+                configuration.setPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, unitsText);
+            }
+        }
 
         imageLegend.initLegendWithPreferences(configuration, raster);
     }

@@ -2,6 +2,7 @@ package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
+import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.util.PropertyMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -350,7 +351,7 @@ public class ColorSchemeManager {
                 }
             }
         }
-        
+
         Document dom = getFileDocument(colorSchemesFile);
         Element rootElement = dom.getDocumentElement();
         NodeList schemeNodeList = rootElement.getElementsByTagName("Scheme");
@@ -376,6 +377,10 @@ public class ColorSchemeManager {
             String displayName = getTextValue(schemeElement, "VERBOSE_NAME");
             String colorBarLabels = getTextValue(schemeElement, "COLORBAR_LABELS");
             String colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
+            String colorBarTitleAlt = getTextValue(schemeElement, "COLORBAR_TITLE_ALT");
+            String colorBarUnits = getTextValue(schemeElement, "COLORBAR_UNITS");
+            String colorBarLengthStr = getTextValue(schemeElement, "COLORBAR_LENGTH");
+            String colorBarLabelScalingStr = getTextValue(schemeElement, "COLORBAR_LABEL_SCALING");
             String minStr = getTextValue(schemeElement, "MIN");
             String maxStr = getTextValue(schemeElement, "MAX");
             String logScaledStr = getTextValue(schemeElement, "LOG_SCALE");
@@ -461,7 +466,8 @@ public class ColorSchemeManager {
 
                 enabled = validEntry;
 
-                colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename, colorBarTitle, colorBarLabels, colorPaletteAuxDir);
+                colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename,
+                        colorBarTitle, colorBarTitleAlt, colorBarLabels, colorBarUnits,  colorBarLabelScalingStr, colorBarLengthStr, colorPaletteAuxDir);
 
                 if (!colorSchemeInfo.isEnabled()) {
                     description = checkScheme(colorSchemeInfo);

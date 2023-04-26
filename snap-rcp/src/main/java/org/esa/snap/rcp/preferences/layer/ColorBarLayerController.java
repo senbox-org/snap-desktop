@@ -82,6 +82,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY, true);
         labelValuesModeProperty = initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
@@ -510,6 +511,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
         boolean labelValuesSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
+        boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
