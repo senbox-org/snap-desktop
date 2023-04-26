@@ -86,6 +86,7 @@
             <artifactId>snap-core</artifactId>
             <type>test-jar</type>
         </dependency>
+
         <dependency>
             <groupId>tec.uom</groupId>
             <artifactId>uom-se</artifactId>

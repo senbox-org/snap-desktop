@@ -21,8 +21,8 @@ import org.esa.snap.rcp.layermanager.layersrc.HistoryComboBoxModel;
 import org.esa.snap.ui.UserInputHistory;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
-import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.WMSCapabilities;
+import org.geotools.ows.wms.WebMapServer;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;

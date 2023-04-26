@@ -27,7 +27,6 @@ import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.VFSPath;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
-import sun.swing.FilePane;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -431,28 +430,28 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     private void initViewType() {
-        FilePane filePane = findFilePane(this);
-        if (filePane != null) {
-            int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
-            filePane.setViewType(viewType);
-        }
+//        FilePane filePane = findFilePane(this);
+//        if (filePane != null) {
+//            int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
+//            filePane.setViewType(viewType);
+//        }
     }
 
-    private FilePane findFilePane(Container root) {
-        Component[] components = root.getComponents();
-        for (Component component : components) {
-            if (component instanceof FilePane) {
-                return (FilePane) component;
-            }
-            if (component instanceof Container) {
-                FilePane filePane = findFilePane((Container) component);
-                if (filePane != null) {
-                    return filePane;
-                }
-            }
-        }
-        return null;
-    }
+//    private FilePane findFilePane(Container root) {
+//        Component[] components = root.getComponents();
+//        for (Component component : components) {
+//            if (component instanceof FilePane) {
+//                return (FilePane) component;
+//            }
+//            if (component instanceof Container) {
+//                FilePane filePane = findFilePane((Container) component);
+//                if (filePane != null) {
+//                    return filePane;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     private static class CompoundDocumentIcon implements Icon {
 
@@ -467,8 +466,8 @@ public class SnapFileChooser extends JFileChooser {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             baseIcon.paintIcon(c, g, x, y);
             compoundDocumentIcon.paintIcon(c, g,
-                                           x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
-                                           y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
+                    x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
+                    y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
         }
 
         @Override
@@ -499,11 +498,11 @@ public class SnapFileChooser extends JFileChooser {
 
         @Override
         public void windowClosed(WindowEvent e) {
-            FilePane filePane = findFilePane(SnapFileChooser.this);
-            if (filePane != null) {
-                snapPreferences.putInt(PREFERENCES_VIEW_TYPE, filePane.getViewType());
-                flushPreferences();
-            }
+//            FilePane filePane = findFilePane(SnapFileChooser.this);
+//            if (filePane != null) {
+//                snapPreferences.putInt(PREFERENCES_VIEW_TYPE, filePane.getViewType());
+//                flushPreferences();
+//            }
         }
 
         private void flushPreferences() {

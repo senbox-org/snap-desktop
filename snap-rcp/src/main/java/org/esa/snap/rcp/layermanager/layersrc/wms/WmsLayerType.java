@@ -31,12 +31,12 @@ import com.bc.ceres.glevel.support.DefaultMultiLevelModel;
 import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.data.wms.request.GetMapRequest;
-import org.geotools.data.wms.response.GetMapResponse;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.StyleImpl;
+import org.geotools.ows.wms.WebMapServer;
+import org.geotools.ows.wms.request.GetMapRequest;
+import org.geotools.ows.wms.response.GetMapResponse;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
@@ -73,11 +73,11 @@ public class WmsLayerType extends ImageLayer.Type {
             mapServer = getWmsServer(configuration);
         } catch (Exception e) {
             final String message = String.format("Not able to access Web Mapping Server: %s",
-                                                 configuration.<URL>getValue(WmsLayerType.PROPERTY_NAME_URL));
+                    configuration.<URL>getValue(WmsLayerType.PROPERTY_NAME_URL));
             throw new RuntimeException(message, e);
         }
         final int layerIndex = configuration.getValue(WmsLayerType.PROPERTY_NAME_LAYER_INDEX);
-        final org.geotools.data.ows.Layer wmsLayer = getLayer(mapServer, layerIndex);
+        final org.geotools.ows.wms.Layer wmsLayer = getLayer(mapServer, layerIndex);
         final MultiLevelSource multiLevelSource = createMultiLevelSource(configuration, mapServer, wmsLayer);
 
         final ImageLayer.Type imageLayerType = LayerTypeRegistry.getLayerType(ImageLayer.Type.class);
@@ -110,7 +110,7 @@ public class WmsLayerType extends ImageLayer.Type {
 
     private static DefaultMultiLevelSource createMultiLevelSource(PropertySet configuration,
                                                                   WebMapServer wmsServer,
-                                                                  org.geotools.data.ows.Layer layer) {
+                                                                  org.geotools.ows.wms.Layer layer) {
         DefaultMultiLevelSource multiLevelSource;
         final String styleName = configuration.getValue(WmsLayerType.PROPERTY_NAME_STYLE_NAME);
         final Dimension size = configuration.getValue(WmsLayerType.PROPERTY_NAME_IMAGE_SIZE);
@@ -150,7 +150,7 @@ public class WmsLayerType extends ImageLayer.Type {
         return multiLevelSource;
     }
 
-    private static org.geotools.data.ows.Layer getLayer(WebMapServer server, int layerIndex) {
+    private static org.geotools.ows.wms.Layer getLayer(WebMapServer server, int layerIndex) {
         return server.getCapabilities().getLayerList().get(layerIndex);
     }
 

@@ -19,9 +19,9 @@ package org.esa.snap.rcp.layermanager.layersrc.wms;
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import org.esa.snap.ui.layer.AbstractLayerSourceAssistantPage;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.StyleImpl;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.StyleImpl;
 import org.opengis.util.InternationalString;
 
 import javax.swing.DefaultListCellRenderer;
