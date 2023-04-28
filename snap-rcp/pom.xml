@@ -57,6 +57,7 @@
                         <publicPackage>org.esa.snap.rcp.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.util.*</publicPackage>
 						<publicPackage>org.jfree.*</publicPackage>
+						<publicPackage>eu.esa.snap.netbeans.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

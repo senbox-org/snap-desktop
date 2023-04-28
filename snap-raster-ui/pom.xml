@@ -57,10 +57,6 @@
         </dependency>
 
         <dependency>
-            <groupId>eu.esa.snap.netbeans</groupId>
-            <artifactId>snap-gui-lib</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
         </dependency>
