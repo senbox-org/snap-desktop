@@ -307,8 +307,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
     private void addLabelValuesActual() {
-        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
-
+//        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+        String labelsMode = context.getPropertySet().getProperty(PROPERTY_LABEL_VALUES_MODE_KEY).getValue();
         boolean enabled = (DISTRIB_MANUAL_STR.equals(labelsMode)) ? true : false;
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_ACTUAL_KEY,
@@ -317,14 +317,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
         pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
-        pd.setEnabled(true);
 
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
-        // todo Danny commented this out to make sure this isn't disabled when switching to a band with mode of "entered values"
-        // todo but it means there is no binding to the PROPERTY_LABEL_VALUES_MODE_KEY
         context.bindEnabledState(PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
                 PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);
 
@@ -413,7 +410,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
     private void addLocationSectionBreak() {
         addSectionBreak(ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY,
-            PROPERTY_LOCATION_SECTION_LABEL,
+                PROPERTY_LOCATION_SECTION_LABEL,
                 PROPERTY_LOCATION_SECTION_TOOLTIP);
     }
 
