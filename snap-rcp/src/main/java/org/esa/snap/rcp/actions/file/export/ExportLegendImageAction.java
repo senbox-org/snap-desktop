@@ -390,69 +390,85 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 String description = schemeInfo.getDescription();
                 String bandname = raster.getName();
                 float wavelength = raster.getProduct().getBand(raster.getName()).getSpectralWavelength();
-                String wvlStr = "";
-                if (wavelength > 0.0) {
-                    if (Math.ceil(wavelength) == Math.round(wavelength)) {
-                        wvlStr = String.valueOf(Math.round(wavelength));
-                    } else {
-                        wvlStr = String.valueOf(wavelength);
-                    }
-                }
-                if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
-                    if (colorBarTitle.contains("[WAVELENGTH]")) {
-                        if (wavelength > 0.0) {
-                            while (colorBarTitle.contains("[WAVELENGTH]")) {
-                                colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
-                            }
-                        } else {
-                            colorBarTitleReplaceFailed = true;
-                        }
-                    }
-                    if (!colorBarTitleReplaceFailed) {
-                        while (colorBarTitle.contains("[DESCRIPTION]")) {
-                            colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
-                        }
-                        while (colorBarTitle.contains("[BANDNAME]")) {
-                            colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
-                        }
-                        if (colorBarTitle.length() == 0) {
-                            colorBarTitleReplaceFailed = true;
-                        }
-                    }
-                } else {
-                    colorBarTitleReplaceFailed = true;
-                }
-                if (colorBarTitleReplaceFailed) {
+
+                boolean allowWavelengthZero = false;
+
+                colorBarTitle = ColorSchemeInfo.getColorBarTitle(colorBarTitle, bandname, description, wavelength,  allowWavelengthZero);
+                if (colorBarTitle == null || colorBarTitle.trim().length() == 0) {
                     colorBarTitle = schemeInfo.getColorBarTitleAlt();
-                    colorBarTitleReplaceFailed = false;
-                    if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
-                        if (colorBarTitle.contains("[WAVELENGTH]")) {
-                            if (wavelength > 0.0) {
-                                while (colorBarTitle.contains("[WAVELENGTH]")) {
-                                    colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
-                                }
-                            } else {
-                                colorBarTitleReplaceFailed = true;
-                            }
-                        }
-                        if (!colorBarTitleReplaceFailed) {
-                            while(colorBarTitle.contains("[DESCRIPTION]")) {
-                                colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
-                            }
-                            while(colorBarTitle.contains("[BANDNAME]")) {
-                                colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
-                            }
-                            if (colorBarTitle.length() == 0) {
-                                colorBarTitleReplaceFailed = true;
-                            }
-                        }
-                    } else {
-                        colorBarTitleReplaceFailed = true;
+                    colorBarTitle = ColorSchemeInfo.getColorBarTitle(colorBarTitle, bandname, description, wavelength,  allowWavelengthZero);
+
+                    if (colorBarTitle == null || colorBarTitle.trim().length() == 0) {
+                        colorBarTitle = raster.getName();
                     }
                 }
-                if (colorBarTitleReplaceFailed) {
-                    colorBarTitle = raster.getName();
-                }
+//
+//                String wvlStr = "";
+//                if (wavelength > 0.0) {
+//                    if (Math.ceil(wavelength) == Math.round(wavelength)) {
+//                        wvlStr = String.valueOf(Math.round(wavelength));
+//                    } else {
+//                        wvlStr = String.valueOf(wavelength);
+//                    }
+//                }
+//                if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
+//                    if (colorBarTitle.contains("[WAVELENGTH]")) {
+//                        if (wavelength > 0.0) {
+//                            while (colorBarTitle.contains("[WAVELENGTH]")) {
+//                                colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
+//                            }
+//                        } else {
+//                            colorBarTitleReplaceFailed = true;
+//                        }
+//                    }
+//                    if (!colorBarTitleReplaceFailed) {
+//                        while (colorBarTitle.contains("[DESCRIPTION]")) {
+//                            colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
+//                        }
+//                        while (colorBarTitle.contains("[BANDNAME]")) {
+//                            colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
+//                        }
+//                        if (colorBarTitle.length() == 0) {
+//                            colorBarTitleReplaceFailed = true;
+//                        }
+//                    }
+//                } else {
+//                    colorBarTitleReplaceFailed = true;
+//                }
+//                if (colorBarTitleReplaceFailed) {
+//                    colorBarTitle = schemeInfo.getColorBarTitleAlt();
+//                    colorBarTitleReplaceFailed = false;
+//                    if (colorBarTitle != null && colorBarTitle.trim().length() > 0) {
+//                        if (colorBarTitle.contains("[WAVELENGTH]")) {
+//                            if (wavelength > 0.0) {
+//                                while (colorBarTitle.contains("[WAVELENGTH]")) {
+//                                    colorBarTitle = colorBarTitle.replace("[WAVELENGTH]", wvlStr);
+//                                }
+//                            } else {
+//                                colorBarTitleReplaceFailed = true;
+//                            }
+//                        }
+//                        if (!colorBarTitleReplaceFailed) {
+//                            while(colorBarTitle.contains("[DESCRIPTION]")) {
+//                                colorBarTitle = colorBarTitle.replace("[DESCRIPTION]", description);
+//                            }
+//                            while(colorBarTitle.contains("[BANDNAME]")) {
+//                                colorBarTitle = colorBarTitle.replace("[BANDNAME]", bandname);
+//                            }
+//                            if (colorBarTitle.length() == 0) {
+//                                colorBarTitleReplaceFailed = true;
+//                            }
+//                        }
+//                    } else {
+//                        colorBarTitleReplaceFailed = true;
+//                    }
+//                }
+//                if (colorBarTitleReplaceFailed) {
+//                    colorBarTitle = raster.getName();
+//                }
+
+
+
                 configuration.setPropertyString(ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY, colorBarTitle);
                 if (schemeInfo.getColorBarUnits() != null && schemeInfo.getColorBarUnits().trim().length() > 0) {
                     configuration.setPropertyString(ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY, schemeInfo.getColorBarUnits());

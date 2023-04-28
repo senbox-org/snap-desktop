@@ -317,11 +317,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
         pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        pd.setEnabled(true);
 
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
+        // todo Danny commented this out to make sure this isn't disabled when switching to a band with mode of "entered values"
+        // todo but it means there is no binding to the PROPERTY_LABEL_VALUES_MODE_KEY
         context.bindEnabledState(PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
                 PROPERTY_LABEL_VALUES_MODE_KEY, DISTRIB_MANUAL_STR);
 
