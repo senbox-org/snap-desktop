@@ -1,10 +1,10 @@
 package org.esa.snap.remote.execution.topology;
 
-import org.apache.commons.lang.StringUtils;
-import org.esa.snap.remote.execution.local.folder.MountMacLocalFolderTimerRunnable;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
 import org.esa.snap.remote.execution.local.folder.MacLocalSharedFolder;
+import org.esa.snap.remote.execution.local.folder.MountMacLocalFolderTimerRunnable;
 import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.MessageDialog;
 

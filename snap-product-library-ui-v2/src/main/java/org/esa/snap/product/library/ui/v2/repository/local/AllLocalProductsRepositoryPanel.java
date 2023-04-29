@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.AbstractProductsRepositoryPanel;
@@ -24,17 +24,27 @@ import org.esa.snap.ui.loading.CustomComboBox;
 import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The panel containing the query parameters of a local repository.
- *
  * Created by jcoravu on 5/8/2019.
  */
 public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryPanel {
@@ -56,20 +66,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.allLocalFolderProductsRepository = new AllLocalFolderProductsRepository();
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
-        ItemRenderer<LocalRepositoryFolder> foldersItemRenderer = new ItemRenderer<LocalRepositoryFolder>() {
-            @Override
-            public String getItemDisplayText(LocalRepositoryFolder item) {
-                return (item == null) ? " " : item.getPath().toString();
-            }
-        };
+        ItemRenderer<LocalRepositoryFolder> foldersItemRenderer = item -> (item == null) ? " " : item.getPath().toString();
         this.foldersComboBox = new CustomComboBox(foldersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
-        ItemRenderer<String> missionsItemRenderer = new ItemRenderer<String>() {
-            @Override
-            public String getItemDisplayText(String item) {
-                return (item == null) ? " " : item;
-            }
-        };
+        ItemRenderer<String> missionsItemRenderer = item -> (item == null) ? " " : item;
         this.remoteMissionsComboBox = new CustomComboBox(missionsItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
         this.attributesComboBox = SwingUtils.buildComboBox(null, null, componentDimension.getTextFieldPreferredHeight(), false);
@@ -84,12 +84,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.removeFoldersButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
         this.removeFoldersButton.setToolTipText("Remove local folder(s)");
 
-        ItemRenderer<String> attributeValuesItemRenderer = new ItemRenderer<String>() {
-            @Override
-            public String getItemDisplayText(String item) {
-                return (item == null) ? " " : item;
-            }
-        };
+        ItemRenderer<String> attributeValuesItemRenderer = item -> (item == null) ? " " : item;
         this.attributeValuesEditableComboBox = new CustomComboBox(attributeValuesItemRenderer, componentDimension.getTextFieldPreferredHeight(), true, componentDimension.getTextFieldBackgroundColor());
         this.attributeValuesEditableComboBox.addItem(null);
     }
@@ -97,6 +92,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     @Override
     public String getRepositoryName() {
         return "All Local Folders";
+    }
+
+    private static Comparator<String> buildAttributeNamesComparator() {
+        return String::compareToIgnoreCase;
     }
 
     @Override
@@ -123,8 +122,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.parameterComponents = panel.addParameterComponents(parameters, startRowIndex, gapBetweenRows, this.componentDimension, classesToIgnore);
 
         RepositoryQueryParameter attributesParameter = null;
-        for (int i = 0; i < parameters.size(); i++) {
-            RepositoryQueryParameter param = parameters.get(i);
+        for (RepositoryQueryParameter param : parameters) {
             if (param.getType() == attributesClass) {
                 attributesParameter = param;
             }
@@ -148,20 +146,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
             panel.add(attributesParameterComponent.getComponent(), c);
         }
         return panel;
-    }
-
-    @Override
-    protected RepositoryQueryParameter getAreaOfInterestParameter(){
-        Class<?> areaOfInterestClass = Rectangle2D.class;
-        List<RepositoryQueryParameter> parameters = this.allLocalFolderProductsRepository.getParameters();
-        RepositoryQueryParameter areaOfInterestParameter = null;
-        for (int i=0; i<parameters.size(); i++) {
-            RepositoryQueryParameter param = parameters.get(i);
-            if (param.getType() == areaOfInterestClass) {
-                areaOfInterestParameter = param;
-            }
-        }
-        return areaOfInterestParameter;
     }
 
     @Override
@@ -205,18 +189,16 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
     }
 
     @Override
-    public boolean refreshInputParameterComponentValues() {
-        if (this.localInputParameterValues != null) {
-            this.foldersComboBox.setSelectedItem(this.localInputParameterValues.getLocalRepositoryFolder());
-            this.remoteMissionsComboBox.setSelectedItem(this.localInputParameterValues.getMissionName());
-            for (int i=0; i<this.parameterComponents.size(); i++) {
-                AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
-                Object parameterValue = this.localInputParameterValues.getParameterValue(inputParameterComponent.getParameterName());
-                inputParameterComponent.setParameterValue(parameterValue);
+    protected RepositoryQueryParameter getAreaOfInterestParameter(){
+        Class<?> areaOfInterestClass = Rectangle2D.class;
+        List<RepositoryQueryParameter> parameters = this.allLocalFolderProductsRepository.getParameters();
+        RepositoryQueryParameter areaOfInterestParameter = null;
+        for (RepositoryQueryParameter param : parameters) {
+            if (param.getType() == areaOfInterestClass) {
+                areaOfInterestParameter = param;
             }
-            return true;
         }
-        return false;
+        return areaOfInterestParameter;
     }
 
     public void updateInputParameterValues(Path localRepositoryFolderPath, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
@@ -231,25 +213,18 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         updateInputParameterValues(localRepositoryFolderToSelect, null, startDate, endDate, areaOfInterestToSelect, attributes);
     }
 
-    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, Date startDate, Date endDate,
-                                           Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
-
-        this.foldersComboBox.setSelectedItem(localRepositoryFolder);
-        this.remoteMissionsComboBox.setSelectedItem(remoteMission);
-        for (int i=0; i<this.parameterComponents.size(); i++) {
-            AbstractParameterComponent<?> inputParameterComponent = this.parameterComponents.get(i);
-            if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.FOOT_PRINT_PARAMETER)) {
-                inputParameterComponent.setParameterValue(areaOfInterestToSelect);
-            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.START_DATE_PARAMETER)) {
-                inputParameterComponent.setParameterValue(startDate);
-            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.END_DATE_PARAMETER)) {
-                inputParameterComponent.setParameterValue(endDate);
-            } else if (inputParameterComponent.getParameterName().equals(AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER)) {
-                inputParameterComponent.setParameterValue(attributes);
-            } else {
-                inputParameterComponent.setParameterValue(null); // clear the value
+    @Override
+    public boolean refreshInputParameterComponentValues() {
+        if (this.localInputParameterValues != null) {
+            this.foldersComboBox.setSelectedItem(this.localInputParameterValues.getLocalRepositoryFolder());
+            this.remoteMissionsComboBox.setSelectedItem(this.localInputParameterValues.getMissionName());
+            for (AbstractParameterComponent<?> inputParameterComponent : this.parameterComponents) {
+                Object parameterValue = this.localInputParameterValues.getParameterValue(inputParameterComponent.getParameterName());
+                inputParameterComponent.setParameterValue(parameterValue);
             }
+            return true;
         }
+        return false;
     }
 
     public AllLocalFolderProductsRepository getAllLocalFolderProductsRepository() {
@@ -326,6 +301,41 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return (LocalRepositoryFolder) this.foldersComboBox.getSelectedItem();
     }
 
+    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, Date startDate, Date endDate,
+                                           Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+
+        this.foldersComboBox.setSelectedItem(localRepositoryFolder);
+        this.remoteMissionsComboBox.setSelectedItem(remoteMission);
+        for (AbstractParameterComponent<?> inputParameterComponent : this.parameterComponents) {
+            switch (inputParameterComponent.getParameterName()) {
+                case AllLocalFolderProductsRepository.FOOT_PRINT_PARAMETER:
+                    inputParameterComponent.setParameterValue(areaOfInterestToSelect);
+                    break;
+                case AllLocalFolderProductsRepository.START_DATE_PARAMETER:
+                    inputParameterComponent.setParameterValue(startDate);
+                    break;
+                case AllLocalFolderProductsRepository.END_DATE_PARAMETER:
+                    inputParameterComponent.setParameterValue(endDate);
+                    break;
+                case AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER:
+                    inputParameterComponent.setParameterValue(attributes);
+                    break;
+                default:
+                    inputParameterComponent.setParameterValue(null); // clear the value
+                    break;
+            }
+        }
+    }
+
+    private void setAttributes(SortedSet<String> uniqueAttributeNames) {
+        this.attributesComboBox.removeAllItems();
+        // add an empty attribute on the first position
+        this.attributesComboBox.addItem(null);
+        for (String attributeName : uniqueAttributeNames) {
+            this.attributesComboBox.addItem(attributeName);
+        }
+    }
+
     public void setLocalParameterValues(LocalRepositoryParameterValues localRepositoryParameterValues) {
         List<LocalRepositoryFolder> localRepositoryFolders = null;
         List<String> remoteMissionNames = null;
@@ -340,8 +350,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.foldersComboBox.removeAllItems();
         if (localRepositoryFolders != null && localRepositoryFolders.size() > 0) {
             this.foldersComboBox.addItem(null);
-            for (int i = 0; i < localRepositoryFolders.size(); i++) {
-                this.foldersComboBox.addItem(localRepositoryFolders.get(i));
+            for (LocalRepositoryFolder localRepositoryFolder : localRepositoryFolders) {
+                this.foldersComboBox.addItem(localRepositoryFolder);
             }
             this.foldersComboBox.setSelectedItem(null);
         }
@@ -349,8 +359,8 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         this.remoteMissionsComboBox.removeAllItems();
         if (remoteMissionNames != null && remoteMissionNames.size() > 0) {
             this.remoteMissionsComboBox.addItem(null);
-            for (int i = 0; i < remoteMissionNames.size(); i++) {
-                this.remoteMissionsComboBox.addItem(remoteMissionNames.get(i));
+            for (String remoteMissionName : remoteMissionNames) {
+                this.remoteMissionsComboBox.addItem(remoteMissionName);
             }
             this.remoteMissionsComboBox.setSelectedItem(null);
         }
@@ -373,15 +383,6 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
     }
 
-    private void setAttributes(SortedSet<String> uniqueAttributeNames) {
-        this.attributesComboBox.removeAllItems();
-        // add an empty attribute on the first position
-        this.attributesComboBox.addItem(null);
-        for (String attributeName : uniqueAttributeNames) {
-            this.attributesComboBox.addItem(attributeName);
-        }
-    }
-
     public void addAttributesIfMissing(RepositoryProduct repositoryProduct) {
         Comparator<String> comparator = buildAttributeNamesComparator();
         SortedSet<String> uniqueAttributes = new TreeSet<>(comparator);
@@ -394,18 +395,16 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         }
         boolean newAttribute = false;
         List<Attribute> remoteAttributes = repositoryProduct.getRemoteAttributes();
-        if (remoteAttributes != null && remoteAttributes.size() > 0) {
-            for (int k = 0; k < remoteAttributes.size(); k++) {
-                Attribute attribute = remoteAttributes.get(k);
+        if (remoteAttributes != null) {
+            for (Attribute attribute : remoteAttributes) {
                 if (uniqueAttributes.add(attribute.getName())) {
                     newAttribute = true;
                 }
             }
         }
         List<Attribute> localAttributes = repositoryProduct.getLocalAttributes();
-        if (localAttributes != null && localAttributes.size() > 0) {
-            for (int k = 0; k < localAttributes.size(); k++) {
-                Attribute attribute = localAttributes.get(k);
+        if (localAttributes != null) {
+            for (Attribute attribute : localAttributes) {
                 if (uniqueAttributes.add(attribute.getName())) {
                     newAttribute = true;
                 }
@@ -419,14 +418,5 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                 this.attributesComboBox.setSelectedItem(null);
             }
         }
-    }
-
-    private static Comparator<String> buildAttributeNamesComparator() {
-        return new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareToIgnoreCase(o2);
-            }
-        };
     }
 }

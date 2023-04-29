@@ -1,12 +1,17 @@
 package org.esa.snap.ui.loading;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.nio.file.Path;
@@ -31,51 +36,37 @@ public class CustomFileChooser extends JFileChooser {
         super();
 
         this.previousReadOnlyFlag = previousReadOnlyFlag;
-        this.propertyChangeListener = new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent event) {
-                if (JFileChooser.DIRECTORY_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())) {
-                    if (getFileSelectionMode() == JFileChooser.FILES_ONLY) {
-                        resetSelectedFile();
-                    }
-                } else if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())
-                            || JFileChooser.SELECTED_FILES_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())) {
+        this.propertyChangeListener = event -> {
+            if (JFileChooser.DIRECTORY_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())) {
+                if (getFileSelectionMode() == JFileChooser.FILES_ONLY) {
+                    resetSelectedFile();
+                }
+            } else if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())
+                    || JFileChooser.SELECTED_FILES_CHANGED_PROPERTY.equalsIgnoreCase(event.getPropertyName())) {
 
-                    if (getFileSelectionMode() == JFileChooser.FILES_ONLY && event.getNewValue() == null) {
-                        resetSelectedFile();
-                    }
+                if (getFileSelectionMode() == JFileChooser.FILES_ONLY && event.getNewValue() == null) {
+                    resetSelectedFile();
                 }
             }
         };
     }
 
-    @Override
-    protected JDialog createDialog(Component parent) throws HeadlessException {
-        JDialog dialog = super.createDialog(parent);
-
-        dialog.setMinimumSize(new Dimension(450, 350));
-        addPropertyChangeListener(this.propertyChangeListener);
-
-        this.textField = findTextField(this);
-        List<JComboBox<?>> comboBoxes = findComboBoxes(this);
-        if (this.textField != null && comboBoxes.size() > 0) {
-            Dimension preferredTextFieldSize = this.textField.getPreferredSize();
-            int maximumHeight = preferredTextFieldSize.height;
-            for (int i=0; i<comboBoxes.size(); i++) {
-                Dimension preferredComboBoxSize = comboBoxes.get(i).getPreferredSize();
-                maximumHeight = Math.max(maximumHeight, preferredComboBoxSize.height);
-            }
-            preferredTextFieldSize.height = maximumHeight;
-            this.textField.setPreferredSize(preferredTextFieldSize);
-            for (int i=0; i<comboBoxes.size(); i++) {
-                JComboBox<?> comboBox = comboBoxes.get(i);
-                Dimension preferredComboBoxSize = comboBox.getPreferredSize();
-                preferredComboBoxSize.height = maximumHeight;
-                comboBox.setPreferredSize(preferredComboBoxSize);
+    private static List<JComboBox<?>> findComboBoxes(Container root) {
+        List<JComboBox<?>> comboBoxes = new ArrayList<>();
+        Stack<Container> stack = new Stack<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Container container = stack.pop();
+            Component[] components = container.getComponents();
+            for (Component component : components) {
+                if (component instanceof JComboBox<?>) {
+                    comboBoxes.add((JComboBox<?>) component);
+                } else if (component instanceof Container) {
+                    stack.push((Container) component);
+                }
             }
         }
-
-        return dialog;
+        return comboBoxes;
     }
 
     @Override
@@ -129,22 +120,32 @@ public class CustomFileChooser extends JFileChooser {
         return null;
     }
 
-    private static List<JComboBox<?>> findComboBoxes(Container root) {
-        List<JComboBox<?>> comboBoxes = new ArrayList<JComboBox<?>>();
-        Stack<Container> stack = new Stack<Container>();
-        stack.push(root);
-        while (!stack.isEmpty()) {
-            Container container = stack.pop();
-            Component[] components = container.getComponents();
-            for (Component component : components) {
-                if (component instanceof JComboBox<?>) {
-                    comboBoxes.add((JComboBox<?>) component);
-                } else if (component instanceof Container) {
-                    stack.push((Container) component);
-                }
+    @Override
+    protected JDialog createDialog(Component parent) throws HeadlessException {
+        JDialog dialog = super.createDialog(parent);
+
+        dialog.setMinimumSize(new Dimension(450, 350));
+        addPropertyChangeListener(this.propertyChangeListener);
+
+        this.textField = findTextField(this);
+        List<JComboBox<?>> comboBoxes = findComboBoxes(this);
+        if (this.textField != null && comboBoxes.size() > 0) {
+            Dimension preferredTextFieldSize = this.textField.getPreferredSize();
+            int maximumHeight = preferredTextFieldSize.height;
+            for (JComboBox<?> box : comboBoxes) {
+                Dimension preferredComboBoxSize = box.getPreferredSize();
+                maximumHeight = Math.max(maximumHeight, preferredComboBoxSize.height);
+            }
+            preferredTextFieldSize.height = maximumHeight;
+            this.textField.setPreferredSize(preferredTextFieldSize);
+            for (JComboBox<?> comboBox : comboBoxes) {
+                Dimension preferredComboBoxSize = comboBox.getPreferredSize();
+                preferredComboBoxSize.height = maximumHeight;
+                comboBox.setPreferredSize(preferredComboBoxSize);
             }
         }
-        return comboBoxes;
+
+        return dialog;
     }
 
     public static FileFilter buildFileFilter(String extension, String description) {
