@@ -25,7 +25,11 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.remote.execution.operator.RemoteExecutionDialog;
@@ -33,8 +37,19 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -112,17 +127,11 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
     }
 
-    private List<File> getSourceProductsFilePath() {
-        File[] sourceFiles = this.productSetPanel.getFileList();
-        List<File> sourceProductFiles = new ArrayList<>();
-        if (sourceFiles != null && sourceFiles.length > 0) {
-            for (File sourceFile : sourceFiles) {
-                if (!sourceFile.getPath().equals("")) {
-                    sourceProductFiles.add(sourceFile);
-                }
-            }
+    private static String[] getRunRemoteIfWindows() {
+        if (org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang3.SystemUtils.IS_OS_LINUX) {
+            return new String[]{"Run remote"};
         }
-        return sourceProductFiles;
+        return null;
     }
 
     private JPanel createUI() {
@@ -394,21 +403,17 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         return result;
     }
 
-    private void openTargetProducts() {
-        final File[] fileList = getAllBatchProcessedTargetProducts();
-        if (fileList != null && fileList.length > 0) {
-            for (File file : fileList) {
-                try {
-
-                    final Product product = CommonReaders.readProduct(file);
-                    if (product != null) {
-                        appContext.getProductManager().addProduct(product);
-                    }
-                } catch (IOException e) {
-                    showErrorDialog(e.getMessage());
+    private List<File> getSourceProductsFilePath() {
+        File[] sourceFiles = this.productSetPanel.getFileList();
+        List<File> sourceProductFiles = new ArrayList<>();
+        if (sourceFiles != null) {
+            for (File sourceFile : sourceFiles) {
+                if (!sourceFile.getPath().equals("")) {
+                    sourceProductFiles.add(sourceFile);
                 }
             }
         }
+        return sourceProductFiles;
     }
 
     protected ProductSetPanel getProductSetPanel() {
@@ -537,11 +542,19 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         }
     }
 
-    private static String[] getRunRemoteIfWindows() {
-        if (org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang.SystemUtils.IS_OS_LINUX) {
-            return new String[] {"Run remote"};
+    private void openTargetProducts() {
+        final File[] fileList = getAllBatchProcessedTargetProducts();
+        for (File file : fileList) {
+            try {
+
+                final Product product = CommonReaders.readProduct(file);
+                if (product != null) {
+                    appContext.getProductManager().addProduct(product);
+                }
+            } catch (IOException e) {
+                showErrorDialog(e.getMessage());
+            }
         }
-        return null;
     }
 
     protected void cloneGraphs() throws Exception {
