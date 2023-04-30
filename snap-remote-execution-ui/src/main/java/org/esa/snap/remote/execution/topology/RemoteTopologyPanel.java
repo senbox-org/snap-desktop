@@ -1,6 +1,6 @@
 package org.esa.snap.remote.execution.topology;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
 import org.esa.snap.remote.execution.machines.RemoteMachineProperties;
@@ -34,7 +34,6 @@ import java.util.List;
  */
 public abstract class RemoteTopologyPanel extends JPanel {
 
-    private final Window parentWindow;
     private final JTextField remoteSharedFolderPathTextField;
     private final JTextField remoteUsernameTextField;
     private final JPasswordField remotePasswordTextField;
@@ -43,8 +42,6 @@ public abstract class RemoteTopologyPanel extends JPanel {
 
     public RemoteTopologyPanel(Window parentWindow, Insets defaultTextFieldMargins, Insets defaultListItemMargins) {
         super(new GridBagLayout());
-
-        this.parentWindow = parentWindow;
 
         this.remoteSharedFolderPathTextField = new JTextField();
         this.remoteSharedFolderPathTextField.setMargin(defaultTextFieldMargins);
@@ -58,7 +55,7 @@ public abstract class RemoteTopologyPanel extends JPanel {
         this.localSharedFolderPathTextField = new JTextField();
         this.localSharedFolderPathTextField.setMargin(defaultTextFieldMargins);
 
-        this.remoteMachinesList = new JList<RemoteMachineProperties>(new DefaultListModel<RemoteMachineProperties>());
+        this.remoteMachinesList = new JList<>(new DefaultListModel<>());
         this.remoteMachinesList.setVisibleRowCount(15);
         this.remoteMachinesList.setCellRenderer(new OperatingSystemLabelListCellRenderer(defaultListItemMargins));
     }
@@ -169,8 +166,8 @@ public abstract class RemoteTopologyPanel extends JPanel {
         DefaultListModel<RemoteMachineProperties> model = (DefaultListModel<RemoteMachineProperties>) this.remoteMachinesList.getModel();
         model.removeAllElements();
         List<RemoteMachineProperties> remoteMachines = remoteTopology.getRemoteMachines();
-        for (int i = 0; i < remoteMachines.size(); i++) {
-            model.addElement(remoteMachines.get(i));
+        for (RemoteMachineProperties remoteMachine : remoteMachines) {
+            model.addElement(remoteMachine);
         }
     }
 

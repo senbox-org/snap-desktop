@@ -10,22 +10,8 @@ import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.internal.ListSelectionAdapter;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
-import org.esa.snap.remote.execution.RemoteExecutionOp;
-import org.esa.snap.remote.execution.converters.RemoteMachinePropertiesConverter;
-import org.esa.snap.remote.execution.converters.SourceProductFilesConverter;
-import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderResult;
-import org.esa.snap.remote.execution.machines.EditRemoteMachineCredentialsDialog;
-import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
-import org.esa.snap.remote.execution.local.folder.IUnmountLocalSharedFolderCallback;
-import org.esa.snap.remote.execution.machines.RemoteMachineProperties;
-import org.esa.snap.remote.execution.topology.LinuxRemoteTopologyPanel;
-import org.esa.snap.remote.execution.topology.MacRemoteTopologyPanel;
-import org.esa.snap.remote.execution.topology.ReadRemoteTopologyTimerRunnable;
-import org.esa.snap.remote.execution.topology.RemoteTopology;
-import org.esa.snap.remote.execution.topology.RemoteTopologyPanel;
-import org.esa.snap.remote.execution.topology.WindowsRemoteTopologyPanel;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.gpf.GPF;
@@ -38,11 +24,25 @@ import org.esa.snap.core.gpf.ui.OperatorParameterSupport;
 import org.esa.snap.core.gpf.ui.ParameterUpdater;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
+import org.esa.snap.remote.execution.RemoteExecutionOp;
+import org.esa.snap.remote.execution.converters.RemoteMachinePropertiesConverter;
+import org.esa.snap.remote.execution.converters.SourceProductFilesConverter;
+import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
+import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderResult;
+import org.esa.snap.remote.execution.local.folder.IUnmountLocalSharedFolderCallback;
+import org.esa.snap.remote.execution.machines.EditRemoteMachineCredentialsDialog;
+import org.esa.snap.remote.execution.machines.RemoteMachineProperties;
+import org.esa.snap.remote.execution.topology.LinuxRemoteTopologyPanel;
+import org.esa.snap.remote.execution.topology.MacRemoteTopologyPanel;
+import org.esa.snap.remote.execution.topology.ReadRemoteTopologyTimerRunnable;
+import org.esa.snap.remote.execution.topology.RemoteTopology;
+import org.esa.snap.remote.execution.topology.RemoteTopologyPanel;
+import org.esa.snap.remote.execution.topology.WindowsRemoteTopologyPanel;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.AbstractModalDialog;
 import org.esa.snap.ui.loading.CustomFileChooser;
-import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
+import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.DefaultListModel;
@@ -67,10 +67,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -161,31 +158,28 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
                 // refresh the target product components
                 refreshTargetProductEnabledComponents();
                 Boolean canSaveTargetProduct = (Boolean) parameterMap.get(CAN_SAVE_TARGET_PRODUCT_PROPERTY);
-                if (canSaveTargetProduct != null && canSaveTargetProduct.booleanValue()) {
+                if (canSaveTargetProduct != null && canSaveTargetProduct) {
                     refreshOpenTargetProductSelectedState();
                 }
             }
         };
 
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        Map<String, Object> parameterMap = new HashMap<>();
         PropertySet propertySet = PropertyContainer.createMapBacked(parameterMap, CloudExploitationPlatformItem.class);
         propertySet.getDescriptor(REMOTE_MACHINES_PROPERTY).setConverter(new RemoteMachinePropertiesConverter());
         propertySet.getDescriptor(SOURCE_PRODUCT_FILES_PROPERTY).setConverter(new SourceProductFilesConverter());
         propertySet.setDefaultValues();
-        propertySet.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String propertyName = evt.getPropertyName();
-                if (propertyName.equals(CAN_SAVE_TARGET_PRODUCT_PROPERTY)) {
-                    refreshTargetProductEnabledComponents();
-                    Boolean selected = (Boolean) evt.getNewValue();
-                    if (selected.booleanValue()) {
-                        refreshOpenTargetProductSelectedState();
-                    }
-                } else if (propertyName.equals(MASTER_PRODUCT_FORMAT_NAME_PROPERTY)) {
-                    refreshOpenTargetProductEnabledState();
+        propertySet.addPropertyChangeListener(evt -> {
+            String propertyName = evt.getPropertyName();
+            if (propertyName.equals(CAN_SAVE_TARGET_PRODUCT_PROPERTY)) {
+                refreshTargetProductEnabledComponents();
+                Boolean selected = (Boolean) evt.getNewValue();
+                if (selected) {
                     refreshOpenTargetProductSelectedState();
                 }
+            } else if (propertyName.equals(MASTER_PRODUCT_FORMAT_NAME_PROPERTY)) {
+                refreshOpenTargetProductEnabledState();
+                refreshOpenTargetProductSelectedState();
             }
         });
 
@@ -248,22 +242,16 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         // do nothing
     }
 
-    @Override
-    public void close() {
-        if (this.mountLocalSharedFolderResult == null) {
-            super.close();
-        } else {
-            LoadingIndicator loadingIndicator = getLoadingIndicator();
-            int threadId = getNewCurrentThreadId();
-            IUnmountLocalSharedFolderCallback callback = new IUnmountLocalSharedFolderCallback() {
-                @Override
-                public void onFinishUnmountingLocalFolder(Exception exception) {
-                    RemoteExecutionDialog.this.mountLocalSharedFolderResult = null;
-                    RemoteExecutionDialog.super.close();
-                }
-            };
-            this.mountLocalSharedFolderResult.unmountLocalSharedFolderAsync(loadingIndicator, threadId, callback);
+    private static String[] getAvailableFormatNames() {
+        String[] formatNames = ProductIOPlugInManager.getInstance().getAllProductWriterFormatStrings();
+        if (formatNames.length > 1) {
+            List<String> items = new ArrayList<>(formatNames.length);
+            Collections.addAll(items, formatNames);
+            Comparator<String> comparator = String::compareTo;
+            Collections.sort(items, comparator);
+            items.toArray(formatNames);
         }
+        return formatNames;
     }
 
     @Override
@@ -273,37 +261,24 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         refreshTargetProductEnabledComponents();
     }
 
-    @Override
-    protected JPanel buildButtonsPanel(ActionListener cancelActionListener) {
-        ActionListener runActionListener = new ActionListener() {
+    private static JComboBox<String> buildProductFormatNamesComboBox(Insets defaultListItemMargins, int textFieldPreferredHeight, String[] availableFormatNames) {
+        JComboBox<String> productFormatNameComboBox = new JComboBox<>(availableFormatNames);
+        Dimension formatNameComboBoxSize = productFormatNameComboBox.getPreferredSize();
+        formatNameComboBoxSize.height = textFieldPreferredHeight;
+        productFormatNameComboBox.setPreferredSize(formatNameComboBoxSize);
+        productFormatNameComboBox.setMinimumSize(formatNameComboBoxSize);
+        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<>(defaultListItemMargins) {
             @Override
-            public void actionPerformed(ActionEvent event) {
-                runButtonPressed();
+            protected String getItemDisplayText(String value) {
+                return value;
             }
         };
+        productFormatNameComboBox.setMaximumRowCount(5);
+        productFormatNameComboBox.setRenderer(renderer);
+        productFormatNameComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
+        productFormatNameComboBox.setOpaque(true);
 
-        JButton finishButton = buildDialogButton("Run");
-        finishButton.addActionListener(runActionListener);
-        JButton cancelButton = buildDialogButton("Cancel");
-        cancelButton.addActionListener(cancelActionListener);
-
-        addComponentToAllwaysEnabledList(cancelButton);
-
-        JPanel buttonsGridPanel = new JPanel(new GridLayout(1, 2, 5, 0));
-        buttonsGridPanel.add(finishButton);
-        buttonsGridPanel.add(cancelButton);
-
-        JPanel buttonsPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
-        buttonsPanel.add(new JLabel(), c);
-
-        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, 0, 0);
-        buttonsPanel.add(this.continueOnFailureCheckBox, c);
-
-        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, 0, 5);
-        buttonsPanel.add(buttonsGridPanel, c);
-
-        return buttonsPanel;
+        return productFormatNameComboBox;
     }
 
     @Override
@@ -358,65 +333,19 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         setPropertyValue(slaveProductsFormaName, SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY);
     }
 
-    private void createRemoteTopologyPanel(Insets defaultTextFieldMargins, Insets defaultListItemMargins, int textFieldPreferredHeight, int gapBetweenColumns, int gapBetweenRows) {
-        if (SystemUtils.IS_OS_LINUX) {
-            this.remoteTopologyPanel = new LinuxRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
-        } else if (SystemUtils.IS_OS_WINDOWS) {
-            this.remoteTopologyPanel = new WindowsRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
-        } else if (SystemUtils.IS_OS_MAC) {
-            this.remoteTopologyPanel = new MacRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
+    @Override
+    public void close() {
+        if (this.mountLocalSharedFolderResult == null) {
+            super.close();
         } else {
-            throw new UnsupportedOperationException("Unsupported operating system '" + SystemUtils.OS_NAME + "'.");
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
+            int threadId = getNewCurrentThreadId();
+            IUnmountLocalSharedFolderCallback callback = exception -> {
+                RemoteExecutionDialog.this.mountLocalSharedFolderResult = null;
+                RemoteExecutionDialog.super.close();
+            };
+            this.mountLocalSharedFolderResult.unmountLocalSharedFolderAsync(loadingIndicator, threadId, callback);
         }
-
-        this.remoteTopologyPanel.getRemoteSharedFolderPathTextField().setColumns(70);
-        this.bindingContext.bind(REMOTE_SHARED_FOLDER_PATH_PROPERTY, this.remoteTopologyPanel.getRemoteSharedFolderPathTextField());
-
-        this.bindingContext.bind(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY, this.remoteTopologyPanel.getRemoteUsernameTextField());
-
-        this.bindingContext.bind(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY, this.remoteTopologyPanel.getRemotePasswordTextField());
-
-        this.bindingContext.bind(LOCAL_SHARED_FOLDER_PATH_PROPERTY, this.remoteTopologyPanel.getLocalSharedFolderPathTextField());
-
-        JPasswordField localPasswordTextField = this.remoteTopologyPanel.getLocalPasswordTextField();
-        if (localPasswordTextField != null) {
-            localPasswordTextField.setMargin(defaultTextFieldMargins);
-            this.bindingContext.bind(LOCAL_PASSWORD_PROPERTY, localPasswordTextField);
-        }
-
-        ActionListener addButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                addServerCredentialsButtonPressed();
-            }
-        };
-        ActionListener editButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                editServerCredentialsButtonPressed();
-            }
-        };
-        ActionListener removeButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                removeServerCredentialsButtonPressed();
-            }
-        };
-        ActionListener browseLocalSharedFolderButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                selectLocalSharedFolderPath();
-            }
-        };
-
-        this.bindingContext.bind(REMOTE_MACHINES_PROPERTY, new ListSelectionAdapter(this.remoteTopologyPanel.getRemoteMachinesList()));
-        this.remoteTopologyPanel.getRemoteMachinesList().setVisibleRowCount(5);
-
-        JPanel remoteMachinesButtonsPanel = RemoteTopologyPanel.buildVerticalButtonsPanel(addButtonListener, editButtonListener, removeButtonListener,
-                                                                                          textFieldPreferredHeight, gapBetweenRows);
-
-        this.remoteTopologyPanel.addComponents(gapBetweenColumns, gapBetweenRows, browseLocalSharedFolderButtonListener, remoteMachinesButtonsPanel);
-        this.remoteTopologyPanel.setBorder(new TitledBorder("Remote execution"));
     }
 
     private void addServerCredentialsButtonPressed() {
@@ -476,18 +405,82 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         }
     }
 
+    @Override
+    protected JPanel buildButtonsPanel(ActionListener cancelActionListener) {
+        ActionListener runActionListener = event -> runButtonPressed();
+
+        JButton finishButton = buildDialogButton("Run");
+        finishButton.addActionListener(runActionListener);
+        JButton cancelButton = buildDialogButton("Cancel");
+        cancelButton.addActionListener(cancelActionListener);
+
+        addComponentToAllwaysEnabledList(cancelButton);
+
+        JPanel buttonsGridPanel = new JPanel(new GridLayout(1, 2, 5, 0));
+        buttonsGridPanel.add(finishButton);
+        buttonsGridPanel.add(cancelButton);
+
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 0, 0);
+        buttonsPanel.add(new JLabel(), c);
+
+        c = SwingUtils.buildConstraints(1, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, 0, 0);
+        buttonsPanel.add(this.continueOnFailureCheckBox, c);
+
+        c = SwingUtils.buildConstraints(2, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, 0, 5);
+        buttonsPanel.add(buttonsGridPanel, c);
+
+        return buttonsPanel;
+    }
+
+    private void createRemoteTopologyPanel(Insets defaultTextFieldMargins, Insets defaultListItemMargins, int textFieldPreferredHeight, int gapBetweenColumns, int gapBetweenRows) {
+        if (SystemUtils.IS_OS_LINUX) {
+            this.remoteTopologyPanel = new LinuxRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
+        } else if (SystemUtils.IS_OS_WINDOWS) {
+            this.remoteTopologyPanel = new WindowsRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
+        } else if (SystemUtils.IS_OS_MAC) {
+            this.remoteTopologyPanel = new MacRemoteTopologyPanel(getJDialog(), defaultTextFieldMargins, defaultListItemMargins);
+        } else {
+            throw new UnsupportedOperationException("Unsupported operating system '" + SystemUtils.OS_NAME + "'.");
+        }
+
+        this.remoteTopologyPanel.getRemoteSharedFolderPathTextField().setColumns(70);
+        this.bindingContext.bind(REMOTE_SHARED_FOLDER_PATH_PROPERTY, this.remoteTopologyPanel.getRemoteSharedFolderPathTextField());
+
+        this.bindingContext.bind(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY, this.remoteTopologyPanel.getRemoteUsernameTextField());
+
+        this.bindingContext.bind(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY, this.remoteTopologyPanel.getRemotePasswordTextField());
+
+        this.bindingContext.bind(LOCAL_SHARED_FOLDER_PATH_PROPERTY, this.remoteTopologyPanel.getLocalSharedFolderPathTextField());
+
+        JPasswordField localPasswordTextField = this.remoteTopologyPanel.getLocalPasswordTextField();
+        if (localPasswordTextField != null) {
+            localPasswordTextField.setMargin(defaultTextFieldMargins);
+            this.bindingContext.bind(LOCAL_PASSWORD_PROPERTY, localPasswordTextField);
+        }
+
+        ActionListener addButtonListener = event -> addServerCredentialsButtonPressed();
+        ActionListener editButtonListener = event -> editServerCredentialsButtonPressed();
+        ActionListener removeButtonListener = event -> removeServerCredentialsButtonPressed();
+        ActionListener browseLocalSharedFolderButtonListener = event -> selectLocalSharedFolderPath();
+
+        this.bindingContext.bind(REMOTE_MACHINES_PROPERTY, new ListSelectionAdapter(this.remoteTopologyPanel.getRemoteMachinesList()));
+        this.remoteTopologyPanel.getRemoteMachinesList().setVisibleRowCount(5);
+
+        JPanel remoteMachinesButtonsPanel = RemoteTopologyPanel.buildVerticalButtonsPanel(addButtonListener, editButtonListener, removeButtonListener,
+                textFieldPreferredHeight, gapBetweenRows);
+
+        this.remoteTopologyPanel.addComponents(gapBetweenColumns, gapBetweenRows, browseLocalSharedFolderButtonListener, remoteMachinesButtonsPanel);
+        this.remoteTopologyPanel.setBorder(new TitledBorder("Remote execution"));
+    }
+
     private JPanel buildInputPanel(int gapBetweenColumns, int gapBetweenRows, int textFieldPreferredHeight, Insets defaultListItemMargins, String[] availableFormatNames) {
-        ActionListener slaveGraphBrowseButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                selectSlaveGraphFile();
-            }
-        };
+        ActionListener slaveGraphBrowseButtonListener = event -> selectSlaveGraphFile();
 
         JButton slaveGraphBrowseButton = SwingUtils.buildBrowseButton(slaveGraphBrowseButtonListener, textFieldPreferredHeight);
 
-        this.sourceProductsList = new JList<String>(new DefaultListModel<String>());
-        LabelListCellRenderer<String> sourceProductsRenderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
+        this.sourceProductsList = new JList<>(new DefaultListModel<>());
+        LabelListCellRenderer<String> sourceProductsRenderer = new LabelListCellRenderer<>(defaultListItemMargins) {
             @Override
             protected String getItemDisplayText(String value) {
                 return value;//remoteTopologyPanel.normalizeFileSeparator(value.toString());
@@ -506,18 +499,8 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
             formatNameBinding.setPropertyValue(availableFormatNames[0]);
         }
 
-        ActionListener addSourceProductsButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                showDialogToSelectSourceProducts();
-            }
-        };
-        ActionListener removeSourceProductsButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                removeSelectedSourceProducts();
-            }
-        };
+        ActionListener addSourceProductsButtonListener = event -> showDialogToSelectSourceProducts();
+        ActionListener removeSourceProductsButtonListener = event -> removeSelectedSourceProducts();
 
         JPanel sourceProductButtonsPanel = RemoteTopologyPanel.buildVerticalButtonsPanel(addSourceProductsButtonListener, null, removeSourceProductsButtonListener, textFieldPreferredHeight, gapBetweenRows);
 
@@ -551,15 +534,28 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         return inputPanel;
     }
 
+    private boolean canSaveTargetProductToFile() {
+        return this.canSaveTargetProductCheckBox.isEnabled() && this.canSaveTargetProductCheckBox.isSelected();
+    }
+
+    private void refreshOpenTargetProductEnabledState() {
+        boolean enabled = (existReaderPluginForMasterProduct() && canSaveTargetProductToFile());
+        this.openTargetProductCheckBox.setEnabled(enabled);
+    }
+
+    private void refreshOpenTargetProductSelectedState() {
+        this.bindingContext.getBinding(OPEN_TARGET_PRODUCT_PROPERTY).setPropertyValue(existReaderPluginForMasterProduct());
+    }
+
+    private boolean existReaderPluginForMasterProduct() {
+        String formatName = (String) this.bindingContext.getBinding(MASTER_PRODUCT_FORMAT_NAME_PROPERTY).getPropertyValue();
+        return ProductIOPlugInManager.getInstance().getReaderPlugIns(formatName).hasNext();
+    }
+
     private JPanel buildOutputMasterProductPanel(int gapBetweenColumns, int gapBetweenRows, Insets defaultTextFieldMargins, Insets defaultListItemMargins,
                                                  int textFieldPreferredHeight, String[] availableFormatNames) {
 
-        ActionListener masterGraphBrowseButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                selectMasterGraphFile();
-            }
-        };
+        ActionListener masterGraphBrowseButtonListener = event -> selectMasterGraphFile();
         JButton masterGraphFileBrowseButton = SwingUtils.buildBrowseButton(masterGraphBrowseButtonListener, textFieldPreferredHeight);
 
         Insets noMargins = new Insets(0, 0, 0, 0);
@@ -589,19 +585,14 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         this.masterProductFormatNameComboBox = buildProductFormatNamesComboBox(defaultListItemMargins, textFieldPreferredHeight, availableFormatNames);
         Binding formatNameBinding = this.bindingContext.bind(MASTER_PRODUCT_FORMAT_NAME_PROPERTY, this.masterProductFormatNameComboBox);
 
-        ActionListener targetProductBrowseButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                selectTargetProductFolderPath();
-            }
-        };
+        ActionListener targetProductBrowseButtonListener = event -> selectTargetProductFolderPath();
         JButton targetProductFolderBrowseButton = SwingUtils.buildBrowseButton(targetProductBrowseButtonListener, textFieldPreferredHeight);
 
         JLabel targetProductNameLabel = new JLabel("Name");
         JLabel targetProductFolderLabel = new JLabel("Directory");
         JLabel masterGraphFileLabel = new JLabel("Master graph file path");
 
-        this.masterProductEnabledComponents = new ArrayList<JComponent>();
+        this.masterProductEnabledComponents = new ArrayList<>();
         this.masterProductEnabledComponents.add(this.masterProductFormatNameComboBox);
         this.masterProductEnabledComponents.add(masterGraphFileLabel);
         this.masterProductEnabledComponents.add(this.masterGraphFilePathTextField);
@@ -659,138 +650,6 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         return targetProductPanel;
     }
 
-    private void refreshTargetProductEnabledComponents() {
-        boolean enabled = canSaveTargetProductToFile();
-        for (int i = 0; i < this.masterProductEnabledComponents.size(); i++) {
-            this.masterProductEnabledComponents.get(i).setEnabled(enabled);
-        }
-        refreshOpenTargetProductEnabledState();
-    }
-
-    private boolean canSaveTargetProductToFile() {
-        return this.canSaveTargetProductCheckBox.isEnabled() && this.canSaveTargetProductCheckBox.isSelected();
-    }
-
-    private void refreshOpenTargetProductEnabledState() {
-        boolean enabled = (existReaderPluginForMasterProduct() && canSaveTargetProductToFile());
-        this.openTargetProductCheckBox.setEnabled(enabled);
-    }
-
-    private void refreshOpenTargetProductSelectedState() {
-        this.bindingContext.getBinding(OPEN_TARGET_PRODUCT_PROPERTY).setPropertyValue(existReaderPluginForMasterProduct());
-    }
-
-    private boolean existReaderPluginForMasterProduct() {
-        String formatName = (String) this.bindingContext.getBinding(MASTER_PRODUCT_FORMAT_NAME_PROPERTY).getPropertyValue();
-        return ProductIOPlugInManager.getInstance().getReaderPlugIns(formatName).hasNext();
-    }
-
-    private void runButtonPressed() {
-        Map<String, Object> parameterMap = this.parameterSupport.getParameterMap();
-
-        String masterSharedFolderPath = (String) parameterMap.get(REMOTE_SHARED_FOLDER_PATH_PROPERTY);
-        String masterSharedFolderUsername = (String) parameterMap.get(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY);
-        String masterSharedFolderPassword = (String) parameterMap.get(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY);
-        String localSharedFolderPath = (String) parameterMap.get(LOCAL_SHARED_FOLDER_PATH_PROPERTY);
-        String localPassword = (String) parameterMap.get(LOCAL_PASSWORD_PROPERTY);
-        String slaveGraphFilePath = (String) parameterMap.get(SLAVE_GRAPH_FILE_PATH_PROPERTY);
-        String slaveProductsFormatName = (String) parameterMap.get(SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY);
-        String masterGraphFilePath = (String) parameterMap.get(MASTER_GRAPH_FILE_PATH_PROPERTY);
-        String masterProductFolderPath = (String) parameterMap.get(MASTER_PRODUCT_FOLDER_PATH_PROPERTY);
-        String masterProductFileName = (String) parameterMap.get(MASTER_PRODUCT_FILE_NAME_PROPERTY);
-        String masterProductFormatName = (String) parameterMap.get(MASTER_PRODUCT_FORMAT_NAME_PROPERTY);
-        Boolean continueOnFailure = (Boolean) parameterMap.get(CONTINUE_ON_FAILURE_NAME_PROPERTY);
-        Boolean canSaveTargetProduct = (Boolean) parameterMap.get(CAN_SAVE_TARGET_PRODUCT_PROPERTY);
-        String[] selectedSourceProducts = (String[]) parameterMap.get(SOURCE_PRODUCT_FILES_PROPERTY);
-        RemoteMachineProperties[] selectedRemoteMachines = (RemoteMachineProperties[]) parameterMap.get(REMOTE_MACHINES_PROPERTY);
-
-        if (StringUtils.isBlank(masterSharedFolderPath)) {
-            showErrorDialog("Enter the remote shared folder path.");
-            this.remoteTopologyPanel.getRemoteSharedFolderPathTextField().requestFocus();
-        } else {
-            if (StringUtils.isBlank(masterSharedFolderUsername)) {
-                showErrorDialog("Enter the username of the machine containing the remote shared folder path.");
-                this.remoteTopologyPanel.getRemoteUsernameTextField().requestFocus();
-            } else if (StringUtils.isBlank(masterSharedFolderPassword)) {
-                showErrorDialog("Enter the password of the machine containing the remote shared folder path.");
-                this.remoteTopologyPanel.getRemotePasswordTextField().requestFocus();
-            } else {
-                Property property = this.bindingContext.getPropertySet().getProperty(REMOTE_MACHINES_PROPERTY);
-                ValueSet valueSet = property.getDescriptor().getValueSet();
-                if (valueSet == null) {
-                    // no remote machines available to run the slave graph
-                    showErrorDialog("Add at least one remote machine to process the source products.");
-                    this.remoteTopologyPanel.getRemoteMachinesList().requestFocus();
-                } else if (selectedRemoteMachines == null || selectedRemoteMachines.length == 0) {
-                    // no remote machines selected to run the slave graph
-                    showErrorDialog("Select the remote machines to process the source products.");
-                    this.remoteTopologyPanel.getRemoteMachinesList().requestFocus();
-                } else if (StringUtils.isBlank(slaveGraphFilePath)) {
-                    showErrorDialog("Enter the slave graph file to be processed on the remote machines.");
-                    this.slaveGraphFilePathTextField.requestFocus();
-                } else {
-                    property = this.bindingContext.getPropertySet().getProperty(SOURCE_PRODUCT_FILES_PROPERTY);
-                    valueSet = property.getDescriptor().getValueSet();
-                    if (valueSet == null) {
-                        showErrorDialog("Add at least one source product.");
-                        this.sourceProductsList.requestFocus();
-                    } else if (selectedSourceProducts == null || selectedSourceProducts.length == 0) {
-                        showErrorDialog("Select the source products to be processed on the remote machines.");
-                        this.sourceProductsList.requestFocus();
-                    } else {
-                        boolean canExecuteOperator = false;
-                        if (canSaveTargetProduct.booleanValue()) {
-                            if (StringUtils.isBlank(masterProductFormatName)) {
-                                showErrorDialog("Select the target product format name.");
-                                this.masterProductFormatNameComboBox.requestFocus();
-                            } else if (StringUtils.isBlank(masterGraphFilePath)) {
-                                showErrorDialog("Enter the master graph file to be processed.");
-                                this.masterGraphFilePathTextField.requestFocus();
-                            } else if (StringUtils.isBlank(masterProductFileName)) {
-                                showErrorDialog("Enter the target product name.");
-                                this.masterProductNameTextField.requestFocus();
-                            } else if (StringUtils.isBlank(masterProductFolderPath)) {
-                                showErrorDialog("Enter the target product folder path.");
-                                this.masterProductFolderPathTextField.requestFocus();
-                            } else {
-                                canExecuteOperator = true;
-                            }
-                        } else {
-                            canExecuteOperator = true;
-                        }
-                        if (canExecuteOperator) {
-                            Map<String, Object> operatatorParameters = new HashMap<String, Object>();
-                            operatatorParameters.put(REMOTE_SHARED_FOLDER_PATH_PROPERTY, masterSharedFolderPath);
-                            operatatorParameters.put(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY, masterSharedFolderUsername);
-                            operatatorParameters.put(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY, masterSharedFolderPassword);
-                            operatatorParameters.put(LOCAL_SHARED_FOLDER_PATH_PROPERTY, localSharedFolderPath);
-                            operatatorParameters.put(LOCAL_PASSWORD_PROPERTY, localPassword);
-                            operatatorParameters.put(SLAVE_GRAPH_FILE_PATH_PROPERTY, slaveGraphFilePath);
-                            operatatorParameters.put(SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY, slaveProductsFormatName);
-                            operatatorParameters.put(SOURCE_PRODUCT_FILES_PROPERTY, selectedSourceProducts);
-                            operatatorParameters.put(REMOTE_MACHINES_PROPERTY, selectedRemoteMachines);
-                            operatatorParameters.put(CONTINUE_ON_FAILURE_NAME_PROPERTY, continueOnFailure.booleanValue());
-
-                            boolean openTargetProductInApplication = ((Boolean) parameterMap.get(OPEN_TARGET_PRODUCT_PROPERTY)).booleanValue();
-                            if (canSaveTargetProduct.booleanValue()) {
-                                File targetProductFile = buildTargetProductFile(masterProductFormatName, masterProductFolderPath, masterProductFileName);
-                                operatatorParameters.put(MASTER_GRAPH_FILE_PATH_PROPERTY, masterGraphFilePath);
-                                operatatorParameters.put(MASTER_PRODUCT_FILE_PATH_PROPERTY, targetProductFile.getAbsolutePath());
-                                operatatorParameters.put(MASTER_PRODUCT_FORMAT_NAME_PROPERTY, masterProductFormatName);
-
-                                // save the target product folder path into the preferences
-                                this.appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, masterProductFolderPath);
-                            } else {
-                                openTargetProductInApplication = false;
-                            }
-                            runOperatorAsync(operatatorParameters, openTargetProductInApplication);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private void runOperatorAsync(Map<String, Object> parametersMap, boolean openTargetProductInApplication) {
         Path remoteTopologyFilePath = getRemoteTopologyFilePath();
         RemoteTopology remoteTopologyToSave = this.remoteTopologyPanel.buildRemoteTopology();
@@ -843,33 +702,12 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         removeListItems(selectedIndices, String.class, SOURCE_PRODUCT_FILES_PROPERTY);
     }
 
-    private void showDialogToSelectSourceProducts() {
-        if (this.mountLocalSharedFolderResult == null) {
-            // mount the local folder and then select the source product
-            LoadingIndicator loadingIndicator = getLoadingIndicator();
-            int threadId = getNewCurrentThreadId();
-            IMountLocalSharedFolderCallback callback = new IMountLocalSharedFolderCallback() {
-                @Override
-                public void onSuccessfullyFinishMountingLocalFolder(IMountLocalSharedFolderResult result) {
-                    RemoteExecutionDialog.this.mountLocalSharedFolderResult = result;
-                    showDialogToSelectSourceProductsNew();
-                }
-            };
-            this.remoteTopologyPanel.mountLocalSharedFolderAsync(this, loadingIndicator, threadId, callback);
-        } else if (this.remoteTopologyPanel.hasChangedParameters(this.mountLocalSharedFolderResult.getLocalSharedDrive())) {
-            LoadingIndicator loadingIndicator = getLoadingIndicator();
-            int threadId = getNewCurrentThreadId();
-            IUnmountLocalSharedFolderCallback callback = new IUnmountLocalSharedFolderCallback() {
-                @Override
-                public void onFinishUnmountingLocalFolder(Exception exception) {
-                    RemoteExecutionDialog.this.mountLocalSharedFolderResult = null;
-                    RemoteExecutionDialog.this.showDialogToSelectSourceProducts(); // mount again the local shared folder
-                }
-            };
-            this.mountLocalSharedFolderResult.unmountLocalSharedFolderAsync(loadingIndicator, threadId, callback);
-        } else {
-            showDialogToSelectSourceProductsNew();
+    private void refreshTargetProductEnabledComponents() {
+        boolean enabled = canSaveTargetProductToFile();
+        for (JComponent masterProductEnabledComponent : this.masterProductEnabledComponents) {
+            masterProductEnabledComponent.setEnabled(enabled);
         }
+        refreshOpenTargetProductEnabledState();
     }
 
     private void showDialogToSelectSourceProductsNew() {
@@ -972,31 +810,107 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         }
     }
 
-    private <ItemType> void removeListItems(int[] itemIndicesToRemove, Class<? extends ItemType> arrayType, String propertyName) {
-        if (itemIndicesToRemove.length > 0) {
-            Property property = this.bindingContext.getPropertySet().getProperty(propertyName);
-            ValueSet valueSet = property.getDescriptor().getValueSet();
-            if (valueSet == null) {
-                throw new NullPointerException("The valueSet is null");
+    private void runButtonPressed() {
+        Map<String, Object> parameterMap = this.parameterSupport.getParameterMap();
+
+        String masterSharedFolderPath = (String) parameterMap.get(REMOTE_SHARED_FOLDER_PATH_PROPERTY);
+        String masterSharedFolderUsername = (String) parameterMap.get(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY);
+        String masterSharedFolderPassword = (String) parameterMap.get(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY);
+        String localSharedFolderPath = (String) parameterMap.get(LOCAL_SHARED_FOLDER_PATH_PROPERTY);
+        String localPassword = (String) parameterMap.get(LOCAL_PASSWORD_PROPERTY);
+        String slaveGraphFilePath = (String) parameterMap.get(SLAVE_GRAPH_FILE_PATH_PROPERTY);
+        String slaveProductsFormatName = (String) parameterMap.get(SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY);
+        String masterGraphFilePath = (String) parameterMap.get(MASTER_GRAPH_FILE_PATH_PROPERTY);
+        String masterProductFolderPath = (String) parameterMap.get(MASTER_PRODUCT_FOLDER_PATH_PROPERTY);
+        String masterProductFileName = (String) parameterMap.get(MASTER_PRODUCT_FILE_NAME_PROPERTY);
+        String masterProductFormatName = (String) parameterMap.get(MASTER_PRODUCT_FORMAT_NAME_PROPERTY);
+        Boolean continueOnFailure = (Boolean) parameterMap.get(CONTINUE_ON_FAILURE_NAME_PROPERTY);
+        Boolean canSaveTargetProduct = (Boolean) parameterMap.get(CAN_SAVE_TARGET_PRODUCT_PROPERTY);
+        String[] selectedSourceProducts = (String[]) parameterMap.get(SOURCE_PRODUCT_FILES_PROPERTY);
+        RemoteMachineProperties[] selectedRemoteMachines = (RemoteMachineProperties[]) parameterMap.get(REMOTE_MACHINES_PROPERTY);
+
+        if (StringUtils.isBlank(masterSharedFolderPath)) {
+            showErrorDialog("Enter the remote shared folder path.");
+            this.remoteTopologyPanel.getRemoteSharedFolderPathTextField().requestFocus();
+        } else {
+            if (StringUtils.isBlank(masterSharedFolderUsername)) {
+                showErrorDialog("Enter the username of the machine containing the remote shared folder path.");
+                this.remoteTopologyPanel.getRemoteUsernameTextField().requestFocus();
+            } else if (StringUtils.isBlank(masterSharedFolderPassword)) {
+                showErrorDialog("Enter the password of the machine containing the remote shared folder path.");
+                this.remoteTopologyPanel.getRemotePasswordTextField().requestFocus();
             } else {
-                Object[] existingItems = valueSet.getItems();
-                int index = 0;
-                Object items = Array.newInstance(arrayType, existingItems.length - itemIndicesToRemove.length);
-                for (int i = 0; i < existingItems.length; i++) {
-                    boolean foundIndex = false;
-                    for (int k = 0; k < itemIndicesToRemove.length && !foundIndex; k++) {
-                        if (i == itemIndicesToRemove[k]) {
-                            foundIndex = true;
+                Property property = this.bindingContext.getPropertySet().getProperty(REMOTE_MACHINES_PROPERTY);
+                ValueSet valueSet = property.getDescriptor().getValueSet();
+                if (valueSet == null) {
+                    // no remote machines available to run the slave graph
+                    showErrorDialog("Add at least one remote machine to process the source products.");
+                    this.remoteTopologyPanel.getRemoteMachinesList().requestFocus();
+                } else if (selectedRemoteMachines == null || selectedRemoteMachines.length == 0) {
+                    // no remote machines selected to run the slave graph
+                    showErrorDialog("Select the remote machines to process the source products.");
+                    this.remoteTopologyPanel.getRemoteMachinesList().requestFocus();
+                } else if (StringUtils.isBlank(slaveGraphFilePath)) {
+                    showErrorDialog("Enter the slave graph file to be processed on the remote machines.");
+                    this.slaveGraphFilePathTextField.requestFocus();
+                } else {
+                    property = this.bindingContext.getPropertySet().getProperty(SOURCE_PRODUCT_FILES_PROPERTY);
+                    valueSet = property.getDescriptor().getValueSet();
+                    if (valueSet == null) {
+                        showErrorDialog("Add at least one source product.");
+                        this.sourceProductsList.requestFocus();
+                    } else if (selectedSourceProducts == null || selectedSourceProducts.length == 0) {
+                        showErrorDialog("Select the source products to be processed on the remote machines.");
+                        this.sourceProductsList.requestFocus();
+                    } else {
+                        boolean canExecuteOperator = false;
+                        if (canSaveTargetProduct) {
+                            if (StringUtils.isBlank(masterProductFormatName)) {
+                                showErrorDialog("Select the target product format name.");
+                                this.masterProductFormatNameComboBox.requestFocus();
+                            } else if (StringUtils.isBlank(masterGraphFilePath)) {
+                                showErrorDialog("Enter the master graph file to be processed.");
+                                this.masterGraphFilePathTextField.requestFocus();
+                            } else if (StringUtils.isBlank(masterProductFileName)) {
+                                showErrorDialog("Enter the target product name.");
+                                this.masterProductNameTextField.requestFocus();
+                            } else if (StringUtils.isBlank(masterProductFolderPath)) {
+                                showErrorDialog("Enter the target product folder path.");
+                                this.masterProductFolderPathTextField.requestFocus();
+                            } else {
+                                canExecuteOperator = true;
+                            }
+                        } else {
+                            canExecuteOperator = true;
+                        }
+                        if (canExecuteOperator) {
+                            Map<String, Object> operatatorParameters = new HashMap<>();
+                            operatatorParameters.put(REMOTE_SHARED_FOLDER_PATH_PROPERTY, masterSharedFolderPath);
+                            operatatorParameters.put(REMOTE_SHARED_FOLDER_USERNAME_PROPERTY, masterSharedFolderUsername);
+                            operatatorParameters.put(REMOTE_SHARED_FOLDER_PASSWORD_PROPERTY, masterSharedFolderPassword);
+                            operatatorParameters.put(LOCAL_SHARED_FOLDER_PATH_PROPERTY, localSharedFolderPath);
+                            operatatorParameters.put(LOCAL_PASSWORD_PROPERTY, localPassword);
+                            operatatorParameters.put(SLAVE_GRAPH_FILE_PATH_PROPERTY, slaveGraphFilePath);
+                            operatatorParameters.put(SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY, slaveProductsFormatName);
+                            operatatorParameters.put(SOURCE_PRODUCT_FILES_PROPERTY, selectedSourceProducts);
+                            operatatorParameters.put(REMOTE_MACHINES_PROPERTY, selectedRemoteMachines);
+                            operatatorParameters.put(CONTINUE_ON_FAILURE_NAME_PROPERTY, continueOnFailure);
+
+                            boolean openTargetProductInApplication = (Boolean) parameterMap.get(OPEN_TARGET_PRODUCT_PROPERTY);
+                            if (canSaveTargetProduct) {
+                                File targetProductFile = buildTargetProductFile(masterProductFormatName, masterProductFolderPath, masterProductFileName);
+                                operatatorParameters.put(MASTER_GRAPH_FILE_PATH_PROPERTY, masterGraphFilePath);
+                                operatatorParameters.put(MASTER_PRODUCT_FILE_PATH_PROPERTY, targetProductFile.getAbsolutePath());
+                                operatatorParameters.put(MASTER_PRODUCT_FORMAT_NAME_PROPERTY, masterProductFormatName);
+
+                                // save the target product folder path into the preferences
+                                this.appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, masterProductFolderPath);
+                            } else {
+                                openTargetProductInApplication = false;
+                            }
+                            runOperatorAsync(operatatorParameters, openTargetProductInApplication);
                         }
                     }
-                    if (!foundIndex) {
-                        Array.set(items, index++, existingItems[i]);
-                    }
-                }
-                if (index == Array.getLength(items)) {
-                    property.getDescriptor().setValueSet(new ValueSet((Object[]) items));
-                } else {
-                    throw new IllegalStateException("The remaining item count is different.");
                 }
             }
         }
@@ -1025,43 +939,58 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         property.getDescriptor().setValueSet(new ValueSet(items));
     }
 
-    private static String[] getAvailableFormatNames() {
-        String[] formatNames = ProductIOPlugInManager.getInstance().getAllProductWriterFormatStrings();
-        if (formatNames.length > 1) {
-            List<String> items = new ArrayList<String>(formatNames.length);
-            for (int i = 0; i < formatNames.length; i++) {
-                items.add(formatNames[i]);
-            }
-            Comparator<String> comparator = new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    return o1.compareTo(o2);
-                }
+    private void showDialogToSelectSourceProducts() {
+        if (this.mountLocalSharedFolderResult == null) {
+            // mount the local folder and then select the source product
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
+            int threadId = getNewCurrentThreadId();
+            IMountLocalSharedFolderCallback callback = result -> {
+                RemoteExecutionDialog.this.mountLocalSharedFolderResult = result;
+                showDialogToSelectSourceProductsNew();
             };
-            Collections.sort(items, comparator);
-            items.toArray(formatNames);
+            this.remoteTopologyPanel.mountLocalSharedFolderAsync(this, loadingIndicator, threadId, callback);
+        } else if (this.remoteTopologyPanel.hasChangedParameters(this.mountLocalSharedFolderResult.getLocalSharedDrive())) {
+            LoadingIndicator loadingIndicator = getLoadingIndicator();
+            int threadId = getNewCurrentThreadId();
+            IUnmountLocalSharedFolderCallback callback = exception -> {
+                RemoteExecutionDialog.this.mountLocalSharedFolderResult = null;
+                RemoteExecutionDialog.this.showDialogToSelectSourceProducts(); // mount again the local shared folder
+            };
+            this.mountLocalSharedFolderResult.unmountLocalSharedFolderAsync(loadingIndicator, threadId, callback);
+        } else {
+            showDialogToSelectSourceProductsNew();
         }
-        return formatNames;
     }
 
-    private static JComboBox<String> buildProductFormatNamesComboBox(Insets defaultListItemMargins, int textFieldPreferredHeight, String[] availableFormatNames) {
-        JComboBox<String> productFormatNameComboBox = new JComboBox<String>(availableFormatNames);
-        Dimension formatNameComboBoxSize = productFormatNameComboBox.getPreferredSize();
-        formatNameComboBoxSize.height = textFieldPreferredHeight;
-        productFormatNameComboBox.setPreferredSize(formatNameComboBoxSize);
-        productFormatNameComboBox.setMinimumSize(formatNameComboBoxSize);
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
-            @Override
-            protected String getItemDisplayText(String value) {
-                return value;
+    private <ItemType> void removeListItems(int[] itemIndicesToRemove, Class<? extends ItemType> arrayType, String propertyName) {
+        if (itemIndicesToRemove.length > 0) {
+            Property property = this.bindingContext.getPropertySet().getProperty(propertyName);
+            ValueSet valueSet = property.getDescriptor().getValueSet();
+            if (valueSet == null) {
+                throw new NullPointerException("The valueSet is null");
+            } else {
+                Object[] existingItems = valueSet.getItems();
+                int index = 0;
+                Object items = Array.newInstance(arrayType, existingItems.length - itemIndicesToRemove.length);
+                for (int i = 0; i < existingItems.length; i++) {
+                    boolean foundIndex = false;
+                    for (int k = 0; k < itemIndicesToRemove.length && !foundIndex; k++) {
+                        if (i == itemIndicesToRemove[k]) {
+                            foundIndex = true;
+                            break;
+                        }
+                    }
+                    if (!foundIndex) {
+                        Array.set(items, index++, existingItems[i]);
+                    }
+                }
+                if (index == Array.getLength(items)) {
+                    property.getDescriptor().setValueSet(new ValueSet((Object[]) items));
+                } else {
+                    throw new IllegalStateException("The remaining item count is different.");
+                }
             }
-        };
-        productFormatNameComboBox.setMaximumRowCount(5);
-        productFormatNameComboBox.setRenderer(renderer);
-        productFormatNameComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
-        productFormatNameComboBox.setOpaque(true);
-
-        return productFormatNameComboBox;
+        }
     }
 
     private static File buildTargetProductFile(String targetProductFormatName, String targetProductFolderPath, String targetProductFileName) {

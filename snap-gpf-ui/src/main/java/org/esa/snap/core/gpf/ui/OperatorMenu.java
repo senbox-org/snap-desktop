@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
 import com.thoughtworks.xstream.io.xml.XppDomWriter;
 import com.thoughtworks.xstream.io.xml.XppReader;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.OperatorSpi;
@@ -253,10 +253,10 @@ public class OperatorMenu {
     }
 
     static void escapeXmlElements(DomElement domElement) {
-        domElement.setValue(StringEscapeUtils.escapeXml(domElement.getValue()));
+        domElement.setValue(StringEscapeUtils.ESCAPE_XML10.translate(domElement.getValue()));
         String[] attributeNames = domElement.getAttributeNames();
         for (String attributeName : attributeNames) {
-            domElement.setAttribute(attributeName, StringEscapeUtils.escapeXml(domElement.getAttribute(attributeName)));
+            domElement.setAttribute(attributeName, StringEscapeUtils.ESCAPE_XML10.translate(domElement.getAttribute(attributeName)));
         }
         DomElement[] children = domElement.getChildren();
         for (DomElement child : children) {
@@ -326,24 +326,25 @@ public class OperatorMenu {
         return opDescriptor.getAlias() != null ? opDescriptor.getAlias() : opDescriptor.getName();
     }
 
+    @SuppressWarnings("ConcatenationWithEmptyString")
     String getOperatorAboutText() {
         return makeHtmlConform(String.format("" +
-                                                     "<html>" +
-                                                     "<h2>%s Operator</h2>" +
-                                                     "<table>" +
-                                                     "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
-                                                     "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
-                                                     "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
-                                                     "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
-                                                     "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
-                                                     "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
-                                             getOperatorName(),
-                                             getOperatorName(),
-                                             opDescriptor.getVersion(),
-                                             opDescriptor.getName(),
-                                             opDescriptor.getDescription(),
-                                             opDescriptor.getAuthors(),
-                                             opDescriptor.getCopyright()
+                        "<html>" +
+                        "<h2>%s Operator</h2>" +
+                        "<table>" +
+                        "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
+                        "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
+                        "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
+                getOperatorName(),
+                getOperatorName(),
+                opDescriptor.getVersion(),
+                opDescriptor.getName(),
+                opDescriptor.getDescription(),
+                opDescriptor.getAuthors(),
+                opDescriptor.getCopyright()
         ));
     }
 

@@ -17,7 +17,7 @@ package org.esa.snap.smart.configurator.ui;
 
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryManager;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.util.ServiceLoader;
 import org.esa.snap.core.util.SystemUtils;

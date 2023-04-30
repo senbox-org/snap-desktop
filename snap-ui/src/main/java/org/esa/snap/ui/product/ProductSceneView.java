@@ -859,6 +859,7 @@ public class ProductSceneView extends BasicView
      * @since BEAM 4.7
      * @deprecated since BEAM 4.10, use {@link #getFeatureFigures(boolean)} instead
      */
+    @Deprecated
     public SimpleFeatureFigure[] getSelectedFeatureFigures() {
         ArrayList<SimpleFeatureFigure> selectedFigures = new ArrayList<>();
         collectFeatureFigures(figureEditor.getFigureSelection(), selectedFigures);

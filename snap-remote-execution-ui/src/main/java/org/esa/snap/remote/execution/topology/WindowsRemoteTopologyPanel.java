@@ -1,13 +1,13 @@
 package org.esa.snap.remote.execution.topology;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.remote.execution.local.folder.AbstractLocalSharedFolder;
 import org.esa.snap.remote.execution.local.folder.IMountLocalSharedFolderCallback;
+import org.esa.snap.remote.execution.local.folder.MountWindowsLocalDriveTimerRunnable;
+import org.esa.snap.remote.execution.local.folder.WindowsLocalMachineMountDrive;
 import org.esa.snap.remote.execution.local.folder.WindowsLocalSharedDrive;
 import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.MessageDialog;
-import org.esa.snap.remote.execution.local.folder.MountWindowsLocalDriveTimerRunnable;
-import org.esa.snap.remote.execution.local.folder.WindowsLocalMachineMountDrive;
 
 import javax.swing.JPanel;
 import java.awt.Insets;
