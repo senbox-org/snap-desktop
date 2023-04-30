@@ -104,7 +104,7 @@ class AddDirectoryAction extends AbstractAction {
         }
         preferences.setPropertyString(lastDirProperty, lastDir);
         try {
-            listModel.addElements(selectedDirs);
+            listModel.addElements((Object[]) selectedDirs);
         } catch (ValidationException ve) {
             // not expected to ever come here
             appContext.handleError("Invalid input path", ve);
