@@ -82,18 +82,6 @@
         </dependency>
 
         <dependency>
-            <groupId>tec.uom</groupId>
-            <artifactId>uom-se</artifactId>
-            <version>1.0.8</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.measure</groupId>
-                    <artifactId>unit-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-explorer</artifactId>
         </dependency>
