@@ -73,8 +73,6 @@
         <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <version>${javahelp.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

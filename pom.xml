@@ -16,7 +16,7 @@
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <netbeans.version>RELEASE82</netbeans.version>
+        <netbeans.version>RELEASE100</netbeans.version>
         <snap-gui-lib.version>1.1</snap-gui-lib.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
@@ -172,11 +172,6 @@
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>beansbinding-1.2.1</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-api-progress-nb</artifactId>
                 <version>${netbeans.version}</version>
@@ -236,6 +231,7 @@
                 <scope>test</scope>
             </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <repositories>
