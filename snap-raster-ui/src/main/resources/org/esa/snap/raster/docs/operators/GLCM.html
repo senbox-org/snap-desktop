@@ -30,7 +30,13 @@ variance, inverse difference moment, difference average, difference
 variance, difference entropy, sum average, sum variance and sum entropy
 (Haralick[R-1]). Each feature models different properties of the
 statistical relation of pixels co-occurrence estimated within a given
-moving window and along predefined directions and inter-pixel distances.<br>
+moving window and along predefined directions and inter-pixel distances.
+
+<br>The gray levels of the image are quantized into a smaller number of discrete gray levels to reduce the size of the GLCM matrix and improve computational efficiency.
+<br>The GLCM matrix is calculated by comparing pairs of pixels in the image based on their gray-level values and their relative position to each other. The GLCM is typically calculated for a set of predetermined spatial relationships, such as horizontal, vertical, diagonal, or a combination of these directions.
+<br>From the GLCM matrix, various statistical measures can be extracted that describe the texture features of the image, such as contrast, energy, entropy, homogeneity, and correlation.
+
+<br>
 The GLCM is a measure of the probability of occurrence of two grey
 levels separated by a given distance in a given direction. The features
 can be categorized into three groups, i.e. contrast group, orderliness
@@ -38,27 +44,29 @@ group and statistics group. <br>
 <br>
 Contrast Group Features:<br>
 <ul>
-  <li>Contrast</li>
-  <li>Dissimilarity (DIS)</li>
-  <li>Homogeneity (HOM)</li>
+  <li>Contrast: GLCM contrast measures the variation in intensity levels between neighboring pixels. It is calculated as the sum of squared differences between gray-level values of neighboring pixels, weighted by the frequency of occurrence of each pair of gray-level values. A higher value of GLCM contrast indicates a more pronounced texture in the image, with greater variation in intensity levels between neighboring pixels.</li>
+  <li>Dissimilarity (DIS): GLCM dissimilarity measures the difference in intensity levels between neighboring pixels. It is calculated as the sum of absolute differences between gray-level values of neighboring pixels, weighted by the frequency of occurrence of each pair of gray-level values. A higher value of GLCM dissimilarity indicates a more distinct texture in the image, with greater differences in intensity levels between neighboring pixels.</li>
+  <li>Homogeneity (HOM): GLCM homogeneity measures the similarity in intensity levels between neighboring pixels. It is calculated as the sum of the products of the frequency of occurrence of each pair of gray-level values and the inverse of the distance between the gray-level values of neighboring pixels. A higher value of GLCM homogeneity indicates a smoother texture in the image, with less variation in intensity levels between neighboring pixels.</li>
 </ul>
 &nbsp;<br>
 Orderliness Group Features:<br>
 <ul>
-  <li>Angular Second Moment (ASM)</li>
-  <li>Maximum Probability (MAX)</li>
-  <li>Entropy (ENT)</li>
+  <li>Angular Second Moment (ASM): GLCM ASM measures the uniformity of gray-level values in an image. It is calculated as the sum of squared elements in the GLCM matrix. A higher value of ASM indicates a more uniform texture in the image, with similar gray-level values occurring more frequently.</li>
+  <li>Maximum Probability (MAX): GLCM MAX measures the largest probability of occurrence of a specific gray-level value in the GLCM matrix. It is calculated by finding the maximum value in the GLCM matrix. A higher value of MAX indicates a more dominant texture in the image, with a specific gray-level value occurring more frequently.</li>
+  <li>Entropy (ENT): GLCM entropy measures the randomness or complexity of the texture in the image. It is calculated as the negative sum of the product of the frequency of occurrence of each gray-level value and its logarithm. A higher value of ENT indicates a more complex texture in the image, with more randomness in the distribution of gray-level values.</li>
 </ul>
 &nbsp;<br>
 Statistics Group Features:<br>
 <ul>
-  <li>GLCM Mean</li>
-  <li>GLCM Variance</li>
-  <li>GLCM Correlation</li>
+  <li>GLCM Mean: GLCM mean measures the average gray-level value of the pixel pairs that contribute to the GLCM matrix. It is calculated as the sum of the products of the gray-level values and their corresponding frequencies, divided by the total number of pixel pairs. A higher value of GLCM mean indicates a higher average intensity in the image.</li>
+  <li>GLCM Variance:  GLCM variance measures the spread of gray-level values in the GLCM matrix. It is calculated as the sum of the products of the squared differences between the gray-level values and the mean, weighted by the frequency of occurrence of each pair of gray-level values, divided by the total number of pixel pairs. A higher value of GLCM variance indicates a greater spread of gray-level values in the image.</li>
+  <li>GLCM Correlation:  GLCM correlation measures the linear relationship between the gray-level values of neighboring pixels. It is calculated as the sum of the products of the frequency of occurrence of each pair of gray-level values, the inverse of the distance between the gray-level values of neighboring pixels, and the standardized deviation of the gray-level values from their respective means, divided by the standard deviation of both gray-level values. A higher value of GLCM correlation indicates a higher degree of linear dependence between the gray-level values of neighboring pixels.</li>
 </ul>
 &nbsp;<br>
 [R-1]&nbsp;&nbsp;&nbsp; Haralick, R.M., Shanmugam, K., Denstien, I.,
 &#8220;Textural features for image classification,&#8221; IEEE Trans Syst Man
 Cybern, vol. 3, no. 6, pp.610&#8211;621, 1973.<br>
+
+[R-2]&nbsp;&nbsp;&nbsp;<a href="https://www.researchgate.net/publication/315776784_GLCM_Texture_A_Tutorial_v_30_March_2017">GLCM Texture: A Tutorial v 30 March 2017</a><br>
 <hr>
 </body></html>
