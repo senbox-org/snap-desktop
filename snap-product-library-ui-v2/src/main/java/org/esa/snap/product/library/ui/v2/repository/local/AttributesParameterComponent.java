@@ -94,7 +94,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.attributesList.setVisibleRowCount(5);
         this.attributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         int cellItemHeight = this.attributeNamesComboBox.getPreferredSize().height;
-        LabelListCellRenderer<AttributeFilter> listCellRenderer = new LabelListCellRenderer<>(cellItemHeight) {
+        LabelListCellRenderer<AttributeFilter> listCellRenderer = new LabelListCellRenderer<AttributeFilter>(cellItemHeight) {
             @Override
             protected String getItemDisplayText(AttributeFilter attribute) {
                 if (attribute == null) {

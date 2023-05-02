@@ -152,7 +152,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
         this.operatingSystemsComboBox.addItem(RemoteMachineProperties.LINUX_OPERATING_SYSTEM);
         this.operatingSystemsComboBox.addItem(RemoteMachineProperties.WINDOWS_OPERATING_SYSTEM);
         this.operatingSystemsComboBox.setSelectedItem(null);
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<>(defaultListItemMargins) {
+        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
             @Override
             protected String getItemDisplayText(String value) {
                 return value;
