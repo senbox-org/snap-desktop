@@ -28,7 +28,6 @@ import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.VFSPath;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
 
-import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -47,15 +46,12 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -69,13 +65,8 @@ public class SnapFileChooser extends JFileChooser {
     private static final String PREFERENCES_BOUNDS_OPEN = "snap.fileChooser.dialogBounds.open";
     private static final String PREFERENCES_BOUNDS_SAVE = "snap.fileChooser.dialogBounds.save";
     private static final String PREFERENCES_BOUNDS_CUSTOM = "snap.fileChooser.dialogBounds.custom";
-    private static final String PREFERENCES_VIEW_TYPE = "snap.fileChooser.viewType";
-
-    private static final String ACTION_VIEW_LIST = "viewTypeList";
-    private static final String ACTION_VIEW_DETAILS = "viewTypeDetails";
 
     private final ResizeHandler resizeHandler;
-    private final CloseHandler windowCloseHandler;
     private final Preferences snapPreferences;
     private String lastFilename;
 
@@ -96,7 +87,6 @@ public class SnapFileChooser extends JFileChooser {
 
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
-        windowCloseHandler = new CloseHandler();
         init();
     }
 
@@ -165,7 +155,6 @@ public class SnapFileChooser extends JFileChooser {
             dialog.setBounds(dialogBounds);
         }
         dialog.addComponentListener(resizeHandler);
-        dialog.addWindowListener(windowCloseHandler);
 
         return dialog;
     }
@@ -306,7 +295,6 @@ public class SnapFileChooser extends JFileChooser {
 
     private void init() {
         setAcceptAllFileFilterUsed(false);
-        initViewType();
 
         addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, evt -> {
             Object newValue = evt.getNewValue();
@@ -331,13 +319,6 @@ public class SnapFileChooser extends JFileChooser {
             setCurrentFilename(lastFilename);
         });
 
-    }
-
-    private void initViewType() {
-        Action details = getActionMap().get(snapPreferences.get(PREFERENCES_VIEW_TYPE, ACTION_VIEW_LIST));
-        if (details != null) {
-            details.actionPerformed(null);
-        }
     }
 
     private boolean isCompoundDocument(File file) {
@@ -458,21 +439,4 @@ public class SnapFileChooser extends JFileChooser {
         }
     }
 
-    private class CloseHandler extends WindowAdapter {
-
-        @Override
-        public void windowClosed(WindowEvent e) {
-            boolean isListEnabled = getActionMap().get(ACTION_VIEW_LIST).isEnabled();
-            snapPreferences.put(PREFERENCES_VIEW_TYPE, isListEnabled ? ACTION_VIEW_LIST : ACTION_VIEW_DETAILS);
-            flushPreferences();
-        }
-
-        private void flushPreferences() {
-            try {
-                snapPreferences.flush();
-            } catch (BackingStoreException bse) {
-                SystemUtils.LOG.severe("Could not store preferences: " + bse.getMessage());
-            }
-        }
-    }
 }
