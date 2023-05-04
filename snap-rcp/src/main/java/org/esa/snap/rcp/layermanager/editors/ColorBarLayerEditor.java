@@ -50,13 +50,21 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Title Section
         addTitleTextfield();
         addUnitsTextfield();
+        addConvertCaretBoolean();
+        addUnitsParenthesisBoolean();
 
 
         // Orientation Section
         addOrientationSectionBreak();
         addAlignment();
         addTitleAnchor();
-        addReversePalette();
+
+        // Color Bar Location Section
+//        addLocationSectionBreak();
+        addLocationPlacement();
+        addLocationOffset();
+        addLocationShift();
+        addLocationInside();
 
 
         // Label Values
@@ -65,18 +73,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesCount();
         addLabelValuesActual();
         addAutoPopulateLabelValues();
+        addReversePalette();
         addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
         addLabelValuesForceDecimalPlaces();
         addWeightTolerance();
 
 
-        // Color Bar Location Section
-        addLocationSectionBreak();
-        addLocationInside();
-        addLocationPlacement();
-        addLocationOffset();
-        addLocationShift();
+
+
+
 
 
         // Color Bar Scaling Section
@@ -146,6 +152,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addBackdropColor();
 
 
+        // Legend Border Gap Section
+        addLegendBorderGapSectionBreak();
+        addLegendBorderGapTop();
+        addLegendBorderGapBottom();
+        addLegendBorderGapLeftSide();
+        addLegendBorderGapRightSide();
+        addLegendTitleGap();
+        addLegendLabelGap();
 
 //  Commented out because choosing NOT to set enablement of this component as it might confused user being location
         // far away from the "Show Title" and "Show Units" components
@@ -190,6 +204,26 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(pd);
     }
 
+
+    private void addConvertCaretBoolean() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_CONVERT_CARET_KEY,
+                PROPERTY_CONVERT_CARET_TYPE);
+        pd.setDefaultValue(PROPERTY_CONVERT_CARET_DEFAULT);
+        pd.setDisplayName(PROPERTY_CONVERT_CARET_LABEL);
+        pd.setDescription(PROPERTY_CONVERT_CARET_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void addUnitsParenthesisBoolean() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_PARENTHESIS_KEY,
+                PROPERTY_UNITS_PARENTHESIS_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_PARENTHESIS_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_PARENTHESIS_LABEL);
+        pd.setDescription(PROPERTY_UNITS_PARENTHESIS_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
 
 
 
@@ -1102,6 +1136,69 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+    // Legend Border Gap Section
+
+    private void  addLegendBorderGapSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_TOOLTIP);
+    }
+
+    private void  addLegendBorderGapTop() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void  addLegendBorderGapBottom() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addLegendBorderGapLeftSide() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+
+    private void  addLegendBorderGapRightSide() {
+        PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void  addLegendTitleGap() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_TITLE_GAP_KEY, PROPERTY_LEGEND_TITLE_GAP_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void  addLegendLabelGap() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LEGEND_LABEL_GAP_KEY, PROPERTY_LEGEND_LABEL_GAP_TYPE);
+        pd.setDefaultValue(ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_DEFAULT);
+        pd.setDisplayName(ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_LABEL);
+        pd.setDescription(ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
 
 
 }

@@ -681,6 +681,15 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
                 ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
+                ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT,
+                ColorBarLayerType.PROPERTY_CONVERT_CARET_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_TYPE);
 
 
         // Orientation Section
