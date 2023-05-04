@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 
 /**
  * The thread class to download a remote product.
- *
  * Created by jcoravu on 16/10/2019.
  */
 public abstract class DownloadProductRunnable extends AbstractBackgroundDownloadRunnable implements ProgressListener {
@@ -90,7 +89,7 @@ public abstract class DownloadProductRunnable extends AbstractBackgroundDownload
             RemoteMission remoteMission = repositoryProduct.getRemoteMission();
             logger.log(Level.WARNING, "Stop downloading the product: name '" + repositoryProduct.getName()+"', mission '" + remoteMission.getName() + "', remote pository '" + remoteMission.getRepositoryName() + "'.");
         } catch (IOException exception) {
-            if (org.apache.commons.lang.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
+            if (org.apache.commons.lang3.StringUtils.containsIgnoreCase(exception.getMessage(), "is not online")) {
                 downloadStatus = DownloadProgressStatus.NOT_AVAILABLE; // the product to download is not online
             }
             logger.log(Level.SEVERE, "Failed to download the remote product '" + this.remoteProductDownloader.getProductToDownload().getName() + "'.", exception);

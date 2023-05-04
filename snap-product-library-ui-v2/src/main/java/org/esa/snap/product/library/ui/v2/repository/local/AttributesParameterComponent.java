@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.local;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.repository.input.AbstractParameterComponent;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
@@ -10,11 +10,22 @@ import org.esa.snap.ui.loading.ItemRenderer;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
 import org.esa.snap.ui.loading.SwingUtils;
 
-import javax.swing.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -25,29 +36,17 @@ import java.util.Map;
 /**
  * The panel shows the attributes of a local product to be selected by the user when searching the products in
  * the local repositories.
- *
+ * <p>
  * Created by jcoravu on 18/9/2019.
  */
 public class AttributesParameterComponent extends AbstractParameterComponent<List<AttributeFilter>> {
 
-    public static final AttributeValueFilter EQUAL_VALUE_FILTER = new AttributeValueFilter() {
-        @Override
-        public boolean matches(String attributeValue, String valueToCheck) {
-            return attributeValue.equalsIgnoreCase(valueToCheck);
-        }
-    };
-    private static final AttributeValueFilter CONTAINS_VALUE_FILTER = new AttributeValueFilter() {
-        @Override
-        public boolean matches(String attributeValue, String valueToCheck) {
-            return StringUtils.containsIgnoreCase(attributeValue, valueToCheck);
-        }
-    };
+    public static final AttributeValueFilter EQUAL_VALUE_FILTER = (attributeValue, valueToCheck) -> attributeValue.equalsIgnoreCase(valueToCheck);
+    private static final AttributeValueFilter CONTAINS_VALUE_FILTER = (attributeValue, valueToCheck) -> StringUtils.containsIgnoreCase(attributeValue, valueToCheck);
 
     private final JComboBox<String> attributeNamesComboBox;
     private final JComboBox<String> attributeValuesEditableComboBox;
     private final JComboBox<AttributeValueFilter> filtersComboBox;
-    private final JButton addAttributeButton;
-    private final JButton removeAttributeButton;
     private final JList<AttributeFilter> attributesList;
     private final JPanel component;
     private final Map<AttributeValueFilter, String> atributeFiltersMap;
@@ -65,12 +64,7 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.atributeFiltersMap.put(EQUAL_VALUE_FILTER, "Equals");
         this.atributeFiltersMap.put(CONTAINS_VALUE_FILTER, "Contains");
 
-        ItemRenderer<AttributeValueFilter> filtersItemRenderer = new ItemRenderer<AttributeValueFilter>() {
-            @Override
-            public String getItemDisplayText(AttributeValueFilter item) {
-                return (item == null) ? " " : getFilterDisplayName(item);
-            }
-        };
+        ItemRenderer<AttributeValueFilter> filtersItemRenderer = item -> (item == null) ? " " : getFilterDisplayName(item);
         this.filtersComboBox = new CustomComboBox(filtersItemRenderer, componentDimension.getTextFieldPreferredHeight(), false, componentDimension.getTextFieldBackgroundColor());
 
         JLabel label = new JLabel();
@@ -85,27 +79,17 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
             }
         }
         Dimension filtersComboBoxSize = this.filtersComboBox.getPreferredSize();
-        filtersComboBoxSize.width = (int)(1.8f * maximumWidth);
+        filtersComboBoxSize.width = (int) (1.8f * maximumWidth);
         this.filtersComboBox.setPreferredSize(filtersComboBoxSize);
         this.filtersComboBox.setSelectedItem(null); // no selected filter by default
 
         Dimension buttonSize = new Dimension(componentDimension.getTextFieldPreferredHeight(), componentDimension.getTextFieldPreferredHeight());
-        this.addAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
-        this.addAttributeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                addAttributeButtonClicked();
-            }
-        });
-        this.removeAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
-        this.removeAttributeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                remoteAttributeButtonClicked();
-            }
-        });
+        JButton addAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Add16.png", null, buttonSize, 1);
+        addAttributeButton.addActionListener(actionEvent -> addAttributeButtonClicked());
+        JButton removeAttributeButton = SwingUtils.buildButton("/org/esa/snap/resources/images/icons/Remove16.png", null, buttonSize, 1);
+        removeAttributeButton.addActionListener(actionEvent -> remoteAttributeButtonClicked());
 
-        this.attributesList = new JList<AttributeFilter>(new DefaultListModel<AttributeFilter>());
+        this.attributesList = new JList<>(new DefaultListModel<>());
         this.attributesList.setBackground(componentDimension.getTextFieldBackgroundColor());
         this.attributesList.setVisibleRowCount(5);
         this.attributesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -151,13 +135,13 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         this.component.add(this.attributeValuesEditableComboBox, c);
 
         c = SwingUtils.buildConstraints(3, 0, GridBagConstraints.NONE, GridBagConstraints.NORTH, 1, 1, 0, gapBetweenColumns);
-        this.component.add(this.addAttributeButton, c);
+        this.component.add(addAttributeButton, c);
 
         JScrollPane scrollPane = new JScrollPane(this.attributesList);
         c = SwingUtils.buildConstraints(0, 1, GridBagConstraints.BOTH, GridBagConstraints.WEST, 3, 1, gapBetweenRows, 0);
         this.component.add(scrollPane, c);
         c = SwingUtils.buildConstraints(3, 1, GridBagConstraints.NONE, GridBagConstraints.NORTH, 1, 1, gapBetweenRows, gapBetweenColumns);
-        this.component.add(this.removeAttributeButton, c);
+        this.component.add(removeAttributeButton, c);
     }
 
     @Override
@@ -216,29 +200,23 @@ public class AttributesParameterComponent extends AbstractParameterComponent<Lis
         String selectedAttributeName = getSelectedAttributeName();
         AttributeValueFilter selectedAttributeValueFilter = getSelectedAttributeValueFilter();
         String attributeValue = getEnteredAttributeValue();
+        // the filter is specified
         if (selectedAttributeName == null && selectedAttributeValueFilter == null && attributeValue.length() == 0) {
             // no filter specified
-            DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>)this.attributesList.getModel();
+            DefaultListModel<AttributeFilter> model = (DefaultListModel<AttributeFilter>) this.attributesList.getModel();
             if (model.getSize() == 0) {
                 // no attributes added into the list
                 return null;
             }
             // the list contains at least one attribute
             return true;
-        } else if (selectedAttributeName != null && selectedAttributeValueFilter != null && attributeValue.length() > 0) {
-            // the filter is specified
-            return true;
-        }
-        return false; // the value is invalid
+        } else
+            return selectedAttributeName != null && selectedAttributeValueFilter != null && attributeValue.length() > 0;// the value is invalid
     }
 
     @Override
     public String getInvalidValueErrorDialogMessage() {
-        StringBuilder message = new StringBuilder();
-        message.append("The '" + getLabel().getText()+"' parameter has missing values.")
-                .append("\n\n")
-                .append("Specify the missing values or remove the existing values.");
-        return message.toString();
+        return String.format("The '%s' parameter has missing values.%n%nSpecify the missing values or remove the existing values.", getLabel().getText());
     }
 
     private void setAttributeFilterToEdit(AttributeFilter firstAttribute) {

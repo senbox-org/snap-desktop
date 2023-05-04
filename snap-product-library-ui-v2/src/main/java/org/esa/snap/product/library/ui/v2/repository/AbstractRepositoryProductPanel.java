@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.product.library.ui.v2.ComponentDimension;
 import org.esa.snap.product.library.ui.v2.RepositoryProductPanelBackground;
 import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults;
@@ -10,12 +10,21 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;

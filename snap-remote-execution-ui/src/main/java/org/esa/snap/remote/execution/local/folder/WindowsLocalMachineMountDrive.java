@@ -1,6 +1,6 @@
 package org.esa.snap.remote.execution.local.folder;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.remote.execution.utils.CommandExecutorUtils;
 import org.esa.snap.ui.loading.LoadingIndicator;
 

@@ -1,12 +1,14 @@
 package org.esa.snap.vfs.ui.file.chooser;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.NioPaths;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +50,7 @@ public class VirtualFileSystemView extends FileSystemView {
     private static final ImageIcon vfsRootIcon;
     private static final ImageIcon vfsDirectoryIcon;
     private static final ImageIcon vfsFileIcon;
-    private static Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
+    private static final Logger logger = Logger.getLogger(VirtualFileSystemView.class.getName());
 
     static {
         vfsRootIcon = loadImageIcon("icons/vfs_root-23x16.png");
@@ -130,10 +132,10 @@ public class VirtualFileSystemView extends FileSystemView {
     /**
      * Gets the child of a file.
      *
-     * @param parent   a <code>File</code> object representing a directory or special folder
-     * @param fileName a name of a file or folder which exists in <code>parent</code>
-     * @return a File object. This is normally constructed with <code>new
-     * File(parent, fileName)</code> except when parent and child are both special folders, in which case the <code>File</code> is a wrapper containing a <code>NioShellFolder</code> object.
+     * @param parent   a {@code File} object representing a directory or special folder
+     * @param fileName a name of a file or folder which exists in {@code parent}
+     * @return a File object. This is normally constructed with {@code new
+     * File(parent, fileName)} except when parent and child are both special folders, in which case the {@code File} is a wrapper containing a {@code NioShellFolder} object.
      * @since 1.4
      */
     @Override
@@ -152,10 +154,10 @@ public class VirtualFileSystemView extends FileSystemView {
     }
 
     /**
-     * Checks if <code>f</code> represents a real directory or file as opposed to a special folder such as <code>"Desktop"</code>. Used by UI classes to decide if a folder is selectable when doing directory choosing.
+     * Checks if {@code f} represents a real directory or file as opposed to a special folder such as {@code "Desktop"}. Used by UI classes to decide if a folder is selectable when doing directory choosing.
      *
-     * @param file a <code>File</code> object
-     * @return <code>true</code> if <code>f</code> is a real file or directory.
+     * @param file a {@code File} object
+     * @return {@code true} if {@code f} is a real file or directory.
      * @since 1.4
      */
     @Override
@@ -185,12 +187,12 @@ public class VirtualFileSystemView extends FileSystemView {
 
     /**
      * Determines if the given file is a root in the navigable tree(s).
-     * Examples: Windows 98 has one root, the Desktop folder. DOS has one root per drive letter, <code>C:\</code>, <code>D:\</code>, etc. Unix has one root, the <code>"/"</code> directory.
+     * Examples: Windows 98 has one root, the Desktop folder. DOS has one root per drive letter, {@code C:\}, {@code D:\}, etc. Unix has one root, the {@code "/"} directory.
      * <p>
-     * The default implementation gets information from the <code>NioShellFolder</code> class.
+     * The default implementation gets information from the {@code NioShellFolder} class.
      *
-     * @param file a <code>File</code> object representing a directory
-     * @return <code>true</code> if <code>f</code> is a root in the navigable tree.
+     * @param file a {@code File} object representing a directory
+     * @return {@code true} if {@code f} is a root in the navigable tree.
      * @see #isFileSystemRoot
      */
     @Override
@@ -239,7 +241,7 @@ public class VirtualFileSystemView extends FileSystemView {
      *
      * @param dir           the target dir
      * @param useFileHiding the hiding flag
-     * @return the list of files
+     * @return the array of files
      */
     @Override
     public File[] getFiles(File dir, boolean useFileHiding) {
@@ -251,11 +253,11 @@ public class VirtualFileSystemView extends FileSystemView {
     }
 
     /**
-     * Returns the parent directory of <code>dir</code>.
+     * Returns the parent directory of {@code dir}.
      *
-     * @param dir the <code>File</code> being queried
-     * @return the parent directory of <code>dir</code>, or
-     * <code>null</code> if <code>dir</code> is <code>null</code>
+     * @param dir the {@code File} being queried
+     * @return the parent directory of {@code dir}, or
+     * {@code null} if {@code dir} is {@code null}
      */
     @Override
     public File getParentDirectory(File dir) {
@@ -276,7 +278,7 @@ public class VirtualFileSystemView extends FileSystemView {
             Path p = parentPath;
             if (!Files.exists(p)) {
                 File ppsf = parentPath.getParent().toFile();
-                if (ppsf == null || !isFileSystem(ppsf)) {
+                if (!isFileSystem(ppsf)) {
                     p = createFileSystemRoot(p.toFile()).toPath();
                 }
             }
@@ -298,7 +300,7 @@ public class VirtualFileSystemView extends FileSystemView {
     /**
      * Return the user's default starting directory for the file chooser.
      *
-     * @return a <code>File</code> object representing the default starting folder
+     * @return a {@code File} object representing the default starting folder
      * @since 1.4
      */
     @Override
@@ -317,8 +319,8 @@ public class VirtualFileSystemView extends FileSystemView {
     /**
      * Is dir the root of a tree in the file system, such as a drive or partition. Example: Returns true for "C:\" on Windows 98.
      *
-     * @param dir a <code>File</code> object representing a directory
-     * @return <code>true</code> if <code>f</code> is a root of a filesystem
+     * @param dir a {@code File} object representing a directory
+     * @return {@code true} if {@code f} is a root of a filesystem
      * @see #isRoot
      * @since 1.4
      */
@@ -336,7 +338,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * The default implementation has no way of knowing, so always returns false.
      *
      * @param dir a directory
-     * @return <code>false</code> always
+     * @return {@code false} always
      * @since 1.4
      */
     @Override
@@ -353,7 +355,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * The default implementation has no way of knowing, so always returns false.
      *
      * @param dir a directory
-     * @return <code>false</code> always
+     * @return {@code false} always
      * @since 1.4
      */
     @Override
@@ -370,7 +372,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * The default implementation has no way of knowing, so always returns false.
      *
      * @param dir a directory
-     * @return <code>false</code> always
+     * @return {@code false} always
      * @since 1.4
      */
     @Override
@@ -400,10 +402,10 @@ public class VirtualFileSystemView extends FileSystemView {
     }
 
     /**
-     * Creates a new <code>File</code> object for <code>f</code> with correct behavior for a file system root directory.
+     * Creates a new {@code File} object for {@code f} with correct behavior for a file system root directory.
      *
-     * @param file a <code>File</code> object representing a file system root directory, for example "/" on Unix or "C:\" on Windows.
-     * @return a new <code>File</code> object
+     * @param file a {@code File} object representing a file system root directory, for example "/" on Unix or "C:\" on Windows.
+     * @return a new {@code File} object
      * @since 1.4
      */
     @Override
@@ -416,7 +418,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * <p>
      * The default implementation gets information from the NioShellFolder class.
      *
-     * @param file a <code>File</code> object
+     * @param file a {@code File} object
      * @return an icon as it would be displayed by a native file chooser
      * @see JFileChooser#getIcon
      * @since 1.4
@@ -441,7 +443,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * <p>
      * The default implementation gets information from the NioShellFolder class.
      *
-     * @param file a <code>File</code> object
+     * @param file a {@code File} object
      * @return the file name as it would be displayed by a native file chooser
      * @see JFileChooser#getName
      * @since 1.4
@@ -459,7 +461,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * <p>
      * Override for platforms with native NioShellFolder implementations.
      *
-     * @param file a <code>File</code> object
+     * @param file a {@code File} object
      * @return the file type description as it would be displayed by a native file chooser or null if no native information is available.
      * @see JFileChooser#getTypeDescription
      * @since 1.4
@@ -476,8 +478,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * Returns true if the file (directory) can be visited.
      * Returns false if the directory cannot be traversed.
      *
-     * @param file the <code>File</code>
-     * @return <code>true</code> if the file/directory can be traversed, otherwise <code>false</code>
+     * @param file the {@code File}
+     * @return {@code true} if the file/directory can be traversed, otherwise {@code false}
      * @see JFileChooser#isTraversable
      * @see javax.swing.filechooser.FileView#isTraversable
      * @since 1.4

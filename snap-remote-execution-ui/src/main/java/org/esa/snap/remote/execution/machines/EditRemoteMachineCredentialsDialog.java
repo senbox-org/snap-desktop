@@ -1,9 +1,9 @@
 package org.esa.snap.remote.execution.machines;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esa.snap.ui.loading.AbstractModalDialog;
-import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.LabelListCellRenderer;
+import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.JButton;
@@ -18,10 +18,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * Created by jcoravu on 17/12/2018.
@@ -59,12 +56,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
 
         JButton testConnectionButton = new JButton("Test connection");
         testConnectionButton.setFocusable(false);
-        testConnectionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                testConnectionButtonPressed();
-            }
-        });
+        testConnectionButton.addActionListener(event -> testConnectionButtonPressed());
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
 
@@ -126,12 +118,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
 
     @Override
     protected JPanel buildButtonsPanel(ActionListener cancelActionListener) {
-        ActionListener okActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                okButtonPressed();
-            }
-        };
+        ActionListener okActionListener = event -> okButtonPressed();
         return buildButtonsPanel("Ok", okActionListener, "Cancel", cancelActionListener);
     }
 
@@ -160,7 +147,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
         this.portNumberTextField = new JTextField();
         this.portNumberTextField.setMargin(defaultTextFieldMargins);
 
-        this.operatingSystemsComboBox = new JComboBox<String>();
+        this.operatingSystemsComboBox = new JComboBox<>();
         this.operatingSystemsComboBox.setPreferredSize(this.hostNameTextField.getPreferredSize());
         this.operatingSystemsComboBox.addItem(RemoteMachineProperties.LINUX_OPERATING_SYSTEM);
         this.operatingSystemsComboBox.addItem(RemoteMachineProperties.WINDOWS_OPERATING_SYSTEM);
@@ -174,12 +161,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
         this.operatingSystemsComboBox.setRenderer(renderer);
         this.operatingSystemsComboBox.setBackground(new Color(0, 0, 0, 0)); // set the transparent color
         this.operatingSystemsComboBox.setOpaque(true);
-        this.operatingSystemsComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent event) {
-                operatingSystemSelected();
-            }
-        });
+        this.operatingSystemsComboBox.addItemListener(event -> operatingSystemSelected());
 
         this.usernameTextField = new JTextField();
         this.usernameTextField.setMargin(defaultTextFieldMargins);
@@ -193,9 +175,9 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
 
     private void operatingSystemSelected() {
         String selectedOperatingSystemName = (String) operatingSystemsComboBox.getSelectedItem();
-        if (selectedOperatingSystemName.equals(RemoteMachineProperties.LINUX_OPERATING_SYSTEM)) {
+        if (RemoteMachineProperties.LINUX_OPERATING_SYSTEM.equals(selectedOperatingSystemName)) {
             this.sharedFolderPathLabel.setText(getLinuxSharedFolderPathLabelText());
-        } else if (selectedOperatingSystemName.equals(RemoteMachineProperties.WINDOWS_OPERATING_SYSTEM)) {
+        } else if (RemoteMachineProperties.WINDOWS_OPERATING_SYSTEM.equals(selectedOperatingSystemName)) {
             this.sharedFolderPathLabel.setText(getWindowsSharedFolderPathLabelText());
         } else {
             throw new IllegalStateException("Unknown operating system name '" + selectedOperatingSystemName + "'.");
@@ -266,7 +248,7 @@ public class EditRemoteMachineCredentialsDialog extends AbstractModalDialog {
                     showErrorDialog(message);
                     this.sharedFolderPathTextField.requestFocus();
                 } else {
-                    remoteMachineCredentials = new RemoteMachineProperties(hostName, portNumber.intValue(), username, password, operatingSystemName, sharedFolderPath);
+                    remoteMachineCredentials = new RemoteMachineProperties(hostName, portNumber, username, password, operatingSystemName, sharedFolderPath);
                     remoteMachineCredentials.setGPTFilePath(this.gptFilePathTextField.getText());
                 }
             }

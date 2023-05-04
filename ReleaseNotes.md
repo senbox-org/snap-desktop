@@ -1,6 +1,14 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.6
+    [SNAP-3473] Improve behaviour of output parameters dialog in Reprojection tool
+    [SNAP-3479] Exception in decode qualification of ZnapProductReader
+    [SNAP-3482] GDAL reader opens too many file handles
+    [SNAP-3488] Error opening any S2 product (which contains JP2 files) after installing the updates (9.0.5) and GDAL is not installed on the system
+    [SNAP-3489] Filtered images yield wrong result
+    [SNAP-3493] SampleCoding of bands can get lost during collocation
+
 # New in SNAP 9.0.5
     [SNAP-793]  Links to external pages in classifier help don't work
 	[SNAP-1584] Graph Builder - Windowed reading - Read operator generates both pixelRegion and geometryRegion in graph xml

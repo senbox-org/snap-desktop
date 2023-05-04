@@ -1,6 +1,6 @@
 package org.esa.snap.remote.execution.local.folder;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by jcoravu on 23/5/2019.
