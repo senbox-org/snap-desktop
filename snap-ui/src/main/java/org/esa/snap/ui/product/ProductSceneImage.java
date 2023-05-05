@@ -672,14 +672,40 @@ public class ProductSceneImage implements ProductLayerContext {
 //
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_DEFAULT,
-                ColorBarLayerType.PROPERTY_UNITS_TEXT_TYPE);
+                ColorBarLayerType.PROPERTY_TITLE_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
+                ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT,
+                ColorBarLayerType.PROPERTY_TITLE_ALT_TYPE);
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_ALT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,

@@ -75,6 +75,19 @@ public final class ColorBarLayerController extends DefaultConfigController {
         //
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_KEY, ColorBarLayerType.PROPERTY_TITLE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
+
+
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_KEY, ColorBarLayerType.PROPERTY_UNITS_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_NULL_KEY, ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT);
+
+
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY, ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY, ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_DEFAULT);
 
@@ -496,6 +509,45 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
                 description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
         boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_TOOLTIP)
+        boolean headerSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TOOLTIP)
+        boolean titleAltUse = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_TOOLTIP)
+        String title = ColorBarLayerType.PROPERTY_TITLE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP)
+        String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP)
+        boolean unitsAltUse = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_TOOLTIP)
+        String units = ColorBarLayerType.PROPERTY_UNITS_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
+        String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
                 key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,

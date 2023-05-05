@@ -24,8 +24,6 @@ import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
-import java.awt.*;
-
 import static org.esa.snap.core.layer.ColorBarLayerType.*;
 
 /**
@@ -48,8 +46,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Title Section
+        addHeaderSectionBreak();
+        addTitleAltUseBoolean();
         addTitleTextfield();
+        addTitleAltTextfield();
+        addUnitsAltUseBoolean();
         addUnitsTextfield();
+        addUnitsAltTextfield();
+        addUnitsNullTextfield();
         addConvertCaretBoolean();
         addUnitsParenthesisBoolean();
 
@@ -184,22 +188,111 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
     // Title / Units
 
+
+    private void addHeaderSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY,
+                PROPERTY_TITLE_TEXT_SECTION_LABEL,
+                PROPERTY_TITLE_TEXT_SECTION_TOOLTIP);
+    }
+
+    private void addTitleAltUseBoolean() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_ALT_USE_KEY,
+                PROPERTY_TITLE_ALT_USE_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_ALT_USE_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_ALT_USE_LABEL);
+        pd.setDescription(PROPERTY_TITLE_ALT_USE_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
     private void addTitleTextfield() {
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_TEXT_KEY,
-                PROPERTY_TITLE_TEXT_TYPE);
-        pd.setDefaultValue(PROPERTY_TITLE_TEXT_DEFAULT);
-        pd.setDisplayName(PROPERTY_TITLE_TEXT_LABEL);
-        pd.setDescription(PROPERTY_TITLE_TEXT_TOOLTIP);
+        boolean titleAltUse = configuration.getPropertyBool(PROPERTY_TITLE_ALT_USE_KEY, PROPERTY_TITLE_ALT_USE_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_KEY,
+                PROPERTY_TITLE_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_LABEL);
+        pd.setDescription(PROPERTY_TITLE_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(!titleAltUse);
+        addPropertyDescriptor(pd);
+
+
+        context.bindEnabledState(PROPERTY_TITLE_KEY, false,
+                PROPERTY_TITLE_ALT_USE_KEY, true);
+    }
+
+    private void addTitleAltTextfield() {
+        boolean titleAltUse = configuration.getPropertyBool(PROPERTY_TITLE_ALT_USE_KEY, PROPERTY_TITLE_ALT_USE_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_ALT_KEY,
+                PROPERTY_TITLE_ALT_TYPE);
+        pd.setDefaultValue(PROPERTY_TITLE_ALT_DEFAULT);
+        pd.setDisplayName(PROPERTY_TITLE_ALT_LABEL);
+        pd.setDescription(PROPERTY_TITLE_ALT_TOOLTIP);
+        pd.setDefaultConverter();
+        pd.setEnabled(titleAltUse);
+
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_TITLE_ALT_KEY, true,
+                PROPERTY_TITLE_ALT_USE_KEY, true);
+    }
+
+
+
+    private void addUnitsAltUseBoolean() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_ALT_USE_KEY,
+                PROPERTY_UNITS_ALT_USE_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_ALT_USE_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_ALT_USE_LABEL);
+        pd.setDescription(PROPERTY_UNITS_ALT_USE_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
 
+
+
     private void addUnitsTextfield() {
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_TEXT_KEY,
-                PROPERTY_UNITS_TEXT_TYPE);
-        pd.setDefaultValue(PROPERTY_UNITS_TEXT_DEFAULT);
-        pd.setDisplayName(PROPERTY_UNITS_TEXT_LABEL);
-        pd.setDescription(PROPERTY_UNITS_TEXT_TOOLTIP);
+        boolean unitsAltUse = configuration.getPropertyBool(PROPERTY_UNITS_ALT_USE_KEY, PROPERTY_UNITS_ALT_USE_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_KEY,
+                PROPERTY_UNITS_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_LABEL);
+        pd.setDescription(PROPERTY_UNITS_TOOLTIP);
+        pd.setEnabled(!unitsAltUse);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_KEY, true,
+                PROPERTY_UNITS_ALT_USE_KEY, false);
+    }
+
+    private void addUnitsAltTextfield() {
+        boolean unitsAltUse = configuration.getPropertyBool(PROPERTY_UNITS_ALT_USE_KEY, PROPERTY_UNITS_ALT_USE_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_ALT_KEY,
+                PROPERTY_UNITS_ALT_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_ALT_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_ALT_LABEL);
+        pd.setDescription(PROPERTY_UNITS_ALT_TOOLTIP);
+        pd.setEnabled(unitsAltUse);
+
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_UNITS_ALT_KEY, true,
+                PROPERTY_UNITS_ALT_USE_KEY, true);
+    }
+
+
+
+    private void addUnitsNullTextfield() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_NULL_KEY,
+                PROPERTY_UNITS_NULL_TYPE);
+        pd.setDefaultValue(PROPERTY_UNITS_NULL_DEFAULT);
+        pd.setDisplayName(PROPERTY_UNITS_NULL_LABEL);
+        pd.setDescription(PROPERTY_UNITS_NULL_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }

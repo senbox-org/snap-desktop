@@ -299,7 +299,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private static ImageLegend initImageLegend(RasterDataNode raster) {
         ImageLegend imageLegend = new ImageLegend(raster.getImageInfo(), raster);
 
-        imageLegend.setTitleText(getLegendHeaderText(raster));
+        imageLegend.setTitle(getLegendHeaderText(raster));
         imageLegend.setOrientation(ImageLegend.VERTICAL);
         imageLegend.setBackdropTransparency(0.0f);
         imageLegend.setTransparencyEnabled(true);

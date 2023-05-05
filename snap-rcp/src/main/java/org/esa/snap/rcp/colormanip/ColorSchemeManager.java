@@ -379,6 +379,7 @@ public class ColorSchemeManager {
             String colorBarTitle = getTextValue(schemeElement, "COLORBAR_TITLE");
             String colorBarTitleAlt = getTextValue(schemeElement, "COLORBAR_TITLE_ALT");
             String colorBarUnits = getTextValue(schemeElement, "COLORBAR_UNITS");
+            String colorBarUnitsAlt = getTextValue(schemeElement, "COLORBAR_UNITS_ALT");
             String colorBarLengthStr = getTextValue(schemeElement, "COLORBAR_LENGTH");
             String colorBarLabelScalingStr = getTextValue(schemeElement, "COLORBAR_LABEL_SCALING");
             String minStr = getTextValue(schemeElement, "MIN");
@@ -467,7 +468,7 @@ public class ColorSchemeManager {
                 enabled = validEntry;
 
                 colorSchemeInfo = new ColorSchemeInfo(id, primaryScheme, divider, displayName, description, standardCpdFilename, min, max, logScaled, enabled, universalCpdFilename,
-                        colorBarTitle, colorBarTitleAlt, colorBarLabels, colorBarUnits,  colorBarLabelScalingStr, colorBarLengthStr, colorPaletteAuxDir);
+                        colorBarTitle, colorBarTitleAlt, colorBarLabels, colorBarUnits, colorBarUnitsAlt, colorBarLabelScalingStr, colorBarLengthStr, colorPaletteAuxDir);
 
                 if (!colorSchemeInfo.isEnabled()) {
                     description = checkScheme(colorSchemeInfo);
