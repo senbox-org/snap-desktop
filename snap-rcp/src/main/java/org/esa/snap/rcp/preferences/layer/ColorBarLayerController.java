@@ -76,7 +76,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_KEY, ColorBarLayerType.PROPERTY_TITLE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
@@ -179,13 +178,13 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_WIDTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_KEY, ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_KEY, ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_KEY, ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_KEY, ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_KEY, ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_DEFAULT);
 
 
 
@@ -511,10 +510,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_TOOLTIP)
-        boolean headerSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
                 key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
@@ -548,6 +543,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
         String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_NULL_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP)
+        String unitsNull = ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
                 key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,

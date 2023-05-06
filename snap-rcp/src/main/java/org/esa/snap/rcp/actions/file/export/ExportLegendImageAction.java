@@ -1418,9 +1418,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             gbc.gridy = 0;
             gbc.gridwidth = 2;
-            JLabel headerSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_LABEL);
-            headerSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_TOOLTIP);
-            p.add(headerSectionLabel, gbc);
+            JLabel headerTitleSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_LABEL);
+            headerTitleSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_TOOLTIP);
+            p.add(headerTitleSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -1441,6 +1441,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             titleAltParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP);
             titleAltParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP);
 
+
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            JLabel headerUnitsSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL);
+            headerUnitsSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP);
+            p.add(headerUnitsSectionLabel, gbc);
 
             gbc.gridy++;
             gbc.gridwidth = 2;

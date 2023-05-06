@@ -46,12 +46,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Title Section
-        addHeaderSectionBreak();
-        addTitleAltUseBoolean();
+        addHeaderTitleSectionBreak();
         addTitleTextfield();
+        addTitleAltUseBoolean();
+
         addTitleAltTextfield();
-        addUnitsAltUseBoolean();
+        addHeaderUnitsSectionBreak();
         addUnitsTextfield();
+        addUnitsAltUseBoolean();
+
         addUnitsAltTextfield();
         addUnitsNullTextfield();
         addConvertCaretBoolean();
@@ -189,10 +192,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     // Title / Units
 
 
-    private void addHeaderSectionBreak() {
-        addSectionBreak(ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY,
-                PROPERTY_TITLE_TEXT_SECTION_LABEL,
-                PROPERTY_TITLE_TEXT_SECTION_TOOLTIP);
+    private void addHeaderTitleSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY,
+                PROPERTY_HEADER_TITLE_SECTION_LABEL,
+                PROPERTY_HEADER_TITLE_SECTION_TOOLTIP);
     }
 
     private void addTitleAltUseBoolean() {
@@ -239,6 +242,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
 
+    private void addHeaderUnitsSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
+                PROPERTY_HEADER_UNITS_SECTION_LABEL,
+                PROPERTY_HEADER_UNITS_SECTION_TOOLTIP);
+    }
 
     private void addUnitsAltUseBoolean() {
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_ALT_USE_KEY,
