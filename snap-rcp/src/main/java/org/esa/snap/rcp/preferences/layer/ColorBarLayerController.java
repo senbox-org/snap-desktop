@@ -76,11 +76,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
 
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_KEY, ColorBarLayerType.PROPERTY_TITLE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
 
-
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_KEY, ColorBarLayerType.PROPERTY_UNITS_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
@@ -510,6 +511,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
         boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
 
+        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_TOOLTIP)
+        boolean headerTitleSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
                 key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
@@ -527,6 +532,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
         String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
 
 
+        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP)
+        boolean headerUnitsSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,

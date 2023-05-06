@@ -663,13 +663,12 @@ public class ProductSceneImage implements ProductLayerContext {
     static void applyColorBarLayerStyle(PropertyMap configuration, Layer layer, ImageInfo imageInfo) {
         final PropertySet layerConfiguration = layer.getConfiguration();
 
-//
-//        // Title Section
-//
-//        addSectionPropertyToLayerConfiguration(configuration, layer,
-//                ColorBarLayerType.PROPERTY_TITLE_TEXT_SECTION_KEY);
-//
-//
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT,
+                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TYPE);
+
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY);
@@ -751,10 +750,6 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
-                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT,
-                ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,

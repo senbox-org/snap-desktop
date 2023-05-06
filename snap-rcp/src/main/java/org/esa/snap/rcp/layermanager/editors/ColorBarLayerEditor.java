@@ -45,20 +45,22 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         context = getBindingContext();
 
 
+        addSchemesCheckbox();
+
         // Title Section
         addHeaderTitleSectionBreak();
         addTitleTextfield();
+        addTitleAltTextfield();
         addTitleAltUseBoolean();
 
-        addTitleAltTextfield();
+
         addHeaderUnitsSectionBreak();
         addUnitsTextfield();
+        addUnitsAltTextfield();
         addUnitsAltUseBoolean();
 
-        addUnitsAltTextfield();
-        addUnitsNullTextfield();
-        addConvertCaretBoolean();
-        addUnitsParenthesisBoolean();
+
+
 
 
         // Orientation Section
@@ -84,7 +86,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
         addLabelValuesForceDecimalPlaces();
-        addWeightTolerance();
+//        addWeightTolerance();
 
 
 
@@ -119,6 +121,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addUnitsFontName();
         addUnitsFontColor();
 
+        addUnitsNullTextfield();
+        addConvertCaretBoolean();
+        addUnitsParenthesisBoolean();
 
         // Labels Section
         addLabelsSectionBreak();
@@ -188,6 +193,17 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(descriptor);
     }
 
+
+
+    private void addSchemesCheckbox() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                PROPERTY_SCHEME_AUTO_APPLY_TYPE);
+        pd.setDefaultValue(PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
+        pd.setDisplayName(PROPERTY_SCHEME_AUTO_APPLY_LABEL);
+        pd.setDescription(PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
 
     // Title / Units
 

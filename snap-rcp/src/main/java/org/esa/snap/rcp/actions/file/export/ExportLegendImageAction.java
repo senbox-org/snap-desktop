@@ -1442,7 +1442,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             titleAltParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP);
 
 
-            gbc.gridy = 0;
+            gbc.gridy++;
             gbc.gridwidth = 2;
             JLabel headerUnitsSectionLabel = sectionBreak(ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL);
             headerUnitsSectionLabel.setToolTipText(ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP);
