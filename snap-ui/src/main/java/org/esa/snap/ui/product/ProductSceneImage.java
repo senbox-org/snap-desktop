@@ -1053,6 +1053,49 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_DEFAULT,
                 ColorBarLayerType.PROPERTY_LEGEND_BORDER_COLOR_TYPE);
 
+
+        // Sizing Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY);
+
+
+
+        // Margins Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_TOP_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_BOTTOM_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_LEFTSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_BORDER_GAP_RIGHTSIDE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_TITLE_GAP_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_DEFAULT,
+                ColorBarLayerType.PROPERTY_LEGEND_LABEL_GAP_TYPE);
+
     }
 
 

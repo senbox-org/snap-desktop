@@ -54,26 +54,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addTitleAltUseBoolean();
 
 
+        // Units Section
         addHeaderUnitsSectionBreak();
         addUnitsTextfield();
         addUnitsAltTextfield();
         addUnitsAltUseBoolean();
-
-
-
-
-
-        // Orientation Section
-        addOrientationSectionBreak();
-        addAlignment();
-        addTitleAnchor();
-
-        // Color Bar Location Section
-//        addLocationSectionBreak();
-        addLocationPlacement();
-        addLocationOffset();
-        addLocationShift();
-        addLocationInside();
 
 
         // Label Values
@@ -82,30 +67,37 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesCount();
         addLabelValuesActual();
         addAutoPopulateLabelValues();
-        addReversePalette();
-        addLabelValuesScalingFactor();
-        addLabelValuesDecimalPlaces();
-        addLabelValuesForceDecimalPlaces();
+
 //        addWeightTolerance();
 
 
+        // Orientation Section
+        addOrientationSectionBreak();
+        addAlignment();
+        addTitleAnchor();
+        addReversePalette();
+
+
+        // Color Bar Location Section
+        addLocationSectionBreak();
+        addLocationInside();
+        addLocationPlacement();
+        addLocationOffset();
+        addLocationShift();
 
 
 
 
 
-        // Color Bar Scaling Section
-        addSizeScalingSectionBreak();
-        addImageScaling();
-        addImageScalingPercent();
-        addColorBarLength();
-        addColorBarWidth();
+
+
+
+
 
 
         // Title Section
         addTitleSectionBreak();
         addTitleShow();
-        addTitleFontSize();
         addTitleFontBold();
         addTitleFontItalic();
         addTitleFontName();
@@ -115,7 +107,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Units Section
         addUnitsSectionBreak();
         addUnitsShow();
-        addUnitsFontSize();
         addUnitsFontBold();
         addUnitsFontItalic();
         addUnitsFontName();
@@ -128,11 +119,13 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Labels Section
         addLabelsSectionBreak();
         addLabelsShow();
-        addLabelsFontSize();
         addLabelsFontBold();
         addLabelsFontItalic();
         addLabelsFontName();
         addLabelsFontColor();
+        addLabelValuesScalingFactor();
+        addLabelValuesDecimalPlaces();
+        addLabelValuesForceDecimalPlaces();
 
 
         // Tickmarks Section
@@ -164,7 +157,22 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addBackdropColor();
 
 
-        // Legend Border Gap Section
+        // Color Bar Scaling Section
+        addSizeScalingSectionBreak();
+        addImageScaling();
+        addImageScalingPercent();
+
+
+
+        // Sizing Section
+        addLegendSizingSectionBreak();
+        addTitleFontSize();
+        addUnitsFontSize();
+        addLabelsFontSize();
+        addColorBarLength();
+        addColorBarWidth();
+
+        // Margins Section
         addLegendBorderGapSectionBreak();
         addLegendBorderGapTop();
         addLegendBorderGapBottom();
@@ -1251,6 +1259,14 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         context.bindEnabledState(PROPERTY_LEGEND_BORDER_COLOR_KEY, PROPERTY_LEGEND_BORDER_SHOW_KEY);
     }
 
+
+    // Legend Border Gap Section
+
+    private void  addLegendSizingSectionBreak() {
+        addSectionBreak(ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY,
+                ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_LABEL,
+                ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_TOOLTIP);
+    }
 
 
     // Legend Border Gap Section
