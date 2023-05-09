@@ -96,8 +96,8 @@
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-javahelp</artifactId>
+            <groupId>eu.esa.snap.netbeans</groupId>
+            <artifactId>snap-help-system</artifactId>
         </dependency>
     </dependencies>
 

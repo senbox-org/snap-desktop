@@ -50,15 +50,11 @@
             </plugin>
         </plugins>
     </build>
-	
+
     <dependencies>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-javahelp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
+            <groupId>eu.esa.snap.netbeans</groupId>
+            <artifactId>snap-help-system</artifactId>
         </dependency>
     </dependencies>
 </project>

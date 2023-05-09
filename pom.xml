@@ -18,6 +18,7 @@
     <properties>
         <netbeans.version>RELEASE113</netbeans.version>
         <snap-gui-lib.version>1.2.0</snap-gui-lib.version>
+        <snap-help-system.version>1.0.0</snap-help-system.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.java.binaries>**/classes</sonar.java.binaries>
@@ -77,11 +78,6 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-autoupdate-ui</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-javahelp</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
@@ -186,6 +182,11 @@
                 <groupId>eu.esa.snap.netbeans</groupId>
                 <artifactId>snap-gui-lib</artifactId>
                 <version>${snap-gui-lib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.esa.snap.netbeans</groupId>
+                <artifactId>snap-help-system</artifactId>
+                <version>${snap-help-system.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
