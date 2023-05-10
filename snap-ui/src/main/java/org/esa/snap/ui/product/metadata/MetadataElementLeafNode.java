@@ -9,7 +9,6 @@ import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
-import java.awt.Image;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +30,6 @@ class MetadataElementLeafNode extends AbstractNode {
         content.add(leaf);
         setName(leaf.getName());
         createSheet();
-    }
-
-    @Override
-    public Image getIcon(int type) {
-        return new EmptyImage();
-    }
-
-    @Override
-    public Image getOpenedIcon(int type) {
-        return getIcon(type);
     }
 
     @Override
