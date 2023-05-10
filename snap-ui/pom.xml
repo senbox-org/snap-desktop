@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>10.0.0-SNAPSHOT</version>
+        <version>10.0.0-JDK11SHOT</version>
     </parent>
 
     <artifactId>snap-ui</artifactId>
@@ -70,12 +70,6 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-tango</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-            <version>${javahelp.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -85,17 +79,6 @@
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-core</artifactId>
             <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>tec.uom</groupId>
-            <artifactId>uom-se</artifactId>
-            <version>1.0.8</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.measure</groupId>
-                    <artifactId>unit-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

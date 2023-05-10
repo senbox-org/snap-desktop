@@ -16,11 +16,7 @@
 
 package org.esa.snap.rcp.layermanager.layersrc.shapefile;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DefaultDomConverter;
 import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
@@ -33,17 +29,17 @@ import com.bc.ceres.glayer.annotations.LayerTypeMetadata;
 import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
 import com.thoughtworks.xstream.io.xml.XppDomWriter;
 import com.thoughtworks.xstream.io.xml.XppReader;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
 import org.esa.snap.core.util.FeatureUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.SLDParser;
-import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
+import org.geotools.xml.styling.SLDParser;
+import org.geotools.xml.styling.SLDTransformer;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
@@ -62,7 +58,7 @@ import java.util.List;
  * Unstable API. Use at own risk.
  */
 @LayerTypeMetadata(name = "FeatureLayerType",
-                   aliasNames = {"FeatureLayerType"})
+        aliasNames = {"FeatureLayerType"})
 public class FeatureLayerType extends LayerType {
 
     public static final String PROPERTY_NAME_SLD_STYLE = "sldStyle";
@@ -99,12 +95,12 @@ public class FeatureLayerType extends LayerType {
                 FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION_CLIP_GEOMETRY);
 
         fc = FeatureUtils.clipCollection(fc,
-                                         featureCrs,
-                                         clipGeometry,
-                                         DefaultGeographicCRS.WGS84,
-                                         null,
-                                         targetCrs,
-                                         ProgressMonitor.NULL);
+                featureCrs,
+                clipGeometry,
+                DefaultGeographicCRS.WGS84,
+                null,
+                targetCrs,
+                ProgressMonitor.NULL);
 
         return new FeatureLayer(this, fc, configuration);
     }

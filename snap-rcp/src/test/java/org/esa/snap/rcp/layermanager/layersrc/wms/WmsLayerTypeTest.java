@@ -7,7 +7,7 @@ import com.bc.ceres.glayer.LayerContext;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.VirtualBand;
-import org.geotools.data.ows.CRSEnvelope;
+import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Assume;
 import org.junit.BeforeClass;

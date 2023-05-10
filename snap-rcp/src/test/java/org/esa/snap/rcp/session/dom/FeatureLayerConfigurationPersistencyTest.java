@@ -20,6 +20,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
+import org.geotools.styling.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
@@ -30,13 +31,6 @@ import org.esa.snap.rcp.layermanager.layersrc.shapefile.FeatureLayerType;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Fill;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory;
@@ -80,7 +74,6 @@ public class FeatureLayerConfigurationPersistencyTest extends AbstractLayerConfi
         return new FeatureLayer(layerType, fc, configuration);
     }
 
-    @SuppressWarnings({"deprecation"})
     private static Style createStyle() {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
         FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
@@ -90,14 +83,16 @@ public class FeatureLayerConfigurationPersistencyTest extends AbstractLayerConfi
                 filterFactory.literal(0.5)
         );
         symbolizer.setFill(fill);
-        Rule rule = styleFactory.createRule();
-        rule.setSymbolizers(new Symbolizer[]{symbolizer});
-        FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle();
-        fts.setRules(new Rule[]{rule});
 
-        Style style = styleFactory.createStyle();
+        StyleBuilder styleBuilder = new StyleBuilder();
+        Rule rule = styleBuilder.createRule(symbolizer);
+        //rule.setSymbolizers(new Symbolizer[]{symbolizer});
+        FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(rule);
+        //fts.setRules(new Rule[]{rule});
+
+        // @todo 1 tb/tb test this 2023-04-26
+        StyleImpl style = (StyleImpl) styleFactory.createStyle();
         style.addFeatureTypeStyle(fts);
         return style;
     }
-
 }

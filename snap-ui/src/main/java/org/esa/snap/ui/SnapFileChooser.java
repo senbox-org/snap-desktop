@@ -27,23 +27,31 @@ import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.VFSPath;
 import org.esa.snap.vfs.ui.file.chooser.VirtualFileSystemView;
-import sun.swing.FilePane;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -57,12 +65,10 @@ public class SnapFileChooser extends JFileChooser {
     private static final String PREFERENCES_BOUNDS_OPEN = "snap.fileChooser.dialogBounds.open";
     private static final String PREFERENCES_BOUNDS_SAVE = "snap.fileChooser.dialogBounds.save";
     private static final String PREFERENCES_BOUNDS_CUSTOM = "snap.fileChooser.dialogBounds.custom";
-    private static final String PREFERENCES_VIEW_TYPE = "snap.fileChooser.viewType";
+
     private final ResizeHandler resizeHandler;
-    private final CloseHandler windowCloseHandler;
     private final Preferences snapPreferences;
     private String lastFilename;
-    private Rectangle dialogBounds;
 
     public SnapFileChooser() {
         this(null, null);
@@ -81,7 +87,6 @@ public class SnapFileChooser extends JFileChooser {
 
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
-        windowCloseHandler = new CloseHandler();
         init();
     }
 
@@ -91,13 +96,13 @@ public class SnapFileChooser extends JFileChooser {
             throw new NullPointerException("fileSystemView is null");
         }
         Path configFile = VFSRemoteFileRepositoriesController.getDefaultConfigFilePath();
-        List<VFSRemoteFileRepository> vfsRepositories = null;
+        List<VFSRemoteFileRepository> vfsRepositories;
         try {
             vfsRepositories = VFSRemoteFileRepositoriesController.getVFSRemoteFileRepositories(configFile);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        if (vfsRepositories != null && !vfsRepositories.isEmpty()) {
+        if (!vfsRepositories.isEmpty()) {
             VirtualFileSystemView fileSystemViewWrapper = new VirtualFileSystemView(fileSystemView, vfsRepositories) {
                 @Override
                 protected void notifyUser(String title, String message) {
@@ -150,8 +155,6 @@ public class SnapFileChooser extends JFileChooser {
             dialog.setBounds(dialogBounds);
         }
         dialog.addComponentListener(resizeHandler);
-        dialog.addWindowListener(windowCloseHandler);
-        initViewType();
 
         return dialog;
     }
@@ -172,22 +175,12 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     /**
-     * Gets the dialog bounds to be used for the next {@link #showDialog(java.awt.Component, String)} call.
-     *
-     * @return the dialog bounds
-     */
-    public Rectangle getDialogBounds() {
-        return dialogBounds;
-    }
-
-    /**
      * Sets the dialog bounds to be used for the next {@link #showDialog(java.awt.Component, String)} call.
      *
      * @param rectangle the dialog bounds
      */
     public void setDialogBounds(Rectangle rectangle) {
-        this.dialogBounds = rectangle;
-        storeDialogBounds(dialogBounds);
+        storeDialogBounds(rectangle);
     }
 
     /**
@@ -255,31 +248,6 @@ public class SnapFileChooser extends JFileChooser {
         return null;
     }
 
-
-    /**
-     * Checks whether or not the given filename with one of the known file extensions. The known file extension of this
-     * file chooser are those, which are registered using a {@link SnapFileFilter}.
-     *
-     * @param filename the filename to be checked
-     * @return {@code true}, if the given file has a "known" extension
-     * @see SnapFileFilter
-     */
-    public boolean checkExtension(String filename) {
-        if (filename != null) {
-            FileFilter[] fileFilters = getChoosableFileFilters();
-            if (fileFilters != null) {
-                for (FileFilter filter : fileFilters) {
-                    if (filter instanceof SnapFileFilter) {
-                        final SnapFileFilter snapFileFilter = (SnapFileFilter) filter;
-                        if (snapFileFilter.checkExtension(filename)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     @Override
     public FileFilter[] getChoosableFileFilters() {
@@ -430,33 +398,9 @@ public class SnapFileChooser extends JFileChooser {
         return null;
     }
 
-    private void initViewType() {
-        FilePane filePane = findFilePane(this);
-        if (filePane != null) {
-            int viewType = snapPreferences.getInt(PREFERENCES_VIEW_TYPE, FilePane.VIEWTYPE_LIST);
-            filePane.setViewType(viewType);
-        }
-    }
-
-    private FilePane findFilePane(Container root) {
-        Component[] components = root.getComponents();
-        for (Component component : components) {
-            if (component instanceof FilePane) {
-                return (FilePane) component;
-            }
-            if (component instanceof Container) {
-                FilePane filePane = findFilePane((Container) component);
-                if (filePane != null) {
-                    return filePane;
-                }
-            }
-        }
-        return null;
-    }
-
     private static class CompoundDocumentIcon implements Icon {
 
-        private static final Icon compoundDocumentIcon = new ImageIcon(CompoundDocumentIcon.class.getResource("CompoundDocument12.png"));
+        private static final Icon compoundDocumentIcon = new ImageIcon(Objects.requireNonNull(CompoundDocumentIcon.class.getResource("CompoundDocument12.png")));
         private final Icon baseIcon;
 
         public CompoundDocumentIcon(Icon baseIcon) {
@@ -467,8 +411,8 @@ public class SnapFileChooser extends JFileChooser {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             baseIcon.paintIcon(c, g, x, y);
             compoundDocumentIcon.paintIcon(c, g,
-                                           x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
-                                           y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
+                    x + baseIcon.getIconWidth() - compoundDocumentIcon.getIconWidth(),
+                    y + baseIcon.getIconHeight() - compoundDocumentIcon.getIconHeight());
         }
 
         @Override
@@ -495,23 +439,4 @@ public class SnapFileChooser extends JFileChooser {
         }
     }
 
-    private class CloseHandler extends WindowAdapter {
-
-        @Override
-        public void windowClosed(WindowEvent e) {
-            FilePane filePane = findFilePane(SnapFileChooser.this);
-            if (filePane != null) {
-                snapPreferences.putInt(PREFERENCES_VIEW_TYPE, filePane.getViewType());
-                flushPreferences();
-            }
-        }
-
-        private void flushPreferences() {
-            try {
-                snapPreferences.flush();
-            } catch (BackingStoreException bse) {
-                SystemUtils.LOG.severe("Could not store preferences: " + bse.getMessage());
-            }
-        }
-    }
 }
