@@ -267,13 +267,6 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         formatNameComboBoxSize.height = textFieldPreferredHeight;
         productFormatNameComboBox.setPreferredSize(formatNameComboBoxSize);
         productFormatNameComboBox.setMinimumSize(formatNameComboBoxSize);
-        LabelListCellRenderer<String> renderer = new LabelListCellRenderer<>(defaultListItemMargins) {
-    private static JComboBox<String> buildProductFormatNamesComboBox(Insets defaultListItemMargins, int textFieldPreferredHeight, String[] availableFormatNames) {
-        JComboBox<String> productFormatNameComboBox = new JComboBox<>(availableFormatNames);
-        Dimension formatNameComboBoxSize = productFormatNameComboBox.getPreferredSize();
-        formatNameComboBoxSize.height = textFieldPreferredHeight;
-        productFormatNameComboBox.setPreferredSize(formatNameComboBoxSize);
-        productFormatNameComboBox.setMinimumSize(formatNameComboBoxSize);
         LabelListCellRenderer<String> renderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
             @Override
             protected String getItemDisplayText(String value) {
@@ -487,7 +480,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         JButton slaveGraphBrowseButton = SwingUtils.buildBrowseButton(slaveGraphBrowseButtonListener, textFieldPreferredHeight);
 
         this.sourceProductsList = new JList<>(new DefaultListModel<>());
-        LabelListCellRenderer<String> sourceProductsRenderer = new LabelListCellRenderer<>(defaultListItemMargins) {
+        LabelListCellRenderer<String> sourceProductsRenderer = new LabelListCellRenderer<String>(defaultListItemMargins) {
             @Override
             protected String getItemDisplayText(String value) {
                 return value;//remoteTopologyPanel.normalizeFileSeparator(value.toString());
