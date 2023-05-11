@@ -548,12 +548,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         // Orientation
 
-        int orientationInt = imageLegend.getOrientation();
-        String orientationString = (orientationInt == ImageLegend.VERTICAL) ? ColorBarLayerType.OPTION_VERTICAL : ColorBarLayerType.OPTION_HORIZONTAL;
-
-        param = new Parameter(PROPERTY_ORIENTATION_KEY2, orientationString);
+        param = new Parameter(PROPERTY_ORIENTATION_KEY2, imageLegend.getOrientation());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_ORIENTATION_LABEL);
-        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1, ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2});
+        param.getProperties().setValueSet(new String[]{ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1, ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2, ColorBarLayerType.PROPERTY_ORIENTATION_OPTION3});
         param.getProperties().setValueSetBound(true);
         paramGroup.addParameter(param);
 
@@ -1034,11 +1031,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         // Orientation
 
         value = legendParamGroup.getParameter(PROPERTY_ORIENTATION_KEY2).getValue();
-        if (ColorBarLayerType.OPTION_VERTICAL.equals(value)) {
-            imageLegend.setOrientation(ImageLegend.VERTICAL);
-        } else {
-            imageLegend.setOrientation(ImageLegend.HORIZONTAL);
-        }
+        imageLegend.setOrientation((String) value);
 
 
         value = legendParamGroup.getParameter(PROPERTY_LOCATION_TITLE_VERTICAL_KEY2).getValue();
@@ -1416,7 +1409,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
             String orientation = (String) orientationParam.getValue();
-            if (ColorBarLayerType.OPTION_VERTICAL.equals(orientation)) {
+            if (ColorBarLayerType.OPTION_VERTICAL.equals(orientation) || ColorBarLayerType.OPTION_BEST_FIT.equals(orientation)) {
                 titleAnchorParam.setUIEnabled(true);
             } else {
                 titleAnchorParam.setUIEnabled(false);

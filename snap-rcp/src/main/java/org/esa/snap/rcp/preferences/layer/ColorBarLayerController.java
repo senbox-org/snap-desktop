@@ -336,7 +336,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         String alignment = orientationComboBoxProperty.getValue();
 
-        boolean enabled = (ColorBarLayerType.OPTION_VERTICAL.equals(alignment)) ? true : false;
+        boolean enabled = (ColorBarLayerType.OPTION_VERTICAL.equals(alignment) || ColorBarLayerType.OPTION_BEST_FIT.equals(alignment)) ? true : false;
 
         context.setComponentsEnabled(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, enabled);
     }
@@ -604,7 +604,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
                 description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
                 valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
-                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2})
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2,
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION3})
         String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,

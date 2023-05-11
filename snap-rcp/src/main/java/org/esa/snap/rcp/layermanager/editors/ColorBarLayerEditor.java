@@ -384,7 +384,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void addTitleAnchor() {
         String alignment = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
 
-        boolean enabled = (OPTION_VERTICAL.equals(alignment)) ? true : false;
+        boolean enabled = (OPTION_VERTICAL.equals(alignment)  || OPTION_BEST_FIT.equals(alignment)) ? true : false;
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
         pd.setDefaultValue(PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
@@ -398,6 +398,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true,
                 PROPERTY_ORIENTATION_KEY, OPTION_VERTICAL);
+
+        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true,
+                PROPERTY_ORIENTATION_KEY, OPTION_BEST_FIT);
     }
 
 
