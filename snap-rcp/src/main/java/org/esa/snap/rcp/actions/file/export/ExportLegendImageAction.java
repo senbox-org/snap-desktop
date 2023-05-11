@@ -386,7 +386,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         final RasterDataNode raster = view.getRaster();
 
-//        imageLegend.initLegendWithPreferences(configuration, raster);
+        imageLegend.initLegendWithPreferences(configuration, raster);
 
         boolean autoApplySchemes = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
                 ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
@@ -399,7 +399,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         boolean allowWavelengthZero = true;
 
 
-        if (!legendInitialized) {
+//        if (!legendInitialized) {
             if (autoApplySchemes) {//auto-apply
                 ColorSchemeInfo schemeInfo = ColorSchemeUtils.getColorPaletteInfoByBandNameLookup(view);
 
@@ -428,10 +428,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                     }
 
                     if (schemeInfo.getColorBarLengthStr() != null && schemeInfo.getColorBarLengthStr().trim().length() > 0) {
-                        imageLegend.setColorBarLength(Integer.valueOf(schemeInfo.getColorBarLengthStr()));
+                        imageLegend.setColorBarLength(Integer.parseInt(schemeInfo.getColorBarLengthStr()));
                     }
                     if (schemeInfo.getColorBarLabelScalingStr() != null && schemeInfo.getColorBarLabelScalingStr().trim().length() > 0) {
-                        imageLegend.setScalingFactor(Double.valueOf(schemeInfo.getColorBarLabelScalingStr()));
+                        imageLegend.setScalingFactor(Double.parseDouble(schemeInfo.getColorBarLabelScalingStr()));
                     }
                 }
             }
@@ -440,23 +440,23 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             imageLegend.setTitle(convertedTitle);
 
             String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, units, allowWavelengthZero);
-            imageLegend.setTitle(convertedTitleAlt);
+            imageLegend.setTitleAlt(convertedTitleAlt);
 
             String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, units, allowWavelengthZero);
-            imageLegend.setTitle(convertedUnits);
+            imageLegend.setUnits(convertedUnits);
 
             String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, units, allowWavelengthZero);
-            imageLegend.setTitle(convertedUnitsAlt);
+            imageLegend.setUnitsAlt(convertedUnitsAlt);
 
 
 
-            legendInitialized = true;
-        }
+//            legendInitialized = true;
+//        }
 
 
 
 
-        imageLegend.initLegendWithPreferences(configuration, raster);
+//        imageLegend.initLegendWithPreferences(configuration, raster);
     }
 
 
