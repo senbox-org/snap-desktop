@@ -734,6 +734,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_ORIENTATION_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_KEY,
+                ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT,
+                ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT,
                 ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);

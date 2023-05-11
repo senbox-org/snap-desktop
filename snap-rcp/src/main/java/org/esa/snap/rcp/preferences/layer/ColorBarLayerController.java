@@ -110,6 +110,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY, ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY, ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_KEY, ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY, ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT);
@@ -607,6 +608,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
                         ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2,
                         ColorBarLayerType.PROPERTY_ORIENTATION_OPTION3})
         String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_KEY,
+                description = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_TOOLTIP)
+        double sceneAspectBestFit = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
                 key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,

@@ -74,6 +74,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Orientation Section
         addOrientationSectionBreak();
         addAlignment();
+        addSceneAspectBestFit();
         addTitleAnchor();
         addReversePalette();
 
@@ -379,6 +380,18 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
     }
+
+    private void addSceneAspectBestFit() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_SCENE_ASPECT_BEST_FIT_KEY, PROPERTY_SCENE_ASPECT_BEST_FIT_TYPE);
+
+        pd.setDisplayName(PROPERTY_SCENE_ASPECT_BEST_FIT_LABEL);
+        pd.setDescription(PROPERTY_SCENE_ASPECT_BEST_FIT_TOOLTIP);
+        pd.setDefaultValue(PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT);
+
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
 
 
     private void addTitleAnchor() {
