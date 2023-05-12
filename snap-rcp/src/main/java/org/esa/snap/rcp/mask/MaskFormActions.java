@@ -23,12 +23,8 @@ import com.bc.ceres.grender.Viewport;
 import org.esa.snap.core.dataio.dimap.DimapProductConstants;
 import org.esa.snap.core.dataio.dimap.spi.DimapPersistable;
 import org.esa.snap.core.dataio.dimap.spi.DimapPersistence;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.datamodel.Mask.ImageType;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.jexp.ParseException;
@@ -49,26 +45,16 @@ import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.openide.windows.TopComponent;
 
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -77,12 +63,8 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -173,7 +155,7 @@ class MaskFormActions {
 
         private NewBandMathsAction(MaskForm maskForm) {
             super(maskForm, "BandMath24.png", "bandMathButton",
-                  "Creates a new mask based on a logical band maths expression");
+                    "Creates a new mask based on a logical band maths expression");
         }
 
         @Override
@@ -206,9 +188,9 @@ class MaskFormActions {
 
         private NewVectorDataNodeAction(MaskForm maskForm) {
             super(maskForm,
-                  "icons/NewVectorDataNode24.gif",
-                  "newGeometry",
-                  "Creates a new mask based on a new geometry container (lines and polygons))");
+                    "icons/NewVectorDataNode24.gif",
+                    "newGeometry",
+                    "Creates a new mask based on a new geometry container (lines and polygons))");
             action = new CreateVectorDataNodeAction();
         }
 
@@ -229,7 +211,7 @@ class MaskFormActions {
 
         private NewIntersectionAction(MaskForm maskForm) {
             super(maskForm, "Intersection24.png", "intersectionButton",
-                  "Creates the intersection of the selected masks");
+                    "Creates the intersection of the selected masks");
         }
 
         @Override
@@ -247,7 +229,7 @@ class MaskFormActions {
 
         private NewComplementAction(MaskForm maskForm) {
             super(maskForm, "Complement24.png", "complementButton",
-                  "Creates the complement (of the union) of the selected mask(s)");
+                    "Creates the complement (of the union) of the selected mask(s)");
         }
 
         @Override
@@ -266,7 +248,7 @@ class MaskFormActions {
 
         private NewRangeAction(MaskForm maskForm) {
             super(maskForm, "Range24.png", "rangeButton",
-                  "Creates a new mask based on a value range");
+                    "Creates a new mask based on a value range");
         }
 
         @Override
@@ -294,7 +276,7 @@ class MaskFormActions {
                 if (expectedSize != null
                         && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, referencedRaster)) {
                     String message = String.format("'%s' does not have the expected size of %d x %d pixels.",
-                                                   model.getRasterName(), expectedSize.width, expectedSize.height);
+                            model.getRasterName(), expectedSize.width, expectedSize.height);
                     Dialogs.showError(message);
                     return;
                 }
@@ -321,7 +303,7 @@ class MaskFormActions {
 
         private NewDifferenceAction(MaskForm maskForm) {
             super(maskForm, "Difference24.png", "differenceButton",
-                  "Creates the difference of the selected masks (in top-down order)");
+                    "Creates the difference of the selected masks (in top-down order)");
         }
 
         @Override
@@ -348,7 +330,7 @@ class MaskFormActions {
 
         private NewInvDifferenceAction(MaskForm maskForm) {
             super(maskForm, "InvDifference24.png", "invDifferenceButton",
-                  "Creates the difference of the selected masks (in bottom-up order)");
+                    "Creates the difference of the selected masks (in bottom-up order)");
         }
 
         @Override
@@ -378,7 +360,7 @@ class MaskFormActions {
 
         private NewUnionAction(MaskForm maskForm) {
             super(maskForm, "Union24.png", "unionButton",
-                  "Creates the union of the selected masks");
+                    "Creates the union of the selected masks");
         }
 
         @Override
@@ -451,10 +433,10 @@ class MaskFormActions {
             final JFileChooser fileChooser = new SnapFileChooser();
             fileChooser.setDialogTitle("Import Masks from file");
             final FileFilter bmdFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE", ".bmd",
-                                                            "Bitmask definition files (*.bmd)");
+                    "Bitmask definition files (*.bmd)");
             fileChooser.addChoosableFileFilter(bmdFilter);
             final FileFilter bmdxFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE_XML", ".bmdx",
-                                                             "Bitmask definition xml files (*.bmdx)");
+                    "Bitmask definition xml files (*.bmdx)");
             fileChooser.addChoosableFileFilter(bmdxFilter);
             final FileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
             fileChooser.setFileFilter(xmlFilter);
@@ -499,13 +481,12 @@ class MaskFormActions {
                 final SAXBuilder saxBuilder = new SAXBuilder();
                 final Document document = saxBuilder.build(file);
                 final Element rootElement = document.getRootElement();
-                @SuppressWarnings({"unchecked"})
-                final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_BITMASK_DEFINITION);
+                @SuppressWarnings({"unchecked"}) final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_BITMASK_DEFINITION);
                 final Product product = getMaskForm().getProduct();
                 for (Element element : children) {
                     Mask mask = Mask.BandMathsType.createFromBitmaskDef(element,
-                                                                        product.getSceneRasterWidth(),
-                                                                        product.getSceneRasterHeight());
+                            product.getSceneRasterWidth(),
+                            product.getSceneRasterHeight());
                     product.getMaskGroup().add(mask);
                 }
             } catch (Exception e) {
@@ -518,8 +499,7 @@ class MaskFormActions {
                 final SAXBuilder saxBuilder = new SAXBuilder();
                 final Document document = saxBuilder.build(file);
                 final Element rootElement = document.getRootElement();
-                @SuppressWarnings({"unchecked"})
-                final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_MASK);
+                @SuppressWarnings({"unchecked"}) final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_MASK);
                 final Product product = getMaskForm().getProduct();
                 for (final Element child : children) {
                     final DimapPersistable persistable = DimapPersistence.getPersistable(child);
@@ -755,8 +735,8 @@ class MaskFormActions {
                 final RangeEditorDialog rangeEditorDialog = new RangeEditorDialog(window, model);
                 if (rangeEditorDialog.show() == AbstractDialog.ID_OK) {
                     final String description = String.format("%s <= %s <= %s",
-                                                             model.getMinValue(), model.getRasterName(),
-                                                             model.getMaxValue());
+                            model.getMinValue(), model.getRasterName(),
+                            model.getMaxValue());
                     selectedMask.setDescription(description);
                     selectedMaskConfig.setValue(Mask.RangeType.PROPERTY_NAME_MINIMUM, model.getMinValue());
                     selectedMaskConfig.setValue(Mask.RangeType.PROPERTY_NAME_MAXIMUM, model.getMaxValue());
@@ -796,7 +776,7 @@ class MaskFormActions {
             Property[] models = selectedConfig.getProperties();
             for (Property model : models) {
                 mask.getImageConfig().setValue(model.getDescriptor().getName(),
-                                               model.getValue());
+                        model.getValue());
             }
             getMaskForm().addMask(mask);
         }
@@ -859,7 +839,7 @@ class MaskFormActions {
             if (expectedSize != null
                     && !ProductUtils.areRastersEqualInSize(expectedSize.width, expectedSize.height, refRasters)) {
                 String message = String.format("Referenced rasters must all be the same size (%d x %d pixels).",
-                                               expectedSize.width, expectedSize.height);
+                        expectedSize.width, expectedSize.height);
                 Dialogs.showError(message);
                 return;
             }
@@ -887,14 +867,14 @@ class MaskFormActions {
 
         private TransferAction(MaskForm maskForm) {
             super(maskForm, "icons/MultiAssignProducts24.gif", "transferButton",
-                  "Transfer the selected mask(s) to other products.");
+                    "Transfer the selected mask(s) to other products.");
         }
 
         @Override
         void updateState() {
             setEnabled(getMaskForm().isInManagementMode() &&
-                               getMaskForm().getSelectedRowCount() > 0 &&
-                               SnapApp.getDefault().getProductManager().getProductCount() > 1);
+                    getMaskForm().getSelectedRowCount() > 0 &&
+                    SnapApp.getDefault().getProductManager().getProductCount() > 1);
         }
 
         @Override
@@ -988,14 +968,14 @@ class MaskFormActions {
 
         private ZoomToVectorMaskAction(ToolTopComponent topComponent, MaskForm maskForm) {
             super(maskForm, "icons/ZoomTo24.gif", "zoomToButton",
-                  "Zooms to the selected mask.");
+                    "Zooms to the selected mask.");
             this.topComponent = topComponent;
         }
 
         @Override
         void updateState() {
             setEnabled(getMaskForm().getSelectedRowCount() == 1 &&
-                               topComponent.getSelectedProductSceneView() != null);
+                    topComponent.getSelectedProductSceneView() != null);
 
         }
 
@@ -1010,7 +990,7 @@ class MaskFormActions {
                     modelBounds = handleVectorMask(mask);
                 } else {
                     modelBounds = handleImageMask(mask,
-                                                  productSceneView.getBaseImageLayer().getImageToModelTransform());
+                            productSceneView.getBaseImageLayer().getImageToModelTransform());
                 }
                 if (modelBounds != null) {
                     Viewport viewport = productSceneView.getViewport();
@@ -1018,7 +998,7 @@ class MaskFormActions {
                     final AffineTransform v2mTransform = viewport.getViewToModelTransform();
                     final Rectangle2D viewBounds = m2vTransform.createTransformedShape(modelBounds).getBounds2D();
                     viewBounds.setFrameFromDiagonal(viewBounds.getMinX() - 10, viewBounds.getMinY() - 10,
-                                                    viewBounds.getMaxX() + 10, viewBounds.getMaxY() + 10);
+                            viewBounds.getMaxX() + 10, viewBounds.getMaxY() + 10);
                     final Shape transformedModelBounds = v2mTransform.createTransformedShape(viewBounds);
                     viewport.zoom(transformedModelBounds.getBounds2D());
                 } else {
@@ -1033,7 +1013,7 @@ class MaskFormActions {
             ReferencedEnvelope envelope = vectorData.getEnvelope();
             if (!envelope.isEmpty()) {
                 return new Rectangle2D.Double(envelope.getMinX(), envelope.getMinY(),
-                                              envelope.getWidth(), envelope.getHeight());
+                        envelope.getWidth(), envelope.getHeight());
             }
             return null;
         }

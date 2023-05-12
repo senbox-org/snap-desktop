@@ -9,27 +9,21 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.PolygonSymbolizer;
-import org.geotools.styling.Rule;
-import org.geotools.styling.SLD;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Stroke;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.Symbolizer;
+import org.geotools.styling.*;
+import org.geotools.xml.styling.SLDParser;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class SLDUtils {
     private static final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
@@ -105,7 +99,7 @@ public class SLDUtils {
                 while (featureIterator.hasNext()) {
                     SimpleFeature simpleFeature = featureIterator.next();
                     SimpleFeature styledFeature = processRules(simpleFeature, styledFeatureType, ruleList,
-                                                               elseRuleList);
+                            elseRuleList);
                     if (styledFeature != null) {
                         styledCollection.add(styledFeature);
                         featureIterator.remove();
@@ -164,7 +158,7 @@ public class SLDUtils {
                 Color strokeColor = SLD.color(stroke);
                 int width = SLD.width(stroke);
                 FigureStyle figureStyle = DefaultFigureStyle.createPolygonStyle(fillColor, strokeColor,
-                                                                                new BasicStroke(width));
+                        new BasicStroke(width));
                 String cssStyle = figureStyle.toCssString();
                 return createStyledFeature(sft, feature, cssStyle);
             }
@@ -173,9 +167,17 @@ public class SLDUtils {
     }
 
     public static boolean isFeatureTypeStyleActive(SimpleFeatureType ftype, FeatureTypeStyle fts) {
-        return ((ftype.getTypeName() != null)
-                && (ftype.getTypeName().equalsIgnoreCase(fts.getFeatureTypeName()) ||
-                FeatureTypes.isDecendedFrom(ftype, null, fts.getFeatureTypeName())));
+        if (ftype.getTypeName() == null) {
+            return false;
+        }
+        Set<Name> ftNames = fts.featureTypeNames();
+        for (Name ftName : ftNames) {
+            if (ftype.getTypeName().equalsIgnoreCase(ftName.toString()) ||
+                    FeatureTypes.isDecendedFrom(ftype, null, ftName.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static SimpleFeatureType createStyledFeatureType(SimpleFeatureType type) {

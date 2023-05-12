@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>10.0.0-SNAPSHOT</version>
+        <version>10.0.0-JDK11SHOT</version>
     </parent>
 
     <artifactId>snap-rcp</artifactId>
@@ -57,6 +57,7 @@
                         <publicPackage>org.esa.snap.rcp.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.util.*</publicPackage>
 						<publicPackage>org.jfree.*</publicPackage>
+						<publicPackage>eu.esa.snap.netbeans.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -134,8 +135,8 @@
             <artifactId>org-netbeans-modules-options-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-javahelp</artifactId>
+            <groupId>eu.esa.snap.netbeans</groupId>
+            <artifactId>snap-help-system</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -172,10 +173,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-sendopts</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>beansbinding-1.2.1</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -303,7 +300,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
 			<scope>test</scope>
         </dependency>
 

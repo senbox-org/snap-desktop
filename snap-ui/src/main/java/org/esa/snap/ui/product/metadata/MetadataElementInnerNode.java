@@ -6,8 +6,6 @@ import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
-import java.awt.Image;
-
 /**
  * @author Tonio Fincke
  */
@@ -23,16 +21,6 @@ class MetadataElementInnerNode extends AbstractNode {
         content.add(element);
         setName(element.getName());
         createSheet();
-    }
-
-    @Override
-    public Image getIcon(int type) {
-        return new EmptyImage();
-    }
-
-    @Override
-    public Image getOpenedIcon(int type) {
-        return getIcon(type);
     }
 
     @Override

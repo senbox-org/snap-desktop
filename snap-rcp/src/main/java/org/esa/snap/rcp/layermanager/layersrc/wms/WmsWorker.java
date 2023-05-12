@@ -23,10 +23,10 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.LayerSourcePageContext;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.StyleImpl;
-import org.geotools.data.wms.WebMapServer;
+import org.geotools.ows.wms.CRSEnvelope;
+import org.geotools.ows.wms.Layer;
+import org.geotools.ows.wms.StyleImpl;
+import org.geotools.ows.wms.WebMapServer;
 
 import java.awt.Dimension;
 import java.net.URL;

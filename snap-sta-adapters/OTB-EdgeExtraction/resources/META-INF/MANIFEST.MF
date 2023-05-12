@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 OpenIDE-Module-Specification-Version: 1
 OpenIDE-Module-Display-Category: SNAP Core
 OpenIDE-Module-Implementation-Version: 1
-OpenIDE-Module-Java-Dependencies: Java > 1.8
+OpenIDE-Module-Java-Dependencies: Java > 11
 OpenIDE-Module-Type: STA
 OpenIDE-Module-Short-Description: OTB Edge Extraction
 OpenIDE-Module: org.esa.snap.OTB.EdgeExtraction

@@ -31,7 +31,7 @@ import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.rcp.session.dom.SessionDomConverter;
-import org.geotools.data.ows.CRSEnvelope;
+import org.geotools.ows.wms.CRSEnvelope;
 import org.junit.Before;
 import org.junit.Test;
 
