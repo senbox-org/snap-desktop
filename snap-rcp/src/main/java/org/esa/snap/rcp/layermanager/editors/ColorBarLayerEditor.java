@@ -19,6 +19,7 @@ import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
+import com.bc.ceres.swing.binding.Enablement;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
@@ -82,7 +83,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Color Bar Location Section
         addLocationSectionBreak();
         addLocationInside();
-        addLocationPlacement();
+        addLocationPlacementHorizontal();
+        addLocationPlacementVertical();
         addLocationOffset();
         addLocationShift();
 
@@ -395,9 +397,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
     private void addTitleAnchor() {
-        String alignment = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
+        // todo Enablement binding is not working so commented out
 
-        boolean enabled = (OPTION_VERTICAL.equals(alignment)  || OPTION_BEST_FIT.equals(alignment)) ? true : false;
+//        boolean enabled = (isPossiblyVertical(configuration)) ? true : false;
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
         pd.setDefaultValue(PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
@@ -406,15 +408,48 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         pd.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_VALUE_SET));
         pd.setDefaultConverter();
-        pd.setEnabled(enabled);
+//        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
-        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true,
-                PROPERTY_ORIENTATION_KEY, OPTION_VERTICAL);
+//        context.setComponentsEnabled(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, isPossiblyVertical(configuration));
 
-        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true,
-                PROPERTY_ORIENTATION_KEY, OPTION_BEST_FIT);
+
+//        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, true, new Enablement.Condition() {
+//            @Override
+//            public boolean evaluate(BindingContext bindingContext) {
+//                return isPossiblyVertical();
+//            }
+//        });
     }
+
+
+
+    public static boolean isPossiblyVertical(PropertyMap configuration) {
+        if (configuration == null) {
+            return true;
+        }
+        String orientation = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
+
+        if (ColorBarLayerType.OPTION_BEST_FIT.equals(orientation) || OPTION_VERTICAL.equals(orientation)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isPossiblyHorizontal(PropertyMap configuration) {
+        if (configuration == null) {
+            return true;
+        }
+        String orientation = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
+
+        if (ColorBarLayerType.OPTION_BEST_FIT.equals(orientation) || OPTION_HORIZONTAL.equals(orientation)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 
     private void addReversePalette() {
@@ -601,15 +636,62 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
 
-    private void addLocationPlacement() {
-        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_KEY,
-                PROPERTY_LOCATION_PLACEMENT_TYPE);
-        pd.setDefaultValue(PROPERTY_LOCATION_PLACEMENT_DEFAULT);
-        pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationArray()));
-        pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_LABEL);
-        pd.setDescription(PROPERTY_LOCATION_PLACEMENT_TOOLTIP);
+    private void addLocationPlacementHorizontal() {
+        // todo Enablement binding is not working so commented out
+
+//        boolean enabled = (isPossiblyHorizontal(configuration)) ? true : false;
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY,
+                PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT);
+        pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationHorizontalArray()));
+        pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TOOLTIP);
         pd.setDefaultConverter();
+//        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
+
+//        context.setComponentsEnabled(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, isPossiblyHorizontal(configuration));
+
+//        context.bindEnabledState(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, true, new Enablement.Condition() {
+//            @Override
+//            public boolean evaluate(BindingContext context) {
+//                context.setComponentsEnabled();
+//                return isPossiblyHorizontal();
+//            }
+//        });
+
+    }
+
+
+
+
+
+
+    private void addLocationPlacementVertical() {
+        // todo Enablement binding is not working so commented out
+
+//        boolean enabled = (isPossiblyVertical(configuration)) ? true : false;
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY,
+                PROPERTY_LOCATION_PLACEMENT_VERTICAL_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT);
+        pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationVerticalArray()));
+        pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_VERTICAL_LABEL);
+        pd.setDescription(PROPERTY_LOCATION_PLACEMENT_VERTICAL_TOOLTIP);
+        pd.setDefaultConverter();
+//        pd.setEnabled(enabled);
+        addPropertyDescriptor(pd);
+
+
+//        context.setComponentsEnabled(PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, isPossiblyVertical(configuration));
+
+//        context.bindEnabledState(PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, true, new Enablement.Condition() {
+//            @Override
+//            public boolean evaluate(BindingContext bindingContext) {
+//                return isPossiblyVertical();
+//            }
+//        });
     }
 
 

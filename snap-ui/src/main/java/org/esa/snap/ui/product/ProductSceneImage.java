@@ -805,9 +805,14 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
-                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT,
-                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TYPE);
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,

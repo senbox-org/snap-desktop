@@ -87,8 +87,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
     private final static String[][] IMAGE_FORMAT_DESCRIPTIONS = {
-            BMP_FORMAT_DESCRIPTION,
             PNG_FORMAT_DESCRIPTION,
+            BMP_FORMAT_DESCRIPTION,
             JPEG_FORMAT_DESCRIPTION,
             TIFF_FORMAT_DESCRIPTION
     };

@@ -22,7 +22,6 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.layer.ColorBarLayerType;
@@ -97,7 +96,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
@@ -647,18 +647,32 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_TOOLTIP)
         boolean placementInside = ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_LABEL,
-                key = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_KEY,
-                description = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_TOOLTIP,
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TOOLTIP,
                 valueSet = {ColorBarLayerType.LOCATION_UPPER_LEFT,
                         ColorBarLayerType.LOCATION_UPPER_CENTER,
                         ColorBarLayerType.LOCATION_UPPER_RIGHT,
                         ColorBarLayerType.LOCATION_LOWER_LEFT,
                         ColorBarLayerType.LOCATION_LOWER_CENTER,
-                        ColorBarLayerType.LOCATION_LOWER_RIGHT,
+                        ColorBarLayerType.LOCATION_LOWER_RIGHT})
+        //        ColorBarLayerType.LOCATION_LEFT_CENTER,
+//        ColorBarLayerType.LOCATION_RIGHT_CENTER
+        String placementHorizontalMode = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_TOOLTIP,
+                valueSet = {ColorBarLayerType.LOCATION_UPPER_LEFT,
                         ColorBarLayerType.LOCATION_LEFT_CENTER,
-                        ColorBarLayerType.LOCATION_RIGHT_CENTER})
-        String placementMode = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_DEFAULT;
+                        ColorBarLayerType.LOCATION_LOWER_LEFT,
+                        ColorBarLayerType.LOCATION_UPPER_RIGHT,
+                        ColorBarLayerType.LOCATION_RIGHT_CENTER,
+                        ColorBarLayerType.LOCATION_LOWER_RIGHT})
+        String placementVerticalMode = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
                 key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
