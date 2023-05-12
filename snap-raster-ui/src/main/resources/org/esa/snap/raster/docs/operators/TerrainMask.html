@@ -20,6 +20,18 @@
 <p> The Terrain Mask operator uses a DEM to determine large slopes in
     elevation over a window. This is useful for feature extraction on
     plateaus by masking out mountainous areas.</p><br>
+
+<p>The following parameters are used by the operator:</p>
+<ol>
+    <li>Digital Elevation Model: The choice of elevation model.</li>
+    <li>DEM Resampling Method: Resampling method applied to the DEM in order to match the image resolution.</li>
+    <li>Window Size: Convolution filter window size.</li>
+    <li>Threshold: The threshold difference in metres between the minimum and maximum elevation within a window.</li>
+</ol>
+<p></p>
+<p> If the slope between the min and max elevations within a window exceeds the threshold then the operator will mask out the pixel.</p><br>
+
+<p><img style="width: 500px; height: 500px;" alt="" src="images/terrain_mask_dlg.png"><br></p><br>
 <hr>
 </body>
 </html>
