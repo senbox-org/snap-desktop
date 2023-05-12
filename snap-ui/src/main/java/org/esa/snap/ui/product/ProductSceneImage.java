@@ -815,6 +815,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_KEY,
+                ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_DEFAULT,
+                ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT,
                 ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TYPE);

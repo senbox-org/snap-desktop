@@ -98,8 +98,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_KEY, ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
 
 
@@ -674,15 +675,22 @@ public final class ColorBarLayerController extends DefaultConfigController {
         String placementVerticalMode = ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
-                key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
-                description = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP)
-        double locationOffset = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_TOOLTIP,
+        interval = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_INTERVAL)
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL,
-                key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
-                description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
-        double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
+        double locationGapFactor = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_DEFAULT;
+
+//        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
+//                key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
+//                description = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP)
+//        double locationOffset = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL,
+//                key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
+//                description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
+//        double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
 
 
 

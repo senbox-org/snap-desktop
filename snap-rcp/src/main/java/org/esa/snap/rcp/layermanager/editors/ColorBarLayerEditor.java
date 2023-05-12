@@ -19,7 +19,6 @@ import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.Enablement;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
@@ -85,6 +84,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLocationInside();
         addLocationPlacementHorizontal();
         addLocationPlacementVertical();
+        addLocationGapFactor();
         addLocationOffset();
         addLocationShift();
 
@@ -692,6 +692,18 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //                return isPossiblyVertical();
 //            }
 //        });
+    }
+
+
+    private void addLocationGapFactor() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_GAP_FACTOR_KEY,
+                PROPERTY_LOCATION_GAP_FACTOR_TYPE);
+        pd.setDefaultValue(PROPERTY_LOCATION_GAP_FACTOR_DEFAULT);
+        pd.setDisplayName(PROPERTY_LOCATION_GAP_FACTOR_LABEL);
+        pd.setValueRange(new ValueRange(PROPERTY_LOCATION_GAP_FACTOR_MIN, PROPERTY_LOCATION_GAP_FACTOR_MAX));
+        pd.setDescription(PROPERTY_LOCATION_GAP_FACTOR_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
     }
 
 
