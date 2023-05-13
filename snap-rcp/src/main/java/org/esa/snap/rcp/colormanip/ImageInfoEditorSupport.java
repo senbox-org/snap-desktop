@@ -18,6 +18,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.runtime.internal.Platform;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.tool.ToolButtonFactory;

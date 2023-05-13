@@ -22,6 +22,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;

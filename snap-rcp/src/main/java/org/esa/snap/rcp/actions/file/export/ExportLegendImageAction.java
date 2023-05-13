@@ -401,7 +401,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 //        if (!legendInitialized) {
             if (autoApplySchemes) {//auto-apply
-                ColorSchemeInfo schemeInfo = ColorSchemeUtils.getColorPaletteInfoByBandNameLookup(view);
+                String bandName = view.getBaseImageLayer().getName().trim();
+                ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName);
 
                 if (schemeInfo != null) {
                     if (schemeInfo.getColorBarLabels() != null && schemeInfo.getColorBarLabels().trim().length() > 0) {
