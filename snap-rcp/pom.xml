@@ -265,11 +265,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-gpf</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>snap-python</artifactId>
-            <version>${snap.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>${project.groupId}</groupId>-->
+<!--            <artifactId>snap-esa-snappy</artifactId>-->
+<!--            <version>${snap.version}</version>-->
+<!--        </dependency>-->
 
 		<dependency>
             <groupId>org.jfree</groupId>
