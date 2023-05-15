@@ -44,7 +44,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.chart.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
 import javax.swing.DefaultListCellRenderer;
@@ -332,7 +332,7 @@ class DensityPlotPanel extends ChartPagePanel {
         rangeAxis.setUpperMargin(0);
         rangeAxis.setLowerMargin(0);
         plot.setNoDataMessage(NO_DATA_MESSAGE);
-        plot.getRenderer().setBaseToolTipGenerator(new XYPlotToolTipGenerator());
+        plot.getRenderer().setDefaultToolTipGenerator(new XYPlotToolTipGenerator());
         JFreeChart chart = new JFreeChart(CHART_TITLE, plot);
         ChartFactory.getChartTheme().apply(chart);
 

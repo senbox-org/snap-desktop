@@ -30,12 +30,12 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.util.UnitType;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
-import org.jfree.util.UnitType;
 
 import javax.media.jai.CachedTile;
 import javax.media.jai.JAI;
@@ -417,7 +417,7 @@ public class TileCacheMonitor {
     }
 
     private static TimeSeriesCollection addSubPlot(CombinedDomainXYPlot plot, String label) {
-        final TimeSeriesCollection seriesCollection = new TimeSeriesCollection(new TimeSeries(label, Millisecond.class));
+        final TimeSeriesCollection seriesCollection = new TimeSeriesCollection(new TimeSeries(label));
         NumberAxis rangeAxis = new NumberAxis();
         rangeAxis.setAutoRangeIncludesZero(false);
         XYPlot subplot = new XYPlot(seriesCollection, null, rangeAxis, new StandardXYItemRenderer());

@@ -1,7 +1,7 @@
 package org.esa.snap.rcp.statistics;
 
 import org.jfree.chart.axis.NumberTick;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleEdge;
 import org.junit.Test;
 
 import java.util.List;

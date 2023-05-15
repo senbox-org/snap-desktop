@@ -42,8 +42,8 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
 import javax.swing.DefaultListCellRenderer;
@@ -161,7 +161,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         DefaultXYItemRenderer itemRenderer = new DefaultXYItemRenderer();
         itemRenderer.setSeriesPaint(0, DEFAULT_PAINT_ARRAY[index % DEFAULT_PAINT_ARRAY.length]);
         itemRenderer.setSeriesShape(0, DEFAULT_SHAPE_ARRAY[index % DEFAULT_SHAPE_ARRAY.length]);
-        itemRenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
+        itemRenderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
         final DecimalFormat numberFormat = new DecimalFormat("0.00#");
         numberFormat.setGroupingUsed(false);
         StandardXYToolTipGenerator toolTipGenerator;
@@ -442,7 +442,7 @@ class MetadataPlotPanel extends ChartPagePanel {
         xyPlot.clearRangeAxes();
         xyPlot.clearDomainAxes();
         configureDomainAxis(0, DEFAULT_X_AXIS_LABEL, ProductData.TYPE_FLOAT64);
-        xyPlot.getRenderer().setBaseSeriesVisibleInLegend(true);
+        xyPlot.getRenderer().setDefaultSeriesVisibleInLegend(true);
     }
 
     private boolean isValidYField(MetadataElement metadataElement, String elementName, String nameY) {
