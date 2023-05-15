@@ -384,14 +384,21 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     }
 
     private void addSceneAspectBestFit() {
+        String orientation = configuration.getPropertyString(PROPERTY_ORIENTATION_KEY, PROPERTY_ORIENTATION_DEFAULT);
+        boolean enabled = OPTION_BEST_FIT.equals(orientation);
+
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_SCENE_ASPECT_BEST_FIT_KEY, PROPERTY_SCENE_ASPECT_BEST_FIT_TYPE);
 
         pd.setDisplayName(PROPERTY_SCENE_ASPECT_BEST_FIT_LABEL);
         pd.setDescription(PROPERTY_SCENE_ASPECT_BEST_FIT_TOOLTIP);
         pd.setDefaultValue(PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT);
+        pd.setEnabled(enabled);
 
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_SCENE_ASPECT_BEST_FIT_KEY, true,
+                PROPERTY_ORIENTATION_KEY, OPTION_BEST_FIT);
     }
 
 
@@ -399,7 +406,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void addTitleAnchor() {
         // todo Enablement binding is not working so commented out
 
-//        boolean enabled = (isPossiblyVertical(configuration)) ? true : false;
+        boolean enabled = isPossiblyVertical(configuration);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, PROPERTY_LOCATION_TITLE_VERTICAL_TYPE);
         pd.setDefaultValue(PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT);
@@ -407,8 +414,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDescription(PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP);
 
         pd.setValueSet(new ValueSet(ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_VALUE_SET));
+        pd.setEnabled(enabled);
+
+
         pd.setDefaultConverter();
-//        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
 //        context.setComponentsEnabled(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, isPossiblyVertical(configuration));
@@ -420,6 +429,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //                return isPossiblyVertical();
 //            }
 //        });
+
+        context.bindEnabledState(PROPERTY_LOCATION_TITLE_VERTICAL_KEY, false,
+                PROPERTY_ORIENTATION_KEY, OPTION_HORIZONTAL);
     }
 
 
@@ -495,17 +507,19 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void addLabelValuesCount() {
         String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
 
-        boolean enabled = (DISTRIB_EVEN_STR.equals(labelsMode)) ? true : false;
+        boolean enabled = DISTRIB_EVEN_STR.equals(labelsMode);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_COUNT_KEY, PROPERTY_LABEL_VALUES_COUNT_TYPE);
         pd.setDefaultValue(PROPERTY_LABEL_VALUES_COUNT_DEFAULT);
         pd.setDisplayName(PROPERTY_LABEL_VALUES_COUNT_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
-        pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+//        pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
+
+        pd.setEnabled(enabled);
 
         pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_COUNT_MIN, PROPERTY_LABEL_VALUES_COUNT_MAX));
+
         pd.setDefaultConverter();
-        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
         context.bindEnabledState(PROPERTY_LABEL_VALUES_COUNT_KEY, true,
@@ -517,19 +531,20 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
     private void addLabelValuesActual() {
-//        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
-        String labelsMode = context.getPropertySet().getProperty(PROPERTY_LABEL_VALUES_MODE_KEY).getValue();
-        boolean enabled = (DISTRIB_MANUAL_STR.equals(labelsMode)) ? true : false;
+        String labelsMode = configuration.getPropertyString(PROPERTY_LABEL_VALUES_MODE_KEY, PROPERTY_LABEL_VALUES_MODE_DEFAULT);
+//        String labelsMode = context.getPropertySet().getProperty(PROPERTY_LABEL_VALUES_MODE_KEY).getValue();
+        boolean enabled = DISTRIB_MANUAL_STR.equals(labelsMode);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABEL_VALUES_ACTUAL_KEY,
                 PROPERTY_LABEL_VALUES_ACTUAL_TYPE);
         pd.setDefaultValue(PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT);
         pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
-        pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+//        pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
+        pd.setEnabled(enabled);
+
 
         pd.setDefaultConverter();
-        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
         context.bindEnabledState(PROPERTY_LABEL_VALUES_ACTUAL_KEY, true,
@@ -633,13 +648,15 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDescription(PROPERTY_LOCATION_INSIDE_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
+
+
     }
 
 
     private void addLocationPlacementHorizontal() {
         // todo Enablement binding is not working so commented out
 
-//        boolean enabled = (isPossiblyHorizontal(configuration)) ? true : false;
+        boolean enabled = isPossiblyHorizontal(configuration);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY,
                 PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TYPE);
@@ -647,8 +664,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationHorizontalArray()));
         pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_LABEL);
         pd.setDescription(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_TOOLTIP);
+        pd.setEnabled(enabled);
+
         pd.setDefaultConverter();
-//        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
 //        context.setComponentsEnabled(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, isPossiblyHorizontal(configuration));
@@ -661,6 +679,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //            }
 //        });
 
+        context.bindEnabledState(PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, false,
+                PROPERTY_ORIENTATION_KEY, OPTION_VERTICAL);
     }
 
 
@@ -671,7 +691,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void addLocationPlacementVertical() {
         // todo Enablement binding is not working so commented out
 
-//        boolean enabled = (isPossiblyVertical(configuration)) ? true : false;
+        boolean enabled = (isPossiblyVertical(configuration)) ? true : false;
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY,
                 PROPERTY_LOCATION_PLACEMENT_VERTICAL_TYPE);
@@ -679,8 +699,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setValueSet(new ValueSet(ColorBarLayerType.getColorBarLocationVerticalArray()));
         pd.setDisplayName(PROPERTY_LOCATION_PLACEMENT_VERTICAL_LABEL);
         pd.setDescription(PROPERTY_LOCATION_PLACEMENT_VERTICAL_TOOLTIP);
+        pd.setEnabled(enabled);
+
         pd.setDefaultConverter();
-//        pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
 
@@ -692,6 +713,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //                return isPossiblyVertical();
 //            }
 //        });
+
+        context.bindEnabledState(PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, false,
+                PROPERTY_ORIENTATION_KEY, OPTION_HORIZONTAL);
     }
 
 
