@@ -48,11 +48,11 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleInsets;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.openide.windows.TopComponent;
@@ -211,7 +211,7 @@ class ProfilePlotPanel extends ChartPagePanel {
 
         deviationRenderer = new DeviationRenderer();
         deviationRenderer.setUseFillPaint(true);
-        deviationRenderer.setBaseToolTipGenerator(new XYPlotToolTipGenerator());
+        deviationRenderer.setDefaultToolTipGenerator(new XYPlotToolTipGenerator());
         deviationRenderer.setSeriesLinesVisible(0, true);
         deviationRenderer.setSeriesShapesVisible(0, false);
         deviationRenderer.setSeriesStroke(0, new BasicStroke(1.0f));
@@ -220,7 +220,7 @@ class ProfilePlotPanel extends ChartPagePanel {
 
         pointRenderer = new XYErrorRenderer();
         pointRenderer.setUseFillPaint(true);
-        pointRenderer.setBaseToolTipGenerator(new XYPlotToolTipGenerator());
+        pointRenderer.setDefaultToolTipGenerator(new XYPlotToolTipGenerator());
         pointRenderer.setSeriesLinesVisible(0, false);
         pointRenderer.setSeriesShapesVisible(0, true);
         pointRenderer.setSeriesStroke(0, new BasicStroke(1.0f));

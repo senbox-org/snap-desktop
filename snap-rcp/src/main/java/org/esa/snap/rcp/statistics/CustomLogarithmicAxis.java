@@ -2,8 +2,8 @@ package org.esa.snap.rcp.statistics;
 
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberTick;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.TextAnchor;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.TextAnchor;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;

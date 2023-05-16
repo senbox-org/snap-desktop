@@ -8,8 +8,8 @@ import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleEdge;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

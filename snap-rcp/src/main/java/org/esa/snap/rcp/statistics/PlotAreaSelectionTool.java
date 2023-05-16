@@ -6,7 +6,7 @@ import org.jfree.chart.annotations.XYShapeAnnotation;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleEdge;
 
 import java.awt.Color;
 import java.awt.Paint;

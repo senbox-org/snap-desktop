@@ -43,9 +43,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.xy.XIntervalSeries;
 import org.jfree.data.xy.XIntervalSeriesCollection;
-import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
 import javax.media.jai.Histogram;
