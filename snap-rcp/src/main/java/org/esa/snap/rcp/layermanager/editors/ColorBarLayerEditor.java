@@ -46,6 +46,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         addSchemesCheckbox();
+        addSchemeLabelsApplyCheckbox();
+        addSchemeLabelsRestrictCheckbox();
 
         // Title Section
         addHeaderTitleSectionBreak();
@@ -214,6 +216,32 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDescription(PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP);
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
+    }
+
+    private void addSchemeLabelsApplyCheckbox() {
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_SCHEME_LABELS_APPLY_KEY,
+                PROPERTY_SCHEME_LABELS_APPLY_TYPE);
+        pd.setDefaultValue(PROPERTY_SCHEME_LABELS_APPLY_DEFAULT);
+        pd.setDisplayName(PROPERTY_SCHEME_LABELS_APPLY_LABEL);
+        pd.setDescription(PROPERTY_SCHEME_LABELS_APPLY_TOOLTIP);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+    }
+
+    private void addSchemeLabelsRestrictCheckbox() {
+        boolean enabled = configuration.getPropertyBool(PROPERTY_SCHEME_LABELS_APPLY_KEY, PROPERTY_SCHEME_LABELS_APPLY_DEFAULT);
+
+        PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
+                PROPERTY_SCHEME_LABELS_RESTRICT_TYPE);
+        pd.setDefaultValue(PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT);
+        pd.setDisplayName(PROPERTY_SCHEME_LABELS_RESTRICT_LABEL);
+        pd.setDescription(PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP);
+        pd.setEnabled(enabled);
+        pd.setDefaultConverter();
+        addPropertyDescriptor(pd);
+
+        context.bindEnabledState(PROPERTY_SCHEME_LABELS_RESTRICT_KEY, true,
+                PROPERTY_SCHEME_LABELS_APPLY_KEY, true);
     }
 
     // Title / Units

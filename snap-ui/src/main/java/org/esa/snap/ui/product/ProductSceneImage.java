@@ -669,6 +669,16 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT,
                 ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT,
+                ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TYPE);
+
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY);

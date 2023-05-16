@@ -74,6 +74,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         //
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY, ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY, ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY, true);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
@@ -513,6 +515,17 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
                 description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
         boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_TOOLTIP)
+        boolean schemeLabelsApply = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP)
+        boolean schemeLabelsRestrict = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT;
+
 
 
         // Title
