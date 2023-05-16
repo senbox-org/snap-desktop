@@ -142,6 +142,7 @@
         </tocitem>
         <tocitem text="Optical">
             <tocitem text="Product Spectrum" target="showSpectrumWnd"/>
+            <tocitem text="Product Angular View" target="showAngularViewWnd"/>
             <tocitem text="Geometric">
                 <tocitem text="Orthorectification" target="orthorectificationAction">
                     <tocitem text="Orthorectification Dialog" target="orthorectificationAction"/>

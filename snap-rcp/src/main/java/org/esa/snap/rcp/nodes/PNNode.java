@@ -685,6 +685,24 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     }
 
             );
+            set.put(new PropertySupport.ReadWrite<Float>("angularValue", Float.class, "View Angle",
+                            "The view angle") {
+                        @Override
+                        public Float getValue() {
+                            return band.getAngularValue();
+                        }
+
+                        @Override
+                        public void setValue(Float newValue) {
+                            float oldValue = band.getAngularValue();
+                            performUndoableProductNodeEdit("Edit Angular Value",
+                                    band,
+                                    node -> node.setAngularValue(newValue),
+                                    node -> node.setAngularValue(oldValue));
+                        }
+                    }
+
+            );
             Property<RasterDataNode[]> ancillaryVariables = new PropertySupport.ReadWrite<RasterDataNode[]>("ancillaryVariables",
                     RasterDataNode[].class,
                     "Ancillary Variables",

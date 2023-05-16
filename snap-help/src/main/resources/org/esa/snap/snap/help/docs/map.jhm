@@ -79,6 +79,7 @@
     <mapID target="showColorManipulationWnd" url="desktop/ColorManipulationWindow.html"/>
     <mapID target="colorManipulationPreferences" url="desktop/ColorManipulationPreferences.html"/>
     <mapID target="showSpectrumWnd" url="desktop/SpectrumWindow.html"/>
+    <mapID target="showAngularViewWnd" url="desktop/AngularViewWindow.html"/>
     <mapID target="spectrumChooser" url="desktop/SpectrumChooser.html"/>
     <mapID target="showWorldMapWnd" url="desktop/WorldMap.html"/>
     <mapID target="showGcpManagerWnd" url="desktop/GcpManagement.html"/>
