@@ -44,9 +44,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.xy.XIntervalSeries;
 import org.jfree.data.xy.XIntervalSeriesCollection;
-import org.jfree.ui.RectangleInsets;
 import org.openide.windows.TopComponent;
 
 import javax.media.jai.Histogram;
@@ -226,7 +226,7 @@ class HistogramPanel extends ChartPagePanel {
         renderer.setDrawBarOutline(false);
         renderer.setShadowVisible(false);
         renderer.setShadowYOffset(-4.0);
-        renderer.setBaseToolTipGenerator(new XYPlotToolTipGenerator());
+        renderer.setDefaultToolTipGenerator(new XYPlotToolTipGenerator());
         renderer.setBarPainter(new StandardXYBarPainter());
         renderer.setSeriesPaint(0, new Color(0, 0, 200));
 
