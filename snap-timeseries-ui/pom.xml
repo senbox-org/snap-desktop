@@ -37,6 +37,7 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-javahelp</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
 
         <dependency>
@@ -46,6 +47,7 @@
         <dependency>
             <groupId>org.esa.snap.netbeans</groupId>
             <artifactId>doc-windows</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.esa.snap</groupId>
