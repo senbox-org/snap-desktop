@@ -46,10 +46,14 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.HorizontalAlignment;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
+
+
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+
+
 import org.locationtech.jts.geom.Point;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -742,8 +746,8 @@ public class AngularTopComponent extends ToolTopComponent {
             setLegend(chart);
             setAutomaticRangeAdjustments(false);
             final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
-            renderer.setBaseShapesVisible(true);
-            renderer.setBaseShapesFilled(false);
+            renderer.setDefaultLinesVisible(true);
+            renderer.setDefaultShapesFilled(false);
             setPlotMessage(MESSAGE_NO_PRODUCT_SELECTED);
         }
 
