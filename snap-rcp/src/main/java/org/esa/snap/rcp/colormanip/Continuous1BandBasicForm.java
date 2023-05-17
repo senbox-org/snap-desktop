@@ -22,6 +22,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
@@ -503,6 +504,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
         String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_PALETTE_KEY, PROPERTY_SCHEME_PALETTE_DEFAULT);
+        String schemeUniversalCpd = configuration.getPropertyString(PROPERTY_SCHEME_PALETTE_KEY, PROPERTY_SCHEME_PALETTE_DEFAULT);
 
 
         schemeInfoLabel.setText("<html>*Modified scheme");
@@ -517,13 +519,14 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
         colorPaletteSchemes.setSelected(imageInfo.getColorSchemeInfo());
 
-        if (colorPaletteSchemes.isSchemeSet() &&
-                schemeApply &&
-                (!PROPERTY_SCHEME_PALETTE_DEFAULT.equals(schemeCpd) ||
-                        !PROPERTY_SCHEME_RANGE_DEFAULT.equals(schemeRange) ||
-                        !PROPERTY_SCHEME_LOG_DEFAULT.equals(schemeLogScaling))
-        ) {
-            visible = true;
+        if (colorPaletteSchemes.isSchemeSet() && schemeApply) {
+            if (!ColorManipulationDefaults.OPTION_RANGE_FROM_SCHEME.equals(schemeRange) ||
+                    !ColorManipulationDefaults.OPTION_LOG_FROM_SCHEME.equals(schemeLogScaling)) {
+                visible = true;
+            }
+            if (!ColorManipulationDefaults.OPTION_COLOR_STANDARD_SCHEME.equals(schemeCpd) && !ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL_SCHEME.equals(schemeCpd)) {
+                visible = true;
+            }
         }
         schemeInfoLabel.setVisible(visible);
 
