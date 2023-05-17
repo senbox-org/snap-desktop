@@ -75,7 +75,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private static final String HELP_ID = "rgbImageProfile";
 
-    private final Product product;
+    private  Product product;
 
     private Lookup lookup;
     private final Lookup.Result<ProductNode> viewResult;
@@ -94,7 +94,9 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_Name());
-        product = node.getProduct();
+        if (node != null) {
+            product = node.getProduct();
+        }
 
         putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
