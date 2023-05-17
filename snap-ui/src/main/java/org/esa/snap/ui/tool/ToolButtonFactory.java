@@ -19,13 +19,7 @@ import com.jidesoft.swing.JideButton;
 import com.jidesoft.swing.JideToggleButton;
 import org.esa.snap.ui.UIUtils;
 
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.UIManager;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -71,13 +65,14 @@ public class ToolButtonFactory {
     }
 
     private static AbstractButton createButton(boolean toggle) {
-        JideButton button;
         if (toggle) {
-            button = new JideToggleButton(); // <JIDE/>
+            JToggleButton button= new JToggleButton();
+            return button;
         } else {
-            button = new JideButton(); // <JIDE/>
+            JButton button;
+            button = new JButton();
+            return button;
         }
-        return button;
     }
 
     private static void configure(AbstractButton button) {
