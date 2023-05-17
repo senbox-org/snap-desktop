@@ -87,67 +87,71 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
     private void addBandCheckers(final StringBuffer description, final JPanel checkersPane,
                                  final GridBagConstraints gbc, final ActionListener checkListener) {
         for (int i = 0; i < allBands.length; i++) {
-                Band band = allBands[i];
-                boolean checked = false;
-                for (Band selectedBand : selectedBands) {
-                    if (band == selectedBand) {
-                        checked = true;
-                        numSelected++;
-                        break;
-                    }
+            Band band = allBands[i];
+            boolean checked = false;
+            for (Band selectedBand : selectedBands) {
+                if (band == selectedBand) {
+                    checked = true;
+                    numSelected++;
+                    break;
                 }
-
-                description.setLength(0);
-                description.append(band.getDescription() == null ? "" : band.getDescription());
-                if (band.getSpectralWavelength() > 0.0) {
-                    description.append(" (");
-                    description.append(band.getSpectralWavelength());
-                    description.append(" nm)");
-                }
-
-                final JCheckBox check = new JCheckBox(getRasterDisplayName(band), checked);
-                check.setFont(SMALL_PLAIN_FONT);
-                check.addActionListener(checkListener);
-
-                final JLabel label = new JLabel(description.toString());
-                label.setFont(SMALL_ITALIC_FONT);
-
-                gbc.gridy++;
-                GridBagUtils.addToPanel(checkersPane, check, gbc, "weightx=0,gridx=0");
-                GridBagUtils.addToPanel(checkersPane, label, gbc, "weightx=1,gridx=1");
-                checkBoxes[i] = check;
             }
+
+            description.setLength(0);
+            description.append(band.getDescription() == null ? "" : band.getDescription());
+            if (band.getSpectralWavelength() > 0.0) {
+                description.append(" (");
+                description.append(band.getSpectralWavelength());
+                description.append(" nm)");
+            } else if (band.getDate() != null) {
+                description.append(" (");
+                description.append(band.getDate());
+                description.append(")");
+            }
+
+            final JCheckBox check = new JCheckBox(getRasterDisplayName(band), checked);
+            check.setFont(SMALL_PLAIN_FONT);
+            check.addActionListener(checkListener);
+
+            final JLabel label = new JLabel(description.toString());
+            label.setFont(SMALL_ITALIC_FONT);
+
+            gbc.gridy++;
+            GridBagUtils.addToPanel(checkersPane, check, gbc, "weightx=0,gridx=0");
+            GridBagUtils.addToPanel(checkersPane, label, gbc, "weightx=1,gridx=1");
+            checkBoxes[i] = check;
+        }
     }
 
     private void addTiePointCheckers(final StringBuffer description, final JPanel checkersPane,
                                      final GridBagConstraints gbc, final ActionListener checkListener) {
-            for (int i = 0; i < allTiePointGrids.length; i++) {
-                TiePointGrid grid = allTiePointGrids[i];
-                boolean checked = false;
-                for (TiePointGrid selectedGrid : selectedTiePointGrids) {
-                    if (grid == selectedGrid) {
-                        checked = true;
-                        numSelected++;
-                        break;
-                    }
+        for (int i = 0; i < allTiePointGrids.length; i++) {
+            TiePointGrid grid = allTiePointGrids[i];
+            boolean checked = false;
+            for (TiePointGrid selectedGrid : selectedTiePointGrids) {
+                if (grid == selectedGrid) {
+                    checked = true;
+                    numSelected++;
+                    break;
                 }
-
-                description.setLength(0);
-                description.append(grid.getDescription() == null ? "" : grid.getDescription());
-
-                final JCheckBox check = new JCheckBox(getRasterDisplayName(grid), checked);
-                check.setFont(SMALL_PLAIN_FONT);
-                check.addActionListener(checkListener);
-
-                final JLabel label = new JLabel(description.toString());
-                label.setFont(SMALL_ITALIC_FONT);
-
-                gbc.gridy++;
-                GridBagUtils.addToPanel(checkersPane, check, gbc, "weightx=0,gridx=0");
-                GridBagUtils.addToPanel(checkersPane, label, gbc, "weightx=1,gridx=1");
-
-                checkBoxes[i + allBands.length] = check;
             }
+
+            description.setLength(0);
+            description.append(grid.getDescription() == null ? "" : grid.getDescription());
+
+            final JCheckBox check = new JCheckBox(getRasterDisplayName(grid), checked);
+            check.setFont(SMALL_PLAIN_FONT);
+            check.addActionListener(checkListener);
+
+            final JLabel label = new JLabel(description.toString());
+            label.setFont(SMALL_ITALIC_FONT);
+
+            gbc.gridy++;
+            GridBagUtils.addToPanel(checkersPane, check, gbc, "weightx=0,gridx=0");
+            GridBagUtils.addToPanel(checkersPane, label, gbc, "weightx=1,gridx=1");
+
+            checkBoxes[i + allBands.length] = check;
+        }
     }
 
     private String getRasterDisplayName(RasterDataNode rasterDataNode) {
