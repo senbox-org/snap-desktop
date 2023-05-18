@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.actions;
 
 import org.esa.snap.graphbuilder.rcp.dialogs.BatchGraphDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -38,7 +39,7 @@ import java.awt.event.ActionEvent;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Tools", position = 320, separatorAfter = 399),
-        @ActionReference(path = "Toolbars/Processing", position = 20)
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GPT_BATCH_PROCESSING_TOOLBAR, position = 20)
 })
 @NbBundle.Messages({
         "CTL_BatchProcessingAction_MenuText=Batch Processing",

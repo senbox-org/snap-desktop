@@ -8,6 +8,7 @@ package org.esa.snap.rcp.actions.layer.overlay;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.support.LayerUtils;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
 import org.openide.awt.ActionID;
@@ -28,7 +29,7 @@ import java.util.List;
 @ActionRegistration(displayName = "#CTL_OverlayGeometryLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 10),
-        @ActionReference(path = "Toolbars/Overlay", position = 10),
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GEOMETRY_TOGGLE_TOOLBAR, position = 10),
 })
 @NbBundle.Messages({
         "CTL_OverlayGeometryLayerActionName=Geometry Overlay",
