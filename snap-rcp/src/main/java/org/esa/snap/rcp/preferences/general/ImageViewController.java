@@ -31,8 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.Insets;
 
-import static com.bc.ceres.swing.TableLayout.Anchor;
-import static com.bc.ceres.swing.TableLayout.Fill;
+import static com.bc.ceres.swing.TableLayout.*;
 
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
@@ -63,7 +62,7 @@ public final class ImageViewController extends DefaultConfigController {
 
     @Override
     protected JPanel createPanel(BindingContext context) {
-        TableLayout tableLayout = new TableLayout(1);
+        TableLayout tableLayout = new TableLayout(2);
         tableLayout.setTableAnchor(Anchor.NORTHWEST);
         tableLayout.setTablePadding(4, 10);
         tableLayout.setTableFill(Fill.BOTH);
@@ -76,15 +75,39 @@ public final class ImageViewController extends DefaultConfigController {
         Property showNavigationControl = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN);
         Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN);
         Property reverseZoom = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING);
+        Property zoomInitial = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL);
 
         JComponent[] showNavigationControlComponents = registry.findPropertyEditor(showNavigationControl.getDescriptor()).createComponents(showNavigationControl.getDescriptor(), context);
         JComponent[] showScrollBarsComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(showScrollBars.getDescriptor(), context);
-        JComponent[] reverseZoomComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(reverseZoom.getDescriptor(), context);
+//        JComponent[] reverseZoomComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(reverseZoom.getDescriptor(), context);
+        JComponent[] reverseZoomComponents = registry.findPropertyEditor(reverseZoom.getDescriptor()).createComponents(reverseZoom.getDescriptor(), context);
+        JComponent[] zoomInitialComponents = registry.findPropertyEditor(zoomInitial.getDescriptor()).createComponents(zoomInitial.getDescriptor(), context);
 
         tableLayout.setRowPadding(0, new Insets(10, 80, 10, 4));
+
+        int row = 0;
+        tableLayout.setCellColspan(row, 0, 2);
+        tableLayout.setCellWeightX(row, 0, 1.0);
         pageUI.add(showNavigationControlComponents[0]);
+
+        row++;
+        tableLayout.setCellColspan(row, 0, 2);
+        tableLayout.setCellWeightX(row, 0, 1.0);
         pageUI.add(showScrollBarsComponents[0]);
+
+        row++;
+        tableLayout.setCellColspan(row, 0, 2);
+        tableLayout.setCellWeightX(row, 0, 1.0);
         pageUI.add(reverseZoomComponents[0]);
+        tableLayout.setCellColspan(row, 0, 2);
+
+        row++;
+        tableLayout.setCellWeightX(row, 0, 0.0);
+        pageUI.add(zoomInitialComponents[1]);
+        tableLayout.setCellWeightX(row, 1, 1.0);
+        pageUI.add(zoomInitialComponents[0]);
+
+        row++;
         pageUI.add(tableLayout.createVerticalSpacer());
 
         return pageUI;
@@ -103,7 +126,13 @@ public final class ImageViewController extends DefaultConfigController {
 
         @Preference(label = "Invert mouse wheel scrolling (zoom-in/out)",
                 key = ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING)
-        boolean reverseZom = false;
+        boolean reverseZom = true;
+
+        @Preference(label = "Default Scene Image Zoom (When opening a View Window)",
+                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL,
+                description = "<html>1 is no zoom (image scene fits window)<br>Less than 1 is zoomed out<br>Greater than 1 is zoomed in</html>",
+                interval = "[0.01,10.0]")
+        double zoomInitial = ProductSceneView.PREFERENCE_ZOOM_INITIAL_DEFAULT;
     }
 
 }
