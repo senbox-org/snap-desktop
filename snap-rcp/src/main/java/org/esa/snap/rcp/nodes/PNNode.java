@@ -771,6 +771,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 if (band.getSpectralBandwidth() > 0.0) {
                     append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
                 }
+            } else if (band.getDate() != null) {
+                append(tooltip, String.format("%s", band.getDate()));
             }
             append(tooltip, String.format("%d x %d pixels", band.getRasterWidth(), band.getRasterHeight()));
             if (band instanceof VirtualBand) {
