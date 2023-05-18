@@ -37,13 +37,13 @@
 <p>
     The <em>Collocation Tool</em> allows to collocate spatially
     overlapping products. Collocating products implies that the pixel
-    values of slave products are resampled into the geographical
+    values of dependent products are resampled into the geographical
     raster of the master product.
 </p>
 
 <p>
     In order to avoid naming conflicts, the Collocation Tool allows to rename both
-    master and slave components such as bands, flag codings and bitmask definitions
+    master and dependent components such as bands, flag codings and bitmask definitions
     according to a user defined pattern.
 </p>
 
@@ -52,12 +52,12 @@
 <p>
     When products are collocated, a new product is created which contains a
     copy of all components of the master product, i.e. band data, tie-point grids,
-    flag codings, bitmask definitions, and metadata. The components of the slave
+    flag codings, bitmask definitions, and metadata. The components of the dependent
     products are transfered in a different manner:
 </p>
 
 <p>
-    The band data of the slave products are resampled into the geographical
+    The band data of the dependent products are resampled into the geographical
     raster of the master product. The user may choose between three different
     resampling methods: <a href="../general/ResamplingMethods.html">Nearest
     Neighbour</a>, <a href="../general/ResamplingMethods.html">Bilinear
@@ -65,26 +65,26 @@
     Convolution</a>. For flag bands and bands where a valid-pixel expression
     is defined, the Nearest Neighbour method is used.
     In order to establish a mapping between the samples in the master and the
-    slave rasters, the geographical position of a master sample is used to find
-    the corresponding sample in the slave raster. If there is no sample for a
+    dependent rasters, the geographical position of a master sample is used to find
+    the corresponding sample in the dependent raster. If there is no sample for a
     requested geographical position, the master sample is set to the no-data
-    value which was defined for the slave band. The collocation algorithm
-    requires accurate geopositioning information for both master and slave
+    value which was defined for the dependent band. The collocation algorithm
+    requires accurate geopositioning information for both master and dependent
     products. When necessary, accurate geopositioning information may be provided
     by <a href="../visat/GcpManagement.html">ground control points</a>.
 </p>
 
 <p>
     As for the master product, the tie-point grids, flag codings and bitmask
-    definitions of the slave products are copied. Slave product metadata are not
+    definitions of the dependent products are copied. Dependent product metadata are not
     transfered.
 </p>
 
 <h3>User Interfaces</h3>
 
 <p>
-    The Collocation Tool can be invoked from the tool menu in the Sentinel Toolbox
-    by selecting <b>Processing->Geometric Operations->Collocation...</b>,
+    The Collocation Tool can be invoked from the tool menu in the Sentinel Toolbox Application
+    by selecting <b>Raster->Geometric->Collocation...</b>,
     or in batch mode by using the command line
     tool <i><code>gpt</code></i> (Graph Processing Tool) which is located
     in the <code>bin</code> directory. For the latter type
@@ -111,8 +111,8 @@
 </p>
 
 <p class="i1">
-    <b>Slave:</b>
-    Here the user specifies the slave products. The user may select products
+    <b>Dependent:</b>
+    Here the user specifies the dependent products. The user may select products
     opened in SNAP or products from the file system.
 </p>
 
@@ -139,7 +139,7 @@
 
 <p class="i1">
     Each product consists of different components, such as bands, flag codings and
-    bitmask definitions. In order to avoid naming conflicts between master and slave
+    bitmask definitions. In order to avoid naming conflicts between master and dependent
     product components, the user can specify a renaming pattern.
 </p>
 
@@ -154,13 +154,13 @@
 </p>
 
 <p class="i1">
-    <b>Rename slave components:</b>
-    By checking or unchecking this option the automatic renaming of slave product
+    <b>Rename dependent components:</b>
+    By checking or unchecking this option the automatic renaming of dependent product
     components can be activated or deactivated, respectively. If activated, all
-    components of the slave products are renamed according to the
+    components of the dependent products are renamed according to the
     pattern given in the text field next to the check box. The expression
-    <code>${ORIGINAL_NAME}</code> or <code>${SLAVE_NUMBER_ID}</code> can be used
-    to refer to the original name of the component or the id of the slave (0,1,2...)
+    <code>${ORIGINAL_NAME}</code> or <code>${DEPENDENT_NUMBER_ID}</code> can be used
+    to refer to the original name of the component or the id of the dependent (0,1,2...)
     respectively.
 </p>
 
@@ -172,7 +172,7 @@
     <a href="../general/ResamplingMethods.html">Nearest
         Neighbour</a>, <a href="../general/ResamplingMethods.html">Bilinear
     Interpolation</a>, and <a href="../general/ResamplingMethods.html">Cubic
-    Convolution</a>. When the slave product contains a band where a valid-pixel
+    Convolution</a>. When the dependent product contains a band where a valid-pixel
     expression is defined, only the <a href="../general/ResamplingMethods.html">Nearest
     Neighbour</a> method is presented.
 </p>

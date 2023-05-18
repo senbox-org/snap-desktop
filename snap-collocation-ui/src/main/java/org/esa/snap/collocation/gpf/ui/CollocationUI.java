@@ -35,12 +35,12 @@ public class CollocationUI extends BaseOperatorUI {
     private final JComboBox<String> masterCombo = new JComboBox<>();
     private final JComboBox<ResamplingType> resampleTypeCombo = new JComboBox<>();
     private final JTextField productTypeField = new JTextField("COLLOCATED");
-    private final JTextField slavePatternField = new JTextField("${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}");
+    private final JTextField dependentPatternField = new JTextField("${ORIGINAL_NAME}_S${DEPENDENT_NUMBER_ID}");
     private final JTextField masterPatternField = new JTextField("${ORIGINAL_NAME}_M");
 
     private JCheckBox copySecMetadataCheckBox;
     private JCheckBox renameMasterCheckBox;
-    private JCheckBox renameSlaveCheckBox;
+    private JCheckBox renameDependentCheckBox;
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
@@ -96,9 +96,9 @@ public class CollocationUI extends BaseOperatorUI {
         paramMap.put("targetProductType", productTypeField.getText());
         paramMap.put("copySecondaryMetadata", copySecMetadataCheckBox.isSelected());
         paramMap.put("renameMasterComponents", renameMasterCheckBox.isSelected());
-        paramMap.put("renameSlaveComponents", renameSlaveCheckBox.isSelected());
+        paramMap.put("renameDependentComponents", renameDependentCheckBox.isSelected());
         paramMap.put("masterComponentPattern", masterPatternField.getText());
-        paramMap.put("slaveComponentPattern", slavePatternField.getText());
+        paramMap.put("dependentComponentPattern", dependentPatternField.getText());
         paramMap.put("resamplingType", resampleTypeCombo.getSelectedItem());
 
     }
@@ -169,12 +169,12 @@ public class CollocationUI extends BaseOperatorUI {
         renameMasterCheckBox.setToolTipText(descriptorRenameMaster.getAttribute("description").toString());
         renameMasterPanel.add(renameMasterCheckBox);
 
-        JPanel renameSlavePanel = new JPanel(new GridLayout(1, 1));
-        PropertyDescriptor descriptorRenameSlave = propertySet.getProperty("renameSlaveComponents").getDescriptor();
-        renameSlaveCheckBox = new JCheckBox(descriptorRenameSlave.getAttribute("displayName").toString());
-        renameSlaveCheckBox.setSelected(true);
-        renameSlaveCheckBox.setToolTipText(descriptorRenameSlave.getAttribute("description").toString());
-        renameSlavePanel.add(renameSlaveCheckBox);
+        JPanel renameDependentPanel = new JPanel(new GridLayout(1, 1));
+        PropertyDescriptor descriptorRenameDependent = propertySet.getProperty("renameDependentComponents").getDescriptor();
+        renameDependentCheckBox = new JCheckBox(descriptorRenameDependent.getAttribute("displayName").toString());
+        renameDependentCheckBox.setSelected(true);
+        renameDependentCheckBox.setToolTipText(descriptorRenameDependent.getAttribute("description").toString());
+        renameDependentPanel.add(renameDependentCheckBox);
 
         JPanel masterPatternPanel = new JPanel(new GridLayout(1, 2));
         PropertyDescriptor descriptorMasterPattern = propertySet.getProperty("masterComponentPattern").getDescriptor();
@@ -183,12 +183,12 @@ public class CollocationUI extends BaseOperatorUI {
         masterPatternPanel.add(masterPatternLabel);
         masterPatternPanel.add(masterPatternField);
 
-        JPanel slavePatternPanel = new JPanel(new GridLayout(1, 2));
-        PropertyDescriptor descriptorSlavePattern = propertySet.getProperty("slaveComponentPattern").getDescriptor();
-        JLabel slavePatternLabel = new JLabel(descriptorSlavePattern.getAttribute("displayName").toString());
-        slavePatternLabel.setToolTipText(descriptorSlavePattern.getAttribute("description").toString());
-        slavePatternPanel.add(slavePatternLabel);
-        slavePatternPanel.add(slavePatternField);
+        JPanel dependentPatternPanel = new JPanel(new GridLayout(1, 2));
+        PropertyDescriptor descriptorDependentPattern = propertySet.getProperty("dependentComponentPattern").getDescriptor();
+        JLabel dependentPatternLabel = new JLabel(descriptorDependentPattern.getAttribute("displayName").toString());
+        dependentPatternLabel.setToolTipText(descriptorDependentPattern.getAttribute("description").toString());
+        dependentPatternPanel.add(dependentPatternLabel);
+        dependentPatternPanel.add(dependentPatternField);
 
         JPanel resampleTypePanel = new JPanel(new GridLayout(1, 2));
         PropertyDescriptor descriptorResampleType = propertySet.getProperty("resamplingType").getDescriptor();
@@ -202,9 +202,9 @@ public class CollocationUI extends BaseOperatorUI {
         parametersPanel.add(masterSelectionPanel);
         parametersPanel.add(secMetaPanel);
         parametersPanel.add(renameMasterPanel);
-        parametersPanel.add(renameSlavePanel);
+        parametersPanel.add(renameDependentPanel);
         parametersPanel.add(masterPatternPanel);
-        parametersPanel.add(slavePatternPanel);
+        parametersPanel.add(dependentPatternPanel);
         parametersPanel.add(resampleTypePanel);
         parametersPanel.add(tableLayout.createVerticalSpacer());
         return parametersPanel;
