@@ -15,16 +15,16 @@
  */
 package org.esa.snap.ui.tool;
 
-import com.jidesoft.swing.JideButton;
-import com.jidesoft.swing.JideToggleButton;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,10 +38,9 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.util.EventObject;
 
-//import UIUtils;
 
 /**
- * The <code>ToolButtonFactory</code> can be used to create tool bar buttons which have a consistent look and feel.
+ * The {@code ToolButtonFactory} can be used to create tool bar buttons which have a consistent look and feel.
  *
  * @author Norman Fomferra
  * @version $Revision$  $Date$
@@ -71,13 +70,11 @@ public class ToolButtonFactory {
     }
 
     private static AbstractButton createButton(boolean toggle) {
-        JideButton button;
         if (toggle) {
-            button = new JideToggleButton(); // <JIDE/>
+            return new JToggleButton();
         } else {
-            button = new JideButton(); // <JIDE/>
+            return new JButton();
         }
-        return button;
     }
 
     private static void configure(AbstractButton button) {
