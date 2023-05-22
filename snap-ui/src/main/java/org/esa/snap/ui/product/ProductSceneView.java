@@ -153,7 +153,7 @@ public class ProductSceneView extends BasicView
      * Name of property which zooms the view when opening a band view window.
      */
     public static final String PREFERENCE_KEY_ZOOM_INITIAL = "image.zoom.initial";
-    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.085;
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.85;
 
     /**
      * Name of property of image info
