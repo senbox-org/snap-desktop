@@ -21,6 +21,7 @@ Gson ;Json IO;Google;Apache License;https://github.com/google/gson;https://www.a
 Guava;General Library for Java;Google;Apache License;https://github.com/google/guava;https://www.apache.org/licenses/
 hamcrest;Testing framework;Hamcrest;BSD 3 Clause;http://hamcrest.org/;http://opensource.org/licenses/BSD-3-Clause
 hsqldb;database;http://hsqldb.org/;BSD Style;http://hsqldb.org/;http://hsqldb.org/web/hsqlLicense.html
+Icons;16x16 Free Application Icons;Aha-Soft;Creative Commons Attribution-Share Alike 3.0;http://www.small-icons.com/packs/16x16-free-application-icons.htm;http://www.small-icons.com/packs/free-license.htm
 ImageIO-EXT;ImageIO extensions;GeoSolutions;Apache License;https://github.com/geosolutions-it/imageio-ext;https://www.apache.org/licenses/
 JAI;Java Advanced Imaging;Oracle;Sun Binary License;http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-java-client-419417.html;https://download.java.net/media/jai/builds/release/1_1_3/LICENSE-jai.txt
 JAI-ext;JAI extensions;GeoSolutions;Apache License;https://github.com/geosolutions-it/jai-ext;https://www.apache.org/licenses/
