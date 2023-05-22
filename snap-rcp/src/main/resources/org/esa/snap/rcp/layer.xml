@@ -227,7 +227,7 @@
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap/updates.xml.gz"/>
 				<attr name="category" stringvalue="SNAP Core"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/icon_core.png"/>
+				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/IconCore.png"/>
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -237,7 +237,7 @@
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap-toolboxes/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Toolboxes"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/icon_toolboxes.png"/>
+				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/IconToolboxes.png"/>
             </file>
             <file name="snap_supported_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Supported Plugins"/>
@@ -248,7 +248,7 @@
                 <attr name="url"
                       urlvalue="https://step.esa.int/updatecenter/9.0/snap-supported-plugins/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Supported Plugins"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/icon_supported.png"/>
+				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/IconSupported.png"/>
             </file>
             <file name="snap_community_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Community Plugins"/>
@@ -259,7 +259,7 @@
                 <attr name="url"
                       urlvalue="https://step.esa.int/updatecenter/9.0/snap-community-plugins/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Community Plugins"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/icon_community.png"/>
+				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/IconCommunity.png"/>
             </file>
         </folder>
     </folder>
