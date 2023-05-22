@@ -15,6 +15,7 @@
  */
 package org.esa.snap.ui.tool;
 
+import com.bc.ceres.swing.BrightBlueImageFilter;
 import org.esa.snap.ui.UIUtils;
 
 import javax.swing.AbstractButton;
@@ -35,7 +36,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.FilteredImageSource;
-import java.awt.image.RGBImageFilter;
 import java.util.EventObject;
 
 
@@ -131,27 +131,9 @@ public class ToolButtonFactory {
 
     private static Image createRolloverImage(Image image) {
         return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(),
-                                                                               new BrightBlueFilter()));
+                new BrightBlueImageFilter()));
     }
 
-    private static class BrightBlueFilter extends RGBImageFilter {
-
-        public BrightBlueFilter() {
-            canFilterIndexColorModel = true;
-        }
-
-        @Override
-        public int filterRGB(int x, int y, int rgb) {
-            int a = (rgb & 0xff000000) >> 24;
-            int r = (rgb & 0x00ff0000) >> 16;
-            int g = (rgb & 0x0000ff00) >> 8;
-            int b = rgb & 0x000000ff;
-            int i = (r + g + b) / 3;
-            r = g = i;
-            b = 255;
-            return a << 24 | r << 16 | g << 8 | b;
-        }
-    }
 
     private static class RolloverButtonEventListener extends MouseAdapter implements ItemListener {
 
