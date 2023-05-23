@@ -899,12 +899,19 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 Path sourceDirPath = getColorPalettesAuxDataSourceDir();
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
+                final ResourceInstaller resourceInstallerKeepExisting = new ResourceInstaller(sourceDirPath, auxdataDir, false);
+
 
                 resourceInstaller.install(".*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
                 resourceInstaller.install(".*." + FILE_EXTENSION_CPT, ProgressMonitor.NULL);
 
+
                 // these file get overwritten as we do not encourage that these standard files to be altered
-                resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+
+
+                resourceInstallerKeepExisting.install(".*." + ColorManipulationDefaults.COLOR_PALETTE_LIST_FILENAME, ProgressMonitor.NULL);
+
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {

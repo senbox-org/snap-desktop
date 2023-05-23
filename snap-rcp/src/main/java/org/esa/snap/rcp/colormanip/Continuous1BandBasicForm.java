@@ -606,6 +606,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private void applyChanges(RangeKey key) {
         ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
 
+        final ColorPaletteDef selectedCPD = colorPaletteChooser.getSelectedColorPaletteDefinition();
+        if (selectedCPD.getFirstPoint().getLabel().contains("-- Universal Palettes --") ||
+                selectedCPD.getFirstPoint().getLabel().contains("-- Standard Palettes --") ||
+                selectedCPD.getFirstPoint().getLabel().contains("-- Primary Palettes --") ||
+                selectedCPD.getFirstPoint().getLabel().contains("-- Additional Palettes --")) {
+            parentForm.applyChanges();
+            return;
+        }
+
         if (shouldFireChooserEvent) {
             // The 'valid' variable is used to determine whether the component entries are valid.  For the cases
             // where the component entry is not valid, no update will occur, the user will be prompted, and the
@@ -618,7 +627,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             boolean valueChange = false;
 
 
-            final ColorPaletteDef selectedCPD = colorPaletteChooser.getSelectedColorPaletteDefinition();
             final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
             final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
             final ColorPaletteDef selectedCpdDeepCopy = selectedCPD.createDeepCopy();

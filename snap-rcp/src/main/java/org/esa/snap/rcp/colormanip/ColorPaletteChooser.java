@@ -3,8 +3,11 @@ package org.esa.snap.rcp.colormanip;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.Range;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.*;
 import java.awt.BasicStroke;
@@ -17,6 +20,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.List;
 import java.util.Vector;
+
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 
 /**
@@ -84,7 +89,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         final String suffix = userPalette.getFirstPoint().getLabel();
         final String name;
         if (suffix != null && suffix.trim().length() > 0) {
-                name = DERIVED_FROM + " " + suffix.trim();
+            name = DERIVED_FROM + " " + suffix.trim();
         } else {
             name = UNNAMED;
         }
@@ -94,11 +99,68 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     }
 
     private static Vector<ColorPaletteWrapper> getPalettes() {
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+        String paletteSelectorSplit = configuration.getPropertyString(PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY, PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT);
+
         final List<ColorPaletteDef> defList = ColorPaletteManager.getDefault().getColorPaletteDefList();
         final Vector<ColorPaletteWrapper> paletteWrappers = new Vector<>();
-        for (ColorPaletteDef colorPaletteDef : defList) {
-            final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-            paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+        final ColorPaletteDef paletteDummy = new ColorPaletteDef(new ColorPaletteDef.Point[]{
+                new ColorPaletteDef.Point(.001, Color.WHITE),
+                new ColorPaletteDef.Point(1.0, Color.WHITE)
+        }); //cpd that goes with "-- Primary Palettes --" and "-- Additional Palettes --"
+
+        if (paletteSelectorSplit.contains(PROPERTY_PALETTE_CATEGORIZE_DISPLAY_OPTION3)) {   //Universal, Standard and Additional Palettes
+            paletteWrappers.add(new ColorPaletteWrapper("-- Universal Palettes --", paletteDummy));
+
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                if (colorPaletteDef.isUniversal()) {
+                    final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                    paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                }
+            }
+
+            paletteWrappers.add(new ColorPaletteWrapper("-- Standard Palettes --", paletteDummy));
+
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                if (!colorPaletteDef.isUniversal() && colorPaletteDef.isStandard()) {
+                    paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                }
+            }
+
+            paletteWrappers.add(new ColorPaletteWrapper("-- Additional Palettes --", paletteDummy));
+
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                if (!colorPaletteDef.isUniversal() && !colorPaletteDef.isStandard()) {
+                    paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                }
+            }
+        } else if (paletteSelectorSplit.contains(PROPERTY_PALETTE_CATEGORIZE_DISPLAY_OPTION2)){   // Primary and Additional Palettes
+            paletteWrappers.add(new ColorPaletteWrapper("-- Primary Palettes --", paletteDummy));
+
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                if (colorPaletteDef.isPrimary()) {
+                    paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                }
+            }
+
+            paletteWrappers.add(new ColorPaletteWrapper("-- Additional Palettes --", paletteDummy));
+
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                if (!colorPaletteDef.isPrimary()) {
+                    paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                }
+            }
+        } else {
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+            }
         }
         return paletteWrappers;
     }
@@ -113,14 +175,20 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     }
 
     private ListCellRenderer<ColorPaletteWrapper> createPaletteRenderer() {
+
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+        boolean includePaletteImage = configuration.getPropertyBool(PROPERTY_PALETTE_INCLUDE_IMAGE_KEY, PROPERTY_PALETTE_INCLUDE_IMAGE_DEFAULT);
+
         return new ListCellRenderer<ColorPaletteWrapper>() {
             @Override
             public Component getListCellRendererComponent(JList<? extends ColorPaletteWrapper> list, ColorPaletteWrapper value, int index, boolean isSelected, boolean cellHasFocus) {
-                final Font font = getFont();
-                final Font smaller = font.deriveFont(font.getSize() * 0.85f);
+//                final Font font = getFont();
+//                final Font smaller = font.deriveFont(font.getSize() * 0.85f);
 
                 final JLabel nameComp = new JLabel(value.name);
-                nameComp.setFont(smaller);
+//                nameComp.setFont(smaller);
 
                 final ColorPaletteDef cpd = value.cpd;
                 final JLabel rampComp = new JLabel(" ") {
@@ -132,8 +200,31 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 };
 
                 final JPanel palettePanel = new JPanel(new BorderLayout(0, 2));
+                if (value.name.contains("-- Primary Palettes --")
+                        || value.name.contains("-- Standard Palettes --")
+                        || value.name.contains("-- Universal Palettes --")
+                        || value.name.contains("-- Additional Palettes --")) {
+                    nameComp.setBackground(Color.LIGHT_GRAY);
+                    nameComp.setOpaque(true);
+                }
+                if (includePaletteImage) {
+                    final Font font = getFont();
+                    final Font smaller = font.deriveFont(font.getSize() * 0.85f);
+                    nameComp.setFont(smaller);
+                }
                 palettePanel.add(nameComp, BorderLayout.NORTH);
-                palettePanel.add(rampComp, BorderLayout.CENTER);
+                if (includePaletteImage) {
+                    if (!(value.name.contains("-- Primary Palettes --")
+                            || value.name.contains("-- Standard Palettes --")
+                            || value.name.contains("-- Universal Palettes --")
+                            || value.name.contains("-- Additional Palettes --"))) {
+                        palettePanel.add(rampComp, BorderLayout.CENTER);
+                    }
+                } else {
+                    if (value.name.contains("derived from")) {
+                        palettePanel.add(rampComp, BorderLayout.CENTER);
+                    }
+                }
 
                 if (isSelected) {
                     list.setToolTipText(value.name);
