@@ -75,8 +75,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private static final String HELP_ID = "rgbImageProfile";
 
-    private  Product product;
-
     private Lookup lookup;
     private final Lookup.Result<ProductNode> viewResult;
 
@@ -94,10 +92,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_Name());
-        if (node != null) {
-            product = node.getProduct();
-        }
-
         putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
@@ -112,6 +106,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
         if (product != null) {
             openProductSceneViewRGB(product, HELP_ID);
         }
