@@ -115,7 +115,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
             paletteWrappers.add(new ColorPaletteWrapper("-- Universal Palettes --", paletteDummy));
 
             for (ColorPaletteDef colorPaletteDef : defList) {
-                if (colorPaletteDef.isUniversal()) {
+                if (ColorPaletteManager.getDefault().isUniversal(colorPaletteDef)) {
                     final String nameFor = getNameForWithoutExtension(colorPaletteDef);
                     paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
                 }
@@ -125,7 +125,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
 
             for (ColorPaletteDef colorPaletteDef : defList) {
                 final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-                if (!colorPaletteDef.isUniversal() && colorPaletteDef.isStandard()) {
+                if (!ColorPaletteManager.getDefault().isUniversal(colorPaletteDef) && ColorPaletteManager.getDefault().isStandard(colorPaletteDef)) {
                     paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
                 }
             }
@@ -134,7 +134,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
 
             for (ColorPaletteDef colorPaletteDef : defList) {
                 final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-                if (!colorPaletteDef.isUniversal() && !colorPaletteDef.isStandard()) {
+                if (!ColorPaletteManager.getDefault().isUniversal(colorPaletteDef) && !ColorPaletteManager.getDefault().isStandard(colorPaletteDef)) {
                     paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
                 }
             }
@@ -143,7 +143,8 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
 
             for (ColorPaletteDef colorPaletteDef : defList) {
                 final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-                if (colorPaletteDef.isPrimary()) {
+
+                if (ColorPaletteManager.getDefault().isPrimary(colorPaletteDef)) {
                     paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
                 }
             }
@@ -152,7 +153,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
 
             for (ColorPaletteDef colorPaletteDef : defList) {
                 final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-                if (!colorPaletteDef.isPrimary()) {
+                if (!ColorPaletteManager.getDefault().isPrimary(colorPaletteDef)) {
                     paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
                 }
             }

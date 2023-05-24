@@ -34,6 +34,9 @@ class ColorPaletteManager {
 
     private List<ColorPaletteDef> cpdList;
     private List<String> cpdNames;
+    private List<Boolean> cpdPrimary;
+    private List<Boolean> cpdUniversal;
+    private List<Boolean> cpdStandard;
     private List<String> primaryPaletteList;
     private List<String> universalPaletteList;
     private List<String> standardPaletteList;
@@ -101,15 +104,11 @@ class ColorPaletteManager {
                     } else {
                         newCpd = ColorPaletteDef.loadColorPaletteDef(file);
                     }
-                    if (primaryPaletteList.contains(file.getName())) {
-                        newCpd.setPrimary(true);
-                    }
-                    if (universalPaletteList.contains(file.getName())) {
-                        newCpd.setUniversal(true);
-                    }
-                    if (standardPaletteList.contains(file.getName())) {
-                        newCpd.setStandard(true);
-                    }
+
+                    cpdPrimary.add(primaryPaletteList.contains(file.getName()));
+                    cpdUniversal.add(universalPaletteList.contains(file.getName()));
+                    cpdStandard.add(standardPaletteList.contains(file.getName()));
+
                     cpdList.add(newCpd);
                     cpdNames.add(file.getName());
                 } catch (IOException e) {
@@ -143,6 +142,36 @@ class ColorPaletteManager {
         }
         return null;
     }
+
+
+    public boolean isPrimary(ColorPaletteDef cpdForRaster) {
+        for (int i = 0; i < cpdList.size(); i++) {
+            ColorPaletteDef colorPaletteDef = cpdList.get(i);
+            if (colorPaletteDef == cpdForRaster)
+                return cpdPrimary.get(i);
+        }
+        return false;
+    }
+
+    public boolean isUniversal(ColorPaletteDef cpdForRaster) {
+        for (int i = 0; i < cpdList.size(); i++) {
+            ColorPaletteDef colorPaletteDef = cpdList.get(i);
+            if (colorPaletteDef == cpdForRaster)
+                return cpdUniversal.get(i);
+        }
+        return false;
+    }
+
+    public boolean isStandard(ColorPaletteDef cpdForRaster) {
+        for (int i = 0; i < cpdList.size(); i++) {
+            ColorPaletteDef colorPaletteDef = cpdList.get(i);
+            if (colorPaletteDef == cpdForRaster)
+                return cpdStandard.get(i);
+        }
+        return false;
+    }
+
+
 
     private Document getFileDocument(File file) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
