@@ -292,7 +292,7 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
         final ValueAxis domainAxis = timeSeriesPlot.getDomainAxis();
         domainAxis.setAutoRange(true);
         XYLineAndShapeRenderer xyRenderer = new XYLineAndShapeRenderer(true, true);
-        xyRenderer.setBaseLegendTextPaint(DEFAULT_FOREGROUND_COLOR);
+        xyRenderer.setLegendTextPaint(1, DEFAULT_FOREGROUND_COLOR);
         timeSeriesPlot.setRenderer(xyRenderer);
         timeSeriesPlot.setBackgroundPaint(DEFAULT_BACKGROUND_COLOR);
         timeSeriesPlot.setNoDataMessage(NO_DATA_MESSAGE);
@@ -345,11 +345,11 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
             final XYErrorRenderer cursorRenderer = createXYErrorRenderer();
             final XYErrorRenderer insituRenderer = createXYErrorRenderer();
 
-            pinRenderer.setBaseStroke(PIN_STROKE);
-            cursorRenderer.setBaseStroke(CURSOR_STROKE);
+            pinRenderer.setSeriesStroke(1, PIN_STROKE);
+            cursorRenderer.setSeriesStroke(1, CURSOR_STROKE);
 
-            insituRenderer.setBaseLinesVisible(false);
-            insituRenderer.setBaseShapesFilled(false);
+            insituRenderer.setSeriesLinesVisible(1, false);
+            insituRenderer.setSeriesShapesFilled(1, false);
 
 
             final List<String> rasterNamesSet = displayAxisMapping.getRasterNames(aliasName);
@@ -389,7 +389,7 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
         final XYErrorRenderer renderer = new XYErrorRenderer();
         renderer.setDrawXError(false);
         renderer.setDrawYError(false);
-        renderer.setBaseLinesVisible(true);
+        renderer.setSeriesLinesVisible(1, true);
         renderer.setAutoPopulateSeriesStroke(false);
         renderer.setAutoPopulateSeriesPaint(false);
         renderer.setAutoPopulateSeriesFillPaint(false);
@@ -398,7 +398,7 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
         renderer.setAutoPopulateSeriesShape(false);
         final StandardXYToolTipGenerator tipGenerator;
         tipGenerator = new StandardXYToolTipGenerator("Value: {2}   Date: {1}", new SimpleDateFormat(), new DecimalFormat());
-        renderer.setBaseToolTipGenerator(tipGenerator);
+        renderer.setSeriesToolTipGenerator(1, tipGenerator);
         return renderer;
     }
 
