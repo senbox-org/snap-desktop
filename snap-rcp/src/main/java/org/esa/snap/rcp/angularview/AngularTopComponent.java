@@ -260,8 +260,8 @@ public class AngularTopComponent extends ToolTopComponent {
         }
         setScatteringZenithBands(angularViewBands);
         if (angularViewBands.isEmpty()) {
-            Dialogs.showWarning("<html>Angular View Tool <br>requires bands with View Angle property,<br>" +
-                    "such as PACE OCI, HARP2,and SPEXone bands</html>");
+//            Dialogs.showWarning("<html>Angular View Tool <br>requires bands with View Angle property,<br>" +
+//                    "such as PACE OCI, HARP2,and SPEXone bands</html>");
         }
         return angularViewBands.toArray(new AngularBand[angularViewBands.size()]);
     }
