@@ -57,14 +57,6 @@
             <artifactId>org-netbeans-modules-extbrowser</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-        <!-- To use Jelly Tools in your functional tests, add or replace with:
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-jellytools-platform</artifactId>
-            <version>${netbeans.version}</version>
-            <scope>test</scope>
-        </dependency>
-        -->
 
         <!-- SNAP project modules -->
         <dependency>
