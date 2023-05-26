@@ -60,10 +60,6 @@
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-        </dependency>
     </dependencies>
 </project>
 
