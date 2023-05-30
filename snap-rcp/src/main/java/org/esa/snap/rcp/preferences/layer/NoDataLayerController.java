@@ -95,7 +95,7 @@ public final class NoDataLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-nodatalayer");
     }
 
     @SuppressWarnings("UnusedDeclaration")
