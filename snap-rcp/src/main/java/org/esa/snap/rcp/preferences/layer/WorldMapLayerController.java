@@ -128,7 +128,7 @@ public final class WorldMapLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-worldmaplayer");
     }
 
     @SuppressWarnings("UnusedDeclaration")
