@@ -28,7 +28,6 @@ import com.bc.ceres.swing.binding.PropertyPane;
 import org.esa.snap.core.layer.GraticuleLayerType;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -396,7 +395,7 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-graticulelayer");
     }
 
     @SuppressWarnings("UnusedDeclaration")
