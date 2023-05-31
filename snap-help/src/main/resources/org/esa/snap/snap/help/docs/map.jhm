@@ -113,6 +113,13 @@
     <mapID target="options-rgb" url="desktop/OptionsDialog.html#rgbprofiles"/>
     <mapID target="options-uibehavior" url="desktop/OptionsDialog.html#uibehavior"/>
     <mapID target="options-gdalLibraryLoader" url="desktop/OptionsDialog.html#GDALLibraryLoaderConfig"/>
+    <mapID target="options-graticulelayer" url="desktop/OptionsDialog.html#graticulelayer"/>
+    <mapID target="options-imagelayer" url="desktop/OptionsDialog.html#imagelayer"/>
+    <mapID target="options-nodatalayer" url="desktop/OptionsDialog.html#nodatalayer"/>
+    <mapID target="options-worldmaplayer" url="desktop/OptionsDialog.html#worldmaplayer"/>
+    <mapID target="netbeans.optionsDialog.general" url="desktop/OptionsDialog.html#www"/>
+    <mapID target="netbeans.optionsDialog.keymaps" url="desktop/OptionsDialog.html#keymap"/>
+    <mapID target="org.netbeans.core.windows.options.TabsOptionsPanelController" url="desktop/OptionsDialog.html#appearance"/>
 
     <mapID target="reprojectionAction" url="desktop/Reprojection.html"/>
     <mapID target="resampleAction" url="desktop/Resample.html"/>

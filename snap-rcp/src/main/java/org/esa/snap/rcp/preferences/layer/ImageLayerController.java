@@ -180,7 +180,7 @@ public final class ImageLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("layer");
+        return new HelpCtx("options-imagelayer");
     }
 
     @SuppressWarnings("UnusedDeclaration")
