@@ -5,9 +5,8 @@ import org.esa.snap.product.library.ui.v2.repository.output.OutputProductResults
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * The panel containing the two types to compute the product count from the search list: by day, by month.
@@ -156,13 +155,11 @@ public class RepositoryProductsTimelinePanel extends JPanel {
     private static java.util.List<YearLabel> computeBarsByMonthsOfYear(OutputProductResults outputProductResults) {
         java.util.List<YearLabel> monthBarsByYear = new ArrayList<>();
 
-        Calendar calendar = Calendar.getInstance();
         for (int i=0; i<outputProductResults.getAvailableProductCount(); i++) {
-            Date acquisitionDate = outputProductResults.getProductAt(i).getAcquisitionDate();
+            LocalDateTime acquisitionDate = outputProductResults.getProductAt(i).getAcquisitionDate();
             if (acquisitionDate != null) {
-                calendar.setTimeInMillis(acquisitionDate.getTime());
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
+                int year = acquisitionDate.getYear();
+                int month = acquisitionDate.getMonthValue() - 1;
 
                 YearLabel foundPair = null;
                 for (int k=0; k<monthBarsByYear.size() && foundPair == null; k++) {
@@ -188,13 +185,11 @@ public class RepositoryProductsTimelinePanel extends JPanel {
     private static java.util.List<YearLabel> computeBarsByDaysOfYear(OutputProductResults outputProductResults) {
         java.util.List<YearLabel> dayBarsByYear = new ArrayList<>();
 
-        Calendar calendar = Calendar.getInstance();
         for (int i=0; i<outputProductResults.getAvailableProductCount(); i++) {
-            Date acquisitionDate = outputProductResults.getProductAt(i).getAcquisitionDate();
+            LocalDateTime acquisitionDate = outputProductResults.getProductAt(i).getAcquisitionDate();
             if (acquisitionDate != null) {
-                calendar.setTimeInMillis(acquisitionDate.getTime());
-                int year = calendar.get(Calendar.YEAR);
-                int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+                int year = acquisitionDate.getYear();
+                int dayOfYear = acquisitionDate.getDayOfYear();
 
                 YearLabel foundPair = null;
                 for (int k=0; k<dayBarsByYear.size() && foundPair == null; k++) {

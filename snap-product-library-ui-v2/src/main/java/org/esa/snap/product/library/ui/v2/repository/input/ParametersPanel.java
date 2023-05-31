@@ -5,10 +5,9 @@ import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.loading.VerticalScrollablePanel;
 
-import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,11 +51,11 @@ public class ParametersPanel extends VerticalScrollablePanel {
                     }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
-            } else if (param.getType() == Double.class || param.getType() == Float.class || param.getType() == Integer.class || param.getType() == Short.class) {
+            } else if (param.getType() == Double.class || param.getType() == double.class || param.getType() == Float.class || param.getType() == float.class || param.getType() == Integer.class || param.getType() == int.class || param.getType() == Short.class || param.getType() == short.class ) {
                 // the parameter type is number
                 Number defaultValue = (param.getDefaultValue() == null) ? null : (Number)param.getDefaultValue();
                 parameterComponent = new NumberParameterComponent(param.getName(), param.getType(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
-            } else if (param.getType() == Date.class) {
+            } else if (param.getType() == LocalDateTime.class || param.getType() == LocalDateTime[].class) {
                 parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
             } else if (param.getType() == String[].class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();

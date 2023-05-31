@@ -27,10 +27,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ import java.util.Map;
  */
 public abstract class AbstractRepositoryProductPanel extends JPanel {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss");
     private static final DecimalFormat FORMAT = new DecimalFormat("###.##");
 
     private static ImageIcon[] ICONS;
@@ -276,7 +275,7 @@ public abstract class AbstractRepositoryProductPanel extends JPanel {
         return attributeDisplayName + ": " + attributeValue;
     }
 
-    public static String buildAcquisitionDateLabelText(Date acquisitionDate) {
+    public static String buildAcquisitionDateLabelText(LocalDateTime acquisitionDate) {
         String dateAsString = "N/A";
         if (acquisitionDate != null) {
             dateAsString = DATE_FORMAT.format(acquisitionDate);

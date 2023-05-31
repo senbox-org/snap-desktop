@@ -63,16 +63,16 @@ public class NumberParameterComponent extends TextFieldParameterComponent<Number
     }
 
     private Number convertValue(String value) {
-        if (this.parameterType == Double.class) {
+        if (this.parameterType == Double.class || this.parameterType == double.class) {
             return Double.parseDouble(value);
         }
-        if (this.parameterType == Float.class) {
+        if (this.parameterType == Float.class || this.parameterType == float.class) {
             return Float.parseFloat(value);
         }
-        if (this.parameterType == Short.class) {
+        if (this.parameterType == Short.class || this.parameterType == short.class) {
             return Short.parseShort(value);
         }
-        if (this.parameterType == Integer.class) {
+        if (this.parameterType == Integer.class || this.parameterType == int.class) {
             return Integer.parseInt(value);
         }
         throw new IllegalStateException("Unknown parameter type '" + this.parameterType + "'.");

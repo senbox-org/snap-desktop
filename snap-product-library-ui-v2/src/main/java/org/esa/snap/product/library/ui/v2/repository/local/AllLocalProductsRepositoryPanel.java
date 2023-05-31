@@ -34,6 +34,8 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -201,7 +203,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return areaOfInterestParameter;
     }
 
-    public void updateInputParameterValues(Path localRepositoryFolderPath, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
+    public void updateInputParameterValues(Path localRepositoryFolderPath, LocalDateTime startDate, LocalDateTime endDate, Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
         LocalRepositoryFolder localRepositoryFolderToSelect = null;
         int size = this.foldersComboBox.getModel().getSize();
         for (int i=0; i<size && localRepositoryFolderToSelect == null; i++) {
@@ -301,7 +303,7 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
         return (LocalRepositoryFolder) this.foldersComboBox.getSelectedItem();
     }
 
-    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, Date startDate, Date endDate,
+    public void updateInputParameterValues(LocalRepositoryFolder localRepositoryFolder, String remoteMission, LocalDateTime startDate, LocalDateTime endDate,
                                            Rectangle2D.Double areaOfInterestToSelect, List<AttributeFilter> attributes) {
 
         this.foldersComboBox.setSelectedItem(localRepositoryFolder);
@@ -312,10 +314,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                     inputParameterComponent.setParameterValue(areaOfInterestToSelect);
                     break;
                 case AllLocalFolderProductsRepository.START_DATE_PARAMETER:
-                    inputParameterComponent.setParameterValue(startDate);
+                    inputParameterComponent.setParameterValue(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()));
                     break;
                 case AllLocalFolderProductsRepository.END_DATE_PARAMETER:
-                    inputParameterComponent.setParameterValue(endDate);
+                    inputParameterComponent.setParameterValue(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()));
                     break;
                 case AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER:
                     inputParameterComponent.setParameterValue(attributes);

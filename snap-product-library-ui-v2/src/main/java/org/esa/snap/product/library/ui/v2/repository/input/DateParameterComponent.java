@@ -7,6 +7,8 @@ import java.awt.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -14,7 +16,7 @@ import java.util.Date;
  *
  * Created by jcoravu on 7/8/2019.
  */
-public class DateParameterComponent extends AbstractParameterComponent<Date> {
+public class DateParameterComponent extends AbstractParameterComponent<LocalDateTime> {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -32,8 +34,8 @@ public class DateParameterComponent extends AbstractParameterComponent<Date> {
     }
 
     @Override
-    public Date getParameterValue() {
-        return this.datePickerComboBox.getDate();
+    public LocalDateTime getParameterValue() {
+        return this.datePickerComboBox.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     @Override

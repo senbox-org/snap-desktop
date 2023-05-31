@@ -32,6 +32,8 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -247,7 +249,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
         return false;
     }
 
-    public void updateInputParameterValues(String missionName, Date startDate, Date endDate, Rectangle2D.Double areaOfInterestToSelect) {
+    public void updateInputParameterValues(String missionName, LocalDateTime startDate, LocalDateTime endDate, Rectangle2D.Double areaOfInterestToSelect) {
         this.missionsComboBox.removeItemListener(this.missionItemListener);
         try {
             this.missionsComboBox.setSelectedItem(missionName);
@@ -259,9 +261,9 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
             if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.FOOTPRINT)) {
                 inputParameterComponent.setParameterValue(areaOfInterestToSelect);
             } else if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.START_DATE)) {
-                inputParameterComponent.setParameterValue(startDate);
+                inputParameterComponent.setParameterValue(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()));
             } else if (inputParameterComponent.getParameterName().equals(RepositoryQueryParameter.END_DATE)) {
-                inputParameterComponent.setParameterValue(endDate);
+                inputParameterComponent.setParameterValue(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()));
             }
         }
     }
