@@ -1,97 +1,74 @@
 <paletteList>
     <Palette name="oceancolor_standard.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
-        <UNIVERSAL>true</UNIVERSAL>
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="oceancolor_sss.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>STANDARD</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="oceancolor_ndvi.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>STANDARD</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="sm.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="gray_scale.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="standard_red.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="standard_blue.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="standard_green.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="oceancolor_zphotic.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="smooth_inv_blue.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="smooth_green.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>MONOCHROME</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="topography.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="chlor_blue_green.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>STANDARD</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="universal_bluered.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>STANDARD</CAT>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="universal_bluegreen.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
+        <CAT>STANDARD</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="deep.cpt">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>true</STANDARD>
         <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="anomalies1_universal.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>false</STANDARD>
-        <UNIVERSAL>false</UNIVERSAL>
+        <CAT>ANOMALIES</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
     </Palette>
     <Palette name="anomalies2_universal.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>false</STANDARD>
+        <CAT>ANOMALIES</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
     <Palette name="gradient_red_white_blue.cpd">
-        <PRIMARY>true</PRIMARY>
-        <STANDARD>false</STANDARD>
+        <CAT>ANOMALIES</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
 </paletteList>

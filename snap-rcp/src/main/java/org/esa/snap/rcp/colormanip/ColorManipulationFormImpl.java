@@ -908,9 +908,13 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 // these file get overwritten as we do not encourage that these standard files to be altered
                 resourceInstallerKeepExisting.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*universal_bluered.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*universal_bluegreen.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*anomalies1_universal.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*anomalies2_universal.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
 
 
-                resourceInstallerKeepExisting.install(".*." + ColorManipulationDefaults.COLOR_PALETTE_LIST_FILENAME, ProgressMonitor.NULL);
+                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_PALETTE_LIST_FILENAME, ProgressMonitor.NULL);
 
 
                 colorPalettesAuxFilesInstalled = true;

@@ -559,11 +559,8 @@ public final class ColorManipulationController extends DefaultConfigController {
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY,
-                description = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_TOOLTIP,
-                valueSet = {ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_OPTION1,
-                        ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_OPTION2,
-                        ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_OPTION3})
-        String paletteSelectorSplit = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT;
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_TOOLTIP)
+        boolean categorizePalettes = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT;
 
         // Slider and Range Options
 

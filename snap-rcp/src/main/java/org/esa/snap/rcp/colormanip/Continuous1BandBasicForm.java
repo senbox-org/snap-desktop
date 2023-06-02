@@ -41,11 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.NumberFormatter;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -105,6 +101,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel schemeInfoLabel;
     private final MoreOptionsForm moreOptionsForm;
     private final ColorPaletteChooser colorPaletteChooser;
+    private final JPanel selectedColorBarPanel;
     private final JFormattedTextField minField;
     private final JFormattedTextField maxField;
     private final JButton fromFile;
@@ -120,6 +117,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] logButtonListenerEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
+
+    ColorPaletteChooser.ColorPaletteWrapper currColorPaletteChooserSelection = null;
 
     PropertyMap configuration = null;
 
@@ -144,6 +143,21 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         colorSchemeJLabel = new JLabel("");
 
         schemeInfoLabel = new JLabel("");
+        selectedColorBarPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        selectedColorBarPanel.add(new JLabel("color bar"), gbc);
+
+
 
 
         colorSchemeManager = ColorSchemeManager.getDefault();
@@ -515,6 +529,23 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         boolean visible = false;
 
+        selectedColorBarPanel.remove(0);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        selectedColorBarPanel.add(colorPaletteChooser.getPaletteImage(), gbc);
+
+
+
+
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
         colorPaletteSchemes.setSelected(imageInfo.getColorSchemeInfo());
@@ -590,8 +621,41 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
     private ActionListener createListener(final RangeKey key) {
-        return e -> applyChanges(key);
+        if (1 == 1) {
+            return e -> applyChanges(key);
+        }
+
+
+        ColorPaletteChooser.ColorPaletteWrapper wrapper = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
+
+        boolean isCategory = false;
+        for ( String category: ColorPaletteManager.getDefault().getCategories()) {
+            if (wrapper.name.contains(ColorPaletteManager.getCategoryDisplay(category))) {
+                isCategory = true;
+
+                break;
+            }
+        }
+
+
+
+        if (!isCategory) {
+            System.out.println("IsCategory");
+            currColorPaletteChooserSelection = wrapper;
+            return e -> applyChanges(key);
+        } else {
+            System.out.println("Is NOT Category");
+
+            shouldFireChooserEvent = false;
+            if (currColorPaletteChooserSelection != null) {
+                colorPaletteChooser.setSelectedItem(currColorPaletteChooserSelection);
+            }
+            shouldFireChooserEvent = true;
+
+            return e -> {};
+        }
     }
+
 
     private JFormattedTextField getNumberTextField(double value) {
         final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("0.0############"));
@@ -1054,16 +1118,21 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         gbc.weightx = 1.0;
-        gbc.insets = new Insets(0, 4, 4, 4);
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(0, 4, 0, 4);
 
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         jPanel.add(colorPaletteChooser, gbc);
 
         gbc.gridy++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        jPanel.add(selectedColorBarPanel, gbc);
+
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
 
         final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
         row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);

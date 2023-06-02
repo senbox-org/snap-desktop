@@ -30,28 +30,87 @@ import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 class ColorPaletteManager {
 
+
     static ColorPaletteManager manager = new ColorPaletteManager();
+
+
+    public final static String  OTHER_CAT = "OTHER";
 
     private List<ColorPaletteDef> cpdList;
     private List<String> cpdNames;
-    private List<Boolean> cpdPrimary;
-    private List<Boolean> cpdUniversal;
-    private List<Boolean> cpdStandard;
-    private List<String> primaryPaletteList;
-    private List<String> universalPaletteList;
-    private List<String> standardPaletteList;
+    private List<File> filesList;
+
+    private List<String> cpdCategory;
+    private List<String> categories;
+
+
+    private List<PaletteInfo> paletteInfos;
 
     public static ColorPaletteManager getDefault() {
         return manager;
     }
 
     ColorPaletteManager() {
+        filesList = new ArrayList<>();
         cpdList = new ArrayList<>();
         cpdNames = new ArrayList<>();
-        primaryPaletteList = new ArrayList<>();
-        universalPaletteList = new ArrayList<>();
-        standardPaletteList = new ArrayList<>();
+        cpdCategory = new ArrayList<>();
+        categories = new ArrayList<>();
+        paletteInfos = new ArrayList<>();
     }
+
+    public class PaletteInfo {
+        private String palette;
+        private String category;
+        private boolean universal;
+
+
+
+        PaletteInfo(String palette, String category, boolean universal) {
+            this.palette = palette;
+            this.category = category;
+            this.universal = universal;
+        }
+
+        PaletteInfo(String palette, String category) {
+            this.palette = palette;
+            this.category = category;
+            this.universal = false;
+        }
+
+        PaletteInfo(String palette) {
+            this.palette = palette;
+            this.category = null;
+            this.universal = false;
+        }
+
+        public void setPalette(String palette) {
+            this.palette = palette;
+        }
+
+        public String getPalette() {
+            return palette;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setUniversal(boolean universal) {
+            this.universal = universal;
+        }
+
+        public boolean isUniversal() {
+            return universal;
+        }
+
+
+    }
+
 
     public void loadAvailableColorPalettes(File palettesDir) {
         cpdNames.clear();
@@ -60,7 +119,6 @@ class ColorPaletteManager {
         final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         PropertyMap configuration = view.getSceneImage().getConfiguration();
 
-        boolean sort = configuration.getPropertyBool(PROPERTY_PALETTE_SORT_KEY, PROPERTY_PALETTE_SORT_DEFAULT);
 
         final File[] files = palettesDir.listFiles((dir, name) -> {
             return name.toLowerCase().endsWith(".cpd") || name.toLowerCase().endsWith(".cpt");
@@ -77,23 +135,60 @@ class ColorPaletteManager {
                         Element paletteElement = (Element) paletteNodeList.item(i);
                         if (paletteElement != null) {
                             String id = paletteElement.getAttribute("name");
-                            String primaryPaletteString = getTextValue(paletteElement, "PRIMARY");
                             String universalPaletteString = getTextValue(paletteElement, "UNIVERSAL");
-                            String standardPaletteString = getTextValue(paletteElement, "STANDARD");
-                            if (primaryPaletteString != null && primaryPaletteString.length() > 0 && primaryPaletteString.toLowerCase().equals("true")) {
-                                primaryPaletteList.add(id);
+                            String categoryPaletteString = getTextValue(paletteElement, "CAT");
+
+                            if (categoryPaletteString != null && categoryPaletteString.length() > 0) {
+                                int match = 0;
+                                for (String category : categories) {
+                                    if (category.equals(categoryPaletteString)) {
+                                        match = 1;
+                                    }
+                                }
+                                if (match == 0) {
+                                    categories.add(categoryPaletteString);
+                                }
                             }
-                            if (universalPaletteString != null && universalPaletteString.length() > 0 && universalPaletteString.toLowerCase().equals("true")) {
-                                universalPaletteList.add(id);
-                            }
-                            if (standardPaletteString != null && standardPaletteString.length() > 0 && standardPaletteString.toLowerCase().equals("true")) {
-                                standardPaletteList.add(id);
-                            }
+
+                            PaletteInfo paletteInfo = new PaletteInfo(id, categoryPaletteString);
+                            paletteInfos.add(paletteInfo);
                         }
+                    }
+
+                    int match = 0;
+                    for (String category : categories) {
+                        if (category.equals(OTHER_CAT)) {
+                            match = 1;
+                        }
+                    }
+                    if (match == 0) {
+                        categories.add(OTHER_CAT);
                     }
                 }
             }
         }
+
+        if (files != null) {
+            for (File file : files) {
+                filesList.add(file);
+            }
+        }
+
+        boolean sort = configuration.getPropertyBool(PROPERTY_PALETTE_SORT_KEY, PROPERTY_PALETTE_SORT_DEFAULT);
+        if (sort) {
+//            Collections.sort(cpdList, new Comparator<ColorPaletteDef>() {
+//                public int compare(ColorPaletteDef colorPaletteDef1, ColorPaletteDef colorPaletteDef2) {
+//                    return colorPaletteDef1.getFirstPoint().getLabel().compareTo
+//                            (colorPaletteDef2.getFirstPoint().getLabel());
+//                }
+//            });
+//            Collections.sort(cpdNames);
+
+            Collections.sort(filesList);
+        }
+
+
+
         if (files != null) {
             for (File file : files) {
                 try {
@@ -105,9 +200,16 @@ class ColorPaletteManager {
                         newCpd = ColorPaletteDef.loadColorPaletteDef(file);
                     }
 
-                    cpdPrimary.add(primaryPaletteList.contains(file.getName()));
-                    cpdUniversal.add(universalPaletteList.contains(file.getName()));
-                    cpdStandard.add(standardPaletteList.contains(file.getName()));
+                    String currCategory = null;
+                    for (PaletteInfo paletteInfo: paletteInfos) {
+                        if (paletteInfo.getPalette().equals(file.getName())) {
+                            currCategory = paletteInfo.getCategory();
+                        }
+                    }
+                    if (currCategory == null) {
+                        currCategory = OTHER_CAT;
+                    }
+                    cpdCategory.add(currCategory);
 
                     cpdList.add(newCpd);
                     cpdNames.add(file.getName());
@@ -118,17 +220,42 @@ class ColorPaletteManager {
                 }
             }
         }
-//        need to sort cpdList too
-        if (sort) {
-            Collections.sort(cpdList, new Comparator<ColorPaletteDef>() {
-                public int compare(ColorPaletteDef colorPaletteDef1, ColorPaletteDef colorPaletteDef2) {
-                    return colorPaletteDef1.getFirstPoint().getLabel().compareTo
-                            (colorPaletteDef2.getFirstPoint().getLabel());
-                }
-            });
-            Collections.sort(cpdNames);
-        }
+
     }
+
+
+    public static String getCategoryDisplay(String category) {
+        return "  ------- " + category + " Palettes -------";
+    }
+
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public boolean matchesCategory(ColorPaletteDef cpdForRaster, String category) {
+        if (cpdForRaster == null || category == null) {
+            return false;
+        }
+
+        for (int i = 0; i < cpdList.size(); i++) {
+            ColorPaletteDef colorPaletteDef = cpdList.get(i);
+            if (colorPaletteDef == cpdForRaster) {
+                if (category.equals(cpdCategory.get(i))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+
 
     public List<ColorPaletteDef> getColorPaletteDefList() {
         return Collections.unmodifiableList(cpdList);
@@ -144,32 +271,8 @@ class ColorPaletteManager {
     }
 
 
-    public boolean isPrimary(ColorPaletteDef cpdForRaster) {
-        for (int i = 0; i < cpdList.size(); i++) {
-            ColorPaletteDef colorPaletteDef = cpdList.get(i);
-            if (colorPaletteDef == cpdForRaster)
-                return cpdPrimary.get(i);
-        }
-        return false;
-    }
 
-    public boolean isUniversal(ColorPaletteDef cpdForRaster) {
-        for (int i = 0; i < cpdList.size(); i++) {
-            ColorPaletteDef colorPaletteDef = cpdList.get(i);
-            if (colorPaletteDef == cpdForRaster)
-                return cpdUniversal.get(i);
-        }
-        return false;
-    }
 
-    public boolean isStandard(ColorPaletteDef cpdForRaster) {
-        for (int i = 0; i < cpdList.size(); i++) {
-            ColorPaletteDef colorPaletteDef = cpdList.get(i);
-            if (colorPaletteDef == cpdForRaster)
-                return cpdStandard.get(i);
-        }
-        return false;
-    }
 
 
 
