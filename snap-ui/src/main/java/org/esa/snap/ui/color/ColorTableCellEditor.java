@@ -1,5 +1,7 @@
 package org.esa.snap.ui.color;
 
+import org.openide.awt.ColorComboBox;
+
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -24,7 +26,7 @@ public class ColorTableCellEditor extends AbstractCellEditor implements TableCel
 
     public ColorTableCellEditor(ColorComboBox colorComboBox) {
         this.colorComboBox = colorComboBox;
-        this.colorComboBox.addPropertyChangeListener(ColorComboBox.SELECTED_COLOR_PROPERTY, this);
+//        this.colorComboBox.addPropertyChangeListener(ColorComboBox.SELECTED_COLOR_PROPERTY, this);
     }
 
     @Override

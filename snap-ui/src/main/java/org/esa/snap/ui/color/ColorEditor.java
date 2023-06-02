@@ -15,6 +15,8 @@
  */
 package org.esa.snap.ui.color;
 
+import org.openide.awt.ColorComboBox;
+
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditor;

@@ -15,6 +15,7 @@
  */
 
 package org.esa.snap.rcp.colormanip;
+import org.openide.awt.ColorComboBox;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -24,7 +25,6 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.color.ColorComboBoxAdapter;
 
 import javax.swing.JComboBox;

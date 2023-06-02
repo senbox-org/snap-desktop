@@ -18,6 +18,8 @@ package org.esa.snap.ui.color;
 
 import com.bc.ceres.swing.binding.ComponentAdapter;
 
+import org.openide.awt.ColorComboBox;
+
 import javax.swing.JComponent;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
