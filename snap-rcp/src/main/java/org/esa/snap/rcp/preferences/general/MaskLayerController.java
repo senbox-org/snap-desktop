@@ -24,7 +24,7 @@ import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
+import org.esa.snap.ui.color.ColorComboBoxUtil;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -79,7 +79,7 @@ public final class MaskLayerController extends DefaultConfigController {
         Property maskOverlayColor = context.getPropertySet().getProperty(PREFERENCE_KEY_MASK_COLOR);
         Property maskOverlayTransparency = context.getPropertySet().getProperty(PREFERENCE_KEY_MASK_TRANSPARENCY);
 
-        JComponent[] maskOverlayColorComponents = PreferenceUtils.createColorComponents(maskOverlayColor);
+        JComponent[] maskOverlayColorComponents = ColorComboBoxUtil.createColorComponents(maskOverlayColor);
         JComponent[] maskOverlayTransparencyComponents = registry.findPropertyEditor(maskOverlayTransparency.getDescriptor()).createComponents(maskOverlayTransparency.getDescriptor(), context);
 
         pageUI.add(maskOverlayColorComponents[0]);

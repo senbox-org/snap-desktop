@@ -15,6 +15,7 @@
  */
 package org.esa.snap.ui.color;
 
+import com.bc.ceres.binding.Property;
 import org.openide.awt.ColorComboBox;
 
 import com.bc.ceres.binding.PropertyDescriptor;
@@ -38,10 +39,14 @@ public class ColorEditor extends PropertyEditor {
         Class<?> type = propertyDescriptor.getType();
         return type.isAssignableFrom(Color.class);
     }
-    
+
     @Override
     public JComponent createEditorComponent(PropertyDescriptor propertyDescriptor, BindingContext bindingContext) {
-        ColorComboBox colorComboBox = new ColorComboBox();
+//        ColorComboBox colorComboBox = new ColorComboBox();
+        String propertyName = propertyDescriptor.getName();
+         Property property = bindingContext.getPropertySet().getProperty(propertyName);
+        ColorComboBox colorComboBox = ColorComboBoxUtil.createColorCombobox(property);
+
         ColorComboBoxAdapter adapter = new ColorComboBoxAdapter(colorComboBox);
         bindingContext.bind(propertyDescriptor.getName(), adapter);
         return colorComboBox;

@@ -25,7 +25,7 @@ import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
+import org.esa.snap.ui.color.ColorComboBoxUtil;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
@@ -112,13 +112,13 @@ public final class ImageLayerController extends DefaultConfigController {
         Property pixelBorderSize = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_SIZE);
         Property pixelBorderColor = context.getPropertySet().getProperty(PROPERTY_KEY_PIXEL_BORDER_COLOR);
 
-        JComponent[] backgroundColorComponents = PreferenceUtils.createColorComponents(backgroundColor);
+        JComponent[] backgroundColorComponents = ColorComboBoxUtil.createColorComponents(backgroundColor);
         JComponent[] showImageBorderComponents = registry.findPropertyEditor(showImageBorder.getDescriptor()).createComponents(showImageBorder.getDescriptor(), context);
         JComponent[] imageBorderSizeComponents = registry.findPropertyEditor(imageBorderSize.getDescriptor()).createComponents(imageBorderSize.getDescriptor(), context);
-        imageBorderColorComponents = PreferenceUtils.createColorComponents(imageBorderColor);
+        imageBorderColorComponents = ColorComboBoxUtil.createColorComponents(imageBorderColor);
         JComponent[] showPixelBorderComponents = registry.findPropertyEditor(showPixelBorder.getDescriptor()).createComponents(showPixelBorder.getDescriptor(), context);
         JComponent[] pixelBorderSizeComponents = registry.findPropertyEditor(pixelBorderSize.getDescriptor()).createComponents(pixelBorderSize.getDescriptor(), context);
-        pixelBorderColorComponents = PreferenceUtils.createColorComponents(pixelBorderColor);
+        pixelBorderColorComponents = ColorComboBoxUtil.createColorComponents(pixelBorderColor);
 
         // row 0
         pageUI.add(backgroundColorComponents[0]);

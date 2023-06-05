@@ -7,8 +7,11 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import org.esa.snap.ui.color.ColorComboBoxUtil;
 
 /**
  * A table cell editor for color values.
@@ -21,12 +24,13 @@ public class ColorTableCellEditor extends AbstractCellEditor implements TableCel
     private boolean adjusting;
 
     public ColorTableCellEditor() {
-        this(new ColorComboBox());
+//        this(new ColorComboBox());
+        this(ColorComboBoxUtil.createColorCombobox());
     }
 
     public ColorTableCellEditor(ColorComboBox colorComboBox) {
         this.colorComboBox = colorComboBox;
-//        this.colorComboBox.addPropertyChangeListener(ColorComboBox.SELECTED_COLOR_PROPERTY, this);
+//        this.colorComboBox.addPropertyChangeListener("selectedColor", this);
     }
 
     @Override
@@ -34,6 +38,7 @@ public class ColorTableCellEditor extends AbstractCellEditor implements TableCel
         adjusting = true;
         colorComboBox.setSelectedColor((Color) value);
         adjusting = false;
+        colorComboBox.repaint();
         return colorComboBox;
     }
 
@@ -47,6 +52,7 @@ public class ColorTableCellEditor extends AbstractCellEditor implements TableCel
     public void propertyChange(PropertyChangeEvent evt) {
         if (!adjusting) {
             stopCellEditing();
+            colorComboBox.repaint();
         }
     }
 }

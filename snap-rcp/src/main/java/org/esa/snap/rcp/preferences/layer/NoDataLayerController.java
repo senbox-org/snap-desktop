@@ -24,7 +24,7 @@ import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.preferences.PreferenceUtils;
+import org.esa.snap.ui.color.ColorComboBoxUtil;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
@@ -78,7 +78,7 @@ public final class NoDataLayerController extends DefaultConfigController {
         Property noDataOverlayColor = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_COLOR);
         Property noDataOverlayTransparency = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY);
 
-        JComponent[] noDataOverlayColorComponents = PreferenceUtils.createColorComponents(noDataOverlayColor);
+        JComponent[] noDataOverlayColorComponents = ColorComboBoxUtil.createColorComponents(noDataOverlayColor);
         JComponent[] noDataOverlayTransparencyComponents = registry.findPropertyEditor(noDataOverlayTransparency.getDescriptor()).createComponents(noDataOverlayTransparency.getDescriptor(), context);
 
         pageUI.add(noDataOverlayColorComponents[0]);
