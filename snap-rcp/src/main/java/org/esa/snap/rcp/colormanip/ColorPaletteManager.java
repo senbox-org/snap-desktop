@@ -19,10 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -183,9 +180,13 @@ class ColorPaletteManager {
 //                }
 //            });
 //            Collections.sort(cpdNames);
+            Arrays.sort(files);
+
 
             Collections.sort(filesList);
         }
+
+
 
 
 
@@ -250,6 +251,22 @@ class ColorPaletteManager {
         }
         return false;
     }
+
+
+
+    public static boolean isWrapperCategory(ColorPaletteChooser.ColorPaletteWrapper wrapper) {
+        if (wrapper == null || wrapper.name == null || wrapper.name.length() == 0) {
+            return false;
+        }
+        for (String category : ColorPaletteManager.getDefault().getCategories()) {
+            if (wrapper.name.contains(ColorPaletteManager.getCategoryDisplay(category))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
 
 

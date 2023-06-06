@@ -112,6 +112,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel colorSchemeJLabel;
     private final JButton paletteInversionButton;
 
+    private ColorPaletteChooser.ColorPaletteWrapper selectedColorPalettePrevious;
+
 
     final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
@@ -669,6 +671,30 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void applyChanges(RangeKey key) {
         ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
+
+
+        // Start of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
+        if (selectedColorPalettePrevious == null) {
+            selectedColorPalettePrevious = (ColorPaletteChooser.ColorPaletteWrapper)  colorPaletteChooser.getSelectedItem();
+        }
+
+        if (key == RangeKey.FromPaletteChooser) {
+            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
+
+            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
+                shouldFireChooserEvent = false;
+                colorPaletteChooser.setSelectedItem(selectedColorPalettePrevious);
+                colorPaletteChooser.repaint();
+                shouldFireChooserEvent = true;
+                return;
+
+            } else {
+                selectedColorPalettePrevious = selectedColorPaletteCurrent;
+            }
+        }
+        // End of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
+
+
 
         if (shouldFireChooserEvent) {
             // The 'valid' variable is used to determine whether the component entries are valid.  For the cases

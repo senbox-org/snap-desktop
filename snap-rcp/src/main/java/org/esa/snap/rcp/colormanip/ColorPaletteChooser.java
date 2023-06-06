@@ -194,11 +194,6 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     }
                 };
 
-                // todo start
-                nameComp.setEnabled(true);
-                list.setEnabled(true);
-                // todo end
-
                 final JPanel panel = GridBagUtils.createPanel();
                 GridBagConstraints gbc = new GridBagConstraints();
 
@@ -239,15 +234,6 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
 
                 } else {
                     if (isCategory) {
-                        // todo start
-                        if (hasFocus()) {
-                           nameComp.setEnabled(false);
-                           list.setEnabled(false);
-                        } else {
-                            nameComp.setEnabled(true);
-                            list.setEnabled(true);
-                        }
-                        // todo end
                         nameComp.setOpaque(true);
                         nameComp.setFocusable(false);
                         Font currFont = nameComp.getFont();
