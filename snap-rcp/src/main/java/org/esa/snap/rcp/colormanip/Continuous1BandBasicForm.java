@@ -1118,17 +1118,29 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
+        gbc.weighty = 1.0;
         gbc.insets = new Insets(0, 4, 0, 4);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets.top = -3;
+        gbc.insets.bottom = -3;
         jPanel.add(colorPaletteChooser, gbc);
 
+
         gbc.gridy++;
+
+        gbc.insets.bottom = 0;
+        gbc.insets.top = -3;
         jPanel.add(selectedColorBarPanel, gbc);
+
+        gbc.insets.bottom = 0;
+        gbc.insets.top  = 0;
+
+
+
 
         gbc.gridy++;
         gbc.weighty = 1.0;

@@ -35,12 +35,12 @@ import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrapper> {
 
-    private final String DERIVED_FROM = "derived from";
-    private final String UNNAMED = "unnamed";
+    private final String DERIVED_FROM = "Derived from";
+    private final String UNNAMED = "Unnamed";
     private boolean discreteDisplay;
     private boolean log10Display;
 
-    boolean preferredSizeSet = false;
+
 
 
 
@@ -48,9 +48,9 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         super(getPalettes());
         setRenderer(createPaletteRenderer());
         setEditable(false);
-        setSelectedIndex(1);
-        setPreferredSize(getPreferredSize());
-        setMinimumSize(getMinimumSize());;
+//        setSelectedIndex(1);
+//        setPreferredSize(getPreferredSize());
+//        setMinimumSize(getMinimumSize());;
     }
 
     public void removeUserDefinedPalette() {
@@ -126,7 +126,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 }
 
                 if (matches > 0) {
-                    paletteWrappers.add(new ColorPaletteWrapper(ColorPaletteManager.getCategoryDisplay(currCategory) + currCategory, paletteDummy));
+                    paletteWrappers.add(new ColorPaletteWrapper(ColorPaletteManager.getCategoryDisplay(currCategory), paletteDummy));
 
                     for (ColorPaletteDef colorPaletteDef : defList) {
                         final String nameFor = getNameForWithoutExtension(colorPaletteDef);
@@ -182,11 +182,8 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         return new ListCellRenderer<ColorPaletteWrapper>() {
             @Override
             public Component getListCellRendererComponent(JList<? extends ColorPaletteWrapper> list, ColorPaletteWrapper value, int index, boolean isSelected, boolean cellHasFocus) {
-//                final Font font = getFont();
-//                final Font smaller = font.deriveFont(font.getSize() * 0.85f);
 
                 final JLabel nameComp = new JLabel(value.name);
-//                nameComp.setFont(smaller);
 
                 final ColorPaletteDef cpd = value.cpd;
                 final JLabel rampComp = new JLabel(" ") {
@@ -197,6 +194,10 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     }
                 };
 
+                // todo start
+                nameComp.setEnabled(true);
+                list.setEnabled(true);
+                // todo end
 
                 final JPanel panel = GridBagUtils.createPanel();
                 GridBagConstraints gbc = new GridBagConstraints();
@@ -208,8 +209,9 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 gbc.weightx = 1;
                 gbc.weighty = 1;
 
-                gbc.insets.left = 15;
-                gbc.insets.right = 15;
+                gbc.insets.left = 10;
+                gbc.insets.right = 10;
+                gbc.insets.bottom = 3;
                 gbc.insets.top = 3;
 
 
@@ -222,47 +224,48 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 }
 
 
-                if (value.name.contains("derived from")) {
+                if (value.name.length() == 0) {
+                    panel.add(new JLabel("Default"), gbc);
+                } else if (value.name.contains(DERIVED_FROM) || value.name.contains(UNNAMED)) {
 
                     panel.add(nameComp, gbc);
 
-//                    gbc.gridy += 1;
-//                    gbc.fill = GridBagConstraints.HORIZONTAL;
-//                    panel.add(rampComp, gbc);
-//                    gbc.fill = GridBagConstraints.NONE;
-
+//                    if (includePaletteImage) {
+//                        gbc.fill = GridBagConstraints.HORIZONTAL;
+//                        gbc.gridy += 1;
+//                        panel.add(rampComp, gbc);
+//                        gbc.fill = GridBagConstraints.NONE;
+//                    }
 
                 } else {
                     if (isCategory) {
-                        nameComp.setBackground(Color.WHITE);
+                        // todo start
+                        if (hasFocus()) {
+                           nameComp.setEnabled(false);
+                           list.setEnabled(false);
+                        } else {
+                            nameComp.setEnabled(true);
+                            list.setEnabled(true);
+                        }
+                        // todo end
                         nameComp.setOpaque(true);
                         nameComp.setFocusable(false);
                         Font currFont = nameComp.getFont();
-                        int newFontSize = (int) Math.floor(currFont.getSize() * 1.2);
+                        int newFontSize = (int) Math.floor(currFont.getSize() * 1.1);
                         int newFontStyle = currFont.getStyle() | ITALIC;
                         Font newFont = new Font(currFont.getName(), newFontStyle, newFontSize);
                         nameComp.setFont(newFont);
 
-                        gbc.insets.top = 15;
+                        gbc.insets.top = 10;
                         gbc.fill = GridBagConstraints.HORIZONTAL;
                         panel.add(nameComp, gbc);
                         gbc.fill = GridBagConstraints.NONE;
                         gbc.insets.top = 3;
 
-
-//                        if (isSelected || hasFocus()) {
-//                            nameComp.setEnabled(false);
-//                        } else {
-//                            nameComp.setEnabled(true);
-//                        }
                     } else {
                         if (includePaletteImage) {
-                            final Font font = getFont();
-                            final Font smaller = font.deriveFont(font.getSize() * 0.85f);
-                            nameComp.setFont(smaller);
 
-
-                            gbc.insets.top = 15;
+                            gbc.insets.top = 10;
                             panel.add(nameComp, gbc);
                             gbc.insets.top = 3;
 
@@ -271,13 +274,10 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                             panel.add(rampComp, gbc);
                             gbc.fill = GridBagConstraints.NONE;
 
-                            if (!preferredSizeSet) {
-                                setPreferredSize(panel.getPreferredSize());
-                                setMinimumSize(panel.getPreferredSize());
-                                preferredSizeSet = true;
-                            }
-
                         } else {
+                            gbc.insets.top = 3;
+                            gbc.insets.bottom = 3;
+
                             panel.add(nameComp, gbc);
                         }
                     }
