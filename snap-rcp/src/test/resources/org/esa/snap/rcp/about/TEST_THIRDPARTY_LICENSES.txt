@@ -1,6 +1,4 @@
 Name;Description / Use;IPR owner;License;IPR URL;License URL
-Java SE JRE;Java Runtime;Oracle;Oracle Binary Code License;http://www.oracle.com/technetwork/java/javase/overview/index.html;http://www.oracle.com/technetwork/java/javase/terms/license/index.html
-OpenJDK;OpenJDK;OpenJDK;GPL2 with CE;http://openjdk.java.net/;http://openjdk.java.net/legal/gplv2+ce.html
 abdera;Atom client;Apache;Apache License;http://abdera.apache.org/;https://www.apache.org/licenses/
 Abeel Java Toolkit (ajt);Used for classification;Thomas Abeel;LGPLv3;http://www.gnu.de/documents/lgpl.de.html;http://www.gnu.de/documents/lgpl.de.html
 Apache Commons;Common libraries;Apache;Apache License;http://commons.apache.org/;https://www.apache.org/licenses/
@@ -30,6 +28,7 @@ JAI-tools;Tools for jai;jaitools;BSD 3 Clause;https://code.google.com/archive/p/
 Jama;Linear algebra;Jama;public-domain;https://math.nist.gov/javanumerics/jama/;https://en.wikipedia.org/wiki/Public-domain_software
 James;Mail server;James;Apache License;https://james.apache.org/;https://www.apache.org/licenses/
 JASYPT;Encryption;JASYPT;Apache License;http://www.jasypt.org/;https://www.apache.org/licenses/
+Java SE JDK;Java Runtime;BellSoft;GPLv2+CE;https://bell-sw.com/libericajdk/;https://bell-sw.com/liberica_eula/
 java-cup-11b;LALR parser generator;cup;BSD Style;http://www2.cs.tum.edu/projects/cup/;http://www2.cs.tum.edu/projects/cup/licence.php
 javaml;Machine leatning;Java Machine Learning;GPLv2;http://java-ml.sourceforge.net/;https://sourceforge.net/p/java-ml/java-ml-code/ci/master/tree/legal/license.txt
 Javassist;Bytecode manipulation;Javassist;Apache License;http://jboss-javassist.github.io/javassist/;https://www.apache.org/licenses/
