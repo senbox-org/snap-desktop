@@ -112,7 +112,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel colorSchemeJLabel;
     private final JButton paletteInversionButton;
 
-    private ColorPaletteChooser.ColorPaletteWrapper selectedColorPalettePrevious;
+    private int selectedColorPaletteIndex = 0;
+    private boolean selectedColorPaletteIndexInitialized = false;
 
 
     final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
@@ -157,7 +158,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        selectedColorBarPanel.add(new JLabel("color bar"), gbc);
+        selectedColorBarPanel.add(new JLabel("color bar"), gbc);  // later replace this with an image of color bar
 
 
 
@@ -541,7 +542,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.fill = GridBagConstraints.BOTH;
 
         selectedColorBarPanel.add(colorPaletteChooser.getPaletteImage(), gbc);
 
@@ -623,39 +624,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
     private ActionListener createListener(final RangeKey key) {
-        if (1 == 1) {
             return e -> applyChanges(key);
-        }
 
-
-        ColorPaletteChooser.ColorPaletteWrapper wrapper = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
-
-        boolean isCategory = false;
-        for ( String category: ColorPaletteManager.getDefault().getCategories()) {
-            if (wrapper.name.contains(ColorPaletteManager.getCategoryDisplay(category))) {
-                isCategory = true;
-
-                break;
-            }
-        }
-
-
-
-        if (!isCategory) {
-            System.out.println("IsCategory");
-            currColorPaletteChooserSelection = wrapper;
-            return e -> applyChanges(key);
-        } else {
-            System.out.println("Is NOT Category");
-
-            shouldFireChooserEvent = false;
-            if (currColorPaletteChooserSelection != null) {
-                colorPaletteChooser.setSelectedItem(currColorPaletteChooserSelection);
-            }
-            shouldFireChooserEvent = true;
-
-            return e -> {};
-        }
     }
 
 
@@ -672,27 +642,29 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private void applyChanges(RangeKey key) {
         ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
 
-
-        // Start of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
-        if (selectedColorPalettePrevious == null) {
-            selectedColorPalettePrevious = (ColorPaletteChooser.ColorPaletteWrapper)  colorPaletteChooser.getSelectedItem();
-        }
-
-        if (key == RangeKey.FromPaletteChooser) {
-            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
-
-            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
-                shouldFireChooserEvent = false;
-                colorPaletteChooser.setSelectedItem(selectedColorPalettePrevious);
-                colorPaletteChooser.repaint();
-                shouldFireChooserEvent = true;
-                return;
-
-            } else {
-                selectedColorPalettePrevious = selectedColorPaletteCurrent;
-            }
-        }
-        // End of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
+// todo this block is a somewhat failed attempted at preventing the selection of a category.
+//        // Start of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
+//        if (!selectedColorPaletteIndexInitialized) {
+//            selectedColorPaletteIndex = colorPaletteChooser.getSelectedIndex();
+//            selectedColorPaletteIndexInitialized = true;
+//        }
+//
+//        if (key == RangeKey.FromPaletteChooser) {
+//            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
+//            int selectedColorPaletteIndexCurrent = colorPaletteChooser.getSelectedIndex();
+//
+//            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
+//                shouldFireChooserEvent = false;
+//                colorPaletteChooser.setSelectedIndex(selectedColorPaletteIndex);
+//                colorPaletteChooser.repaint();
+//                shouldFireChooserEvent = true;
+//
+//                return;
+//            } else {
+//                selectedColorPaletteIndex = selectedColorPaletteIndexCurrent;
+//            }
+//        }
+//        // End of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
 
 
 
@@ -1136,7 +1108,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
 
-    private JPanel getPalettePanel(String title) {
+    private JPanel getPalettePanelOld(String title) {
         JPanel jPanel = new JPanel(new GridBagLayout());
         jPanel.setBorder(BorderFactory.createTitledBorder(title));
         jPanel.setToolTipText("");
@@ -1181,6 +1153,80 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         return jPanel;
     }
+
+    private JPanel getPalettePanel(String title) {
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createTitledBorder(title));
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 5, 4, 5);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        jPanel.add(getPaletteInnerPanel(), gbc);
+
+        gbc.gridy++;
+
+        gbc.insets.top = 4;
+        gbc.insets.bottom = 4;
+
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
+        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
+        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+
+        jPanel.add(row2Panel, gbc);
+
+
+        return jPanel;
+    }
+
+
+    private JPanel getPaletteInnerPanel() {
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 0, 0, 0);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets.top = -3;
+        gbc.insets.bottom = -5;
+        jPanel.add(colorPaletteChooser, gbc);
+
+
+        gbc.gridy++;
+
+        gbc.fill = GridBagConstraints.BOTH;
+
+        gbc.insets.bottom = 3;
+        gbc.insets.top = -5;
+        Dimension tmpDim = selectedColorBarPanel.getPreferredSize();
+        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.5);
+        Dimension biggerDim = new Dimension(tmpDim.width, newHeight);
+        selectedColorBarPanel.setPreferredSize(biggerDim);
+        selectedColorBarPanel.setMinimumSize(biggerDim);
+        jPanel.add(selectedColorBarPanel, gbc);
+
+        return jPanel;
+    }
+
 
 
     private JPanel getRangePanel(String title) {

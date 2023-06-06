@@ -91,7 +91,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     private void setUserDefinedPalette(ColorPaletteDef userPalette) {
         final String suffix = userPalette.getFirstPoint().getLabel();
         final String name;
-        if (suffix != null && suffix.trim().length() > 0) {
+        if (suffix != null && suffix.trim().length() > 0 && !suffix.startsWith(DERIVED_FROM)) {
             name = DERIVED_FROM + " " + suffix.trim();
         } else {
             name = UNNAMED;
@@ -194,6 +194,8 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     }
                 };
 
+
+
                 final JPanel panel = GridBagUtils.createPanel();
                 GridBagConstraints gbc = new GridBagConstraints();
 
@@ -208,6 +210,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                 gbc.insets.right = 10;
                 gbc.insets.bottom = 3;
                 gbc.insets.top = 3;
+
 
 
                 boolean isCategory = false;
