@@ -112,6 +112,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         PropertyMap configuration = view.getSceneImage().getConfiguration();
 
         boolean categorizePalettes = configuration.getPropertyBool(PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY, PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT);
+        boolean removePaletteNameExtension = configuration.getPropertyBool(PROPERTY_PALETTE_REMOVE_EXTENSION_KEY, PROPERTY_PALETTE_REMOVE_EXTENSION_DEFAULT);
 
         final List<ColorPaletteDef> defList = ColorPaletteManager.getDefault().getColorPaletteDefList();
         final Vector<ColorPaletteWrapper> paletteWrappers = new Vector<>();
@@ -135,7 +136,7 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     paletteWrappers.add(new ColorPaletteWrapper(ColorPaletteManager.getCategoryDisplay(currCategory), paletteDummy));
 
                     for (ColorPaletteDef colorPaletteDef : defList) {
-                        final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                        final String nameFor = getNameForColorPalette(colorPaletteDef, removePaletteNameExtension);
 
                         if (ColorPaletteManager.getDefault().matchesCategory(colorPaletteDef, currCategory)) {
                             paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
@@ -146,12 +147,21 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
             }
         } else {
             for (ColorPaletteDef colorPaletteDef : defList) {
-                final String nameFor = getNameForWithoutExtension(colorPaletteDef);
+                final String nameFor = getNameForColorPalette(colorPaletteDef, removePaletteNameExtension);
                 paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
             }
         }
         return paletteWrappers;
     }
+
+    private static String getNameForColorPalette(ColorPaletteDef colorPaletteDef, boolean removeExtension) {
+        if (removeExtension) {
+            return getNameForWithoutExtension(colorPaletteDef);
+        } else {
+            return ColorPaletteManager.getDefault().getNameFor(colorPaletteDef);
+        }
+    }
+
 
     private static String getNameForWithoutExtension(ColorPaletteDef colorPaletteDef) {
         final String nameFor = ColorPaletteManager.getDefault().getNameFor(colorPaletteDef);
