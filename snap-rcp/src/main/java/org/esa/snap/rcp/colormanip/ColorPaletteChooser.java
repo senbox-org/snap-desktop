@@ -91,11 +91,17 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     private void setUserDefinedPalette(ColorPaletteDef userPalette) {
         final String suffix = userPalette.getFirstPoint().getLabel();
         final String name;
-        if (suffix != null && suffix.trim().length() > 0 && !suffix.startsWith(DERIVED_FROM)) {
-            name = DERIVED_FROM + " " + suffix.trim();
+
+        if (suffix != null && suffix.trim().length() > 0) {
+            if (suffix.startsWith(DERIVED_FROM)) {
+                name = suffix.trim();
+            } else {
+                    name = DERIVED_FROM + " " + suffix.trim();
+            }
         } else {
             name = UNNAMED;
         }
+
         final ColorPaletteWrapper item = new ColorPaletteWrapper(name, userPalette);
         insertItemAt(item, 0);
         setSelectedIndex(0);

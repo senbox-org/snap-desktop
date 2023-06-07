@@ -112,19 +112,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel colorSchemeJLabel;
     private final JButton paletteInversionButton;
 
-    private int selectedColorPaletteIndex = 0;
-    private boolean selectedColorPaletteIndexInitialized = false;
-
-
     final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] logButtonListenerEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
 
-    ColorPaletteChooser.ColorPaletteWrapper currColorPaletteChooserSelection = null;
-
     PropertyMap configuration = null;
-
 
     private enum RangeKey {FromCpdFile, FromData, FromMinField, FromMaxField, FromPaletteChooser, FromLogButton, InvertPalette, Dummy}
 
@@ -160,11 +153,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         selectedColorBarPanel.add(new JLabel("color bar"), gbc);  // later replace this with an image of color bar
 
-
-
-
         colorSchemeManager = ColorSchemeManager.getDefault();
-
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use its actual values and overwrite user min/max values");
@@ -547,9 +536,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         selectedColorBarPanel.add(colorPaletteChooser.getPaletteImage(), gbc);
 
 
-
-
-
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
         colorPaletteSchemes.setSelected(imageInfo.getColorSchemeInfo());
 
@@ -624,8 +610,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
     private ActionListener createListener(final RangeKey key) {
-            return e -> applyChanges(key);
-
+        return e -> applyChanges(key);
     }
 
 
@@ -642,30 +627,22 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private void applyChanges(RangeKey key) {
         ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
 
-// todo this block is a somewhat failed attempted at preventing the selection of a category.
-//        // Start of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
-//        if (!selectedColorPaletteIndexInitialized) {
-//            selectedColorPaletteIndex = colorPaletteChooser.getSelectedIndex();
-//            selectedColorPaletteIndexInitialized = true;
-//        }
-//
-//        if (key == RangeKey.FromPaletteChooser) {
-//            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
-//            int selectedColorPaletteIndexCurrent = colorPaletteChooser.getSelectedIndex();
-//
-//            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
-//                shouldFireChooserEvent = false;
-//                colorPaletteChooser.setSelectedIndex(selectedColorPaletteIndex);
-//                colorPaletteChooser.repaint();
-//                shouldFireChooserEvent = true;
-//
-//                return;
-//            } else {
-//                selectedColorPaletteIndex = selectedColorPaletteIndexCurrent;
-//            }
-//        }
-//        // End of block of code for preventing a category to be applied instead of a palette within the colorPaletteChooser JComboBox
+        if (key == RangeKey.FromPaletteChooser) {
+            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
 
+            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
+                // todo Attempts made here to reset colorPaletteChooser if category selected failed so code commented out here but could be useful for future refinements
+//                final ColorPaletteDef selectedCPD = colorPaletteChooser.getSelectedColorPaletteDefinition();
+//                final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+//                final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+//
+//                shouldFireChooserEvent = false;
+//                colorPaletteChooser.setSelectedColorPaletteDefinition(currentCPD);
+//                shouldFireChooserEvent = true;
+
+                return;
+            }
+        }
 
 
         if (shouldFireChooserEvent) {
@@ -1135,9 +1112,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         jPanel.add(selectedColorBarPanel, gbc);
 
         gbc.insets.bottom = 0;
-        gbc.insets.top  = 0;
-
-
+        gbc.insets.top = 0;
 
 
         gbc.gridy++;
@@ -1218,7 +1193,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.insets.bottom = 3;
         gbc.insets.top = -5;
         Dimension tmpDim = selectedColorBarPanel.getPreferredSize();
-        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.5);
+        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.75);
         Dimension biggerDim = new Dimension(tmpDim.width, newHeight);
         selectedColorBarPanel.setPreferredSize(biggerDim);
         selectedColorBarPanel.setMinimumSize(biggerDim);
@@ -1226,7 +1201,6 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         return jPanel;
     }
-
 
 
     private JPanel getRangePanel(String title) {
@@ -1280,9 +1254,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             return ProductUtils.createImageInfo(parentForm.getFormModel().getRasters(), false, ProgressMonitor.NULL);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
-                                          "Failed to create default image settings:\n" + e.getMessage(),
-                                          "I/O Error",
-                                          JOptionPane.ERROR_MESSAGE);
+                    "Failed to create default image settings:\n" + e.getMessage(),
+                    "I/O Error",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
