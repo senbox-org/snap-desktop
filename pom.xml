@@ -55,6 +55,7 @@
         <module>snap-remote-execution-ui</module>
         <module>snap-znap-ui</module>
         <module>lib-gdal-preferences-ui</module>
+        <module>snap-gdal-writer-ui</module>
 
     </modules>
 
