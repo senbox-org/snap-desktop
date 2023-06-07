@@ -46,6 +46,7 @@ import java.beans.PropertyChangeListener;
 // DefaultConfigController was loading the user saved preferences
 
     // JUN2023 - Daniel Knowles - moved ColorComboBox utils to org.esa.snap.ui.color.ColorComboBoxUtil
+    // todo Consider deleting the color methods here after full integration
 
 public class PreferenceUtils {
 
@@ -64,19 +65,19 @@ public class PreferenceUtils {
         panel.add(note);
     }
 
-//    /**
-//     * Creates color combobox components for a given property.
-//     *
-//     * @param colorProperty The property to create the components for.
-//     *
-//     * @return A new color combobox.
-//     */
-//    public static JComponent[] createColorComponents(Property colorProperty) {
-//        JComponent[] components = new JComponent[2];
-//        components[0] = new JLabel(colorProperty.getDescriptor().getDisplayName() + ":");
-//        components[1] = createColorCombobox(colorProperty);
-//        return components;
-//    }
+    /**
+     * Creates color combobox components for a given property.
+     *
+     * @param colorProperty The property to create the components for.
+     *
+     * @return A new color combobox.
+     */
+    public static JComponent[] createColorComponents(Property colorProperty) {
+        JComponent[] components = new JComponent[2];
+        components[0] = new JLabel(colorProperty.getDescriptor().getDisplayName() + ":");
+        components[1] = createColorCombobox(colorProperty);
+        return components;
+    }
 
     /**
      * Creates a <code>JPanel</code> containing a label with the given text and a horizontal line.
@@ -101,41 +102,45 @@ public class PreferenceUtils {
         return comp;
     }
 
-//    private static ColorComboBox createColorCombobox(final Property property) {
-//        ColorComboBox colorComboBox = new ColorComboBox();
-//        colorComboBox.setSelectedColor(property.getValue());
-//        colorComboBox.getModel().addListDataListener(new ListDataListener() {
-//            @Override
-//            public void intervalAdded(ListDataEvent e) {
-//            }
-//
-//            @Override
-//            public void intervalRemoved(ListDataEvent e) {
-//            }
-//
-//            @Override
-//            public void contentsChanged(ListDataEvent e) {
-//                try {
-//                    property.setValue(colorComboBox.getSelectedColor());
-//                } catch (ValidationException e1) {
-//                    SystemUtils.LOG.warning("Color preference conversion error: " + e1.getMessage());
-//                }
-//            }
-//        });
-//        colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
-//
-//        // Modification by Daniel Knowles SEP2018
-//        // Add PropertyChangeListener to the passed in property which when triggered sets the colorComboBox selected color.
-//        // This fixes bug where colorComboBox was not listening to properties change event when DefaultConfigController was
-//        // loading the user saved preferences
-//
-//        property.addPropertyChangeListener(new PropertyChangeListener() {
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                colorComboBox.setSelectedColor(property.getValue());
-//            }
-//        });
-//
-//        return colorComboBox;
-//    }
+    private static ColorComboBox createColorCombobox(final Property property) {
+        ColorComboBox colorComboBox = new ColorComboBox();
+        colorComboBox.setSelectedColor(property.getValue());
+        colorComboBox.getModel().addListDataListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                try {
+                    property.setValue(colorComboBox.getSelectedColor());
+                } catch (ValidationException e1) {
+                    SystemUtils.LOG.warning("Color preference conversion error: " + e1.getMessage());
+                }
+            }
+        });
+        colorComboBox.setPreferredSize(new Dimension(colorComboBox.getWidth(), 25));
+
+        // Modification by Daniel Knowles SEP2018
+        // Add PropertyChangeListener to the passed in property which when triggered sets the colorComboBox selected color.
+        // This fixes bug where colorComboBox was not listening to properties change event when DefaultConfigController was
+        // loading the user saved preferences
+
+        property.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                colorComboBox.setSelectedColor(property.getValue());
+            }
+        });
+
+        return colorComboBox;
+    }
+
+
+
+
 }
