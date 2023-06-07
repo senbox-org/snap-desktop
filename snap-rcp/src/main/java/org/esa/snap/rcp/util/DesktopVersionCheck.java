@@ -19,11 +19,11 @@ import java.awt.Cursor;
 @SuppressWarnings("unused")
 public class DesktopVersionCheck {
 
-    private static final String STEP_WEB_PAGE = SystemUtils.getApplicationHomepageUrl();
+    private static final String APPLICATION_HOMEPAGE_URL = SystemUtils.getApplicationHomepageUrl();
     private static final String MSG_UPDATE_INFO =
-            "<html>A new SNAP version is available for download!<br>" +
-                    "Currently installed %s, available is %s.<br>" +
-                    "Please visit the SNAP home page at";
+            "<html>A new " + SnapApp.getDefault().getInstanceName() + " version is available for download!<br>" +
+                    "Currently installed " + SnapApp.getDefault().getInstanceName() + " %s, available is " + SnapApp.getDefault().getInstanceName() + " %s.<br>" +
+                    "To download, please visit the " + SnapApp.getDefault().getInstanceName() + " home page at";
     private static final VersionChecker VERSION_CHECKER = VersionChecker.getInstance();
 
     private DesktopVersionCheck() {
@@ -49,9 +49,9 @@ public class DesktopVersionCheck {
                     String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
                     panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
 
-                    final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
+                    final JLabel LinkLabel = new JLabel("<html><a href=\"" + APPLICATION_HOMEPAGE_URL + "\">" + APPLICATION_HOMEPAGE_URL + "</a>");
                     LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
+                    LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(APPLICATION_HOMEPAGE_URL));
                     panel.add(LinkLabel);
 
                     JOptionPane.showMessageDialog(null, panel);
@@ -59,11 +59,12 @@ public class DesktopVersionCheck {
                 }
             }
             final String message =
-                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +
+                    "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of " + SnapApp.getDefault().getInstanceName() +
+                            ".\n" +
                             "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
-                            "to get the best SNAP experience.\n\n" +
+                            "to get the best " + SnapApp.getDefault().getInstanceName() + " experience.\n\n" +
                             "Press 'Yes', if you want to check for plugin updates now.\n\n";
-            Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
+            Dialogs.Answer decision = Dialogs.requestDecision(SnapApp.getDefault().getInstanceName() + " Update", message, false, "optional.version.check.onstartup");
             if (Dialogs.Answer.YES.equals(decision)) {
                 final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
                 checkForUpdatesProvider.openCheckForUpdatesWizard(true);
