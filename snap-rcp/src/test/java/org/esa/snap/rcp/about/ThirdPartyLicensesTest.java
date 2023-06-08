@@ -17,32 +17,32 @@ public class ThirdPartyLicensesTest {
         final ThirdPartyLicensesCsvTable licensesCsvTable = new ThirdPartyLicensesCsvTable(new BufferedReader(new InputStreamReader(is)));
         assertNotNull(licensesCsvTable);
 
-        final int javaIdx = 0;
-        final int olingoIdx = 63;
-        final int iTextIdx = 113;
+        final int abderaIdx = 0;
+        final int oroIdx = 63;
+        final int iTextIdx = 112;
 
-        assertEquals("Java SE JRE", licensesCsvTable.getName(javaIdx));
-        assertEquals("olingo", licensesCsvTable.getName(olingoIdx));
+        assertEquals("abdera", licensesCsvTable.getName(abderaIdx));
+        assertEquals("oro", licensesCsvTable.getName(oroIdx));
         assertEquals("iText", licensesCsvTable.getName(iTextIdx));
 
-        assertEquals("Java Runtime", licensesCsvTable.getDescrUse(javaIdx));
-        assertEquals("Open Data Protocol", licensesCsvTable.getDescrUse(olingoIdx));
+        assertEquals("Atom client", licensesCsvTable.getDescrUse(abderaIdx));
+        assertEquals("Text processing", licensesCsvTable.getDescrUse(oroIdx));
         assertEquals("PDF Library", licensesCsvTable.getDescrUse(iTextIdx));
 
-        assertEquals("Oracle", licensesCsvTable.getIprOwner(0));
-        assertEquals("olingo", licensesCsvTable.getIprOwner(olingoIdx));
+        assertEquals("Apache", licensesCsvTable.getIprOwner(0));
+        assertEquals("ORO", licensesCsvTable.getIprOwner(oroIdx));
         assertEquals("lowagie", licensesCsvTable.getIprOwner(iTextIdx));
 
-        assertEquals("Oracle Binary Code License", licensesCsvTable.getLicense(javaIdx));
-        assertEquals("Apache License", licensesCsvTable.getLicense(olingoIdx));
+        assertEquals("Apache License", licensesCsvTable.getLicense(abderaIdx));
+        assertEquals("Apache License", licensesCsvTable.getLicense(oroIdx));
         assertEquals("MPL", licensesCsvTable.getLicense(iTextIdx));
 
-        assertEquals("http://www.oracle.com/technetwork/java/javase/overview/index.html", licensesCsvTable.getIprOwnerUrl(javaIdx));
-        assertEquals("http://olingo.apache.org/", licensesCsvTable.getIprOwnerUrl(olingoIdx));
+        assertEquals("http://abdera.apache.org/", licensesCsvTable.getIprOwnerUrl(abderaIdx));
+        assertEquals("http://jakarta.apache.org/oro/", licensesCsvTable.getIprOwnerUrl(oroIdx));
         assertEquals("http://www.lowagie.com/iText/", licensesCsvTable.getIprOwnerUrl(iTextIdx));
 
-        assertEquals("http://www.oracle.com/technetwork/java/javase/terms/license/index.html", licensesCsvTable.getLicenseUrl(javaIdx));
-        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(olingoIdx));
+        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(abderaIdx));
+        assertEquals("https://www.apache.org/licenses/", licensesCsvTable.getLicenseUrl(oroIdx));
         assertEquals("https://www.mozilla.org/en-US/MPL/", licensesCsvTable.getLicenseUrl(iTextIdx));
 
     }
