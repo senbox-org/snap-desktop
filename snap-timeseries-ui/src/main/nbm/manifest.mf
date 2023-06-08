@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Specification-Version: ${snap.nbmSpecVersion}
+OpenIDE-Module-Implementation-Version: ${snap.nbmImplVersion}
+AutoUpdate-Show-In-Client: false
+AutoUpdate-Essential-Module: true
+OpenIDE-Module-Java-Dependencies: Java > 1.8
+OpenIDE-Module-Layer: org/esa/snap/timeseries/layer.xml
+OpenIDE-Module-Display-Category: SNAP Core
+OpenIDE-Module-Long-Description: <p>This module provides the time seri
+ es tool. In the user interface components are the <i>Time Series Mana
+ ger</i>, the <i>Time Series Player</i> and the <i>Time Series Graph</
+ i>. It additionally provides export components, such as export of tim
+ e series as Google Earth KMZ file, animated gif, and CSV-file.</p><p>
+ <b>Funding:</b> ESA, EU</p><p><b>Vendor:</b> Brockmann Consult GmbH</
+ p><p><b>Contact address:</b> Chrysanderstr. 1, 21029 Hamburg (Ger
+ many)</p><p><b>Copyright:</b> (C) 2014 by Brockmann Consult GmbH</p><
+ p><b>Vendor:</b> Brockmann Consult GmbH</p><p><b>License:</b> http://
+ www.gnu.org/licenses/gpl.html</p>
