@@ -1,0 +1,46 @@
+#SeaDAS Color Palette Definition File
+# created by Daniel Knowles
+# colorblindly friend palette
+isLogScaled=false
+numPoints=20
+autoDistribute=false
+color0=0,0,100
+color1=5,5,130
+color2=20,20,165
+color3=30,42,195
+color4=33,70,225
+color5=37,110,249
+color6=48,153,255
+color7=75,200,255
+color8=140,235,255
+color9=200,250,255
+color10=255,250,170
+color11=255,237,80
+color12=255,210,30
+color13=255,160,10
+color14=250,105,4
+color15=240,53,1
+color16=210,16,0
+color17=165,3,0
+color18=135,0,0
+color19=110,0,0
+sample0=-1.0
+sample1=-0.8888
+sample2=-0.7777
+sample3=-0.6666
+sample4=-0.5555
+sample5=-0.4444
+sample6=-0.3333
+sample7=-0.2222
+sample8=-0.1111
+sample9=-0.005
+sample10=0.005
+sample11=0.1111
+sample12=0.2222
+sample13=0.3333
+sample14=0.4444
+sample15=0.5555
+sample16=0.6666
+sample17=0.7777
+sample18=0.8888
+sample19=1.0000
