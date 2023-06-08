@@ -150,6 +150,11 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
+    /**
+     * Name of property which zooms the view when opening a band view window.
+     */
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL = "image.zoom.initial";
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.85;
 
     /**
      * Name of property of image info
@@ -230,6 +235,11 @@ public class ProductSceneView extends BasicView
 
         final Layer rootLayer = sceneImage.getRootLayer();
         this.layerCanvas = new LayerCanvas(rootLayer, viewport);
+        final double zoomInitial = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL, PREFERENCE_ZOOM_INITIAL_DEFAULT);
+
+        this.layerCanvas.setZoomInitial(zoomInitial);
+
         rootLayer.addListener(new AbstractLayerListener() {
             @Override
             public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
