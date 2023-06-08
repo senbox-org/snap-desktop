@@ -76,6 +76,7 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -141,7 +142,7 @@ import static java.lang.Math.min;
 )
 @TopComponent.Registration(
         mode = "rightSlidingSide",
-        openAtStartup = true,
+        openAtStartup = PackageDefaults.PRODUCT_LIBRARY_OPEN,
         position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2")
