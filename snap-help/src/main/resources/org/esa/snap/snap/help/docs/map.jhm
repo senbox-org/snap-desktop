@@ -71,7 +71,7 @@
     <mapID target="exportMaskPixels" url="desktop/ExportMaskPixels.html"/>
     <mapID target="exportTransectPixels" url="desktop/ExportTransectPixels.html"/>
     <mapID target="exportShapefile" url="desktop/ExportShapefile.html"/>
-    <mapID target="exportLegendImageFile" url="desktop/ExportColorLegend.html"/>
+    <mapID target="exportLegendImageFile" url="desktop/ColorBarLegend.html"/>
     <mapID target="exportColorPalette" url="desktop/ExportColorPalette.html"/>
     <mapID target="preferences" url="desktop/PreferencesDialog.html"/>
     <mapID target="imageView" url="desktop/ProductSceneView.html"/>
@@ -88,6 +88,8 @@
     <mapID target="showMaskManagerWnd" url="desktop/MaskManagement.html"/>
     <mapID target="noDataOverlay" url="desktop/NoDataOverlay.html"/>
     <mapID target="graticuleOverlay" url="desktop/ShowGraticuleOverlay.html"/>
+    <mapID target="colorBarLegend" url="desktop/ColorBarLegend.html"/>
+    <mapID target="colorBarLegendPreferences" url="desktop/ColorBarLegend.html"/>
     <mapID target="noDataValue" url="desktop/NoDataValue.html"/>
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>
     <mapID target="geoCodingInfoDialog" url="desktop/GeoCodingInfo.html"/>

@@ -22,6 +22,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
@@ -40,11 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.text.NumberFormatter;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -104,6 +101,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel schemeInfoLabel;
     private final MoreOptionsForm moreOptionsForm;
     private final ColorPaletteChooser colorPaletteChooser;
+    private final JPanel selectedColorBarPanel;
     private final JFormattedTextField minField;
     private final JFormattedTextField maxField;
     private final JButton fromFile;
@@ -114,14 +112,12 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JLabel colorSchemeJLabel;
     private final JButton paletteInversionButton;
 
-
     final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] logButtonListenerEnabled = {true};
     final Boolean[] basicSwitcherIsActive;
 
     PropertyMap configuration = null;
-
 
     private enum RangeKey {FromCpdFile, FromData, FromMinField, FromMaxField, FromPaletteChooser, FromLogButton, InvertPalette, Dummy}
 
@@ -143,10 +139,21 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         colorSchemeJLabel = new JLabel("");
 
         schemeInfoLabel = new JLabel("");
+        selectedColorBarPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        selectedColorBarPanel.add(new JLabel("color bar"), gbc);  // later replace this with an image of color bar
 
         colorSchemeManager = ColorSchemeManager.getDefault();
-
 
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use its actual values and overwrite user min/max values");
@@ -503,6 +510,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         String schemeLogScaling = configuration.getPropertyString(PROPERTY_SCHEME_LOG_KEY, PROPERTY_SCHEME_LOG_DEFAULT);
         String schemeRange = configuration.getPropertyString(PROPERTY_SCHEME_RANGE_KEY, PROPERTY_SCHEME_RANGE_DEFAULT);
         String schemeCpd = configuration.getPropertyString(PROPERTY_SCHEME_PALETTE_KEY, PROPERTY_SCHEME_PALETTE_DEFAULT);
+        String schemeUniversalCpd = configuration.getPropertyString(PROPERTY_SCHEME_PALETTE_KEY, PROPERTY_SCHEME_PALETTE_DEFAULT);
 
 
         schemeInfoLabel.setText("<html>*Modified scheme");
@@ -513,17 +521,32 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         boolean visible = false;
 
+        selectedColorBarPanel.remove(0);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 4, 4, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        selectedColorBarPanel.add(colorPaletteChooser.getPaletteImage(), gbc);
+
 
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
         colorPaletteSchemes.setSelected(imageInfo.getColorSchemeInfo());
 
-        if (colorPaletteSchemes.isSchemeSet() &&
-                schemeApply &&
-                (!PROPERTY_SCHEME_PALETTE_DEFAULT.equals(schemeCpd) ||
-                        !PROPERTY_SCHEME_RANGE_DEFAULT.equals(schemeRange) ||
-                        !PROPERTY_SCHEME_LOG_DEFAULT.equals(schemeLogScaling))
-        ) {
-            visible = true;
+        if (colorPaletteSchemes.isSchemeSet() && schemeApply) {
+            if (!ColorManipulationDefaults.OPTION_RANGE_FROM_SCHEME.equals(schemeRange) ||
+                    !ColorManipulationDefaults.OPTION_LOG_FROM_SCHEME.equals(schemeLogScaling)) {
+                visible = true;
+            }
+            if (!ColorManipulationDefaults.OPTION_COLOR_STANDARD_SCHEME.equals(schemeCpd) && !ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL_SCHEME.equals(schemeCpd)) {
+                visible = true;
+            }
         }
         schemeInfoLabel.setVisible(visible);
 
@@ -590,6 +613,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         return e -> applyChanges(key);
     }
 
+
     private JFormattedTextField getNumberTextField(double value) {
         final NumberFormatter formatter = new NumberFormatter(new DecimalFormat("0.0############"));
         formatter.setValueClass(Double.class); // to ensure that double values are returned
@@ -602,6 +626,24 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     private void applyChanges(RangeKey key) {
         ColorManipulationDefaults.debug("applyChanges: Start: key=" + key.toString());
+
+        if (key == RangeKey.FromPaletteChooser) {
+            ColorPaletteChooser.ColorPaletteWrapper selectedColorPaletteCurrent = (ColorPaletteChooser.ColorPaletteWrapper) colorPaletteChooser.getSelectedItem();
+
+            if (ColorPaletteManager.isWrapperCategory(selectedColorPaletteCurrent)) {
+                // todo Attempts made here to reset colorPaletteChooser if category selected failed so code commented out here but could be useful for future refinements
+//                final ColorPaletteDef selectedCPD = colorPaletteChooser.getSelectedColorPaletteDefinition();
+//                final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+//                final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+//
+//                shouldFireChooserEvent = false;
+//                colorPaletteChooser.setSelectedColorPaletteDefinition(currentCPD);
+//                shouldFireChooserEvent = true;
+
+                return;
+            }
+        }
+
 
         if (shouldFireChooserEvent) {
             // The 'valid' variable is used to determine whether the component entries are valid.  For the cases
@@ -1043,6 +1085,50 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     }
 
 
+    private JPanel getPalettePanelOld(String title) {
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createTitledBorder(title));
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 4, 0, 4);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets.top = -3;
+        gbc.insets.bottom = -3;
+        jPanel.add(colorPaletteChooser, gbc);
+
+
+        gbc.gridy++;
+
+        gbc.insets.bottom = 0;
+        gbc.insets.top = -3;
+        jPanel.add(selectedColorBarPanel, gbc);
+
+        gbc.insets.bottom = 0;
+        gbc.insets.top = 0;
+
+
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
+        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
+        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+
+        jPanel.add(row2Panel, gbc);
+
+
+        return jPanel;
+    }
+
     private JPanel getPalettePanel(String title) {
         JPanel jPanel = new JPanel(new GridBagLayout());
         jPanel.setBorder(BorderFactory.createTitledBorder(title));
@@ -1051,16 +1137,23 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
 
         gbc.weightx = 1.0;
-        gbc.insets = new Insets(0, 4, 4, 4);
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 5, 4, 5);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        jPanel.add(colorPaletteChooser, gbc);
+
+        jPanel.add(getPaletteInnerPanel(), gbc);
 
         gbc.gridy++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.insets.top = 4;
+        gbc.insets.bottom = 4;
+
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
 
         final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
         row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
@@ -1068,6 +1161,43 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         jPanel.add(row2Panel, gbc);
 
+
+        return jPanel;
+    }
+
+
+    private JPanel getPaletteInnerPanel() {
+        JPanel jPanel = new JPanel(new GridBagLayout());
+        jPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        jPanel.setToolTipText("");
+        GridBagConstraints gbc = new GridBagConstraints();
+
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 0, 0, 0);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets.top = -3;
+        gbc.insets.bottom = -5;
+        jPanel.add(colorPaletteChooser, gbc);
+
+
+        gbc.gridy++;
+
+        gbc.fill = GridBagConstraints.BOTH;
+
+        gbc.insets.bottom = 3;
+        gbc.insets.top = -5;
+        Dimension tmpDim = selectedColorBarPanel.getPreferredSize();
+        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.75);
+        Dimension biggerDim = new Dimension(tmpDim.width, newHeight);
+        selectedColorBarPanel.setPreferredSize(biggerDim);
+        selectedColorBarPanel.setMinimumSize(biggerDim);
+        jPanel.add(selectedColorBarPanel, gbc);
 
         return jPanel;
     }
@@ -1124,9 +1254,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
             return ProductUtils.createImageInfo(parentForm.getFormModel().getRasters(), false, ProgressMonitor.NULL);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(getContentPanel(),
-                                          "Failed to create default image settings:\n" + e.getMessage(),
-                                          "I/O Error",
-                                          JOptionPane.ERROR_MESSAGE);
+                    "Failed to create default image settings:\n" + e.getMessage(),
+                    "I/O Error",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
