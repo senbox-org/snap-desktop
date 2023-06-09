@@ -47,7 +47,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         addSchemesCheckbox();
         addSchemeLabelsApplyCheckbox();
-//        addSchemeLabelsRestrictCheckbox();
+        addSchemeLabelsRestrictCheckbox();
 
         // Title Section
         addHeaderTitleSectionBreak();
