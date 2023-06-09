@@ -6,11 +6,11 @@
             <file name="org-esa-snap-landcover-gpf-LandCoverMask-Action.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.OperatorAction.create"/>
-                <attr name="displayName" stringvalue="LandCover Mask"/>
+                <attr name="displayName" stringvalue="Land Cover Mask"/>
                 <attr name="operatorName" stringvalue="Land-Cover-Mask"/>
-                <attr name="dialogTitle" stringvalue="LandCover Mask"/>
+                <attr name="dialogTitle" stringvalue="Land Cover Mask"/>
                 <attr name="targetProductNameSuffix" stringvalue="_lc-msk"/>
-                <attr name="ShortDescription" stringvalue="LandCover Mask Generation"/>
+                <attr name="ShortDescription" stringvalue="Land Cover Mask Generation"/>
                 <attr name="helpId" stringvalue="LandCoverMask"/>
                 <attr name="icon" stringvalue="rstbIcon"/>
             </file>

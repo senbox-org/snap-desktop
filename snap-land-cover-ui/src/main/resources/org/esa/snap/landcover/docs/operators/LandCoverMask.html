@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head><title>Help - Land Cover Mask</title>
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tbody>
+    <tr class="header">
+        <td class="header">&nbsp;Land Cover Mask</td>
+        <td class="header" align="right"><a href="../general/Overview.html"><img src="../images/snap_header.jpg"
+                                                                                 border="0"></a></td>
+    </tr>
+    </tbody>
+</table>
+<h3>Land Cover Mask</h3>
+
+<p> The Land Cover Mask operator uses a land cover band to mask an image based on the classes in the land cover.</p><br>
+<p> A product must first have a land cover band added to it using the AddLandCover operator. The Land Cover Mask operator will then apply a mask including pixels within the selected land cover classes and nodata value for pixels within non-selected classes.</p>
+
+<p>The following parameters are used by the operator:</p>
+<ol>
+    <li>Source bands: The choice of bands to apply the mask to.</li>
+    <li>Land cover band: The choice of land cover band found in the source product.</li>
+    <li>Valid land cover classes: The classes to use to determine which pixels to include.</li>
+    <li>Include all other band: Pass through all other bands from the source product to the target product without applying the mask to unselected bands.</li>
+</ol>
+<p></p>
+<br>
+
+<p><img style="width: 500px; height: 500px;" alt="" src="images/land_cover_mask_dlg.png"><br></p><br>
+<hr>
+</body>
+</html>
