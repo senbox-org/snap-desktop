@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.api.annotations.common.NonNull;
 import org.openide.util.HelpCtx;
@@ -31,7 +32,7 @@ import javax.swing.AbstractButton;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 public abstract class MaskToolTopComponent extends ToolTopComponent implements HelpCtx.Provider {
 
@@ -54,7 +55,7 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
 
         AbstractButton helpButton = maskForm.getHelpButton();
         if (helpButton != null) {
-            helpButton.addActionListener(e -> getHelpCtx().display());
+            helpButton.addActionListener(e -> HelpDisplayer.show(getHelpCtx()));
             helpButton.setName("helpButton");
         }
 

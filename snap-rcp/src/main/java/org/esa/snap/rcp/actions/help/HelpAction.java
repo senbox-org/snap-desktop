@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.actions.help;
 
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -51,6 +52,7 @@ public class HelpAction extends AbstractAction implements HelpCtx.Provider {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getHelpCtx().display();
+        HelpDisplayer.show(getHelpCtx());
     }
+
 }

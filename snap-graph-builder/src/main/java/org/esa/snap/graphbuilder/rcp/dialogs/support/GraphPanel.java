@@ -19,14 +19,25 @@ import org.esa.snap.core.gpf.graph.NodeSource;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.filesystems.FileObject;
-import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -195,9 +206,7 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
     private void callOperatorHelp(final String id) {
         FileObject file = ActionFileSystem.findOperatorFile(id);
         if(file != null) {
-            String helpId = (String) file.getAttribute("helpId");
-
-            new HelpCtx(helpId).display();
+            HelpDisplayer.show((String) file.getAttribute("helpId"));
         } else {
             Dialogs.showWarning("Operator help for " + id +" not found.");
         }

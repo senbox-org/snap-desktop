@@ -76,6 +76,7 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -84,7 +85,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -408,8 +408,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ActionListener searchButtonListener = e -> searchButtonPressed();
         ActionListener stopDownloadingProductListButtonListener = e -> cancelSearchingProductList();
         ActionListener helpButtonListener = e -> {
-            HelpCtx helpCtx = new HelpCtx(HELP_ID);
-            helpCtx.display();
+            HelpDisplayer.show(HELP_ID);
         };
 
         String text = DownloadProductListTimerRunnable.buildProgressBarDownloadingText(1000, 1000);

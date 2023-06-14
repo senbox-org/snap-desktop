@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.windows.TopComponent;
 
@@ -201,8 +202,7 @@ public abstract class PagePanel extends JPanel implements ProductNodeListener {
                                                                              false);
             helpButton.setToolTipText("Help.");
             helpButton.setName("helpButton");
-            helpButton.addActionListener(e -> parentComponent.getHelpCtx().display());
-//            HelpSys.enableHelpKey(getParentDialogContentPane(), helpId);
+            helpButton.addActionListener(e -> HelpDisplayer.show(parentComponent.getHelpCtx()));
             return helpButton;
         }
 
