@@ -15,6 +15,7 @@
  */
 package org.esa.snap.ui;
 
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -382,9 +383,10 @@ public abstract class AbstractDialog {
      * Clients should override this method to implement a different behaviour.
      */
     protected void onHelp() {
-        if (helpId == null || !new HelpCtx(helpId).display()) {
+        if (helpId == null) {
             showWarningDialog(String.format(Bundle.CTL_AbstractDlg_NoHelpIDShowingStandard(), helpId));
         }
+        HelpDisplayer.show(helpId);
     }
 
     /**

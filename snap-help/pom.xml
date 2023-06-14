@@ -56,10 +56,6 @@
             <groupId>eu.esa.snap.netbeans</groupId>
             <artifactId>snap-help-system</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-        </dependency>
     </dependencies>
 </project>
 

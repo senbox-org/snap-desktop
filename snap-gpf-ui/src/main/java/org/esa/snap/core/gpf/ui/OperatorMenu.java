@@ -36,7 +36,7 @@ import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.openide.util.HelpCtx;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.xmlpull.mxp1.MXParser;
 
 import javax.swing.AbstractAction;
@@ -137,7 +137,7 @@ public class OperatorMenu {
     private JMenuItem createHelpMenuItem() {
         JMenuItem menuItem = new JMenuItem("Help");
         if (helpId != null && !helpId.isEmpty()) {
-            menuItem.addActionListener(e -> new HelpCtx(helpId).display());
+            menuItem.addActionListener(e -> HelpDisplayer.show(helpId));
         } else {
             menuItem.setEnabled(false);
         }

@@ -43,11 +43,20 @@
 
 package org.esa.snap.graphbuilder.rcp.wizards;
 
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.jfree.ui.L1R3ButtonPanel;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -393,7 +402,9 @@ public class WizardDialog extends JDialog implements ActionListener {
         final L1R3ButtonPanel buttons = new L1R3ButtonPanel("Help", "Previous", "Next", "Finish");
 
         this.helpButton = buttons.getLeftButton();
-        this.helpButton.addActionListener(e -> { new HelpCtx(helpId).display();});
+        this.helpButton.addActionListener(e -> {
+            HelpDisplayer.show(helpId);
+        });
         this.helpButton.setEnabled(false);
 
         this.previousButton = buttons.getRightButton1();
