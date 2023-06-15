@@ -19,7 +19,7 @@ public class PackageDefaults  {
     //---------------------------------------------------------------
     // Color Defaults
     public static final Color IMAGE_BACKGROUND_COLOR = Color.WHITE; // differs from snap
-    public static final Color NO_DATA_LAYER_COLOR = new Color(128, 128, 128); // differs from snap
+//    public static final Color NO_DATA_LAYER_COLOR = new Color(128, 128, 128); // differs from snap
 
 
     //---------------------------------------------------------------
