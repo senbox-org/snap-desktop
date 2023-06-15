@@ -322,7 +322,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final LayerType noDataType = LayerTypeRegistry.getLayerType(NoDataLayerType.class);
         final PropertySet configTemplate = noDataType.createLayerConfig(null);
 
-        final Color color = configuration.getPropertyColor("noDataOverlay.color", PackageDefaults.NO_DATA_LAYER_COLOR);
+        final Color color = configuration.getPropertyColor("noDataOverlay.color", NoDataLayerType.DEFAULT_COLOR);
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_COLOR, color);
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_RASTER, getRaster());
         final Layer layer = noDataType.createLayer(this, configTemplate);
