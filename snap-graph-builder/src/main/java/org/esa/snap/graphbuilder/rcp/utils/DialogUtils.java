@@ -18,7 +18,14 @@ package org.esa.snap.graphbuilder.rcp.utils;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -94,25 +101,25 @@ public final class DialogUtils {
         panel.add(new JPanel(), gbc);
     }
 
-    public static JButton createIconButton(final String name, final String text, final ImageIcon icon, final boolean toggle) {
+    public static AbstractButton createIconButton(final String name, final String text, final ImageIcon icon, final boolean toggle) {
         return createButton(name, text, icon, null, ButtonStyle.Icon, toggle);
     }
 
-    public static JButton createButton(final String name, final String text, final ImageIcon icon, final JPanel panel,
-                                       final ButtonStyle style) {
+    public static AbstractButton createButton(final String name, final String text, final ImageIcon icon, final JPanel panel,
+                                              final ButtonStyle style) {
         return createButton(name, text, icon, panel, style, false);
     }
 
-    public static JButton createButton(final String name, final String text, final ImageIcon icon, final JPanel panel,
-                                       final ButtonStyle style, final boolean toggle) {
-        final JButton button;
-        if(icon == null || style == ButtonStyle.TextAndIcon) {
+    public static AbstractButton createButton(final String name, final String text, final ImageIcon icon, final JPanel panel,
+                                              final ButtonStyle style, final boolean toggle) {
+        final AbstractButton button;
+        if (icon == null || style == ButtonStyle.TextAndIcon) {
             button = new JButton();
             button.setText(text);
-        } else if(style == ButtonStyle.FramedButton) {
+        } else if (style == ButtonStyle.FramedButton) {
             button = new JButton();
         } else {
-            button = (JButton) ToolButtonFactory.createButton(icon, toggle);
+            button = ToolButtonFactory.createButton(icon, toggle);
         }
         button.setName(name);
         button.setIcon(icon);

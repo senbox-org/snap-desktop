@@ -47,6 +47,7 @@ import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -297,22 +298,22 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
-        final JButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         processButton.addActionListener(e -> doProcessing());
 
-        final JButton saveButton = DialogUtils.createButton("saveButton", "Save", saveIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton saveButton = DialogUtils.createButton("saveButton", "Save", saveIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         saveButton.addActionListener(e -> saveGraph());
 
-        final JButton loadButton = DialogUtils.createButton("loadButton", "Load", loadIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton loadButton = DialogUtils.createButton("loadButton", "Load", loadIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         loadButton.addActionListener(e -> loadGraph());
 
-        final JButton clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         clearButton.addActionListener(e -> clearGraph());
 
-        final JButton infoButton = DialogUtils.createButton("infoButton", "Note", infoIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton infoButton = DialogUtils.createButton("infoButton", "Note", infoIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         infoButton.addActionListener(e -> OnInfo());
         //getClass().getName() + name
-        final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         helpButton.addActionListener(e -> OnHelp());
 
         gbc.weightx = 0;
