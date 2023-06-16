@@ -105,13 +105,13 @@ public class CommunityPluginVotePanel extends JPanel {
 							} catch (NoSuchMethodException ex) {
 								// not here
 							} catch (SecurityException ex) {
-								System.err.println("Access error");
+					            SystemUtils.LOG.severe("Access error");
 							} catch (IllegalAccessException ex) {
-								System.err.println("Invokation error");
+								SystemUtils.LOG.severe("Invokation error");
 							} catch (IllegalArgumentException ex) {
-								System.err.println("Invokation error");
+								SystemUtils.LOG.severe("Invokation error");
 							} catch (InvocationTargetException ex) {
-								System.err.println("Invokation error");
+								SystemUtils.LOG.severe("Invokation error");
 							}
 
 						}
