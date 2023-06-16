@@ -281,14 +281,6 @@ public class CommunityPluginVotePanel extends JPanel {
 		    });
 		}
 		
-
-		/**
-		 * Connect to the website and extract the plugin's data
-		 */
-		public void run() {
-			final CommunityPluginResponse pluginsData = getPluginsInfo();
-		}
-		
 		/**
 		 * Get the plugins info.
 		 * 
@@ -314,7 +306,7 @@ public class CommunityPluginVotePanel extends JPanel {
 					StringBuilder sb = new StringBuilder();
 					String line;
 					while ((line = br.readLine()) != null) {
-						sb.append(line + "\n");
+						sb.append(line);
 					}
 					br.close();
 
