@@ -27,12 +27,12 @@ import org.esa.snap.rcp.layermanager.layersrc.SelectLayerSourceAssistantPage;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.layer.LayerSourceAssistantPane;
 import org.esa.snap.ui.layer.LayerSourceDescriptor;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayer;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.openide.util.HelpCtx;
 
 import javax.swing.AbstractButton;
 import javax.swing.DropMode;
@@ -169,7 +169,7 @@ class LayerManagerForm implements AbstractLayerForm {
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new HelpCtx(Bundle.CTL_LayerManagerTopComponent_HelpId()).display();
+                HelpDisplayer.show(Bundle.CTL_LayerManagerTopComponent_HelpId());
             }
         });
 

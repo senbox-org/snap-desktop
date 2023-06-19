@@ -31,7 +31,12 @@ import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
 import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphStruct;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -39,17 +44,41 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModelessDialog;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.plaf.basic.BasicBorders;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -269,22 +298,22 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
-        final JButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton processButton = DialogUtils.createButton("processButton", "Run", processIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         processButton.addActionListener(e -> doProcessing());
 
-        final JButton saveButton = DialogUtils.createButton("saveButton", "Save", saveIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton saveButton = DialogUtils.createButton("saveButton", "Save", saveIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         saveButton.addActionListener(e -> saveGraph());
 
-        final JButton loadButton = DialogUtils.createButton("loadButton", "Load", loadIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton loadButton = DialogUtils.createButton("loadButton", "Load", loadIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         loadButton.addActionListener(e -> loadGraph());
 
-        final JButton clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton clearButton = DialogUtils.createButton("clearButton", "Clear", clearIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         clearButton.addActionListener(e -> clearGraph());
 
-        final JButton infoButton = DialogUtils.createButton("infoButton", "Note", infoIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton infoButton = DialogUtils.createButton("infoButton", "Note", infoIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         infoButton.addActionListener(e -> OnInfo());
         //getClass().getName() + name
-        final JButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        final AbstractButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         helpButton.addActionListener(e -> OnHelp());
 
         gbc.weightx = 0;
@@ -501,7 +530,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      * Call Help
      */
     private void OnHelp() {
-        new HelpCtx(getHelpID()).display();
+        HelpDisplayer.show(getHelpID());
     }
 
     /**

@@ -33,9 +33,9 @@ import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.GridLayout2;
 import org.netbeans.api.progress.ProgressUtils;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -62,9 +62,9 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     private String targetProductNameSuffix = "";
     private JPanel buttonPanel = null;
 
-    private JButton addButton = null, addAllOpenButton = null, removeButton = null;
-    private JButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
-    private JButton refreshButton = null, clearButton = null;
+    private AbstractButton addButton = null, addAllOpenButton = null, removeButton = null;
+    private AbstractButton moveTopButton = null, moveUpButton = null, moveDownButton = null, moveBottomButton = null;
+    private AbstractButton refreshButton = null, clearButton = null;
 
     private final JLabel countLabel = new JLabel();
 

@@ -17,6 +17,7 @@ package org.esa.snap.rcp.placemark;
 
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
@@ -107,7 +108,7 @@ public class PlacemarkManagerButtons extends JPanel {
         final AbstractButton helpButton = createButton("icons/Help22.png");
         helpButton.setToolTipText("Help."); /*I18N*/
         helpButton.setName("helpButton");
-        helpButton.addActionListener(e -> topComponent.getHelpCtx().display());
+        helpButton.addActionListener(e -> HelpDisplayer.show(topComponent.getHelpCtx()));
 
         final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 1;
