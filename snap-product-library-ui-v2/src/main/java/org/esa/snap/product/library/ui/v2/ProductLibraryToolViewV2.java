@@ -119,10 +119,9 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1244,7 +1243,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     if (remoteMission == null) {
                         throw new NullPointerException("The remote mission is missing.");
                     }
-                    Date acquisitionDate = selectedProducts[0].getAcquisitionDate();
+                    LocalDateTime acquisitionDate = selectedProducts[0].getAcquisitionDate();
                     if (acquisitionDate == null) {
                         throw new NullPointerException("The product acquisition date is missing.");
                     }
@@ -1256,12 +1255,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         throw new IllegalStateException("The remote products repository '" + remoteMission.getRepositoryName() + "' is missing.");
                     } else {
                         // the remote products repository exists and it is selected
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(acquisitionDate);
-                        calendar.add(Calendar.DAY_OF_MONTH, -7); // one week ago
-                        Date startDate = new Date(calendar.getTimeInMillis());
-                        calendar.add(Calendar.DAY_OF_MONTH, 14);
-                        Date endDate = new Date(calendar.getTimeInMillis());
+                        LocalDateTime startDate = acquisitionDate.minusDays(7); // one week ago
+                        LocalDateTime endDate = acquisitionDate.plusDays(14);
 
                         Rectangle2D.Double areaOfInterestToSelect = null;
                         if (selectedProducts[0].getPolygon() != null) {

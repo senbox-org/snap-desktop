@@ -21,9 +21,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -503,15 +503,15 @@ public class RepositoryOutputProductListPanel extends JPanel implements OutputPr
         return new ComparatorItem("Acquisition Date") {
             @Override
             public int compare(RepositoryProduct o1, RepositoryProduct o2) {
-                Date acquisitionDate1 = o1.getAcquisitionDate();
-                Date acquisitionDate2 = o2.getAcquisitionDate();
+                final LocalDateTime acquisitionDate1 = o1.getAcquisitionDate();
+                final LocalDateTime acquisitionDate2 = o2.getAcquisitionDate();
                 if (acquisitionDate1 == null && acquisitionDate2 == null) {
                     return 0; // both acquisition dates are null
                 }
-                if (acquisitionDate1 == null && acquisitionDate2 != null) {
+                if (acquisitionDate1 == null) {
                     return -1; // the first acquisition date is null
                 }
-                if (acquisitionDate1 != null && acquisitionDate2 == null) {
+                if (acquisitionDate2 == null) {
                     return 1; // the second acquisition date is null
                 }
                 return acquisitionDate1.compareTo(acquisitionDate2);
