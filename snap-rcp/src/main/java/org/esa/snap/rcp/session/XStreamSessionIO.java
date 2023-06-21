@@ -20,8 +20,8 @@ import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.core.Assert;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.ExplicitTypePermission;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -39,6 +39,8 @@ public class XStreamSessionIO extends SessionIO {
 
     protected XStream createXStream() {
         XStream xStream = new XStream();
+        xStream.addPermission(new ExplicitTypePermission(new Class[]{Session.class, Session.ProductRef.class, Session.ViewRef.class}));
+
         xStream.setClassLoader(XStreamSessionIO.class.getClassLoader());
         xStream.autodetectAnnotations(true);
         xStream.alias("session", Session.class);
@@ -47,13 +49,13 @@ public class XStreamSessionIO extends SessionIO {
     }
 
     @Override
-    public Session readSession(Reader reader) throws IOException {
+    public Session readSession(Reader reader) {
         Assert.notNull(reader, "reader");
         return (Session) createXStream().fromXML(reader);
     }
 
     @Override
-    public void writeSession(Session session, Writer writer) throws IOException {
+    public void writeSession(Session session, Writer writer) {
         Assert.notNull(session, "session");
         Assert.notNull(writer, "writer");
         createXStream().toXML(session, writer);
