@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /*
-@ActionID(category = "Raster", id = "org.esa.s1tbx.dat.ScaleDataAction" )
+@ActionID(category = "Raster", id = "eu.esa.microwave.dat.ScaleDataAction" )
 @ActionRegistration(displayName = "#CTL_ScaleDataAction_Text")
 @ActionReference(path = "Menu/Raster/Data Conversion", position = 300 )
 @NbBundle.Messages({"CTL_ScaleDataAction_Text=Scale Data"})
