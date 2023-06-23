@@ -19,7 +19,6 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.layers.Earth.OSMMapnikLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
@@ -149,24 +148,33 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         SystemUtils.LOG.info("INITIALIZE IN WWAnalysisToolView CALLED" + " includeLayerPanel " + includeLayerPanel +
                 " includeProductPanel " + includeProductPanel);
 
+        // share resources from existing WorldWind Canvas
+        WorldWindowGLCanvas shareWith = findWorldWindView();
+
         final WWView toolView = this;
         final SwingWorker worker = new SwingWorker() {
             @Override
-            protected Object doInBackground() throws Exception {
+            protected Object doInBackground() {
                 // Create the WorldWindow.
                 try {
-                    // share resources from existing WorldWind Canvas
-                    WorldWindowGLCanvas shareWith = findWorldWindView();
 
                     createWWPanel(shareWith, includeStatusBar, false, false);
                     wwjPanel.addLayerPanelLayer();
                     wwjPanel.addElevation();
 
-                    final OSMMapnikLayer streetLayer = new OSMMapnikLayer();
-                    streetLayer.setOpacity(0.7);
-                    streetLayer.setEnabled(false);
-                    streetLayer.setName("Open Street Map");
-                    insertTiledLayer(getWwd(), streetLayer);
+                    // Put the pieces together.
+                    mainPane.add(wwjPanel, BorderLayout.CENTER);
+
+                    final LayerList layerList = getWwd().getModel().getLayers();
+
+                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
+                    bingLayer.setEnabled(true);
+
+//                    final OSMMapnikLayer streetLayer = new OSMMapnikLayer();
+//                    streetLayer.setOpacity(0.7);
+//                    streetLayer.setEnabled(false);
+//                    streetLayer.setName("Open Street Map");
+//                    insertTiledLayer(getWwd(), streetLayer);
 
                     final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
                     for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
@@ -183,7 +191,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                             }
                         }
                     }
-                    final LayerList layerList = getWwd().getModel().getLayers();
+
                     // Instead of the default Place Name layer we use special implementation to replace
                     // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
                     final Layer placeNameLayer = layerList.getLayerByName("Place Names");
@@ -193,11 +201,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                     layerList.add(fixingPlaceNameLayer);
                     fixingPlaceNameLayer.setEnabled(true);
 
-                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
-                    bingLayer.setEnabled(true);
-
-                    // Put the pieces together.
-                    mainPane.add(wwjPanel, BorderLayout.CENTER);
                     if (includeLayerPanel) {
                         layerPanel = new LayerPanel(wwjPanel.getWwd(), null);
                         mainPane.add(layerPanel, BorderLayout.WEST);
