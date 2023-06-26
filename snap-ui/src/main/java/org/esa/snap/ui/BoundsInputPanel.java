@@ -57,6 +57,7 @@ public class BoundsInputPanel {
     private JFormattedTextField pixelSizeXField;
     private JFormattedTextField pixelSizeYField;
     private final Map<String, Double> unitMap;
+    private final String degreeSymbol = "°";
 
     /**
      * Default constructor.
@@ -103,7 +104,6 @@ public class BoundsInputPanel {
         layout.setColumnPadding(2, new Insets(3, 0, 3, 12));
         layout.setColumnPadding(5, new Insets(3, 0, 3, 12));
         final JPanel panel = new JPanel(layout);
-        String degreeSymbol = "°";
         pixelXUnit = new JLabel(degreeSymbol);
         pixelYUnit = new JLabel(degreeSymbol);
 
@@ -183,12 +183,12 @@ public class BoundsInputPanel {
         final String unitX = coordinateSystem.getAxis(0).getUnit().toString();
         if (!unitX.equals(pixelXUnit.getText())) {
             pixelXUnit.setText(unitX);
-            pixelSizeXField.setValue(unitMap.get(unitX));
+            pixelSizeXField.setValue(unitMap.get("deg".equals(unitX) ? degreeSymbol : unitX));
         }
         final String unitY = coordinateSystem.getAxis(1).getUnit().toString();
         if (!unitY.equals(pixelYUnit.getText())) {
             pixelYUnit.setText(unitY);
-            pixelSizeYField.setValue(unitMap.get(unitY));
+            pixelSizeYField.setValue(unitMap.get("deg".equals(unitY) ? degreeSymbol : unitY));
         }
     }
 
