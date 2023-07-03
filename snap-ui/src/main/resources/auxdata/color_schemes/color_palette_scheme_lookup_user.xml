@@ -1,5 +1,6 @@
 <colorSchemeLut>
-    <KEY REGEX="user_band">
+<!--    This is an example to help users understand how to make entries in this file-->
+    <KEY REGEX="^user_band($|_.+)">
         <SCHEME_ID>user_scheme</SCHEME_ID>
         <DESCRIPTION/>
     </KEY>
