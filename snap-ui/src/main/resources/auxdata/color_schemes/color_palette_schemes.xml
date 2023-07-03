@@ -219,6 +219,17 @@
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Particle backscatter</DESCRIPTION>
     </Scheme>
+    <Scheme name="bbp_giop">
+        <VERBOSE_NAME/>
+        <MIN>1.0e-04</MIN>
+        <MAX>0.1</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Particle backscatter</DESCRIPTION>
+    </Scheme>
     <Scheme name="bbp_s">
         <VERBOSE_NAME/>
         <MIN>-1.0</MIN>
@@ -252,7 +263,8 @@
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Total backscatter</DESCRIPTION>
     </Scheme>
-    <Scheme name="bbp_giop">
+
+    <Scheme name="bb_giop">
         <VERBOSE_NAME/>
         <MIN>1.0e-04</MIN>
         <MAX>0.1</MAX>
@@ -261,8 +273,10 @@
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
-        <DESCRIPTION>Particle backscatter</DESCRIPTION>
+        <DESCRIPTION>Total backscatter</DESCRIPTION>
     </Scheme>
+
+
     <Scheme name="BSi">
         <VERBOSE_NAME/>
         <MIN>0.001</MIN>
@@ -667,6 +681,8 @@
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,40,45</COLORBAR_LABELS>
+<!--        <COLORBAR_LABELS>0:0°,10:10°,20:20°,30:30°,40:40°,45:45°</COLORBAR_LABELS>-->
+
         <DESCRIPTION>Sea Surface Temperature</DESCRIPTION>
     </Scheme>
     <Scheme name="Zeu">
