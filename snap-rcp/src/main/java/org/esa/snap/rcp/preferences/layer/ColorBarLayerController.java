@@ -78,12 +78,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY, ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT);
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_KEY, ColorBarLayerType.PROPERTY_TITLE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
 
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY, true);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_KEY, ColorBarLayerType.PROPERTY_UNITS_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_NULL_KEY, ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT);
@@ -101,8 +101,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_HORIZONTAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_KEY, ColorBarLayerType.PROPERTY_LOCATION_PLACEMENT_VERTICAL_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_KEY, ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
-//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY, ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY, ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_KEY, ColorBarLayerType.PROPERTY_LOCATION_INSIDE_DEFAULT);
 
 
@@ -543,20 +543,20 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
                 description = ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP)
         String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TOOLTIP)
-        boolean titleAltUse = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
+//                description = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TOOLTIP)
+//        boolean titleAltUse = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT;
 
 
 
         // Units
 
-        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP)
-        boolean headerUnitsSection = true;
+//        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP)
+//        boolean headerUnitsSection = true;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_KEY,
@@ -567,11 +567,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
                 description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
         String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP)
-        boolean unitsAltUse = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT;
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
+//                key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
+//                description = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP)
+//        boolean unitsAltUse = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT;
 
 
 
@@ -695,15 +695,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         double locationGapFactor = ColorBarLayerType.PROPERTY_LOCATION_GAP_FACTOR_DEFAULT;
 
-//        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
-//                key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
-//                description = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP)
-//        double locationOffset = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL,
-//                key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
-//                description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
-//        double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_TOOLTIP)
+        double locationOffset = ColorBarLayerType.PROPERTY_LOCATION_OFFSET_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
+        double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
 
 
 

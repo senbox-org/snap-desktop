@@ -1009,7 +1009,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         // Title and Units Text
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_ALT_USE_KEY2).getValue();
-        imageLegend.setTitleAltUse((Boolean) value);
+//        todo Danny
+//        imageLegend.setTitleAltUse((Boolean) value);
+        imageLegend.setTitleAltUse((Boolean) false);
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_KEY2).getValue();
         imageLegend.setTitle((String) value);
