@@ -110,7 +110,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private final JCheckBox loadWithCPDFileValuesCheckBox;
     private final ColorSchemeManager colorSchemeManager;
     private final JLabel colorSchemeJLabel;
-    private final JButton paletteInversionButton;
+    private final AbstractButton paletteInversionButton;
 
     final Boolean[] minTextFieldListenerEnabled = {Boolean.TRUE};
     final Boolean[] maxTextFieldListenerEnabled = {Boolean.TRUE};
@@ -158,7 +158,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use its actual values and overwrite user min/max values");
 
-        paletteInversionButton = new JButton("Reverse");
+//        paletteInversionButton = new JButton("Reverse");
+        paletteInversionButton = createReverseButton();
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
         paletteInversionButton.addActionListener(e -> applyChanges(RangeKey.InvertPalette));
         paletteInversionButton.setEnabled(true);
@@ -353,6 +354,21 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         });
 
         shouldFireChooserEvent = true;
+    }
+
+    static AbstractButton createButton() {
+        final AbstractButton logDisplayButton = ImageInfoEditorSupport.createToggleButton("org/esa/snap/rcp/icons/LogDisplay24.png");
+        logDisplayButton.setName("logDisplayButton");
+        logDisplayButton.setToolTipText("Switch to logarithmic display"); /*I18N*/
+        return logDisplayButton;
+    }
+
+
+    static AbstractButton createReverseButton() {
+        final AbstractButton logDisplayButton = ImageInfoEditorSupport.createToggleButton("org/esa/snap/rcp/icons/PaletteReverse24.png");
+        logDisplayButton.setName("paletteReverseButton");
+        logDisplayButton.setToolTipText("Reverse (invert) color palette"); /*I18N*/
+        return logDisplayButton;
     }
 
 
@@ -1155,11 +1171,13 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
 
-        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
-        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
-        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+        // todo Danny temp remove
 
-        jPanel.add(row2Panel, gbc);
+//        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
+//        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
+//        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+
+//        jPanel.add(row2Panel, gbc);
 
 
         return jPanel;
@@ -1185,9 +1203,17 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.insets.bottom = -5;
         jPanel.add(colorPaletteChooser, gbc);
 
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.1;
+        gbc.gridx++;
+        jPanel.add(paletteInversionButton, gbc);
 
         gbc.gridy++;
 
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 0.0;
+        gbc.gridx = 0;
         gbc.fill = GridBagConstraints.BOTH;
 
         gbc.insets.bottom = 3;
