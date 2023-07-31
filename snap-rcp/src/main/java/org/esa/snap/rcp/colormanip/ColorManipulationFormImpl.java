@@ -22,6 +22,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
