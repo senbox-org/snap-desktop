@@ -158,8 +158,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         loadWithCPDFileValuesCheckBox = new JCheckBox("Load exact values", false);
         loadWithCPDFileValuesCheckBox.setToolTipText("When loading a new cpd file, use its actual values and overwrite user min/max values");
 
-//        paletteInversionButton = new JButton("Reverse");
-        paletteInversionButton = createReverseButton();
+        paletteInversionButton = new JButton("Reverse");
+//        paletteInversionButton = createReverseButton();
         paletteInversionButton.setToolTipText("Reverse (invert) palette"); /*I18N*/
         paletteInversionButton.addActionListener(e -> applyChanges(RangeKey.InvertPalette));
         paletteInversionButton.setEnabled(true);
@@ -188,14 +188,15 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         final JPanel editorPanel = new JPanel(layout);
 
-        JPanel schemePanel = getSchemePanel("Scheme");
-        editorPanel.add(schemePanel);
 
         JPanel palettePanel = getPalettePanel("Palette");
         editorPanel.add(palettePanel);
 
         JPanel rangePanel = getRangePanel("Range");
         editorPanel.add(rangePanel);
+
+        JPanel schemePanel = getSchemePanel("Scheme");
+        editorPanel.add(schemePanel);
 
         shouldFireChooserEvent = false;
 
@@ -621,7 +622,8 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     @Override
     public AbstractButton[] getToolButtons() {
         return new AbstractButton[]{
-                logDisplayButton,
+                logDisplayButton
+//                paletteInversionButton
         };
     }
 
@@ -1173,11 +1175,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         // todo Danny temp remove
 
-//        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
-//        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
-//        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
+        final JPanel row2Panel = new JPanel(new BorderLayout(0, 0));
+        row2Panel.add(loadWithCPDFileValuesCheckBox, BorderLayout.WEST);
+        row2Panel.add(paletteInversionButton, BorderLayout.EAST);
 
-//        jPanel.add(row2Panel, gbc);
+        jPanel.add(row2Panel, gbc);
 
 
         return jPanel;
@@ -1203,26 +1205,27 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         gbc.insets.bottom = -5;
         jPanel.add(colorPaletteChooser, gbc);
 
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0.1;
-        gbc.gridx++;
-        jPanel.add(paletteInversionButton, gbc);
+//        gbc.anchor = GridBagConstraints.EAST;
+//        gbc.fill = GridBagConstraints.NONE;
+//        gbc.weightx = 1.0;
+//        gbc.gridx++;
+//        jPanel.add(paletteInversionButton, gbc);
 
         gbc.gridy++;
 
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0.0;
         gbc.gridx = 0;
+        gbc.gridwidth=2;
         gbc.fill = GridBagConstraints.BOTH;
 
         gbc.insets.bottom = 3;
         gbc.insets.top = -5;
         Dimension tmpDim = selectedColorBarPanel.getPreferredSize();
-        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.75);
-        Dimension biggerDim = new Dimension(tmpDim.width, newHeight);
-        selectedColorBarPanel.setPreferredSize(biggerDim);
-        selectedColorBarPanel.setMinimumSize(biggerDim);
+        int newHeight = (int) Math.floor(tmpDim.getHeight() * 1.0);
+        Dimension adjustedHeightDim = new Dimension(tmpDim.width, newHeight);
+        selectedColorBarPanel.setPreferredSize(adjustedHeightDim);
+        selectedColorBarPanel.setMinimumSize(adjustedHeightDim);
         jPanel.add(selectedColorBarPanel, gbc);
 
         return jPanel;
