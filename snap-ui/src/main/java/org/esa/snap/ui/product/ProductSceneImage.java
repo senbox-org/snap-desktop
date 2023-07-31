@@ -405,32 +405,15 @@ public class ProductSceneImage implements ProductLayerContext {
         // Added multiple new properties here
         // Daniel Knowles - Sept 2018
 
-        // Added section break properties
-
-//        layerConfiguration.setValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                configuration.getPropertyInt(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                        GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT));
 
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                                        GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-                                        GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
-                                        GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
-                GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT,
-                GraticuleLayerType.PROPERTY_MINOR_STEPS_TYPE);
 
         // Grid Spacing Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
                                                GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
-                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
+
         addPropertyToLayerConfiguration(configuration, layer,
                                         GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
                                         GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT,
@@ -440,6 +423,16 @@ public class ProductSceneImage implements ProductLayerContext {
                                         GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME,
                                         GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT,
                                         GraticuleLayerType.PROPERTY_GRID_SPACING_LON_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
+                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
+                GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_TYPE);
 
 
         // Labels Section
