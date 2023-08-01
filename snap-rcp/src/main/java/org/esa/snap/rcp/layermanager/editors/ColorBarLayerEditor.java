@@ -45,8 +45,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         context = getBindingContext();
 
 
-        addSchemesCheckbox();
-        addSchemeLabelsApplyCheckbox();
 //        addSchemeLabelsRestrictCheckbox();
 
         // Title Section
@@ -60,7 +58,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Units Section
 //        addHeaderUnitsSectionBreak();
         addUnitsTextfield();
-        addConvertCaretBoolean();
+        addSchemesCheckbox();
+
 
 //        addUnitsAltTextfield();
 //        addUnitsAltUseBoolean();
@@ -71,6 +70,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelValuesMode();
         addLabelValuesCount();
         addLabelValuesActual();
+        addSchemeLabelsApplyCheckbox();
         addAutoPopulateLabelValues();
 
 //        addWeightTolerance();
@@ -121,6 +121,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addUnitsFontColor();
         addUnitsNullTextfield();
         addUnitsParenthesisBoolean();
+        addConvertCaretBoolean();
+
 
         // Labels Section
         addLabelsSectionBreak();

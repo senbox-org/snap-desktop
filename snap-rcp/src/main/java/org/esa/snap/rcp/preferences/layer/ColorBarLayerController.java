@@ -80,12 +80,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY, true);
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_KEY, ColorBarLayerType.PROPERTY_TITLE_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_TITLE_ALT_KEY, ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT);
 
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY, true);
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_KEY, ColorBarLayerType.PROPERTY_UNITS_DEFAULT);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_NULL_KEY, ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT);
 
 
@@ -511,20 +511,9 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
-                key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
-                description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
-        boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_LABEL,
-                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
-                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_TOOLTIP)
-        boolean schemeLabelsApply = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_LABEL,
-                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
-                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP)
-        boolean schemeLabelsRestrict = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT;
+
 
 
 
@@ -534,15 +523,22 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_TOOLTIP)
         boolean headerTitleSection = true;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
+        boolean autoApply = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
+
+
         @Preference(label = ColorBarLayerType.PROPERTY_TITLE_LABEL,
                 key = ColorBarLayerType.PROPERTY_TITLE_KEY,
                 description = ColorBarLayerType.PROPERTY_TITLE_TOOLTIP)
         String title = ColorBarLayerType.PROPERTY_TITLE_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP)
-        String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
+
+//        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_LABEL,
+//                key = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
+//                description = ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP)
+//        String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
 //
 //        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
 //                key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
@@ -563,10 +559,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_TOOLTIP)
         String units = ColorBarLayerType.PROPERTY_UNITS_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
-        String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
+//        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_LABEL,
+//                key = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
+//                description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
+//        String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
 //
 //        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
 //                key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
@@ -581,6 +577,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
         boolean labelValuesSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_TOOLTIP)
+        boolean schemeLabelsApply = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_LABEL,
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_MODE_KEY,
@@ -600,6 +601,13 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP)
         String labelValuesActual = ColorBarLayerType.PROPERTY_LABEL_VALUES_ACTUAL_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP)
+        boolean schemeLabelsRestrict = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL,
                 key = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
