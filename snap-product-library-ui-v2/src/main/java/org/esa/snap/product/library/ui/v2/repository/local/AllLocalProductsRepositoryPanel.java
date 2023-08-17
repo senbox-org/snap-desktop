@@ -314,10 +314,18 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                     inputParameterComponent.setParameterValue(areaOfInterestToSelect);
                     break;
                 case AllLocalFolderProductsRepository.START_DATE_PARAMETER:
-                    inputParameterComponent.setParameterValue(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()));
+                    if (startDate != null) {
+                        inputParameterComponent.setParameterValue(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()));
+                    } else {
+                        inputParameterComponent.setParameterValue(null);
+                    }
                     break;
                 case AllLocalFolderProductsRepository.END_DATE_PARAMETER:
-                    inputParameterComponent.setParameterValue(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()));
+                    if (endDate != null) {
+                        inputParameterComponent.setParameterValue(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()));
+                    } else {
+                        inputParameterComponent.setParameterValue(null);
+                    }
                     break;
                 case AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER:
                     inputParameterComponent.setParameterValue(attributes);
