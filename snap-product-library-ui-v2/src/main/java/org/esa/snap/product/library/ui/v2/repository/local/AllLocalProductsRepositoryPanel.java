@@ -35,10 +35,8 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -314,18 +312,10 @@ public class AllLocalProductsRepositoryPanel extends AbstractProductsRepositoryP
                     inputParameterComponent.setParameterValue(areaOfInterestToSelect);
                     break;
                 case AllLocalFolderProductsRepository.START_DATE_PARAMETER:
-                    if (startDate != null) {
-                        inputParameterComponent.setParameterValue(Date.from(startDate.atZone(ZoneId.systemDefault()).toInstant()));
-                    } else {
-                        inputParameterComponent.setParameterValue(null);
-                    }
+                    inputParameterComponent.setParameterValue(startDate);
                     break;
                 case AllLocalFolderProductsRepository.END_DATE_PARAMETER:
-                    if (endDate != null) {
-                        inputParameterComponent.setParameterValue(Date.from(endDate.atZone(ZoneId.systemDefault()).toInstant()));
-                    } else {
-                        inputParameterComponent.setParameterValue(null);
-                    }
+                    inputParameterComponent.setParameterValue(endDate);
                     break;
                 case AllLocalFolderProductsRepository.ATTRIBUTES_PARAMETER:
                     inputParameterComponent.setParameterValue(attributes);
