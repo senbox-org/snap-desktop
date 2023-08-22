@@ -627,10 +627,16 @@ public class AngularTopComponent extends ToolTopComponent {
                 List<AngularBand> ungroupedBandsList = new ArrayList<>();
                 for (AngularBand availableAngularBand : availableAngularBands) {
                     final String bandName = availableAngularBand.getName();
-                    if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                        availableAngularBand.setSelected(true);
-                    } else {
-                        availableAngularBand.setSelected(false);
+                    availableAngularBand.setSelected(false);
+                    if (currentProduct.getName().contains("SPEXONE")) {
+                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+                            availableAngularBand.setSelected(true);
+                        }
+                    }
+                    if (currentProduct.getName().contains("HARP2")) {
+                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+                            availableAngularBand.setSelected(true);
+                        }
                     }
                     final int angularViewIndex = autoGrouping.indexOf(bandName);
                     if (angularViewIndex != -1) {
