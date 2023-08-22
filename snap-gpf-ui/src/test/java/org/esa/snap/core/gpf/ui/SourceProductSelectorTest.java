@@ -17,7 +17,7 @@
 package org.esa.snap.core.gpf.ui;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.test.LongTestRunner;
+import com.bc.ceres.test.LongTestRunner;
 import org.esa.snap.ui.DefaultAppContext;
 import org.junit.Assert;
 import org.junit.Assume;
