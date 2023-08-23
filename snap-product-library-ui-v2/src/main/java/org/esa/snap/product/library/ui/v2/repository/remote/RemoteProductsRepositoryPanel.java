@@ -249,12 +249,7 @@ public class RemoteProductsRepositoryPanel extends AbstractProductsRepositoryPan
     }
 
     public void updateInputParameterValues(String missionName, LocalDateTime startDate, LocalDateTime endDate, Rectangle2D.Double areaOfInterestToSelect) {
-        this.missionsComboBox.removeItemListener(this.missionItemListener);
-        try {
-            this.missionsComboBox.setSelectedItem(missionName);
-        } finally {
-            this.missionsComboBox.addItemListener(this.missionItemListener);
-        }
+        this.missionsComboBox.setSelectedItem(missionName);
         for (AbstractParameterComponent<?> inputParameterComponent : this.parameterComponents) {
             switch (inputParameterComponent.getParameterName()) {
                 case RepositoryQueryParameter.FOOTPRINT:
