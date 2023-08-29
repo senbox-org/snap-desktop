@@ -54,6 +54,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
     Property restoreDefaults;
     Property orientationComboBoxProperty;
     Property labelValuesModeProperty;
+    Property imageScalingApplyProperty;
 
 
     boolean propertyValueChangeEventsEnabled = true;
@@ -124,7 +125,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY, true);
-        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+//        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        imageScalingApplyProperty = initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT);
@@ -261,6 +263,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
         });
 
 
+        // Handle handleImageScalingEnablement enablement events -
+        imageScalingApplyProperty.addPropertyChangeListener(evt -> {
+            handleImageScalingEnablement(context);
+        });
 
 
 
@@ -366,6 +372,16 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+    private void handleImageScalingEnablement(BindingContext context) {
+
+        String mode = imageScalingApplyProperty.getValue();
+
+        if (ColorBarLayerType.SCENE_SCALING_OFF.equals(mode)) {
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, false);
+        } else {
+            context.setComponentsEnabled(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, true);
+        }
+    }
 
 
     /**
@@ -385,9 +401,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
         // Image Scaling Section
-        context.bindEnabledState(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY);
+//        context.bindEnabledState(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY, ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY);
         context.bindEnabledState(ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY, ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY);
 
+        handleImageScalingEnablement(context);
 
         // Title Section
         context.bindEnabledState(ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY, ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY);
@@ -1046,8 +1063,11 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
                 key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP)
-        boolean applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP,
+                valueSet = {ColorBarLayerType.SCENE_SCALING_OFF,
+                        ColorBarLayerType.SCENE_SCALING_LENGTH,
+                        ColorBarLayerType.SCENE_SCALING_WIDTH})
+        String applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL + " (LAYER ONLY)",
                 key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,

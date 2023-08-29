@@ -69,6 +69,7 @@ import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
+import org.esa.snap.core.layer.MetaDataLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
@@ -135,6 +136,7 @@ public class ProductSceneView extends BasicView
     public static final String VECTOR_DATA_LAYER_ID = VectorDataCollectionLayer.ID;
     public static final String MASKS_LAYER_ID = MaskCollectionLayer.ID;
     public static final String GRATICULE_LAYER_ID = "org.esa.snap.layers.graticule";
+    public static final String METADATA_LAYER_ID = "org.esa.snap.layers.metadata";
     public static final String COLORBAR_LAYER_ID = "org.esa.snap.layers.colorbar";
 
     /**
@@ -575,6 +577,16 @@ public class ProductSceneView extends BasicView
         return getSceneImage().getBaseImageLayer();
     }
 
+    public boolean isMetaDataOverlayEnabled() {
+        final MetaDataLayer metadataLayer = getMetaDataLayer(false);
+        return metadataLayer != null && metadataLayer.isVisible();
+    }
+
+    public void setMetaDataOverlayEnabled(boolean enabled) {
+        if (isMetaDataOverlayEnabled() != enabled) {
+            getMetaDataLayer(true).setVisible(enabled);
+        }
+    }
     public boolean isGraticuleOverlayEnabled() {
         final GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         return graticuleLayer != null && graticuleLayer.isVisible();
@@ -733,6 +745,10 @@ public class ProductSceneView extends BasicView
         Layer collectionLayer = getVectorDataCollectionLayer(false);
         if (collectionLayer != null) {
             ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
+        }
+        MetaDataLayer metaDataLayer = getMetaDataLayer(false);
+        if (metaDataLayer != null) {
+            ProductSceneImage.applyMetaDataLayerStyle(configuration, metaDataLayer);
         }
         GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         if (graticuleLayer != null) {
@@ -1269,6 +1285,9 @@ public class ProductSceneView extends BasicView
         return getSceneImage().getMaskCollectionLayer(create);
     }
 
+    private MetaDataLayer getMetaDataLayer(boolean create) {
+        return getSceneImage().getMetaDataLayer(create);
+    }
     private GraticuleLayer getGraticuleLayer(boolean create) {
         return getSceneImage().getGraticuleLayer(create);
     }

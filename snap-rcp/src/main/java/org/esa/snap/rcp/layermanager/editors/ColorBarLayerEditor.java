@@ -18,11 +18,17 @@ package org.esa.snap.rcp.layermanager.editors;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.grender.Rendering;
+import com.bc.ceres.grender.support.BufferedImageRendering;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.layer.ColorBarLayerType;
+import org.esa.snap.core.layer.MetaDataLayerType;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 import static org.esa.snap.core.layer.ColorBarLayerType.*;
 
@@ -45,6 +51,20 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         context = getBindingContext();
 
 
+        Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        ArrayList<String> fontNames = new ArrayList<String>();
+        for (Font font: fonts) {
+            font.getName();
+            if (font.getName() != null && font.getName().length() > 0) {
+                fontNames.add(font.getName());
+            }
+        }
+        String[] fontNameArray = new String[fontNames.size()];
+        fontNameArray =  fontNames.toArray(fontNameArray);
+
+        final Rendering rendering = new BufferedImageRendering(16, 16);
+        final Graphics2D g2d = rendering.getGraphics();
+        Font defaultFont = g2d.getFont();
 //        addSchemeLabelsRestrictCheckbox();
 
         // Title Section
@@ -108,7 +128,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addTitleShow();
         addTitleFontBold();
         addTitleFontItalic();
-        addTitleFontName();
+        addTitleFontName(fontNameArray, defaultFont);
         addTitleFontColor();
 
 
@@ -800,6 +820,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
     private void  addImageScaling() {
         PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TYPE);
+        pd.setValueSet(new ValueSet(ColorBarLayerType.getScalingOptionsArray()));
         pd.setDefaultValue(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
         pd.setDisplayName(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL);
         pd.setDescription(ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP);
@@ -810,7 +831,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
     private void  addImageScalingPercent() {
-        boolean enabled = configuration.getPropertyBool(PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        String scalingApplySize = configuration.getPropertyString(PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT);
+        boolean enabled = (!SCENE_SCALING_OFF.equals(scalingApplySize)) ? true : false;
 
         PropertyDescriptor pd = new PropertyDescriptor(ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
                 ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TYPE);
@@ -822,7 +844,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
 
-        context.bindEnabledState(PROPERTY_IMAGE_SCALING_SIZE_KEY, PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY);
+        context.bindEnabledState(PROPERTY_IMAGE_SCALING_SIZE_KEY, false,
+                PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY, SCENE_SCALING_OFF);
     }
 
 
@@ -935,14 +958,27 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-    private void  addTitleFontName() {
+    private void  addTitleFontName(String[] fontNameArray, Font defaultFont) {
         boolean enabled = configuration.getPropertyBool(PROPERTY_TITLE_SHOW_KEY, PROPERTY_TITLE_SHOW_DEFAULT);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_NAME_KEY, PROPERTY_TITLE_FONT_NAME_TYPE);
+        boolean fontExists = false;
+        for (String font : fontNameArray) {
+            if (MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT.equals(font)) {
+                fontExists = true;
+                break;
+            }
+        }
+        if (fontExists) {
+            pd.setDefaultValue(MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT);
+        } else {
+            pd.setDefaultValue(defaultFont.toString());
+        }
         pd.setDefaultValue(PROPERTY_TITLE_FONT_NAME_DEFAULT);
         pd.setDisplayName(PROPERTY_TITLE_FONT_NAME_LABEL);
         pd.setDescription(PROPERTY_TITLE_FONT_NAME_TOOLTIP);
-        pd.setValueSet(new ValueSet(PROPERTY_TITLE_FONT_NAME_VALUE_SET));
+        pd.setValueSet(new ValueSet(fontNameArray));
+//        pd.setValueSet(new ValueSet(PROPERTY_TITLE_FONT_NAME_VALUE_SET));
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);

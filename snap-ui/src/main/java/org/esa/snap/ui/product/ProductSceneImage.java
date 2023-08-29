@@ -41,6 +41,8 @@ import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
 import org.esa.snap.core.layer.MaskLayerType;
+import org.esa.snap.core.layer.MetaDataLayer;
+import org.esa.snap.core.layer.MetaDataLayerType;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.layer.RasterImageLayerType;
@@ -195,6 +197,14 @@ public class ProductSceneImage implements ProductLayerContext {
         return layer;
     }
 
+    MetaDataLayer getMetaDataLayer(boolean create) {
+        MetaDataLayer layer = (MetaDataLayer) getLayer(ProductSceneView.METADATA_LAYER_ID);
+        if (layer == null && create) {
+            layer = createMetaDataLayer(getImageToModelTransform());
+            addLayer(0, layer);
+        }
+        return layer;
+    }
     GraticuleLayer getGraticuleLayer(boolean create) {
         GraticuleLayer layer = (GraticuleLayer) getLayer(ProductSceneView.GRATICULE_LAYER_ID);
         if (layer == null && create) {
@@ -402,6 +412,334 @@ public class ProductSceneImage implements ProductLayerContext {
 */
     }
 
+    private MetaDataLayer createMetaDataLayer(AffineTransform i2mTransform) {
+        final LayerType layerType = LayerTypeRegistry.getLayerType(MetaDataLayerType.class);
+        final PropertySet template = layerType.createLayerConfig(null);
+        template.setValue(MetaDataLayerType.PROPERTY_NAME_RASTER, getRaster());
+        final MetaDataLayer metadataLayer = (MetaDataLayer) layerType.createLayer(null, template);
+        metadataLayer.setId(ProductSceneView.METADATA_LAYER_ID);
+        metadataLayer.setVisible(false);
+        metadataLayer.setName("Annotation Metadata");
+        applyMetaDataLayerStyle(configuration, metadataLayer);
+        return metadataLayer;
+    }
+
+
+
+    static void applyMetaDataLayerStyle(PropertyMap configuration, Layer layer) {
+        final PropertySet layerConfiguration = layer.getConfiguration();
+
+
+
+
+        // Parameters Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_SECTION_KEY);
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_SHOW_TYPE);
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_TYPE);
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TYPE);
+
+
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TYPE);
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TYPE);
+
+
+        // Footer2 Section
+
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_TYPE);
+
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_GAP_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_GAP_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_GAP_TYPE);
+
+
+        // Header Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_KEY);
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_LOCATION_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_LOCATION_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_LOCATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_GAP_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_GAP_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_GAP_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_TYPE);
+
+
+
+        // Footer Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_GAP_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_GAP_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_TYPE);
+
+
+
+        // Footer2 Format Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FORMATTING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_SIZE_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_SIZE_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_COLOR_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_COLOR_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_COLOR_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_STYLE_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_STYLE_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_STYLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_ITALIC_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_ITALIC_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_ITALIC_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_BOLD_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_BOLD_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_FONT_BOLD_TYPE);
+
+
+        // My Info Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MY_INFO_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD1_KEY,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD1_DEFAULT,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD1_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD2_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD3_KEY,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD3_DEFAULT,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD3_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD4_KEY,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD4_DEFAULT,
+                MetaDataLayerType.PROPERTY_MY_INFO_TEXTFIELD4_TYPE);
+
+
+
+    }
     private GraticuleLayer createGraticuleLayer(AffineTransform i2mTransform) {
         final LayerType layerType = LayerTypeRegistry.getLayerType(GraticuleLayerType.class);
         final PropertySet template = layerType.createLayerConfig(null);

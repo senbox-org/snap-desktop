@@ -347,7 +347,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
                 imageLegend.setLayerScaling(100.0);
 
-                imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
+                imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth, true, false);
 
                 imageLegend.setDistributionType(distributionTypeOriginal);
             }
@@ -482,7 +482,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         useLegendWidth = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
         legendWidth = (Integer) legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).getValue();
-        return imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
+        return imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth, true, false);
     }
 
     @Override
@@ -913,7 +913,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
                 useLegendWidth = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
                 legendWidth = (Integer) legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).getValue();
-                imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth);
+                imageLegend.createImage(new Dimension(legendWidth, legendWidth), useLegendWidth, true, false);
             }
 
             updateEnablement();
@@ -2179,7 +2179,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             imageLegend.setLayerScaling(70.0);  // preview will be 70% of screen width
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-            final BufferedImage image = imageLegend.createImage(screenSize, true);
+            final BufferedImage image = imageLegend.createImage(screenSize, true, true, false);
             imageLegend.setLayerScaling(scalingOriginal);
 
             final JLabel imageDisplay = new JLabel(new ImageIcon(image));
