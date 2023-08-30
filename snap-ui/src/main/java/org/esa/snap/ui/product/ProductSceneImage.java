@@ -759,229 +759,230 @@ public class ProductSceneImage implements ProductLayerContext {
         // Added multiple new properties here
         // Daniel Knowles - Sept 2018
 
-        // Added section break properties
 
-//        layerConfiguration.setValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                configuration.getPropertyInt(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
-//                        GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT));
 
+
+        // Grid Spacing Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                                               GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME);
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRID_SPACING_LON_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
                 GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT,
                 GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TYPE);
 
-
-        // Grid Spacing Section
-
-        addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME);
-
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRID_SPACING_LON_TYPE);
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_TYPE);
 
 
         // Labels Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME);
+                                               GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_NORTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_NORTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_SOUTH_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_SOUTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_SOUTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_SOUTH_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_SOUTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_SOUTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_WEST_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_WEST_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_WEST_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_WEST_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_WEST_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_WEST_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_EAST_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_EAST_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_EAST_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_EAST_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_EAST_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_EAST_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_INSIDE_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_INSIDE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_ITALIC_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_ITALIC_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_BOLD_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_BOLD_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_FONT_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_FONT_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_FONT_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_FONT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_SIZE_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_SIZE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
-                GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT,
-                GraticuleLayerType.PROPERTY_LABELS_COLOR_TYPE);
+                                        GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
+                                        GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_LABELS_COLOR_TYPE);
 
 
         // Gridlines Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_NAME);
+                                               GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME,
-                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_TYPE);
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_NAME,
-                GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_NAME,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_WIDTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME,
-                GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TYPE);
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_NAME,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_DASHED_PHASE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME,
-                GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TYPE);
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_NAME,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_TRANSPARENCY_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_NAME,
-                GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT,
-                GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_TYPE);
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_NAME,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_GRIDLINES_COLOR_TYPE);
 
 
         // Border Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_BORDER_SECTION_NAME);
+                                               GraticuleLayerType.PROPERTY_BORDER_SECTION_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME,
-                GraticuleLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
-                GraticuleLayerType.PROPERTY_BORDER_SHOW_TYPE);
+                                        GraticuleLayerType.PROPERTY_BORDER_SHOW_NAME,
+                                        GraticuleLayerType.PROPERTY_BORDER_SHOW_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_BORDER_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_BORDER_WIDTH_NAME,
-                GraticuleLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_BORDER_WIDTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_BORDER_WIDTH_NAME,
+                                        GraticuleLayerType.PROPERTY_BORDER_WIDTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_BORDER_WIDTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_BORDER_COLOR_NAME,
-                GraticuleLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
-                GraticuleLayerType.PROPERTY_BORDER_COLOR_TYPE);
+                                        GraticuleLayerType.PROPERTY_BORDER_COLOR_NAME,
+                                        GraticuleLayerType.PROPERTY_BORDER_COLOR_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_BORDER_COLOR_TYPE);
 
 
         // Tickmarks Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
+                                               GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME,
-                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
-                GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
-                GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
-                GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_NAME,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_INSIDE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_NAME,
-                GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_NAME,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_LENGTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME,
-                GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
-                GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_TYPE);
 
 
         // Corner Labels Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME);
+                                               GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TYPE);
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TYPE);
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TYPE);
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TYPE);
 
 
         // Inside Labels Section
 
         addSectionPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME);
+                                               GraticuleLayerType.PROPERTY_INSIDE_LABELS_SECTION_NAME);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TYPE);
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME,
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
-                GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
+                                        GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
 
 
     }
@@ -1468,19 +1469,19 @@ public class ProductSceneImage implements ProductLayerContext {
 
         if (type == Boolean.class) {
             layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyBool(propertyName, (Boolean) propertyDefault));
+                                        configuration.getPropertyBool(propertyName, (Boolean) propertyDefault));
         } else if (type == Double.class) {
             layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyDouble(propertyName, (Double) propertyDefault));
+                                        configuration.getPropertyDouble(propertyName, (Double) propertyDefault));
         } else if (type == Color.class) {
             layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyColor(propertyName, (Color) propertyDefault));
+                                        configuration.getPropertyColor(propertyName, (Color) propertyDefault));
         } else if (type == Integer.class) {
             layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyInt(propertyName, (Integer) propertyDefault));
+                                        configuration.getPropertyInt(propertyName, (Integer) propertyDefault));
         } else if (type == String.class) {
             layerConfiguration.setValue(propertyName,
-                    configuration.getPropertyString(propertyName, (String) propertyDefault));
+                                        configuration.getPropertyString(propertyName, (String) propertyDefault));
         }
 
     }

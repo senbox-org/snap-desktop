@@ -65,6 +65,22 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(gridSpacingLonPD);
 
 
+        PropertyDescriptor numGridLinesPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, Integer.class);
+        numGridLinesPD.setDefaultValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
+        numGridLinesPD.setValueRange(new ValueRange(0, 40));
+        numGridLinesPD.setDisplayName(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL);
+        numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
+        numGridLinesPD.setDefaultConverter();
+        addPropertyDescriptor(numGridLinesPD);
+
+        PropertyDescriptor numMinorStepsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, Integer.class);
+        numMinorStepsPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
+        numMinorStepsPD.setValueRange(new ValueRange(0, 20));
+        numMinorStepsPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL);
+        numMinorStepsPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP);
+        numMinorStepsPD.setDefaultConverter();
+        addPropertyDescriptor(numMinorStepsPD);
+
         // Labels Section
 
         addSectionBreak(GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME,

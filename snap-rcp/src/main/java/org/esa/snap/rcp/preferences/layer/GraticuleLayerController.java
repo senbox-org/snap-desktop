@@ -88,6 +88,8 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME, GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME, GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
 
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
@@ -420,6 +422,17 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 interval = "[0.00,90.0]")
         double gridSpacingLon = GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT;
 
+        @Preference(label = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL,
+                key = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME,
+                description = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP,
+                interval = "[2,40]")
+        int numGridLines = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL,
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,20]")
+        int minorSteps = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
 
         // Labels Section
 
