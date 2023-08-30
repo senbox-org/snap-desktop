@@ -67,7 +67,9 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.layer.GraticuleLayer;
+import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
+import org.esa.snap.core.layer.MetaDataLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
@@ -124,6 +126,8 @@ import java.util.Vector;
  *
  * @author Norman Fomferra
  */
+// MAY2021 - Daniel Knowles - added mechanisms for Color Bar Legend Layer
+
 public class ProductSceneView extends BasicView
         implements FigureEditorAware, ProductNodeView, PropertyChangeListener, ProductLayerContext, ViewportAware {
 
@@ -132,6 +136,8 @@ public class ProductSceneView extends BasicView
     public static final String VECTOR_DATA_LAYER_ID = VectorDataCollectionLayer.ID;
     public static final String MASKS_LAYER_ID = MaskCollectionLayer.ID;
     public static final String GRATICULE_LAYER_ID = "org.esa.snap.layers.graticule";
+    public static final String METADATA_LAYER_ID = "org.esa.snap.layers.metadata";
+    public static final String COLORBAR_LAYER_ID = "org.esa.snap.layers.colorbar";
 
     /**
      * Property name for the pixel border
@@ -256,7 +262,7 @@ public class ProductSceneView extends BasicView
         figureEditor.addSelectionChangeListener(new PinSelectionChangeListener());
 
         this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN,
-                                                                             false);
+                false);
         if (scrollBarsShown) {
             this.scrollPane = createScrollPane();
             add(scrollPane, BorderLayout.CENTER);
@@ -282,8 +288,8 @@ public class ProductSceneView extends BasicView
         final Layer rootLayer = sceneImage.getRootLayer();
 
         final Set<LayerType> layerTypes = LayerTypeRegistry.getLayerTypes();
-        for (LayerType layerType : layerTypes) {
-            if (layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
+        for(LayerType layerType : layerTypes) {
+            if(layerType.isValidFor(sceneImage) && layerType.createWithSceneView(sceneImage)) {
                 PropertyContainer config = new PropertyContainer();
                 config.addProperty(Property.create("raster", getRaster()));
                 Layer layer = layerType.createLayer(sceneImage, config);
@@ -329,7 +335,7 @@ public class ProductSceneView extends BasicView
 
     private AdjustableViewScrollPane createScrollPane() {
         AbstractButton zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll13.gif"),
-                                                                      false);
+                false);
         zoomAllButton.setFocusable(false);
         zoomAllButton.setFocusPainted(false);
         zoomAllButton.addActionListener(e -> getLayerCanvas().zoomAll());
@@ -571,6 +577,16 @@ public class ProductSceneView extends BasicView
         return getSceneImage().getBaseImageLayer();
     }
 
+    public boolean isMetaDataOverlayEnabled() {
+        final MetaDataLayer metadataLayer = getMetaDataLayer(false);
+        return metadataLayer != null && metadataLayer.isVisible();
+    }
+
+    public void setMetaDataOverlayEnabled(boolean enabled) {
+        if (isMetaDataOverlayEnabled() != enabled) {
+            getMetaDataLayer(true).setVisible(enabled);
+        }
+    }
     public boolean isGraticuleOverlayEnabled() {
         final GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         return graticuleLayer != null && graticuleLayer.isVisible();
@@ -581,6 +597,19 @@ public class ProductSceneView extends BasicView
             getGraticuleLayer(true).setVisible(enabled);
         }
     }
+
+
+    public boolean isColorBarOverlayEnabled() {
+        final ColorBarLayer colorBarLayer = getColorBarLayer(false);
+        return colorBarLayer != null && colorBarLayer.isVisible();
+    }
+
+    public void setColorBarOverlayEnabled(boolean enabled) {
+        if (isColorBarOverlayEnabled() != enabled) {
+            getColorBarLayer(true).setVisible(enabled);
+        }
+    }
+
 
     public boolean isPinOverlayEnabled() {
         Layer pinLayer = getPinLayer(false);
@@ -627,8 +656,8 @@ public class ProductSceneView extends BasicView
         for (VectorDataNode vectorDataNode : vectorDataNodes) {
             final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer vectorDataLayer = LayerUtils.getChildLayer(getRootLayer(),
-                                                             LayerUtils.SEARCH_DEEP,
-                                                             nodeFilter);
+                    LayerUtils.SEARCH_DEEP,
+                    nodeFilter);
             if (vectorDataLayer != null) {
                 vectorDataLayer.setVisible(true);
             }
@@ -657,7 +686,7 @@ public class ProductSceneView extends BasicView
 
             if (layer == null) {
                 layer = LayerUtils.getChildLayer(getRootLayer(), LayerUtils.SearchMode.DEEP,
-                                                 VectorDataLayerFilterFactory.createGeometryFilter());
+                        VectorDataLayerFilterFactory.createGeometryFilter());
             }
             if (layer != null) {
                 final VectorDataLayer vectorDataLayer = (VectorDataLayer) layer;
@@ -717,9 +746,20 @@ public class ProductSceneView extends BasicView
         if (collectionLayer != null) {
             ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
         }
+        MetaDataLayer metaDataLayer = getMetaDataLayer(false);
+        if (metaDataLayer != null) {
+            ProductSceneImage.applyMetaDataLayerStyle(configuration, metaDataLayer);
+        }
         GraticuleLayer graticuleLayer = getGraticuleLayer(false);
         if (graticuleLayer != null) {
             ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
+        }
+
+        ColorBarLayer colorBarLayer = getColorBarLayer(false);
+
+
+        if (colorBarLayer != null) {
+            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
         }
     }
 
@@ -773,8 +813,8 @@ public class ProductSceneView extends BasicView
     public VectorDataLayer selectVectorDataLayer(VectorDataNode vectorDataNode) {
         LayerFilter layerFilter = new VectorDataLayerFilter(vectorDataNode);
         VectorDataLayer layer = (VectorDataLayer) LayerUtils.getChildLayer(getRootLayer(),
-                                                                           LayerUtils.SEARCH_DEEP,
-                                                                           layerFilter);
+                LayerUtils.SEARCH_DEEP,
+                layerFilter);
         if (layer != null) {
             setSelectedLayer(layer);
         }
@@ -1103,8 +1143,8 @@ public class ProductSceneView extends BasicView
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
                 final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
-                                                                                                  color, expression, true,
-                                                                                                  getBaseImageLayer().getImageToModelTransform());
+                        color, expression, true,
+                        getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
@@ -1136,11 +1176,11 @@ public class ProductSceneView extends BasicView
          */
         public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, Product[] products) {
             super(name,
-                  ProductData.TYPE_FLOAT32,
-                  width,
-                  height,
-                  expression);
-            if (products == null || products.length == 0) {
+                    ProductData.TYPE_FLOAT32,
+                    width,
+                    height,
+                    expression);
+            if(products == null || products.length == 0) {
                 deriveRasterPropertiesFromExpression(expression, product);
             } else {
                 deriveRasterPropertiesFromExpression(expression, products);
@@ -1245,8 +1285,15 @@ public class ProductSceneView extends BasicView
         return getSceneImage().getMaskCollectionLayer(create);
     }
 
+    private MetaDataLayer getMetaDataLayer(boolean create) {
+        return getSceneImage().getMetaDataLayer(create);
+    }
     private GraticuleLayer getGraticuleLayer(boolean create) {
         return getSceneImage().getGraticuleLayer(create);
+    }
+
+    private ColorBarLayer getColorBarLayer(boolean create) {
+        return getSceneImage().getColorBarLayer(create);
     }
 
     private Layer getPinLayer(boolean create) {

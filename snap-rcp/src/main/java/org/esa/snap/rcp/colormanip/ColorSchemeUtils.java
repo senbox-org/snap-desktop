@@ -45,7 +45,8 @@ public class ColorSchemeUtils {
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
         if (configuration != null && configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT)) {
-            ColorSchemeInfo colorSchemeInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
+            String bandName = productSceneView.getBaseImageLayer().getName().trim();
+            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName);
 
             if (colorSchemeInfo != null) {
                 imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, productSceneView);
@@ -242,24 +243,24 @@ public class ColorSchemeUtils {
     }
 
 
-    public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
-
-        ColorSchemeManager colorSchemeManager = ColorSchemeManager.getDefault();
-        if (colorSchemeManager != null) {
-
-            String bandName = productSceneView.getBaseImageLayer().getName().trim();
-            bandName = bandName.substring(bandName.indexOf(" ")).trim();
-
-            ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = colorSchemeManager.getColorSchemeLookupInfos();
-            for (ColorSchemeLookupInfo colorSchemeLookupInfo : colorSchemeLookupInfos) {
-                if (colorSchemeLookupInfo.isMatch(bandName)) {
-                    return colorSchemeManager.getColorSchemeInfoBySchemeId(colorSchemeLookupInfo.getScheme_id());
-                }
-            }
-        }
-
-        return null;
-    }
+//    public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
+//
+//        ColorSchemeManager colorSchemeManager = ColorSchemeManager.getDefault();
+//        if (colorSchemeManager != null) {
+//
+//            String bandName = productSceneView.getBaseImageLayer().getName().trim();
+//            bandName = bandName.substring(bandName.indexOf(" ")).trim();
+//
+//            ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = colorSchemeManager.getColorSchemeLookupInfos();
+//            for (ColorSchemeLookupInfo colorSchemeLookupInfo : colorSchemeLookupInfos) {
+//                if (colorSchemeLookupInfo.isMatch(bandName)) {
+//                    return colorSchemeManager.getColorSchemeInfoBySchemeId(colorSchemeLookupInfo.getScheme_id());
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
 
     public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo, ColorPaletteDef colorPaletteDef) {
