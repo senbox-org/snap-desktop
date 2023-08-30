@@ -70,7 +70,7 @@
     <mapID target="exportMaskPixels" url="desktop/ExportMaskPixels.html"/>
     <mapID target="exportTransectPixels" url="desktop/ExportTransectPixels.html"/>
     <mapID target="exportShapefile" url="desktop/ExportShapefile.html"/>
-    <mapID target="exportLegendImageFile" url="desktop/ExportColorLegend.html"/>
+    <mapID target="exportLegendImageFile" url="desktop/ColorBarLegend.html"/>
     <mapID target="exportColorPalette" url="desktop/ExportColorPalette.html"/>
     <mapID target="preferences" url="desktop/PreferencesDialog.html"/>
     <mapID target="imageView" url="desktop/ProductSceneView.html"/>
@@ -86,6 +86,8 @@
     <mapID target="showMaskManagerWnd" url="desktop/MaskManagement.html"/>
     <mapID target="noDataOverlay" url="desktop/NoDataOverlay.html"/>
     <mapID target="graticuleOverlay" url="desktop/ShowGraticuleOverlay.html"/>
+    <mapID target="colorBarLegend" url="desktop/ColorBarLegend.html"/>
+    <mapID target="colorBarLegendPreferences" url="desktop/ColorBarLegend.html"/>
     <mapID target="noDataValue" url="desktop/NoDataValue.html"/>
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>
     <mapID target="geoCodingInfoDialog" url="desktop/GeoCodingInfo.html"/>
@@ -114,6 +116,7 @@
     <mapID target="options-uibehavior" url="desktop/OptionsDialog.html#uibehavior"/>
     <mapID target="options-gdalLibraryLoader" url="desktop/OptionsDialog.html#GDALLibraryLoaderConfig"/>
     <mapID target="options-graticulelayer" url="desktop/OptionsDialog.html#graticulelayer"/>
+    <mapID target="options-metadatalayer" url="desktop/OptionsDialog.html#metadatalayer"/>
     <mapID target="options-imagelayer" url="desktop/OptionsDialog.html#imagelayer"/>
     <mapID target="options-nodatalayer" url="desktop/OptionsDialog.html#nodatalayer"/>
     <mapID target="options-worldmaplayer" url="desktop/OptionsDialog.html#worldmaplayer"/>
