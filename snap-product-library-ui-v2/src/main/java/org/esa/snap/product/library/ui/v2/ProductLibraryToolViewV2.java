@@ -76,7 +76,6 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.geometry.AbstractGeometry2D;
 import org.esa.snap.ui.AppContext;
-import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
@@ -85,6 +84,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -122,6 +122,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,7 +142,7 @@ import static java.lang.Math.min;
 )
 @TopComponent.Registration(
         mode = "rightSlidingSide",
-        openAtStartup = true,
+        openAtStartup = PackageDefaults.PRODUCT_LIBRARY_OPEN,
         position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2")
@@ -407,7 +409,8 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         ActionListener searchButtonListener = e -> searchButtonPressed();
         ActionListener stopDownloadingProductListButtonListener = e -> cancelSearchingProductList();
         ActionListener helpButtonListener = e -> {
-            HelpDisplayer.show(HELP_ID);
+            HelpCtx helpCtx = new HelpCtx(HELP_ID);
+            helpCtx.display();
         };
 
         String text = DownloadProductListTimerRunnable.buildProgressBarDownloadingText(1000, 1000);
@@ -1243,7 +1246,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     if (remoteMission == null) {
                         throw new NullPointerException("The remote mission is missing.");
                     }
-                    LocalDateTime acquisitionDate = selectedProducts[0].getAcquisitionDate();
+                    Date acquisitionDate = selectedProducts[0].getAcquisitionDate();
                     if (acquisitionDate == null) {
                         throw new NullPointerException("The product acquisition date is missing.");
                     }
@@ -1255,8 +1258,12 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                         throw new IllegalStateException("The remote products repository '" + remoteMission.getRepositoryName() + "' is missing.");
                     } else {
                         // the remote products repository exists and it is selected
-                        LocalDateTime startDate = acquisitionDate.minusDays(7); // one week ago
-                        LocalDateTime endDate = acquisitionDate.plusDays(14);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(acquisitionDate);
+                        calendar.add(Calendar.DAY_OF_MONTH, -7); // one week ago
+                        Date startDate = new Date(calendar.getTimeInMillis());
+                        calendar.add(Calendar.DAY_OF_MONTH, 14);
+                        Date endDate = new Date(calendar.getTimeInMillis());
 
                         Rectangle2D.Double areaOfInterestToSelect = null;
                         if (selectedProducts[0].getPolygon() != null) {
