@@ -30,6 +30,7 @@
             </folder>
         </folder>
 
+
         <folder name="Edit">
             <attr name="position" intvalue="200"/>
             <!--A CallbackSystemAction, allows to search for something (e.g. in text files), Only enabled if key is mapped to an implementation -->
@@ -70,6 +71,9 @@
                 <attr name="position" intvalue="200"/>
             </file>
         </folder>
+
+
+
 
         <folder name="Analysis">
             <attr name="position" intvalue="400"/>
@@ -182,36 +186,115 @@
         <file name="Standard.xml" url="toolbars/Standard.xml"/>
         <file name="Developer.xml" url="toolbars/Developer.xml"/>
 
-        <folder name="File"> <!-- defined by NetBeans -->
+        <folder name="Analysis">
             <attr name="position" intvalue="100"/>
         </folder>
+
+        <folder name="Angular">
+            <attr name="position" intvalue="150"/>
+        </folder>
+
         <folder name="Clipboard"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="200"/>
         </folder>
-        <folder name="UndoRedo"> <!-- defined by NetBeans -->
+
+        <folder name="File"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="300"/>
         </folder>
-        <folder name="Analysis">
-            <attr name="position" intvalue="400"/>
-        </folder>
-        <folder name="Overlay">
-            <attr name="position" intvalue="500"/>
-        </folder>
-        <folder name="Processing">
+
+        <folder name="Geometry">
             <attr name="position" intvalue="600"/>
         </folder>
-        <folder name="Tools">
-            <attr name="position" intvalue="700"/>
+
+        <folder name="Geometry Shapes">
+            <attr name="position" intvalue="603"/>
         </folder>
+
+        <folder name="Geometry Lines">
+            <attr name="position" intvalue="605"/>
+        </folder>
+
+        <folder name="GPT Processing">
+            <attr name="position" intvalue="610"/>
+        </folder>
+
+        <folder name="Ground Control Points">
+            <attr name="position" intvalue="615"/>
+        </folder>
+
+        <folder name="Image">
+            <attr name="position" intvalue="620"/>
+        </folder>
+
+        <folder name="Info">
+            <attr name="position" intvalue="625"/>
+        </folder>
+
+        <folder name="Interactors">
+            <attr name="position" intvalue="630"/>
+        </folder>
+
+
+
+        <folder name="Memory">
+            <attr name="position" intvalue="640"/>
+        </folder>
+
+        <folder name="Miscellaneous">
+            <attr name="position" intvalue="645"/>
+        </folder>
+
+
+        <folder name="Optical">
+            <attr name="position" intvalue="648"/>
+        </folder>
+
+        <folder name="Overlay">
+            <attr name="position" intvalue="650"/>
+        </folder>
+
+        <folder name="Pins">
+            <attr name="position" intvalue="655"/>
+        </folder>
+
+
+        <!--        <folder name="Processing">-->
+        <!--            <attr name="position" intvalue="600"/>-->
+        <!--        </folder>-->
+
+        <folder name="Projects">
+            <attr name="position" intvalue="660"/>
+        </folder>
+
+
+        <folder name="Radar Tool Windows">
+            <attr name="position" intvalue="665"/>
+        </folder>
+
+        <folder name="Raster">
+            <attr name="position" intvalue="670"/>
+        </folder>
+
+        <folder name="SeaDAS Toolbox">
+            <attr name="position" intvalue="635"/>
+        </folder>
+
         <folder name="Tool Windows">
-            <attr name="position" intvalue="800"/>
+            <attr name="position" intvalue="675"/>
         </folder>
-        <folder name="Window Arrangement"> <!-- defined by tiled-editors -->
-            <attr name="position" intvalue="1500"/>
+
+        <folder name="UndoRedo"> <!-- defined by NetBeans -->
+            <attr name="position" intvalue="677"/>
         </folder>
-        <folder name="Memory"> <!-- defined by NetBeans -->
-            <attr name="position" intvalue="1600"/>
+
+        <folder name="Window Arrangement">
+            <attr name="position" intvalue="680"/>
         </folder>
+
+
+        <!--<folder name="Tools">-->
+        <!--<attr name="position" intvalue="700"/>-->
+        <!--</folder>-->
     </folder>
 
     <!--
@@ -395,16 +478,16 @@
         <file name="General.instance_hidden"/>
         <file name="Advanced.instance_hidden"/>
 
-            <file name="Proxy.instance">
-                <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
-                <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
-                <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
-                <attr intvalue="4" name="position"/>
-                <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
-                <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
-            </file>
+        <file name="Proxy.instance">
+            <attr methodvalue="org.netbeans.spi.options.OptionsCategory.createCategory" name="instanceCreate"/>
+            <attr name="controller" newvalue="org.netbeans.core.ui.options.general.GeneralOptionsPanelController"/>
+            <!--<attr bundlevalue="org.netbeans.core.ui.options.general.Bundle#CTL_General_Options" name="categoryName"/>-->
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsTabName" name="categoryName"/>
+            <attr intvalue="4" name="position"/>
+            <attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/www_32x32.png"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKW" name="keywords"/>
+            <attr bundlevalue="org.esa.snap.rcp.Bundle#ProxyOptionsKWCategory" name="keywordsCategory"/>
+        </file>
 
         <!--<file name="Advanced.instance_hidden"/>-->
 

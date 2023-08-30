@@ -72,10 +72,7 @@ import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.ui.BasicView;
-import org.esa.snap.ui.PixelPositionListener;
-import org.esa.snap.ui.PopupMenuHandler;
-import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.*;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
@@ -164,7 +161,7 @@ public class ProductSceneView extends BasicView
      * Name of property of selected pin
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
-    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = PackageDefaults.IMAGE_BACKGROUND_COLOR;
 
 
     private ProductSceneImage sceneImage;
