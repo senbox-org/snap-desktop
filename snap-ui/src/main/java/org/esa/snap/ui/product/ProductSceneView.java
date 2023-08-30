@@ -149,6 +149,19 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
+    /**
+     * Name of properties which zoom the view when opening a band view window.
+     */
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL = "image.zoom.initial";
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.75;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_WIDE = "image.zoom.initial.wide.scene";
+    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 0.9;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_TALL = "image.zoom.initial.tall.scene";
+    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 0.9;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE = "image.zoom.initial.aspect.wide";
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 1.2;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL = "image.zoom.initial.aspect.tall";
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT = 0.8;
 
     /**
      * Name of property of image info
@@ -229,6 +242,28 @@ public class ProductSceneView extends BasicView
 
         final Layer rootLayer = sceneImage.getRootLayer();
         this.layerCanvas = new LayerCanvas(rootLayer, viewport);
+
+        final double zoomInitial = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL, PREFERENCE_ZOOM_INITIAL_DEFAULT);
+        this.layerCanvas.setZoomInitial(zoomInitial);
+
+        final double zoomInitialWide = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_WIDE, PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT);
+        this.layerCanvas.setZoomInitialWide(zoomInitialWide);
+
+        final double zoomInitialTall = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_TALL, PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT);
+        this.layerCanvas.setZoomInitialTall(zoomInitialTall);
+
+        final double zoomInitialAspectWide = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE, PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT);
+        this.layerCanvas.setZoomInitialAspectWide(zoomInitialAspectWide);
+
+        final double zoomInitialAspectTall = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL, PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT);
+        this.layerCanvas.setZoomInitialAspectTall(zoomInitialAspectTall);
+
+
         rootLayer.addListener(new AbstractLayerListener() {
             @Override
             public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
