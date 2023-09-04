@@ -42,10 +42,11 @@ public class DateParameterComponent extends AbstractParameterComponent<LocalDate
     public void setParameterValue(Object value) {
         if (value == null) {
             clearParameterValue();
-        } else if (value instanceof Date) {
-            this.datePickerComboBox.setDate((Date)value);
+        } else if (value instanceof LocalDateTime) {
+            final LocalDateTime localDateTime = (LocalDateTime) value;
+            this.datePickerComboBox.setDate(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
         } else {
-            throw new ClassCastException("The parameter value type '" + value + "' must be '" + Date.class+"'.");
+            throw new ClassCastException("The parameter value type '" + value + "' must be '" + LocalDateTime.class+"'.");
         }
     }
 
