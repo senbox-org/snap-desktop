@@ -746,21 +746,21 @@ public class ProductSceneView extends BasicView
         if (collectionLayer != null) {
             ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
         }
-        MetaDataLayer metaDataLayer = getMetaDataLayer(false);
-        if (metaDataLayer != null) {
-            ProductSceneImage.applyMetaDataLayerStyle(configuration, metaDataLayer);
-        }
-        GraticuleLayer graticuleLayer = getGraticuleLayer(false);
-        if (graticuleLayer != null) {
-            ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
-        }
+//        MetaDataLayer metaDataLayer = getMetaDataLayer(false);
+//        if (metaDataLayer != null) {
+//            ProductSceneImage.applyMetaDataLayerStyle(configuration, metaDataLayer);
+//        }
+//        GraticuleLayer graticuleLayer = getGraticuleLayer(false);
+//        if (graticuleLayer != null) {
+//            ProductSceneImage.applyGraticuleLayerStyle(configuration, graticuleLayer);
+//        }
+//
+//        ColorBarLayer colorBarLayer = getColorBarLayer(false);
+//
 
-        ColorBarLayer colorBarLayer = getColorBarLayer(false);
-
-
-        if (colorBarLayer != null) {
-            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
-        }
+//        if (colorBarLayer != null) {
+//            ProductSceneImage.applyColorBarLayerStyle(configuration, colorBarLayer, getImageInfo());
+//        }
     }
 
     /**

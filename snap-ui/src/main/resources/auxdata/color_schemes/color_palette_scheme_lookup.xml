@@ -121,6 +121,18 @@
   <!--  END   Standard IOP Suites -->
 
 
+  <!--  START   PACE HARP  -->
+
+
+  <KEY REGEX="I_(.+)_(.+)">
+    <MISSION>HARP2</MISSION>
+    <SCHEME_ID>I_angle_wave</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <!--  END   PACE HARP  -->
+
+
 
 
   <!--  START   Miscellaneous -->

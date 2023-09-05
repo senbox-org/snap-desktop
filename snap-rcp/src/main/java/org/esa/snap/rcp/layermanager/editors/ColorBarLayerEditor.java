@@ -104,6 +104,12 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addReversePalette();
 
 
+
+        // Color Bar Scaling Section
+        addSizeScalingSectionBreak();
+        addImageScaling();
+        addImageScalingPercent();
+
         // Color Bar Location Section
         addLocationSectionBreak();
         addLocationInside();
@@ -185,10 +191,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addBackdropColor();
 
 
-        // Color Bar Scaling Section
-        addSizeScalingSectionBreak();
-        addImageScaling();
-        addImageScalingPercent();
 
 
 

@@ -24,6 +24,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.param.*;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -394,15 +395,26 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         boolean schemeLabelsApply = configuration.getPropertyBool(ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
                 ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_DEFAULT);
 
+        String unitsNullValue = configuration.getPropertyString(ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT);
+
         String description = raster.getDescription();
         String bandname = raster.getName();
         String units = raster.getUnit();
+        if (units == null) {
+            units = unitsNullValue;
+        }
         float wavelength = raster.getProduct().getBand(raster.getName()).getSpectralWavelength();
+        float angle = raster.getProduct().getBand(raster.getName()).getAngularValue();
         boolean allowWavelengthZero = true;
 
         if (autoApplySchemes || schemeLabelsApply) {
             String bandName = view.getBaseImageLayer().getName().trim();
-            ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName);
+            String mission = ProductUtils.getMetaData(raster.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
+            if (mission == null || mission.length() == 0) {
+                mission = raster.getProduct().getProductType();
+            }
+            ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, mission);
 
 //        if (!legendInitialized) {
             if (autoApplySchemes) {//auto-apply
@@ -448,16 +460,16 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
             }
 
-            String convertedTitle = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleText(), bandname, description, wavelength, units, allowWavelengthZero);
+            String convertedTitle = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
             imageLegend.setTitle(convertedTitle);
 
-            String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, units, allowWavelengthZero);
+            String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
             imageLegend.setTitleAlt(convertedTitleAlt);
 
-            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, units, allowWavelengthZero);
+            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
             imageLegend.setUnits(convertedUnits);
 
-            String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, units, allowWavelengthZero);
+            String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
             imageLegend.setUnitsAlt(convertedUnitsAlt);
 
 
