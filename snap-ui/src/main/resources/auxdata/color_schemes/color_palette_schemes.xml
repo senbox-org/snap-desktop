@@ -42,7 +42,7 @@
         <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Chlorophyll [i]a[/i] Concentration</COLORBAR_TITLE>
-<!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
+        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
         <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
     </Scheme>
@@ -126,7 +126,6 @@
     </Scheme>
 
 
-
     <Scheme name="Rrs_400_439">
         <PRIMARY>true</PRIMARY>
         <VERBOSE_NAME>Rrs (400-439)</VERBOSE_NAME>
@@ -170,7 +169,21 @@
     <!--  END   Standard OC Suites -->
 
 
+    <!--  START   PACE HARP  -->
 
+    <Scheme name="I_angle_wave">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>0.06</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <COLORBAR_TITLE>Intensity ([ANGLE]°, [WAVELENGTH] nm)</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.0, 0.01,0.02,0.03,0.04,0.05,0.06</COLORBAR_LABELS>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <DESCRIPTION>PACE Intensity</DESCRIPTION>
+    </Scheme>
+
+    <!--  END   PACE HARP  -->
 
 
     <Scheme name="absorption">
@@ -681,7 +694,7 @@
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,40,45</COLORBAR_LABELS>
-<!--        <COLORBAR_LABELS>0:0°,10:10°,20:20°,30:30°,40:40°,45:45°</COLORBAR_LABELS>-->
+        <!--        <COLORBAR_LABELS>0:0°,10:10°,20:20°,30:30°,40:40°,45:45°</COLORBAR_LABELS>-->
 
         <DESCRIPTION>Sea Surface Temperature</DESCRIPTION>
     </Scheme>
@@ -844,17 +857,17 @@
             palette
         </DESCRIPTION>
     </Scheme>
-<!--    <Scheme name="chlor_a_oc">-->
-<!--        <VERBOSE_NAME/>-->
-<!--        <MIN>0.01</MIN>-->
-<!--        <MAX>20.0</MAX>-->
-<!--        <LOG_SCALE>true</LOG_SCALE>-->
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>oceancolor_standard.cpd</UNIVERSAL_FILENAME>-->
-<!--        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>-->
-<!--        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>-->
-<!--        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>-->
-<!--    </Scheme>-->
+    <!--    <Scheme name="chlor_a_oc">-->
+    <!--        <VERBOSE_NAME/>-->
+    <!--        <MIN>0.01</MIN>-->
+    <!--        <MAX>20.0</MAX>-->
+    <!--        <LOG_SCALE>true</LOG_SCALE>-->
+    <!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
+    <!--        <UNIVERSAL_FILENAME>oceancolor_standard.cpd</UNIVERSAL_FILENAME>-->
+    <!--        <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>-->
+    <!--        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>-->
+    <!--        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>-->
+    <!--    </Scheme>-->
     <Scheme name="CI">
         <VERBOSE_NAME>CI (Cyanobacteria Index)</VERBOSE_NAME>
         <MIN>0.0001</MIN>
@@ -866,15 +879,15 @@
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>
     </Scheme>
-<!--    <Scheme name="256PtLinear">-->
-<!--        <VERBOSE_NAME/>-->
-<!--        <MIN>0</MIN>-->
-<!--        <MAX>255</MAX>-->
-<!--        <LOG_SCALE>false</LOG_SCALE>-->
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-<!--        <COLORBAR_TITLE></COLORBAR_TITLE>-->
-<!--        <COLORBAR_LABELS></COLORBAR_LABELS>-->
-<!--        <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>-->
-<!--    </Scheme>-->
+    <!--    <Scheme name="256PtLinear">-->
+    <!--        <VERBOSE_NAME/>-->
+    <!--        <MIN>0</MIN>-->
+    <!--        <MAX>255</MAX>-->
+    <!--        <LOG_SCALE>false</LOG_SCALE>-->
+    <!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
+    <!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+    <!--        <COLORBAR_TITLE></COLORBAR_TITLE>-->
+    <!--        <COLORBAR_LABELS></COLORBAR_LABELS>-->
+    <!--        <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>-->
+    <!--    </Scheme>-->
 </schemeList>

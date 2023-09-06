@@ -670,6 +670,41 @@ public final class ColorBarLayerController extends DefaultConfigController {
         boolean reversePaletteAndLabels = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT;
 
 
+        // Scaling Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
+        boolean sizeScalingSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP,
+                valueSet = {ColorBarLayerType.SCENE_SCALING_OFF,
+                        ColorBarLayerType.SCENE_SCALING_LENGTH,
+                        ColorBarLayerType.SCENE_SCALING_WIDTH})
+        String applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL + " (LAYER ONLY)",
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_INTERVAL)
+        double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
+                key = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP)
+        boolean exportUseLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
+                key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
+        int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
+
+
+
 
 
         // Location
@@ -1053,39 +1088,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         Color backdropColor = ColorBarLayerType.PROPERTY_BACKDROP_COLOR_DEFAULT;
 
 
-
-        // Scaling Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
-        boolean sizeScalingSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP,
-                valueSet = {ColorBarLayerType.SCENE_SCALING_OFF,
-                        ColorBarLayerType.SCENE_SCALING_LENGTH,
-                        ColorBarLayerType.SCENE_SCALING_WIDTH})
-        String applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL + " (LAYER ONLY)",
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_INTERVAL)
-        double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
-
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
-                key = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP)
-        boolean exportUseLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
-                key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
-        int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
 
 
 

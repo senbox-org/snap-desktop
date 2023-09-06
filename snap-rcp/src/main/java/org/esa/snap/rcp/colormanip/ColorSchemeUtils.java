@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Histogram;
@@ -46,7 +47,11 @@ public class ColorSchemeUtils {
 
         if (configuration != null && configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT)) {
             String bandName = productSceneView.getBaseImageLayer().getName().trim();
-            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName);
+            String mission = ProductUtils.getMetaData(productSceneView.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
+            if (mission == null || mission.length() == 0) {
+                mission = productSceneView.getProduct().getProductType();
+            }
+            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, mission);
 
             if (colorSchemeInfo != null) {
                 imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, productSceneView);
