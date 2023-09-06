@@ -17,6 +17,8 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * @author Daniel Knowles
  */
@@ -32,6 +34,7 @@ import org.openide.util.NbBundle;
 })
 public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
+    boolean isSetByThisTool = false;
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayColorBarLayerActionName());
@@ -42,7 +45,12 @@ public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
-        return view.isColorBarOverlayEnabled();
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
+            return view.isColorBarOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -52,6 +60,7 @@ public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setColorBarOverlayEnabled(!getActionSelectionState(view));
     }
 
