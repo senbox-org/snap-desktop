@@ -195,6 +195,8 @@ public class ProductSceneView extends BasicView
     private boolean pixelBorderShown; // can it be shown?
     private boolean pixelBorderDrawn; // has it been drawn?
     private double pixelBorderViewScale;
+
+    boolean softButtonOn = false;
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -610,6 +612,14 @@ public class ProductSceneView extends BasicView
         }
     }
 
+    public boolean isSoftButtonEnabled() {
+        return softButtonOn;
+    }
+
+    public void setSoftButtonEnabled(boolean enabled) {
+        softButtonOn = enabled;
+    }
+
 
     public boolean isPinOverlayEnabled() {
         Layer pinLayer = getPinLayer(false);
@@ -738,14 +748,14 @@ public class ProductSceneView extends BasicView
         if (imageLayer != null) {
             ProductSceneImage.applyBaseImageLayerStyle(configuration, imageLayer);
         }
-        Layer noDataLayer = getNoDataLayer(false);
-        if (noDataLayer != null) {
-            ProductSceneImage.applyNoDataLayerStyle(configuration, noDataLayer);
-        }
-        Layer collectionLayer = getVectorDataCollectionLayer(false);
-        if (collectionLayer != null) {
-            ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
-        }
+//        Layer noDataLayer = getNoDataLayer(false);
+//        if (noDataLayer != null) {
+//            ProductSceneImage.applyNoDataLayerStyle(configuration, noDataLayer);
+//        }
+//        Layer collectionLayer = getVectorDataCollectionLayer(false);
+//        if (collectionLayer != null) {
+//            ProductSceneImage.applyFigureLayerStyle(configuration, collectionLayer);
+//        }
 //        MetaDataLayer metaDataLayer = getMetaDataLayer(false);
 //        if (metaDataLayer != null) {
 //            ProductSceneImage.applyMetaDataLayerStyle(configuration, metaDataLayer);
