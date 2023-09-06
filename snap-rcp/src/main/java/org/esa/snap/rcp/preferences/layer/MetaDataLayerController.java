@@ -347,7 +347,7 @@ public final class MetaDataLayerController extends DefaultConfigController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("options-metadatalayer");
+        return new HelpCtx("annotationMetadataOverlay");
     }
 
     @SuppressWarnings("UnusedDeclaration")

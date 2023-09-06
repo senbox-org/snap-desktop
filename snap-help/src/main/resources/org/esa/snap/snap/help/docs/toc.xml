@@ -97,6 +97,7 @@
             <tocitem text="The Layer Menu" target="layerMenu"/>
             <tocitem text="No-Data Overlay" target="noDataOverlay"/>
             <tocitem text="Graticule Overlay" target="graticuleOverlay"/>
+            <tocitem text="Annotation Metadata Overlay" target="annotationMetadataOverlay"/>
             <tocitem text="Color Bar Legend" target="colorBarLegend"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
         </tocitem>
