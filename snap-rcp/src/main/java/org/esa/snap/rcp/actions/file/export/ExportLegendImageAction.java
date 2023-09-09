@@ -410,11 +410,11 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         if (autoApplySchemes || schemeLabelsApply) {
             String bandName = view.getBaseImageLayer().getName().trim();
-            String mission = ProductUtils.getMetaData(raster.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
-            if (mission == null || mission.length() == 0) {
-                mission = raster.getProduct().getProductType();
-            }
-            ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, mission);
+//            String mission = ProductUtils.getMetaData(raster.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
+//            if (mission == null || mission.length() == 0) {
+//                mission = raster.getProduct().getProductType();
+//            }
+            ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, raster.getProduct());
 
 //        if (!legendInitialized) {
             if (autoApplySchemes) {//auto-apply

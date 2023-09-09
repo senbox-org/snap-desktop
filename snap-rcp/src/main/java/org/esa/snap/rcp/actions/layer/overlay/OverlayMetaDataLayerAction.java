@@ -24,6 +24,8 @@ import org.openide.util.NbBundle;
 })
 public final class OverlayMetaDataLayerAction extends AbstractOverlayAction {
 
+    boolean isSetByThisTool = false;
+
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayMetaDataLayerActionName());
@@ -34,7 +36,12 @@ public final class OverlayMetaDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
         return view.isMetaDataOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -45,6 +52,7 @@ public final class OverlayMetaDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setMetaDataOverlayEnabled(!getActionSelectionState(view));
     }
 
