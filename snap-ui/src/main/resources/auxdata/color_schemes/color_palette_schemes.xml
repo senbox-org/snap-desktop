@@ -171,7 +171,7 @@
 
     <!--  START   PACE HARP  -->
 
-    <Scheme name="I_angle_wave">
+    <Scheme name="I_angle_wave_HARP2">
         <VERBOSE_NAME></VERBOSE_NAME>
         <MIN>0.01</MIN>
         <MAX>0.06</MAX>
@@ -183,6 +183,18 @@
         <DESCRIPTION>PACE Intensity</DESCRIPTION>
     </Scheme>
 
+
+    <Scheme name="I_angle_wave_SPEXone">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>70.0</MIN>
+        <MAX>90.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <COLORBAR_TITLE>Intensity ([ANGLE]°, [WAVELENGTH] nm)</COLORBAR_TITLE>
+        <COLORBAR_LABELS>70.0, 75.0, 80.0, 85.0, 90.0</COLORBAR_LABELS>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <DESCRIPTION>PACE Intensity</DESCRIPTION>
+    </Scheme>
     <!--  END   PACE HARP  -->
 
 

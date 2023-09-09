@@ -126,9 +126,16 @@
 
   <KEY REGEX="I_(.+)_(.+)">
     <MISSION>HARP2</MISSION>
-    <SCHEME_ID>I_angle_wave</SCHEME_ID>
+    <SCHEME_ID>I_angle_wave_HARP2</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
+
+  <KEY REGEX="I_(.+)_(.+)">
+    <MISSION>SPEXone</MISSION>
+    <SCHEME_ID>I_angle_wave_SPEXone</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
 
   <!--  END   PACE HARP  -->
 
