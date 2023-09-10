@@ -17,6 +17,7 @@
         <Toolbar name="Analysis" visible="true"/>
         <Toolbar name="Optical" visible="true"/>
         <Toolbar name="Angular" visible="false"/>
+        <Toolbar name="Soft Button" visible="false"/>
         <Toolbar name="GPT Processing" visible="true"/>
 
         <Toolbar name="Ground Control Points" visible="false"/>

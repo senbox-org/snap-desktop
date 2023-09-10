@@ -42,7 +42,7 @@
                 <attr name="originalFile"
                       stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
                 <attr name="position" intvalue="11001"/>
-                <attr name="seperatorBefore" intvalue="11000"/>
+                <attr name="separatorBefore" intvalue="11000"/>
             </file>
 
         </folder>
@@ -284,6 +284,10 @@
 
         <folder name="SeaDAS Toolbox">
             <attr name="position" intvalue="635"/>
+        </folder>
+
+        <folder name="Soft Button">
+            <attr name="position" intvalue="640"/>
         </folder>
 
         <folder name="Tool Windows">

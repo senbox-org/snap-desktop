@@ -31,6 +31,8 @@ import org.openide.util.NbBundle;
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
+    boolean isSetByThisTool = false;
+
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGraticuleLayerActionName());
@@ -41,7 +43,12 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
         return view.isGraticuleOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -51,6 +58,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setGraticuleOverlayEnabled(!getActionSelectionState(view));
     }
 
