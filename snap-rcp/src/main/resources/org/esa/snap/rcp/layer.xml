@@ -42,7 +42,7 @@
                 <attr name="originalFile"
                       stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
                 <attr name="position" intvalue="11001"/>
-                <attr name="seperatorBefore" intvalue="11000"/>
+                <attr name="separatorBefore" intvalue="11000"/>
             </file>
 
         </folder>
@@ -155,6 +155,13 @@
         <folder name="Help">
             <attr name="position" intvalue="9000"/>
             <file name="org-netbeans-core-actions-AboutAction.shadow_hidden"/>
+            <file name="org.esa.snap.rcp.about.AboutAction.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.rcp.about.AboutAction.create"/>
+                <attr name="displayName" bundlevalue="org.netbeans.core.ui.Bundle#CTL_AboutAction_Name"/>
+                <attr name="position" intvalue="1600"/>
+                <attr name="separatorBefore" intvalue="1550"/>
+            </file>
         </folder>
 
         <file name="Spacer.instance">
@@ -279,6 +286,10 @@
             <attr name="position" intvalue="635"/>
         </folder>
 
+        <folder name="Soft Button">
+            <attr name="position" intvalue="640"/>
+        </folder>
+
         <folder name="Tool Windows">
             <attr name="position" intvalue="675"/>
         </folder>
@@ -308,9 +319,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap/updates.xml.gz"/>
-				<attr name="category" stringvalue="SNAP Core"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Core.png"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapUpdate_URL"/>
             </file>
             <file name="snap_toolboxes_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Toolboxes"/>
@@ -318,9 +327,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap-toolboxes/updates.xml.gz"/>
-                <attr name="category" stringvalue="SNAP Toolboxes"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Toolboxes.png"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapToolboxesUpdate_URL"/>
             </file>
             <file name="snap_supported_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Supported Plugins"/>
@@ -328,10 +335,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url"
-                      urlvalue="https://step.esa.int/updatecenter/9.0/snap-supported-plugins/updates.xml.gz"/>
-                <attr name="category" stringvalue="SNAP Supported Plugins"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Supported.png"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapSupportedPlugins_URL"/>
             </file>
             <file name="snap_community_plugins_update_center.instance">
                 <attr name="displayName" stringvalue="SNAP Community Plugins"/>
@@ -339,10 +343,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url"
-                      urlvalue="https://step.esa.int/updatecenter/9.0/snap-community-plugins/updates.xml.gz"/>
-                <attr name="category" stringvalue="SNAP Community Plugins"/>
-				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Community.png"/>
+                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapCommunityPlugins_URL"/>
             </file>
         </folder>
     </folder>
@@ -544,6 +545,18 @@
                   stringvalue="org.esa.snap.core.layer.GraticuleLayerType"/>
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>
+        </file>
+        <file name="MetaDataLayerType">
+            <attr name="layerTypeClass"
+                  stringvalue="org.esa.snap.core.layer.MetaDataLayerType"/>
+            <attr name="editorClass"
+                  stringvalue="org.esa.snap.rcp.layermanager.editors.MetaDataLayerEditor"/>
+        </file>
+        <file name="ColorBarLayerType">
+            <attr name="layerTypeClass"
+                  stringvalue="org.esa.snap.core.layer.ColorBarLayerType"/>
+            <attr name="editorClass"
+                  stringvalue="org.esa.snap.rcp.layermanager.editors.ColorBarLayerEditor"/>
         </file>
     </folder>
     <folder name="LayerSources">
