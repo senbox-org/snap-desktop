@@ -47,11 +47,11 @@ public class ColorSchemeUtils {
 
         if (configuration != null && configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT)) {
             String bandName = productSceneView.getBaseImageLayer().getName().trim();
-            String mission = ProductUtils.getMetaData(productSceneView.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
-            if (mission == null || mission.length() == 0) {
-                mission = productSceneView.getProduct().getProductType();
-            }
-            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, mission);
+//            String mission = ProductUtils.getMetaData(productSceneView.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
+//            if (mission == null || mission.length() == 0) {
+//                mission = productSceneView.getProduct().getProductType();
+//            }
+            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, productSceneView.getProduct());
 
             if (colorSchemeInfo != null) {
                 imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, productSceneView);

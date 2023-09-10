@@ -59,6 +59,8 @@ public final class SoftButtonLayerController extends DefaultConfigController {
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_NO_DATA_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_NO_DATA_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_GRIDLINES_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_GRIDLINES_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.MASK_LIST_SHOW_KEY, OverlaySoftButtonLayerAction.MASK_LIST_SHOW_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, MetaDataLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, MetaDataLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
 
@@ -249,6 +251,17 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                 description = OverlaySoftButtonLayerAction.SHOW_COLOR_BAR_LEGEND_OVERLAY_TOOLTIP)
         boolean showColorBarLegendOverlayDefault = OverlaySoftButtonLayerAction.SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT;
 
+
+        @Preference(label = OverlaySoftButtonLayerAction.MASK_LIST_SHOW_LABEL,
+                key = OverlaySoftButtonLayerAction.MASK_LIST_SHOW_KEY,
+                description = OverlaySoftButtonLayerAction.MASK_LIST_SHOW_TOOLTIP)
+        String maskListShowDefault = OverlaySoftButtonLayerAction.MASK_LIST_SHOW_DEFAULT;
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_LABEL,
+                key = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY,
+                description = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_TOOLTIP)
+        boolean showInAllBandsOverlayDefault = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT;
 
 
         // Restore Defaults Section

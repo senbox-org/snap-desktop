@@ -35,6 +35,7 @@ import java.beans.PropertyChangeListener;
 public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
     boolean isSetByThisTool = false;
+
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayColorBarLayerActionName());

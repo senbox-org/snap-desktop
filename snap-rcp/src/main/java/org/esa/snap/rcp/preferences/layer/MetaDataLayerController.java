@@ -145,10 +145,10 @@ public final class MetaDataLayerController extends DefaultConfigController {
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_SHOW_KEY, MetaDataLayerType.PROPERTY_HEADER_SHOW_DEFAULT);
 //        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_LOCATION_KEY, MetaDataLayerType.PROPERTY_HEADER_LOCATION_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_GAP_KEY, MetaDataLayerType.PROPERTY_HEADER_GAP_DEFAULT);
-        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_KEY);
-        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_KEY);
-        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_KEY);
-        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_DEFAULT);
 
 
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_KEY, true);
