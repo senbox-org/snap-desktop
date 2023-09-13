@@ -18,6 +18,7 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.gpf.graph.GraphContext;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.gpf.graph.GraphNodeUpdater;
 import org.esa.snap.core.gpf.graph.NodeContext;
 
 import java.util.ArrayList;
@@ -99,14 +100,22 @@ public class GraphNodeList {
         }
     }
 
-    void updateGraphNodes(final GraphContext graphContext) throws GraphException {
+    void updateGraphNode(GraphNode graphNode, NodeContext context) throws GraphException {
+        if (context.getOperator() != null) {
+            graphNode.setSourceProducts(context.getSourceProducts());
+        }
+        graphNode.updateParameters();
+    }
+
+    void registerGraphNodeUpdaters(final GraphContext graphContext) {
         if (graphContext != null) {
             for (GraphNode n : nodeList) {
-                final NodeContext context = graphContext.getNodeContext(n.getNode());
-                if(context.getOperator() != null) {
-                    n.setSourceProducts(context.getSourceProducts());
-                }
-                n.updateParameters();
+                n.getNode().attachGraphNodeUpdater(new GraphNodeUpdater() {
+                    @Override
+                    public void doUpdate(NodeContext nodeContext) throws GraphException {
+                        updateGraphNode(n, nodeContext);
+                    }
+                });
             }
         }
     }
