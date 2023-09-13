@@ -143,7 +143,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addUnitsShow();
         addUnitsFontBold();
         addUnitsFontItalic();
-        addUnitsFontName();
+        addUnitsFontName(fontNameArray, defaultFont);
         addUnitsFontColor();
         addUnitsNullTextfield();
         addUnitsParenthesisBoolean();
@@ -155,7 +155,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelsShow();
         addLabelsFontBold();
         addLabelsFontItalic();
-        addLabelsFontName();
+        addLabelsFontName(fontNameArray, defaultFont);
         addLabelsFontColor();
         addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
@@ -966,17 +966,16 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_TITLE_FONT_NAME_KEY, PROPERTY_TITLE_FONT_NAME_TYPE);
         boolean fontExists = false;
         for (String font : fontNameArray) {
-            if (MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT.equals(font)) {
+            if (PROPERTY_TITLE_FONT_NAME_DEFAULT.equals(font)) {
                 fontExists = true;
                 break;
             }
         }
         if (fontExists) {
-            pd.setDefaultValue(MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT);
+            pd.setDefaultValue(PROPERTY_TITLE_FONT_NAME_DEFAULT);
         } else {
             pd.setDefaultValue(defaultFont.toString());
         }
-        pd.setDefaultValue(PROPERTY_TITLE_FONT_NAME_DEFAULT);
         pd.setDisplayName(PROPERTY_TITLE_FONT_NAME_LABEL);
         pd.setDescription(PROPERTY_TITLE_FONT_NAME_TOOLTIP);
         pd.setValueSet(new ValueSet(fontNameArray));
@@ -1078,20 +1077,37 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-    private void  addUnitsFontName() {
+    private void  addUnitsFontName(String[] fontNameArray, Font defaultFont) {
         boolean enabled = configuration.getPropertyBool(PROPERTY_UNITS_SHOW_KEY, PROPERTY_UNITS_SHOW_DEFAULT);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_UNITS_FONT_NAME_KEY, PROPERTY_UNITS_FONT_NAME_TYPE);
-        pd.setDefaultValue(PROPERTY_UNITS_FONT_NAME_DEFAULT);
+
+        boolean fontExists = false;
+        for (String font : fontNameArray) {
+            if (PROPERTY_UNITS_FONT_NAME_DEFAULT.equals(font)) {
+                fontExists = true;
+                break;
+            }
+        }
+        if (fontExists) {
+            pd.setDefaultValue(PROPERTY_UNITS_FONT_NAME_DEFAULT);
+        } else {
+            pd.setDefaultValue(defaultFont.toString());
+        }
+
         pd.setDisplayName(PROPERTY_UNITS_FONT_NAME_LABEL);
         pd.setDescription(PROPERTY_UNITS_FONT_NAME_TOOLTIP);
-        pd.setValueSet(new ValueSet(PROPERTY_UNITS_FONT_NAME_VALUE_SET));
+//        pd.setValueSet(new ValueSet(PROPERTY_UNITS_FONT_NAME_VALUE_SET));
+        pd.setValueSet(new ValueSet(fontNameArray));
+
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
         context.bindEnabledState(PROPERTY_UNITS_FONT_NAME_KEY, PROPERTY_UNITS_SHOW_KEY);
     }
+
+
 
 
 
@@ -1186,20 +1202,38 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-    private void  addLabelsFontName() {
+    private void  addLabelsFontName(String[] fontNameArray, Font defaultFont) {
         boolean enabled = configuration.getPropertyBool(PROPERTY_LABELS_SHOW_KEY, PROPERTY_LABELS_SHOW_DEFAULT);
 
         PropertyDescriptor pd = new PropertyDescriptor(PROPERTY_LABELS_FONT_NAME_KEY, PROPERTY_LABELS_FONT_NAME_TYPE);
-        pd.setDefaultValue(PROPERTY_LABELS_FONT_NAME_DEFAULT);
+
+        boolean fontExists = false;
+        for (String font : fontNameArray) {
+            if (PROPERTY_LABELS_FONT_NAME_DEFAULT.equals(font)) {
+                fontExists = true;
+                break;
+            }
+        }
+        if (fontExists) {
+            pd.setDefaultValue(PROPERTY_LABELS_FONT_NAME_DEFAULT);
+        } else {
+            pd.setDefaultValue(defaultFont.toString());
+        }
+
         pd.setDisplayName(PROPERTY_LABELS_FONT_NAME_LABEL);
         pd.setDescription(PROPERTY_LABELS_FONT_NAME_TOOLTIP);
-        pd.setValueSet(new ValueSet(PROPERTY_LABELS_FONT_NAME_VALUE_SET));
+//        pd.setValueSet(new ValueSet(PROPERTY_LABELS_FONT_NAME_VALUE_SET));
+        pd.setValueSet(new ValueSet(fontNameArray));
+
         pd.setDefaultConverter();
         pd.setEnabled(enabled);
         addPropertyDescriptor(pd);
 
         context.bindEnabledState(PROPERTY_LABELS_FONT_NAME_KEY, PROPERTY_LABELS_SHOW_KEY);
     }
+
+
+
 
 
     private void  addLabelsFontColor() {

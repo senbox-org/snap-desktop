@@ -690,6 +690,20 @@ public class ProductSceneView extends BasicView
         }
     }
 
+
+    public boolean isVectorOverlayEnabled() {
+        final Layer layer = getVectorDataCollectionLayer(false);
+        return layer != null && layer.isVisible();
+    }
+
+    public void setVectorOverlayEnabled(boolean enabled) {
+        if (isVectorOverlayEnabled() != enabled) {
+            getVectorDataCollectionLayer(true).setVisible(enabled);
+        }
+    }
+
+
+
     /**
      * @param vectorDataNodes The vector data nodes whose layer shall be made visible.
      * @since BEAM 4.10
