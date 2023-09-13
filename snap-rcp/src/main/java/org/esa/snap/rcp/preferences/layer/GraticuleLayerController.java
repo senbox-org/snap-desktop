@@ -20,6 +20,7 @@ import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.Enablement;
@@ -33,6 +34,7 @@ import org.openide.util.HelpCtx;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * * Panel handling graticule layer preferences. Sub-panel of the "Layer"-panel.
@@ -84,6 +86,26 @@ public final class GraticuleLayerController extends DefaultConfigController {
         // Initialize the default value contained within each property descriptor
         // This is done so subsequently the restoreDefaults actions can be performed
         //
+
+        Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        ArrayList<String> fontNames = new ArrayList<String>();
+        for (Font font: fonts) {
+            font.getName();
+            if (font.getName() != null && font.getName().length() > 0) {
+                fontNames.add(font.getName());
+            }
+        }
+        String[] fontNameArray = new String[fontNames.size()];
+        fontNameArray =  fontNames.toArray(fontNameArray);
+
+        try {
+            Property fontNameProperty = context.getPropertySet().getProperty(GraticuleLayerType.PROPERTY_LABELS_FONT_NAME);
+            fontNameProperty.getDescriptor().setDefaultValue(null);
+            fontNameProperty.getDescriptor().setValueSet(new ValueSet(fontNameArray));
+            fontNameProperty.getDescriptor().setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT);
+        } catch (Exception e) {
+        }
+
 
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME, GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);

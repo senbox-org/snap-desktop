@@ -18,11 +18,14 @@ package org.esa.snap.rcp.layermanager.editors;
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.ValueRange;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.grender.Rendering;
+import com.bc.ceres.grender.support.BufferedImageRendering;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.layer.GraticuleLayerType;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Editor for graticule layer.
@@ -40,6 +43,25 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
     @Override
     protected void addEditablePropertyDescriptors() {
+
+
+
+        Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        ArrayList<String> fontNames = new ArrayList<String>();
+        for (Font font: fonts) {
+            font.getName();
+//            System.out.println("Font=" + font.getName());
+            if (font.getName() != null && font.getName().length() > 0) {
+                fontNames.add(font.getName());
+            }
+        }
+        String[] fontNameArray = new String[fontNames.size()];
+        fontNameArray =  fontNames.toArray(fontNameArray);
+
+        final Rendering rendering = new BufferedImageRendering(16, 16);
+        final Graphics2D g2d = rendering.getGraphics();
+        Font defaultFont = g2d.getFont();
+
 
 
         // Grid Spacing Section
@@ -167,10 +189,24 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(labelsRotationLonPD);
 
         PropertyDescriptor labelsFontPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
+        boolean fontExists = false;
+        for (String font : fontNameArray) {
+            if (GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT.equals(font)) {
+                fontExists = true;
+                break;
+            }
+        }
+        if (fontExists) {
         labelsFontPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT);
+        } else {
+            labelsFontPD.setDefaultValue(defaultFont.toString());
+        }
+
+        labelsFontPD.setDefaultValue(defaultFont.toString());
         labelsFontPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL);
         labelsFontPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP);
-        labelsFontPD.setValueSet(new ValueSet(GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_SET));
+//        labelsFontPD.setValueSet(new ValueSet(GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_SET));
+        labelsFontPD.setValueSet(new ValueSet(fontNameArray));
         labelsFontPD.setDefaultConverter();
         addPropertyDescriptor(labelsFontPD);
 
