@@ -16,22 +16,27 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.core.ProgressMonitor;
-import junit.framework.TestCase;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.util.DefaultPropertyMap;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.awt.geom.AffineTransform;
 
-public class ProductSceneViewTest extends TestCase {
+import static org.esa.snap.core.util.Debug.assertTrue;
+import static org.junit.Assert.*;
+
+public class ProductSceneViewTest {
 
     private VirtualBand r;
     private VirtualBand g;
     private VirtualBand b;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         final Product product = new Product("x", "y", 2, 3);
 
         r = new VirtualBand("r", ProductData.TYPE_FLOAT32, 2, 3, "0");
@@ -47,13 +52,14 @@ public class ProductSceneViewTest extends TestCase {
         b.ensureRasterData();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         r = null;
         g = null;
         b = null;
-}
+    }
 
+    @Test
     public void testIsRGB() {
         ProductSceneView view;
 
@@ -64,13 +70,14 @@ public class ProductSceneViewTest extends TestCase {
         assertTrue(view.isRGB());
     }
 
+    @Test
     public void testDispose() {
         final ProductSceneView view = new ProductSceneView(new ProductSceneImage(r, new DefaultPropertyMap(), ProgressMonitor.NULL));
         view.dispose();
         assertNull(view.getSceneImage());
     }
 
-
+    @Test
     public void testAffineTransformReplacesManualCalculation() {
         double modelOffsetX = 37.8;
         double modelOffsetY = -54.1;
@@ -87,7 +94,7 @@ public class ProductSceneViewTest extends TestCase {
         double viewY = (modelY - modelOffsetY) * viewScale;
 
         final double[] result = new double[2];
-        transform.transform(new double[] {modelX,  modelY}, 0, result, 0, 1);
+        transform.transform(new double[]{modelX, modelY}, 0, result, 0, 1);
         assertEquals(viewX, result[0], 1e-10);
         assertEquals(viewY, result[1], 1e-10);
     }

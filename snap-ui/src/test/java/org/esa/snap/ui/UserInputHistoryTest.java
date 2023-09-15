@@ -15,16 +15,16 @@
  */
 package org.esa.snap.ui;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.prefs.Preferences;
 
-public class UserInputHistoryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-    public UserInputHistoryTest(String name) {
-        super(name);
-    }
+public class UserInputHistoryTest {
 
+    @Test
     public void testFail() {
         final String propertyKey = "test.prop";
         final Preferences preferences = new DummyPreferences();
@@ -81,5 +81,4 @@ public class UserInputHistoryTest extends TestCase {
         assertNull(preferences.get(propertyKey + ".3", null));
         assertNull(preferences.get(propertyKey + ".4", null));
     }
-
 }

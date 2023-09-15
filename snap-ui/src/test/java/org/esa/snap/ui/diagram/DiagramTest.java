@@ -16,18 +16,22 @@
 
 package org.esa.snap.ui.diagram;
 
-import junit.framework.TestCase;
 import org.esa.snap.core.util.math.Range;
+import org.junit.Test;
 
 import java.awt.geom.Point2D;
 
+import static org.junit.Assert.assertEquals;
 
-public class DiagramTest extends TestCase {
+
+public class DiagramTest {
+
+    @Test
     public void testTransform() {
         Diagram.RectTransform rectTransform = new Diagram.RectTransform(new Range(0, 10),
-                                                                        new Range(-1, +1),
-                                                                        new Range(100, 200),
-                                                                        new Range(100, 0));
+                new Range(-1, +1),
+                new Range(100, 200),
+                new Range(100, 0));
         Point2D a, b;
 
         a = new Point2D.Double(5, 0);
@@ -40,7 +44,4 @@ public class DiagramTest extends TestCase {
         assertEquals(new Point2D.Double(175.0, 62.5), b);
         assertEquals(a, rectTransform.transformB2A(b, null));
     }
-
-
-
 }

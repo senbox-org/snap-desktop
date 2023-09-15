@@ -16,14 +16,18 @@
 
 package org.esa.snap.rcp.mask;
 
-import junit.framework.TestCase;
 import org.esa.snap.core.datamodel.Product;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 
-public class MaskTableModelTest extends TestCase {
+public class MaskTableModelTest {
+
+    @Test
     public void testManagementMode() {
         MaskTableModel maskTableModel = new MaskTableModel(true);
-        assertEquals(false, maskTableModel.isInManagmentMode());
+        assertFalse(maskTableModel.isInManagmentMode());
         assertEquals(5, maskTableModel.getColumnCount());
         assertEquals("Name", maskTableModel.getColumnName(0));
         assertEquals("Type", maskTableModel.getColumnName(1));
@@ -34,7 +38,7 @@ public class MaskTableModelTest extends TestCase {
 
         Product product = MaskFormTest.createTestProduct();
         maskTableModel.setProduct(product, null);
-        assertEquals(true, maskTableModel.isInManagmentMode());
+        assertTrue(maskTableModel.isInManagmentMode());
         assertEquals(5, maskTableModel.getColumnCount());
         assertEquals("Name", maskTableModel.getColumnName(0));
         assertEquals("Type", maskTableModel.getColumnName(1));
@@ -44,7 +48,7 @@ public class MaskTableModelTest extends TestCase {
         assertEquals(10, maskTableModel.getRowCount());
 
         maskTableModel.setProduct(product, product.getBand("C"));
-        assertEquals(true, maskTableModel.isInManagmentMode());
+        assertTrue(maskTableModel.isInManagmentMode());
         assertEquals(6, maskTableModel.getColumnCount());
         assertEquals("Visibility", maskTableModel.getColumnName(0));
         assertEquals("Name", maskTableModel.getColumnName(1));
@@ -55,9 +59,10 @@ public class MaskTableModelTest extends TestCase {
         assertEquals(10, maskTableModel.getRowCount());
     }
 
+    @Test
     public void testViewMode() {
         MaskTableModel maskTableModel = new MaskTableModel(false);
-        assertEquals(false, maskTableModel.isInManagmentMode());
+        assertFalse(maskTableModel.isInManagmentMode());
         assertEquals(4, maskTableModel.getColumnCount());
         assertEquals("Name", maskTableModel.getColumnName(0));
         assertEquals("Colour", maskTableModel.getColumnName(1));
@@ -67,7 +72,7 @@ public class MaskTableModelTest extends TestCase {
 
         Product product = MaskFormTest.createTestProduct();
         maskTableModel.setProduct(product, null);
-        assertEquals(false, maskTableModel.isInManagmentMode());
+        assertFalse(maskTableModel.isInManagmentMode());
         assertEquals(4, maskTableModel.getColumnCount());
         assertEquals("Name", maskTableModel.getColumnName(0));
         assertEquals("Colour", maskTableModel.getColumnName(1));
@@ -76,7 +81,7 @@ public class MaskTableModelTest extends TestCase {
         assertEquals(10, maskTableModel.getRowCount());
 
         maskTableModel.setProduct(product, product.getBand("C"));
-        assertEquals(false, maskTableModel.isInManagmentMode());
+        assertFalse(maskTableModel.isInManagmentMode());
         assertEquals(5, maskTableModel.getColumnCount());
         assertEquals("Visibility", maskTableModel.getColumnName(0));
         assertEquals("Name", maskTableModel.getColumnName(1));
