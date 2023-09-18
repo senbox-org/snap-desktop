@@ -134,6 +134,7 @@ public final class MetaDataLayerController extends DefaultConfigController {
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY, MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT);
 
 
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY, true);
@@ -152,6 +153,7 @@ public final class MetaDataLayerController extends DefaultConfigController {
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD2_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD3_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_KEY, MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_DEFAULT);
 
 
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_KEY, true);
@@ -171,6 +173,7 @@ public final class MetaDataLayerController extends DefaultConfigController {
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY, MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY, MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT);
 
 
@@ -462,6 +465,12 @@ public final class MetaDataLayerController extends DefaultConfigController {
         boolean marginBandMetadataShowAll = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT;
 
 
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP)
+        boolean marginConvertCaretDefault = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT;
+
+
 
         // Margin Format Section
 
@@ -567,6 +576,11 @@ public final class MetaDataLayerController extends DefaultConfigController {
         String headerTextfield4 = MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_DEFAULT;
 
 
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_TOOLTIP)
+        boolean headerConvertCaretDefault = MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_DEFAULT;
 
 
         // Header Format Section
@@ -688,13 +702,20 @@ public final class MetaDataLayerController extends DefaultConfigController {
                 description = MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_TOOLTIP)
         String footerTextfield4Default = MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_DEFAULT;
 
-    @Preference(label = MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_LABEL,
+        @Preference(label = MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_LABEL,
                 key = MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY,
                 description = MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_TOOLTIP)
         boolean footerMyInfoShowDefault = MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT;
 
 
-    // Footer Format Section
+
+        @Preference(label = MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_LABEL,
+                key = MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY,
+                description = MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_TOOLTIP)
+        boolean footerConvertCaretDefault = MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT;
+
+
+        // Footer Format Section
 
 
         // Header Format Section

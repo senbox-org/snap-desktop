@@ -544,6 +544,20 @@ public class ProductSceneImage implements ProductLayerContext {
                 MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT,
                 MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TYPE);
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TYPE);
 
         // Footer2 Section
 

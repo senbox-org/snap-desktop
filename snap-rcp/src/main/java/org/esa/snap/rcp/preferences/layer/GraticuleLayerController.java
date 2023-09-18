@@ -238,9 +238,9 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
         for (Property property : properties) {
             if (property != restoreDefaults && property.getDescriptor().getDefaultValue() != null)
-            if (!property.getValue().equals(property.getDescriptor().getDefaultValue())) {
-                return false;
-            }
+                if (!property.getValue().equals(property.getDescriptor().getDefaultValue())) {
+                    return false;
+                }
         }
 
         return true;
@@ -400,7 +400,7 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
     /**
      * Initialize the property descriptor default value
-     * 
+     *
      * @param context
      * @param propertyName
      * @param propertyDefault
@@ -483,6 +483,42 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 description = GraticuleLayerType.PROPERTY_LABELS_EAST_TOOLTIP)
         boolean labelsEast = GraticuleLayerType.PROPERTY_LABELS_EAST_DEFAULT;
 
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP)
+        boolean cornerLabelsNorth = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP)
+        boolean cornerLabelsSouth = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP)
+        boolean cornerLabelsWest = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP)
+        boolean cornerLabelsEast = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_INSIDE_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP)
+        boolean labelsInside = GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT;
+
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP)
+        boolean cornerLabelsSection = true;
+
+
+
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL,
                 key = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
                 description = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP)
@@ -493,10 +529,6 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 description = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP)
         boolean labelsDecimal = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT;
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_INSIDE_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP)
-        boolean labelsInside = GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT;
 
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL,
                 key = GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME,
@@ -626,32 +658,6 @@ public final class GraticuleLayerController extends DefaultConfigController {
         Color tickmarksColor = GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_DEFAULT;
 
 
-        // Corner Labels Section
-
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP)
-        boolean cornerLabelsSection = true;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP)
-        boolean cornerLabelsNorth = GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP)
-        boolean cornerLabelsSouth = GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP)
-        boolean cornerLabelsWest = GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP)
-        boolean cornerLabelsEast = GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT;
 
 
         // Inside Labels Section

@@ -161,6 +161,15 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
         addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
                 MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
                 MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
@@ -196,6 +205,15 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
         context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP,
+                true
+        );
+
+
+
 //
 //
 //        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY,
@@ -204,14 +222,6 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 //                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_TOOLTIP,
 //                footerShow);
 //        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
 
@@ -361,6 +371,17 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
                 MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_TOOLTIP,
                 headerShow);
         context.bindEnabledState(MetaDataLayerType.PROPERTY_HEADER_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_HEADER_SHOW_KEY);
+
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_LABEL,
+                MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_TOOLTIP,
+                true
+        );
+
+
+
 
 
 
@@ -519,6 +540,13 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
                 footer2Show);
         context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
 
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_TOOLTIP,
+                true
+        );
 
         addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY,
                 MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT,

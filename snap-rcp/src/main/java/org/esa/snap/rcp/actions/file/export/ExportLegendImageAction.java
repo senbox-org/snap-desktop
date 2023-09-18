@@ -24,6 +24,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.param.*;
+import org.esa.snap.core.util.MetadataUtils;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
@@ -460,16 +461,20 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                 }
             }
 
-            String convertedTitle = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+//            String convertedTitle = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+            String convertedTitle = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setTitle(convertedTitle);
 
-            String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+//            String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+            String convertedTitleAlt = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleAlt(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setTitleAlt(convertedTitleAlt);
 
-            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+//            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+            String convertedUnits = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setUnits(convertedUnits);
 
-            String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+//            String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
+            String convertedUnitsAlt = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsAlt(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setUnitsAlt(convertedUnitsAlt);
 
 

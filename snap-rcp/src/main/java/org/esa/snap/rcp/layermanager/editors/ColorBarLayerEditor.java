@@ -69,6 +69,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Title Section
         addHeaderTitleSectionBreak();
+        addSchemesCheckbox();
+
         addTitleTextfield();
 
 //        addTitleAltTextfield();
@@ -78,7 +80,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         // Units Section
 //        addHeaderUnitsSectionBreak();
         addUnitsTextfield();
-        addSchemesCheckbox();
 
 
 //        addUnitsAltTextfield();
@@ -86,11 +87,13 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Label Values
+        addSchemeLabelsApplyCheckbox();
         addLabelValuesSectionBreak();
         addLabelValuesMode();
         addLabelValuesCount();
         addLabelValuesActual();
-        addSchemeLabelsApplyCheckbox();
+        addLabelValuesScalingFactor();
+
         addAutoPopulateLabelValues();
 
 //        addWeightTolerance();
@@ -106,9 +109,18 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Color Bar Scaling Section
-        addSizeScalingSectionBreak();
+//        addSizeScalingSectionBreak();
+        addLegendSizingSectionBreak();
         addImageScaling();
         addImageScalingPercent();
+
+
+        // Sizing Section
+        addTitleFontSize();
+        addUnitsFontSize();
+        addLabelsFontSize();
+        addColorBarLength();
+        addColorBarWidth();
 
         // Color Bar Location Section
         addLocationSectionBreak();
@@ -157,7 +169,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLabelsFontItalic();
         addLabelsFontName(fontNameArray, defaultFont);
         addLabelsFontColor();
-        addLabelValuesScalingFactor();
         addLabelValuesDecimalPlaces();
         addLabelValuesForceDecimalPlaces();
 
@@ -194,13 +205,6 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        // Sizing Section
-        addLegendSizingSectionBreak();
-        addTitleFontSize();
-        addUnitsFontSize();
-        addLabelsFontSize();
-        addColorBarLength();
-        addColorBarWidth();
 
         // Margins Section
         addLegendBorderGapSectionBreak();
