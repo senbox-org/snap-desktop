@@ -27,8 +27,8 @@ import static org.esa.snap.rcp.actions.window.OpenImageViewAction.getProductScen
 @ActionID(category = "View", id = "OverlaySoftButtonLayerAction")
 @ActionRegistration(displayName = "#CTL_OverlaySoftButtonLayerActionName")
 @ActionReferences({
-        @ActionReference(path = "Menu/Layer", position = 21),
-        @ActionReference(path = "Toolbars/Soft Button", position = 21)
+        @ActionReference(path = "Menu/Layer", position = 22),
+        @ActionReference(path = "Toolbars/Soft Button", position = 22)
 })
 @NbBundle.Messages({
         "CTL_OverlaySoftButtonLayerActionName=Soft Button Overlay(s)",
@@ -143,6 +143,14 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 //        return view.isSoftButtonEnabled();
 //    }
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (view.isSoftButtonEnabled()) {
+            putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/SoftButtonBlueGreen24.png", false));
+            putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/SoftButtonBlueGreen24.png", false));
+        } else {
+            putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/SoftButtonBlueWhite24.png", false));
+            putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/seadas/SoftButtonBlueWhite24.png", false));
+        }
+
         return false;
     }
 

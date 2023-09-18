@@ -137,6 +137,54 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         labelsEastPD.setDefaultConverter();
         addPropertyDescriptor(labelsEastPD);
 
+        // Corner Label Section
+
+
+        PropertyDescriptor cornerLabelsNorthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, Boolean.class);
+        cornerLabelsNorthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
+        cornerLabelsNorthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL);
+        cornerLabelsNorthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP);
+        cornerLabelsNorthPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsNorthPD);
+
+        PropertyDescriptor cornerLabelsSouthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, Boolean.class);
+        cornerLabelsSouthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT);
+        cornerLabelsSouthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL);
+        cornerLabelsSouthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP);
+        cornerLabelsSouthPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsSouthPD);
+
+        PropertyDescriptor cornerLabelsWestPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, Boolean.class);
+        cornerLabelsWestPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
+        cornerLabelsWestPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL);
+        cornerLabelsWestPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP);
+        cornerLabelsWestPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsWestPD);
+
+        PropertyDescriptor cornerLabelsEastPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, Boolean.class);
+        cornerLabelsEastPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
+        cornerLabelsEastPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL);
+        cornerLabelsEastPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP);
+        cornerLabelsEastPD.setDefaultConverter();
+        addPropertyDescriptor(cornerLabelsEastPD);
+
+
+        PropertyDescriptor labelsInsidePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, Boolean.class);
+        labelsInsidePD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT);
+        labelsInsidePD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_INSIDE_LABEL);
+        labelsInsidePD.setDescription(GraticuleLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP);
+        labelsInsidePD.setDefaultConverter();
+        addPropertyDescriptor(labelsInsidePD);
+
+
+
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
+
+
+
         PropertyDescriptor labelsSuffixPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, Boolean.class);
         labelsSuffixPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
         labelsSuffixPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL);
@@ -151,12 +199,7 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         labelsDecimalPD.setDefaultConverter();
         addPropertyDescriptor(labelsDecimalPD);
 
-        PropertyDescriptor labelsInsidePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_INSIDE_NAME, Boolean.class);
-        labelsInsidePD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_INSIDE_DEFAULT);
-        labelsInsidePD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_INSIDE_LABEL);
-        labelsInsidePD.setDescription(GraticuleLayerType.PROPERTY_LABELS_INSIDE_TOOLTIP);
-        labelsInsidePD.setDefaultConverter();
-        addPropertyDescriptor(labelsInsidePD);
+
 
         PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME, Boolean.class);
         labelsItalicsPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
@@ -333,39 +376,6 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(tickmarksColorPD);
 
 
-        // Corner Label Section
-
-        addSectionBreak(GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
-
-        PropertyDescriptor cornerLabelsNorthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_NAME, Boolean.class);
-        cornerLabelsNorthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_DEFAULT);
-        cornerLabelsNorthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_LABEL);
-        cornerLabelsNorthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_NORTH_TOOLTIP);
-        cornerLabelsNorthPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsNorthPD);
-
-        PropertyDescriptor cornerLabelsSouthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_NAME, Boolean.class);
-        cornerLabelsSouthPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_DEFAULT);
-        cornerLabelsSouthPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_LABEL);
-        cornerLabelsSouthPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_SOUTH_TOOLTIP);
-        cornerLabelsSouthPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsSouthPD);
-
-        PropertyDescriptor cornerLabelsWestPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_NAME, Boolean.class);
-        cornerLabelsWestPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_DEFAULT);
-        cornerLabelsWestPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_LABEL);
-        cornerLabelsWestPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_WEST_TOOLTIP);
-        cornerLabelsWestPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsWestPD);
-
-        PropertyDescriptor cornerLabelsEastPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_NAME, Boolean.class);
-        cornerLabelsEastPD.setDefaultValue(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_DEFAULT);
-        cornerLabelsEastPD.setDisplayName(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_LABEL);
-        cornerLabelsEastPD.setDescription(GraticuleLayerType.PROPERTY_CORNER_LABELS_EAST_TOOLTIP);
-        cornerLabelsEastPD.setDefaultConverter();
-        addPropertyDescriptor(cornerLabelsEastPD);
 
 
         // Inner Labels Section

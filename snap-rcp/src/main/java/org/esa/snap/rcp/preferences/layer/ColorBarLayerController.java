@@ -624,6 +624,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
+
         // Labels
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_LABEL,
@@ -706,12 +707,27 @@ public final class ColorBarLayerController extends DefaultConfigController {
         boolean reversePaletteAndLabels = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT;
 
 
-        // Scaling Section
 
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
-        boolean sizeScalingSection = true;
+
+
+
+
+//
+//        // Scaling Section
+//
+//        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_LABEL,
+//                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
+//                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
+//        boolean sizeScalingSection = true;
+
+
+        // Sizing Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_TOOLTIP)
+        boolean sizing = true;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
                 key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
@@ -738,6 +754,53 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
                 description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
         int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
+        int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_INTERVAL)
+        int unitsSize = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
+        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
+                description = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_VALUE_INTERVAL)
+        int colorbarLength = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_LABEL,
+                key = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_INTERVAL)
+        int colorbarWidth = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT;
 
 
 
@@ -800,25 +863,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_KEY,
                 description = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_TOOLTIP)
         double locationShift = ColorBarLayerType.PROPERTY_LOCATION_SHIFT_DEFAULT;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -925,16 +969,17 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP)
         String unitsNull = ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
-                key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
-                description = ColorBarLayerType.PROPERTY_CONVERT_CARET_TOOLTIP)
-        boolean convertCaret = ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY,
                 description = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_TOOLTIP)
         boolean unitsParenthesis = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_DEFAULT;
 
+
+        @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
+                key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
+                description = ColorBarLayerType.PROPERTY_CONVERT_CARET_TOOLTIP)
+        boolean convertCaret = ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT;
 
 
 
@@ -1126,47 +1171,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-
-        // Sizing Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_TOOLTIP)
-        boolean sizing = true;
-
-
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
-        int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_INTERVAL)
-        int unitsSize = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
-        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
-                description = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_VALUE_INTERVAL)
-        int colorbarLength = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_LABEL,
-                key = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_INTERVAL)
-        int colorbarWidth = ColorBarLayerType.PROPERTY_COLORBAR_WIDTH_DEFAULT;
 
 
         // Border Gap Section
