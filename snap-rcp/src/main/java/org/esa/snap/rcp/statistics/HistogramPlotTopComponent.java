@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,11 +26,11 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "HistogramPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Histogram.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.HISTOGRAM_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "HistogramPlotMode",
+        mode = PackageDefaults.HISTOGRAM_PLOT_WS_MODE,
         openAtStartup = false,
         position = 40
 )

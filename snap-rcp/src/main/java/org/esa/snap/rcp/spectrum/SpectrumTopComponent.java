@@ -31,6 +31,7 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.*;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -74,13 +75,13 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif")
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
+@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON)
+@TopComponent.Registration(mode = PackageDefaults.SPECTRUM_WS_MODE, openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Optical"),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Toolbars/Optical")
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent")
 @NbBundle.Messages({"CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
@@ -171,6 +172,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
+                if (currentProduct.getName().contains("SPEXONE")) {
+                    currentProduct.setAutoGrouping("QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:" +
+                            "I_58_*:I_22_*:I_4_*:I_-22_*:I_-58_*:I_noise:I_noisefree:I_polsample:"  +
+                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
+                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
+                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
+                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
+                            "obs_per_view:view_time_offsets");
+                }
                 if (!rasterToSpectraMap.containsKey(currentView.getRaster())) {
                     setUpSpectra();
                 }
@@ -520,6 +530,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
                 for (SpectrumBand availableSpectralBand : availableSpectralBands) {
                     final String bandName = availableSpectralBand.getName();
+                    if (currentProduct.getName().contains("SPEXONE")) {
+                        availableSpectralBand.setSelected(false);
+                    }
                     final int spectrumIndex = autoGrouping.indexOf(bandName);
                     if (spectrumIndex != -1) {
                         autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);

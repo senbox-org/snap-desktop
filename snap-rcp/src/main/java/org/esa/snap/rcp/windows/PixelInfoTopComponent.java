@@ -7,6 +7,7 @@ package org.esa.snap.rcp.windows;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.ui.PackageDefaults;
 import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -36,7 +37,7 @@ import java.beans.PropertyChangeListener;
         iconBase = "org/esa/snap/rcp/icons/PixelInfo.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer",
+@TopComponent.Registration(mode = PackageDefaults.PIXEL_INFO_MODE,
                            openAtStartup = true,
                            position = 20
 )
