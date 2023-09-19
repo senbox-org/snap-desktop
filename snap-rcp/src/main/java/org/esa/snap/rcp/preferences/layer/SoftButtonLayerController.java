@@ -68,6 +68,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, MetaDataLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, MetaDataLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
@@ -362,6 +365,28 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
                         OverlaySoftButtonLayerAction.STATE_OFF_OFF})
         String showVectorParentOverlayDefault = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_DEFAULT;
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY,
+                description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_TOOLTIP,
+                valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2})
+        String setZoomFactorStateDefault = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT;
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_KEY,
+                description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_TOOLTIP)
+        double setZoomFactor1Default = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_DEFAULT;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_KEY,
+                description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_TOOLTIP)
+        double setZoomFactor2Default = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_DEFAULT;
 
 
         @Preference(label = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_LABEL,
