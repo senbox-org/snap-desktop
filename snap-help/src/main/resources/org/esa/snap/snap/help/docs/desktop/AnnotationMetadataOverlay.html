@@ -1,4 +1,3 @@
-
 <!--Help page for the color bar legend tools-->
 <!--@author Daniel Knowles-->
 
@@ -24,9 +23,60 @@
 </table>
 
 
-<h3>Overview</h3>
 
-<p>TBD </p>
+<h3>A more complete help documentation is TBD</h3>
+<p>
+    File level metadata can be accessed with either of the following:
+</p>
+<pre>
+    &lt;GLOBAL_ATTRIBUTE={property_name}&gt;
+    &lt;GLOBAL_ATTR={property_name}&gt;
+</pre>
+
+<p>
+    Band level metadata can be accessed with either of the following:
+</p>
+<pre>
+    &lt;BAND_ATTRIBUTE={property_name}&gt;
+    &lt;BAND_ATTR={property_name}&gt;
+</pre>
+
+
+
+
+<p>File level information properties are:</p>
+<pre>
+    &lt;INFO=file&gt;            - File name (as it appears in the File Manager)
+    &lt;INFO=file_location&gt;   - File location (physical location from where file was read)
+    &lt;INFO=product_type&gt;
+    &lt;INFO=scene_start_time&gt;
+    &lt;INFO=scene_end_time&gt;
+</pre>
+
+<p>Band level information properties are:</p>
+<pre>
+    &lt;INFO=band&gt;
+    &lt;INFO=units&gt;
+    &lt;INFO=band_description&gt;
+    &lt;INFO=scene_height&gt;
+    &lt;INFO=scene_width&gt;
+    &lt;INFO=scene_size&gt;       - Combination of scene_width and scene_height
+    &lt;INFO=wavelength&gt;
+    &lt;INFO=angle&gt;
+    &lt;INFO=flag_coding&gt;
+    &lt;INFO=valid_pixel_expression&gt;
+    &lt;INFO=no_data_value&gt;
+    &lt;INFO=is_no_data_value_set&gt;
+    &lt;INFO=is_no_data_value_used&gt;
+    &lt;INFO=is_scaling_applied&gt;
+    &lt;INFO=scaling_factor&gt;
+    &lt;INFO=scaling_offset&gt;
+    &lt;INFO=is_log_scaled&gt;
+    &lt;INFO=is_palette_log_scaled&gt;
+    &lt;INFO=node_display_names&gt;
+    &lt;INFO=node_names&gt;
+</pre>
+
 
 
 </body>
