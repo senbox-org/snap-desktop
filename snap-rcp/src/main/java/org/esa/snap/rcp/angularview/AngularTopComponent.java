@@ -85,7 +85,7 @@ import static java.lang.Math.abs;
 @ActionReferences({
 //        @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Angular"),
-        @ActionReference(path = "Toolbars/Angular")
+        @ActionReference(path = "Toolbars/Spectral Angular View")
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AngularTopComponent_Name", preferredID = "AngularTopComponent")
 @NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularViewWnd"})
