@@ -88,14 +88,14 @@ public class PackageDefaults  {
 
     public static final String PIN_MANAGER_TOOLBAR_NAME = "Pins"; // differs from snap
     public static final String PIN_TOOL_TOOLBAR_NAME = "Pins"; // differs from snap
-    public static final String OVERLAY_PINS_TOOLBAR_NAME = "Pins"; // differs from snap
+    public static final String OVERLAY_PINS_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
 
-    public static final String GCP_TOGGLE_TOOLBAR = "Ground Control Points"; // differs from snap
+    public static final String GCP_TOGGLE_TOOLBAR = "Miscellaneous"; // differs from snap
     public static final String GCP_TOOL_ACTION_TOOLBAR = "Ground Control Points"; // differs from snap
     public static final String GCP_MANAGER_TOOLBAR = "Ground Control Points"; // differs from snap
 
     public static final String NEW_GEOMETRY_CONTAINER_TOOLBAR = "Geometry"; // differs from snap
-    public static final String GEOMETRY_TOGGLE_TOOLBAR = "Geometry"; // differs from snap
+    public static final String GEOMETRY_TOGGLE_TOOLBAR = "Miscellaneous"; // differs from snap
     public static final String DRAW_RECTANGLE_TOOLBAR = "Geometry Shapes"; // differs from snap
     public static final String DRAW_ELLIPSE_TOOLBAR = "Geometry Shapes"; // differs from snap
     public static final String DRAW_POLYGON_TOOLBAR = "Geometry Shapes"; // differs from snap
