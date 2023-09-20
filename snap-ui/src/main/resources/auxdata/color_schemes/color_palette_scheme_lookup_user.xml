@@ -4,4 +4,9 @@
         <SCHEME_ID>user_scheme</SCHEME_ID>
         <DESCRIPTION/>
     </KEY>
+
+<!--    <KEY REGEX="Rrs($|_.+)">-->
+<!--        <SCHEME_ID>Rrs</SCHEME_ID>-->
+<!--        <DESCRIPTION/>-->
+<!--    </KEY>-->
 </colorSchemeLut>

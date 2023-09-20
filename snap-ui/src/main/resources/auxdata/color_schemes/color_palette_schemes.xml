@@ -166,6 +166,19 @@
         <DESCRIPTION>Remote sensing reflectance at [461-2400] nm</DESCRIPTION>
     </Scheme>
 
+    <Scheme name="Rrs">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Rrs</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>0.02</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Remote Sensing Reflectance at &lt;INFO=wavelength&gt; nm</COLORBAR_TITLE>
+        <COLORBAR_TITLE_ALT>&lt;INFO=band&gt;: Remote Sensing Reflectance</COLORBAR_TITLE_ALT>
+        <COLORBAR_LABELS>0.0,0.005,0.01,0.015,0.02</COLORBAR_LABELS>
+        <DESCRIPTION>Remote sensing reflectance</DESCRIPTION>
+    </Scheme>
     <!--  END   Standard OC Suites -->
 
 
