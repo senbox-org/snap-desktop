@@ -197,10 +197,6 @@
             <attr name="position" intvalue="100"/>
         </folder>
 
-        <folder name="Angular">
-            <attr name="position" intvalue="150"/>
-        </folder>
-
         <folder name="Clipboard"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="200"/>
         </folder>
@@ -252,7 +248,7 @@
         </folder>
 
 
-        <folder name="Optical">
+        <folder name="Spectral Angular View">
             <attr name="position" intvalue="648"/>
         </folder>
 
@@ -269,14 +265,14 @@
         <!--            <attr name="position" intvalue="600"/>-->
         <!--        </folder>-->
 
-        <folder name="Projects">
-            <attr name="position" intvalue="660"/>
-        </folder>
+<!--        <folder name="Projects">-->
+<!--            <attr name="position" intvalue="660"/>-->
+<!--        </folder>-->
 
 
-        <folder name="Radar Tool Windows">
-            <attr name="position" intvalue="665"/>
-        </folder>
+<!--        <folder name="Radar Tool Windows">-->
+<!--            <attr name="position" intvalue="665"/>-->
+<!--        </folder>-->
 
         <folder name="Raster">
             <attr name="position" intvalue="670"/>
