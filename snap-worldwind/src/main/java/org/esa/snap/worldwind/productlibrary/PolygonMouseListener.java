@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.worldwind;
+package org.esa.snap.worldwind.productlibrary;
 
 import java.awt.geom.Path2D;
 import java.util.List;

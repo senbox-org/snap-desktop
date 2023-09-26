@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.worldwind;
+package org.esa.snap.worldwind.productlibrary;
 
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
