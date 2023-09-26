@@ -67,10 +67,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         Font defaultFont = g2d.getFont();
 //        addSchemeLabelsRestrictCheckbox();
 
-        // Title Section
+        // Title/Units Section
         addHeaderTitleSectionBreak();
+        addTitleShow();
         addSchemesCheckbox();
-
         addTitleTextfield();
 
 //        addTitleAltTextfield();
@@ -78,24 +78,29 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
 
         // Units Section
-//        addHeaderUnitsSectionBreak();
-        addUnitsTextfield();
+        addHeaderUnitsSectionBreak();
+        addUnitsShow();
 
+        addUnitsTextfield();
+        addUnitsNullTextfield();
+        addUnitsParenthesisBoolean();
+        addConvertCaretBoolean();
 
 //        addUnitsAltTextfield();
 //        addUnitsAltUseBoolean();
 
 
         // Label Values
-        addSchemeLabelsApplyCheckbox();
         addLabelValuesSectionBreak();
+        addLabelsShow();
+        addSchemeLabelsApplyCheckbox();
         addLabelValuesMode();
         addLabelValuesCount();
         addLabelValuesActual();
         addLabelValuesScalingFactor();
-
         addAutoPopulateLabelValues();
-
+        addLabelValuesDecimalPlaces();
+        addLabelValuesForceDecimalPlaces();
 //        addWeightTolerance();
 
 
@@ -110,15 +115,10 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 
         // Color Bar Scaling Section
 //        addSizeScalingSectionBreak();
+        // Sizing Section
         addLegendSizingSectionBreak();
         addImageScaling();
         addImageScalingPercent();
-
-
-        // Sizing Section
-        addTitleFontSize();
-        addUnitsFontSize();
-        addLabelsFontSize();
         addColorBarLength();
         addColorBarWidth();
 
@@ -131,47 +131,29 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLocationOffset();
         addLocationShift();
 
-
-
-
-
-
-
-
-
-
-
         // Title Section
         addTitleSectionBreak();
-        addTitleShow();
-        addTitleFontBold();
-        addTitleFontItalic();
-        addTitleFontName(fontNameArray, defaultFont);
+        addTitleFontSize();
         addTitleFontColor();
-
+        addTitleFontName(fontNameArray, defaultFont);
+        addTitleFontItalic();
+        addTitleFontBold();
 
         // Units Section
         addUnitsSectionBreak();
-        addUnitsShow();
-        addUnitsFontBold();
-        addUnitsFontItalic();
-        addUnitsFontName(fontNameArray, defaultFont);
+        addUnitsFontSize();
         addUnitsFontColor();
-        addUnitsNullTextfield();
-        addUnitsParenthesisBoolean();
-        addConvertCaretBoolean();
-
+        addUnitsFontName(fontNameArray, defaultFont);
+        addUnitsFontItalic();
+        addUnitsFontBold();
 
         // Labels Section
         addLabelsSectionBreak();
-        addLabelsShow();
-        addLabelsFontBold();
-        addLabelsFontItalic();
-        addLabelsFontName(fontNameArray, defaultFont);
+        addLabelsFontSize();
         addLabelsFontColor();
-        addLabelValuesDecimalPlaces();
-        addLabelValuesForceDecimalPlaces();
-
+        addLabelsFontName(fontNameArray, defaultFont);
+        addLabelsFontItalic();
+        addLabelsFontBold();
 
         // Tickmarks Section
         addTickMarksSectionBreak();
@@ -180,13 +162,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addTickMarksWidth();
         addTickMarksColor();
 
-
         // Palette Border Section
         addPaletteBorderSectionBreak();
         addPaletteBorderShow();
         addPaletteBorderWidth();
         addPaletteBorderColor();
-
 
         // Legend Border Section
         addLegendBorderSectionBreak();
@@ -194,17 +174,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addLegendBorderWidth();
         addLegendBorderColor();
 
-
         // Backdrop Section
         addBackdropSectionBreak();
         addBackdropShow();
         addBackdropTransparency();
         addBackdropColor();
-
-
-
-
-
 
         // Margins Section
         addLegendBorderGapSectionBreak();

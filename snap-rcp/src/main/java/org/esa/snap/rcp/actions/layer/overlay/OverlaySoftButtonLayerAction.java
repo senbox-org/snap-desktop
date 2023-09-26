@@ -64,13 +64,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "soft.button.gridlines.overlay.show";
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_LABEL = "Map Gridlines Metadata Layer Display";
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_TOOLTIP = "Map Gridlines layer display when soft button is clicked";
-    public static final String SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = STATE_ON_ON;
-
+    public static final String SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = STATE_ON_OFF;
 
     public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY = "soft.button.colorbar.legend.overlay.show";
     public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_LABEL = "Show Color Bar Legend Layer";
     public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_TOOLTIP = "Shows Color Bar Legend layer when soft button is clicked";
-    public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = STATE_ON_ON;
+    public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = STATE_ON_OFF;
 
     public static final String SHOW_NO_DATA_OVERLAY_KEY = "soft.button.nodata.overlay.show";
     public static final String SHOW_NO_DATA_OVERLAY_LABEL = "Show No-Data Layer";
@@ -92,7 +91,6 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_GCP_OVERLAY_TOOLTIP = "Shows ground control points layer when soft button is clicked";
     public static final String SHOW_GCP_OVERLAY_DEFAULT = STATE_UNASSIGNED;
 
-
     public static final String SHOW_MASK_PARENT_OVERLAY_KEY = "soft.button.mask.parent.overlay.show";
     public static final String SHOW_MASK_PARENT_OVERLAY_LABEL = "Show Masks Parent Layers";
     public static final String SHOW_MASK_PARENT_OVERLAY_TOOLTIP = "Shows masks parent layers when soft button is clicked";
@@ -107,7 +105,6 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_MASK_LIST_OVERLAY_LABEL = "Show Specific Masks Layers";
     public static final String SHOW_MASK_LIST_OVERLAY_TOOLTIP = "Shows specific masks layers when soft button is clicked";
     public static final String SHOW_MASK_LIST_OVERLAY_DEFAULT = STATE_ON_OFF;
-
 
     public static final String MASK_LIST_KEY = "soft.button.mask.list.overlay";
     public static final String MASK_LIST_LABEL = "Show Mask(s)";
@@ -127,8 +124,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SET_ZOOM_FACTOR_2_KEY = "soft.button.zoom.factor2";
     public static final String SET_ZOOM_FACTOR_2_LABEL = "Image Zoom 2";
     public static final String SET_ZOOM_FACTOR_2_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
-    public static final double SET_ZOOM_FACTOR_2_DEFAULT = 0.9;
-
+    public static final double SET_ZOOM_FACTOR_2_DEFAULT = 1.0;
 
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_KEY = "soft.button.overlay.apply.all.view.windows";
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_LABEL = "Apply To All View Windows";

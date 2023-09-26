@@ -576,6 +576,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_TOOLTIP)
         boolean headerTitleSection = true;
 
+
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_SHOW_TOOLTIP)
+        boolean titleShow = ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT;
+
+
+
+
         @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_LABEL,
                 key = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_KEY,
                 description = ColorBarLayerType.PROPERTY_SCHEME_AUTO_APPLY_TOOLTIP)
@@ -602,10 +611,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
         // Units
 
-//        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL,
-//                key = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
-//                description = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP)
-//        boolean headerUnitsSection = true;
+        @Preference(label = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_TOOLTIP)
+        boolean headerUnitsSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP)
+        boolean unitsShow = ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_KEY,
@@ -622,6 +636,24 @@ public final class ColorBarLayerController extends DefaultConfigController {
 //                description = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP)
 //        boolean unitsAltUse = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_NULL_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP)
+        String unitsNull = ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_TOOLTIP)
+        boolean unitsParenthesis = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
+                key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
+                description = ColorBarLayerType.PROPERTY_CONVERT_CARET_TOOLTIP)
+        boolean convertCaret = ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT;
+
+
 
 
 
@@ -631,6 +663,12 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_KEY,
                 description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SECTION_TOOLTIP)
         boolean labelValuesSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP)
+        boolean labelsShow = ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT;
+
 
         @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_LABEL,
                 key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_APPLY_KEY,
@@ -658,15 +696,36 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_LABEL,
-                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
-                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP)
-        boolean schemeLabelsRestrict = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_INTERVAL)
+        double labelScaling = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_LABEL,
                 key = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_KEY,
                 description = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_TOOLTIP)
         boolean populateLabelValuesTextfield = ColorBarLayerType.PROPERTY_POPULATE_VALUES_TEXTFIELD_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_INTERVAL)
+        int decimalPlaces = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
+                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP)
+        boolean decimalPlacesForce = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_KEY,
+                description = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_TOOLTIP)
+        boolean schemeLabelsRestrict = ColorBarLayerType.PROPERTY_SCHEME_LABELS_RESTRICT_DEFAULT;
 
 
 
@@ -771,24 +830,8 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
-        int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_INTERVAL)
-        int unitsSize = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
-        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_LABEL,
                 key = ColorBarLayerType.PROPERTY_COLORBAR_LENGTH_KEY,
@@ -878,24 +921,19 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_TITLE_SECTION_TOOLTIP)
         boolean titleSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_SHOW_TOOLTIP)
-        boolean titleShow = ColorBarLayerType.PROPERTY_TITLE_SHOW_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_INTERVAL)
+        int titleSize = ColorBarLayerType.PROPERTY_TITLE_FONT_SIZE_DEFAULT;
 
 
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TOOLTIP)
-        boolean titleBold = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TOOLTIP)
-        boolean titleItalic = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT;
-
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP)
+        Color titleColor = ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT;
 
 
         @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_LABEL,
@@ -908,12 +946,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
         String titleFont = ColorBarLayerType.PROPERTY_TITLE_FONT_NAME_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_TITLE_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_TITLE_COLOR_TOOLTIP)
-        Color titleColor = ColorBarLayerType.PROPERTY_TITLE_COLOR_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_TOOLTIP)
+        boolean titleItalic = ColorBarLayerType.PROPERTY_TITLE_FONT_ITALIC_DEFAULT;
 
-
+        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_TOOLTIP)
+        boolean titleBold = ColorBarLayerType.PROPERTY_TITLE_FONT_BOLD_DEFAULT;
 
 
 
@@ -930,23 +971,18 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_SECTION_TOOLTIP)
         boolean unitsSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_SHOW_TOOLTIP)
-        boolean unitsShow = ColorBarLayerType.PROPERTY_UNITS_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_INTERVAL)
+        int unitsSize = ColorBarLayerType.PROPERTY_UNITS_FONT_SIZE_DEFAULT;
 
 
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP)
-        boolean unitsBold = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP)
-        boolean unitsItalic = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT;
-
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP)
+        Color unitsColor = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_KEY,
@@ -958,28 +994,15 @@ public final class ColorBarLayerController extends DefaultConfigController {
         String unitsFont = ColorBarLayerType.PROPERTY_UNITS_FONT_NAME_DEFAULT;
 
 
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_TOOLTIP)
-        Color unitsColor = ColorBarLayerType.PROPERTY_UNITS_FONT_COLOR_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_TOOLTIP)
+        boolean unitsItalic = ColorBarLayerType.PROPERTY_UNITS_FONT_ITALIC_DEFAULT;
 
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_NULL_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP)
-        String unitsNull = ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_LABEL,
-                key = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY,
-                description = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_TOOLTIP)
-        boolean unitsParenthesis = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_DEFAULT;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_CONVERT_CARET_LABEL,
-                key = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
-                description = ColorBarLayerType.PROPERTY_CONVERT_CARET_TOOLTIP)
-        boolean convertCaret = ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_TOOLTIP)
+        boolean unitsBold = ColorBarLayerType.PROPERTY_UNITS_FONT_BOLD_DEFAULT;
 
 
 
@@ -1002,23 +1025,18 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_LABELS_SECTION_TOOLTIP)
         boolean labelsFormattingSection = true;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_SHOW_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_SHOW_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_SHOW_TOOLTIP)
-        boolean labelsShow = ColorBarLayerType.PROPERTY_LABELS_SHOW_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_VALUE_INTERVAL)
+        int labelsSize = ColorBarLayerType.PROPERTY_LABELS_FONT_SIZE_DEFAULT;
 
 
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP)
-        boolean labelsBold = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP)
-        boolean labelsItalic = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP)
+        Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT;
 
 
         @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_LABEL,
@@ -1030,28 +1048,18 @@ public final class ColorBarLayerController extends DefaultConfigController {
                         ColorBarLayerType.FONT_NAME_MONOSPACED})
         String labelsFont = ColorBarLayerType.PROPERTY_LABELS_FONT_NAME_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_TOOLTIP)
+        boolean labelsItalic = ColorBarLayerType.PROPERTY_LABELS_FONT_ITALIC_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_KEY,
-                description = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_TOOLTIP)
-        Color labelsColor = ColorBarLayerType.PROPERTY_LABELS_FONT_COLOR_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_KEY,
-                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_INTERVAL)
-        double labelScaling = ColorBarLayerType.PROPERTY_LABEL_VALUES_SCALING_DEFAULT;
+        @Preference(label = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_LABEL,
+                key = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_KEY,
+                description = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_TOOLTIP)
+        boolean labelsBold = ColorBarLayerType.PROPERTY_LABELS_FONT_BOLD_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_KEY,
-                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_INTERVAL)
-        int decimalPlaces = ColorBarLayerType.PROPERTY_LABEL_VALUES_DECIMAL_PLACES_DEFAULT;
 
-        @Preference(label = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_LABEL,
-                key = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_KEY,
-                description = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_TOOLTIP)
-        boolean decimalPlacesForce = ColorBarLayerType.PROPERTY_LABEL_VALUES_FORCE_DECIMAL_PLACES_DEFAULT;
 
 //
 //        @Preference(label = ColorBarLayerType.PROPERTY_WEIGHT_TOLERANCE_LABEL,

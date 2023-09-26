@@ -59,249 +59,6 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        // Annotation Contents Section
-
-        addSectionBreak(MetaDataLayerType.PROPERTY_MARGIN_SECTION_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_SECTION_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_SECTION_TOOLTIP);
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_SHOW_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_SHOW_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_SHOW_TOOLTIP,
-                true);
-
-
-        // Header Location Subsection
-
-//        addSectionBreak(MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_KEY,
-//                MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_LABEL,
-//                MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_TOOLTIP,
-//                headerShow);
-//        context.bindEnabledState(MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_KEY, MetaDataLayerType.PROPERTY_HEADER_SHOW_KEY);
-
-
-
-        PropertyDescriptor footerLocationPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TYPE);
-        footerLocationPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT);
-        footerLocationPD.setValueSet(new ValueSet(MetaDataLayerType.getMarginLocationArray()));
-        footerLocationPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL);
-        footerLocationPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP);
-        footerLocationPD.setEnabled(footerShow);
-        footerLocationPD.setDefaultConverter();
-        addPropertyDescriptor(footerLocationPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-
-        PropertyDescriptor locationGapFactorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY, Double.class);
-        locationGapFactorPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_GAP_DEFAULT);
-        locationGapFactorPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_GAP_LABEL);
-        locationGapFactorPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_GAP_TOOLTIP);
-        locationGapFactorPD.setEnabled(footerShow);
-        locationGapFactorPD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_MARGIN_GAP_MIN, MetaDataLayerType.PROPERTY_MARGIN_GAP_MAX));
-        locationGapFactorPD.setDefaultConverter();
-        addPropertyDescriptor(locationGapFactorPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_TOOLTIP,
-                footerShow
-        );
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_TOOLTIP,
-                footerShow
-        );
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TOOLTIP,
-                footerShow
-        );
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP,
-                true
-        );
-
-
-
-//
-//
-//        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY,
-//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_DEFAULT,
-//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_LABEL,
-//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_TOOLTIP,
-//                footerShow);
-//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-
-
-
-        // Footer Format Section
-
-        addSectionBreak(MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_TOOLTIP);
-
-
-
-        PropertyDescriptor footerFontSizePD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY, Integer.class);
-        footerFontSizePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_DEFAULT);
-        footerFontSizePD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_LABEL);
-        footerFontSizePD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_TOOLTIP);
-        footerFontSizePD.setEnabled(footerShow);
-        footerFontSizePD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_MIN, MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_MAX));
-        footerFontSizePD.setDefaultConverter();
-        addPropertyDescriptor(footerFontSizePD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        PropertyDescriptor marginFontColorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY, Color.class);
-        marginFontColorPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_DEFAULT);
-        marginFontColorPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_LABEL);
-        marginFontColorPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_TOOLTIP);
-        marginFontColorPD.setEnabled(footerShow);
-        marginFontColorPD.setDefaultConverter();
-        addPropertyDescriptor(marginFontColorPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        PropertyDescriptor marginFontStylePD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY, String.class);
-
-        boolean marginFontExists = false;
-        for (String font : fontNameArray) {
-            if (MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT.equals(font)) {
-                marginFontExists = true;
-                break;
-            }
-        }
-        if (marginFontExists) {
-            marginFontStylePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT);
-        } else {
-            marginFontStylePD.setDefaultValue(defaultFont.toString());
-        }
-
-//        marginFontStylePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT);
-        marginFontStylePD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_LABEL);
-        marginFontStylePD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_TOOLTIP);
-        marginFontStylePD.setEnabled(footerShow);
-        marginFontStylePD.setValueSet(new ValueSet(fontNameArray));
-//        footerFontStylePD.setValueSet(new ValueSet(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_VALUE_SET));
-        marginFontStylePD.setDefaultConverter();
-        addPropertyDescriptor(marginFontStylePD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        PropertyDescriptor footerFontItalicPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY, Boolean.class);
-        footerFontItalicPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_DEFAULT);
-        footerFontItalicPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_LABEL);
-        footerFontItalicPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_TOOLTIP);
-        footerFontItalicPD.setEnabled(footerShow);
-        footerFontItalicPD.setDefaultConverter();
-        addPropertyDescriptor(footerFontItalicPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-        PropertyDescriptor footerFontBoldPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY, Boolean.class);
-        footerFontBoldPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_DEFAULT);
-        footerFontBoldPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_LABEL);
-        footerFontBoldPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_TOOLTIP);
-        footerFontBoldPD.setEnabled(footerShow);
-        footerFontBoldPD.setDefaultConverter();
-        addPropertyDescriptor(footerFontBoldPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-
 
         // Header Section
 
@@ -383,6 +140,294 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+
+
+
+
+
+        // Annotation Contents Section
+
+        addSectionBreak(MetaDataLayerType.PROPERTY_MARGIN_SECTION_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_SECTION_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_SECTION_TOOLTIP);
+
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_SHOW_TOOLTIP,
+                true);
+
+
+        // Header Location Subsection
+
+//        addSectionBreak(MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_KEY,
+//                MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_LABEL,
+//                MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_TOOLTIP,
+//                headerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_HEADER_LOCATION_SECTION_KEY, MetaDataLayerType.PROPERTY_HEADER_SHOW_KEY);
+
+
+
+        PropertyDescriptor footerLocationPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TYPE);
+        footerLocationPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT);
+        footerLocationPD.setValueSet(new ValueSet(MetaDataLayerType.getMarginLocationArray()));
+        footerLocationPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL);
+        footerLocationPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP);
+        footerLocationPD.setEnabled(footerShow);
+        footerLocationPD.setDefaultConverter();
+        addPropertyDescriptor(footerLocationPD);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+
+        PropertyDescriptor locationGapFactorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY, Double.class);
+        locationGapFactorPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_GAP_DEFAULT);
+        locationGapFactorPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_GAP_LABEL);
+        locationGapFactorPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_GAP_TOOLTIP);
+        locationGapFactorPD.setEnabled(footerShow);
+        locationGapFactorPD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_MARGIN_GAP_MIN, MetaDataLayerType.PROPERTY_MARGIN_GAP_MAX));
+        locationGapFactorPD.setDefaultConverter();
+        addPropertyDescriptor(locationGapFactorPD);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA2_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_TOOLTIP,
+                footerShow
+        );
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_TOOLTIP,
+                footerShow
+        );
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TOOLTIP,
+                footerShow
+        );
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
+                footerShow);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP,
+                true
+        );
+
+
+
+//
+//
+//        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_DEFAULT,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_LABEL,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_TOOLTIP,
+//                footerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEYS_SHOW_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+
+
+        // Footer2 Contents Section
+
+        addSectionBreak(MetaDataLayerType.PROPERTY_FOOTER2_SECTION_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_SECTION_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_SECTION_TOOLTIP);
+
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_TOOLTIP,
+                true);
+
+        PropertyDescriptor footer2LocationPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_TYPE);
+        footer2LocationPD.setDefaultValue(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_DEFAULT);
+        footer2LocationPD.setValueSet(new ValueSet(MetaDataLayerType.getFooter2LocationArray()));
+        footer2LocationPD.setDisplayName(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_LABEL);
+        footer2LocationPD.setDescription(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_TOOLTIP);
+        footer2LocationPD.setEnabled(footer2Show);
+        footer2LocationPD.setDefaultConverter();
+        addPropertyDescriptor(footer2LocationPD);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+
+        PropertyDescriptor footer2GapFactorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_GAP_KEY, Double.class);
+        footer2GapFactorPD.setDefaultValue(MetaDataLayerType.PROPERTY_FOOTER2_GAP_DEFAULT);
+        footer2GapFactorPD.setDisplayName(MetaDataLayerType.PROPERTY_FOOTER2_GAP_LABEL);
+        footer2GapFactorPD.setDescription(MetaDataLayerType.PROPERTY_FOOTER2_GAP_TOOLTIP);
+        footer2GapFactorPD.setEnabled(footer2Show);
+        footer2GapFactorPD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_FOOTER2_GAP_MIN, MetaDataLayerType.PROPERTY_FOOTER2_GAP_MAX));
+        footer2GapFactorPD.setDefaultConverter();
+        addPropertyDescriptor(footer2GapFactorPD);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_GAP_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_TOOLTIP,
+                footer2Show);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_TOOLTIP,
+                footer2Show);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_TOOLTIP,
+                footer2Show);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_TOOLTIP,
+                footer2Show);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_TOOLTIP,
+                true
+        );
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_LABEL,
+                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_TOOLTIP,
+                footer2Show);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
 
 
 
@@ -470,90 +515,77 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        // Margin Format Section
+
+            addSectionBreak(MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY,
+                    MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_LABEL,
+                    MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_TOOLTIP);
 
 
+            PropertyDescriptor footerFontSizePD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY, Integer.class);
+            footerFontSizePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_DEFAULT);
+            footerFontSizePD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_LABEL);
+            footerFontSizePD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_TOOLTIP);
+            footerFontSizePD.setEnabled(footerShow);
+            footerFontSizePD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_MIN, MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_MAX));
+            footerFontSizePD.setDefaultConverter();
+            addPropertyDescriptor(footerFontSizePD);
+            context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-        // Footer2 Contents Section
+            PropertyDescriptor marginFontColorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY, Color.class);
+            marginFontColorPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_DEFAULT);
+            marginFontColorPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_LABEL);
+            marginFontColorPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_TOOLTIP);
+            marginFontColorPD.setEnabled(footerShow);
+            marginFontColorPD.setDefaultConverter();
+            addPropertyDescriptor(marginFontColorPD);
+            context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-        addSectionBreak(MetaDataLayerType.PROPERTY_FOOTER2_SECTION_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_SECTION_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_SECTION_TOOLTIP);
+            PropertyDescriptor marginFontStylePD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY, String.class);
 
+            boolean marginFontExists = false;
+            for (String font : fontNameArray) {
+                if (MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT.equals(font)) {
+                    marginFontExists = true;
+                    break;
+                }
+            }
+            if (marginFontExists) {
+                marginFontStylePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT);
+            } else {
+                marginFontStylePD.setDefaultValue(defaultFont.toString());
+            }
 
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_SHOW_TOOLTIP,
-                true);
+//        marginFontStylePD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT);
+            marginFontStylePD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_LABEL);
+            marginFontStylePD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_TOOLTIP);
+            marginFontStylePD.setEnabled(footerShow);
+            marginFontStylePD.setValueSet(new ValueSet(fontNameArray));
+//        footerFontStylePD.setValueSet(new ValueSet(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_VALUE_SET));
+            marginFontStylePD.setDefaultConverter();
+            addPropertyDescriptor(marginFontStylePD);
+            context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-        PropertyDescriptor footer2LocationPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_TYPE);
-        footer2LocationPD.setDefaultValue(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_DEFAULT);
-        footer2LocationPD.setValueSet(new ValueSet(MetaDataLayerType.getFooter2LocationArray()));
-        footer2LocationPD.setDisplayName(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_LABEL);
-        footer2LocationPD.setDescription(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_TOOLTIP);
-        footer2LocationPD.setEnabled(footer2Show);
-        footer2LocationPD.setDefaultConverter();
-        addPropertyDescriptor(footer2LocationPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_LOCATION_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
-
-
-        PropertyDescriptor footer2GapFactorPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_GAP_KEY, Double.class);
-        footer2GapFactorPD.setDefaultValue(MetaDataLayerType.PROPERTY_FOOTER2_GAP_DEFAULT);
-        footer2GapFactorPD.setDisplayName(MetaDataLayerType.PROPERTY_FOOTER2_GAP_LABEL);
-        footer2GapFactorPD.setDescription(MetaDataLayerType.PROPERTY_FOOTER2_GAP_TOOLTIP);
-        footer2GapFactorPD.setEnabled(footer2Show);
-        footer2GapFactorPD.setValueRange(new ValueRange(MetaDataLayerType.PROPERTY_FOOTER2_GAP_MIN, MetaDataLayerType.PROPERTY_FOOTER2_GAP_MAX));
-        footer2GapFactorPD.setDefaultConverter();
-        addPropertyDescriptor(footer2GapFactorPD);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_GAP_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
-
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_TOOLTIP,
-                footer2Show);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_TOOLTIP,
-                footer2Show);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD2_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_TOOLTIP,
-                footer2Show);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD3_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+            PropertyDescriptor footerFontItalicPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY, Boolean.class);
+            footerFontItalicPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_DEFAULT);
+            footerFontItalicPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_LABEL);
+            footerFontItalicPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_TOOLTIP);
+            footerFontItalicPD.setEnabled(footerShow);
+            footerFontItalicPD.setDefaultConverter();
+            addPropertyDescriptor(footerFontItalicPD);
+            context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_TOOLTIP,
-                footer2Show);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_TEXTFIELD4_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
+            PropertyDescriptor footerFontBoldPD = new PropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY, Boolean.class);
+            footerFontBoldPD.setDefaultValue(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_DEFAULT);
+            footerFontBoldPD.setDisplayName(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_LABEL);
+            footerFontBoldPD.setDescription(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_TOOLTIP);
+            footerFontBoldPD.setEnabled(footerShow);
+            footerFontBoldPD.setDefaultConverter();
+            addPropertyDescriptor(footerFontBoldPD);
+            context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_TOOLTIP,
-                true
-        );
-
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY,
-                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_DEFAULT,
-                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_LABEL,
-                MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_TOOLTIP,
-                footer2Show);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_FOOTER2_MY_INFO_SHOW_KEY, MetaDataLayerType.PROPERTY_FOOTER2_SHOW_KEY);
 
 
 
