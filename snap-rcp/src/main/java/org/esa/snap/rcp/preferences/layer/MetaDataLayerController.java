@@ -127,6 +127,9 @@ public final class MetaDataLayerController extends DefaultConfigController {
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT);
+        initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT);
         initPropertyDefaults(context, MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT);
@@ -360,159 +363,6 @@ public final class MetaDataLayerController extends DefaultConfigController {
     static class MetaDataLayerBean {
 
 
-        // Margin Section
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_SECTION_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_SECTION_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_SECTION_TOOLTIP)
-        boolean marginSection = true;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_SHOW_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_SHOW_TOOLTIP)
-        boolean marginShowSection = MetaDataLayerType.PROPERTY_MARGIN_SHOW_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP)
-        String marginLocation = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT;
-
-
-//        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL,
-//                key = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
-//                description = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP,
-//                valueSet = {MetaDataLayerType.LOCATION_TOP_LEFT,
-//                        MetaDataLayerType.LOCATION_TOP_CENTER,
-//                        MetaDataLayerType.LOCATION_TOP_CENTER_JUSTIFY_LEFT,
-//                        MetaDataLayerType.LOCATION_TOP_RIGHT,
-//                        MetaDataLayerType.LOCATION_BOTTOM_LEFT,
-//                        MetaDataLayerType.LOCATION_BOTTOM_CENTER,
-//                        MetaDataLayerType.LOCATION_BOTTOM_CENTER_JUSTIFY_LEFT,
-//                        MetaDataLayerType.LOCATION_BOTTOM_RIGHT,
-//                        MetaDataLayerType.LOCATION_LEFT,
-//                        MetaDataLayerType.LOCATION_RIGHT
-//                })
-//        String marginLocation = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_GAP_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_GAP_TOOLTIP,
-                interval = MetaDataLayerType.PROPERTY_MARGIN_GAP_INTERVAL)
-        double marginGap = MetaDataLayerType.PROPERTY_MARGIN_GAP_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_TOOLTIP)
-        String marginTextfield1 = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_TOOLTIP)
-        String marginTextfield2 = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_TOOLTIP)
-        String marginMetadata1 = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_TOOLTIP)
-        String marginMetadata2 = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP)
-        String marginMetadata3 = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP)
-        String marginMetadata4 = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP)
-        String marginMetadata5 = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP)
-        String marginMetadataDelimiter = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP)
-        boolean marginInfoShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_TOOLTIP)
-        boolean marginMetadataShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_TOOLTIP)
-        boolean isMarginMetadataProcessControlShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TOOLTIP)
-        boolean marginBandMetadataShowAll = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP)
-        boolean marginConvertCaretDefault = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT;
-
-
-
-        // Margin Format Section
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_TOOLTIP)
-        boolean marginFormatSection = true;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_TOOLTIP,
-                interval = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_INTERVAL)
-        int marginFontSize = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_TOOLTIP)
-        Color marginFontColor = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_TOOLTIP,
-                valueSet = {MetaDataLayerType.PROPERTY_FONT_STYLE_1,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_2,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_3,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_4})
-        String marginFontStyle = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT;
-
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_TOOLTIP)
-        boolean marginFontItalic = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_LABEL,
-                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY,
-                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_TOOLTIP)
-        boolean marginFontBold = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_DEFAULT;
-
-
-
 
         // Header Section
 
@@ -583,58 +433,138 @@ public final class MetaDataLayerController extends DefaultConfigController {
         boolean headerConvertCaretDefault = MetaDataLayerType.PROPERTY_HEADER_CONVERT_CARET_DEFAULT;
 
 
-        // Header Format Section
-
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_TOOLTIP)
-        boolean headerFormatSection = true;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_TOOLTIP,
-                interval = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_INTERVAL)
-        int headerFontSize = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_DEFAULT;
-
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_TOOLTIP)
-        Color headerFontColor = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_DEFAULT;
 
 
-//        private String[] fontStyleValueSet = fontStyleValueSet();
-//        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
-//                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
-//                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP,
-//                valueSet = fontStyleValueSet)
-//        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+        // Margin Section
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_SECTION_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_SECTION_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_SECTION_TOOLTIP)
+        boolean marginSection = true;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_SHOW_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_SHOW_TOOLTIP)
+        boolean marginShowSection = MetaDataLayerType.PROPERTY_MARGIN_SHOW_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP)
+        String marginLocation = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT;
+
+
+//        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_LABEL,
+//                key = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_KEY,
+//                description = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_TOOLTIP,
+//                valueSet = {MetaDataLayerType.LOCATION_TOP_LEFT,
+//                        MetaDataLayerType.LOCATION_TOP_CENTER,
+//                        MetaDataLayerType.LOCATION_TOP_CENTER_JUSTIFY_LEFT,
+//                        MetaDataLayerType.LOCATION_TOP_RIGHT,
+//                        MetaDataLayerType.LOCATION_BOTTOM_LEFT,
+//                        MetaDataLayerType.LOCATION_BOTTOM_CENTER,
+//                        MetaDataLayerType.LOCATION_BOTTOM_CENTER_JUSTIFY_LEFT,
+//                        MetaDataLayerType.LOCATION_BOTTOM_RIGHT,
+//                        MetaDataLayerType.LOCATION_LEFT,
+//                        MetaDataLayerType.LOCATION_RIGHT
+//                })
+//        String marginLocation = MetaDataLayerType.PROPERTY_MARGIN_LOCATION_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_GAP_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_GAP_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_GAP_TOOLTIP,
+                interval = MetaDataLayerType.PROPERTY_MARGIN_GAP_INTERVAL)
+        double marginGap = MetaDataLayerType.PROPERTY_MARGIN_GAP_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_TOOLTIP)
+        String marginTextfield1 = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_TOOLTIP)
+        String marginTextfield2 = MetaDataLayerType.PROPERTY_MARGIN_TEXTFIELD2_DEFAULT;
 
 
 
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP,
-                valueSet = {MetaDataLayerType.PROPERTY_FONT_STYLE_1,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_2,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_3,
-                        MetaDataLayerType.PROPERTY_FONT_STYLE_4})
-        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY,
+            description = MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_TOOLTIP)
+        String marginPropertyHeadingDefault = MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT;
 
-//        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
-//                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
-//                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP)
-//        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_TOOLTIP)
+        String marginMetadata1 = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT;
 
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_TOOLTIP)
-        boolean headerFontItalic = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_DEFAULT;
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_TOOLTIP)
+        String marginMetadata2 = MetaDataLayerType.PROPERTY_MARGIN_METADATA2_DEFAULT;
 
-        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_LABEL,
-                key = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_KEY,
-                description = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_TOOLTIP)
-        boolean headerFontBold = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_DEFAULT;
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP)
+        boolean marginInfoShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT;
 
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_TOOLTIP)
+        String marginGlobalHeadingDefault = MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP)
+        String marginMetadata3 = MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP)
+        String marginMetadata4 = MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_TOOLTIP)
+        boolean marginMetadataShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_TOOLTIP)
+        boolean isMarginMetadataProcessControlShowAllSection = MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_DEFAULT;
+
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_TOOLTIP)
+        String marginBandHeadingDefault = MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP)
+        String marginMetadata5 = MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_TOOLTIP)
+        boolean marginBandMetadataShowAll = MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP)
+        String marginMetadataDelimiter = MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_TOOLTIP)
+        boolean marginConvertCaretDefault = MetaDataLayerType.PROPERTY_MARGIN_CONVERT_CARET_DEFAULT;
 
 
 
@@ -715,10 +645,108 @@ public final class MetaDataLayerController extends DefaultConfigController {
         boolean footerConvertCaretDefault = MetaDataLayerType.PROPERTY_FOOTER_CONVERT_CARET_DEFAULT;
 
 
-        // Footer Format Section
 
 
         // Header Format Section
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FORMAT_SECTION_TOOLTIP)
+        boolean headerFormatSection = true;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_TOOLTIP,
+                interval = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_INTERVAL)
+        int headerFontSize = MetaDataLayerType.PROPERTY_HEADER_FONT_SIZE_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_TOOLTIP)
+        Color headerFontColor = MetaDataLayerType.PROPERTY_HEADER_FONT_COLOR_DEFAULT;
+
+
+//        private String[] fontStyleValueSet = fontStyleValueSet();
+//        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
+//                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
+//                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP,
+//                valueSet = fontStyleValueSet)
+//        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP,
+                valueSet = {MetaDataLayerType.PROPERTY_FONT_STYLE_1,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_2,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_3,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_4})
+        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+
+//        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_LABEL,
+//                key = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_KEY,
+//                description = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_TOOLTIP)
+//        String headerFontStyle = MetaDataLayerType.PROPERTY_HEADER_FONT_STYLE_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_TOOLTIP)
+        boolean headerFontItalic = MetaDataLayerType.PROPERTY_HEADER_FONT_ITALIC_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_LABEL,
+                key = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_KEY,
+                description = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_TOOLTIP)
+        boolean headerFontBold = MetaDataLayerType.PROPERTY_HEADER_FONT_BOLD_DEFAULT;
+
+
+
+
+        // Margin Format Section
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FORMATTING_SECTION_TOOLTIP)
+        boolean marginFormatSection = true;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_TOOLTIP,
+                interval = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_INTERVAL)
+        int marginFontSize = MetaDataLayerType.PROPERTY_MARGIN_FONT_SIZE_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_TOOLTIP)
+        Color marginFontColor = MetaDataLayerType.PROPERTY_MARGIN_FONT_COLOR_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_TOOLTIP,
+                valueSet = {MetaDataLayerType.PROPERTY_FONT_STYLE_1,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_2,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_3,
+                        MetaDataLayerType.PROPERTY_FONT_STYLE_4})
+        String marginFontStyle = MetaDataLayerType.PROPERTY_MARGIN_FONT_STYLE_DEFAULT;
+
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_TOOLTIP)
+        boolean marginFontItalic = MetaDataLayerType.PROPERTY_MARGIN_FONT_ITALIC_DEFAULT;
+
+        @Preference(label = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_LABEL,
+                key = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_KEY,
+                description = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_TOOLTIP)
+        boolean marginFontBold = MetaDataLayerType.PROPERTY_MARGIN_FONT_BOLD_DEFAULT;
+
+
+
+
+
+        // Footer Format Section
+
 
         @Preference(label = MetaDataLayerType.PROPERTY_FOOTER2_FORMATTING_SECTION_LABEL,
                 key = MetaDataLayerType.PROPERTY_FOOTER2_FORMATTING_SECTION_KEY,
