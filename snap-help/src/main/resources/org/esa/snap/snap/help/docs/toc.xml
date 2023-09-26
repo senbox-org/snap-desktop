@@ -16,7 +16,7 @@
         <tocitem text="The 'pconvert' Tool" target="pconvertTool"/>
     </tocitem>
 
-    <tocitem text="Sentinel Toolbox Application">
+    <tocitem text="SeaDAS Application">
         <tocitem text="General Concepts">
             <tocitem text="Introduction" target="desktop"/>
             <tocitem text="Main Menu Bar" target="menuBar"/>
