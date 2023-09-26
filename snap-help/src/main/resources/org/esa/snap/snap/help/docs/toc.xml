@@ -104,6 +104,7 @@
             <tocitem text="Annotation Metadata Overlay" target="annotationMetadataOverlay"/>
             <tocitem text="Color Bar Legend" target="colorBarLegend"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
+            <tocitem text="Soft Button" target="softButton"/>
         </tocitem>
         <tocitem text="Vector">
             <tocitem text="Vector Data Management" target="vectorDataManagement"/>

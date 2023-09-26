@@ -32,7 +32,7 @@ import java.awt.*;
         keywordsCategory = "Layer",
         id = "LayerSoftButton")
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerSoftButton=Soft Button Layer(s)",
+        "Options_DisplayName_LayerSoftButton=Soft Button",
         "Options_Keywords_LayerSoftButton=layer, annotation, metadata, colorbar legend, soft button"
 })
 public final class SoftButtonLayerController extends DefaultConfigController {
@@ -247,7 +247,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showGridlinesOverlayStateDefault = OverlaySoftButtonLayerAction.SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT;
 
 
@@ -260,7 +262,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showColorBarLegendOverlayDefault = OverlaySoftButtonLayerAction.SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT;
 
 
@@ -273,7 +277,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showAnnotationOverlayStateDefault = OverlaySoftButtonLayerAction.SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT;
 
 
@@ -285,10 +291,23 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showNoDataOverlayDefault = OverlaySoftButtonLayerAction.SHOW_NO_DATA_OVERLAY_DEFAULT;
 
 
+        @Preference(label = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_LABEL,
+                key = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_KEY,
+                description = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_TOOLTIP,
+                valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
+                        OverlaySoftButtonLayerAction.STATE_ON_OFF,
+                        OverlaySoftButtonLayerAction.STATE_OFF_ON,
+                        OverlaySoftButtonLayerAction.STATE_ON_ON,
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
+        String showMaskParentOverlayDefault = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_DEFAULT;
 
 
         @Preference(label = OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_LABEL,
@@ -298,7 +317,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showMaskListOverlayDefault = OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_DEFAULT;
 
 
@@ -309,16 +330,31 @@ public final class SoftButtonLayerController extends DefaultConfigController {
         String maskListShowDefault = OverlaySoftButtonLayerAction.MASK_LIST_DEFAULT;
 
 
-        @Preference(label = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_LABEL,
-                key = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_KEY,
-                description = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_TOOLTIP,
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_LABEL,
+                key = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_KEY,
+                description = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_TOOLTIP,
                 valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
-        String showMaskParentOverlayDefault = OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_DEFAULT;
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
+        String showVectorParentOverlayDefault = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_DEFAULT;
 
+        @Preference(label = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_LABEL,
+                key = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_KEY,
+                description = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_TOOLTIP,
+                valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
+                        OverlaySoftButtonLayerAction.STATE_ON_OFF,
+                        OverlaySoftButtonLayerAction.STATE_OFF_ON,
+                        OverlaySoftButtonLayerAction.STATE_ON_ON,
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
+        String showGeometryOverlayDefault = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_DEFAULT;
 
 
 
@@ -329,7 +365,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showPinsOverlayDefault = OverlaySoftButtonLayerAction.SHOW_PINS_OVERLAY_DEFAULT;
 
 
@@ -340,31 +378,13 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ON_OFF,
                         OverlaySoftButtonLayerAction.STATE_OFF_ON,
                         OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
+                        OverlaySoftButtonLayerAction.STATE_OFF_OFF,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ON,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_OFF})
         String showGcpOverlayDefault = OverlaySoftButtonLayerAction.SHOW_GCP_OVERLAY_DEFAULT;
 
 
-        @Preference(label = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_LABEL,
-                key = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_KEY,
-                description = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_TOOLTIP,
-                valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
-                        OverlaySoftButtonLayerAction.STATE_ON_OFF,
-                        OverlaySoftButtonLayerAction.STATE_OFF_ON,
-                        OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
-        String showGeometryOverlayDefault = OverlaySoftButtonLayerAction.SHOW_GEOMETRY_OVERLAY_DEFAULT;
 
-
-
-        @Preference(label = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_LABEL,
-                key = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_KEY,
-                description = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_TOOLTIP,
-                valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
-                        OverlaySoftButtonLayerAction.STATE_ON_OFF,
-                        OverlaySoftButtonLayerAction.STATE_OFF_ON,
-                        OverlaySoftButtonLayerAction.STATE_ON_ON,
-                        OverlaySoftButtonLayerAction.STATE_OFF_OFF})
-        String showVectorParentOverlayDefault = OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_DEFAULT;
 
 
         @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_LABEL,
@@ -374,7 +394,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                         OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2,
                         OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
                         OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2})
+                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2})
         String setZoomFactorStateDefault = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT;
 
 
