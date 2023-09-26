@@ -507,6 +507,24 @@ public class ProductSceneImage implements ProductLayerContext {
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_TYPE);
+
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TYPE);
