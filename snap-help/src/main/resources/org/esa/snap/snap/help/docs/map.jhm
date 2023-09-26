@@ -88,6 +88,7 @@
     <mapID target="graticuleOverlay" url="desktop/ShowGraticuleOverlay.html"/>
     <mapID target="colorBarLegend" url="desktop/ColorBarLegend.html"/>
     <mapID target="annotationMetadataOverlay" url="desktop/AnnotationMetadataOverlay.html"/>
+    <mapID target="softButton" url="desktop/SoftButton.html"/>
     <mapID target="colorBarLegendPreferences" url="desktop/ColorBarLegend.html"/>
     <mapID target="noDataValue" url="desktop/NoDataValue.html"/>
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>

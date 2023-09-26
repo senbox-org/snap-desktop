@@ -37,10 +37,14 @@ import static org.esa.snap.rcp.actions.window.OpenImageViewAction.getProductScen
 public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
     public static final String STATE_UNASSIGNED = "Unassigned";
+    public static final String STATE_UNASSIGNED_ON = "Unassigned - ON";
+    public static final String STATE_UNASSIGNED_OFF = "Unassigned - OFF";
     public static final String STATE_ON_ON = "ON - ON";
     public static final String STATE_ON_OFF = "ON - OFF";
     public static final String STATE_OFF_ON = "OFF - ON";
     public static final String STATE_OFF_OFF = "OFF - OFF";
+    public static final String STATE_UNASSIGNED_ZOOM1 = "Unassigned - ZOOM 1";
+    public static final String STATE_UNASSIGNED_ZOOM2 = "Unassigned - ZOOM 2";
     public static final String STATE_ZOOM1_ZOOM2 = "ZOOM 1 - ZOOM 2";
     public static final String STATE_ZOOM1_ZOOM1 = "ZOOM 1 - ZOOM 1";
     public static final String STATE_ZOOM2_ZOOM1 = "ZOOM 2 - ZOOM 1";
@@ -57,12 +61,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
 
     public static final String SHOW_ANNOTATION_OVERLAY_STATE_KEY = "soft.button.annotation.overlay.show";
-    public static final String SHOW_ANNOTATION_OVERLAY_STATE_LABEL = "Annotation Metadata Layer Display";
+    public static final String SHOW_ANNOTATION_OVERLAY_STATE_LABEL = "Show Annotation Metadata Layer";
     public static final String SHOW_ANNOTATION_OVERLAY_STATE_TOOLTIP = "Assign Annotation Metadata layer display when soft button is clicked";
     public static final String SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = STATE_ON_OFF;
 
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "soft.button.gridlines.overlay.show";
-    public static final String SHOW_GRIDLINES_OVERLAY_STATE_LABEL = "Map Gridlines Metadata Layer Display";
+    public static final String SHOW_GRIDLINES_OVERLAY_STATE_LABEL = "Show Map Gridlines Layer";
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_TOOLTIP = "Map Gridlines layer display when soft button is clicked";
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = STATE_ON_OFF;
 
@@ -92,42 +96,42 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_GCP_OVERLAY_DEFAULT = STATE_UNASSIGNED;
 
     public static final String SHOW_MASK_PARENT_OVERLAY_KEY = "soft.button.mask.parent.overlay.show";
-    public static final String SHOW_MASK_PARENT_OVERLAY_LABEL = "Show Masks Parent Layers";
+    public static final String SHOW_MASK_PARENT_OVERLAY_LABEL = "Show Masks Layers";
     public static final String SHOW_MASK_PARENT_OVERLAY_TOOLTIP = "Shows masks parent layers when soft button is clicked";
     public static final String SHOW_MASK_PARENT_OVERLAY_DEFAULT = STATE_ON_OFF;
 
     public static final String SHOW_VECTOR_PARENT_OVERLAY_KEY = "soft.button.vector.parent.overlay.show";
-    public static final String SHOW_VECTOR_PARENT_OVERLAY_LABEL = "Show Vectors Parent Layers";
+    public static final String SHOW_VECTOR_PARENT_OVERLAY_LABEL = "Show Vectors Layers";
     public static final String SHOW_VECTOR_PARENT_OVERLAY_TOOLTIP = "Shows vectors parent layers when soft button is clicked";
     public static final String SHOW_VECTOR_PARENT_OVERLAY_DEFAULT = STATE_UNASSIGNED;
 
-    public static final String SHOW_MASK_LIST_OVERLAY_KEY = "soft.button.mask.list.overlay.show";
-    public static final String SHOW_MASK_LIST_OVERLAY_LABEL = "Show Specific Masks Layers";
+    public static final String SHOW_MASK_LIST_OVERLAY_KEY = "soft.button.favorite.masks.show";
+    public static final String SHOW_MASK_LIST_OVERLAY_LABEL = "Show Favorite Masks";
     public static final String SHOW_MASK_LIST_OVERLAY_TOOLTIP = "Shows specific masks layers when soft button is clicked";
     public static final String SHOW_MASK_LIST_OVERLAY_DEFAULT = STATE_ON_OFF;
 
-    public static final String MASK_LIST_KEY = "soft.button.mask.list.overlay";
-    public static final String MASK_LIST_LABEL = "Show Mask(s)";
+    public static final String MASK_LIST_KEY = "soft.button.favorite.mask.list";
+    public static final String MASK_LIST_LABEL = "Favorite Masks";
     public static final String MASK_LIST_TOOLTIP = "Shows masks from this comma or space delimited list";
     public static final String MASK_LIST_DEFAULT = "LAND,CLDICE,LandMask";
 
-    public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.zoom.factor";
-    public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Image Zoom";
-    public static final String SET_ZOOM_FACTOR_STATE_TOOLTIP = "Sets image zoom based on Zoom Factor 1 and Zoom Factor 2";
+    public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.set.zoom";
+    public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Zoom";
+    public static final String SET_ZOOM_FACTOR_STATE_TOOLTIP = "Sets image zoom based on Zoom 1 and Zoom 2";
     public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM1_ZOOM2;
 
-    public static final String SET_ZOOM_FACTOR_1_KEY = "soft.button.zoom.factor1";
-    public static final String SET_ZOOM_FACTOR_1_LABEL = "Image Zoom 1";
+    public static final String SET_ZOOM_FACTOR_1_KEY = "soft.button.zoom1";
+    public static final String SET_ZOOM_FACTOR_1_LABEL = "Scene Zoom 1";
     public static final String SET_ZOOM_FACTOR_1_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
     public static final double SET_ZOOM_FACTOR_1_DEFAULT = 0.7;
 
-    public static final String SET_ZOOM_FACTOR_2_KEY = "soft.button.zoom.factor2";
-    public static final String SET_ZOOM_FACTOR_2_LABEL = "Image Zoom 2";
+    public static final String SET_ZOOM_FACTOR_2_KEY = "soft.button.zoom2";
+    public static final String SET_ZOOM_FACTOR_2_LABEL = "Scene Zoom 2";
     public static final String SET_ZOOM_FACTOR_2_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
     public static final double SET_ZOOM_FACTOR_2_DEFAULT = 1.0;
 
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_KEY = "soft.button.overlay.apply.all.view.windows";
-    public static final String SHOW_IN_ALL_BANDS_OVERLAY_LABEL = "Apply To All View Windows";
+    public static final String SHOW_IN_ALL_BANDS_OVERLAY_LABEL = "Apply to all Open View Windows";
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_TOOLTIP = "Apply toggle of layer(s) to all open view windows when soft button is clicked";
     public static final boolean SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT = false;
 
@@ -255,9 +259,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
                 desiredState = SelectionState.OFF;
             }
         } else {
-            if (STATE_ON_ON.equals(userSelection) || STATE_OFF_ON.equals(userSelection)) {
+            if (STATE_ON_ON.equals(userSelection) || STATE_OFF_ON.equals(userSelection) || STATE_UNASSIGNED_ON.equals(userSelection)) {
                 desiredState = SelectionState.ON;
-            } else if (STATE_OFF_OFF.equals(userSelection) || STATE_ON_OFF.equals(userSelection)) {
+            } else if (STATE_OFF_OFF.equals(userSelection) || STATE_ON_OFF.equals(userSelection) || STATE_UNASSIGNED_OFF.equals(userSelection)) {
                 desiredState = SelectionState.OFF;
             }
         }
@@ -272,9 +276,13 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         if (desiredButtonState) {
             if (STATE_ZOOM1_ZOOM2.equals(userSelection) || STATE_ZOOM1_ZOOM1.equals(userSelection)) {
                 desiredState = SelectionState.ZOOM1;
+            } else if (STATE_ZOOM2_ZOOM1.equals(userSelection) || STATE_ZOOM2_ZOOM2.equals(userSelection)) {
+                desiredState = SelectionState.ZOOM2;
             }
         } else {
-             if (STATE_ZOOM1_ZOOM2.equals(userSelection) || STATE_ZOOM2_ZOOM2.equals(userSelection)) {
+            if (STATE_ZOOM1_ZOOM1.equals(userSelection) || STATE_ZOOM2_ZOOM1.equals(userSelection) || STATE_UNASSIGNED_ZOOM1.equals(userSelection)) {
+                desiredState = SelectionState.ZOOM1;
+            } else if (STATE_ZOOM1_ZOOM2.equals(userSelection) || STATE_ZOOM2_ZOOM2.equals(userSelection) || STATE_UNASSIGNED_ZOOM2.equals(userSelection)) {
                 desiredState = SelectionState.ZOOM2;
             }
         }
