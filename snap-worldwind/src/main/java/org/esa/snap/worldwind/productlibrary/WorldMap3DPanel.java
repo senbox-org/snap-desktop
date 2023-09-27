@@ -21,6 +21,7 @@ import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
+import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 
 import java.awt.Color;
 import java.awt.Cursor;
