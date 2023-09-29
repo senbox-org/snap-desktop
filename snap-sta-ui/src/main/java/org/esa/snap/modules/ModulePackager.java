@@ -160,7 +160,11 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             InfoBuilder infoBuilder = new InfoBuilder();
             String javaVersion = System.getProperty("java.version");
-            javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+            try {
+                javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+            }catch(Exception ex){
+                javaVersion = javaVersion.substring(0, javaVersion.indexOf("."));
+            }
             String descriptorName = normalize(descriptor.getName());
             String description = descriptor.getDescription();
 
@@ -324,7 +328,11 @@ public final class ModulePackager {
             zipStream.putNextEntry(entry);
             InfoBuilder infoBuilder = new InfoBuilder();
             String javaVersion = System.getProperty("java.version");
-            javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+            try {
+                javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+            }catch(Exception ex){
+                javaVersion = javaVersion.substring(0, javaVersion.indexOf("."));
+            }
             String descriptorName = descriptor.getName();
             String description = descriptor.getDescription();
 

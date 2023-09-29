@@ -15,7 +15,11 @@ public class ManifestBuilder extends AbstractBuilder {
     public ManifestBuilder() {
         version = "1.0";
         javaVersion = System.getProperty("java.version");
-        javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+        try {
+            javaVersion = javaVersion.substring(0, javaVersion.indexOf("_"));
+        }catch(Exception ex){
+            javaVersion = javaVersion.substring(0, javaVersion.indexOf("."));
+        }
         properties = new HashMap<>();
     }
 
