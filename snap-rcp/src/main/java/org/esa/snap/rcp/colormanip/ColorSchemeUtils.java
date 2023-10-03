@@ -46,7 +46,7 @@ public class ColorSchemeUtils {
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
         if (configuration != null && configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT)) {
-            String bandName = productSceneView.getBaseImageLayer().getName().trim();
+            String bandName = productSceneView.getRaster().getName().trim();
 //            String mission = ProductUtils.getMetaData(productSceneView.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
 //            if (mission == null || mission.length() == 0) {
 //                mission = productSceneView.getProduct().getProductType();
