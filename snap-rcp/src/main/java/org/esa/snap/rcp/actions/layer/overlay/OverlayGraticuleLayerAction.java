@@ -26,7 +26,7 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 20)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGraticuleLayerActionName=Graticule Overlay",
+        "CTL_OverlayGraticuleLayerActionName=Map Gridlines Overlay",
         "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
