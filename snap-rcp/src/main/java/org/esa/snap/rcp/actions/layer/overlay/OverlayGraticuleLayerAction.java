@@ -25,10 +25,12 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 20)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGraticuleLayerActionName=Graticule Overlay",
+        "CTL_OverlayGraticuleLayerActionName=Map Gridlines Overlay",
         "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
+
+    boolean isSetByThisTool = false;
 
     @Override
     protected void initActionProperties() {
@@ -40,7 +42,12 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
         return view.isGraticuleOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
