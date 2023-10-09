@@ -26,7 +26,7 @@ import org.openide.util.NbBundle;
 })
 @NbBundle.Messages({
         "CTL_OverlayGraticuleLayerActionName=Map Gridlines Overlay",
-        "CTL_OverlayGraticuleLayerActionToolTip=Show/hide graticule overlay for the selected image"
+        "CTL_OverlayGraticuleLayerActionToolTip=Show/hide Map Gridlines overlay for the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
@@ -57,6 +57,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setGraticuleOverlayEnabled(!getActionSelectionState(view));
     }
 
