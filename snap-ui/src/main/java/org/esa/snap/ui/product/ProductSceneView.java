@@ -82,6 +82,7 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
+import org.openide.util.actions.Presenter;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -511,11 +512,15 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/ProductSceneView");
         for (Action action : viewActions) {
+            if(action instanceof Presenter.Popup) {
+                popupMenu.add(((Presenter.Popup) action).getPopupPresenter());
+            }else {
             JMenuItem menuItem = popupMenu.add(action);
             String popupText = (String) action.getValue("popupText");
             if (StringUtils.isNotNullAndNotEmpty(popupText)) {
                 menuItem.setText(popupText);
             }
+        }
         }
         return popupMenu;
     }
