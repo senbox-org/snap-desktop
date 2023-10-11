@@ -72,6 +72,7 @@ import org.esa.snap.core.layer.MaskCollectionLayer;
 import org.esa.snap.core.layer.MetaDataLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.BasicView;
@@ -81,6 +82,7 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
+import org.openide.util.actions.Presenter;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -155,7 +157,33 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
+    /**
+     * Name of properties which zoom the view when opening a band view window.
+     */
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_KEY = "image.zoom.initial";
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.65;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY = "image.zoom.initial.wide.scene";
+    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 0.7;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY = "image.zoom.initial.tall.scene";
+    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 0.65;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY = "image.zoom.initial.aspect.wide";
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 1.2;
+    public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY = "image.zoom.initial.aspect.tall";
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT = 0.8;
+    /**
+     * Name of properties which turn on layers when opening a band view window.
+     */
+    public static final String SHOW_ANNOTATION_OVERLAY_STATE_KEY = "image.initial.annotation.overlay.show";
+    public static final boolean SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = true;
 
+    public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "image.initial.gridlines.overlay.show";
+    public static final boolean SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = true;
+
+    public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY = "image.initial.colorbar.legend.overlay.show";
+    public static final boolean SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = true;
+
+    public static final String SHOW_NO_DATA_OVERLAY_KEY = "image.initial.nodata.overlay.show";
+    public static final boolean SHOW_NO_DATA_OVERLAY_DEFAULT = true;
     /**
      * Name of property of image info
      */
@@ -237,6 +265,28 @@ public class ProductSceneView extends BasicView
 
         final Layer rootLayer = sceneImage.getRootLayer();
         this.layerCanvas = new LayerCanvas(rootLayer, viewport);
+
+        final double zoomInitial = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_KEY, PREFERENCE_ZOOM_INITIAL_DEFAULT);
+        this.layerCanvas.setZoomInitial(zoomInitial);
+
+        final double zoomInitialWide = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY, PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT);
+        this.layerCanvas.setZoomInitialWide(zoomInitialWide);
+
+        final double zoomInitialTall = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY, PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT);
+        this.layerCanvas.setZoomInitialTall(zoomInitialTall);
+
+        final double zoomInitialAspectWide = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY, PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT);
+        this.layerCanvas.setZoomInitialAspectWide(zoomInitialAspectWide);
+
+        final double zoomInitialAspectTall = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY, PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT);
+        this.layerCanvas.setZoomInitialAspectTall(zoomInitialAspectTall);
+
+
         rootLayer.addListener(new AbstractLayerListener() {
             @Override
             public void handleLayersRemoved(Layer parentLayer, Layer[] childLayers) {
@@ -284,6 +334,27 @@ public class ProductSceneView extends BasicView
         sceneImage.getConfiguration().addPropertyChangeListener(this);
 
         addDefaultLayers(sceneImage);
+
+        if (!isRGB()) {
+            final boolean initialShowAnnotationLayer = sceneImage.getConfiguration().getPropertyBool(
+                    SHOW_ANNOTATION_OVERLAY_STATE_KEY, SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT);
+            setMetaDataOverlayEnabled(initialShowAnnotationLayer);
+
+            final boolean initialShowColorBarLegendLayer = sceneImage.getConfiguration().getPropertyBool(
+                    SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY, SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT);
+            setColorBarOverlayEnabled(initialShowColorBarLegendLayer);
+
+            final boolean initialShowNoDataLayer = sceneImage.getConfiguration().getPropertyBool(
+                    SHOW_NO_DATA_OVERLAY_KEY, SHOW_NO_DATA_OVERLAY_DEFAULT);
+            setNoDataOverlayEnabled(initialShowNoDataLayer);
+        }
+
+        if (ProductUtils.canGetPixelPos(getRaster())) {
+            final boolean initialShowGridlinesLayer = sceneImage.getConfiguration().getPropertyBool(
+                    SHOW_GRIDLINES_OVERLAY_STATE_KEY, SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT);
+            setGraticuleOverlayEnabled(initialShowGridlinesLayer);
+        }
+
     }
 
     private void addDefaultLayers(final ProductSceneImage sceneImage) {
@@ -441,11 +512,15 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/ProductSceneView");
         for (Action action : viewActions) {
+            if(action instanceof Presenter.Popup) {
+                popupMenu.add(((Presenter.Popup) action).getPopupPresenter());
+            }else {
             JMenuItem menuItem = popupMenu.add(action);
             String popupText = (String) action.getValue("popupText");
             if (StringUtils.isNotNullAndNotEmpty(popupText)) {
                 menuItem.setText(popupText);
             }
+        }
         }
         return popupMenu;
     }
