@@ -198,7 +198,7 @@ public class ProductSceneView extends BasicView
      * Name of property of selected pin
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
-    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = Color.WHITE;
 
 
     private ProductSceneImage sceneImage;
