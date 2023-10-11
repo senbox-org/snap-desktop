@@ -391,12 +391,24 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                 key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY,
                 description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_TOOLTIP,
                 valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_DEFAULT,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_ALL,
                         OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2})
+//                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_DEFAULT,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ALL,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM_DEFAULT,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ALL,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM_DEFAULT,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ALL,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2,
+
+        })
         String setZoomFactorStateDefault = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT;
 
 

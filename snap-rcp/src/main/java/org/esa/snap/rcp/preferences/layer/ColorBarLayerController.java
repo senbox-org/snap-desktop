@@ -597,17 +597,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
         String title = ColorBarLayerType.PROPERTY_TITLE_DEFAULT;
 
 
-//        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
-//                description = ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP)
-//        String titleAlt = ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL,
-//                key = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
-//                description = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TOOLTIP)
-//        boolean titleAltUse = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT;
-
-
 
         // Units
 
@@ -626,15 +615,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_TOOLTIP)
         String units = ColorBarLayerType.PROPERTY_UNITS_DEFAULT;
 
-//        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_LABEL,
-//                key = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
-//                description = ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP)
-//        String unitsAlt = ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT;
-//
-//        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL,
-//                key = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
-//                description = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP)
-//        boolean unitsAltUse = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_NULL_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
