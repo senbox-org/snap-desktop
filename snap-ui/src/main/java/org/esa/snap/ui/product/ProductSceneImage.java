@@ -779,7 +779,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final GraticuleLayer graticuleLayer = (GraticuleLayer) layerType.createLayer(null, template);
         graticuleLayer.setId(ProductSceneView.GRATICULE_LAYER_ID);
         graticuleLayer.setVisible(false);
-        graticuleLayer.setName("Graticule");
+        graticuleLayer.setName("Map Gridlines");
         applyGraticuleLayerStyle(configuration, graticuleLayer);
         return graticuleLayer;
     }
@@ -1054,39 +1054,19 @@ public class ProductSceneImage implements ProductLayerContext {
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_HEADER_TITLE_SECTION_KEY);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_TITLE_KEY,
                 ColorBarLayerType.PROPERTY_TITLE_DEFAULT,
                 ColorBarLayerType.PROPERTY_TITLE_TYPE);
 
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_KEY,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_DEFAULT,
-                ColorBarLayerType.PROPERTY_TITLE_ALT_TYPE);
-
-
         addSectionPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_HEADER_UNITS_SECTION_KEY);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_DEFAULT,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_UNITS_KEY,
                 ColorBarLayerType.PROPERTY_UNITS_DEFAULT,
                 ColorBarLayerType.PROPERTY_UNITS_TYPE);
-
-        addPropertyToLayerConfiguration(configuration, layer,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_KEY,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT,
-                ColorBarLayerType.PROPERTY_UNITS_ALT_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_UNITS_NULL_KEY,
