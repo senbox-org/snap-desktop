@@ -52,7 +52,11 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionEnabledState(ProductSceneView view) {
-        return view.getRaster().isValidMaskUsed();
+        if (view.getRaster() != null && view.getRaster().isValidMaskUsed()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

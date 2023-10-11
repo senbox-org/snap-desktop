@@ -6,6 +6,7 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.support.LayerUtils;
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayerFilterFactory;
@@ -43,10 +44,27 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String STATE_ON_OFF = "ON - OFF";
     public static final String STATE_OFF_ON = "OFF - ON";
     public static final String STATE_OFF_OFF = "OFF - OFF";
-    public static final String STATE_UNASSIGNED_ZOOM1 = "Unassigned - ZOOM 1";
-    public static final String STATE_UNASSIGNED_ZOOM2 = "Unassigned - ZOOM 2";
+
+
+    public static final String STATE_UNASSIGNED_ZOOM_DEFAULT = "Unassigned - DEFAULT";
+    public static final String STATE_UNASSIGNED_ZOOM_ALL = "Unassigned - ALL";
+    public static final String STATE_UNASSIGNED_ZOOM1 = "Unassigned - ZOOM1";
+
+    public static final String STATE_ZOOM_DEFAULT_DEFAULT = "DEFAULT - DEFAULT";
+    public static final String STATE_ZOOM_DEFAULT_ALL = "DEFAULT - ALL";
+    public static final String STATE_ZOOM_DEFAULT_ZOOM1 = "DEFAULT - ZOOM_1";
+
+    public static final String STATE_ZOOM_ALL_ZOOM_DEFAULT = "ALL - DEFAULT";
+    public static final String STATE_ZOOM_ALL_ALL = "ALL - ALL";
+    public static final String STATE_ZOOM_ALL_ZOOM1 = "ALL - ZOOM1";
+
+    public static final String STATE_ZOOM1_ZOOM_DEFAULT = "ZOOM1 - DEFAULT";
+    public static final String STATE_ZOOM1_ALL = "ZOOM1 - ALL";
+    public static final String STATE_ZOOM1_ZOOM1 = "ZOOM1 - ZOOM1";
+
     public static final String STATE_ZOOM1_ZOOM2 = "ZOOM 1 - ZOOM 2";
-    public static final String STATE_ZOOM1_ZOOM1 = "ZOOM 1 - ZOOM 1";
+
+    public static final String STATE_UNASSIGNED_ZOOM2 = "Unassigned - ZOOM2";
     public static final String STATE_ZOOM2_ZOOM1 = "ZOOM 2 - ZOOM 1";
     public static final String STATE_ZOOM2_ZOOM2 = "ZOOM 2 - ZOOM 2";
 
@@ -56,7 +74,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         ON,
         OFF,
         ZOOM1,
-        ZOOM2
+        ZOOM2,
+        ZOOM_DEFAULT,
+        ZOOM_ALL
     }
 
 
@@ -118,7 +138,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.set.zoom";
     public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Zoom";
     public static final String SET_ZOOM_FACTOR_STATE_TOOLTIP = "Sets image zoom based on Zoom 1 and Zoom 2";
-    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM1_ZOOM2;
+    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM_DEFAULT_ALL;
 
     public static final String SET_ZOOM_FACTOR_1_KEY = "soft.button.zoom1";
     public static final String SET_ZOOM_FACTOR_1_LABEL = "Scene Zoom 1";
@@ -151,6 +171,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     SelectionState vectorParentOverlayDesiredState;
     double zoomFactor1;
     double zoomFactor2;
+
 
 
     private final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
@@ -274,21 +295,65 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         SelectionState desiredState = SelectionState.UNASSIGNED;
 
         if (desiredButtonState) {
-            if (STATE_ZOOM1_ZOOM2.equals(userSelection) || STATE_ZOOM1_ZOOM1.equals(userSelection)) {
+            if (STATE_ZOOM1_ZOOM2.equals(userSelection)
+                    || STATE_ZOOM1_ALL.equals(userSelection)
+                    || STATE_ZOOM1_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM1_ZOOM2.equals(userSelection)
+                    || STATE_ZOOM1_ZOOM_DEFAULT.equals(userSelection)
+            ) {
                 desiredState = SelectionState.ZOOM1;
-            } else if (STATE_ZOOM2_ZOOM1.equals(userSelection) || STATE_ZOOM2_ZOOM2.equals(userSelection)) {
+            } else if (STATE_ZOOM2_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM2_ZOOM2.equals(userSelection)) {
                 desiredState = SelectionState.ZOOM2;
+            } else if (STATE_ZOOM_DEFAULT_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM_DEFAULT_ALL.equals(userSelection)
+                    || STATE_ZOOM_DEFAULT_DEFAULT.equals(userSelection)
+            ) {
+                desiredState = SelectionState.ZOOM_DEFAULT;
+            } else if (STATE_ZOOM_ALL_ZOOM_DEFAULT.equals(userSelection)
+                    || STATE_ZOOM_ALL_ALL.equals(userSelection)
+                    || STATE_ZOOM_ALL_ZOOM1.equals(userSelection)
+            ) {
+                desiredState = SelectionState.ZOOM_ALL;
             }
         } else {
-            if (STATE_ZOOM1_ZOOM1.equals(userSelection) || STATE_ZOOM2_ZOOM1.equals(userSelection) || STATE_UNASSIGNED_ZOOM1.equals(userSelection)) {
+            if (STATE_ZOOM1_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM_ALL_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM2_ZOOM1.equals(userSelection)
+                    || STATE_UNASSIGNED_ZOOM1.equals(userSelection)
+                    || STATE_ZOOM_DEFAULT_ZOOM1.equals(userSelection)
+            ) {
                 desiredState = SelectionState.ZOOM1;
-            } else if (STATE_ZOOM1_ZOOM2.equals(userSelection) || STATE_ZOOM2_ZOOM2.equals(userSelection) || STATE_UNASSIGNED_ZOOM2.equals(userSelection)) {
+            } else if (STATE_ZOOM1_ZOOM2.equals(userSelection)
+                    || STATE_ZOOM2_ZOOM2.equals(userSelection)
+                    || STATE_UNASSIGNED_ZOOM2.equals(userSelection)) {
                 desiredState = SelectionState.ZOOM2;
+            } else if (STATE_ZOOM1_ZOOM_DEFAULT.equals(userSelection)
+                    || STATE_UNASSIGNED_ZOOM_DEFAULT.equals(userSelection)
+                    || STATE_ZOOM_ALL_ZOOM_DEFAULT.equals(userSelection)
+                    || STATE_ZOOM_DEFAULT_DEFAULT.equals(userSelection)
+            ) {
+                desiredState = SelectionState.ZOOM_DEFAULT;
+            } else if (STATE_ZOOM_DEFAULT_ALL.equals(userSelection)
+                    || STATE_UNASSIGNED_ZOOM_ALL.equals(userSelection)
+                    || STATE_ZOOM_ALL_ALL.equals(userSelection)
+                    || STATE_ZOOM1_ALL.equals(userSelection)
+            ) {
+                desiredState = SelectionState.ZOOM_ALL;
             }
         }
 
+
         return desiredState;
     }
+
+    public void zoomWithDefaultAspect(ProductSceneView view) {
+        if (view != null) {
+            view.getLayerCanvas().zoomWithDefaultAspect();
+        }
+    }
+
+
 
 
     public void zoom(final double zoomFactor, ProductSceneView view) {
@@ -324,7 +389,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
         if (graticuleOverlayDesiredState != SelectionState.UNASSIGNED) {
             if (graticuleOverlayDesiredState == SelectionState.ON) {
-                view.setGraticuleOverlayEnabled(true);
+                if (ProductUtils.canGetPixelPos(view.getRaster())) {
+                    view.setGraticuleOverlayEnabled(true);
+                }
             } else {
                 view.setGraticuleOverlayEnabled(false);
             }
@@ -333,7 +400,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
         if (metadataOverlayDesiredState != SelectionState.UNASSIGNED) {
             if (metadataOverlayDesiredState == SelectionState.ON) {
-                view.setMetaDataOverlayEnabled(true);
+                if (!view.isRGB()) {
+                    view.setMetaDataOverlayEnabled(true);
+                }
             } else {
                 view.setMetaDataOverlayEnabled(false);
             }
@@ -341,7 +410,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
         if (colorBarLegendOverlayDesiredState != SelectionState.UNASSIGNED) {
             if (colorBarLegendOverlayDesiredState == SelectionState.ON) {
-                view.setColorBarOverlayEnabled(true);
+                if (!view.isRGB()) {
+                    view.setColorBarOverlayEnabled(true);
+                }
             } else {
                 view.setColorBarOverlayEnabled(false);
             }
@@ -447,8 +518,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         if (zoomDesiredState != SelectionState.UNASSIGNED) {
             if (zoomDesiredState == SelectionState.ZOOM1) {
                 zoom(zoomFactor1, view);
-            } else {
+            } else if (zoomDesiredState == SelectionState.ZOOM2) {
                 zoom(zoomFactor2, view);
+            } else if (zoomDesiredState == SelectionState.ZOOM_DEFAULT) {
+                zoomWithDefaultAspect(view);
+            } else if (zoomDesiredState == SelectionState.ZOOM_ALL) {
+                zoomAll(view);
             }
         }
 

@@ -100,13 +100,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     // Keys named differently from preferences to not overwrite preferences
 
     // Title and Units Text
-    private static final String PROPERTY_TITLE_ALT_USE_KEY2 = ColorBarLayerType.PROPERTY_TITLE_ALT_USE_KEY + ".export";
     private static final String PROPERTY_TITLE_KEY2 = ColorBarLayerType.PROPERTY_TITLE_KEY + ".export";
-    private static final String PROPERTY_TITLE_ALT_KEY2 = ColorBarLayerType.PROPERTY_TITLE_ALT_KEY + ".export";
 
-    private static final String PROPERTY_UNITS_ALT_USE_KEY2 = ColorBarLayerType.PROPERTY_UNITS_ALT_USE_KEY + ".export";
     private static final String PROPERTY_UNITS_KEY2 = ColorBarLayerType.PROPERTY_UNITS_KEY + ".export";
-    private static final String PROPERTY_UNITS_ALT_KEY2 = ColorBarLayerType.PROPERTY_UNITS_ALT_KEY + ".export";
     private static final String PROPERTY_UNITS_NULL_KEY2 = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY + ".export";
 
 
@@ -429,18 +425,10 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
                         imageLegend.setTitle(schemeInfo.getColorBarTitle());
                     }
 
-                    if (schemeInfo.getColorBarTitleAlt() != null && schemeInfo.getColorBarTitleAlt().trim().length() > 0) {
-                        imageLegend.setTitleAlt(schemeInfo.getColorBarTitleAlt());
-                    }
-
 
                     if (schemeInfo.getColorBarUnits() != null && schemeInfo.getColorBarUnits().trim().length() > 0) {
                         imageLegend.setUnits(schemeInfo.getColorBarUnits());
 
-                    }
-
-                    if (schemeInfo.getColorBarUnitsAlt() != null && schemeInfo.getColorBarUnitsAlt().trim().length() > 0) {
-                        imageLegend.setUnitsAlt(schemeInfo.getColorBarUnitsAlt());
                     }
 
                     if (schemeInfo.getColorBarLengthStr() != null && schemeInfo.getColorBarLengthStr().trim().length() > 0) {
@@ -465,17 +453,11 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             String convertedTitle = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setTitle(convertedTitle);
 
-//            String convertedTitleAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
-            String convertedTitleAlt = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleAlt(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
-            imageLegend.setTitleAlt(convertedTitleAlt);
 
 //            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
             String convertedUnits = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setUnits(convertedUnits);
 
-//            String convertedUnitsAlt = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsAlt(), bandname, description, wavelength, angle, units, allowWavelengthZero);
-            String convertedUnitsAlt = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsAlt(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
-            imageLegend.setUnitsAlt(convertedUnitsAlt);
 
 
 
@@ -522,37 +504,14 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         // Title and Units Text
 
-        param = new Parameter(PROPERTY_TITLE_ALT_USE_KEY2, imageLegend.isTitleAltUse());
-        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_ALT_USE_LABEL);
-        param.addParamChangeListener(paramChangeListener);
-        paramGroup.addParameter(param);
-
         param = new Parameter(PROPERTY_TITLE_KEY2, imageLegend.getTitleText());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
 
-        param = new Parameter(PROPERTY_TITLE_ALT_KEY2, imageLegend.getTitleAlt());
-        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_TITLE_ALT_LABEL);
-        param.getProperties().setNumCols(24);
-        param.getProperties().setNullValueAllowed(true);
-        paramGroup.addParameter(param);
-
-
-        param = new Parameter(PROPERTY_UNITS_ALT_USE_KEY2, imageLegend.isUnitsAltUse());
-        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_ALT_USE_LABEL);
-        param.addParamChangeListener(paramChangeListener);
-        paramGroup.addParameter(param);
-
         param = new Parameter(PROPERTY_UNITS_KEY2, imageLegend.getUnitsText());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_LABEL);
-        param.getProperties().setNumCols(24);
-        param.getProperties().setNullValueAllowed(true);
-        paramGroup.addParameter(param);
-
-        param = new Parameter(PROPERTY_UNITS_ALT_KEY2, imageLegend.getUnitsAlt());
-        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_ALT_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
@@ -975,18 +934,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         }
 
 
-        boolean titleAltUse = (Boolean) legendParamGroup.getParameter(PROPERTY_TITLE_ALT_USE_KEY2).getValue();
-        if (titleAltUse) {
-            legendParamGroup.getParameter(PROPERTY_TITLE_KEY2).setUIEnabled(false);
-            legendParamGroup.getParameter(PROPERTY_TITLE_ALT_KEY2).setUIEnabled(true);
-        } else {
-            legendParamGroup.getParameter(PROPERTY_TITLE_KEY2).setUIEnabled(true);
-            legendParamGroup.getParameter(PROPERTY_TITLE_ALT_KEY2).setUIEnabled(false);
-        }
-
-//        boolean unitsAltUse = (Boolean) legendParamGroup.getParameter(PROPERTY_UNITS_ALT_USE_KEY2).getValue();
-//        legendParamGroup.getParameter(PROPERTY_UNITS_KEY2).setUIEnabled(!unitsAltUse);
-//        legendParamGroup.getParameter(PROPERTY_UNITS_ALT_KEY2).setUIEnabled(unitsAltUse);
+        legendParamGroup.getParameter(PROPERTY_TITLE_KEY2).setUIEnabled(true);
 
         boolean useLegendWidthTmp = (Boolean) legendParamGroup.getParameter(PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY2).getValue();
         legendParamGroup.getParameter(PROPERTY_EXPORT_LEGEND_WIDTH_KEY2).setUIEnabled(useLegendWidthTmp);
@@ -1025,32 +973,15 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         // Title and Units Text
 
-        value = legendParamGroup.getParameter(PROPERTY_TITLE_ALT_USE_KEY2).getValue();
-//        todo Danny
-//        imageLegend.setTitleAltUse((Boolean) value);
-        imageLegend.setTitleAltUse((Boolean) false);
 
         value = legendParamGroup.getParameter(PROPERTY_TITLE_KEY2).getValue();
         imageLegend.setTitle((String) value);
 
-        value = legendParamGroup.getParameter(PROPERTY_TITLE_ALT_KEY2).getValue();
-        imageLegend.setTitleAlt((String) value);
-
-
-
-        value = legendParamGroup.getParameter(PROPERTY_UNITS_ALT_USE_KEY2).getValue();
-        imageLegend.setUnitsAltUse((Boolean) value);
-
         value = legendParamGroup.getParameter(PROPERTY_UNITS_KEY2).getValue();
         imageLegend.setUnits((String) value);
 
-        value = legendParamGroup.getParameter(PROPERTY_UNITS_ALT_KEY2).getValue();
-        imageLegend.setUnitsAlt((String) value);
-
         value = legendParamGroup.getParameter(PROPERTY_UNITS_NULL_KEY2).getValue();
         imageLegend.setUnitsNull((String) value);
-
-
 
 
         value = legendParamGroup.getParameter(PROPERTY_CONVERT_CARET_KEY2).getValue();
@@ -1261,12 +1192,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
         // Title and Units Text
-        private Parameter titleAltUseParam;
         private Parameter titleTextParam;
-        private Parameter titleAltParam;
-        private Parameter unitsAltUseParam;
         private Parameter unitsTextParam;
-        private Parameter unitsAltParam;
         private Parameter unitsNullParam;
         private Parameter convertCaretParam;
         private Parameter unitsParenthesisParam;
@@ -1374,14 +1301,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             // Colors Override
             boolean bwColorOverride = (Boolean) bwColorOverrideParam.getValue();
 
-
-            boolean titleAltUse = (Boolean) titleAltUseParam.getValue();
-            titleAltParam.setUIEnabled(titleAltUse);
-            titleTextParam.setUIEnabled(!titleAltUse);
-
-            boolean unitsAltUse = (Boolean) unitsAltUseParam.getValue();
-            unitsAltParam.setUIEnabled(unitsAltUse);
-            unitsTextParam.setUIEnabled(!unitsAltUse);
+            titleTextParam.setUIEnabled(true);
+            unitsTextParam.setUIEnabled(true);
 
 
             // Title Section
@@ -1499,20 +1420,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             titleTextParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_TOOLTIP);
             titleTextParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_TOOLTIP);
 
-//            gbc.gridy++;
-//            gbc.gridwidth = 1;
-//            p.add(titleAltParam.getEditor().getLabelComponent(), gbc);
-//            p.add(titleAltParam.getEditor().getEditorComponent(), gbc);
-//            titleAltParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP);
-//            titleAltParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_TOOLTIP);
-//
-//            gbc.gridy++;
-//            gbc.gridwidth = 2;
-//            p.add(titleAltUseParam.getEditor().getEditorComponent(), gbc);
-//            titleAltUseParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_TITLE_ALT_USE_TOOLTIP);
-
-
-
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -1551,22 +1458,6 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             gbc.gridwidth = 2;
             p.add(unitsParenthesisParam.getEditor().getEditorComponent(), gbc);
             unitsParenthesisParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_TOOLTIP);
-
-
-//            gbc.gridy++;
-//            gbc.gridwidth = 1;
-//            p.add(unitsAltParam.getEditor().getLabelComponent(), gbc);
-//            p.add(unitsAltParam.getEditor().getEditorComponent(), gbc);
-//            unitsAltParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP);
-//            unitsAltParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_ALT_TOOLTIP);
-//
-//
-//            gbc.gridy++;
-//            gbc.gridwidth = 2;
-//            p.add(unitsAltUseParam.getEditor().getEditorComponent(), gbc);
-//            unitsAltUseParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_ALT_USE_TOOLTIP);
-
-
 
 
 
@@ -2095,13 +1986,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private void initParams() {
 
             // Title and Units Text
-            titleAltUseParam = paramGroup.getParameter(PROPERTY_TITLE_ALT_USE_KEY2);
             titleTextParam = paramGroup.getParameter(PROPERTY_TITLE_KEY2);
-            titleAltParam = paramGroup.getParameter(PROPERTY_TITLE_ALT_KEY2);
 
-            unitsAltUseParam = paramGroup.getParameter(PROPERTY_UNITS_ALT_USE_KEY2);
             unitsTextParam = paramGroup.getParameter(PROPERTY_UNITS_KEY2);
-            unitsAltParam = paramGroup.getParameter(PROPERTY_UNITS_ALT_KEY2);
             unitsNullParam = paramGroup.getParameter(PROPERTY_UNITS_NULL_KEY2);
 
 

@@ -27,7 +27,6 @@
         <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Aerosol Optical Thickness at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
-        <COLORBAR_TITLE_ALT>Aerosol Optical Thickness: &lt;PROPERTY=band&gt;</COLORBAR_TITLE_ALT>
         <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
         <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
         <DESCRIPTION>Aerosol optical thickness</DESCRIPTION>
@@ -55,7 +54,7 @@
         <LOG_SCALE>true</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
-<!--        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>-->
+<!--        <COLORBAR_TITLE>Chlorophyll Concentration</COLORBAR_TITLE>-->
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
         <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
     </Scheme>
@@ -121,8 +120,8 @@
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE></COLORBAR_TITLE>
-        <COLORBAR_LABELS>0,10,20,30,40,50,60,70,76.2</COLORBAR_LABELS>
+        <COLORBAR_TITLE>Photosynthetically Available Radiation</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,20,40,60,76.2</COLORBAR_LABELS>
         <DESCRIPTION>Photosynthetically Available Radiation</DESCRIPTION>
     </Scheme>
 
