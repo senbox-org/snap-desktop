@@ -167,20 +167,20 @@ public class ProductSceneView extends BasicView
     public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 1.2;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY = "image.zoom.initial.aspect.tall";
     public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT = 0.8;
-    /**
-     * Name of properties which turn on layers when opening a band view window.
-     */
-    public static final String SHOW_ANNOTATION_OVERLAY_STATE_KEY = "image.initial.annotation.overlay.show";
-    public static final boolean SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = true;
-
-    public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "image.initial.gridlines.overlay.show";
-    public static final boolean SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = true;
-
-    public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY = "image.initial.colorbar.legend.overlay.show";
-    public static final boolean SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = true;
-
-    public static final String SHOW_NO_DATA_OVERLAY_KEY = "image.initial.nodata.overlay.show";
-    public static final boolean SHOW_NO_DATA_OVERLAY_DEFAULT = true;
+//    /**
+//     * Name of properties which turn on layers when opening a band view window.
+//     */
+//    public static final String SHOW_ANNOTATION_OVERLAY_STATE_KEY = "image.initial.annotation.overlay.show";
+//    public static final boolean SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = true;
+//
+//    public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "image.initial.gridlines.overlay.show";
+//    public static final boolean SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = true;
+//
+//    public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY = "image.initial.colorbar.legend.overlay.show";
+//    public static final boolean SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = true;
+//
+//    public static final String SHOW_NO_DATA_OVERLAY_KEY = "image.initial.nodata.overlay.show";
+//    public static final boolean SHOW_NO_DATA_OVERLAY_DEFAULT = true;
     /**
      * Name of property of image info
      */
@@ -332,25 +332,25 @@ public class ProductSceneView extends BasicView
 
         addDefaultLayers(sceneImage);
 
-        if (!isRGB()) {
-            final boolean initialShowAnnotationLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_ANNOTATION_OVERLAY_STATE_KEY, SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT);
-            setMetaDataOverlayEnabled(initialShowAnnotationLayer);
-
-            final boolean initialShowColorBarLegendLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY, SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT);
-            setColorBarOverlayEnabled(initialShowColorBarLegendLayer);
-
-            final boolean initialShowNoDataLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_NO_DATA_OVERLAY_KEY, SHOW_NO_DATA_OVERLAY_DEFAULT);
-            setNoDataOverlayEnabled(initialShowNoDataLayer);
-        }
-
-        if (ProductUtils.canGetPixelPos(getRaster())) {
-            final boolean initialShowGridlinesLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_GRIDLINES_OVERLAY_STATE_KEY, SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT);
-            setGraticuleOverlayEnabled(initialShowGridlinesLayer);
-        }
+//        if (!isRGB()) {
+//            final boolean initialShowAnnotationLayer = sceneImage.getConfiguration().getPropertyBool(
+//                    SHOW_ANNOTATION_OVERLAY_STATE_KEY, SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT);
+//            setMetaDataOverlayEnabled(initialShowAnnotationLayer);
+//
+//            final boolean initialShowColorBarLegendLayer = sceneImage.getConfiguration().getPropertyBool(
+//                    SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY, SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT);
+//            setColorBarOverlayEnabled(initialShowColorBarLegendLayer);
+//
+//            final boolean initialShowNoDataLayer = sceneImage.getConfiguration().getPropertyBool(
+//                    SHOW_NO_DATA_OVERLAY_KEY, SHOW_NO_DATA_OVERLAY_DEFAULT);
+//            setNoDataOverlayEnabled(initialShowNoDataLayer);
+//        }
+//
+//        if (ProductUtils.canGetPixelPos(getRaster())) {
+//            final boolean initialShowGridlinesLayer = sceneImage.getConfiguration().getPropertyBool(
+//                    SHOW_GRIDLINES_OVERLAY_STATE_KEY, SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT);
+//            setGraticuleOverlayEnabled(initialShowGridlinesLayer);
+//        }
 
     }
 
