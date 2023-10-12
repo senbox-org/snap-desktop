@@ -138,12 +138,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.set.zoom";
     public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Zoom";
     public static final String SET_ZOOM_FACTOR_STATE_TOOLTIP = "Sets image zoom based on Zoom 1 and Zoom 2";
-    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM_DEFAULT_ALL;
+    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM1_ALL;
 
     public static final String SET_ZOOM_FACTOR_1_KEY = "soft.button.zoom1";
     public static final String SET_ZOOM_FACTOR_1_LABEL = "Scene Zoom 1";
     public static final String SET_ZOOM_FACTOR_1_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
-    public static final double SET_ZOOM_FACTOR_1_DEFAULT = 0.7;
+    public static final double SET_ZOOM_FACTOR_1_DEFAULT = 0.65;
 
     public static final String SET_ZOOM_FACTOR_2_KEY = "soft.button.zoom2";
     public static final String SET_ZOOM_FACTOR_2_LABEL = "Scene Zoom 2";
