@@ -235,7 +235,7 @@ public class TestProducts {
 //    }
 
     private static float[] createRandomPoints(int n) {
-        Random random = new Random();
+        Random random = new Random(987);
         float[] pnts = new float[n];
         for (int i = 0; i < pnts.length; i++) {
             pnts[i] = (float) random.nextGaussian();
