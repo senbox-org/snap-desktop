@@ -1,6 +1,9 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.7
+    [SNAP-3558] Update Product Library for CDAS on 9x
+
 # New in SNAP 9.0.6
     [SNAP-3473] Improve behaviour of output parameters dialog in Reprojection tool
     [SNAP-3479] Exception in decode qualification of ZnapProductReader
