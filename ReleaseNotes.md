@@ -1,6 +1,13 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 9.0.8
+    [SNAP-3480] Reading S2 product results in cannot open error  
+    [SNAP-3500] GDAL native library fail to load on Mac after system update.
+    [SNAP-3503] Unable to open S2 products on Mac after update of the reader to use GDAL library
+    [SNAP-3570] GDAL Reader not working after SNAP 9.0.7 release
+    [SNAP-3558] Update Product Library for CDAS on 9x
+
 # New in SNAP 9.0.7
     [SNAP-3558] Update Product Library for CDAS on 9x
 
