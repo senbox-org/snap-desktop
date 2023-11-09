@@ -52,7 +52,7 @@ public class ParametersPanel extends VerticalScrollablePanel {
                     }
                     parameterComponent = new StringComboBoxParameterComponent(param.getName(), defaultValue, param.getLabel(), param.isRequired(), values, componentDimension);
                 }
-            } else if (param.getType() == Double.class || param.getType() == Float.class || param.getType() == Integer.class || param.getType() == Short.class) {
+            } else if (param.getType() == Double.class || param.getType() == double.class || param.getType() == Float.class || param.getType() == float.class || param.getType() == Integer.class || param.getType() == int.class || param.getType() == Short.class || param.getType() == short.class ) {
                 // the parameter type is number
                 Number defaultValue = (param.getDefaultValue() == null) ? null : (Number)param.getDefaultValue();
                 parameterComponent = new NumberParameterComponent(param.getName(), param.getType(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
