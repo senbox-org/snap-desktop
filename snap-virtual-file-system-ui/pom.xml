@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>9.0.8-SNAPSHOT</version>
+        <version>9.0.8</version>
     </parent>
 
     <artifactId>snap-virtual-file-system-ui</artifactId>
