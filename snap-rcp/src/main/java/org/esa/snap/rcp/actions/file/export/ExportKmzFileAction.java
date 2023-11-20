@@ -32,6 +32,7 @@ import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
+import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -66,6 +67,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+//JUN2021 - Daniel Knowles - Minor renaming due to revisions of color bar and color bar layer tools
+
 
 @ActionID(
         category = "File",
@@ -296,10 +300,10 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private static ImageLegend initImageLegend(RasterDataNode raster) {
         ImageLegend imageLegend = new ImageLegend(raster.getImageInfo(), raster);
 
-        imageLegend.setHeaderText(getLegendHeaderText(raster));
-        imageLegend.setOrientation(ImageLegend.VERTICAL);
-        imageLegend.setBackgroundTransparency(0.0f);
-        imageLegend.setBackgroundTransparencyEnabled(true);
+        imageLegend.setTitle(getLegendHeaderText(raster));
+        imageLegend.setOrientation(ColorBarLayerType.OPTION_VERTICAL);
+        imageLegend.setBackdropTransparency(0.0f);
+        imageLegend.setTransparencyEnabled(true);
         imageLegend.setAntialiasing(true);
 
         return imageLegend;
