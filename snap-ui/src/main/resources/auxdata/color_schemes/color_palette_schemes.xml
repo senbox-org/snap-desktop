@@ -777,24 +777,13 @@
 
 
 
-    <Scheme name="NDVI">
+    <Scheme name="ndvi">
         <VERBOSE_NAME/>
         <MIN>-0.05</MIN>
         <MAX>0.915200</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE></COLORBAR_TITLE>
-        <COLORBAR_LABELS></COLORBAR_LABELS>
-        <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
-    </Scheme>
-    <Scheme name="ndvi">
-        <VERBOSE_NAME/>
-        <MIN>-0.35</MIN>
-        <MAX>0.920000</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <UNIVERSAL_FILENAME>oceancolor_ndvi.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
