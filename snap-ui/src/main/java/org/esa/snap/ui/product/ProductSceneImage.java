@@ -48,6 +48,7 @@ import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.layer.RasterImageLayerType;
 import org.esa.snap.core.layer.RgbImageLayerType;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.ui.PackageDefaults;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
