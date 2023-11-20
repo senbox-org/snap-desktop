@@ -66,6 +66,25 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         Font defaultFont = g2d.getFont();
 //        addSchemeLabelsRestrictCheckbox();
 
+
+
+        // Orientation Section
+        addOrientationSectionBreak();
+        addAlignment();
+//        addSceneAspectBestFit();  too much so only in Preferences
+        addTitleAnchor();
+        addReversePalette();
+
+        // Color Bar Scaling Section
+        // Sizing Section
+        addLegendSizingSectionBreak();
+        addImageScaling();
+        addImageScalingPercent();
+//        addColorBarLength();    too much so only in Preferences
+//        addColorBarWidth();    too much so only in Preferences
+
+
+
         // Title/Units Section
         addHeaderTitleSectionBreak();
         addTitleShow();
@@ -97,23 +116,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
 //        addWeightTolerance();
 
 
-        // Orientation Section
-        addOrientationSectionBreak();
-        addAlignment();
-        addSceneAspectBestFit();
-        addTitleAnchor();
-        addReversePalette();
 
 
-
-        // Color Bar Scaling Section
-//        addSizeScalingSectionBreak();
-        // Sizing Section
-        addLegendSizingSectionBreak();
-        addImageScaling();
-        addImageScalingPercent();
-        addColorBarLength();
-        addColorBarWidth();
 
         // Color Bar Location Section
         addLocationSectionBreak();
@@ -259,12 +263,11 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDisplayName(PROPERTY_TITLE_LABEL);
         pd.setDescription(PROPERTY_TITLE_TOOLTIP);
         pd.setDefaultConverter();
-        pd.setEnabled(!titleShow);
+        pd.setEnabled(titleShow);
         addPropertyDescriptor(pd);
 
 
-        context.bindEnabledState(PROPERTY_TITLE_KEY, false,
-                PROPERTY_TITLE_SHOW_KEY, true);
+        context.bindEnabledState(PROPERTY_TITLE_KEY, PROPERTY_TITLE_SHOW_KEY);
     }
 
 
@@ -289,8 +292,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDefaultConverter();
         addPropertyDescriptor(pd);
 
-        context.bindEnabledState(PROPERTY_UNITS_KEY, true,
-                PROPERTY_UNITS_SHOW_KEY, false);
+        context.bindEnabledState(PROPERTY_UNITS_KEY, PROPERTY_UNITS_SHOW_KEY);
     }
 
 

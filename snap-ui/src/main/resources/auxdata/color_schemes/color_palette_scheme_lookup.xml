@@ -337,7 +337,10 @@
   <!--  END   PACE HARP  -->
 
 
-
+  <KEY REGEX="^ndvi($|_.+)">
+    <SCHEME_ID>ndvi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
 
 
   <!--todo:  the following have been commented out and they can be reviewed and implemented late using strict regular expression.-->
