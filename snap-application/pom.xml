@@ -57,6 +57,14 @@
             <artifactId>org-netbeans-modules-extbrowser</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <!-- To use Jelly Tools in your functional tests, add or replace with:
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-jellytools-platform</artifactId>
+            <version>${netbeans.version}</version>
+            <scope>test</scope>
+        </dependency>
+        -->
 
         <!-- SNAP project modules -->
         <dependency>
@@ -194,6 +202,18 @@
         <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>lib-gdal-preferences-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- disabled: these modules don't have the required maturity right now. -->
+        <!--<dependency>-->
+        <!--<groupId>${project.groupId}</groupId>-->
+        <!--<artifactId>snap-opendap-ui</artifactId>-->
+        <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-timeseries-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
 

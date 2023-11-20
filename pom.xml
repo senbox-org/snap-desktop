@@ -57,6 +57,7 @@
         <module>lib-gdal-preferences-ui</module>
         <module>snap-gdal-writer-ui</module>
 
+        <module>snap-timeseries-ui</module>
     </modules>
 
     <dependencyManagement>
@@ -227,10 +228,10 @@
             </dependency>
             <dependency>
                 <groupId>org.esa.snap</groupId>
-                <artifactId>ceres-core</artifactId>
+                <artifactId>snap-test-utils</artifactId>
                 <version>${snap.version}</version>
-                <scope>test</scope>
                 <type>test-jar</type>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
