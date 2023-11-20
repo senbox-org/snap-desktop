@@ -462,6 +462,18 @@
             <attr name="editorClass"
                   stringvalue="org.esa.snap.rcp.layermanager.editors.GraticuleLayerEditor"/>
         </file>
+        <file name="MetaDataLayerType">
+            <attr name="layerTypeClass"
+                  stringvalue="org.esa.snap.core.layer.MetaDataLayerType"/>
+            <attr name="editorClass"
+                  stringvalue="org.esa.snap.rcp.layermanager.editors.MetaDataLayerEditor"/>
+        </file>
+        <file name="ColorBarLayerType">
+            <attr name="layerTypeClass"
+                  stringvalue="org.esa.snap.core.layer.ColorBarLayerType"/>
+            <attr name="editorClass"
+                  stringvalue="org.esa.snap.rcp.layermanager.editors.ColorBarLayerEditor"/>
+        </file>
     </folder>
     <folder name="LayerSources">
         <file name="WmsLayerSource">
