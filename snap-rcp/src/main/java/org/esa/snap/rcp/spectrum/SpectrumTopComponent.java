@@ -21,6 +21,7 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.math.Array;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
@@ -172,6 +173,61 @@ public class SpectrumTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
+                if (currentProduct.getName().contains("SPEX")) {
+                    List<Integer> view_Angles = new ArrayList<Integer>();
+                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
+                        int viewAngle = (int) currentProduct.getBandAt(i).getAngularValue();
+                        if (!view_Angles.contains(viewAngle)) {
+                            view_Angles.add(viewAngle);
+                            if (view_Angles.size()  == 5) {
+                                break;
+                            }
+                        }
+                    }
+                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+                    if (view_Angles != null) {
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "I_" + view_Angles.get(i) + "_*:";
+                        }
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "DOLP_" + view_Angles.get(i) + "_*:";
+                        }
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "AOLP_" + view_Angles.get(i) + "_*:";
+                        }
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "i_" + view_Angles.get(i) + "_*:";
+                        }
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "alop_" + view_Angles.get(i) + "_*:";
+                        }
+                        for (int i = 0; i < 5; i ++) {
+                            autoGroupingStr += "dolp_" + view_Angles.get(i) + "_*:";
+                        }
+                    }
+                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
+                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
+                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noise:AOLP_noisefree:" +
+                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
+                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
+                            "obs_per_view:view_time_offsets";
+                    currentProduct.setAutoGrouping(autoGroupingStr);
+//                    currentProduct.setAutoGrouping("I:I_58_*:I_22_*:I_4_*:I_-22_*:I_-58_*:" +
+//                            "AOLP:AOLP_58_*:AOLP_22_*:AOLP_4_*:AOLP_-22_*:AOLP_-58_*:" +
+//                            "DOLP:DOLP_58_*:DOLP_22_*:DOLP_4_*:DOLP_-22_*:DOLP_-58_*:" +
+//                            "QC:QC_58_*:QC_22_*:QC_4_*:QC_-22_*:QC_-58_*:" +
+//                            "I_57_*:I_50_*:I_20_*:I_0_*:I_-20_*:I_-57_*:I_-50*:" +
+//                            "AOLP_57_*:AOLP_50:AOLP_20_*:AOLP_0_*:AOLP_-20_*:AOLP_-57_*:AOLP_-50" +
+//                            "DOLP_57_*:DOLP_20_*:DOLP_0_*:DOLP_-20_*:DOLP_-57_*:" +
+//                            "QC_57_*:QC_20_*:QC_0_*:QC_-22_*:QC_-57_*:" +
+//                            "QC_bitwise:QC_polsample_bitwise:QC_polsample:" +
+//                            "I_noise:I_noisefree:I_polsample:I_polsample_noise:I_noisefree_polsample:" +
+//                            "DOLP_noise:DOLP_noisefree:AOLP_noise:AOLP_noisefree:" +
+//                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:" +
+//                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
+//                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
+//                            "obs_per_view:view_time_offsets");
+                }
                 if (!rasterToSpectraMap.containsKey(currentView.getRaster())) {
                     setUpSpectra();
                 }
@@ -521,6 +577,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
                 for (SpectrumBand availableSpectralBand : availableSpectralBands) {
                     final String bandName = availableSpectralBand.getName();
+                    if (currentProduct.getName().contains("SPEX")) {
+                        availableSpectralBand.setSelected(false);
+                    }
                     final int spectrumIndex = autoGrouping.indexOf(bandName);
                     if (spectrumIndex != -1) {
                         autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);
