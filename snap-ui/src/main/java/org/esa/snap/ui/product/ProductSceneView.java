@@ -515,12 +515,12 @@ public class ProductSceneView extends BasicView
             if(action instanceof Presenter.Popup) {
                 popupMenu.add(((Presenter.Popup) action).getPopupPresenter());
             }else {
-            JMenuItem menuItem = popupMenu.add(action);
-            String popupText = (String) action.getValue("popupText");
-            if (StringUtils.isNotNullAndNotEmpty(popupText)) {
-                menuItem.setText(popupText);
+                JMenuItem menuItem = popupMenu.add(action);
+                String popupText = (String) action.getValue("popupText");
+                if (StringUtils.isNotNullAndNotEmpty(popupText)) {
+                    menuItem.setText(popupText);
+                }
             }
-        }
         }
         return popupMenu;
     }
