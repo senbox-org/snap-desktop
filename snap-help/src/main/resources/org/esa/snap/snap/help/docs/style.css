@@ -9,7 +9,7 @@ body {
 
 p {
     font-family: Verdana, Arial, Helvetica, sans-serif;
-    margin: 6pt;
+    margin: 0pt;
 }
 
 .i1 {
@@ -56,7 +56,7 @@ h2 {
     margin-top: 18pt;
     margin-right: 6pt;
     margin-bottom: 12pt;
-    margin-left: 6pt;
+    margin-left: 0pt;
 }
 
 h3 {
@@ -65,8 +65,8 @@ h3 {
     font-weight: bold;
     margin-top: 18pt;
     margin-right: 6pt;
-    margin-bottom: 12pt;
-    margin-left: 6pt;
+    margin-bottom: 6pt;
+    margin-left: 0pt;
 }
 
 h4 {
@@ -76,7 +76,7 @@ h4 {
     margin-top: 18pt;
     margin-right: 6pt;
     margin-bottom: 6pt;
-    margin-left: 6pt;
+    margin-left: 0pt;
 }
 
 h5 {
@@ -102,6 +102,11 @@ h6 {
 li {
     margin-top: 4pt;
     margin-bottom: 4pt;
+}
+
+hr_custom {
+size: 5px
+color: #00cccc
 }
 
 table {
@@ -155,7 +160,7 @@ table.header {
     font-size: 17;
     color: #ffffff;
     vertical-align: middle;
-    background-color: #024150;
+    background-color: #ffffff;
     border-width: 0;
     padding: 0;
     margin: 0;
