@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -32,7 +33,7 @@ import javax.swing.Icon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ProfilePlot",
+        mode = PackageDefaults.PROFILE_PLOT_WS_MODE,
         openAtStartup = false,
         position = 30
 )
