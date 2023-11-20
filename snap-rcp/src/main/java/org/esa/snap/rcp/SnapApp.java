@@ -4,6 +4,7 @@ import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import com.formdev.flatlaf.FlatLightLaf;
 import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.datamodel.*;
@@ -346,6 +347,8 @@ public class SnapApp {
     public void onStart() {
         engine = Engine.start(false);
 
+        initialiseLookAndFeel();
+
         String toolbarConfig = "Standard";
         if (Config.instance().debug()) {
             WindowManager.getDefault().setRole("developer");
@@ -539,6 +542,26 @@ public class SnapApp {
         public void run() {
             LOG.info("Stopping SNAP Desktop");
             SnapApp.getDefault().onStop();
+        }
+    }
+
+    /**
+     * The method changes the default look and feel to FlatLaf Light on Windows, if the user has not changed the look and feel before.
+     * Because of two reasons. First, it looks nicer, and second but more important, it fixes a bug in the Windows look and feel.
+     * The bug is that icons disappear in the Analysis menu when one of the items clicked. It occurs in SNAP 10 with JDK11 and Netbeans 11.3.
+     */
+    private static void initialiseLookAndFeel() {
+        if (Utilities.isWindows()) {
+            Preferences lafPreference = NbPreferences.root().node("laf");
+            if (lafPreference == null || lafPreference.get("laf", null) == null) {
+                try {
+                    UIManager.setLookAndFeel(FlatLightLaf.class.getName());
+                    lafPreference.put("laf", FlatLightLaf.class.getName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                         UnsupportedLookAndFeelException e) {
+                    LOG.warning("Could not set FlatLaf Light Look and Feel");
+                }
+            }
         }
     }
 
