@@ -212,13 +212,22 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+// Only showing in preferences as it was too much
+//        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY,
+//                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT,
+//                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_LABEL,
+//                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_TOOLTIP,
+//                footerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_TOOLTIP,
+
+        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP,
                 footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_PROPERTY_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
 
         addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_KEY,
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA_DEFAULT,
@@ -235,40 +244,17 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
                 footerShow);
         context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA2_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-        addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_INFO_KEYS_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
 
-
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP,
-                footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+// Only showing in preferences as it was too much
+//
+//        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY,
+//                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_DEFAULT,
+//                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_LABEL,
+//                MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_TOOLTIP,
+//                footerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_GLOBAL_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
         addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_KEY,
                 MetaDataLayerType.PROPERTY_MARGIN_METADATA_SHOW_ALL_DEFAULT,
@@ -287,22 +273,30 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
         context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_PROCESS_CONTROL_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_TOOLTIP,
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA3_TOOLTIP,
                 footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA3_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
-
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP,
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA4_TOOLTIP,
                 footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA4_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
+
+
+// Only showing in preferences as it was too much
+//        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY,
+//                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_DEFAULT,
+//                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_LABEL,
+//                MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_TOOLTIP,
+//                footerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_HEADING_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+
 
         addBooleanPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY,
                 MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_DEFAULT,
@@ -313,14 +307,22 @@ public class MetaDataLayerEditor extends AbstractLayerConfigurationEditor {
         context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_BAND_METADATA_SHOW_ALL_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
 
-
-        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
-                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
+        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_DEFAULT,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_LABEL,
+                MetaDataLayerType.PROPERTY_MARGIN_METADATA5_TOOLTIP,
                 footerShow);
-        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA5_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
 
+
+// Only showing in preferences as it was too much
+//        addStringPropertyDescriptor(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_DEFAULT,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_LABEL,
+//                MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_TOOLTIP,
+//                footerShow);
+//        context.bindEnabledState(MetaDataLayerType.PROPERTY_MARGIN_METADATA_DELIMITER_KEY, MetaDataLayerType.PROPERTY_MARGIN_SHOW_KEY);
+//
 
 
 
