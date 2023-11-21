@@ -72,7 +72,7 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addOrientationSectionBreak();
         addAlignment();
 //        addSceneAspectBestFit();  too much so only in Preferences
-        addTitleAnchor();
+//        addTitleAnchor();  too much so only in Preferences
         addReversePalette();
 
         // Color Bar Scaling Section
@@ -97,8 +97,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         addUnitsShow();
 
         addUnitsTextfield();
-        addUnitsNullTextfield();
-        addUnitsParenthesisBoolean();
+//        addUnitsNullTextfield();  too much so only in Preferences
+//        addUnitsParenthesisBoolean();  too much so only in Preferences
         addConvertCaretBoolean();
 
 

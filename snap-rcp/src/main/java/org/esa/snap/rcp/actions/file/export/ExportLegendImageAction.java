@@ -412,6 +412,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 //                mission = raster.getProduct().getProductType();
 //            }
             ColorSchemeInfo schemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, raster.getProduct());
+//            schemeInfo = raster.getImageInfo().getColorSchemeInfo();
 
 //        if (!legendInitialized) {
             if (autoApplySchemes) {//auto-apply
