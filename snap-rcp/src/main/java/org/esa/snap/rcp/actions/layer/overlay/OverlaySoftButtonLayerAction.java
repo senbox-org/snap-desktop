@@ -478,37 +478,49 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         }
 
 
-        // turn on parent level masks folder if any masks are in list
-        if (maskListOverlayDesiredState == SelectionState.ON && masksArrayList != null && masksArrayList.size() > 0) {
-            if (!view.isMaskOverlayEnabled()) {
-                view.setMaskOverlayEnabled(true);
-            }
+        if (maskListOverlayDesiredState != SelectionState.UNASSIGNED && masksArrayList != null && masksArrayList.size() > 0) {
 
-            for (String maskName : masksArrayList) {
-                // Make sure 2 entries didn't ever get in place.  Delete all entries for this maskName
-                Mask mask = view.getRaster().getOverlayMaskGroup().get(maskName);
-                while (mask != null) {
-                    view.getRaster().getOverlayMaskGroup().remove(mask);
-                    mask = view.getRaster().getOverlayMaskGroup().get(maskName);
+            // turn on parent level masks folder if any masks are in list
+            if (maskListOverlayDesiredState == SelectionState.ON) {
+                if (!view.isMaskOverlayEnabled()) {
+                    view.setMaskOverlayEnabled(true);
                 }
 
-                if (maskListOverlayDesiredState == SelectionState.ON) {
-
-                    // don't add mask twice
-                    mask = view.getRaster().getOverlayMaskGroup().get(maskName);
-                    if (mask == null) {
-
-                        // mask not in group to add it if it is a mask
-                        mask = view.getProduct().getMaskGroup().get(maskName);
-                        if (mask != null) {
-                            view.getRaster().getOverlayMaskGroup().add(mask);
-                        }
+                for (String maskName : masksArrayList) {
+                    // Make sure 2 entries didn't ever get in place.  Delete all entries for this maskName
+                    Mask mask = view.getRaster().getOverlayMaskGroup().get(maskName);
+                    while (mask != null) {
+                        view.getRaster().getOverlayMaskGroup().remove(mask);
+                        mask = view.getRaster().getOverlayMaskGroup().get(maskName);
                     }
 
-                } else {
-                    mask = view.getRaster().getOverlayMaskGroup().get(maskName);
-                    if (mask != null) {
+                    if (maskListOverlayDesiredState == SelectionState.ON) {
+
+                        // don't add mask twice
+                        mask = view.getRaster().getOverlayMaskGroup().get(maskName);
+                        if (mask == null) {
+
+                            // mask not in group to add it if it is a mask
+                            mask = view.getProduct().getMaskGroup().get(maskName);
+                            if (mask != null) {
+                                view.getRaster().getOverlayMaskGroup().add(mask);
+                            }
+                        }
+
+                    } else {
+                        mask = view.getRaster().getOverlayMaskGroup().get(maskName);
+                        if (mask != null) {
+                            view.getRaster().getOverlayMaskGroup().remove(mask);
+                        }
+                    }
+                }
+            } else {
+                for (String maskName : masksArrayList) {
+                    // Delete all entries for this maskName
+                    Mask mask = view.getRaster().getOverlayMaskGroup().get(maskName);
+                    while (mask != null) {
                         view.getRaster().getOverlayMaskGroup().remove(mask);
+                        mask = view.getRaster().getOverlayMaskGroup().get(maskName);
                     }
                 }
             }
