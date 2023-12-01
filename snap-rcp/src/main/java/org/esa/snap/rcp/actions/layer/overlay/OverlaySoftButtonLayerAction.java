@@ -390,7 +390,9 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         if (graticuleOverlayDesiredState != SelectionState.UNASSIGNED) {
             if (graticuleOverlayDesiredState == SelectionState.ON) {
                 if (ProductUtils.canGetPixelPos(view.getRaster())) {
-                    view.setGraticuleOverlayEnabled(true);
+                    if (view.validGeoCorners()) {
+                        view.setGraticuleOverlayEnabled(true);
+                    }
                 }
             } else {
                 view.setGraticuleOverlayEnabled(false);
