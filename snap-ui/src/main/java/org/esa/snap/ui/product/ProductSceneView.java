@@ -350,11 +350,41 @@ public class ProductSceneView extends BasicView
         }
 
         if (ProductUtils.canGetPixelPos(getRaster())) {
-            final boolean initialShowGridlinesLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_GRIDLINES_OVERLAY_STATE_KEY, SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT);
-            setGraticuleOverlayEnabled(initialShowGridlinesLayer);
+            if (validGeoCorners()) {
+                final boolean initialShowGridlinesLayer = sceneImage.getConfiguration().getPropertyBool(
+                        SHOW_GRIDLINES_OVERLAY_STATE_KEY, SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT);
+                setGraticuleOverlayEnabled(initialShowGridlinesLayer);
+            }
+        }
+    }
+
+    public boolean validGeoCorners() {
+        if (ProductUtils.canGetPixelPos(getRaster())) {
+            GeoPos geoPos = new GeoPos();
+            getRaster().getGeoCoding().getGeoPos(new PixelPos(0,0), geoPos);
+            if (!geoPos.isValid()) {
+                return false;
+            }
+
+            getRaster().getGeoCoding().getGeoPos(new PixelPos(getRaster().getRasterWidth() - 1, 0), geoPos);
+            if (!geoPos.isValid()) {
+                return false;
+            }
+
+            getRaster().getGeoCoding().getGeoPos(new PixelPos(0, getRaster().getRasterHeight() - 1), geoPos);
+            if (!geoPos.isValid()) {
+                return false;
+            }
+
+            getRaster().getGeoCoding().getGeoPos(new PixelPos(getRaster().getRasterWidth() - 1, getRaster().getRasterHeight() - 1), geoPos);
+            if (!geoPos.isValid()) {
+                return false;
+            }
+
+            return true;
         }
 
+        return false;
     }
 
     private void addDefaultLayers(final ProductSceneImage sceneImage) {
