@@ -117,7 +117,7 @@ public final class NoDataLayerController extends DefaultConfigController {
                 interval = "[0.0,1.0]")
         double noDataOverlayTransparency = 0.3;
 
-        @Preference(label = "No-data overlay valid Geo",
+        @Preference(label = "Limit No-Data mask to valid geolocated pixels",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_VALID_GEO)
         boolean noDataOverlayValidGeo = NoDataLayerType.DEFAULT_VALID_GEO;
     }
