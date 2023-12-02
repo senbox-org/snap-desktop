@@ -1262,10 +1262,21 @@ public class ProductSceneView extends BasicView
 
     public void updateNoDataImage() {
         // change configuration of layer ; not setting MultiLevelSource
-        final String expression = getRaster().getValidMaskExpression();
+         String expression = getRaster().getValidMaskExpression();
+
+
         final ImageLayer noDataLayer = (ImageLayer) getNoDataLayer(false);
         if (noDataLayer != null) {
             if (expression != null) {
+                final boolean validGeo = noDataLayer.getConfiguration().getValue(
+                        NoDataLayerType.PROPERTY_NAME_VALID_GEO);
+                if (validGeo) {
+                    if (expression.trim().length() > 0) {
+                        expression = expression.trim() + " or LAT < -90 or LAT > 90 or nan(LAT) or nan(LON)";
+                    } else {
+                        expression = "LAT < -90 or LAT > 90 or nan(LAT) or nan(LON)";
+                    }
+                }
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
                 final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
