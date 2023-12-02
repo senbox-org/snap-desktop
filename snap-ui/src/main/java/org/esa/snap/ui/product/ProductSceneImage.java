@@ -333,6 +333,10 @@ public class ProductSceneImage implements ProductLayerContext {
 
         final Color color = configuration.getPropertyColor("noDataOverlay.color", NoDataLayerType.DEFAULT_COLOR);
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_COLOR, color);
+
+        final boolean validGeo = configuration.getPropertyBool("noDataOverlay.valid.geo", NoDataLayerType.DEFAULT_VALID_GEO);
+        configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_VALID_GEO, validGeo);
+
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_RASTER, getRaster());
         final Layer layer = noDataType.createLayer(this, configTemplate);
         final double transparency = configuration.getPropertyDouble("noDataOverlay.transparency", 0.3);
