@@ -1,5 +1,5 @@
 # RGB-Image Configuration Profile
-# OLCI-S3A_TrueColor_(665,560,490)_Log
+# OLCI_TrueColor_(665,560,490)_Log
 #
 # A true color RGB configuration profile which uses a red, green and blue band for the
 # respective RGB color model channels
