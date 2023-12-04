@@ -143,7 +143,9 @@ public class SubsetUI extends BaseOperatorUI {
         referenceCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateParametersReferenceBand();
+                if (referenceCombo.isEnabled()) {
+                    updateParametersReferenceBand();
+                }
             }
         });
         subSamplingX.addChangeListener(new ChangeListener() {
@@ -287,7 +289,7 @@ public class SubsetUI extends BaseOperatorUI {
         getGeoRegion();
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
-        } else {
+        } else if(sourceProducts!=null) {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
     }
