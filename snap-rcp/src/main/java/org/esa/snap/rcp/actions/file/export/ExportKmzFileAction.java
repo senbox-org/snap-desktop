@@ -20,16 +20,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageEncoder;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageLegend;
-import org.esa.snap.core.datamodel.MapGeoCoding;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
 import org.esa.snap.core.util.Debug;
@@ -46,20 +37,10 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.HelpCtx;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import java.awt.Cursor;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -104,113 +85,22 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
 
     public ExportKmzFileAction(Lookup lookup) {
         super(Bundle.CTL_ExportKmzFileAction_MenuText());
-        putValue("popupText",Bundle.CTL_ExportKmzFileAction_PopupText());
+        putValue("popupText", Bundle.CTL_ExportKmzFileAction_PopupText());
         result = lookup.lookupResult(ProductSceneView.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
 
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-        final GeoCoding geoCoding = view.getProduct().getSceneGeoCoding();
-        boolean isGeographic = false;
-        if (geoCoding instanceof MapGeoCoding) {
-            MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
-            MapTransformDescriptor transformDescriptor = mapGeoCoding.getMapInfo()
-                    .getMapProjection().getMapTransform().getDescriptor();
-            String typeID = transformDescriptor.getTypeID();
-            if (typeID.equals(IdentityTransformDescriptor.TYPE_ID)) {
-                isGeographic = true;
-            }
-        } else if (geoCoding instanceof CrsGeoCoding) {
-            isGeographic = CRS.equalsIgnoreMetadata(geoCoding.getMapCRS(), DefaultGeographicCRS.WGS84);
-        }
-
-        if (isGeographic) {
-            exportImage(view);
-        } else {
-            String message = "Product must be in ''Geographic Lat/Lon'' projection.";
-            Dialogs.showInformation(message, null);
-        }
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
-    }
-
-
-    @Override
-    public Action createContextAwareInstance(Lookup lookup) {
-        return new ExportKmzFileAction(lookup);
-    }
-
-    @Override
-    public void resultChanged(LookupEvent lookupEvent) {
-        setEnabled(SnapApp.getDefault().getSelectedProductSceneView() != null);
-    }
-
-
-    private void exportImage(ProductSceneView sceneView) {
-        SnapApp snapApp = SnapApp.getDefault();
-        final String lastDir = Config.instance().load().preferences().get(
+    static String getLastDir() {
+        return Config.instance().load().preferences().get(
                 IMAGE_EXPORT_DIR_PREFERENCES_KEY,
                 SystemUtils.getUserHomeDir().getPath());
-        final File currentDir = new File(lastDir);
+    }
 
-        final SnapFileChooser fileChooser = new SnapFileChooser();
-
-        HelpCtx.setHelpIDString(fileChooser, getHelpCtx().getHelpID());
-
-        SnapFileFilter kmzFileFilter = new SnapFileFilter(KMZ_FORMAT_DESCRIPTION[0],
-                                                          KMZ_FORMAT_DESCRIPTION[1],
-                                                          KMZ_FORMAT_DESCRIPTION[2]);
-
-        fileChooser.setCurrentDirectory(currentDir);
-        fileChooser.addChoosableFileFilter(kmzFileFilter);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-
-        fileChooser.setDialogTitle(snapApp.getInstanceName() + " - " + "export KMZ");
-        final String currentFilename = sceneView.isRGB() ? "RGB" : sceneView.getRaster().getName();
-        fileChooser.setCurrentFilename(currentFilename);
-
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        Dimension fileChooserSize = fileChooser.getPreferredSize();
-        if (fileChooserSize != null) {
-            fileChooser.setPreferredSize(new Dimension(
-                    fileChooserSize.width + 120, fileChooserSize.height));
-        } else {
-            fileChooser.setPreferredSize(new Dimension(512, 256));
-        }
-
-        int result = fileChooser.showSaveDialog(snapApp.getMainFrame());
-        File file = fileChooser.getSelectedFile();
-        fileChooser.addPropertyChangeListener(evt -> {
-            // @todo never comes here, why?
-            Debug.trace(evt.toString());
-        });
-        final File currentDirectory = fileChooser.getCurrentDirectory();
-        if (currentDirectory != null) {
-            Config.instance().load().preferences().get(
-                    IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                    currentDirectory.getPath());
-        }
-        if (result != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-        if (file == null || file.getName().isEmpty()) {
-            return;
-        }
-
-        if (!Dialogs.requestOverwriteDecision("h", file)) {
-            return;
-        }
-
-        final SaveKMLSwingWorker worker = new SaveKMLSwingWorker(snapApp, "Save KMZ", sceneView, file);
-        worker.executeWithBlocking();
+    static void setLastDir(File currentDirectory) {
+        Config.instance().load().preferences().put(
+                IMAGE_EXPORT_DIR_PREFERENCES_KEY,
+                currentDirectory.getPath());
     }
 
     private static RenderedImage createImageLegend(RasterDataNode raster) {
@@ -224,7 +114,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         final GeoCoding geoCoding = raster.getGeoCoding();
         final PixelPos upperLeftPP = new PixelPos(0, 0);
         final PixelPos lowerRightPP = new PixelPos(product.getSceneRasterWidth(),
-                                                   product.getSceneRasterHeight());
+                product.getSceneRasterHeight());
         final GeoPos upperLeftGP = geoCoding.getGeoPos(upperLeftPP, null);
         final GeoPos lowerRightGP = geoCoding.getGeoPos(lowerRightPP, null);
         double eastLon = lowerRightGP.getLon();
@@ -311,6 +201,101 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         return "(" + unit + ")";
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        final GeoCoding geoCoding = view.getProduct().getSceneGeoCoding();
+        boolean isGeographic = false;
+        if (geoCoding instanceof MapGeoCoding) {
+            MapGeoCoding mapGeoCoding = (MapGeoCoding) geoCoding;
+            MapTransformDescriptor transformDescriptor = mapGeoCoding.getMapInfo()
+                    .getMapProjection().getMapTransform().getDescriptor();
+            String typeID = transformDescriptor.getTypeID();
+            if (typeID.equals(IdentityTransformDescriptor.TYPE_ID)) {
+                isGeographic = true;
+            }
+        } else if (geoCoding instanceof CrsGeoCoding) {
+            isGeographic = CRS.equalsIgnoreMetadata(geoCoding.getMapCRS(), DefaultGeographicCRS.WGS84);
+        }
+
+        if (isGeographic) {
+            exportImage(view);
+        } else {
+            String message = "Product must be in ''Geographic Lat/Lon'' projection.";
+            Dialogs.showInformation(message, null);
+        }
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup lookup) {
+        return new ExportKmzFileAction(lookup);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent lookupEvent) {
+        setEnabled(SnapApp.getDefault().getSelectedProductSceneView() != null);
+    }
+
+    private void exportImage(ProductSceneView sceneView) {
+        SnapApp snapApp = SnapApp.getDefault();
+        final String lastDir = getLastDir();
+        final File currentDir = new File(lastDir);
+
+        final SnapFileChooser fileChooser = new SnapFileChooser();
+
+        HelpCtx.setHelpIDString(fileChooser, getHelpCtx().getHelpID());
+
+        SnapFileFilter kmzFileFilter = new SnapFileFilter(KMZ_FORMAT_DESCRIPTION[0],
+                KMZ_FORMAT_DESCRIPTION[1],
+                KMZ_FORMAT_DESCRIPTION[2]);
+
+        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.addChoosableFileFilter(kmzFileFilter);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        fileChooser.setDialogTitle(snapApp.getInstanceName() + " - " + "export KMZ");
+        final String currentFilename = sceneView.isRGB() ? "RGB" : sceneView.getRaster().getName();
+        fileChooser.setCurrentFilename(currentFilename);
+
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        Dimension fileChooserSize = fileChooser.getPreferredSize();
+        if (fileChooserSize != null) {
+            fileChooser.setPreferredSize(new Dimension(
+                    fileChooserSize.width + 120, fileChooserSize.height));
+        } else {
+            fileChooser.setPreferredSize(new Dimension(512, 256));
+        }
+
+        int result = fileChooser.showSaveDialog(snapApp.getMainFrame());
+        File file = fileChooser.getSelectedFile();
+        fileChooser.addPropertyChangeListener(evt -> {
+            // @todo never comes here, why?
+            Debug.trace(evt.toString());
+        });
+        final File currentDirectory = fileChooser.getCurrentDirectory();
+        if (currentDirectory != null) {
+            setLastDir(currentDirectory);
+        }
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        if (file == null || file.getName().isEmpty()) {
+            return;
+        }
+
+        if (!Dialogs.requestOverwriteDecision("h", file)) {
+            return;
+        }
+
+        final SaveKMLSwingWorker worker = new SaveKMLSwingWorker(snapApp, "Save KMZ", sceneView, file);
+        worker.executeWithBlocking();
+    }
 
     private static class SaveKMLSwingWorker extends ProgressMonitorSwingWorker {
 
@@ -333,7 +318,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
                 snapApp.setStatusBarMessage(message);
                 snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 final Dimension dimension = new Dimension(view.getProduct().getSceneRasterWidth(),
-                                                          view.getProduct().getSceneRasterHeight());
+                        view.getProduct().getSceneRasterHeight());
                 RenderedImage image = ExportImageAction.createImage(view, true, dimension, true, true);
                 pm.worked(1);
                 try (ZipOutputStream outStream = new ZipOutputStream(new FileOutputStream(file))) {
