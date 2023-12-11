@@ -48,6 +48,8 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static org.esa.snap.rcp.actions.file.export.AbstractExportImageAction.IMAGE_EXPORT_DIR_PREFERENCES_KEY;
+
 @ActionID(
         category = "File",
         id = "org.esa.snap.rcp.actions.file.export.ExportKmzFileAction"
@@ -72,7 +74,6 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private static final String IMAGE_TYPE = "PNG";
     private static final String LEGEND_PNG = "legend.png";
     private static final String[] KMZ_FORMAT_DESCRIPTION = {"KMZ", "kmz", "KMZ - Google Earth File Format"};
-    private static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
     private static final String HELP_ID = "exportKmzFile";
 
     @SuppressWarnings("FieldCanBeLocal")
