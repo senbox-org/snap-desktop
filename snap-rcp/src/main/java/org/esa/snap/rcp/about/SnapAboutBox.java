@@ -20,13 +20,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * @author Norman
  */
 public class SnapAboutBox extends JPanel {
 
-    private final static String releaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20";
+    private final static String defaultReleaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20"; // the version is appended in the code below
+    private final static String stepReleaseNotesUrlString = "https://step.esa.int/main/wp-content/releasenotes/SNAP/SNAP_<version>.html";
     private final JLabel versionText;
     private final ModuleInfo engineModuleInfo;
 
@@ -86,12 +90,28 @@ public class SnapAboutBox extends JPanel {
 
         Version specVersion = Version.parseVersion(engineModuleInfo.getSpecificationVersion().toString());
         String versionString = String.format("%s.%s.%s", specVersion.getMajor(), specVersion.getMinor(), specVersion.getMicro());
-        String changelogUrl = releaseNotesUrlString + versionString;
-
+        String changelogUrl = getReleaseNotesURLString(versionString);
         final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + changelogUrl + "\">Release Notes</a>");
         releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
         panel.add(releaseNoteLabel);
         return panel;
+    }
+
+    private String getReleaseNotesURLString(String versionString){
+        String changelogUrl = stepReleaseNotesUrlString.replace("<version>", versionString);
+        try {
+            URL url = new URL(changelogUrl);
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            huc.setRequestMethod("HEAD");
+
+            int responseCode = huc.getResponseCode();
+            if(responseCode != HttpURLConnection.HTTP_OK) {
+                changelogUrl = defaultReleaseNotesUrlString + versionString;
+            }
+        } catch (IOException e) {
+            changelogUrl = defaultReleaseNotesUrlString + versionString;
+        }
+        return changelogUrl;
     }
 }
