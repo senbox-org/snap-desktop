@@ -1,0 +1,10 @@
+# RGB-Image Configuration Profile
+# VIIRS_TrueColor_(667,556,411)_Atan_20_0.015
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=VIIRS_TrueColor_(667,556,411)_Atan_20_0.015
+red=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_667 - 0.015))) else NaN
+green=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_556 - 0.015))) else NaN
+blue=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN) then (0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_411 - 0.015))) else NaN
