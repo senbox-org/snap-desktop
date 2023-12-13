@@ -134,7 +134,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
 
                 final String itemAlias = descriptor.getItemAlias();
                 if (descriptor.getType().isArray() && itemAlias != null && !itemAlias.isEmpty()) {
-                    final DomElement childElement = descriptor.getItemsInlined() ? parentElement : parentElement.createChild(getElementName(p));
+                    final DomElement childElement = descriptor.getBooleanProperty("itemsInlined") ? parentElement : parentElement.createChild(getElementName(p));
                     final Object array = p.getValue();
                     final Converter itemConverter = getItemConverter(descriptor);
                     if (array != null && itemConverter != null) {
