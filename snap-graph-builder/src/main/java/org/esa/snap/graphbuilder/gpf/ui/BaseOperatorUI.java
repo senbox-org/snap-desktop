@@ -15,14 +15,7 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.Converter;
-import com.bc.ceres.binding.ConverterRegistry;
-import com.bc.ceres.binding.Property;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertyDescriptor;
-import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.PropertySetDescriptor;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
@@ -36,7 +29,7 @@ import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +49,27 @@ public abstract class BaseOperatorUI implements OperatorUI {
     protected Map<String, Object> paramMap = null;
     protected Product[] sourceProducts = null;
     protected String operatorName = "";
+
+    private static Converter getItemConverter(final Object obj) {
+        return ConverterRegistry.getInstance().getConverter(obj.getClass());
+    }
+
+    private static Converter getItemConverter(final PropertyDescriptor descriptor) {
+        final Class<?> itemType = descriptor.getType().getComponentType();
+        Converter itemConverter = descriptor.getConverter();
+        if (itemConverter == null) {
+            itemConverter = ConverterRegistry.getInstance().getConverter(itemType);
+        }
+        return itemConverter;
+    }
+
+    private static String getElementName(final Property p) {
+        final String alias = p.getDescriptor().getAlias();
+        if (alias != null && !alias.isEmpty()) {
+            return alias;
+        }
+        return p.getDescriptor().getName();
+    }
 
     public abstract JComponent CreateOpTab(final String operatorName,
                                            final Map<String, Object> parameterMap, final AppContext appContext);
@@ -153,8 +167,8 @@ public abstract class BaseOperatorUI implements OperatorUI {
                     final DomElement childElement = parentElement.createChild(getElementName(p));
                     final Object childValue = p.getValue();
                     final Converter converter = descriptor.getConverter();
-                    if(converter == null) {
-                        throw new GraphException(operatorName+" BaseOperatorUI: no converter found for parameter "+descriptor.getName());
+                    if (converter == null) {
+                        throw new GraphException(operatorName + " BaseOperatorUI: no converter found for parameter " + descriptor.getName());
                     }
 
                     String text = converter.format(childValue);
@@ -165,15 +179,16 @@ public abstract class BaseOperatorUI implements OperatorUI {
             }
         }
     }
+
     /**
      * The method check if there are at least one multi-size source product
+     *
      * @return false if there is not multi-size source product
      */
-    protected boolean hasMultiSizeProducts()
-    {
+    protected boolean hasMultiSizeProducts() {
         if (sourceProducts != null) {
             for (Product prod : sourceProducts) {
-                if(prod.isMultiSize())
+                if (prod.isMultiSize())
                     return true;
             }
         }
@@ -226,7 +241,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
             }
 
             Converter itemConverter = getItemConverter(value);
-            if(itemConverter != null) {
+            if (itemConverter != null) {
                 final String text = itemConverter.format(value);
                 if (text != null && !text.isEmpty()) {
                     xml.setValue(text);
@@ -235,27 +250,6 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 xml.setValue(value.toString());
             }
         }
-    }
-
-    private static Converter getItemConverter(final Object obj) {
-         return ConverterRegistry.getInstance().getConverter(obj.getClass());
-    }
-
-    private static Converter getItemConverter(final PropertyDescriptor descriptor) {
-        final Class<?> itemType = descriptor.getType().getComponentType();
-        Converter itemConverter = descriptor.getConverter();
-        if (itemConverter == null) {
-            itemConverter = ConverterRegistry.getInstance().getConverter(itemType);
-        }
-        return itemConverter;
-    }
-
-    private static String getElementName(final Property p) {
-        final String alias = p.getDescriptor().getAlias();
-        if (alias != null && !alias.isEmpty()) {
-            return alias;
-        }
-        return p.getDescriptor().getName();
     }
 
     @Override
