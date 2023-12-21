@@ -377,14 +377,6 @@ public class ProductSceneView extends BasicView
         return sceneImage.getCoordinateReferenceSystem();
     }
 
-    /**
-     * @deprecated since BEAM 4.7
-     */
-    @Deprecated
-    public LayerContext getLayerContext() {
-        return sceneImage;
-    }
-
     public LayerCanvas getLayerCanvas() {
         return layerCanvas;
     }
@@ -859,19 +851,7 @@ public class ProductSceneView extends BasicView
         return null;
     }
 
-    /**
-     * @return The selected feature figures.
-     * @since BEAM 4.7
-     * @deprecated since BEAM 4.10, use {@link #getFeatureFigures(boolean)} instead
-     */
-    @Deprecated
-    public SimpleFeatureFigure[] getSelectedFeatureFigures() {
-        ArrayList<SimpleFeatureFigure> selectedFigures = new ArrayList<>();
-        collectFeatureFigures(figureEditor.getFigureSelection(), selectedFigures);
-        return selectedFigures.toArray(new SimpleFeatureFigure[selectedFigures.size()]);
-    }
-
-    /**
+   /**
      * Gets either the selected figures, or all the figures of the currently selected layer.
      *
      * @param selectedOnly If {@code true}, only selected figures are returned.
