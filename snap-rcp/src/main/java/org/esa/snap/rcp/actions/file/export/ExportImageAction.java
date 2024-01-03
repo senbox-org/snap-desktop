@@ -392,7 +392,8 @@ public class ExportImageAction extends AbstractExportImageAction {
                 final double mScale = modelBounds.getWidth() / modelBounds.getHeight();
                 final double iScale = imageBounds.getHeight() / imageBounds.getWidth();
                 double scaleFactorX = mScale * iScale;
-                bounds = new Rectangle2D.Double(0, 0, scaleFactorX * imageBounds.getWidth(), 1 * imageBounds.getHeight());
+//                bounds = new Rectangle2D.Double(0, 0, scaleFactorX * imageBounds.getWidth(), 1 * imageBounds.getHeight());
+                bounds = new Rectangle2D.Double(0, 0, 1 * imageBounds.getWidth(), 1 * imageBounds.getHeight());
             } else {
                 switch (resolutionAC) {
                     case AC_FULL_RES:
