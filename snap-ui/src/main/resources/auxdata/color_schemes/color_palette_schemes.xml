@@ -406,7 +406,7 @@
         <LOG_SCALE>true</LOG_SCALE>
         <STANDARD_FILENAME>gray_scale.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>gray_scale.cpd</UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>>Surface Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
+        <COLORBAR_TITLE>Surface Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
         <DESCRIPTION>rhos</DESCRIPTION>
     </Scheme>
@@ -418,7 +418,7 @@
         <LOG_SCALE>true</LOG_SCALE>
         <STANDARD_FILENAME>gray_scale.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>gray_scale.cpd</UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>>TOA (Top of Atmosphere) Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
+        <COLORBAR_TITLE>TOA (Top of Atmosphere) Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1</COLORBAR_LABELS>
         <DESCRIPTION>rhos</DESCRIPTION>
     </Scheme>
