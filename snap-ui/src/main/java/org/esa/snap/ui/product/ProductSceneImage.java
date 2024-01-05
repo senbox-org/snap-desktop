@@ -420,6 +420,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final LayerType layerType = LayerTypeRegistry.getLayerType(MetaDataLayerType.class);
         final PropertySet template = layerType.createLayerConfig(null);
         template.setValue(MetaDataLayerType.PROPERTY_NAME_RASTER, getRaster());
+        template.setValue(MetaDataLayerType.PROPERTY_NAME_SCENE_IMAGE, getName());
         final MetaDataLayer metadataLayer = (MetaDataLayer) layerType.createLayer(null, template);
         metadataLayer.setId(ProductSceneView.METADATA_LAYER_ID);
         metadataLayer.setVisible(false);
