@@ -451,12 +451,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             }
 
 //            String convertedTitle = ColorSchemeInfo.getColorBarTitle(imageLegend.getTitleText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
-            String convertedTitle = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
+            String convertedTitle = MetadataUtils.getReplacedStringAllVariables(imageLegend.getTitleText(), raster, "","", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setTitle(convertedTitle);
 
 
 //            String convertedUnits = ColorSchemeInfo.getColorBarTitle(imageLegend.getUnitsText(), bandname, description, wavelength, angle, units, allowWavelengthZero);
-            String convertedUnits = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsText(), raster, "", MetadataUtils.INFO_PARAM_WAVE);
+            String convertedUnits = MetadataUtils.getReplacedStringAllVariables(imageLegend.getUnitsText(), raster, "", "", MetadataUtils.INFO_PARAM_WAVE);
             imageLegend.setUnits(convertedUnits);
 
 

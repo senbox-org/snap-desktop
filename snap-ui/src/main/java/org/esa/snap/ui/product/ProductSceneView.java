@@ -333,10 +333,6 @@ public class ProductSceneView extends BasicView
         addDefaultLayers(sceneImage);
 
         if (!isRGB()) {
-            final boolean initialShowAnnotationLayer = sceneImage.getConfiguration().getPropertyBool(
-                    SHOW_ANNOTATION_OVERLAY_STATE_KEY, SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT);
-            setMetaDataOverlayEnabled(initialShowAnnotationLayer);
-
             final boolean initialShowColorBarLegendLayer = sceneImage.getConfiguration().getPropertyBool(
                     SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY, SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT);
             setColorBarOverlayEnabled(initialShowColorBarLegendLayer);
@@ -345,6 +341,10 @@ public class ProductSceneView extends BasicView
                     SHOW_NO_DATA_OVERLAY_KEY, SHOW_NO_DATA_OVERLAY_DEFAULT);
             setNoDataOverlayEnabled(initialShowNoDataLayer);
         }
+
+        final boolean initialShowAnnotationLayer = sceneImage.getConfiguration().getPropertyBool(
+                SHOW_ANNOTATION_OVERLAY_STATE_KEY, SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT);
+        setMetaDataOverlayEnabled(initialShowAnnotationLayer);
 
         if (ProductUtils.canGetPixelPos(getRaster())) {
             if (validGeoCorners()) {

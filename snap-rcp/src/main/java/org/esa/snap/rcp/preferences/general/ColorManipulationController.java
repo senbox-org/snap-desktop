@@ -133,6 +133,7 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
 
@@ -622,6 +623,11 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_TOOLTIP)
         boolean rgbOptionsSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_TOOLTIP)
+        boolean rgbOptionsMinMaxRange = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY,
