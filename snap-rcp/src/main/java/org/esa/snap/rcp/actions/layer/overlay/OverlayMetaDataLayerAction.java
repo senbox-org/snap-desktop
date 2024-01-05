@@ -46,7 +46,8 @@ public final class OverlayMetaDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionEnabledState(ProductSceneView view) {
-        if (view.getRaster() != null && !view.isRGB()) {
+//        if (view.getRaster() != null && !view.isRGB()) {
+        if (view.getRaster() != null) {
             return true;
         } else {
             return false;

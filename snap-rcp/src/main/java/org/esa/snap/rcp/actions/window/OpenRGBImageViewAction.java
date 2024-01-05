@@ -27,6 +27,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.RGBImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -42,6 +43,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
@@ -220,26 +224,35 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     static RGBChannelDef mergeRgbChannelDefs(RGBImageProfile rgbImageProfile, Band[] rgbBands) {
         final RGBChannelDef defFromProfile = rgbImageProfile.getRgbChannelDef();
 
+        boolean useRgbRange = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT);
+        double rgbMin = SnapApp.getDefault().getPreferences().getDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
+        double rgbMax = SnapApp.getDefault().getPreferences().getDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
+
         for (int i = 0; i < rgbBands.length; i++) {
-            final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
-            final double min = defFromProfile.getMinDisplaySample(i);
-            if (Double.isNaN(min)) {
-                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
-                if (rgbChannelDef != null) {
-                    defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
-                } else {
-                    final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
-                    defFromProfile.setMinDisplaySample(i, minColorPalette);
+            if (useRgbRange) {
+                defFromProfile.setMinDisplaySample(i, rgbMin);
+                defFromProfile.setMaxDisplaySample(i, rgbMax);
+            } else {
+                final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
+                final double min = defFromProfile.getMinDisplaySample(i);
+                if (Double.isNaN(min)) {
+                    final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                    if (rgbChannelDef != null) {
+                        defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
+                    } else {
+                        final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
+                        defFromProfile.setMinDisplaySample(i, minColorPalette);
+                    }
                 }
-            }
-            final double max = defFromProfile.getMaxDisplaySample(i);
-            if (Double.isNaN(max)) {
-                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
-                if (rgbChannelDef != null) {
-                    defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
-                } else {
-                    final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
-                    defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                final double max = defFromProfile.getMaxDisplaySample(i);
+                if (Double.isNaN(max)) {
+                    final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                    if (rgbChannelDef != null) {
+                        defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
+                    } else {
+                        final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
+                        defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                    }
                 }
             }
         }

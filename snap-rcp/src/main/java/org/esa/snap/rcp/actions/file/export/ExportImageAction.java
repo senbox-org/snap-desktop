@@ -235,12 +235,22 @@ public class ExportImageAction extends AbstractExportImageAction {
         switch (actionCommand) {
             case AC_FULL_REGION:
                 buttonViewResolution.setEnabled(false);
-                if (buttonViewResolution.isSelected()) {
-                    buttonFullResolution.setSelected(true);
-                }
+                buttonViewResolution.setSelected(false);
+                buttonFullResolution.setEnabled(true);
+                buttonFullResolution.setSelected(true);
+                buttonUserResolution.setEnabled(true);
+                buttonUserResolution.setSelected(false);
+//                if (buttonViewResolution.isSelected()) {
+//                    buttonFullResolution.setSelected(true);
+//                }
                 break;
             case AC_VIEW_REGION:
                 buttonViewResolution.setEnabled(true);
+                buttonViewResolution.setSelected(true);
+                buttonFullResolution.setEnabled(false);
+                buttonFullResolution.setSelected(false);
+                buttonUserResolution.setEnabled(true);
+                buttonUserResolution.setSelected(false);
                 break;
             case PSEUDO_AC_INIT:
                 buttonVisibleRegion.setSelected(true);
