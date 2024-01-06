@@ -24,6 +24,7 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.PreferencesPropertyMap;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -52,6 +53,9 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT;
+
 /**
  * This action opens an RGB image view on the currently selected Product.
  * Enablement: when a product is selected which contains at least 1 band
@@ -76,6 +80,8 @@ import java.util.stream.Collectors;
         "CTL_OpenRGBImageViewAction_Name=RGB Image",
         "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
 })
+
+
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "rgbImageProfile";
@@ -87,7 +93,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
     private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
-
 
 
     // Governs enablement of the RGB GUI access
@@ -163,26 +168,35 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     static RGBChannelDef mergeRgbChannelDefs(RGBImageProfile rgbImageProfile, Band[] rgbBands) {
         final RGBChannelDef defFromProfile = rgbImageProfile.getRgbChannelDef();
 
+        boolean useRgbRange = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT);
+        double rgbMin = SnapApp.getDefault().getPreferences().getDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
+        double rgbMax = SnapApp.getDefault().getPreferences().getDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
+
         for (int i = 0; i < rgbBands.length; i++) {
-            final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
-            final double min = defFromProfile.getMinDisplaySample(i);
-            if (Double.isNaN(min)) {
-                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
-                if (rgbChannelDef != null) {
-                    defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
-                } else {
-                    final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
-                    defFromProfile.setMinDisplaySample(i, minColorPalette);
+            if (useRgbRange) {
+                defFromProfile.setMinDisplaySample(i, rgbMin);
+                defFromProfile.setMaxDisplaySample(i, rgbMax);
+            } else {
+                final ImageInfo bandImageInfo = rgbBands[i].getImageInfo();
+                final double min = defFromProfile.getMinDisplaySample(i);
+                if (Double.isNaN(min)) {
+                    final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                    if (rgbChannelDef != null) {
+                        defFromProfile.setMinDisplaySample(i, rgbChannelDef.getMinDisplaySample(i));
+                    } else {
+                        final double minColorPalette = bandImageInfo.getColorPaletteDef().getFirstPoint().getSample();
+                        defFromProfile.setMinDisplaySample(i, minColorPalette);
+                    }
                 }
-            }
-            final double max = defFromProfile.getMaxDisplaySample(i);
-            if (Double.isNaN(max)) {
-                final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
-                if (rgbChannelDef != null) {
-                    defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
-                } else {
-                    final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
-                    defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                final double max = defFromProfile.getMaxDisplaySample(i);
+                if (Double.isNaN(max)) {
+                    final RGBChannelDef rgbChannelDef = bandImageInfo.getRgbChannelDef();
+                    if (rgbChannelDef != null) {
+                        defFromProfile.setMaxDisplaySample(i, rgbChannelDef.getMaxDisplaySample(i));
+                    } else {
+                        final double maxColorPalette = bandImageInfo.getColorPaletteDef().getLastPoint().getSample();
+                        defFromProfile.setMaxDisplaySample(i, maxColorPalette);
+                    }
                 }
             }
         }
