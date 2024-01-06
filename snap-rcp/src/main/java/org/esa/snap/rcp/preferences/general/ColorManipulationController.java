@@ -117,6 +117,13 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY, ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT);
 
+
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_SELECTOR_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_SORT_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_SORT_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_DEFAULT);
+
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_ZOOM_IN_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_KEY, ColorManipulationDefaults.PROPERTY_SLIDERS_SHOW_INFORMATION_DEFAULT);
@@ -126,6 +133,7 @@ public final class ColorManipulationController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY, true);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
 
@@ -534,6 +542,32 @@ public final class ColorManipulationController extends DefaultConfigController {
                 description = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_TOOLTIP)
         boolean schemeSelectorShowDisabled = ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
 
+        // Palettes Selector Options
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_SELECTOR_SECTION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_SELECTOR_SECTION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_SELECTOR_SECTION_TOOLTIP)
+        boolean palettesOptionsSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_TOOLTIP)
+        boolean includePaletteImageOnly = ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_SORT_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_SORT_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_SORT_TOOLTIP)
+        boolean paletteSelectorSort = ColorManipulationDefaults.PROPERTY_PALETTE_SORT_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_TOOLTIP)
+        boolean categorizePalettes = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_TOOLTIP)
+        boolean removePaletteNameExtension = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_DEFAULT;
 
 
         // Slider and Range Options
@@ -589,6 +623,11 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_KEY,
                 description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_SECTION_TOOLTIP)
         boolean rgbOptionsSection = true;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY,
+                description = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_TOOLTIP)
+        boolean rgbOptionsMinMaxRange = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY,
