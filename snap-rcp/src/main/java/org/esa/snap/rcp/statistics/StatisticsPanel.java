@@ -27,10 +27,7 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.*;
-import org.esa.snap.core.util.Guardian;
-import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.*;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.GridBagUtils;
@@ -66,6 +63,7 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.prefs.Preferences;
 
 
 /**
@@ -229,12 +227,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     public StatisticsPanel(final TopComponent parentDialog, String helpID) {
         super(parentDialog, helpID, TITLE_PREFIX);
 
-
-
         resultText = new StringBuilder();
         popupHandler = new PopupHandler();
         if (snapApp != null) {
-            this.configuration = snapApp.getPreferencesPropertyMap();
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            PropertyMap propertyMap = new PreferencesPropertyMap(preferences);
+
+            this.configuration = propertyMap;
         }
 
         this.parentDialog = parentDialog;
