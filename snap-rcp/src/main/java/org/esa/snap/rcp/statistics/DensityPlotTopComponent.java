@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,11 +26,11 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/DensityPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.DENSITY_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ScatterPlot",
+        mode = PackageDefaults.DENSITY_PLOT_WS_MODE,
         openAtStartup = false,
         position = 10
 )
