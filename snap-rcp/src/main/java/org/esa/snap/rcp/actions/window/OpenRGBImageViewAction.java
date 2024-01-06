@@ -24,6 +24,7 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.PreferencesPropertyMap;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -80,6 +81,8 @@ import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RGB
         "CTL_OpenRGBImageViewAction_Name=RGB Image",
         "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
 })
+
+
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "rgbImageProfile";
@@ -91,7 +94,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
     private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
-
 
 
     // Governs enablement of the RGB GUI access
