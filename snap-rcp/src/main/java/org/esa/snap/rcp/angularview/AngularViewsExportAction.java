@@ -17,6 +17,8 @@
 package org.esa.snap.rcp.angularview;
 
 import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.util.PreferencesPropertyMap;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.diagram.DiagramGraph;
@@ -27,6 +29,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 //import org.esa.snap.visat.VisatApp;
 
@@ -58,10 +61,14 @@ class AngularViewsExportAction extends AbstractAction {
         }
         DiagramGraph[] pinGraphs = angularViewGraphList.toArray(new DiagramGraph[0]);
         //todo move diagramgraphio to snap
+
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        PropertyMap propertyMap = new PreferencesPropertyMap(preferences);
+
         DiagramGraphIO.writeGraphs(SwingUtilities.getWindowAncestor(angularViewTopComponent),
                 "Export Pin angularViews",
                 new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
-                SnapApp.getDefault().getPreferencesPropertyMap(),
+                propertyMap,
                 pinGraphs);
     }
 
