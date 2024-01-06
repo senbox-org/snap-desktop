@@ -24,10 +24,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.layer.ColorBarLayer;
 import org.esa.snap.core.layer.ColorBarLayerType;
 import org.esa.snap.core.param.*;
-import org.esa.snap.core.util.MetadataUtils;
-import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.*;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.colormanip.ColorSchemeUtils;
@@ -55,6 +52,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * @author Brockmann Consult
@@ -353,6 +351,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
 
             legendParamGroup = createLegendParamGroup(imageLegend, paramChangeListener, blackWhiteColor, populateLabelValuesTextfield, useLegendWidth, legendWidth);
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            legendParamGroup.setParameterValues(new PreferencesPropertyMap(preferences), null);
+
 
 
             updateEnablement();
@@ -1384,6 +1385,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         @Override
         protected void onOK() {
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            getParamGroup().getParameterValues(new PreferencesPropertyMap(preferences));
             super.onOK();
         }
 
