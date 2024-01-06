@@ -51,7 +51,7 @@ import java.util.ArrayList;
         keywordsCategory = "Layer",
         id = "LayerGraticule")
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerGraticule=Graticule Layer",
+        "Options_DisplayName_LayerGraticule=Map Gridlines Layer",
         "Options_Keywords_LayerGraticule=layer, graticule"
 })
 public final class GraticuleLayerController extends DefaultConfigController {
