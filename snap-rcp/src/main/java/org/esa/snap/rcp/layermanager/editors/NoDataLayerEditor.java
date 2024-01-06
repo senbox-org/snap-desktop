@@ -18,6 +18,7 @@ package org.esa.snap.rcp.layermanager.editors;
 
 import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.glayer.support.ImageLayer;
+import org.esa.snap.core.jexp.impl.AbstractSymbol;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.ui.PackageDefaults;
@@ -45,6 +46,15 @@ public class NoDataLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(vd);
         getBindingContext().getPropertySet().addPropertyChangeListener(NoDataLayerType.PROPERTY_NAME_COLOR,
                                                                        new UpdateImagePropertyChangeListener());
+
+        PropertyDescriptor vd2 = new PropertyDescriptor(NoDataLayerType.PROPERTY_NAME_VALID_GEO, Boolean.class);
+        vd2.setDefaultValue(NoDataLayerType.DEFAULT_VALID_GEO);
+        vd2.setDisplayName("Limit to valid Geo pixels");
+        vd2.setDefaultConverter();
+
+        addPropertyDescriptor(vd2);
+        getBindingContext().getPropertySet().addPropertyChangeListener(NoDataLayerType.PROPERTY_NAME_VALID_GEO,
+                new UpdateImagePropertyChangeListener());
     }
 
     private class UpdateImagePropertyChangeListener implements PropertyChangeListener {
