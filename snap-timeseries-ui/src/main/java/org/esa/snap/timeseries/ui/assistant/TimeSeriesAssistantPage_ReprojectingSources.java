@@ -8,6 +8,7 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.ui.CollocationCrsForm;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.timeseries.core.timeseries.datamodel.ProductLocation;
@@ -191,9 +192,9 @@ class TimeSeriesAssistantPage_ReprojectingSources extends AbstractTimeSeriesAssi
             }
             final GeoCoding geoCoding = collocationProduct.getSceneGeoCoding();
             if (geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos()
-                    && ((geoCoding instanceof CrsGeoCoding)||(geoCoding instanceof MapGeoCoding))) {
-                final GeneralPath[] sourcePaths = ProductUtils.createGeoBoundaryPaths(timeSeriesSourceProduct);
-                final GeneralPath[] collocationPaths = ProductUtils.createGeoBoundaryPaths(collocationProduct);
+                    && ((geoCoding instanceof CrsGeoCoding)||(geoCoding instanceof CrsGeoCoding))) {
+                final GeneralPath[] sourcePaths = GeoUtils.createGeoBoundaryPaths(timeSeriesSourceProduct);
+                final GeneralPath[] collocationPaths = GeoUtils.createGeoBoundaryPaths(collocationProduct);
                 for (GeneralPath sourcePath : sourcePaths) {
                     for (GeneralPath collocationPath : collocationPaths) {
                         final Area sourceArea = new Area(sourcePath);
