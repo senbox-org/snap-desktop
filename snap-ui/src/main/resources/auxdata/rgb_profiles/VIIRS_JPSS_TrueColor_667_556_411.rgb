@@ -4,7 +4,7 @@
 # A true color RGB configuration profile which uses a red, green and blue band for the
 # respective RGB color model channels
 #
-name=RGB_VIIRS_JPSS_TrueColor(667,556,411)
-red=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN and LAT >= -90 and LAT <= 90) then (log(rhos_667/0.01)/log(1/0.01)) else NaN
-green=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN and LAT >= -90 and LAT <= 90) then (log(rhos_556/0.01)/log(1/0.01)) else NaN
-blue=if (rhos_667 \!\= NaN and rhos_556 \!\= NaN and rhos_411 \!\= NaN and LAT >= -90 and LAT <= 90) then (log(rhos_411/0.01)/log(1/0.01)) else NaN
+name=RGB_VIIRS_JPSS_TrueColor(667,556,411)_Log
+red=if (rhos_667 \!\= -32767.0 and rhos_556 \!\= -32767.0 and rhos_489 \!\= -32767.0 and LAT \!\= -999  and LON \!\= -999 and \!nan(rhos_667) and \!nan(rhos_556) and \!nan(rhos_411)) then (log(rhos_667/0.01)/log(1/0.01)) else NaN
+green=if (rhos_667 \!\= -32767.0 and rhos_556 \!\= -32767.0 and rhos_489 \!\= -32767.0 and LAT \!\= -999  and LON \!\= -999 and \!nan(rhos_667) and \!nan(rhos_556) and \!nan(rhos_411)) then (log(rhos_556/0.01)/log(1/0.01)) else NaN
+blue=if (rhos_667 \!\= -32767.0 and rhos_556 \!\= -32767.0 and rhos_489 \!\= -32767.0 and LAT \!\= -999  and LON \!\= -999 and \!nan(rhos_667) and \!nan(rhos_556) and \!nan(rhos_411)) then (log(rhos_411/0.01)/log(1/0.01)) else NaN
