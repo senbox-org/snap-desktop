@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+
 public class RGBImageProfilePane extends JPanel {
 
     private static final boolean SHOW_ALPHA = false;
@@ -251,7 +253,7 @@ public class RGBImageProfilePane extends JPanel {
         return profileItem != null ? profileItem.getProfile() : null;
     }
 
-   /**
+    /**
      * Gets the selected RGBA expressions as array of 4 strings.
      *
      * @return the selected RGBA expressions, never null
@@ -502,12 +504,36 @@ public class RGBImageProfilePane extends JPanel {
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, rgbaExpressions[i]);
                 }
-                final Range redMinMax = profile.getRedMinMax();
-                rangeComponents[0].set(redMinMax);
-                final Range greenMinMax = profile.getGreenMinMax();
-                rangeComponents[1].set(greenMinMax);
-                final Range blueMinMax = profile.getBlueMinMax();
-                rangeComponents[2].set(blueMinMax);
+
+                if (preferences.getPropertyBool(PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT)) {
+
+                    final Range redMinMaxPreference = new Range();
+                    redMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    redMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    rangeComponents[0].set(redMinMaxPreference);
+                    rangeComponents[0].enableMinMax(true);
+
+                    final Range greenMinMaxPreference = new Range();
+                    greenMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    greenMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    rangeComponents[1].set(greenMinMaxPreference);
+                    rangeComponents[1].enableMinMax(true);
+
+                    final Range blueMinMaxPreference = new Range();
+                    blueMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    blueMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    rangeComponents[2].set(blueMinMaxPreference);
+                    rangeComponents[2].enableMinMax(true);
+
+                } else {
+                    final Range redMinMax = profile.getRedMinMax();
+                    rangeComponents[0].set(redMinMax);
+                    final Range greenMinMax = profile.getGreenMinMax();
+                    rangeComponents[1].set(greenMinMax);
+                    final Range blueMinMax = profile.getBlueMinMax();
+                    rangeComponents[2].set(blueMinMax);
+                }
+
             } else {
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, "");
@@ -705,6 +731,7 @@ public class RGBImageProfilePane extends JPanel {
     }
 
     private void updateUIState() {
+
         final ProfileItem profileItem = getSelectedProfileItem();
         if (profileItem != null) {
             saveAsAction.setEnabled(true);
@@ -835,6 +862,7 @@ public class RGBImageProfilePane extends JPanel {
         final JLabel maxLabel;
         final JTextField maxText;
 
+
         RangeComponents() {
             fixedRangeCheckBox = new JCheckBox("fixed range");
             fixedRangeCheckBox.addActionListener(e -> this.enableMinMax(fixedRangeCheckBox.isSelected()));
@@ -847,6 +875,7 @@ public class RGBImageProfilePane extends JPanel {
             fixedRangeCheckBox.setSelected(false);
             enableMinMax(false);
         }
+
 
         void enableMinMax(boolean enable) {
             minLabel.setEnabled(enable);
