@@ -136,9 +136,9 @@ public class Continuous3BandGraphicalForm implements ColorManipulationChildForm 
         contentPanel.add(imageInfoEditor, BorderLayout.CENTER);
 
         moreOptionsForm.getBindingContext().addPropertyChangeListener(GAMMA_PROPERTY,
-                                                                      evt -> handleGammaChanged());
+                evt -> handleGammaChanged());
         moreOptionsForm.getBindingContext().addPropertyChangeListener(CHANNEL_SOURCE_NAME_PROPERTY,
-                                                                      this::handleChannelSourceNameChanged);
+                this::handleChannelSourceNameChanged);
     }
 
     public Component getContentPanel() {
@@ -331,25 +331,8 @@ public class Continuous3BandGraphicalForm implements ColorManipulationChildForm 
                 final ImageInfo info = newChannelSource.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL);
                 final ColorPaletteDef def = info.getColorPaletteDef();
                 if (def != null) {
-
-                    PropertyMap configuration = parentForm.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-                    boolean useRgbRange = SnapApp.getDefault().getPreferences().getBoolean(PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT);
-                    double rgbMin = configuration.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
-                    double rgbMax = configuration.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
-
-                    if (useRgbRange) {
-                        imageInfo.getRgbChannelDef().setMinDisplaySample(channel, rgbMin);
-                        imageInfo.getRgbChannelDef().setMaxDisplaySample(channel, rgbMax);
-                     } else {
-                        imageInfo.getRgbChannelDef().setMinDisplaySample(channel, def.getMinDisplaySample());
-                        imageInfo.getRgbChannelDef().setMaxDisplaySample(channel, def.getMaxDisplaySample());
-                        rgbMin = def.getMinDisplaySample();
-                        rgbMax = def.getMaxDisplaySample();
-                    }
-
-                    imageInfoEditor.setRGBminmax(rgbMin, rgbMax);
-
-
+                    imageInfo.getRgbChannelDef().setMinDisplaySample(channel, def.getMinDisplaySample());
+                    imageInfo.getRgbChannelDef().setMaxDisplaySample(channel, def.getMaxDisplaySample());
                 }
                 models[channel] = new ImageInfoEditorModel3B(imageInfo, channel);
                 Continuous1BandGraphicalForm.setDisplayProperties(models[channel], newChannelSource);
