@@ -850,29 +850,29 @@ public class ColorSchemeUtils {
 
         // RGB Options
 
-        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MIN_KEY);
+        preferenceKey = getPreferenceContextKey(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
             try {
                 double value = Double.parseDouble(preferenceValue);
-                ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
+                RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
             } catch (NumberFormatException ex) {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
             }
         }
-        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+        showEffectiveDefault(preferenceKey, Double.toString(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
 
 
-        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MAX_KEY);
+        preferenceKey = getPreferenceContextKey(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
             try {
                 double value = Double.parseDouble(preferenceValue);
 
-                if (value > ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
-                    ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
+                if (value > RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
+                    RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
                 } else {
-                    String msg = PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY;
+                    String msg = RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY;
                     errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
                 }
             } catch (NumberFormatException ex) {
@@ -880,7 +880,7 @@ public class ColorSchemeUtils {
             }
 
         }
-        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+        showEffectiveDefault(preferenceKey, Double.toString(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
 
 
         if (errorMsg != null && errorMsg.length() > 0) {
