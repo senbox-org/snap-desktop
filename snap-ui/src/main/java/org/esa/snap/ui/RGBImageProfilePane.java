@@ -19,6 +19,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RGBImageProfile;
 import org.esa.snap.core.datamodel.RGBImageProfileManager;
+import org.esa.snap.core.datamodel.RgbDefaults;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
@@ -505,23 +506,23 @@ public class RGBImageProfilePane extends JPanel {
                     setExpression(i, rgbaExpressions[i]);
                 }
 
-                if (preferences.getPropertyBool(PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT)) {
+                if (preferences.getPropertyBool(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT)) {
 
                     final Range redMinMaxPreference = new Range();
-                    redMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
-                    redMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    redMinMaxPreference.setMin(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    redMinMaxPreference.setMax(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
                     rangeComponents[0].set(redMinMaxPreference);
                     rangeComponents[0].enableMinMax(true);
 
                     final Range greenMinMaxPreference = new Range();
-                    greenMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
-                    greenMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    greenMinMaxPreference.setMin(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    greenMinMaxPreference.setMax(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
                     rangeComponents[1].set(greenMinMaxPreference);
                     rangeComponents[1].enableMinMax(true);
 
                     final Range blueMinMaxPreference = new Range();
-                    blueMinMaxPreference.setMin(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MIN_KEY, PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
-                    blueMinMaxPreference.setMax(preferences.getPropertyDouble(PROPERTY_RGB_OPTIONS_MAX_KEY, PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+                    blueMinMaxPreference.setMin(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+                    blueMinMaxPreference.setMax(preferences.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
                     rangeComponents[2].set(blueMinMaxPreference);
                     rangeComponents[2].enableMinMax(true);
 
