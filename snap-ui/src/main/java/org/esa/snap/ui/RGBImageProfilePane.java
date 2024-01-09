@@ -149,6 +149,7 @@ public class RGBImageProfilePane extends JPanel {
             rgbaExprBoxes[i].setName("rgbExprBox_" + i);
         }
 
+        JLabel validPixelExpressionJLabel = new JLabel("Valid Pixel Expression");
         validPixelExpression = new JTextField();
 
         rangeComponents = new RangeComponents[3];
@@ -175,9 +176,32 @@ public class RGBImageProfilePane extends JPanel {
             addColorRangeComponentsRow(colorComponentPanel, c3, i);
         }
 
-        c3.gridy++;
-        c3.gridx = 0;
-        colorComponentPanel.add(validPixelExpression, c3);
+
+        JPanel validPixelExpressionPanel = new JPanel(new GridBagLayout());
+        final GridBagConstraints validPixelExpressionConstraints = new GridBagConstraints();
+        validPixelExpressionConstraints.anchor = GridBagConstraints.WEST;
+        validPixelExpressionConstraints.fill = GridBagConstraints.NONE;
+        validPixelExpressionConstraints.insets = new Insets(2, 2, 2, 2);
+        validPixelExpressionConstraints.gridy = 0;
+        validPixelExpressionConstraints.gridx = 0;
+        validPixelExpressionConstraints.weightx = 0;
+        validPixelExpressionPanel.add(validPixelExpressionJLabel, validPixelExpressionConstraints);
+        validPixelExpressionConstraints.gridx = 1;
+        validPixelExpressionConstraints.fill = GridBagConstraints.HORIZONTAL;
+        validPixelExpressionConstraints.weightx = 1;
+        validPixelExpressionPanel.add(validPixelExpression, validPixelExpressionConstraints);
+
+        final JButton editorButton = new JButton("...");
+        editorButton.addActionListener(e -> invokeValidPixelExpressionEditor());
+        final Dimension preferredSize = rgbaExprBoxes[0].getPreferredSize();
+        editorButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
+        editorButton.setMaximumSize(new Dimension(preferredSize.height, preferredSize.height));
+
+        validPixelExpressionConstraints.gridx = 2;
+        validPixelExpressionConstraints.fill = GridBagConstraints.NONE;
+        validPixelExpressionConstraints.weightx = 0;
+        validPixelExpressionPanel.add(editorButton, validPixelExpressionConstraints);
+
 
         referencedRastersAreCompatibleLabel = new JLabel();
 
@@ -189,6 +213,7 @@ public class RGBImageProfilePane extends JPanel {
         setLayout(layout);
         add(profilePanel);
         add(colorComponentPanel);
+        add(validPixelExpressionPanel);
         layout.setCellFill(2, 0, TableLayout.Fill.NONE);
         layout.setCellAnchor(2, 0, TableLayout.Anchor.NORTHEAST);
         add(referencedRastersAreCompatibleLabel);
@@ -659,6 +684,38 @@ public class RGBImageProfilePane extends JPanel {
             }
         }
     }
+
+
+    private void invokeValidPixelExpressionEditor() {
+        final Window window = SwingUtilities.getWindowAncestor(this);
+        final String title = "Edit Valid Pixel Expression";
+        if (product != null) {
+            final ExpressionPane pane;
+            final Product[] products = getCompatibleProducts(product, openedProducts);
+            pane = ProductExpressionPane.createGeneralExpressionPane(products, product, preferences);
+            pane.setCode(getValidPixelExpression());
+            int status = pane.showModalDialog(window, title);
+            if (status == ModalDialog.ID_OK) {
+                setValidPixelExpression(pane.getCode());
+            }
+        } else {
+            final JTextArea textArea = new JTextArea(8, 48);
+            textArea.setFont(EXPRESSION_FONT);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setText(getValidPixelExpression());
+            final ModalDialog modalDialog = new ModalDialog(window, title, ModalDialog.ID_OK_CANCEL, "");
+            final JPanel panel = new JPanel(new BorderLayout(2, 2));
+            panel.add(new JLabel("Expression:"), BorderLayout.NORTH);
+            panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+            modalDialog.setContent(panel);
+            final int status = modalDialog.show();
+            if (status == ModalDialog.ID_OK) {
+                setValidPixelExpression(textArea.getText());
+            }
+        }
+    }
+
 
     private static Product[] getCompatibleProducts(final Product targetProduct, final Product[] productsList) {
         final List<Product> compatibleProducts = new ArrayList<>(1);

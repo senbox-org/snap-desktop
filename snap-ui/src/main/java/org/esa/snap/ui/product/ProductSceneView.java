@@ -1318,10 +1318,6 @@ public class ProductSceneView extends BasicView
                     setValidPixelExpression(productsValidPixelExpression);
                 }
             }
-//
-//            String testValidPixelExpression = "!CLDICE and !LAND";
-//            setValidPixelExpression(testValidPixelExpression);
-
 
             setOwner(product);
             setModified(false);
