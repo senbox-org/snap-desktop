@@ -1294,7 +1294,7 @@ public class ProductSceneView extends BasicView
          * @param expression the expression
          * @param products   the products used to evaluate the expression
          */
-        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, Product[] products) {
+        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, final String validPixelExpression, Product[] products) {
             super(name,
                     ProductData.TYPE_FLOAT32,
                     width,
@@ -1305,6 +1305,20 @@ public class ProductSceneView extends BasicView
             } else {
                 deriveRasterPropertiesFromExpression(expression, products);
             }
+            String productsValidPixelExpression = getValidPixelExpression();
+
+            if (productsValidPixelExpression == null || productsValidPixelExpression.trim().length() == 0) {
+                if (validPixelExpression != null) {
+                    setValidPixelExpression(validPixelExpression);
+                }
+            } else {
+                if (validPixelExpression != null) {
+                    setValidPixelExpression(productsValidPixelExpression + " and  " + validPixelExpression);
+                } else {
+                    setValidPixelExpression(productsValidPixelExpression);
+                }
+            }
+
             setOwner(product);
             setModified(false);
         }
@@ -1319,7 +1333,7 @@ public class ProductSceneView extends BasicView
          * @param expression the expression
          */
         public RGBChannel(final Product product, final int width, final int height, final String name, final String expression) {
-            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null);
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null, null);
         }
 
         /**
@@ -1331,7 +1345,7 @@ public class ProductSceneView extends BasicView
          * @param products   the products used to evaluate the expression
          */
         public RGBChannel(final Product product, final String name, final String expression, Product[] products) {
-            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, products);
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null, products);
         }
 
         /**
@@ -1342,7 +1356,7 @@ public class ProductSceneView extends BasicView
          * @param expression the expression
          */
         public RGBChannel(final Product product, final String name, final String expression) {
-            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null);
+            this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null, null);
         }
 
         private void deriveRasterPropertiesFromExpression(String expression, Product... products) {
