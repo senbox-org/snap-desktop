@@ -232,7 +232,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         ProductSceneImage productSceneImage = null;
         try {
             pm.beginTask("Creating RGB image...", 2);
-            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
+            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions(), rgbImageProfile.getValidPixelExpression());
 
             final Preferences preferences = SnapApp.getDefault().getPreferences();
             PropertyMap propertyMap = new PreferencesPropertyMap(preferences);
@@ -292,7 +292,9 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return defFromProfile;
     }
 
-    public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
+    public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions, final String validPixelExpression) {
+
+
         final Band[] rgbBands = new Band[3]; // todo - set to [4] as soon as we support alpha
         final boolean productModificationState = product.isModified();
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
@@ -323,12 +325,13 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         for (int i = 0; i < rgbBands.length; i++) {
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
             Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
+
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
                         determineWidth(expression, products, elementIndex),
                         determineHeight(expression, products, elementIndex),
                         RGBImageProfile.RGB_BAND_NAMES[i],
-                        expression, products);
+                        expression, validPixelExpression, products);
             }
             rgbBands[i] = rgbBand;
         }

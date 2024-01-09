@@ -67,6 +67,7 @@ public class RGBImageProfilePane extends JPanel {
     private JComboBox<ProfileItem> profileBox;
 
     private final JComboBox[] rgbaExprBoxes;
+    private final JTextField validPixelExpression;
     private final RangeComponents[] rangeComponents;
     private DefaultComboBoxModel<ProfileItem> profileModel;
     private AbstractAction saveAsAction;
@@ -148,6 +149,8 @@ public class RGBImageProfilePane extends JPanel {
             rgbaExprBoxes[i].setName("rgbExprBox_" + i);
         }
 
+        validPixelExpression = new JTextField();
+
         rangeComponents = new RangeComponents[3];
         for (int i = 0; i < rangeComponents.length; i++) {
             rangeComponents[i] = new RangeComponents();
@@ -171,6 +174,11 @@ public class RGBImageProfilePane extends JPanel {
             c3.gridy = 2 * i + 1;
             addColorRangeComponentsRow(colorComponentPanel, c3, i);
         }
+
+        c3.gridy++;
+        c3.gridx = 0;
+        colorComponentPanel.add(validPixelExpression, c3);
+
         referencedRastersAreCompatibleLabel = new JLabel();
 
         TableLayout layout = new TableLayout(1);
@@ -268,8 +276,12 @@ public class RGBImageProfilePane extends JPanel {
         };
     }
 
+
+
+
     public RGBImageProfile getRgbProfile() {
         final String[] rgbaExpressions = getRgbaExpressions();
+        final String validPixelExpression = getValidPixelExpression();
 
         final Range[] ranges = new Range[3];
         for (int i = 0; i < rangeComponents.length; i++) {
@@ -284,7 +296,7 @@ public class RGBImageProfilePane extends JPanel {
             pattern = selectedProfile.getPattern();
         }
 
-        return new RGBImageProfile(name, rgbaExpressions, pattern, ranges);
+        return new RGBImageProfile(name, rgbaExpressions, validPixelExpression, pattern, ranges);
     }
 
     public void addProfiles(RGBImageProfile[] profiles) {
@@ -320,9 +332,19 @@ public class RGBImageProfilePane extends JPanel {
         return ((JTextField) rgbaExprBoxes[i].getEditor().getEditorComponent()).getText().trim();
     }
 
+    private String getValidPixelExpression() {
+        return ((JTextField) validPixelExpression).getText().trim();
+    }
+
     private void setExpression(int i, String expression) {
         rgbaExprBoxes[i].setSelectedItem(expression);
     }
+
+
+    private void setValidPixelExpression(String validPixelExpression) {
+         this.validPixelExpression.setText(validPixelExpression);
+    }
+
 
     private void performOpen() {
         final SnapFileChooser snapFileChooser = new SnapFileChooser(getProfilesDir());
@@ -415,7 +437,7 @@ public class RGBImageProfilePane extends JPanel {
             ranges[i] = rangeComponents[i].getRange();
         }
         final RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
-                rgbaExpressions, null, ranges);
+                rgbaExpressions, getValidPixelExpression(), null, ranges);
         try {
             profile.store(file);
         } catch (IOException e) {
@@ -505,6 +527,8 @@ public class RGBImageProfilePane extends JPanel {
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, rgbaExpressions[i]);
                 }
+
+                setValidPixelExpression(profile.getValidPixelExpression());
 
                 if (preferences.getPropertyBool(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT)) {
 
