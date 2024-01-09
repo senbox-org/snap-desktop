@@ -67,6 +67,7 @@ public class RGBImageProfilePane extends JPanel {
     private JComboBox<ProfileItem> profileBox;
 
     private final JComboBox[] rgbaExprBoxes;
+    private final JTextField validPixelExpression;
     private final RangeComponents[] rangeComponents;
     private DefaultComboBoxModel<ProfileItem> profileModel;
     private AbstractAction saveAsAction;
@@ -148,6 +149,9 @@ public class RGBImageProfilePane extends JPanel {
             rgbaExprBoxes[i].setName("rgbExprBox_" + i);
         }
 
+        JLabel validPixelExpressionJLabel = new JLabel("Valid Pixel Expression");
+        validPixelExpression = new JTextField();
+
         rangeComponents = new RangeComponents[3];
         for (int i = 0; i < rangeComponents.length; i++) {
             rangeComponents[i] = new RangeComponents();
@@ -171,6 +175,34 @@ public class RGBImageProfilePane extends JPanel {
             c3.gridy = 2 * i + 1;
             addColorRangeComponentsRow(colorComponentPanel, c3, i);
         }
+
+
+        JPanel validPixelExpressionPanel = new JPanel(new GridBagLayout());
+        final GridBagConstraints validPixelExpressionConstraints = new GridBagConstraints();
+        validPixelExpressionConstraints.anchor = GridBagConstraints.WEST;
+        validPixelExpressionConstraints.fill = GridBagConstraints.NONE;
+        validPixelExpressionConstraints.insets = new Insets(2, 2, 2, 2);
+        validPixelExpressionConstraints.gridy = 0;
+        validPixelExpressionConstraints.gridx = 0;
+        validPixelExpressionConstraints.weightx = 0;
+        validPixelExpressionPanel.add(validPixelExpressionJLabel, validPixelExpressionConstraints);
+        validPixelExpressionConstraints.gridx = 1;
+        validPixelExpressionConstraints.fill = GridBagConstraints.HORIZONTAL;
+        validPixelExpressionConstraints.weightx = 1;
+        validPixelExpressionPanel.add(validPixelExpression, validPixelExpressionConstraints);
+
+        final JButton editorButton = new JButton("...");
+        editorButton.addActionListener(e -> invokeValidPixelExpressionEditor());
+        final Dimension preferredSize = rgbaExprBoxes[0].getPreferredSize();
+        editorButton.setPreferredSize(new Dimension(preferredSize.height, preferredSize.height));
+        editorButton.setMaximumSize(new Dimension(preferredSize.height, preferredSize.height));
+
+        validPixelExpressionConstraints.gridx = 2;
+        validPixelExpressionConstraints.fill = GridBagConstraints.NONE;
+        validPixelExpressionConstraints.weightx = 0;
+        validPixelExpressionPanel.add(editorButton, validPixelExpressionConstraints);
+
+
         referencedRastersAreCompatibleLabel = new JLabel();
 
         TableLayout layout = new TableLayout(1);
@@ -181,6 +213,7 @@ public class RGBImageProfilePane extends JPanel {
         setLayout(layout);
         add(profilePanel);
         add(colorComponentPanel);
+        add(validPixelExpressionPanel);
         layout.setCellFill(2, 0, TableLayout.Fill.NONE);
         layout.setCellAnchor(2, 0, TableLayout.Anchor.NORTHEAST);
         add(referencedRastersAreCompatibleLabel);
@@ -270,6 +303,7 @@ public class RGBImageProfilePane extends JPanel {
 
     public RGBImageProfile getRgbProfile() {
         final String[] rgbaExpressions = getRgbaExpressions();
+        final String validPixelExpression = getValidPixelExpression();
 
         final Range[] ranges = new Range[3];
         for (int i = 0; i < rangeComponents.length; i++) {
@@ -284,7 +318,7 @@ public class RGBImageProfilePane extends JPanel {
             pattern = selectedProfile.getPattern();
         }
 
-        return new RGBImageProfile(name, rgbaExpressions, pattern, ranges);
+        return new RGBImageProfile(name, rgbaExpressions, validPixelExpression, pattern, ranges);
     }
 
     public void addProfiles(RGBImageProfile[] profiles) {
@@ -320,9 +354,19 @@ public class RGBImageProfilePane extends JPanel {
         return ((JTextField) rgbaExprBoxes[i].getEditor().getEditorComponent()).getText().trim();
     }
 
+    private String getValidPixelExpression() {
+        return ((JTextField) validPixelExpression).getText().trim();
+    }
+
     private void setExpression(int i, String expression) {
         rgbaExprBoxes[i].setSelectedItem(expression);
     }
+
+
+    private void setValidPixelExpression(String validPixelExpression) {
+         this.validPixelExpression.setText(validPixelExpression);
+    }
+
 
     private void performOpen() {
         final SnapFileChooser snapFileChooser = new SnapFileChooser(getProfilesDir());
@@ -415,7 +459,7 @@ public class RGBImageProfilePane extends JPanel {
             ranges[i] = rangeComponents[i].getRange();
         }
         final RGBImageProfile profile = new RGBImageProfile(FileUtils.getFilenameWithoutExtension(file),
-                rgbaExpressions, null, ranges);
+                rgbaExpressions, getValidPixelExpression(), null, ranges);
         try {
             profile.store(file);
         } catch (IOException e) {
@@ -505,6 +549,8 @@ public class RGBImageProfilePane extends JPanel {
                 for (int i = 0; i < rgbaExprBoxes.length; i++) {
                     setExpression(i, rgbaExpressions[i]);
                 }
+
+                setValidPixelExpression(profile.getValidPixelExpression());
 
                 if (preferences.getPropertyBool(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_MAX_RANGE_DEFAULT)) {
 
@@ -635,6 +681,38 @@ public class RGBImageProfilePane extends JPanel {
             }
         }
     }
+
+
+    private void invokeValidPixelExpressionEditor() {
+        final Window window = SwingUtilities.getWindowAncestor(this);
+        final String title = "Edit Valid Pixel Expression";
+        if (product != null) {
+            final ExpressionPane pane;
+            final Product[] products = getCompatibleProducts(product, openedProducts);
+            pane = ProductExpressionPane.createGeneralExpressionPane(products, product, preferences);
+            pane.setCode(getValidPixelExpression());
+            int status = pane.showModalDialog(window, title);
+            if (status == ModalDialog.ID_OK) {
+                setValidPixelExpression(pane.getCode());
+            }
+        } else {
+            final JTextArea textArea = new JTextArea(8, 48);
+            textArea.setFont(EXPRESSION_FONT);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setText(getValidPixelExpression());
+            final ModalDialog modalDialog = new ModalDialog(window, title, ModalDialog.ID_OK_CANCEL, "");
+            final JPanel panel = new JPanel(new BorderLayout(2, 2));
+            panel.add(new JLabel("Expression:"), BorderLayout.NORTH);
+            panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+            modalDialog.setContent(panel);
+            final int status = modalDialog.show();
+            if (status == ModalDialog.ID_OK) {
+                setValidPixelExpression(textArea.getText());
+            }
+        }
+    }
+
 
     private static Product[] getCompatibleProducts(final Product targetProduct, final Product[] productsList) {
         final List<Product> compatibleProducts = new ArrayList<>(1);
