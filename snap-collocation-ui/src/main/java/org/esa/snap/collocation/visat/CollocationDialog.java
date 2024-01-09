@@ -60,8 +60,8 @@ class CollocationDialog extends SingleTargetProductDialog {
     protected Product createTargetProduct() throws Exception {
         final Map<String, Product> productMap = new LinkedHashMap<String, Product>(5);
         productMap.put("master", form.getMasterProduct());
-        for (int i = 0 ; i < form.getSlaveProducts().length ; i++) {
-            productMap.put(String.format("slave%d",i), form.getSlaveProducts()[i]);
+        for (int i = 0 ; i < form.getDependentProducts().length ; i++) {
+            productMap.put(String.format("dependent%d",i), form.getDependentProducts()[i]);
         }
 
         parameterSupport.getParameterMap().put("masterProductName",form.getMasterProduct().getName());
