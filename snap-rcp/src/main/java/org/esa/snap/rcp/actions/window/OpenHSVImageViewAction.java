@@ -157,8 +157,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private static ProductSceneImage createProductSceneImageHSV(final String name, final Product product,
                                                                 final String[] hsvExpressions,
-                                                                final ProgressMonitor pm) throws Exception {
-        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+                                                                final ProgressMonitor pm) {
         Band[] rgbBands = null;
         boolean errorOccured = false;
         ProductSceneImage productSceneImage = null;
@@ -281,5 +280,79 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         rgbExpressions[1] = g.replace("(h)", '(' + h + ')').replace("(s)", '(' + s + ')').replace("(v)", '(' + v + ')');
         rgbExpressions[2] = b.replace("(h)", '(' + h + ')').replace("(s)", '(' + s + ')').replace("(v)", '(' + v + ')');
         return rgbExpressions;
+    }
+
+    @Override
+    public void actionPerformed(final ActionEvent event) {
+        if (product != null) {
+            openProductSceneViewHSV(product, HELP_ID);
+        }
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
+
+    public void openProductSceneViewHSV(Product hsvProduct, final String helpId) {
+
+        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+        final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(hsvProduct);
+
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        final HSVImageProfilePane profilePane = new HSVImageProfilePane(new PreferencesPropertyMap(preferences),
+                hsvProduct,
+                openedProducts, defaultBandIndices);
+
+        final String title = "Select HSV-Image Channels";
+        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
+        if (!ok) {
+            return;
+        }
+        final String[] hsvExpressions = profilePane.getRgbaExpressions();
+        nomalizeHSVExpressions(hsvProduct, hsvExpressions);
+        if (profilePane.getStoreProfileInProduct()) {
+            RGBImageProfile.storeRgbaExpressions(hsvProduct, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
+        }
+
+        final String sceneName = OpenRGBImageViewAction.createSceneName(hsvProduct, profilePane.getSelectedProfile(), "HSV");
+        openProductSceneViewHSV(sceneName, hsvProduct, hsvExpressions);
+    }
+
+    /**
+     * Creates product scene view using the given HSV expressions.
+     */
+    public void openProductSceneViewHSV(final String name, final Product product, final String[] hsvExpressions) {
+
+        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<>(
+                SnapApp.getDefault().getMainFrame(),
+                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + '\'') {
+
+            @Override
+            protected ProductSceneImage doInBackground(ProgressMonitor pm) {
+                return createProductSceneImageHSV(name, product, hsvExpressions, pm);
+            }
+
+            @Override
+            protected void done() {
+                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
+
+                String errorMsg = "The HSV image view could not be created.";
+                try {
+                    final ProductSceneView productSceneView = new ProductSceneView(get());
+                    OpenRGBImageViewAction.openDocumentWindow(productSceneView);
+                } catch (OutOfMemoryError e) {
+                    Dialogs.showOutOfMemoryError(errorMsg);
+                    return;
+                } catch (Exception e) {
+                    SnapApp.getDefault().handleError(errorMsg, e);
+                    return;
+                }
+                SnapApp.getDefault().setStatusBarMessage("");
+            }
+        };
+        SnapApp.getDefault().setStatusBarMessage("Creating HSV image view...");  /*I18N*/
+        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+        worker.execute();
     }
 }
