@@ -75,8 +75,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private static ProductSceneImage createProductSceneImageHSV(final String name, final Product product,
                                                                 final String[] hsvExpressions,
-                                                                final ProgressMonitor pm) throws Exception {
-        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+                                                                final ProgressMonitor pm) {
         Band[] rgbBands = null;
         boolean errorOccured = false;
         ProductSceneImage productSceneImage = null;
@@ -245,12 +244,12 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
      */
     public void openProductSceneViewHSV(final String name, final Product product, final String[] hsvExpressions) {
 
-        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
+        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<>(
                 SnapApp.getDefault().getMainFrame(),
                 SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + '\'') {
 
             @Override
-            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
+            protected ProductSceneImage doInBackground(ProgressMonitor pm) {
                 return createProductSceneImageHSV(name, product, hsvExpressions, pm);
             }
 
