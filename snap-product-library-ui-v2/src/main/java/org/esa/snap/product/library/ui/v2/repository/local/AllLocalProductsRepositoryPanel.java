@@ -12,7 +12,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.LocalRepositoryParameterValues;

@@ -18,7 +18,7 @@ import org.esa.snap.product.library.ui.v2.repository.input.ParametersPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadProductListTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.preferences.RepositoriesCredentialsController;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
