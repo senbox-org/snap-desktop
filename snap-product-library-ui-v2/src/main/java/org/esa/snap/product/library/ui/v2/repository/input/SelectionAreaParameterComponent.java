@@ -1,6 +1,6 @@
 package org.esa.snap.product.library.ui.v2.repository.input;
 
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 
 import javax.swing.*;
 import java.awt.geom.Rectangle2D;

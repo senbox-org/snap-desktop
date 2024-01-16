@@ -58,8 +58,9 @@ import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.thread.ThreadCallback;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
-import org.esa.snap.product.library.ui.v2.worldwind.PolygonMouseListener;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapperImpl;
+import org.esa.snap.worldwind.productlibrary.PolygonMouseListener;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.DataAccess;
@@ -424,7 +425,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void createWorldWindowPanel(PropertyMap persistencePreferences) {
         PolygonMouseListener worldWindowMouseListener = ProductLibraryToolViewV2.this::leftMouseButtonClicked;
-        this.worldWindowPanel = new WorldMapPanelWrapper(worldWindowMouseListener, getTextFieldBackgroundColor(), persistencePreferences);
+        this.worldWindowPanel = new WorldMapPanelWrapperImpl(worldWindowMouseListener, getTextFieldBackgroundColor(), persistencePreferences);
         this.worldWindowPanel.setPreferredSize(new Dimension(400, 250));
         this.worldWindowPanel.addWorldMapPanelAsync(false, true);
     }

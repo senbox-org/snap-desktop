@@ -13,7 +13,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.RemoteRepositoriesSe
 import org.esa.snap.product.library.ui.v2.thread.AbstractProgressTimerRunnable;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.RepositoryQueryParameter;
 import org.esa.snap.ui.loading.CustomSplitPane;
@@ -217,6 +217,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(this.componentDimension.getGapBetweenColumns(), 0));
         centerPanel.add(label, BorderLayout.WEST);
         centerPanel.add(selectionAreaParameterComponent.getComponent(), BorderLayout.CENTER);
+        this.worlWindPanel.refresh();
         return centerPanel;
     }
 }

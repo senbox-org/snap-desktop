@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.worldwind;
+package org.esa.snap.worldwind.productlibrary;
 
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
@@ -21,6 +21,7 @@ import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
+import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 
 import java.awt.Color;
 import java.awt.Cursor;
