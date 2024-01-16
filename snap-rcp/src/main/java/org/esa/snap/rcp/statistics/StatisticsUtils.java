@@ -27,9 +27,8 @@ import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
 
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Point2D;
-import java.io.IOException;
 
 
 /**
@@ -70,22 +69,6 @@ public class StatisticsUtils {
 
     public static class TransectProfile {
 
-        /**
-         * @deprecated since BEAM 4.11; no replacement.
-         */
-        @Deprecated
-        public static TransectProfileData getTransectProfileData(final RasterDataNode raster) throws IOException {
-            Shape transectShape = null;
-            if (raster != null) {
-                transectShape = getTransectShape(raster.getProduct());
-            }
-            if (transectShape == null) {
-                return null;
-            } else {
-                return raster.createTransectProfileData(transectShape);
-            }
-        }
-
         public static Shape getTransectShape(Product product) {
             final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
             if (sceneView != null) {
@@ -98,19 +81,6 @@ public class StatisticsUtils {
                 }
             }
             return null;
-        }
-
-        /**
-         * @deprecated since BEAM 4.11; no replacement.
-         */
-        @Deprecated
-        public static String createTransectProfileText(final RasterDataNode raster) throws IOException {
-            final TransectProfileData data = getTransectProfileData(raster);
-            if (data == null) {
-                return null;
-            }
-
-            return createTransectProfileText(raster, data);
         }
 
         static String createTransectProfileText(RasterDataNode raster, TransectProfileData data) {
@@ -133,15 +103,15 @@ public class StatisticsUtils {
 
             for (int i = 0; i < pixelPositions.length; i++) {
                 final Point2D pixelPos = pixelPositions[i];
-                sb.append(String.format(formatString, String.valueOf(i)));
-                sb.append(String.format(formatString, String.valueOf(pixelPos.getX())));
-                sb.append(String.format(formatString, String.valueOf(pixelPos.getY())));
+                sb.append(String.format(formatString, i));
+                sb.append(String.format(formatString, pixelPos.getX()));
+                sb.append(String.format(formatString, pixelPos.getY()));
                 if (geoPositions.length > 0) {
                     final GeoPos geoPos = geoPositions[i];
-                    sb.append(String.format(formatString, String.valueOf(geoPos.lat)));
-                    sb.append(String.format(formatString, String.valueOf(geoPos.lon)));
+                    sb.append(String.format(formatString, geoPos.lat));
+                    sb.append(String.format(formatString, geoPos.lon));
                 }
-                sb.append(String.format(formatString, String.valueOf(sampleValues[i])));
+                sb.append(String.format(formatString, sampleValues[i]));
                 sb.append(" \n");
             }
 
