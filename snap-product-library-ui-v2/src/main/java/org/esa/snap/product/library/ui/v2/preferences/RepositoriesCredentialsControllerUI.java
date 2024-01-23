@@ -246,6 +246,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     @Override
     public void applyChanges() {
+        final TableCellEditor tableCellEditor = this.credentialsListTable.getCellEditor();
+        if (tableCellEditor != null) {
+            tableCellEditor.stopCellEditing();
+        }
         if (isChanged()) {
             try {
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
