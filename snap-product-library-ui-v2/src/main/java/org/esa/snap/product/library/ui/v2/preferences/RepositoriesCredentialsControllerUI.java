@@ -257,7 +257,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 this.downloadAllPages = changedDownloadAllPagesEnabled;
                 this.nrRecordsOnPage = changedNrRecordsOnPage;
                 AppContext appContext = SnapApp.getDefault().getAppContext();
-                appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
+                SwingUtilities.invokeLater(() -> appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2));
             } catch (Exception ex) {
                 String title = "Error saving remote repositories credentials";
                 String msg = "Unable to save Remote Repositories Credentials to SNAP configuration file." + " Details: " + ex.getMessage();
