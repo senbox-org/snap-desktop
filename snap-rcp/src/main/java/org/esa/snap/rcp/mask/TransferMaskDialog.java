@@ -19,7 +19,7 @@ import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.ui.ModalDialog;
 
 import javax.swing.BorderFactory;
@@ -164,8 +164,8 @@ class TransferMaskDialog extends ModalDialog {
         final GeoCoding srcGC = sourceProduct.getSceneGeoCoding();
         final GeoCoding targetGC = targetProduct.getSceneGeoCoding();
         if (srcGC != null && srcGC.canGetGeoPos() && targetGC != null && targetGC.canGetGeoPos()) {
-            final GeneralPath[] sourcePath = ProductUtils.createGeoBoundaryPaths(sourceProduct);
-            final GeneralPath[] targetPath = ProductUtils.createGeoBoundaryPaths(targetProduct);
+            final GeneralPath[] sourcePath = GeoUtils.createGeoBoundaryPaths(sourceProduct);
+            final GeneralPath[] targetPath = GeoUtils.createGeoBoundaryPaths(targetProduct);
             for (GeneralPath spath : sourcePath) {
                 Rectangle bounds = spath.getBounds();
                 for (GeneralPath tPath : targetPath) {
