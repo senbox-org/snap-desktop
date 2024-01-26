@@ -23,13 +23,14 @@
   <tr><td><b>Version:</b></td><td>1.0</td></tr>
 </table>
 <h2>Description</h2>
-An operator that is used to perform spatial and temporal aggregations into "bin" cells for any number of source
+<p>An operator that is used to perform spatial and temporal aggregations into "bin" cells for any number of source
  product. The output is either a file comprising the resulting bins or a reprojected "map" of the bin cells
- represented by a usual data product.
+ represented by a usual data product.</p>
  <p>
  Unlike most other operators, that can compute single {@link Tile tiles},
  the binning operator processes all
  of its source products in its {@link #initialize()} method.
+ </p>
 <h2>Sources</h2>
 <table>
 <tr>
@@ -264,6 +265,6 @@ in each source data product, so that it can be used as input for the binning.</t
         <td></td>
     </tr>
 </table>
-<hr/>
+<hr>
 </body>
 </html>
