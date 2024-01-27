@@ -854,6 +854,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         if (getSelectMaskCount(selectedMasks) > 0) {
             if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.INDIVIDUAL) {
+                //todo  We may consider also adding an INDIVIDUAL_COMPLEMENT mask
                 for (Mask mask : selectedMasks) {
                     if (mask != null) {
                         masksToProcess[index] = mask;
