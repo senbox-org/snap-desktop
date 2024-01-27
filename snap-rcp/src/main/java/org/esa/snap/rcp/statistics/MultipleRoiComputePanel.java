@@ -347,9 +347,14 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(maskFilterPane, gbc);
 
         gbc.insets.top = 0;
-        gbc.gridy++;
+        gbc.gridy += 1;
+        gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(maskQualityNameListPane, gbc);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+
+
 
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -446,7 +451,11 @@ class MultipleRoiComputePanel extends JPanel {
 
         gbc.insets.top = 0;
         gbc.gridy += 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
         panel.add(maskNameListPane, gbc);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
 
         gbc.gridy += 1;
         gbc.anchor = GridBagConstraints.CENTER;
