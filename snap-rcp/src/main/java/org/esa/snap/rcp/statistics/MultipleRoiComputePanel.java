@@ -217,6 +217,8 @@ class MultipleRoiComputePanel extends JPanel {
 //        }
 
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
+        MaskGrouping[] maskGroupings = {MaskGrouping.COMPLEMENT};
+        qualityMaskGroupingComboBox = new JComboBox(maskGroupings);
     }
 
 
@@ -228,10 +230,10 @@ class MultipleRoiComputePanel extends JPanel {
         tabbedPane.addTab("Bands", getBandsPanel());
         tabbedPane.setToolTipTextAt(0, "<html>Select bands on which to create statistics<br>By default current band is selected</html>");
 
-        tabbedPane.addTab("Regional", getMaskROIPanel());
+        tabbedPane.addTab("ROI", getMaskROIPanel());
         tabbedPane.setToolTipTextAt(1, "Select regional masks for which to create statistics");
 
-        tabbedPane.addTab("Quality", getQualityMaskPanel());
+        tabbedPane.addTab("Masking", getQualityMaskPanel());
         tabbedPane.setToolTipTextAt(2, "Select quality masks for which to create statistics");
 
         tabbedPane.addTab("Criteria", criteriaPanel);
@@ -264,7 +266,7 @@ class MultipleRoiComputePanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         regionalMaskGroupingComboBox.setMinimumSize(regionalMaskGroupingComboBox.getPreferredSize());
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         panel.add(regionalMaskGroupingComboBox, gbc);
 
         regionalMaskGroupingComboBoxLabel.setToolTipText(maskGroupingToolTip);
@@ -290,9 +292,9 @@ class MultipleRoiComputePanel extends JPanel {
         gbc.gridx++;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.COMPLEMENT);
         qualityMaskGroupingComboBox.setMinimumSize(qualityMaskGroupingComboBox.getPreferredSize());
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.COMPLEMENT);
         panel.add(qualityMaskGroupingComboBox, gbc);
 
         qualityMaskGroupingComboBoxLabel.setToolTipText(maskGroupingToolTip);
@@ -325,6 +327,8 @@ class MultipleRoiComputePanel extends JPanel {
 
 
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
+        MaskGrouping[] maskGroupings = {MaskGrouping.COMPLEMENT};
+        qualityMaskGroupingComboBox = new JComboBox(maskGroupings);
 
         final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
         myComboBoxRenderer.setTooltipList(MaskGroupingToolTips.values());
@@ -391,7 +395,7 @@ class MultipleRoiComputePanel extends JPanel {
                 }
             }
         });
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.COMPLEMENT);
         selectAndEnableQualityCheckBoxes();
 
 
@@ -421,7 +425,8 @@ class MultipleRoiComputePanel extends JPanel {
         JPanel checkBoxPane = getRegionSelectAllNonePanel();
 
         regionalMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
-
+        MaskGrouping[] maskGroupings = {MaskGrouping.INTERSECTION, MaskGrouping.UNION, MaskGrouping.INDIVIDUAL};
+        regionalMaskGroupingComboBox = new JComboBox(maskGroupings);
 
         final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
         myComboBoxRenderer.setTooltipList(MaskGroupingToolTips.values());
@@ -482,7 +487,7 @@ class MultipleRoiComputePanel extends JPanel {
                 }
             }
         });
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         selectAndEnableRegionCheckBoxes();
 
         return panel;
@@ -620,20 +625,21 @@ class MultipleRoiComputePanel extends JPanel {
             for (Mask mask : masks) {
                 if (mask != null && mask.getName() != null) {
 
-                    String imageTypeName = null;
-                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
-                        imageTypeName = mask.getImageType().getName();
-                    }
-
-                    if ("Geometry".equals(imageTypeName) ||
-                            mask.getName().toLowerCase().contains("region") ||
-                            mask.getName().toLowerCase().contains("bathymetry") ||
-                            mask.getName().toLowerCase().contains("topography") ||
-                            mask.getName().toLowerCase().contains("elev") ||
-                            mask.getName().toLowerCase().contains("land") ||
-                            mask.getName().toLowerCase().contains("water")) {
+//                    String imageTypeName = null;
+//                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
+//                        imageTypeName = mask.getImageType().getName();
+//                    }
+//
+//                    if ("Geometry".equals(imageTypeName) ||
+//                            mask.getName().toLowerCase().contains("region") ||
+//                            mask.getName().toLowerCase().contains("bathymetry") ||
+//                            mask.getName().toLowerCase().contains("topography") ||
+//                            mask.getName().toLowerCase().contains("elev") ||
+//                            mask.getName().toLowerCase().contains("land") ||
+//                            mask.getName().toLowerCase().contains("water")) {
+                    // Adding all mask to this category
                         regionMaskNameListModel.addElement(mask.getName());
-                    }
+//                    }
                 }
             }
             regionMaskNameList.setModel(regionMaskNameListModel);
@@ -687,14 +693,15 @@ class MultipleRoiComputePanel extends JPanel {
             for (Mask mask : masks) {
                 if (mask != null && mask.getName() != null) {
 
-                    String imageTypeName = null;
-                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
-                        imageTypeName = mask.getImageType().getName();
-                    }
-
-                    if (!"Geometry".equals(imageTypeName)) {
+//                    String imageTypeName = null;
+//                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
+//                        imageTypeName = mask.getImageType().getName();
+//                    }
+//
+//                    if (!"Geometry".equals(imageTypeName)) {
+                    // adding all masks to this category
                         qualityMaskNameListModel.addElement(mask.getName());
-                    }
+//                    }
                 }
             }
             qualityMaskNameList.setModel(qualityMaskNameListModel);
