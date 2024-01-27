@@ -21,14 +21,14 @@ import eu.esa.snap.netbeans.javahelp.api.Help;
 public class HelpDisplayer {
 
     /** URl for the online help. */
-    private static final String DEFAULT_ONLINE_HELP_URL = "https://step.esa.int/main/doc/online-help";
-	
+    private static final String DEFAULT_ONLINE_HELP_URL = "https://seadas.gsfc.nasa.gov/help/";
+
     /** Relative URL for the version.json file */
     private static final String VERSION_JSON_URL = "../../wp-content/help/versions/";
-    
+
     /** The version.json file name */
     private static final String VERSION_JSON_FILE = "/version.json";
-    
+
     /**
      * Invoke the help system with the provided help ID.
      *
@@ -52,8 +52,8 @@ public class HelpDisplayer {
         	// Online help opened
         	return;
         }
-    	
-    	Help helpImpl = Lookup.getDefault().lookup(Help.class);
+
+        Help helpImpl = Lookup.getDefault().lookup(Help.class);
         if (helpImpl == null) {
             Toolkit.getDefaultToolkit().beep();
             return;
