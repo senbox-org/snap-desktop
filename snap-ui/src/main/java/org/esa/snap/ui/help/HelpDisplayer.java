@@ -48,10 +48,10 @@ public class HelpDisplayer {
         final String version = SystemUtils.getReleaseVersion();
         final String fullURL = serverURL + "?helpid=" + helpCtx.getHelpID() + "&version=" + version;
         final String versionURL = serverURL + VERSION_JSON_URL + version + VERSION_JSON_FILE;
-        if (checkServer(versionURL) && browse(fullURL)) {
-        	// Online help opened
-        	return;
-        }
+//        if (checkServer(versionURL) && browse(fullURL)) {
+//        	// Online help opened
+//        	return;
+//        }
 
         Help helpImpl = Lookup.getDefault().lookup(Help.class);
         if (helpImpl == null) {
