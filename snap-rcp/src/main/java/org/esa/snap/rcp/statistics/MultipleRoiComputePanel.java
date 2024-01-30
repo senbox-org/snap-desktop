@@ -176,7 +176,7 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(topPane, gbc);
 
         gbc = GridBagUtils.restoreConstraints(gbc);
-        includeFullSceneCheckBox = new JCheckBox("Include Unmasked (Full Scene)");
+        includeFullSceneCheckBox = new JCheckBox("Include results for ROI-Masking OFF");
         includeFullSceneCheckBox.setSelected(includeFullScene);
         includeFullSceneCheckBox.addActionListener(new ActionListener() {
 
@@ -230,11 +230,11 @@ class MultipleRoiComputePanel extends JPanel {
         tabbedPane.addTab("Bands", getBandsPanel());
         tabbedPane.setToolTipTextAt(0, "<html>Select bands on which to create statistics<br>By default current band is selected</html>");
 
-        tabbedPane.addTab("ROI", getMaskROIPanel());
+        tabbedPane.addTab("ROI-Mask", getMaskROIPanel());
         tabbedPane.setToolTipTextAt(1, "Select regional masks for which to create statistics");
 
-        tabbedPane.addTab("Masking", getQualityMaskPanel());
-        tabbedPane.setToolTipTextAt(2, "Select quality masks for which to create statistics");
+        tabbedPane.addTab("Flag-Mask", getQualityMaskPanel());
+        tabbedPane.setToolTipTextAt(2, "Select flagging masks for which to create statistics");
 
         tabbedPane.addTab("Criteria", criteriaPanel);
         tabbedPane.setToolTipTextAt(3, "Specify statistical criteria and formatting");
@@ -307,7 +307,7 @@ class MultipleRoiComputePanel extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        includeNoQualityCheckBox = new JCheckBox("Include Unmasked");
+        includeNoQualityCheckBox = new JCheckBox("Include results for Flag-Masking OFF");
         includeNoQualityCheckBox.setSelected(includeFullScene);
         includeNoQualityCheckBox.addActionListener(new ActionListener() {
 
