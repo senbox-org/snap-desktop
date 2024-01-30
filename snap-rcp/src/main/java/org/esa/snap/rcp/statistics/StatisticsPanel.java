@@ -148,8 +148,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     private enum PrimaryStatisticsFields {
         FileRefNum("File#"),
         BandName("Band"),
-        MaskName("Regional_Mask"),
-        QualityMaskName("Quality_Mask");
+        MaskName("ROI_Mask"),
+        QualityMaskName("Flag_Mask");
 
         PrimaryStatisticsFields(String name) {
             this.name = name;
@@ -191,13 +191,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         BandValidExpression("Band_Valid_Expression"),
         BandDescription("Band_Description"),
         RegionalMaskMetaDataBreak(COLUMN_BREAK),
-        RegionalMaskName("Regional_Mask"),
-        RegionalMaskDescription("Regional_Mask_Description"),
-        RegionalMaskExpression("Regional_Mask_Expression"),
+        RegionalMaskName("ROI_Mask"),
+        RegionalMaskDescription("ROI_Mask_Description"),
+        RegionalMaskExpression("ROI_Mask_Expression"),
         QualityMaskMetaDataBreak(COLUMN_BREAK),
-        QualityMaskName("Quality_Mask"),
-        QualityMaskDescription("Quality_Mask_Description"),
-        QualityMaskExpression("Quality_Mask_Expression");
+        QualityMaskName("Flag_Mask"),
+        QualityMaskDescription("Flag_Mask_Description"),
+        QualityMaskExpression("Flag_Mask_Expression");
 
         MetaDataFields(String name) {
             this.name = name;
@@ -644,6 +644,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         numQualityMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
         numRegionMasks = getMasksToProcessCount(selectedRegionMasks, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
 
+        if (numQualityMasks == 0) {
+            numQualityMasks = 1;  // forcing no masks
+        }
+        if (numRegionMasks == 0) {
+            numRegionMasks = 1;  // forcing no masks
+        }
+
         numStxRegions = numBands * numRegionMasks * numQualityMasks;
         System.out.println("numStxRegions=" + numStxRegions);
 
@@ -775,7 +782,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 try {
                     if (totalRecordCount == 0) {
                         Dialogs.showMessage("Statistics",
-                                "No statistics computed.\nMask and/or Full Scene must be selected.",
+                                "No statistics computed.\nROI-Mask and Flag-Mask must have something selected.",
                                 JOptionPane.ERROR_MESSAGE, null);
                     }
 
@@ -841,7 +848,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         int masksToProcessCount = getMasksToProcessCount(selectedMasks, includeNull, maskGrouping);
         if (masksToProcessCount == 0) {
-            return null;
+            includeNull = true;  // forcing no masks
+            masksToProcessCount = 1;
         }
 
         Mask[] masksToProcess = new Mask[masksToProcessCount];
@@ -2280,11 +2288,11 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         StringBuilder sb = new StringBuilder("");
 
         if (regionalMask != null && regionalMask.getName() != null) {
-            sb.append("regional_mask=" + regionalMask.getName() + "  ");
+            sb.append("ROI_mask=" + regionalMask.getName() + "  ");
         }
 
         if (qualityMask != null && qualityMask.getName() != null) {
-            sb.append("quality_mask=" + qualityMask.getName() + " ");
+            sb.append("Flag_mask=" + qualityMask.getName() + " ");
         }
 
         final String title;
