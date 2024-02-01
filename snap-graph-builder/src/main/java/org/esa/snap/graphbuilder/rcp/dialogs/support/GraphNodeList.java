@@ -16,6 +16,7 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.GraphContext;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.gpf.graph.NodeContext;
@@ -104,7 +105,11 @@ public class GraphNodeList {
             for (GraphNode n : nodeList) {
                 final NodeContext context = graphContext.getNodeContext(n.getNode());
                 if(context.getOperator() != null) {
-                    n.setSourceProducts(context.getSourceProducts());
+                    Product[] sourceProducts = context.getSourceProducts();
+                    for (final Product product : sourceProducts) {
+                        System.out.println("5 - " + product.getName());
+                    }
+                    n.setSourceProducts(sourceProducts);
                 }
                 n.updateParameters();
             }
