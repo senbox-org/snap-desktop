@@ -256,7 +256,8 @@ public class GraphExecuter extends Observable {
 
             try {
                 recreateGraphContext();
-                graphNodeList.updateGraphNodes(graphContext);
+                graphNodeList.registerGraphNodeUpdaters(graphContext);
+                graphContext.init(null);
                 //todo recreateGraphContext();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -275,7 +276,7 @@ public class GraphExecuter extends Observable {
             graphContext.dispose();
 
         processor = new GraphProcessor();
-        graphContext = new GraphContext(graph);
+        graphContext = new GraphContext(graph, false);
     }
 
     public void disposeGraphContext() {
