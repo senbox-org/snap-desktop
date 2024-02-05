@@ -19,6 +19,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
@@ -473,22 +474,20 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     }
 
     protected void assignParameters() {
-        final File[] fileList = productSetPanel.getFileList();
-        // ---- DEBUG -----
-        for (final File file: fileList) {
-            System.out.println("2 - " + file.getAbsolutePath());
+        final File targetFolder = productSetPanel.getTargetFolder();
+        if (targetFolder != null && !targetFolder.exists()) {
+            if (!targetFolder.mkdirs()) {
+                SystemUtils.LOG.severe("Unable to create folders in " + targetFolder);
+                throw new OperatorException("Unable to create folders in " + targetFolder);
+            }
         }
-        // ---- DEBUG -----
+
+        final File[] fileList = productSetPanel.getFileList();
         int graphIndex = 0;
         for (File f : fileList) {
             final String name = FileUtils.getFilenameWithoutExtension(f);
 
-            final File targetFolder = productSetPanel.getTargetFolder();
-            if (targetFolder != null && !targetFolder.exists()) {
-                if (!targetFolder.mkdirs()) {
-                    SystemUtils.LOG.severe("Unable to create folders in " + targetFolder);
-                }
-            }
+
             final File targetFile = targetFolder == null ? null : new File(targetFolder, name);
             final String targetFormat = productSetPanel.getTargetFormat();
 
@@ -553,11 +552,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         graphExecutorList.add(graphEx);
 
         final File[] fileList = productSetPanel.getFileList();
-        // ---- DEBUG -----
-        for (final File file: fileList) {
-            System.out.println("1 - " + file.getAbsolutePath());
-        }
-        // ---- DEBUG -----
         for (int graphIndex = 1; graphIndex < fileList.length; ++graphIndex) {
 
             final GraphExecuter cloneGraphEx = new GraphExecuter();
