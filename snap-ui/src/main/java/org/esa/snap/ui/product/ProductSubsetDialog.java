@@ -414,7 +414,7 @@ public class ProductSubsetDialog extends ModalDialog {
             return null;
         }
         // metadata elements must be added to includeAlways list
-        // to ensure that they are selected if isIgnoreMetada is set to false
+        // to ensure that they are selected if isIgnoreMetadata is set to false
         if (givenProductSubsetDef != null && !givenProductSubsetDef.isIgnoreMetadata()) {
             metaNodes = new String[metadataElements.length];
             for (int i = 0; i < metadataElements.length; i++) {

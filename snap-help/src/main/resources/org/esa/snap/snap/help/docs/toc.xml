@@ -91,7 +91,7 @@
             <tocitem text="Band Transect Profile Plot" target="profilePlotDialog"/>
             <tocitem text="Correlative Plot" target="correlativePlotDialog"/>
             <tocitem text="Band Statistics" target="statisticsDialog"/>
-            <tocitem text="Metada Plot" target="metadataPlotDialog"/>
+            <tocitem text="Metadata Plot" target="metadataPlotDialog"/>
         </tocitem>
         <tocitem text="Layer">
             <tocitem text="The Layer Menu" target="layerMenu"/>
