@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.graphbuiler.rcp.dialogs.support;
+package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import com.bc.ceres.binding.dom.XppDomElement;
 import org.esa.snap.core.gpf.graph.Node;
