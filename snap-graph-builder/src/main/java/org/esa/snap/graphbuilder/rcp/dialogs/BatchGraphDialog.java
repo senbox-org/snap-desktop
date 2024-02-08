@@ -14,22 +14,19 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
-
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.graph.GraphException;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.gpf.ProcessTimeMonitor;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.remote.execution.operator.RemoteExecutionDialog;
@@ -37,19 +34,8 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.FileChooserFactory;
 import org.esa.snap.ui.ModelessDialog;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -64,28 +50,23 @@ import java.util.Map;
 public class BatchGraphDialog extends ModelessDialog implements GraphDialog, LabelBarProgressMonitor.ProgressBarListener {
 
     protected final static Path defaultGraphPath = ResourceUtils.getGraphFolder("");
-
+    protected final List<GraphExecuter> graphExecutorList = new ArrayList<>(10);
     private final AppContext appContext;
     private final String baseTitle;
-
-    protected final List<GraphExecuter> graphExecutorList = new ArrayList<>(10);
     private final List<BatchProcessListener> listenerList = new ArrayList<>(1);
-
+    private final boolean closeOnDone;
     protected ProductSetPanel productSetPanel;
+    protected File graphFile;
+    protected boolean openProcessedProducts;
     private JTabbedPane tabbedPane;
     private JLabel statusLabel, bottomStatusLabel;
     private JPanel progressPanel;
     private JProgressBar progressBar;
     private LabelBarProgressMonitor progBarMonitor;
-
     private Map<File, File[]> slaveFileMap;
-    private final boolean closeOnDone;
     private boolean skipExistingTargetFiles;
     private boolean replaceWritersWithUniqueTargetProduct;
-
     private boolean isProcessing;
-    protected File graphFile;
-    protected boolean openProcessedProducts;
 
     public BatchGraphDialog(final AppContext theAppContext, final String title, final String helpID,
                             final boolean closeOnDone) {
@@ -105,17 +86,59 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         super.getJDialog().setMinimumSize(new Dimension(600, 400));
     }
 
+    private static String[] getRunRemoteIfWindows() {
+        if (org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang3.SystemUtils.IS_OS_LINUX) {
+            return new String[]{"Run remote"};
+        }
+        return null;
+    }
+
+    private static File getFilePath(Component component, String title) {
+
+        final File graphPath = new File(SnapApp.getDefault().getPreferences().get("batch.last_graph_path", defaultGraphPath.toFile().getAbsolutePath()));
+        final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setDialogTitle(title);
+        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
+            final File file = chooser.getSelectedFile();
+            SnapApp.getDefault().getPreferences().put("batch.last_graph_path", file.getAbsolutePath());
+            return file;
+        }
+        return null;
+    }
+
+    /**
+     * For coregistration
+     *
+     * @param graphEx      the graph executer
+     * @param productSetID the product set reader
+     * @param masterFile   master file
+     * @param slaveFiles   slave file list
+     */
+    protected static void setSlaveIO(final GraphExecuter graphEx, final String productSetID,
+                                     final File masterFile, final File[] slaveFiles) {
+        final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator(productSetID);
+        if (productSetNode != null) {
+            StringBuilder str = new StringBuilder(masterFile.getAbsolutePath());
+            for (File slaveFile : slaveFiles) {
+                str.append(',');
+                str.append(slaveFile.getAbsolutePath());
+            }
+            graphEx.setOperatorParam(productSetNode.getID(), "fileList", str.toString());
+        }
+    }
+
     @Override
     protected void onOther() {
-        final List<File> sourceProductFiles = getSourceProductsFilePath();
-        if (sourceProductFiles.size() == 0) {
+        final List<File> sourceProductFiles = getSourceProductFiles();
+        if (sourceProductFiles.isEmpty()) {
             showErrorDialog("Please add at least one source product.");
         } else if (this.graphFile == null) {
             showErrorDialog("Please add the graph file.");
         } else {
-            Window parentWindow = getJDialog().getOwner();
+            final Window parentWindow = getJDialog().getOwner();
             close();
-            RemoteExecutionDialog dialog = new RemoteExecutionDialog(this.appContext, parentWindow) {
+            final RemoteExecutionDialog dialog = new RemoteExecutionDialog(appContext, parentWindow) {
                 @Override
                 protected void onAboutToShow() {
                     super.onAboutToShow();
@@ -125,13 +148,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             };
             dialog.show();
         }
-    }
-
-    private static String[] getRunRemoteIfWindows() {
-        if (org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS || org.apache.commons.lang3.SystemUtils.IS_OS_LINUX) {
-            return new String[]{"Run remote"};
-        }
-        return null;
     }
 
     private JPanel createUI() {
@@ -193,7 +209,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     @Override
     public void onApply() {
-        if (isProcessing) return;
+        if (isProcessing) {
+            return;
+        }
 
         productSetPanel.onApply();
 
@@ -291,20 +309,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         return "";
     }
 
-    private static File getFilePath(Component component, String title) {
-
-        final File graphPath = new File(SnapApp.getDefault().getPreferences().get("batch.last_graph_path", defaultGraphPath.toFile().getAbsolutePath()));
-        final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(graphPath);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setDialogTitle(title);
-        if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
-            final File file = chooser.getSelectedFile();
-            SnapApp.getDefault().getPreferences().put("batch.last_graph_path", file.getAbsolutePath());
-            return file;
-        }
-        return null;
-    }
-
     @Override
     protected void onClose() {
         cancelProcessing();
@@ -326,7 +330,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      * Validates the input and then call the GPF to execute the graph
      */
     private void doProcessing() {
-
         if (validateAllNodes()) {
 
             SystemUtils.freeAllMemory();
@@ -366,35 +369,45 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
      * Loads a new graph from a file
      *
      * @param executer  the GraphExcecuter
-     * @param file the graph file to load
+     * @param graphFile the graph file to load
      * @param addUI     add a user interface
      */
-    protected void loadGraph(final GraphExecuter executer, final File file, final boolean addUI) {
+    protected void loadGraph(final GraphExecuter executer, final File graphFile, final boolean addUI) {
         try {
-            executer.loadGraph(new FileInputStream(file), file, addUI, true);
-
+            executer.loadGraph(new FileInputStream(graphFile), graphFile, addUI, true);
+            ensureWriteNodeTargetReset(executer.getGraphNodes());
         } catch (Exception e) {
             showErrorDialog(e.getMessage());
         }
     }
 
+    static void ensureWriteNodeTargetReset(GraphNode[] graphNodes) {
+        for (final GraphNode node : graphNodes) {
+            if (node.getID().equals("Write")) {
+                Map<String, Object> parameterMap = node.getParameterMap();
+                parameterMap.remove("file");
+            }
+        }
+    }
+
     private boolean validateAllNodes() {
-        if (isProcessing) return false;
-        if (productSetPanel == null)
+        if (isProcessing) {
             return false;
-        if (graphExecutorList.isEmpty())
+        }
+        if (productSetPanel == null) {
             return false;
+        }
+        if (graphExecutorList.isEmpty()) {
+            return false;
+        }
 
         boolean result;
         statusLabel.setText("");
         try {
             cloneGraphs();
-
             assignParameters();
-
             // first graph must pass
             result = graphExecutorList.get(0).initGraph();
-
         } catch (Exception e) {
             statusLabel.setText(e.getMessage());
             bottomStatusLabel.setText("");
@@ -403,14 +416,12 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
         return result;
     }
 
-    private List<File> getSourceProductsFilePath() {
-        File[] sourceFiles = this.productSetPanel.getFileList();
-        List<File> sourceProductFiles = new ArrayList<>();
-        if (sourceFiles != null) {
-            for (File sourceFile : sourceFiles) {
-                if (!sourceFile.getPath().equals("")) {
-                    sourceProductFiles.add(sourceFile);
-                }
+    private List<File> getSourceProductFiles() {
+        final File[] sourceFiles = productSetPanel.getFileList();
+        final List<File> sourceProductFiles = new ArrayList<>();
+        for (final File sourceFile : sourceFiles) {
+            if (StringUtils.isNotNullAndNotEmpty(sourceFile.getPath())) {
+                sourceProductFiles.add(sourceFile);
             }
         }
         return sourceProductFiles;
@@ -461,8 +472,8 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 if (tabTitle.isEmpty())
                     tabTitle = n.getOperatorName();
                 tabbedPane.addTab(tabTitle, null,
-                                  n.getOperatorUI().CreateOpTab(n.getOperatorName(), n.getParameterMap(), appContext),
-                                  n.getID() + " Operator");
+                        n.getOperatorUI().CreateOpTab(n.getOperatorName(), n.getParameterMap(), appContext),
+                        n.getID() + " Operator");
             }
         }
     }
@@ -472,28 +483,29 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     }
 
     protected void assignParameters() {
+        final File targetFolder = productSetPanel.getTargetFolder();
+        if (targetFolder != null && !targetFolder.exists()) {
+            if (!targetFolder.mkdirs()) {
+                final String msg = "Unable to create folders in " + targetFolder;
+                SystemUtils.LOG.severe(msg);
+                throw new OperatorException(msg);
+            }
+        }
+
         final File[] fileList = productSetPanel.getFileList();
         int graphIndex = 0;
-        for (File f : fileList) {
-            final String name = FileUtils.getFilenameWithoutExtension(f);
+        for (File file : fileList) {
+            final String name = FileUtils.getFilenameWithoutExtension(file);
 
-            final File targetFolder = productSetPanel.getTargetFolder();
-            if (targetFolder != null && !targetFolder.exists()) {
-                if (!targetFolder.mkdirs()) {
-                    SystemUtils.LOG.severe("Unable to create folders in " + targetFolder);
-                }
-            }
             final File targetFile = targetFolder == null ? null : new File(targetFolder, name);
             final String targetFormat = productSetPanel.getTargetFormat();
 
-            setIO(graphExecutorList.get(graphIndex),
-                  "Read", f,
-                  "Write", targetFile, name, targetFormat);
+            setIO(graphExecutorList.get(graphIndex), file, targetFile, targetFormat);
             if (slaveFileMap != null) {
-                final File[] slaveFiles = slaveFileMap.get(f);
+                final File[] slaveFiles = slaveFileMap.get(file);
                 if (slaveFiles != null) {
                     setSlaveIO(graphExecutorList.get(graphIndex),
-                               "ProductSet-Reader", f, slaveFiles);
+                            "ProductSet-Reader", file, slaveFiles);
                 }
             }
             ++graphIndex;
@@ -501,44 +513,22 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
     }
 
     protected void setIO(final GraphExecuter graphEx,
-                                final String readID, final File readPath,
-                                final String writeID, final File writePath, final String name, final String format) {
-        final GraphNode readNode = graphEx.getGraphNodeList().findGraphNodeByOperator(readID);
+                         final File readPath, final File writePath, final String format) {
+        final GraphNode readNode = graphEx.getGraphNodeList().findGraphNodeByOperator("Read");
         if (readNode != null) {
             graphEx.setOperatorParam(readNode.getID(), "file", readPath.getAbsolutePath());
         }
 
-        if (replaceWritersWithUniqueTargetProduct && writeID != null) {
-            final GraphNode[] writeNodes = graphEx.getGraphNodeList().findAllGraphNodeByOperator(writeID);
-            for(GraphNode writeNode : writeNodes) {
+        if (replaceWritersWithUniqueTargetProduct) {
+            final GraphNode[] writeNodes = graphEx.getGraphNodeList().findAllGraphNodeByOperator("Write");
+            for (GraphNode writeNode : writeNodes) {
                 if (format != null) {
                     graphEx.setOperatorParam(writeNode.getID(), "formatName", format);
                 }
-                if(writePath != null) {
+                if (writePath != null) {
                     graphEx.setOperatorParam(writeNode.getID(), "file", writePath.getAbsolutePath());
                 }
             }
-        }
-    }
-
-    /**
-     * For coregistration
-     *
-     * @param graphEx      the graph executer
-     * @param productSetID the product set reader
-     * @param masterFile   master file
-     * @param slaveFiles   slave file list
-     */
-    protected static void setSlaveIO(final GraphExecuter graphEx, final String productSetID,
-                                     final File masterFile, final File[] slaveFiles) {
-        final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator(productSetID);
-        if (productSetNode != null) {
-            StringBuilder str = new StringBuilder(masterFile.getAbsolutePath());
-            for (File slaveFile : slaveFiles) {
-                str.append(',');
-                str.append(slaveFile.getAbsolutePath());
-            }
-            graphEx.setOperatorParam(productSetNode.getID(), "fileList", str.toString());
         }
     }
 
@@ -577,8 +567,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             final GraphNode[] cloneGraphNodes = cloneGraphEx.getGraphNodes();
             for (GraphNode cloneNode : cloneGraphNodes) {
                 final GraphNode node = graphEx.getGraphNodeList().findGraphNode(cloneNode.getID());
-                if (node != null)
+                if (node != null) {
                     cloneNode.setOperatorUI(node.getOperatorUI());
+                }
             }
         }
     }
@@ -593,12 +584,21 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
 
     /////
 
+    public interface BatchProcessListener {
+
+        void notifyMSG(final BatchMSG msg, final File[] inputFileList, final File[] targetFileList);
+
+        void notifyMSG(final BatchMSG msg, final String text);
+
+        enum BatchMSG {DONE, UPDATE, CLOSE}
+    }
+
     private class ProcessThread extends SwingWorker<Boolean, Object> {
 
+        final List<String> errMsgs = new ArrayList<>();
         private final ProgressMonitor pm;
         private final ProcessTimeMonitor timeMonitor = new ProcessTimeMonitor();
         private boolean errorOccured = false;
-        final List<String> errMsgs = new ArrayList<>();
 
         public ProcessThread(final ProgressMonitor pm) {
             this.pm = pm;
@@ -617,7 +617,9 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                 final File[] fileList = productSetPanel.getFileList();
                 int graphIndex = 0;
                 for (GraphExecuter graphEx : graphExecutorList) {
-                    if (pm.isCanceled()) break;
+                    if (pm.isCanceled()) {
+                        break;
+                    }
 
                     final String nOfm = (graphIndex + 1) + " of " + graphExecutorList.size() + ' ';
                     final String statusText = nOfm + fileList[graphIndex].getName();
@@ -627,11 +629,10 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                         graphEx.initGraph();
 
                         if (shouldSkip(graphEx, existingFiles)) {
-                            statusLabel.setText("Skipping " +statusText);
+                            statusLabel.setText("Skipping " + statusText);
                             notifyMSG(BatchProcessListener.BatchMSG.UPDATE, statusText);
 
                             pm.worked(1);
-                            graphEx = null;
                             ++graphIndex;
                             continue;
                         } else {
@@ -650,7 +651,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
                         errMsgs.add(filename + " -> " + e.getMessage());
                     }
 
-                    graphEx = null;
                     ++graphIndex;
 
                     // calculate time remaining
@@ -737,15 +737,6 @@ public class BatchGraphDialog extends ModelessDialog implements GraphDialog, Lab
             }
             return false;
         }
-    }
-
-    public interface BatchProcessListener {
-
-        enum BatchMSG {DONE, UPDATE, CLOSE}
-
-        void notifyMSG(final BatchMSG msg, final File[] inputFileList, final File[] targetFileList);
-
-        void notifyMSG(final BatchMSG msg, final String text);
     }
 
 }
