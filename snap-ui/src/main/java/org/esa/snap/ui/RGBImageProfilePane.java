@@ -251,22 +251,7 @@ public class RGBImageProfilePane extends JPanel {
         return profileItem != null ? profileItem.getProfile() : null;
     }
 
-    /**
-     * Gets the selected RGB expressions as array of 3 strings.
-     *
-     * @return the selected RGB expressions, never null
-     * @deprecated please use #getSelectedProfile()
-     */
-    @Deprecated
-    public String[] getRgbExpressions() {
-        return new String[]{
-                getExpression(0),
-                getExpression(1),
-                getExpression(2),
-        };
-    }
-
-    /**
+   /**
      * Gets the selected RGBA expressions as array of 4 strings.
      *
      * @return the selected RGBA expressions, never null

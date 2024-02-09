@@ -18,16 +18,10 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RGBImageProfile;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -42,11 +36,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.SwingWorker;
-import java.awt.Cursor;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.prefs.Preferences;
 
 /**
  * This action opens an HSV image view on the currently selected Product.
@@ -69,13 +62,10 @@ import java.awt.event.ActionEvent;
 public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "hsvImageProfile";
-    private Product product;
-
     private static final String r = "min(round( (floor((6*(h))%6)==0?(v): (floor((6*(h))%6)==1?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)): (floor((6*(h))%6)==2?((1-(s))*(v)): (floor((6*(h))%6)==3?((1-(s))*(v)): (floor((6*(h))%6)==4?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==5?(v):0)))))) *256), 255)";
-
     private static final String g = "min(round( (floor((6*(h))%6)==0?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==1?(v): (floor((6*(h))%6)==2?(v): (floor((6*(h))%6)==3?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)): (floor((6*(h))%6)==4?((1-(s))*(v)): (floor((6*(h))%6)==5?((1-(s))*(v)):0)))))) *256), 255)";
-
     private static final String b = "min(round( (floor((6*(h))%6)==0?((1-(s))*(v)): (floor((6*(h))%6)==1?((1-(s))*(v)): (floor((6*(h))%6)==2?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==3?(v): (floor((6*(h))%6)==4?(v): (floor((6*(h))%6)==5?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)):0)))))) *256), 255)";
+    private final Product product;
 
     public OpenHSVImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenHSVImageViewAction_MenuText());
@@ -83,82 +73,9 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenHSVImageViewAction_ShortDescription());
     }
 
-    @Override
-    public void actionPerformed(final ActionEvent event) {
-        if (product != null) {
-            openProductSceneViewHSV(product, HELP_ID);
-        }
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
-    }
-
-    public void openProductSceneViewHSV(Product hsvProduct, final String helpId) {
-
-        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-        final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(hsvProduct);
-
-        final HSVImageProfilePane profilePane = new HSVImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), hsvProduct,
-                                                                        openedProducts, defaultBandIndices);
-
-        final String title = "Select HSV-Image Channels";
-        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
-        if (!ok) {
-            return;
-        }
-        final String[] hsvExpressions = profilePane.getRgbaExpressions();
-        nomalizeHSVExpressions(hsvProduct, hsvExpressions);
-        if (profilePane.getStoreProfileInProduct()) {
-            RGBImageProfile.storeRgbaExpressions(hsvProduct, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
-        }
-
-        final String sceneName = OpenRGBImageViewAction.createSceneName(hsvProduct, profilePane.getSelectedProfile(), "HSV");
-        openProductSceneViewHSV(sceneName, hsvProduct, hsvExpressions);
-    }
-
-    /**
-     * Creates product scene view using the given HSV expressions.
-     */
-    public void openProductSceneViewHSV(final String name, final Product product, final String[] hsvExpressions) {
-
-        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
-                SnapApp.getDefault().getMainFrame(),
-                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + '\'') {
-
-            @Override
-            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
-                return createProductSceneImageHSV(name, product, hsvExpressions, pm);
-            }
-
-            @Override
-            protected void done() {
-                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
-
-                String errorMsg = "The HSV image view could not be created.";
-                try {
-                    final ProductSceneView productSceneView = new ProductSceneView(get());
-                    OpenRGBImageViewAction.openDocumentWindow(productSceneView);
-                } catch (OutOfMemoryError e) {
-                    Dialogs.showOutOfMemoryError(errorMsg);
-                    return;
-                } catch (Exception e) {
-                    SnapApp.getDefault().handleError(errorMsg, e);
-                    return;
-                }
-                SnapApp.getDefault().setStatusBarMessage("");
-            }
-        };
-        SnapApp.getDefault().setStatusBarMessage("Creating HSV image view...");  /*I18N*/
-        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
-        worker.execute();
-    }
-
     private static ProductSceneImage createProductSceneImageHSV(final String name, final Product product,
                                                                 final String[] hsvExpressions,
-                                                                final ProgressMonitor pm) throws Exception {
-        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+                                                                final ProgressMonitor pm) {
         Band[] rgbBands = null;
         boolean errorOccured = false;
         ProductSceneImage productSceneImage = null;
@@ -167,12 +84,14 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             final String[] rgbaExpressions = convertHSVToRGBExpressions(hsvExpressions);
             rgbBands = OpenRGBImageViewAction.allocateRgbBands(product, rgbaExpressions);
 
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            final PreferencesPropertyMap configuration = new PreferencesPropertyMap(preferences);
             productSceneImage = new ProductSceneImage(name,
-                                                      rgbBands[0],
-                                                      rgbBands[1],
-                                                      rgbBands[2],
-                                                      SnapApp.getDefault().getPreferencesPropertyMap(),
-                                                      SubProgressMonitor.create(pm, 1));
+                    rgbBands[0],
+                    rgbBands[1],
+                    rgbBands[2],
+                    configuration,
+                    SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
         } catch (Exception e) {
@@ -193,13 +112,15 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         //normvalue = min(max(((v- min)/range),0), 1);
         boolean modified = product.isModified();
 
+        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+
         int i = 0;
         for (String exp : hsvExpressions) {
             if (exp.isEmpty()) continue;
 
             final String checkForNoDataValue = "";//getCheckForNoDataExpression(product, exp);
 
-            final Band virtBand = createVirtualBand(product, exp, "tmpVirtBand" + i);
+            final Band virtBand = createVirtualBand(product, products, exp, "tmpVirtBand" + i);
 
             final Stx stx = virtBand.getStx(false, ProgressMonitor.NULL);
             if (stx != null) {
@@ -225,11 +146,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         return checkForNoData.toString();
     }
 
-    public static Band createVirtualBand(final Product product, final String expression, final String name) {
+    private static Band createVirtualBand(final Product product, final Product[] products, final String expression, final String name) {
         int width = product.getSceneRasterWidth();
         int height = product.getSceneRasterHeight();
         try {
-            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
             if (refRasters.length > 0) {
                 width = refRasters[0].getRasterWidth();
                 height = refRasters[0].getRasterHeight();
@@ -239,10 +160,10 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         }
 
         final VirtualBand virtBand = new VirtualBand(name,
-                                                     ProductData.TYPE_FLOAT64,
-                                                     width,
-                                                     height,
-                                                     expression);
+                ProductData.TYPE_FLOAT64,
+                width,
+                height,
+                expression);
         virtBand.setNoDataValueUsed(true);
         product.addBand(virtBand);
         return virtBand;
@@ -281,5 +202,79 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         rgbExpressions[1] = g.replace("(h)", '(' + h + ')').replace("(s)", '(' + s + ')').replace("(v)", '(' + v + ')');
         rgbExpressions[2] = b.replace("(h)", '(' + h + ')').replace("(s)", '(' + s + ')').replace("(v)", '(' + v + ')');
         return rgbExpressions;
+    }
+
+    @Override
+    public void actionPerformed(final ActionEvent event) {
+        if (product != null) {
+            openProductSceneViewHSV(product, HELP_ID);
+        }
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
+
+    public void openProductSceneViewHSV(Product hsvProduct, final String helpId) {
+
+        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+        final int[] defaultBandIndices = OpenRGBImageViewAction.getDefaultBandIndices(hsvProduct);
+
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        final HSVImageProfilePane profilePane = new HSVImageProfilePane(new PreferencesPropertyMap(preferences),
+                hsvProduct,
+                openedProducts, defaultBandIndices);
+
+        final String title = "Select HSV-Image Channels";
+        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
+        if (!ok) {
+            return;
+        }
+        final String[] hsvExpressions = profilePane.getRgbaExpressions();
+        nomalizeHSVExpressions(hsvProduct, hsvExpressions);
+        if (profilePane.getStoreProfileInProduct()) {
+            RGBImageProfile.storeRgbaExpressions(hsvProduct, hsvExpressions, HSVImageProfilePane.HSV_COMP_NAMES);
+        }
+
+        final String sceneName = OpenRGBImageViewAction.createSceneName(hsvProduct, profilePane.getSelectedProfile(), "HSV");
+        openProductSceneViewHSV(sceneName, hsvProduct, hsvExpressions);
+    }
+
+    /**
+     * Creates product scene view using the given HSV expressions.
+     */
+    public void openProductSceneViewHSV(final String name, final Product product, final String[] hsvExpressions) {
+
+        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<>(
+                SnapApp.getDefault().getMainFrame(),
+                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + '\'') {
+
+            @Override
+            protected ProductSceneImage doInBackground(ProgressMonitor pm) {
+                return createProductSceneImageHSV(name, product, hsvExpressions, pm);
+            }
+
+            @Override
+            protected void done() {
+                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
+
+                String errorMsg = "The HSV image view could not be created.";
+                try {
+                    final ProductSceneView productSceneView = new ProductSceneView(get());
+                    OpenRGBImageViewAction.openDocumentWindow(productSceneView);
+                } catch (OutOfMemoryError e) {
+                    Dialogs.showOutOfMemoryError(errorMsg);
+                    return;
+                } catch (Exception e) {
+                    SnapApp.getDefault().handleError(errorMsg, e);
+                    return;
+                }
+                SnapApp.getDefault().setStatusBarMessage("");
+            }
+        };
+        SnapApp.getDefault().setStatusBarMessage("Creating HSV image view...");  /*I18N*/
+        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+        worker.execute();
     }
 }

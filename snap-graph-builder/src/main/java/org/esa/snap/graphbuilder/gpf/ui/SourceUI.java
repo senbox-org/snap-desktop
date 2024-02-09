@@ -286,8 +286,8 @@ public class SourceUI extends BaseOperatorUI {
 
         GridBagConstraints gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.WEST, 2, 1, 0, 0);
         JPanel productSelectionPanel = sourceProductSelector.createDefaultPanel();
-        productSelectionPanel.setMinimumSize(new Dimension(600, 50));
-        productSelectionPanel.setPreferredSize(new Dimension(600, 50));
+        productSelectionPanel.setMinimumSize(new Dimension(600, 70));
+        productSelectionPanel.setPreferredSize(new Dimension(600, 70));
         contentPanel.add(productSelectionPanel, gbc);
         gbc = SwingUtils.buildConstraints(0, 1, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
         contentPanel.add(new JLabel("Data Format:"), gbc);
