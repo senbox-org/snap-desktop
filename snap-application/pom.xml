@@ -192,12 +192,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.esa.snap</groupId>
-            <artifactId>lib-gdal-preferences-ui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

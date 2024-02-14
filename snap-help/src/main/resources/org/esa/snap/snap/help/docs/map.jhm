@@ -112,7 +112,6 @@
     <mapID target="options-quicklook" url="desktop/OptionsDialog.html#quicklooks"/>
     <mapID target="options-rgb" url="desktop/OptionsDialog.html#rgbprofiles"/>
     <mapID target="options-uibehavior" url="desktop/OptionsDialog.html#uibehavior"/>
-    <mapID target="options-gdalLibraryLoader" url="desktop/OptionsDialog.html#GDALLibraryLoaderConfig"/>
     <mapID target="options-graticulelayer" url="desktop/OptionsDialog.html#graticulelayer"/>
     <mapID target="options-imagelayer" url="desktop/OptionsDialog.html#imagelayer"/>
     <mapID target="options-nodatalayer" url="desktop/OptionsDialog.html#nodatalayer"/>
