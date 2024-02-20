@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.spectrum;
 
+import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -29,6 +30,7 @@ import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 //import org.esa.snap.visat.VisatApp;
@@ -51,6 +53,7 @@ class SpectraExportAction extends AbstractAction {
     private void exportSpectra() {
         final List<DisplayableSpectrum> selectedSpectra = spectrumTopComponent.getSelectedSpectra();
         Placemark[] pins = spectrumTopComponent.getDisplayedPins();
+        Map<Placemark, Map<Band, Double>> energiesMap = spectrumTopComponent.getPinToEnergies();
         final List<SpectrumGraph> spectrumGraphList = new ArrayList<SpectrumGraph>();
         for (Placemark pin : pins) {
             for (DisplayableSpectrum spectrumInDisplay : selectedSpectra) {
