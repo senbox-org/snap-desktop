@@ -112,13 +112,15 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         //normvalue = min(max(((v- min)/range),0), 1);
         boolean modified = product.isModified();
 
+        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+
         int i = 0;
         for (String exp : hsvExpressions) {
             if (exp.isEmpty()) continue;
 
             final String checkForNoDataValue = "";//getCheckForNoDataExpression(product, exp);
 
-            final Band virtBand = createVirtualBand(product, exp, "tmpVirtBand" + i);
+            final Band virtBand = createVirtualBand(product, products, exp, "tmpVirtBand" + i);
 
             final Stx stx = virtBand.getStx(false, ProgressMonitor.NULL);
             if (stx != null) {
@@ -144,11 +146,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         return checkForNoData.toString();
     }
 
-    public static Band createVirtualBand(final Product product, final String expression, final String name) {
+    private static Band createVirtualBand(final Product product, final Product[] products, final String expression, final String name) {
         int width = product.getSceneRasterWidth();
         int height = product.getSceneRasterHeight();
         try {
-            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, product);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
             if (refRasters.length > 0) {
                 width = refRasters[0].getRasterWidth();
                 height = refRasters[0].getRasterHeight();
