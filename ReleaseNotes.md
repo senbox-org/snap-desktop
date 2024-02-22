@@ -1,6 +1,14 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 10.0.0
+    [SNAP-3640] Sentinel-5 nc Geocoding not loaded
+    [SNAP-3601] Sentinel-5 nc files load problem in SNAP
+    [SNAP-3626] GPT generates two outputs
+    [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
+    [SNAP-3591] SNAP removes Ubuntu's snap directories
+    [SNAP-3584] NetCDF reader geocoding read performance
+
 # New in SNAP 9.0.6
     [SNAP-3473] Improve behaviour of output parameters dialog in Reprojection tool
     [SNAP-3479] Exception in decode qualification of ZnapProductReader
