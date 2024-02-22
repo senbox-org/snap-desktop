@@ -239,8 +239,8 @@ if [ -z "$cachedirspecified" ]; then
    cachedir="${userdir}/var/cache"
 fi
 
-if [ `uname` != Darwin -a -z "$nosplash" -a -f "${cachedir}/splash.png" -a ! -f "${userdir}/lock" ]; then
-   jargs="$jargs -splash:\"${cachedir}/splash.png\""
+if [ `uname` != Darwin -a -z "$nosplash" -a -f "${cachedir}/splash.jpg" -a ! -f "${userdir}/lock" ]; then
+   jargs="$jargs -splash:\"${cachedir}/splash.jpg\""
 fi
 
 jdkhome=`absolutize_path "$jdkhome"`
