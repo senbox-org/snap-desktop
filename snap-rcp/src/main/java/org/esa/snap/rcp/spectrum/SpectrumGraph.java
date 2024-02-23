@@ -50,8 +50,10 @@ class SpectrumGraph extends AbstractDiagramGraph {
         setBands(bands);
     }
 
-    public Placemark getPlacemark() {
-        return placemark;
+    SpectrumGraph() {
+        // this one is just for testing tb 2024-02-22
+        energyRange = new Range();
+        wavelengthRange = new Range();
     }
 
     @Override
@@ -102,11 +104,7 @@ class SpectrumGraph extends AbstractDiagramGraph {
         return energyRange.getMax();
     }
 
-    public Band[] getBands() {
-        return bands;
-    }
-
-    public void setBands(Band[] bands) {
+    void setBands(Band[] bands) {
         Debug.assertNotNull(bands);
         this.bands = bands.clone();
         Arrays.sort(this.bands, new Comparator<Band>() {
@@ -130,35 +128,9 @@ class SpectrumGraph extends AbstractDiagramGraph {
         Range.computeRangeDouble(energies, IndexValidator.TRUE, energyRange, ProgressMonitor.NULL);
     }
 
-    public void readValues() {
-        Debug.assertNotNull(bands);
-        for (int i = 0; i < bands.length; i++) {
-            final Band band = bands[i];
-            if (placemark != null) {
-                // position of placemark is given in image (L0) coordinates
-                // we have to transform them to the current level
-                final MultiLevelModel multiLevelModel = band.getMultiLevelModel();
-                final AffineTransform i2mTransform = multiLevelModel.getImageToModelTransform(0);
-                final AffineTransform m2iTransform = multiLevelModel.getModelToImageTransform(0);
-                final Point2D modelPixel = i2mTransform.transform(placemark.getPixelPos(), null);
-                final Point2D imagePixel = m2iTransform.transform(modelPixel, null);
-                int pixelX = (int) Math.floor(imagePixel.getX());
-                int pixelY = (int) Math.floor(imagePixel.getY());
-                energies[i] = getSample(band, pixelX, pixelY, 0);
-            }
-        }
-        IndexValidator validator = new IndexValidator() {
-            @Override
-            public boolean validateIndex(int index) {
-                return energies[index] != bands[index].getGeophysicalNoDataValue();
-            }
-        };
-        Range.computeRangeDouble(energies, validator, energyRange, ProgressMonitor.NULL);
-        // no invalidate() call here, SpectrumDiagram does this
-    }
-
-    private double getSample(Band band, int pixelX, int pixelY, int level) {
-        return ProductUtils.getGeophysicalSampleAsDouble(band, pixelX, pixelY, level);
+    void setEnergies(double[] energies) {
+        this.energies = energies;
+        Range.computeRangeDouble(energies, IndexValidator.TRUE, energyRange, ProgressMonitor.NULL);
     }
 
     @Override
