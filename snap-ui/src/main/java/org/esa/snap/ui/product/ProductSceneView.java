@@ -161,11 +161,11 @@ public class ProductSceneView extends BasicView
      * Name of properties which zoom the view when opening a band view window.
      */
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_KEY = "image.zoom.initial";
-    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.65;
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.9;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY = "image.zoom.initial.wide.scene";
-    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 0.75;
+    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 0.9;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY = "image.zoom.initial.tall.scene";
-    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 0.65;
+    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 0.9;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY = "image.zoom.initial.aspect.wide";
     public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 1.2;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY = "image.zoom.initial.aspect.tall";
@@ -174,16 +174,16 @@ public class ProductSceneView extends BasicView
      * Name of properties which turn on layers when opening a band view window.
      */
     public static final String SHOW_ANNOTATION_OVERLAY_STATE_KEY = "image.initial.annotation.overlay.show";
-    public static final boolean SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = true;
+    public static final boolean SHOW_ANNOTATION_OVERLAY_STATE_DEFAULT = false;
 
     public static final String SHOW_GRIDLINES_OVERLAY_STATE_KEY = "image.initial.gridlines.overlay.show";
-    public static final boolean SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = true;
+    public static final boolean SHOW_GRIDLINES_OVERLAY_STATE_DEFAULT = false;
 
     public static final String SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY = "image.initial.colorbar.legend.overlay.show";
-    public static final boolean SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = true;
+    public static final boolean SHOW_COLOR_BAR_LEGEND_OVERLAY_DEFAULT = false;
 
     public static final String SHOW_NO_DATA_OVERLAY_KEY = "image.initial.nodata.overlay.show";
-    public static final boolean SHOW_NO_DATA_OVERLAY_DEFAULT = true;
+    public static final boolean SHOW_NO_DATA_OVERLAY_DEFAULT = false;
     /**
      * Name of property of image info
      */

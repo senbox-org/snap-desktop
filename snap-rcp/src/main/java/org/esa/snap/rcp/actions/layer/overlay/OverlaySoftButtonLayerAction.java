@@ -98,7 +98,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_NO_DATA_OVERLAY_KEY = "soft.button.nodata.overlay.show";
     public static final String SHOW_NO_DATA_OVERLAY_LABEL = "Show No-Data Layer";
     public static final String SHOW_NO_DATA_OVERLAY_TOOLTIP = "Shows No-Data layer when soft button is clicked";
-    public static final String SHOW_NO_DATA_OVERLAY_DEFAULT = STATE_ON_ON;
+    public static final String SHOW_NO_DATA_OVERLAY_DEFAULT = STATE_ON_OFF;
 
     public static final String SHOW_PINS_OVERLAY_KEY = "soft.button.pins.overlay.show";
     public static final String SHOW_PINS_OVERLAY_LABEL = "Show Pins Layer";
@@ -118,7 +118,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_MASK_PARENT_OVERLAY_KEY = "soft.button.mask.parent.overlay.show";
     public static final String SHOW_MASK_PARENT_OVERLAY_LABEL = "Show Masks Layers";
     public static final String SHOW_MASK_PARENT_OVERLAY_TOOLTIP = "Shows masks parent layers when soft button is clicked";
-    public static final String SHOW_MASK_PARENT_OVERLAY_DEFAULT = STATE_ON_OFF;
+    public static final String SHOW_MASK_PARENT_OVERLAY_DEFAULT = STATE_UNASSIGNED;
 
     public static final String SHOW_VECTOR_PARENT_OVERLAY_KEY = "soft.button.vector.parent.overlay.show";
     public static final String SHOW_VECTOR_PARENT_OVERLAY_LABEL = "Show Vectors Layers";
@@ -128,12 +128,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SHOW_MASK_LIST_OVERLAY_KEY = "soft.button.favorite.masks.show";
     public static final String SHOW_MASK_LIST_OVERLAY_LABEL = "Show Favorite Masks";
     public static final String SHOW_MASK_LIST_OVERLAY_TOOLTIP = "Shows specific masks layers when soft button is clicked";
-    public static final String SHOW_MASK_LIST_OVERLAY_DEFAULT = STATE_ON_OFF;
+    public static final String SHOW_MASK_LIST_OVERLAY_DEFAULT = STATE_UNASSIGNED;
 
     public static final String MASK_LIST_KEY = "soft.button.favorite.mask.list";
     public static final String MASK_LIST_LABEL = "Favorite Masks";
     public static final String MASK_LIST_TOOLTIP = "Shows masks from this comma or space delimited list";
-    public static final String MASK_LIST_DEFAULT = "LAND,CLDICE,LandMask";
+    public static final String MASK_LIST_DEFAULT = "";
 
     public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.set.zoom";
     public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Zoom";
