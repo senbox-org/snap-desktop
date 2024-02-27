@@ -184,7 +184,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                         }
                     }
                     String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
-                    if (view_Angles != null && view_Angles.size() == 5) {
+                    if (view_Angles != null) {
                         for (int i = 0; i < 5; i ++) {
                             autoGroupingStr += "I_" + view_Angles.get(i) + "_*:";
                         }
