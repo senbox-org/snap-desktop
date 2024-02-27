@@ -4,7 +4,7 @@
 # A true color RGB configuration profile which uses a red, green and blue band for the
 # respective RGB color model channels
 #
-name=OCI_TrueColor_Log(670,555,490)
+name=OCI_TrueColor_Log(670,555,490)_9band
 red=log(((rhos_668+rhos_670+rhos_671)/3)/0.01)/log(1/0.01)
 green=log(((rhos_553+rhos_555+rhos_558)/3)/0.01)/log(1/0.01)
 blue=log(((rhos_487+rhos_490+rhos_492)/3)/0.01)/log(1/0.01)
