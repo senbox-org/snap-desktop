@@ -78,7 +78,7 @@ public class SmartConfigurator extends javax.swing.JFrame implements PropertyCha
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        setIconImage(new ImageIcon(getClass().getResource("SNAP_icon_16.jpg")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("SNAP_icon_16.png")).getImage());
         setTitle("SNAP Performance Configuration Optimisation");
 
         pack();
