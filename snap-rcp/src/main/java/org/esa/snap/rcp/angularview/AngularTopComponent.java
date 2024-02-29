@@ -230,14 +230,41 @@ public class AngularTopComponent extends ToolTopComponent {
                 if (currentProduct.getName().contains("SPEX")) {
                     String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
                     for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "I_*_" + wvl + ":";
+                        autoGroupingStr += "i_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "aolp_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "dolp_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "q_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "u_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "qc_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "q_over_i_*_" + wvl + ":";
+                    }
+                    for (int wvl = 380; wvl < 390; wvl++) {
+                        autoGroupingStr += "u_over_i_*_" + wvl + ":";
                     }
                     autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
                             "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
                             "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
                             "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
-                            "obs_per_view:view_time_offsets";
+                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
+                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
+                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
+                            "qc:qc_polsample" +
+                            "scattering_angle:rotation_angle:" +
+                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
+                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
+                            "obs_per_view:view_time_offsets:number_of_observations";
                     currentProduct.setAutoGrouping(autoGroupingStr);
                 }
                 if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
