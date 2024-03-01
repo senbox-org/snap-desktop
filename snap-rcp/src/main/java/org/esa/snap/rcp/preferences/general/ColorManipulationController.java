@@ -122,6 +122,7 @@ public final class ColorManipulationController extends DefaultConfigController {
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_INCLUDE_IMAGE_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_SORT_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_SORT_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT);
+        initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_DEFAULT);
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_KEY, ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_DEFAULT);
 
         initPropertyDefaults(context, ColorManipulationDefaults.PROPERTY_SLIDERS_SECTION_KEY, true);
@@ -554,6 +555,11 @@ public final class ColorManipulationController extends DefaultConfigController {
                 key = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY,
                 description = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_TOOLTIP)
         boolean categorizePalettes = ColorManipulationDefaults.PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT;
+
+        @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_LABEL,
+                key = ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_KEY,
+                description = ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_TOOLTIP)
+        boolean showDisabledDefault = ColorManipulationDefaults.PROPERTY_PALETTE_SHOW_DISABLED_DEFAULT;
 
         @Preference(label = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_LABEL,
                 key = ColorManipulationDefaults.PROPERTY_PALETTE_REMOVE_EXTENSION_KEY,
