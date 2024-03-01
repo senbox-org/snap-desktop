@@ -189,6 +189,8 @@ class ColorPaletteManager {
 
 
 
+        boolean showDisabledPalettes = configuration.getPropertyBool(PROPERTY_PALETTE_SHOW_DISABLED_KEY, PROPERTY_PALETTE_SHOW_DISABLED_DEFAULT);
+
 
         if (files != null) {
             for (File file : files) {
@@ -211,7 +213,7 @@ class ColorPaletteManager {
                         currCategory = OTHER_CAT;
                     }
 
-                    if (!"DISABLE".equals(currCategory)) {
+                    if (!"DISABLE".equals(currCategory) || showDisabledPalettes) {
                         cpdCategory.add(currCategory);
 
                         cpdList.add(newCpd);
