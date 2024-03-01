@@ -210,10 +210,13 @@ class ColorPaletteManager {
                     if (currCategory == null) {
                         currCategory = OTHER_CAT;
                     }
-                    cpdCategory.add(currCategory);
 
-                    cpdList.add(newCpd);
-                    cpdNames.add(file.getName());
+                    if (!"DISABLE".equals(currCategory)) {
+                        cpdCategory.add(currCategory);
+
+                        cpdList.add(newCpd);
+                        cpdNames.add(file.getName());
+                    }
                 } catch (IOException e) {
                     final Logger logger = SystemUtils.LOG;
                     logger.warning("Unable to load color palette definition from file '" + file.getAbsolutePath() + "'");
