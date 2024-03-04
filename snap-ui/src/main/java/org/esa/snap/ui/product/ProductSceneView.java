@@ -1294,26 +1294,43 @@ public class ProductSceneView extends BasicView
          * @param expression the expression
          * @param products   the products used to evaluate the expression
          */
-        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, final String validPixelExpression, Product[] products) {
+        public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, final String validPixelExpressionRGB, Product[] products) {
             super(name,
                     ProductData.TYPE_FLOAT32,
                     width,
                     height,
                     expression);
+
+            boolean noDataOnly = false;
+            String validPixelExpressionRGBPlusNoData = validPixelExpressionRGB;
+            if (validPixelExpressionRGB != null && validPixelExpressionRGB.trim().length() > 0) {
+                // todo the RGB valid pixel expression overrides any individual band valid pixel expressions: could consider adding user control to this option in the future
+                noDataOnly = true;
+                // determine noData components of the validPixelExpressionRGB to add to the valid pixel expression
+                setValidPixelExpression("");
+                deriveRasterPropertiesFromExpression(validPixelExpressionRGB, noDataOnly, product);
+                String validPixelExpressionRGBNoData = getValidPixelExpression();
+                setValidPixelExpression("");
+                if (validPixelExpressionRGBNoData != null && validPixelExpressionRGBNoData.length() > 0) {
+                    validPixelExpressionRGBPlusNoData = validPixelExpressionRGB + " and " + validPixelExpressionRGBNoData;
+                }
+            }
+
+
             if(products == null || products.length == 0) {
-                deriveRasterPropertiesFromExpression(expression, product);
+                deriveRasterPropertiesFromExpression(expression, noDataOnly, product);
             } else {
-                deriveRasterPropertiesFromExpression(expression, products);
+                deriveRasterPropertiesFromExpression(expression, noDataOnly, products);
             }
             String productsValidPixelExpression = getValidPixelExpression();
 
             if (productsValidPixelExpression == null || productsValidPixelExpression.trim().length() == 0) {
-                if (validPixelExpression != null) {
-                    setValidPixelExpression(validPixelExpression);
+                if (validPixelExpressionRGB != null) {
+                    setValidPixelExpression(validPixelExpressionRGBPlusNoData);
                 }
             } else {
-                if (validPixelExpression != null) {
-                    setValidPixelExpression(productsValidPixelExpression + " and  " + validPixelExpression);
+                if (validPixelExpressionRGBPlusNoData != null && validPixelExpressionRGBPlusNoData.trim().length() > 0) {
+                    setValidPixelExpression(productsValidPixelExpression + " and  " + validPixelExpressionRGBPlusNoData);
                 } else {
                     setValidPixelExpression(productsValidPixelExpression);
                 }
@@ -1359,10 +1376,16 @@ public class ProductSceneView extends BasicView
             this(product, product.getSceneRasterWidth(), product.getSceneRasterHeight(), name, expression, null, null);
         }
 
-        private void deriveRasterPropertiesFromExpression(String expression, Product... products) {
+        private void deriveRasterPropertiesFromExpression(String expression, boolean noDataOnly, Product... products) {
             if (products != null) {
                 try {
-                    String validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, 0, null);
+                    String validMaskExpression;
+
+                    if (noDataOnly) {
+                        validMaskExpression = BandArithmetic.getValidMaskExpressionNoDataOnly(expression, products, 0, null);
+                    } else {
+                        validMaskExpression = BandArithmetic.getValidMaskExpression(getExpression(), products, 0, null);
+                    }
                     setValidPixelExpression(validMaskExpression);
                     final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
                     if (refRasters.length > 0) {
