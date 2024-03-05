@@ -3,7 +3,7 @@
 # which uses a red, green and blue band for the
 # respective RGB color model channels similar to Landsat OLI bands
 #
-name=OCI_TrueColor_655_560_480_LOG_OLISTYLE
+name=OCI_TC_655_560_480_OLI_CW
 red=log(rhos_655/0.01)/log(1/0.01)
 green=log(rhos_560/0.01)/log(1/0.01)
 blue=log(rhos_480/0.01)/log(1/0.01)
