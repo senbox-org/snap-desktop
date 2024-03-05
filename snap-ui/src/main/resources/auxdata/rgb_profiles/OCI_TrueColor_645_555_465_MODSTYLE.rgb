@@ -1,0 +1,10 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# which uses a red, green and blue band for the
+# respective RGB color model channels similar to MODIS bands
+#
+name=OCI_TrueColor_645_555_470_LOG_MODSTYLE
+red=log(rhos_645/0.01)/log(1/0.01)
+green=log(rhos_555/0.01)/log(1/0.01)
+blue=log(rhos_470/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_645) and \!nan(rhos_555) and \!nan(rhos_470) and LAT >\= -90 and LAT <\= 90
