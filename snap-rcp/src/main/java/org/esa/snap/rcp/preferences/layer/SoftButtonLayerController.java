@@ -26,11 +26,12 @@ import java.awt.*;
  */
 
 
-@OptionsPanelController.SubRegistration(location = "LayerPreferences",
+@OptionsPanelController.SubRegistration(location = "GeneralPreferences",
         displayName = "#Options_DisplayName_LayerSoftButton",
         keywords = "#Options_Keywords_LayerSoftButton",
         keywordsCategory = "Layer",
-        id = "LayerSoftButton")
+        id = "LayerSoftButton",
+        position = 5)
 @org.openide.util.NbBundle.Messages({
         "Options_DisplayName_LayerSoftButton=Soft Button",
         "Options_Keywords_LayerSoftButton=layer, annotation, metadata, colorbar legend, soft button"
