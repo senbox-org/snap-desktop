@@ -5,7 +5,7 @@
 # RSRs were obtained from: https://www.researchgate.net/publication/3204170_Terra_MODIS_on-orbit_spectral_characterization_and_performance?
 #
 name=OCI_TC_MODISA_RSR_5nm
-red=log((1/8.7)*(0.4*rhos_620 + 0.8*rhos_625 + 0.8*rhos_630 + 0.8*rhos_635 + 0.8*rhos_640 + 0.85*rhos_645 + 0.9*rhos_650 + 1.0*rhos_655 + 1.0*rhos_660 + 0.75*rhos_665 + 0.5*rhos_670 + 0.1*rhos_675)/0.01)/log(1/0.01)
+red=log((1/8.7)*(0.4*rhos_620 + 0.8*rhos_625 + 0.8*rhos_630 + 0.8*rhos_635 + 0.8*rhos_640 + 0.85*rhos_645 + 0.9*rhos_650 + 1.0*rhos_655 + 1.0*rhos_660 + 0.75*rhos_665 + 0.5*rhos_670)/0.01)/log(1/0.01)
 green=log((1/4)*(0.8*rhos_545 + 1.0*rhos_550 + 0.95*rhos_555 + 0.95*rhos_560 + 0.3*rhos_565)/3/0.01)/log(1/0.01)
 blue=log((1/3.65)*(0.3*rhos_455 + 1.0*rhos_460  + 0.85*rhos_465 + 0.9*rhos_470 + 0.6*rhos_475)/3/0.01)/log(1/0.01)
 valid_pixel_expression=\!nan(rhos_620) and \!nan(rhos_625) and \!nan(rhos_630) and \!nan(rhos_635) and \!nan(rhos_640) and \!nan(rhos_645) and \!nan(rhos_650) and \!nan(rhos_655) and \!nan(rhos_660) and \!nan(rhos_665) and \!nan(rhos_670) and \!nan(rhos_675) and \!nan(rhos_545) and \!nan(rhos_550)  and \!nan(rhos_555) and \!nan(rhos_560)  and \!nan(rhos_565) and \!nan(rhos_455) and \!nan(rhos_460) and \!nan(rhos_465) and \!nan(rhos_470) and \!nan(rhos_475) and LAT >\= -90 and LAT <\= 90
