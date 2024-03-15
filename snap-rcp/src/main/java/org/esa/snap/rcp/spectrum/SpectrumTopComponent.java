@@ -75,7 +75,10 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
 
-@TopComponent.Description(preferredID = "SpectrumTopComponent", iconBase = "org/esa/snap/rcp/icons/Spectrum.gif")
+@TopComponent.Description(preferredID = "SpectrumTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif",
+        persistenceType = TopComponent.PERSISTENCE_NEVER
+)
 @TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
@@ -440,7 +443,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showSpectrumForCursorButton.addActionListener(e -> recreateChart());
         showSpectrumForCursorButton.setName("showSpectrumForCursorButton");
-        showSpectrumForCursorButton.setSelected(true);
+        showSpectrumForCursorButton.setSelected(false);
         showSpectrumForCursorButton.setToolTipText("Show spectrum at cursor position.");
 
         showSpectraForSelectedPinsButton = ToolButtonFactory.createButton(
