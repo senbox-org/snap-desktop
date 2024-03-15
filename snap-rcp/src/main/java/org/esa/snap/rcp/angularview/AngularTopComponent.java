@@ -78,8 +78,9 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 
-@TopComponent.Description(preferredID = "AngularTopComponent"
-        , iconBase = "org/esa/snap/rcp/icons/AngularView.png")
+@TopComponent.Description(preferredID = "AngularTopComponent",
+        iconBase = "org/esa/snap/rcp/icons/AngularView.png",
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "Statistics", openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.AngularTopComponent")
 @ActionReferences({
@@ -441,7 +442,7 @@ public class AngularTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showAngularViewsForCursorButton.addActionListener(e -> recreateChart());
         showAngularViewsForCursorButton.setName("showAngularViewsForCursorButton");
-        showAngularViewsForCursorButton.setSelected(true);
+        showAngularViewsForCursorButton.setSelected(false);
         showAngularViewsForCursorButton.setToolTipText("Show angular views at cursor position.");
 
         showAngularViewsForSelectedPinsButton = ToolButtonFactory.createButton(
