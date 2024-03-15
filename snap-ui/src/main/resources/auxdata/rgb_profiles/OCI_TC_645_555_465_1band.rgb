@@ -3,8 +3,8 @@
 # which uses a red, green and blue band for the
 # respective RGB color model channels similar to MODIS bands
 #
-name=OCI_TC_645_555_465_MODIS_CW
+name=OCI_TC_645_555_465_1band
 red=log(rhos_645/0.01)/log(1/0.01)
 green=log(rhos_555/0.01)/log(1/0.01)
 blue=log(rhos_465/0.01)/log(1/0.01)
-valid_pixel_expression=\!nan(rhos_645) and \!nan(rhos_555) and \!nan(rhos_465) and LAT >\= -90 and LAT <\= 90
+valid_pixel_expression=\!nan(rhos_645) and \!nan(rhos_555) and \!nan(rhos_465)
