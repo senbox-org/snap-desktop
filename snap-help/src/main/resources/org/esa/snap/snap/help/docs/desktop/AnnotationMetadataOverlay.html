@@ -105,11 +105,11 @@ go in the Header Annotation section.
 
 &#8227; Header Text:
 		Freeform text
-		Supports inline replacement variables for metadata:
-			&lt;PROPERTY={key}&gt;
-			&lt;GLOBAL_ATTRIBUTE={key}&gt;
-			&lt;BAND_ATTRIBUTE={key}&gt;
-		Supports a couple html tags:
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
 			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
 &#8227; Convert Header Carets to Superscripts:
@@ -138,11 +138,11 @@ go in the Margin Annotation section.
 
 &#8227; Margin Text:
 		Freeform text
-		Supports inline replacement variables for metadata:
-			&lt;PROPERTY={key}&gt;
-			&lt;GLOBAL_ATTRIBUTE={key}&gt;
-			&lt;BAND_ATTRIBUTE={key}&gt;
-		Supports several html tags:
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
 			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
 &#8227; PROPERTIES Section Heading:
@@ -154,28 +154,28 @@ go in the Margin Annotation section.
 &#8227; PROPERTIES Show All:
 		Displays all project file properties.
 
-&#8227; GLOBAL_ATTRIBUTES Section Heading:
-		Heading to display for the GLOBAL_ATTRIBUTES section
+&#8227; FILE_META Section Heading:
+		Heading to display for the FILE_META section
 
-&#8227; GLOBAL_ATTRIBUTES List:
+&#8227; FILE_META List:
 		A comma delimited list of desired file metadata.
 
-&#8227; GLOBAL_ATTRIBUTES Show All*:
-		Displays all GLOBAL_ATTRIBUTES (but does not show many of the
+&#8227; FILE_META Show All*:
+		Displays all FILE_META (but does not show many of the
 		potentially massive list of Processing Control Parameters).
 
-&#8227; GLOBAL_ATTRIBUTES Show All (Processing Control Parameters):
+&#8227; FILE_META Show All (Processing Control Parameters):
 		Displays all the Processing Control Parameters which are part
-		of the GLOBAL_ATTRIBUTES.
+		of the FILE_META.
 
-&#8227; BAND_ATTRIBUTES Section Heading:
-		Heading to display for the BAND_ATTRIBUTES section
+&#8227; BAND_META Section Heading:
+		Heading to display for the BAND_META section
 
-&#8227; BAND_ATTRIBUTES List:
+&#8227; BAND_META List:
 		A comma delimited list of desired band metadata.
 
-&#8227; BAND_ATTRIBUTES Show All:
-		Displays all the BAND_ATTRIBUTES.
+&#8227; BAND_META Show All:
+		Displays all the BAND_META.
 
 &#8227; Attribute Delimiter:
 		Delimiter to use when displaying value pair listing of metadata.
@@ -204,11 +204,11 @@ go in the Footer Annotation section.
 
 &#8227; Footer Text:
 		Freeform text
-		Supports inline replacement variables for metadata:
-			&lt;PROPERTY={key}&gt;
-			&lt;GLOBAL_ATTRIBUTE={key}&gt;
-			&lt;BAND_ATTRIBUTE={key}&gt;
-		Supports a couple html tags:
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
 			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
 &#8227; Convert Footer Carets to Superscripts:
@@ -343,14 +343,17 @@ Band level information properties:
 <h4>Inline Metadata Replacement Variables</h4>
 
 <pre>
-File level metadata can be accessed with either of the following:
+File level metadata can be accessed with any of the following:
+    &lt;FILE_META={key}&gt;
     &lt;GLOBAL_ATTRIBUTE={key}&gt;
     &lt;GLOBAL_ATTR={key}&gt;
 
-Band level metadata can be accessed with either of the following:
+Band level metadata can be accessed with any of the following:
+    &lt;BAND_META={key}&gt;
     &lt;BAND_ATTRIBUTE={key}&gt;
     &lt;BAND_ATTR={key}&gt;
 </pre>
+
 
 
 <!--<object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">-->
