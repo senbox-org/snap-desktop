@@ -43,6 +43,9 @@ public final class SoftButtonLayerController extends DefaultConfigController {
 
     boolean propertyValueChangeEventsEnabled = true;
 
+    Property zoomPosSelector;
+
+
 
     protected PropertySet createPropertySet() {
         return createPropertySet(new SoftButtonLayerBean());
@@ -69,9 +72,21 @@ public final class SoftButtonLayerController extends DefaultConfigController {
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_MASK_PARENT_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_MASK_LIST_OVERLAY_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_VECTOR_PARENT_OVERLAY_DEFAULT);
-        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT);
+        zoomPosSelector = initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT);
+
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM1_SECTION_KEY, true);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM2_SECTION_KEY, true);
+
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_KEY, OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_CENTERX_1_KEY, OverlaySoftButtonLayerAction.SET_CENTERX_1_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_CENTERX_2_KEY, OverlaySoftButtonLayerAction.SET_CENTERX_2_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_CENTERY_1_KEY, OverlaySoftButtonLayerAction.SET_CENTERY_1_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_CENTERY_2_KEY, OverlaySoftButtonLayerAction.SET_CENTERY_2_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_SHIFTX_1_KEY, OverlaySoftButtonLayerAction.SET_SHIFTX_1_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_SHIFTX_2_KEY, OverlaySoftButtonLayerAction.SET_SHIFTX_2_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_SHIFTY_1_KEY, OverlaySoftButtonLayerAction.SET_SHIFTY_1_DEFAULT);
+        initPropertyDefaults(context, OverlaySoftButtonLayerAction.SET_SHIFTY_2_KEY, OverlaySoftButtonLayerAction.SET_SHIFTY_2_DEFAULT);
         initPropertyDefaults(context, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY, OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT);
 
         restoreDefaults =  initPropertyDefaults(context, MetaDataLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, MetaDataLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
@@ -106,9 +121,71 @@ public final class SoftButtonLayerController extends DefaultConfigController {
         JPanel parent = new JPanel(new BorderLayout());
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(50), BorderLayout.EAST);
+
+
+        handleZoomPosSelectorEnablement(context);
+
+        zoomPosSelector.addPropertyChangeListener(evt -> {
+            handleZoomPosSelectorEnablement(context);
+        });
+
+
         return parent;
     }
 
+
+    private void handleZoomPosSelectorEnablement(BindingContext context) {
+
+        String mode = zoomPosSelector.getValue();
+
+        boolean zoom1Enabled = false;
+        boolean zoom2Enabled = false;
+
+        switch (mode) {
+            case OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2:
+                zoom1Enabled = true;
+                zoom2Enabled = true;
+                break;
+
+            case OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1:
+                zoom1Enabled = true;
+                zoom2Enabled = true;
+                break;
+
+            case OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1:
+                zoom1Enabled = true;
+                break;
+
+            case OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2:
+                zoom2Enabled = true;
+                break;
+
+            case OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM1:
+                zoom1Enabled = true;
+                break;
+
+            case OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2:
+                zoom2Enabled = true;
+                break;
+        }
+
+
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_ZOOM1_SECTION_KEY, zoom1Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_KEY, zoom1Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_CENTERX_1_KEY, zoom1Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_CENTERY_1_KEY, zoom1Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_SHIFTX_1_KEY, zoom1Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_SHIFTY_1_KEY, zoom1Enabled);
+
+
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_ZOOM2_SECTION_KEY, zoom2Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_KEY, zoom2Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_CENTERX_2_KEY, zoom2Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_CENTERY_2_KEY, zoom2Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_SHIFTX_2_KEY, zoom2Enabled);
+        context.setComponentsEnabled(OverlaySoftButtonLayerAction.SET_SHIFTY_2_KEY, zoom2Enabled);
+
+    }
 
     @Override
     protected void configure(BindingContext context) {
@@ -239,6 +316,12 @@ public final class SoftButtonLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class SoftButtonLayerBean {
 
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_LABEL,
+                key = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY,
+                description = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_TOOLTIP)
+        boolean showInAllBandsOverlayDefault = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT;
 
 
         @Preference(label = OverlaySoftButtonLayerAction.SHOW_GRIDLINES_OVERLAY_STATE_LABEL,
@@ -392,25 +475,45 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                 key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_KEY,
                 description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_TOOLTIP,
                 valueSet = {OverlaySoftButtonLayerAction.STATE_UNASSIGNED,
-                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_DEFAULT,
-                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_ALL,
-                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM1,
+//                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_DEFAULT,
+//                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM_ALL,
+
 //                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_DEFAULT,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ALL,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM_DEFAULT,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ALL,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM_DEFAULT,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
-                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ALL,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_DEFAULT,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ALL,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_DEFAULT_ZOOM1,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM_DEFAULT,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ALL,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM_ALL_ZOOM1,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM_DEFAULT,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
+//                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ALL,
                         OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM2,
-//                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
-//                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM1_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_ZOOM2_ZOOM2,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM1,
+                        OverlaySoftButtonLayerAction.STATE_UNASSIGNED_ZOOM2
 
         })
         String setZoomFactorStateDefault = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_STATE_DEFAULT;
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM1_SECTION_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_ZOOM1_SECTION_KEY,
+                description = OverlaySoftButtonLayerAction.SET_ZOOM1_SECTION_TOOLTIP)
+        boolean zoom1Section = true;
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_CENTERX_1_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_CENTERX_1_KEY,
+                description = OverlaySoftButtonLayerAction.SET_CENTERX_1_TOOLTIP)
+        boolean setCenterx1Default = OverlaySoftButtonLayerAction.SET_CENTERX_1_DEFAULT;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_CENTERY_1_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_CENTERY_1_KEY,
+                description = OverlaySoftButtonLayerAction.SET_CENTERY_1_TOOLTIP)
+        boolean setCentery1Default = OverlaySoftButtonLayerAction.SET_CENTERY_1_DEFAULT;
 
 
         @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_LABEL,
@@ -418,16 +521,49 @@ public final class SoftButtonLayerController extends DefaultConfigController {
                 description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_TOOLTIP)
         double setZoomFactor1Default = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_1_DEFAULT;
 
+        @Preference(label = OverlaySoftButtonLayerAction.SET_SHIFTX_1_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_SHIFTX_1_KEY,
+                description = OverlaySoftButtonLayerAction.SET_SHIFTX_1_TOOLTIP)
+        double setShiftx1Tooltip = OverlaySoftButtonLayerAction.SET_SHIFTX_1_DEFAULT;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_SHIFTY_1_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_SHIFTY_1_KEY,
+                description = OverlaySoftButtonLayerAction.SET_SHIFTY_1_TOOLTIP)
+        double setShifty1Default = OverlaySoftButtonLayerAction.SET_SHIFTY_1_DEFAULT;
+
+
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM2_SECTION_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_ZOOM2_SECTION_KEY,
+                description = OverlaySoftButtonLayerAction.SET_ZOOM2_SECTION_TOOLTIP)
+        boolean zoom2Section = true;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_CENTERX_2_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_CENTERX_2_KEY,
+                description = OverlaySoftButtonLayerAction.SET_CENTERX_2_TOOLTIP)
+        boolean setCenterx2Default = OverlaySoftButtonLayerAction.SET_CENTERX_2_DEFAULT;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_CENTERY_2_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_CENTERY_2_KEY,
+                description = OverlaySoftButtonLayerAction.SET_CENTERY_2_TOOLTIP)
+        boolean setCentery2Default = OverlaySoftButtonLayerAction.SET_CENTERY_2_DEFAULT;
+
         @Preference(label = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_LABEL,
                 key = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_KEY,
                 description = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_TOOLTIP)
         double setZoomFactor2Default = OverlaySoftButtonLayerAction.SET_ZOOM_FACTOR_2_DEFAULT;
 
 
-        @Preference(label = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_LABEL,
-                key = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_KEY,
-                description = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_TOOLTIP)
-        boolean showInAllBandsOverlayDefault = OverlaySoftButtonLayerAction.SHOW_IN_ALL_BANDS_OVERLAY_DEFAULT;
+        @Preference(label = OverlaySoftButtonLayerAction.SET_SHIFTX_2_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_SHIFTX_2_KEY,
+                description = OverlaySoftButtonLayerAction.SET_SHIFTX_2_TOOLTIP)
+        double setShiftx2Default = OverlaySoftButtonLayerAction.SET_SHIFTX_2_DEFAULT;
+
+        @Preference(label = OverlaySoftButtonLayerAction.SET_SHIFTY_2_LABEL,
+                key = OverlaySoftButtonLayerAction.SET_SHIFTY_2_KEY,
+                description = OverlaySoftButtonLayerAction.SET_SHIFTY_2_TOOLTIP)
+        double setShifty2Default = OverlaySoftButtonLayerAction.SET_SHIFTY_2_DEFAULT;
+
 
 
         // Restore Defaults Section
