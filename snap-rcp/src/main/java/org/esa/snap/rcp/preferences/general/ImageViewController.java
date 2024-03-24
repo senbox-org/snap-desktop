@@ -67,7 +67,6 @@ public final class ImageViewController extends DefaultConfigController {
         tableLayout.setTablePadding(4, 10);
         tableLayout.setTableFill(Fill.BOTH);
         tableLayout.setTableWeightX(1.0);
-        tableLayout.setRowWeightY(8, 1.0);
 
         JPanel pageUI = new JPanel(tableLayout);
 
@@ -76,10 +75,14 @@ public final class ImageViewController extends DefaultConfigController {
         Property showScrollBars = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN);
         Property reverseZoom = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING);
         Property zoomInitial = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_KEY);
-        Property zoomInitialWide = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY);
-        Property zoomInitialTall = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY);
-        Property zoomInitialAspectWide = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY);
-        Property zoomInitialAspectTall = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY);
+//        Property zoomInitialWide = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY);
+//        Property zoomInitialTall = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY);
+//        Property zoomInitialAspectWide = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY);
+//        Property zoomInitialAspectTall = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY);
+        Property shiftXInitial = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_SHIFT_X_INITIAL_KEY);
+        Property shiftYInitial = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_KEY_SHIFT_Y_INITIAL_KEY);
+        Property positionCenterX = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_POSITION_CENTER_X_KEY);
+        Property positionCenterY = context.getPropertySet().getProperty(ProductSceneView.PREFERENCE_POSITION_CENTER_Y_KEY);
         Property initialShowAnnotationLayer = context.getPropertySet().getProperty(ProductSceneView.SHOW_ANNOTATION_OVERLAY_STATE_KEY);
         Property initialShowGridlinesLayer = context.getPropertySet().getProperty(ProductSceneView.SHOW_GRIDLINES_OVERLAY_STATE_KEY);
         Property initialShowColorBarLegendLayer = context.getPropertySet().getProperty(ProductSceneView.SHOW_COLOR_BAR_LEGEND_OVERLAY_KEY);
@@ -89,10 +92,14 @@ public final class ImageViewController extends DefaultConfigController {
         JComponent[] showScrollBarsComponents = registry.findPropertyEditor(showScrollBars.getDescriptor()).createComponents(showScrollBars.getDescriptor(), context);
         JComponent[] reverseZoomComponents = registry.findPropertyEditor(reverseZoom.getDescriptor()).createComponents(reverseZoom.getDescriptor(), context);
         JComponent[] zoomInitialComponents = registry.findPropertyEditor(zoomInitial.getDescriptor()).createComponents(zoomInitial.getDescriptor(), context);
-        JComponent[] zoomInitialWideComponents = registry.findPropertyEditor(zoomInitialWide.getDescriptor()).createComponents(zoomInitialWide.getDescriptor(), context);
-        JComponent[] zoomInitialTallComponents = registry.findPropertyEditor(zoomInitialTall.getDescriptor()).createComponents(zoomInitialTall.getDescriptor(), context);
-        JComponent[] zoomInitialAspectWideComponents = registry.findPropertyEditor(zoomInitialAspectWide.getDescriptor()).createComponents(zoomInitialAspectWide.getDescriptor(), context);
-        JComponent[] zoomInitialAspectTallComponents = registry.findPropertyEditor(zoomInitialAspectTall.getDescriptor()).createComponents(zoomInitialAspectTall.getDescriptor(), context);
+//        JComponent[] zoomInitialWideComponents = registry.findPropertyEditor(zoomInitialWide.getDescriptor()).createComponents(zoomInitialWide.getDescriptor(), context);
+//        JComponent[] zoomInitialTallComponents = registry.findPropertyEditor(zoomInitialTall.getDescriptor()).createComponents(zoomInitialTall.getDescriptor(), context);
+//        JComponent[] zoomInitialAspectWideComponents = registry.findPropertyEditor(zoomInitialAspectWide.getDescriptor()).createComponents(zoomInitialAspectWide.getDescriptor(), context);
+//        JComponent[] zoomInitialAspectTallComponents = registry.findPropertyEditor(zoomInitialAspectTall.getDescriptor()).createComponents(zoomInitialAspectTall.getDescriptor(), context);
+        JComponent[] shiftXInitialComponents = registry.findPropertyEditor(shiftXInitial.getDescriptor()).createComponents(shiftXInitial.getDescriptor(), context);
+        JComponent[] shiftYInitialComponents = registry.findPropertyEditor(shiftYInitial.getDescriptor()).createComponents(shiftYInitial.getDescriptor(), context);
+        JComponent[] positionCenterXComponents = registry.findPropertyEditor(positionCenterX.getDescriptor()).createComponents(positionCenterX.getDescriptor(), context);
+        JComponent[] positionCenterYComponents = registry.findPropertyEditor(positionCenterY.getDescriptor()).createComponents(positionCenterY.getDescriptor(), context);
 
         JComponent[] initialShowAnnotationLayerComponents = registry.findPropertyEditor(initialShowAnnotationLayer.getDescriptor()).createComponents(initialShowAnnotationLayer.getDescriptor(), context);
         JComponent[] initialShowGridlinesLayerComponents = registry.findPropertyEditor(initialShowGridlinesLayer.getDescriptor()).createComponents(initialShowGridlinesLayer.getDescriptor(), context);
@@ -137,6 +144,22 @@ public final class ImageViewController extends DefaultConfigController {
         tableLayout.setCellWeightX(row, 0, 1.0);
         pageUI.add(initialShowNoDataLayerComponents[0]);
 
+
+        row++;
+        tableLayout.setCellColspan(row, 0, 2);
+        tableLayout.setCellWeightX(row, 0, 1.0);
+        pageUI.add(positionCenterXComponents[0]);
+
+
+
+        row++;
+        tableLayout.setCellColspan(row, 0, 2);
+        tableLayout.setCellWeightX(row, 0, 1.0);
+        pageUI.add(positionCenterYComponents[0]);
+
+
+
+
         row++;
         tableLayout.setCellColspan(row, 0, 1);
         tableLayout.setCellColspan(row, 1, 1);
@@ -149,37 +172,59 @@ public final class ImageViewController extends DefaultConfigController {
         tableLayout.setCellColspan(row, 0, 1);
         tableLayout.setCellColspan(row, 1, 1);
         tableLayout.setCellWeightX(row, 0, 0.0);
-        pageUI.add(zoomInitialWideComponents[1]);
+        pageUI.add(shiftXInitialComponents[1]);
         tableLayout.setCellWeightX(row, 1, 1.0);
-        pageUI.add(zoomInitialWideComponents[0]);
+        pageUI.add(shiftXInitialComponents[0]);
+
 
         row++;
         tableLayout.setCellColspan(row, 0, 1);
         tableLayout.setCellColspan(row, 1, 1);
         tableLayout.setCellWeightX(row, 0, 0.0);
-        pageUI.add(zoomInitialTallComponents[1]);
+        pageUI.add(shiftYInitialComponents[1]);
         tableLayout.setCellWeightX(row, 1, 1.0);
-        pageUI.add(zoomInitialTallComponents[0]);
+        pageUI.add(shiftYInitialComponents[0]);
+
+
+//
+//        row++;
+//        tableLayout.setCellColspan(row, 0, 1);
+//        tableLayout.setCellColspan(row, 1, 1);
+//        tableLayout.setCellWeightX(row, 0, 0.0);
+//        pageUI.add(zoomInitialWideComponents[1]);
+//        tableLayout.setCellWeightX(row, 1, 1.0);
+//        pageUI.add(zoomInitialWideComponents[0]);
+//
+//        row++;
+//        tableLayout.setCellColspan(row, 0, 1);
+//        tableLayout.setCellColspan(row, 1, 1);
+//        tableLayout.setCellWeightX(row, 0, 0.0);
+//        pageUI.add(zoomInitialTallComponents[1]);
+//        tableLayout.setCellWeightX(row, 1, 1.0);
+//        pageUI.add(zoomInitialTallComponents[0]);
+//
+//        row++;
+//        tableLayout.setCellColspan(row, 0, 1);
+//        tableLayout.setCellColspan(row, 1, 1);
+//        tableLayout.setCellWeightX(row, 0, 0.0);
+//        pageUI.add(zoomInitialAspectWideComponents[1]);
+//        tableLayout.setCellWeightX(row, 1, 1.0);
+//        pageUI.add(zoomInitialAspectWideComponents[0]);
+//
+//        row++;
+//        tableLayout.setCellColspan(row, 0, 1);
+//        tableLayout.setCellColspan(row, 1, 1);
+//        tableLayout.setCellWeightX(row, 0, 0.0);
+//        pageUI.add(zoomInitialAspectTallComponents[1]);
+//        tableLayout.setCellWeightX(row, 1, 1.0);
+//        pageUI.add(zoomInitialAspectTallComponents[0]);
+//
+
+
 
         row++;
-        tableLayout.setCellColspan(row, 0, 1);
-        tableLayout.setCellColspan(row, 1, 1);
-        tableLayout.setCellWeightX(row, 0, 0.0);
-        pageUI.add(zoomInitialAspectWideComponents[1]);
-        tableLayout.setCellWeightX(row, 1, 1.0);
-        pageUI.add(zoomInitialAspectWideComponents[0]);
+        tableLayout.setRowWeightY(row, 1.0);
 
-        row++;
-        tableLayout.setCellColspan(row, 0, 1);
-        tableLayout.setCellColspan(row, 1, 1);
-        tableLayout.setCellWeightX(row, 0, 0.0);
-        pageUI.add(zoomInitialAspectTallComponents[1]);
-        tableLayout.setCellWeightX(row, 1, 1.0);
-        pageUI.add(zoomInitialAspectTallComponents[0]);
-
-
-
-        row++;
         pageUI.add(tableLayout.createVerticalSpacer());
 
         return pageUI;
@@ -200,36 +245,57 @@ public final class ImageViewController extends DefaultConfigController {
                 key = ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING)
         boolean reverseZom = true;
 
-        @Preference(label = "Default Image Zoom",
+        @Preference(label = "Image Zoom",
                 key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_KEY,
-                description = "Zoom factor for default scene (see Wide Scene Aspect and Tall Scene Aspect)",
-                interval = "[0.01,10.0]")
+                description = "Zoom percent for opening scene image",
+                interval = "[10,1000]")
         double zoomInitial = ProductSceneView.PREFERENCE_ZOOM_INITIAL_DEFAULT;
 
-        @Preference(label = "Default Image Zoom (Wide Scene)",
-                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY,
-                description = "Zoom factor for wide scene (see Wide Scene Aspect)",
-                interval = "[0.01,10.0]")
-        double zoomInitialWide = ProductSceneView.PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT;
+//        @Preference(label = "Default Image Zoom (Wide Scene)",
+//                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY,
+//                description = "Zoom factor for wide scene (see Wide Scene Aspect)",
+//                interval = "[10,1000]")
+//        double zoomInitialWide = ProductSceneView.PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT;
+//
+//        @Preference(label = "Default Image Zoom (Tall Scene)",
+//                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY,
+//                description = "Zoom factor for tall scene (see Tall Scene Aspect)",
+//                interval = "[10,1000]")
+//        double zoomInitialTall = ProductSceneView.PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT;
+//
+//        @Preference(label = "Wide Scene Aspect",
+//                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY,
+//                description = "Scene aspect ratio which indicate scene is wide scene for initial zoom",
+//                interval = "[10,1000]")
+//        double zoomInitialAspectWide = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT;
+//
+//        @Preference(label = "Tall Scene Aspect",
+//                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY,
+//                description = "Scene aspect ratio which indicate scene is tall scene for initial zoom",
+//                interval = "[10,1000]")
+//        double zoomInitialAspectTall = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT;
 
-        @Preference(label = "Default Image Zoom (Tall Scene)",
-                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY,
-                description = "Zoom factor for tall scene (see Tall Scene Aspect)",
-                interval = "[0.01,10.0]")
-        double zoomInitialTall = ProductSceneView.PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT;
+        @Preference(label = "Image Shift (Horizontal)",
+                key = ProductSceneView.PREFERENCE_KEY_SHIFT_X_INITIAL_KEY,
+                description = "Shift image horizontally in image display (in percent image width)",
+                interval = "[-500,500]")
+        double shiftXInitialKey = ProductSceneView.PREFERENCE_KEY_SHIFT_X_INITIAL_DEFAULT;
 
-        @Preference(label = "Wide Scene Aspect",
-                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY,
-                description = "Scene aspect ratio which indicate scene is wide scene for initial zoom",
-                interval = "[0.01,10.0]")
-        double zoomInitialAspectWide = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT;
+        @Preference(label = "Image Shift (Vertical)",
+                key = ProductSceneView.PREFERENCE_KEY_SHIFT_Y_INITIAL_KEY,
+                description = "Shift image vertically downwards (in percent of image height)",
+                interval = "[-500,500]")
+        double shiftYInitialDefault = ProductSceneView.PREFERENCE_KEY_SHIFT_Y_INITIAL_DEFAULT;
 
-        @Preference(label = "Tall Scene Aspect",
-                key = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY,
-                description = "Scene aspect ratio which indicate scene is tall scene for initial zoom",
-                interval = "[0.01,10.0]")
-        double zoomInitialAspectTall = ProductSceneView.PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT;
+        @Preference(label = "Center Image (Horizontal)",
+                key = ProductSceneView.PREFERENCE_POSITION_CENTER_X_KEY,
+                description = "Set position to center (horizontal) for initial image display")
+        boolean positionCenterXDefault = ProductSceneView.PREFERENCE_POSITION_CENTER_X_DEFAULT;
 
+        @Preference(label = "Center Image (Vertical)",
+                key = ProductSceneView.PREFERENCE_POSITION_CENTER_Y_KEY,
+                description = "Set position to center (vertical) for initial image display")
+        boolean positionCenterYDefault = ProductSceneView.PREFERENCE_POSITION_CENTER_Y_DEFAULT;
 
 
         @Preference(label = "Show Annotation Metadata Layer",

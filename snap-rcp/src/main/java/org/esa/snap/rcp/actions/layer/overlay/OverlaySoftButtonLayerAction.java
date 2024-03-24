@@ -48,7 +48,7 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
     public static final String STATE_UNASSIGNED_ZOOM_DEFAULT = "Unassigned - DEFAULT";
     public static final String STATE_UNASSIGNED_ZOOM_ALL = "Unassigned - ALL";
-    public static final String STATE_UNASSIGNED_ZOOM1 = "Unassigned - ZOOM1";
+    public static final String STATE_UNASSIGNED_ZOOM1 = "Unassigned - POS_ZOOM1";
 
     public static final String STATE_ZOOM_DEFAULT_DEFAULT = "DEFAULT - DEFAULT";
     public static final String STATE_ZOOM_DEFAULT_ALL = "DEFAULT - ALL";
@@ -60,13 +60,13 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
     public static final String STATE_ZOOM1_ZOOM_DEFAULT = "ZOOM1 - DEFAULT";
     public static final String STATE_ZOOM1_ALL = "ZOOM1 - ALL";
-    public static final String STATE_ZOOM1_ZOOM1 = "ZOOM1 - ZOOM1";
+    public static final String STATE_ZOOM1_ZOOM1 = "POS_ZOOM1 - POS_ZOOM1";
 
-    public static final String STATE_ZOOM1_ZOOM2 = "ZOOM 1 - ZOOM 2";
+    public static final String STATE_ZOOM1_ZOOM2 = "POS_ZOOM1 - POS_ZOOM2";
 
-    public static final String STATE_UNASSIGNED_ZOOM2 = "Unassigned - ZOOM2";
-    public static final String STATE_ZOOM2_ZOOM1 = "ZOOM 2 - ZOOM 1";
-    public static final String STATE_ZOOM2_ZOOM2 = "ZOOM 2 - ZOOM 2";
+    public static final String STATE_UNASSIGNED_ZOOM2 = "Unassigned - POS_ZOOM2";
+    public static final String STATE_ZOOM2_ZOOM1 = "POS_ZOOM2 - POS_ZOOM1";
+    public static final String STATE_ZOOM2_ZOOM2 = "POS_ZOOM2 - POS_ZOOM2";
 
 
     public static enum SelectionState {
@@ -135,20 +135,71 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String MASK_LIST_TOOLTIP = "Shows masks from this comma or space delimited list";
     public static final String MASK_LIST_DEFAULT = "";
 
+
+
+    public static final String SET_ZOOM1_SECTION_KEY = "soft.button.set.zoom1.section";
+    public static final String SET_ZOOM1_SECTION_LABEL = "Position/Zoom (POS_ZOOM1)";
+    public static final String SET_ZOOM1_SECTION_TOOLTIP = "Fields associated with POS_ZOOM1";
+
+    public static final String SET_ZOOM2_SECTION_KEY = "soft.button.set.zoom2.section";
+    public static final String SET_ZOOM2_SECTION_LABEL = "Position/Zoom (POS_ZOOM2)";
+    public static final String SET_ZOOM2_SECTION_TOOLTIP = "Fields associated with POS_ZOOM1";
+
     public static final String SET_ZOOM_FACTOR_STATE_KEY = "soft.button.set.zoom";
-    public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Zoom";
+    public static final String SET_ZOOM_FACTOR_STATE_LABEL = "Set Scene Image Position/Zoom";
     public static final String SET_ZOOM_FACTOR_STATE_TOOLTIP = "Sets image zoom based on Zoom 1 and Zoom 2";
-    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM_DEFAULT_ALL;
+    public static final String SET_ZOOM_FACTOR_STATE_DEFAULT = STATE_ZOOM1_ZOOM2;
 
     public static final String SET_ZOOM_FACTOR_1_KEY = "soft.button.zoom1";
-    public static final String SET_ZOOM_FACTOR_1_LABEL = "Scene Zoom 1";
+    public static final String SET_ZOOM_FACTOR_1_LABEL = "POS_ZOOM1: Image Zoom";
     public static final String SET_ZOOM_FACTOR_1_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
-    public static final double SET_ZOOM_FACTOR_1_DEFAULT = 0.75;
+    public static final double SET_ZOOM_FACTOR_1_DEFAULT = 75;
 
     public static final String SET_ZOOM_FACTOR_2_KEY = "soft.button.zoom2";
-    public static final String SET_ZOOM_FACTOR_2_LABEL = "Scene Zoom 2";
+    public static final String SET_ZOOM_FACTOR_2_LABEL = "POS_ZOOM2: Image Zoom";
     public static final String SET_ZOOM_FACTOR_2_TOOLTIP = "Zoom factor used if Image Zoom is assigned";
-    public static final double SET_ZOOM_FACTOR_2_DEFAULT = 1.0;
+    public static final double SET_ZOOM_FACTOR_2_DEFAULT = 100;
+
+    public static final String SET_CENTERX_1_KEY = "soft.button.centerx.1";
+    public static final String SET_CENTERX_1_LABEL = "POS_ZOOM1: Center Image (Horizontal)";
+    public static final String SET_CENTERX_1_TOOLTIP = "Center image horizontally for Zoom-Pos1";
+    public static final boolean SET_CENTERX_1_DEFAULT = true;
+
+    public static final String SET_CENTERX_2_KEY = "soft.button.centerx.2";
+    public static final String SET_CENTERX_2_LABEL = "POS_ZOOM2: Center Image (Horizontal)";
+    public static final String SET_CENTERX_2_TOOLTIP = "Center image horizontally for Zoom-Pos2";
+    public static final boolean SET_CENTERX_2_DEFAULT = true;
+
+    public static final String SET_CENTERY_1_KEY = "soft.button.centery.1";
+    public static final String SET_CENTERY_1_LABEL = "POS_ZOOM1: Center Image (Vertical)";
+    public static final String SET_CENTERY_1_TOOLTIP = "Center image vertically for Zoom-Pos1";
+    public static final boolean SET_CENTERY_1_DEFAULT = true;
+
+    public static final String SET_CENTERY_2_KEY = "soft.button.centery.2";
+    public static final String SET_CENTERY_2_LABEL = "POS_ZOOM2: Center Image (Vertical)";
+    public static final String SET_CENTERY_2_TOOLTIP = "Center image vertically for Zoom-Pos2";
+    public static final boolean SET_CENTERY_2_DEFAULT = true;
+
+    public static final String SET_SHIFTX_1_KEY = "soft.button.shiftx.1";
+    public static final String SET_SHIFTX_1_LABEL = "POS_ZOOM1: Image Shift (Horizontal)";
+    public static final String SET_SHIFTX_1_TOOLTIP = "Shift image horizontally rightwards if Zoom-Pos 1 is assigned";
+    public static final double SET_SHIFTX_1_DEFAULT = 0.0;
+
+    public static final String SET_SHIFTX_2_KEY = "soft.button.shiftx.2";
+    public static final String SET_SHIFTX_2_LABEL = "POS_ZOOM2: Image Shift (Horizontal)";
+    public static final String SET_SHIFTX_2_TOOLTIP = "Shift image horizontally rightwards if Zoom-Pos 2 is assigned";
+    public static final double SET_SHIFTX_2_DEFAULT = 0.0;
+
+    public static final String SET_SHIFTY_1_KEY = "soft.button.shifty.1";
+    public static final String SET_SHIFTY_1_LABEL = "POS_ZOOM1: Image Shift Image (Vertical)";
+    public static final String SET_SHIFTY_1_TOOLTIP = "Shift image vertically downwards if Zoom-Pos 1 is assigned";
+    public static final double SET_SHIFTY_1_DEFAULT = 0.0;
+
+    public static final String SET_SHIFTY_2_KEY = "soft.button.shifty.2";
+    public static final String SET_SHIFTY_2_LABEL = "POS_ZOOM2: Image Shift (Vertical)";
+    public static final String SET_SHIFTY_2_TOOLTIP = "Shift image vertically downwards if Zoom-Pos 2 is assigned";
+    public static final double SET_SHIFTY_2_DEFAULT = 0.0;
+
 
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_KEY = "soft.button.overlay.apply.all.view.windows";
     public static final String SHOW_IN_ALL_BANDS_OVERLAY_LABEL = "Apply to all Open View Windows";
@@ -171,6 +222,14 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     SelectionState vectorParentOverlayDesiredState;
     double zoomFactor1;
     double zoomFactor2;
+    boolean centerX1;
+    boolean centerX2;
+    boolean centerY1;
+    boolean centerY2;
+    double shiftX1;
+    double shiftX2;
+    double shiftY1;
+    double shiftY2;
 
 
 
@@ -227,6 +286,15 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         String vectorParentOverlayStatePattern = configuration.getPropertyString(SHOW_VECTOR_PARENT_OVERLAY_KEY, SHOW_VECTOR_PARENT_OVERLAY_DEFAULT);
         zoomFactor1 = configuration.getPropertyDouble(SET_ZOOM_FACTOR_1_KEY, SET_ZOOM_FACTOR_1_DEFAULT);
         zoomFactor2 = configuration.getPropertyDouble(SET_ZOOM_FACTOR_2_KEY, SET_ZOOM_FACTOR_2_DEFAULT);
+        centerX1 = configuration.getPropertyBool(SET_CENTERX_1_KEY, SET_CENTERX_1_DEFAULT);
+        centerX2 = configuration.getPropertyBool(SET_CENTERX_2_KEY, SET_CENTERX_2_DEFAULT);
+        centerY1 = configuration.getPropertyBool(SET_CENTERY_1_KEY, SET_CENTERY_1_DEFAULT);
+        centerY2 = configuration.getPropertyBool(SET_CENTERY_2_KEY, SET_CENTERY_2_DEFAULT);
+        shiftX1 = configuration.getPropertyDouble(SET_SHIFTX_1_KEY, SET_SHIFTX_1_DEFAULT);
+        shiftX2 = configuration.getPropertyDouble(SET_SHIFTX_2_KEY, SET_SHIFTX_2_DEFAULT);
+        shiftY1 = configuration.getPropertyDouble(SET_SHIFTY_1_KEY, SET_SHIFTY_1_DEFAULT);
+        shiftY2 = configuration.getPropertyDouble(SET_SHIFTY_2_KEY, SET_SHIFTY_2_DEFAULT);
+
 
         String maskListsShow = configuration.getPropertyString(MASK_LIST_KEY, MASK_LIST_DEFAULT);
         masksArrayList = getVariablesArrayList(maskListsShow);
@@ -356,11 +424,33 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
 
 
+    public void shiftCenter(final boolean centerX, boolean centerY, double shiftX, double shiftY, ProductSceneView view) {
+        if (view != null) {
+            double offsetX;
+            if (centerX) {
+                offsetX = view.getLayerCanvas().getViewport().getOffsetX() - (view.getLayerCanvas().getMaxVisibleModelBounds().getWidth() * shiftX)/100.0;
+            } else {
+                offsetX = - view.getLayerCanvas().getMaxVisibleModelBounds().getWidth()*shiftX/100.0;
+            }
+
+            double offsetY;
+            if (centerY) {
+                offsetY = view.getLayerCanvas().getViewport().getOffsetY() - (view.getLayerCanvas().getMaxVisibleModelBounds().getHeight() * shiftY)/100.0;
+            } else {
+                offsetY = - view.getLayerCanvas().getMaxVisibleModelBounds().getHeight()*shiftY/100.0;
+            }
+
+            view.getLayerCanvas().getViewport().setOffset(offsetX,offsetY);
+        }
+    }
+
+
+
     public void zoom(final double zoomFactor, ProductSceneView view) {
         if (view != null && zoomFactor > 0) {
             zoomAll(view);
-            if (zoomFactor != 1.0) {
-                double zoomAllFactor = view.getLayerCanvas().getViewport().getZoomFactor();
+            if (zoomFactor != 100.0) {
+                double zoomAllFactor = view.getLayerCanvas().getViewport().getZoomFactor()/100;
                 view.getLayerCanvas().getViewport().setZoomFactor(zoomFactor * zoomAllFactor);
             }
 //            maybeSynchronizeCompatibleProductViews();
@@ -532,8 +622,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
         if (zoomDesiredState != SelectionState.UNASSIGNED) {
             if (zoomDesiredState == SelectionState.ZOOM1) {
                 zoom(zoomFactor1, view);
+                shiftCenter(centerX1,centerY1,shiftX1,shiftY1,view);
+
             } else if (zoomDesiredState == SelectionState.ZOOM2) {
                 zoom(zoomFactor2, view);
+                shiftCenter(centerX2,centerY2,shiftX2,shiftY2,view);
+
             } else if (zoomDesiredState == SelectionState.ZOOM_DEFAULT) {
                 zoomWithDefaultAspect(view);
             } else if (zoomDesiredState == SelectionState.ZOOM_ALL) {

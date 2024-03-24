@@ -161,15 +161,23 @@ public class ProductSceneView extends BasicView
      * Name of properties which zoom the view when opening a band view window.
      */
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_KEY = "image.zoom.initial";
-    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 0.9;
+    public static final double PREFERENCE_ZOOM_INITIAL_DEFAULT = 90.0;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_WIDE_KEY = "image.zoom.initial.wide.scene";
-    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 0.9;
+    public static final double PREFERENCE_ZOOM_INITIAL_WIDE_DEFAULT = 90.0;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_TALL_KEY = "image.zoom.initial.tall.scene";
-    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 0.9;
+    public static final double PREFERENCE_ZOOM_INITIAL_TALL_DEFAULT = 90.0;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_KEY = "image.zoom.initial.aspect.wide";
-    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 1.2;
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_WIDE_DEFAULT = 2;
     public static final String PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY = "image.zoom.initial.aspect.tall";
-    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT = 0.8;
+    public static final double PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT = 0.5;
+    public static final String PREFERENCE_KEY_SHIFT_X_INITIAL_KEY = "image.shift.initial";
+    public static final double PREFERENCE_KEY_SHIFT_X_INITIAL_DEFAULT = 0.0;
+    public static final String PREFERENCE_KEY_SHIFT_Y_INITIAL_KEY = "image.shiftx.initial";
+    public static final double PREFERENCE_KEY_SHIFT_Y_INITIAL_DEFAULT = 0.0;
+    public static final String PREFERENCE_POSITION_CENTER_X_KEY = "image.position.center.x.initial";
+    public static final boolean PREFERENCE_POSITION_CENTER_X_DEFAULT = true;
+    public static final String PREFERENCE_POSITION_CENTER_Y_KEY = "image.position.center.y.initial";
+    public static final boolean PREFERENCE_POSITION_CENTER_Y_DEFAULT = true;
     /**
      * Name of properties which turn on layers when opening a band view window.
      */
@@ -286,6 +294,21 @@ public class ProductSceneView extends BasicView
                 PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_KEY, PREFERENCE_KEY_ZOOM_INITIAL_ASPECT_TALL_DEFAULT);
         this.layerCanvas.setZoomInitialAspectTall(zoomInitialAspectTall);
 
+        final double shiftXInitial = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_SHIFT_X_INITIAL_KEY, PREFERENCE_KEY_SHIFT_X_INITIAL_DEFAULT);
+        this.layerCanvas.setShiftInitialX(shiftXInitial);
+
+        final double shiftYInitial = sceneImage.getConfiguration().getPropertyDouble(
+                PREFERENCE_KEY_SHIFT_Y_INITIAL_KEY, PREFERENCE_KEY_SHIFT_Y_INITIAL_DEFAULT);
+        this.layerCanvas.setShiftInitialY(shiftYInitial);
+
+        final boolean positionCenterXInitial = sceneImage.getConfiguration().getPropertyBool(
+                PREFERENCE_POSITION_CENTER_X_KEY, PREFERENCE_POSITION_CENTER_X_DEFAULT);
+        this.layerCanvas.setPositionCenterX(positionCenterXInitial);
+
+        final boolean positionCenterYInitial = sceneImage.getConfiguration().getPropertyBool(
+                PREFERENCE_POSITION_CENTER_Y_KEY, PREFERENCE_POSITION_CENTER_Y_DEFAULT);
+        this.layerCanvas.setPositionCenterY(positionCenterYInitial);
 
         rootLayer.addListener(new AbstractLayerListener() {
             @Override
