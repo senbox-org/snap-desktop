@@ -149,7 +149,7 @@ public class ProductSceneView extends BasicView
      * Name of property which switches display of af a navigation control in the image view.
      */
     public static final String PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
-    public static final boolean PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT = true;
+    public static final boolean PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT = false;
     /**
      * Name of property which switches display of af a navigation control in the image view.
      */
