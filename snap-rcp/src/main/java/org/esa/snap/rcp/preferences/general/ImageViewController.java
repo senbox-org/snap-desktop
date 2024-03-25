@@ -235,7 +235,7 @@ public final class ImageViewController extends DefaultConfigController {
 
         @Preference(label = "Show a navigation control widget in image views",
                 key = ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN)
-        boolean showNavigationControl = false;
+        boolean showNavigationControl = ProductSceneView.PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT;
 
         @Preference(label = "Show scroll bars in image views",
                 key = ProductSceneView.PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN)

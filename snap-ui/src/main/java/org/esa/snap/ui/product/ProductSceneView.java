@@ -149,6 +149,7 @@ public class ProductSceneView extends BasicView
      * Name of property which switches display of af a navigation control in the image view.
      */
     public static final String PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
+    public static final boolean PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT = true;
     /**
      * Name of property which switches display of af a navigation control in the image view.
      */
@@ -322,7 +323,7 @@ public class ProductSceneView extends BasicView
             }
         });
         final boolean navControlShown = sceneImage.getConfiguration().getPropertyBool(
-                PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true);
+                PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT);
 
 
         this.layerCanvas.setNavControlShown(navControlShown);
@@ -872,7 +873,7 @@ public class ProductSceneView extends BasicView
     public void appyLayerProperties(PropertyMap configuration) {
         setScrollBarsShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN, false));
         layerCanvas.setAntialiasing(true);
-        layerCanvas.setNavControlShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, true));
+        layerCanvas.setNavControlShown(configuration.getPropertyBool(PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN, PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT));
         layerCanvas.setBackground(
                 configuration.getPropertyColor("image.background.color", DEFAULT_IMAGE_BACKGROUND_COLOR));
 
