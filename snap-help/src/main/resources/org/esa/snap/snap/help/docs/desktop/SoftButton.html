@@ -34,21 +34,26 @@
     The Soft Button tool let's you assign any number of layer tools to be turned on simultaneously.
     The Soft Button can be configured in the Preferences
 </p>
-<br>
-<br>
+<!--<br>-->
+<!--<br>-->
 
 
-<p align="center">
-    <img src="images/SoftButton_Example.png" width="450" border="0"><br><br>
-    <i>Image 1: Preferences GUI for assigning layer tools to the Soft Button</i>
-</p>
-<br>
+<!--<p align="center">-->
+<!--    <img src="images/SoftButton_Example.png" width="450" border="0"><br><br>-->
+<!--    <i>Image 1: Preferences GUI for assigning layer tools to the Soft Button</i>-->
+<!--</p>-->
+<!--<br>-->
 
 
 <br>
 <h4>Preference Fields</h4>
 <pre>
+
 The following fields assign the behavior of the soft button.
+
+
+&#8227; Apply to all Open View Windows:
+		Applies Soft Button behavior to all compatible open view windows to the same product
 
 &#8227; Show Map Gridlines Layer:
 		Assigns Soft Button behavior to turn on or off the Map Gridlines (Graticule) Layer.
@@ -83,19 +88,41 @@ The following fields assign the behavior of the soft button.
 &#8227; Show Ground Control Points Layer:
 		Assigns Soft Button behavior to turn on or off the Ground Control Points Layer.
 
-&#8227; Set Scene Image Zoom:
-		Can be assign to zoom to the values of fields 'Scene Zoom 1' and or 'Scene Zoom2'
+&#8227; Set Scene Image Position/Zoom:
+		Can be assigned to position and zoom image to the values of fields in the sections 'Position/Zoom (POS_ZOOM1)' and 'Position/Zoom (POS_ZOOM2)' 
 
-&#8227; Scene Zoom 1:
-		Zoom factor which can be assigned by 'Set Scene Image Zoom'
 
-&#8227; Scene Zoom 2:
-		Zoom factor which can be assigned by 'Set Scene Image Zoom'
+&#8227; POS_ZOOM1: Center Image (Horizontal):
+		Centers scene image horizontally in view window (assigned by 'Set Scene Image Position/Zoom')
 
-&#8227; Apply to all Open View Windows:
-		Applies Soft Button behavior to all compatible open view windows to the same product
-</pre>
+&#8227; POS_ZOOM1: Center Image (Vertical):
+		Centers scene image vertically in view window (assigned by 'Set Scene Image Position/Zoom')
 
+&#8227; POS_ZOOM1: Image Zoom:
+        Zoom percentage (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM1: Image Shift (Horizontal):
+		Shifts image horizontally in the view window - positive value shifts rightward - (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM1: Image Shift (Vertical):
+		Shifts image vertically in the view window - positive value shifts downwards - (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM2: Center Image (Horizontal):
+		Centers scene image horizontally in view window (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM2: Center Image (Vertical):
+		Centers scene image vertically in view window (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM2: Image Zoom:
+		Zoom percentage (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM2: Image Shift (Horizontal):
+		Shifts image horizontally in the view window - positive value shifts rightward - (assigned by 'Set Scene Image Position/Zoom')
+
+&#8227; POS_ZOOM2: Image Shift (Vertical):
+		Shifts image vertically in the view window - positive value shifts downwards - (assigned by 'Set Scene Image Position/Zoom')
+
+	</pre>
 
 
 

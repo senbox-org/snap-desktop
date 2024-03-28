@@ -1,0 +1,7 @@
+#RGB-Image Profile
+#Mon Mar 25 11:41:46 EDT 2024
+red=log('i_-20_645'/30)/log(450/30)
+green=log('i_-20_555'/30)/log(450/30)
+blue=log('i_-20_465'/30)/log(450/30)
+name=TC_OCI_L1C_i_AftTilt_645_555_465.rgb
+valid_pixel_expression=\!nan('i_-20_645') and \!nan('i_-20_555') and \!nan('i_-20_465')
