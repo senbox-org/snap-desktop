@@ -4,92 +4,87 @@
 <colorSchemeLut>
 
 
-  <!--  START   Miscellaneous -->
-
-  <KEY REGEX="^chl($|_.+)">
-    <SCHEME_ID>chl</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-
-  <KEY REGEX="^Zsd($|_.+)">
-    <SCHEME_ID>Zsd</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^Zeu($|_.+)">
-    <SCHEME_ID>Zeu</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^Zp($|_.+)">
-    <SCHEME_ID>Zp</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^Zhl($|_.+)">
-    <SCHEME_ID>Zhl</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-
-
-  <KEY REGEX="^(sst|sst4)($|_.+)">
-    <SCHEME_ID>sst</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^elev$">
-    <SCHEME_ID>elev</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^CI_.+">
-    <SCHEME_ID>CI</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^flag$">
-    <SCHEME_ID>flag</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^bathymetry($|_.+)">
-    <SCHEME_ID>bathymetry</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-  <KEY REGEX="^elevation($|_.+)">
-    <SCHEME_ID>elevation</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-  <KEY REGEX="^topography($|_.+)">
-    <SCHEME_ID>topography</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <!--  END   Miscellaneous -->
 
 
 
 
+  <!--  START Standard Suites -->
 
-
-  <!--  START Standard OC Suites -->
-
-  <KEY REGEX="^angstrom($|_.+)">
+  <KEY REGEX="^angstrom$">
     <SCHEME_ID>angstrom</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
-  <KEY REGEX="^aot($|_.+)">
+<!--  <KEY REGEX="^angstrom_.+">-->
+<!--    <SCHEME_ID>angstrom_</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+
+
+  <KEY REGEX="^aot_(\d\d\d|\d\d\d\d)$">
     <SCHEME_ID>aot</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
-  <KEY REGEX="^chlor_a($|_.+)">
+  <KEY REGEX="^aot_(\d\d\d|\d\d\d\d)_dt$">
+    <SCHEME_ID>aot_dt</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^aot_(\d\d\d|\d\d\d\d)_db$">
+    <SCHEME_ID>aot_db</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+<!--  <KEY REGEX="^aot_.+">-->
+<!--    <SCHEME_ID>aot_</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+
+
+
+  <KEY REGEX="^avw($|_.+)">
+    <SCHEME_ID>avw</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+
+
+  <KEY REGEX="^carbon_phyto$">
+    <SCHEME_ID>carbon_phyto</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^carbon_phyto_unc$">
+    <SCHEME_ID>carbon_phyto_unc</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^chlor_a$">
     <SCHEME_ID>chlor_a</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
+
+  <KEY REGEX="^chlor_a_unc$">
+    <SCHEME_ID>chlor_a_unc</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+<!--  <KEY REGEX="^chlor_a_ow.+">-->
+<!--    <SCHEME_ID>NONE</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+<!--  <KEY REGEX="^chlor_a_.+">-->
+<!--    <SCHEME_ID>chlor_a_</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+
+
 
   <KEY REGEX="^ipar($|_.+)">
     <SCHEME_ID>ipar</SCHEME_ID>
@@ -97,22 +92,40 @@
   </KEY>
 
 
-  <KEY REGEX="^Kd($|_.+)">
-    <SCHEME_ID>Kd</SCHEME_ID>
+
+  <KEY REGEX="^Kd_lee_(\d\d\d)$">
+    <SCHEME_ID>Kd_lee</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
-  <KEY REGEX="^Kd_490($|_.+)">
+  <KEY REGEX="^Kd_490$">
     <SCHEME_ID>Kd_490</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
+<!--  <KEY REGEX="^Kd_(PAR|unc).+">-->
+<!--    <SCHEME_ID>NONE</SCHEME_ID>-->
+<!--  </KEY>-->
 
+<!--  <KEY REGEX="^Kd_.+">-->
+<!--    <SCHEME_ID>Kd_</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+
+
+
+  <KEY REGEX="^nflh_unc.+">
+    <SCHEME_ID>NONE</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
 
   <KEY REGEX="^nflh($|_.+)">
     <SCHEME_ID>nflh</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
+
+
 
   <KEY REGEX="^par($|_.+)">
     <SCHEME_ID>par</SCHEME_ID>
@@ -124,13 +137,52 @@
     <DESCRIPTION/>
   </KEY>
 
+
+
+<!--  <KEY REGEX="^poc_stramski_hybrid$">-->
+<!--    <SCHEME_ID>poc_stramski_hybrid</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
+
+  <KEY REGEX="^poc_unc($|_.+)">
+    <SCHEME_ID>NONE</SCHEME_ID>
+  </KEY>
+
+
   <KEY REGEX="^poc($|_.+)">
     <SCHEME_ID>poc</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
+<!--  <KEY REGEX="^poc_.+">-->
+<!--    <SCHEME_ID>poc_</SCHEME_ID>-->
+<!--    <DESCRIPTION/>-->
+<!--  </KEY>-->
 
-  <KEY REGEX="^Rrs_([0-3]\d\d|4[0-2]\d|43[0-9]|440)($|_.+)">
+
+  <KEY REGEX="^Rrs_(vc|brightness)_.+">
+    <SCHEME_ID>NONE</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Rrs_unc_([0-3]\d\d|4[0-4]\d|450)($|_.+)">
+    <SCHEME_ID>Rrs_unc_000_450</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Rrs_unc_(45[1-9]|4[6-9]\d|5[0-5]\d|560)($|_.+)">
+    <SCHEME_ID>Rrs_unc_451_560</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Rrs_unc_(56[1-9]|5[7-9]\d|[6-9]\d\d|1\d\d\d|2[0-3]\d\d|2400)($|_.+)">
+    <SCHEME_ID>Rrs_unc_561_2400</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+
+  <KEY REGEX="^Rrs_([0-3]\d\d|4[0-3]\d|440)($|_.+)">
     <SCHEME_ID>Rrs_000_440</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
@@ -151,7 +203,7 @@
   </KEY>
 
 
-  <!--  END   Standard OC Suites -->
+  <!--  END Standard  Suites -->
 
 
 
@@ -247,6 +299,7 @@
 
   <!--  START   Standard IOP Suites -->
 
+
   <KEY REGEX="^a_(\d\d\d|\d\d\d\d)($|_.+)">
     <SCHEME_ID>a</SCHEME_ID>
     <DESCRIPTION/>
@@ -318,6 +371,87 @@
   <!--  END   Standard IOP Suites -->
 
 
+
+  <KEY REGEX="^ndvi($|_.+)">
+    <SCHEME_ID>ndvi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+
+
+
+
+  <!--  START   Miscellaneous -->
+
+  <KEY REGEX="^chl($|_.+)">
+    <SCHEME_ID>chl</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+  <KEY REGEX="^Zsd($|_.+)">
+    <SCHEME_ID>Zsd</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Zeu($|_.+)">
+    <SCHEME_ID>Zeu</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Zp($|_.+)">
+    <SCHEME_ID>Zp</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^Zhl($|_.+)">
+    <SCHEME_ID>Zhl</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+
+  <KEY REGEX="^(sst|sst4)($|_.+)">
+    <SCHEME_ID>sst</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^elev$">
+    <SCHEME_ID>elev</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^CI_.+">
+    <SCHEME_ID>CI</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^flag$">
+    <SCHEME_ID>flag</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^bathymetry($|_.+)">
+    <SCHEME_ID>bathymetry</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+  <KEY REGEX="^elevation($|_.+)">
+    <SCHEME_ID>elevation</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+  <KEY REGEX="^topography($|_.+)">
+    <SCHEME_ID>topography</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <!--  END   Miscellaneous -->
+
+
+
+
+
+
   <!--  START   PACE HARP  -->
 
 
@@ -337,286 +471,7 @@
   <!--  END   PACE HARP  -->
 
 
-  <KEY REGEX="^ndvi($|_.+)">
-    <SCHEME_ID>ndvi</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
 
 
-  <!--todo:  the following have been commented out and they can be reviewed and implemented late using strict regular expression.-->
-
-
-  <!--  <KEY REGEX="chlor_a_deep">-->
-  <!--    <SCHEME_ID>chlor_a_deep</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="adg_unc_*_giop">-->
-  <!--    <SCHEME_ID>absorption</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="adg_s_*">-->
-  <!--    <SCHEME_ID>adg_s</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="aw($|_\d\d\d_.+|_\d\d\d\d_.+)">-->
-  <!--    <SCHEME_ID>absorption</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="a_unc_(\d\d\d|\d\d\d\d)($|_.+)">-->
-  <!--    <SCHEME_ID>absorption</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="bbp_unc_*_giop">-->
-  <!--    <SCHEME_ID>bbp_giop</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="bbp_s_*">-->
-  <!--    <SCHEME_ID>bbp_s</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="bb_unc_*_giop">-->
-  <!--    <SCHEME_ID>bbp_giop</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="bbw_*">-->
-  <!--    <SCHEME_ID>bbw</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="calcite_*">-->
-  <!--    <SCHEME_ID>calcite</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Chlorophyll_a">-->
-  <!--    <SCHEME_ID>chlor_a</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="eps_78">-->
-  <!--    <SCHEME_ID>epsilon</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="FLAG_*">-->
-  <!--    <SCHEME_ID>flags</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="fqy">-->
-  <!--    <SCHEME_ID>fqy</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="fqy2">-->
-  <!--    <SCHEME_ID>fqy</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="fsat">-->
-  <!--    <SCHEME_ID>flh</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Kd_PAR_*">-->
-  <!--    <SCHEME_ID>Kd_490</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Kd_*_lee">-->
-  <!--    <SCHEME_ID>Kd_lee</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="K_490">-->
-  <!--    <SCHEME_ID>Kd_490</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="nw_*">-->
-  <!--    <SCHEME_ID>nw</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="owtn_*">-->
-  <!--    <SCHEME_ID>owt</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="owt_*">-->
-  <!--    <SCHEME_ID>owt</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="taua_*">-->
-  <!--    <SCHEME_ID>aot</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="tau_*">-->
-  <!--    <SCHEME_ID>aot</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zeu_*">-->
-  <!--    <SCHEME_ID>Zeu</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zsd_*">-->
-  <!--    <SCHEME_ID>Zsd</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="CI_stumpf">-->
-  <!--    <SCHEME_ID>CI</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="absorption">-->
-  <!--    <SCHEME_ID>absorption</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="anc_SSS">-->
-  <!--    <SCHEME_ID>anc_SSS</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="aw">-->
-  <!--    <SCHEME_ID>aw</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="bbp_s">-->
-  <!--    <SCHEME_ID>bbp_s</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="bbw">-->
-  <!--    <SCHEME_ID>bbw</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="BSi">-->
-  <!--    <SCHEME_ID>BSi</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="BulkSST">-->
-  <!--    <SCHEME_ID>BulkSST</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="calcite">-->
-  <!--    <SCHEME_ID>calcite</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="cdom_index">-->
-  <!--    <SCHEME_ID>cdom_index</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="chisqr_giop">-->
-  <!--    <SCHEME_ID>chisqr_giop</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="chlor_a_bluegreen">-->
-  <!--    <SCHEME_ID>chlor_a_bluegreen</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="chlor_a_owterr">-->
-  <!--    <SCHEME_ID>chlor_a_owterr</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="epsilon">-->
-  <!--    <SCHEME_ID>epsilon</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="EVI">-->
-  <!--    <SCHEME_ID>EVI</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="evi">-->
-  <!--    <SCHEME_ID>evi</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="flh">-->
-  <!--    <SCHEME_ID>flh</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="Kd_lee">-->
-  <!--    <SCHEME_ID>Kd_lee</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="NDVI">-->
-  <!--    <SCHEME_ID>NDVI</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="ndvi">-->
-  <!--    <SCHEME_ID>ndvi</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="nw">-->
-  <!--    <SCHEME_ID>nw</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="owtd">-->
-  <!--    <SCHEME_ID>owtd</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="owt">-->
-  <!--    <SCHEME_ID>owt</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="pixels">-->
-  <!--    <SCHEME_ID>pixels</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <!--  <KEY REGEX="rad_sm">-->
-  <!--    <SCHEME_ID>rad_sm</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="scat_wind_speed">-->
-  <!--    <SCHEME_ID>scat_wind_speed</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="scenes">-->
-  <!--    <SCHEME_ID>scenes</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="solz">-->
-  <!--    <SCHEME_ID>solz</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="SSS">-->
-  <!--    <SCHEME_ID>SSS</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-
-  <!--  <KEY REGEX="Zeu">-->
-  <!--    <SCHEME_ID>Zeu</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zhl_morel">-->
-  <!--    <SCHEME_ID>Zhl_morel</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zp_10_lee">-->
-  <!--    <SCHEME_ID>Zp_10_lee</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zp_50_lee">-->
-  <!--    <SCHEME_ID>Zp_50_lee</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-  <!--  <KEY REGEX="Zsd">-->
-  <!--    <SCHEME_ID>Zsd</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
 
 </colorSchemeLut>
