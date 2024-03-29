@@ -554,8 +554,9 @@ public class AngularTopComponent extends ToolTopComponent {
         gbc.insets.top = 2;
         gbc.gridy = 0;
         buttonPane.add(filterButton, gbc);
-        gbc.gridy++;
-        buttonPane.add(showAngularViewsForCursorButton, gbc);
+        // todo Removed cursor button due to freeze bug
+//        gbc.gridy++;
+//        buttonPane.add(showAngularViewsForCursorButton, gbc);
         gbc.gridy++;
         buttonPane.add(showAngularViewsForSelectedPinsButton, gbc);
         gbc.gridy++;
@@ -661,7 +662,7 @@ public class AngularTopComponent extends ToolTopComponent {
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                pm.beginTask("Collecting angular data: this can take several minutes on larger files", 3);
+                pm.beginTask("Collecting angular data: this can take several minutes on larger files", 100);
 
                 try {
                     chartHandler.updateData(pm);
@@ -1068,11 +1069,17 @@ public class AngularTopComponent extends ToolTopComponent {
         private void updateData(JFreeChart chart, List<DisplayableAngularview> angularViews, com.bc.ceres.core.ProgressMonitor pm) {
             dataset = new XYSeriesCollection();
             if (rasterLevel >= 0) {
-                fillDatasetWithPinSeries(angularViews, dataset, chart, pm);
+
+                int totalWorkPlanned = 90;
+                if (getDisplayedPins().length > 0 && isShowingCursorAngularView()) {
+                    totalWorkPlanned = 45;
+                }
+
+                fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
                 if (pm.isCanceled()) {
                     return;
                 }
-                fillDatasetWithCursorSeries(angularViews, dataset, chart, pm);
+                fillDatasetWithCursorSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
             }
         }
 
@@ -1158,7 +1165,7 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
+        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             showsValidCursorAngularViews = false;
             if (modelP == null) {
                 return;
@@ -1167,6 +1174,11 @@ public class AngularTopComponent extends ToolTopComponent {
                 for (DisplayableAngularview angularView : angularViews) {
                     XYSeries series = new XYSeries(angularView.getName());
                     final Band[] angularBands = angularView.getSelectedBands();
+
+                    int numBands = angularBands.length;
+                    double incrementLengthNumBands = numBands / totalWorkPlanned;
+                    int bandCountThisIncrement = 0;
+
                     if (!currentProduct.isMultiSize()) {
                         for (Band angularBand : angularBands) {
                             if (pm.isCanceled()) {
@@ -1189,6 +1201,12 @@ public class AngularTopComponent extends ToolTopComponent {
                             if (pixelPosInRasterBounds && isPixelValid(angularBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                 addToSeries(angularBand, rasterPixelX, rasterPixelY, rasterLevel, series, angle_axis);
                                 showsValidCursorAngularViews = true;
+                            }
+
+                            bandCountThisIncrement++;
+                            if (bandCountThisIncrement > incrementLengthNumBands) {
+                                pm.worked(1);
+                                bandCountThisIncrement = 0;
                             }
                         }
                     } else {
@@ -1230,6 +1248,12 @@ public class AngularTopComponent extends ToolTopComponent {
                                     showsValidCursorAngularViews = true;
                                 }
                             }
+
+                            bandCountThisIncrement++;
+                            if (bandCountThisIncrement > incrementLengthNumBands) {
+                                pm.worked(1);
+                                bandCountThisIncrement = 0;
+                            }
                         }
                     }
                     if (pm.isCanceled()) {
@@ -1257,10 +1281,11 @@ public class AngularTopComponent extends ToolTopComponent {
             return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
-        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
+        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             Placemark[] pins = getDisplayedPins();
             for (Placemark pin : pins) {
-                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm);
+                totalWorkPlanned = (int) Math.floor(totalWorkPlanned / pins.length);
+                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned);
                 if (pm.isCanceled()) {
                     return;
                 }
@@ -1268,7 +1293,7 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
             for (DisplayableAngularview angularView : angularViews) {
@@ -1284,6 +1309,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     bandToEnergy = new HashMap<>();
                     pinToEnergies.put(pin, bandToEnergy);
                 }
+
+
+                int numBands = angularBands.length;
+                double incrementLengthNumBands = (totalWorkPlanned != 0) ? numBands / totalWorkPlanned : numBands;
+                int bandCountThisIncrement = 0;
+
                 for (Band angularBand : angularBands) {
                     if (pm.isCanceled()) {
                         return null;
@@ -1309,6 +1340,14 @@ public class AngularTopComponent extends ToolTopComponent {
                     }
                     if (energy != angularBand.getGeophysicalNoDataValue()) {
                         series.add(angle_axis, energy);
+                    }
+
+                    bandCountThisIncrement++;
+                    if (bandCountThisIncrement > incrementLengthNumBands) {
+                        if (totalWorkPlanned != 0) {
+                            pm.worked(1);
+                        }
+                        bandCountThisIncrement = 0;
                     }
                 }
                 if (pm.isCanceled()) {
