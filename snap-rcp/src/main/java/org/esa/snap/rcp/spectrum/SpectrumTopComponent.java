@@ -17,6 +17,7 @@ package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -346,7 +347,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
         chartHandler.setPosition(pixelX, pixelY, level, pixelPosInRasterBounds);
-        chartHandler.updateData();
+        chartHandler.updateData(null);
     }
 
     void updateChart(boolean adjustAxes) {
@@ -591,11 +592,50 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private void recreateChart() {
-        chartHandler.updateData();
+        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
+                "Collecting Spectral Data") {
+
+            @Override
+            protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+
+                pm.beginTask("Collecting spectral data: this can take several minutes on larger files", 3);
+
+
+                try {
+                    chartHandler.updateData(pm);
+                    if (pm.isCanceled()) {
+                        showSpectraForAllPinsButton.setSelected(false);
+                        showSpectrumForCursorButton.setSelected(false);
+                        showSpectraForSelectedPinsButton.setSelected(false);
+                        componentClosed();
+                        chartHandler.setEmptyPlot();
+                        chartHandler.removeCursorSpectraFromDataset();
+                        pm.done();
+                    }
+                    pm.worked(1);
         chartHandler.updateChart();
+                    pm.worked(1);
         chartPanel.repaint();
+                    pm.worked(1);
         updateUIState();
+                } finally {
+                    if (pm.isCanceled()) {
+                        showSpectraForAllPinsButton.setSelected(false);
+                        showSpectrumForCursorButton.setSelected(false);
+                        showSpectraForSelectedPinsButton.setSelected(false);
+                        componentClosed();
+                        chartHandler.setEmptyPlot();
+                        chartHandler.removeCursorSpectraFromDataset();
+                    }
+                    pm.done();
     }
+                return null;
+            }
+        };
+
+        pmSwingWorker.executeWithBlocking();
+    }
+
 
     Placemark[] getDisplayedPins() {
         if (isShowingSpectraForSelectedPins() && currentView != null) {
@@ -828,9 +868,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             chart.getXYPlot().clearAnnotations();
         }
 
-        private void updateData() {
+        private void updateData(com.bc.ceres.core.ProgressMonitor pm) {
             List<DisplayableSpectrum> spectra = getSelectedSpectra();
-            chartUpdater.updateData(chart, spectra);
+            chartUpdater.updateData(chart, spectra, pm);
         }
 
         private void setEmptyPlot() {
@@ -919,11 +959,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
             modelP = i2m.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), new Point2D.Double());
         }
 
-        private void updateData(JFreeChart chart, List<DisplayableSpectrum> spectra) {
+        private void updateData(JFreeChart chart, List<DisplayableSpectrum> spectra, com.bc.ceres.core.ProgressMonitor pm) {
             dataset = new XYSeriesCollection();
             if (rasterLevel >= 0) {
-                fillDatasetWithPinSeries(spectra, dataset, chart);
-                fillDatasetWithCursorSeries(spectra, dataset, chart);
+                fillDatasetWithPinSeries(spectra, dataset, chart, pm);
+                if (pm.isCanceled()) {
+                    return;
+                }
+                fillDatasetWithCursorSeries(spectra, dataset, chart, pm);
             }
         }
 
@@ -991,7 +1034,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     bounds.getUpperBound() + delta);
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
+        private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
             showsValidCursorSpectra = false;
             if (modelP == null) {
                 return;
@@ -1002,6 +1045,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     final Band[] spectralBands = spectrum.getSelectedBands();
                     if (!currentProduct.isMultiSize()) {
                         for (Band spectralBand : spectralBands) {
+                            if (pm.isCanceled()) {
+                                return;
+                            }
                             final float wavelength = spectralBand.getSpectralWavelength();
                             if (pixelPosInRasterBounds && isPixelValid(spectralBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                 addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
@@ -1010,6 +1056,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                         }
                     } else {
                         for (Band spectralBand : spectralBands) {
+                            if (pm.isCanceled()) {
+                                return;
+                            }
                             final float wavelength = spectralBand.getSpectralWavelength();
                             final AffineTransform i2m = spectralBand.getImageToModelTransform();
                             if (i2m.equals(currentView.getRaster().getImageToModelTransform())) {
@@ -1033,7 +1082,13 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             }
                         }
                     }
+                    if (pm.isCanceled()) {
+                        return;
+                    }
                     updateRenderer(dataset.getSeriesCount(), Color.BLACK, spectrum, chart);
+                    if (pm.isCanceled()) {
+                        return;
+                    }
                     dataset.addSeries(series);
                 }
             }
@@ -1052,18 +1107,24 @@ public class SpectrumTopComponent extends ToolTopComponent {
             return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
-        private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart) {
+        private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
             Placemark[] pins = getDisplayedPins();
             for (Placemark pin : pins) {
-                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart);
+                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart, pm);
+                if (pm.isCanceled()) {
+                    return;
+                }
                 pinSeries.forEach(dataset::addSeries);
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableSpectrum> spectra, JFreeChart chart) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableSpectrum> spectra, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
             for (DisplayableSpectrum spectrum : spectra) {
+                if (pm.isCanceled()) {
+                    return null;
+                }
                 XYSeries series = new XYSeries(spectrum.getName() + "_" + pin.getLabel());
                 final Band[] spectralBands = spectrum.getSelectedBands();
                 Map<Band, Double> bandToEnergy;
@@ -1074,6 +1135,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     pinToEnergies.put(pin, bandToEnergy);
                 }
                 for (Band spectralBand : spectralBands) {
+                    if (pm.isCanceled()) {
+                        return null;
+                    }
                     double energy;
                     if (bandToEnergy.containsKey(spectralBand)) {
                         energy = bandToEnergy.get(spectralBand);
@@ -1085,8 +1149,16 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     if (energy != spectralBand.getGeophysicalNoDataValue()) {
                         series.add(wavelength, energy);
                     }
+
+                }
+
+                if (pm.isCanceled()) {
+                    return null;
                 }
                 updateRenderer(seriesIndex++, pinColor, spectrum, chart);
+                if (pm.isCanceled()) {
+                    return null;
+                }
                 pinSeries.add(series);
             }
             return pinSeries;
