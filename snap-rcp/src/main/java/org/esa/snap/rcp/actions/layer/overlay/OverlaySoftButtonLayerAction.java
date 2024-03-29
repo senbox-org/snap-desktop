@@ -188,12 +188,12 @@ public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
     public static final String SET_SHIFTX_2_KEY = "soft.button.shiftx.2";
     public static final String SET_SHIFTX_2_LABEL = "POS_ZOOM2: Image Shift (Horizontal)";
     public static final String SET_SHIFTX_2_TOOLTIP = "Shift image horizontally rightwards if Zoom-Pos 2 is assigned";
-    public static final double SET_SHIFTX_2_DEFAULT = 5.0;
+    public static final double SET_SHIFTX_2_DEFAULT = 0.0;
 
     public static final String SET_SHIFTY_1_KEY = "soft.button.shifty.1";
     public static final String SET_SHIFTY_1_LABEL = "POS_ZOOM1: Image Shift Image (Vertical)";
     public static final String SET_SHIFTY_1_TOOLTIP = "Shift image vertically downwards if Zoom-Pos 1 is assigned";
-    public static final double SET_SHIFTY_1_DEFAULT = 0.0;
+    public static final double SET_SHIFTY_1_DEFAULT = 5.0;
 
     public static final String SET_SHIFTY_2_KEY = "soft.button.shifty.2";
     public static final String SET_SHIFTY_2_LABEL = "POS_ZOOM2: Image Shift (Vertical)";
