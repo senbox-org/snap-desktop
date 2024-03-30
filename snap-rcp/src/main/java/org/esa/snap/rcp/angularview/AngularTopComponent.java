@@ -325,9 +325,13 @@ public class AngularTopComponent extends ToolTopComponent {
         chartHandler.setCollectingAngularInformationMessage();
     }
 
+
     void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
+        updateData(pixelX, pixelY, level, pixelPosInRasterBounds, null, 0);
+    }
+    void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
         chartHandler.setPosition(pixelX, pixelY, level, pixelPosInRasterBounds);
-        chartHandler.updateData(null);
+        chartHandler.updateData(pm, totalWorkPlanned);
     }
 
     void updateChart(boolean adjustAxes) {
@@ -460,14 +464,13 @@ public class AngularTopComponent extends ToolTopComponent {
         showAngularViewsForCursorButton.addActionListener(e -> {
             if (showAngularViewsForCursorButton.isSelected()) {
                 System.out.println("Listening to showAngularViewsForCursorButton - true");
-                recreateChart(true);
+                runProgressMonitorForCursor();
             } else {
                 System.out.println("Listening to showAngularViewsForCursorButton - false");
                 recreateChart();
             }
         });
 
-        showAngularViewsForCursorButton.addActionListener(e -> recreateChart());
         showAngularViewsForCursorButton.setName("showAngularViewsForCursorButton");
         showAngularViewsForCursorButton.setSelected(false);
         showAngularViewsForCursorButton.setToolTipText("Show angular views at cursor position.");
@@ -690,6 +693,57 @@ public class AngularTopComponent extends ToolTopComponent {
     }
 
 
+
+    private void runProgressMonitorForCursor() {
+        System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
+
+        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
+                "Collecting Angular Data") {
+
+            @Override
+            protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+
+                int totalWorkPlanned = 100;
+                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
+
+                try {
+                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
+
+                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
+                    chartHandler.setEmptyPlot();
+
+                    if (pm != null && pm.isCanceled()) {
+                        pm.done();
+                        return null;
+                    }
+
+                    chartPanel.repaint();
+
+                    updateUIState();
+                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
+
+                } finally {
+                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
+
+                    if (pm != null && pm.isCanceled()) {
+                        return null;
+                    }
+                    pm.done();
+                }
+
+                System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END");
+
+                return null;
+            }
+        };
+
+        pmSwingWorker.executeWithBlocking();
+        System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END2");
+
+    }
+
+
+
     private  void recreateChart() {
         System.out.println("INSIDE Angular View: recreateChart()");
 
@@ -700,11 +754,6 @@ public class AngularTopComponent extends ToolTopComponent {
     private void recreateChart(boolean showProgress) {
         System.out.println("INSIDE Angular View: recreateChart(boolean showProgress)");
 
-        // This should not occur but just in case
-        if (!angularViewToolIsOpen) {
-            return;
-        }
-
         if (showProgress) {
             System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 1");
 
@@ -714,31 +763,22 @@ public class AngularTopComponent extends ToolTopComponent {
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", 100);
-
+                    int totalWorkPlanned = 100;
+                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                     try {
                         System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm);
-//                        chartHandler.updateData();
+                        chartHandler.updateData(pm, (totalWorkPlanned - 10));
                         if (pm != null && pm.isCanceled()) {
-                            componentClosed();
                             pm.done();
+                            return null;
                         }
-                        if (pm != null) {
-                            pm.worked(1);
-                        }
-                        chartHandler.updateChart();
 
+                        chartHandler.updateChart();
                         updateChart(true);
-                        if (pm != null) {
-                            pm.worked(1);
-                        }
                         chartPanel.repaint();
-                        if (pm != null) {
-                            pm.worked(1);
-                        }
+
                         updateUIState();
                         System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 3");
 
@@ -746,7 +786,7 @@ public class AngularTopComponent extends ToolTopComponent {
                         System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS Finally");
 
                         if (pm != null && pm.isCanceled()) {
-                            componentClosed();
+                            return null;
                         }
                         pm.done();
                     }
@@ -764,8 +804,7 @@ public class AngularTopComponent extends ToolTopComponent {
         } else {
             System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - NO PROGRESS");
 
-            chartHandler.updateData(null);
-//            chartHandler.updateData();
+            chartHandler.updateData(null, 0);
             chartHandler.updateChart();
             chartPanel.repaint();
             updateUIState();
@@ -774,14 +813,6 @@ public class AngularTopComponent extends ToolTopComponent {
     }
 
 
-
-//    private void recreateChart() {
-//        System.out.println("INSIDE Angular View");
-//        chartHandler.updateData();
-//        chartHandler.updateChart();
-//        chartPanel.repaint();
-//        updateUIState();
-//    }
 
     Placemark[] getDisplayedPins() {
         if (isShowingAngularViewsForSelectedPins() && currentView != null) {
@@ -942,6 +973,10 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void productSceneViewSelected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
             System.out.println("Listening Angular View Tool: productSceneViewSelected");
+            showAngularViewsForAllPinsButton.setSelected(false);
+            showAngularViewsForCursorButton.setSelected(false);
+            showAngularViewsForSelectedPinsButton.setSelected(false);
+
             view.addPixelPositionListener(pixelPositionListener);
             setCurrentView(view);
             updateChart(true);
@@ -952,6 +987,10 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void productSceneViewDeselected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
             System.out.println("Listening Angular View Tool: productSceneViewDeselected");
+            showAngularViewsForAllPinsButton.setSelected(false);
+            showAngularViewsForCursorButton.setSelected(false);
+            showAngularViewsForSelectedPinsButton.setSelected(false);
+
             view.removePixelPositionListener(pixelPositionListener);
             setCurrentView(null);
             chartHandler.setEmptyPlot();
@@ -962,6 +1001,10 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void componentOpened() {
         System.out.println("Listening Angular View Tool: componentOpened");
         angularViewToolIsOpen = true;
+
+        showAngularViewsForAllPinsButton.setSelected(false);
+        showAngularViewsForCursorButton.setSelected(false);
+        showAngularViewsForSelectedPinsButton.setSelected(false);
 
         final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
         if (selectedProductSceneView != null) {
@@ -976,13 +1019,15 @@ public class AngularTopComponent extends ToolTopComponent {
         System.out.println("Listening Angular View Tool: componentClosed");
         angularViewToolIsOpen = false;
 
+        showAngularViewsForAllPinsButton.setSelected(false);
+        showAngularViewsForCursorButton.setSelected(false);
+        showAngularViewsForSelectedPinsButton.setSelected(false);
+
         if (currentView != null) {
             currentView.removePixelPositionListener(pixelPositionListener);
             setCurrentView(null);
         }
-        showAngularViewsForAllPinsButton.setSelected(false);
-        showAngularViewsForCursorButton.setSelected(false);
-        showAngularViewsForSelectedPinsButton.setSelected(false);
+
 
         chartHandler.setEmptyPlot();
         removeCursorAngularViewsFromDataset();
@@ -1082,9 +1127,9 @@ public class AngularTopComponent extends ToolTopComponent {
             chart.getXYPlot().clearAnnotations();
         }
 
-        private void updateData(com.bc.ceres.core.ProgressMonitor pm) {
+        private void updateData(com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             List<DisplayableAngularview> angularViews = getSelectedAngularViews();
-            chartUpdater.updateData(chart, angularViews, pm);
+            chartUpdater.updateData(chart, angularViews, pm, totalWorkPlanned);
         }
 
 
@@ -1174,12 +1219,11 @@ public class AngularTopComponent extends ToolTopComponent {
             modelP = i2m.transform(new Point2D.Double(pixelX + 0.5, pixelY + 0.5), new Point2D.Double());
         }
 
-        private void updateData(JFreeChart chart, List<DisplayableAngularview> angularViews, com.bc.ceres.core.ProgressMonitor pm) {
+        private void updateData(JFreeChart chart, List<DisplayableAngularview> angularViews, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             dataset = new XYSeriesCollection();
             if (rasterLevel >= 0) {
-                int totalWorkPlanned = 90;
                 if (getDisplayedPins().length > 0 && isShowingCursorAngularView()) {
-                    totalWorkPlanned = 45;
+                    totalWorkPlanned = totalWorkPlanned/2;
                 }
 
                 System.out.println("totalWorkPlanned=" + totalWorkPlanned);
@@ -1280,13 +1324,17 @@ public class AngularTopComponent extends ToolTopComponent {
                 return;
             }
             if (isShowingCursorAngularView() && currentView != null) {
+                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
+                int workDone = 0;
+
                 for (DisplayableAngularview angularView : angularViews) {
                     XYSeries series = new XYSeries(angularView.getName());
                     final Band[] angularBands = angularView.getSelectedBands();
 
                     int numBands = angularBands.length;
-                    double incrementLengthNumBands = numBands / totalWorkPlanned;
-                    int bandCountThisIncrement = 0;
+                    double incrementLengthNumBands = (totalWorkPlannedPerAngularView > 0) ? numBands / totalWorkPlannedPerAngularView : numBands;
+                    double nextIncrementFinishedBandCount = incrementLengthNumBands;
+                    int bandCount = 0;
 
                     if (!currentProduct.isMultiSize()) {
                         for (Band angularBand : angularBands) {
@@ -1312,11 +1360,13 @@ public class AngularTopComponent extends ToolTopComponent {
                                 showsValidCursorAngularViews = true;
                             }
 
-
-                            bandCountThisIncrement++;
-                            if (bandCountThisIncrement > incrementLengthNumBands) {
-                                if (pm != null) {pm.worked(1);}
-                                bandCountThisIncrement = 0;
+                            bandCount++;
+                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
+                                if (totalWorkPlanned != 0) {
+                                    if (pm != null) {pm.worked(1);}
+                                }
+                                nextIncrementFinishedBandCount += incrementLengthNumBands;
+                                workDone++;
                             }
                         }
                     } else {
@@ -1359,10 +1409,13 @@ public class AngularTopComponent extends ToolTopComponent {
                                 }
                             }
 
-                            bandCountThisIncrement++;
-                            if (bandCountThisIncrement > incrementLengthNumBands) {
-                                if (pm != null) {pm.worked(1);}
-                                bandCountThisIncrement = 0;
+                            bandCount++;
+                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
+                                if (totalWorkPlanned != 0) {
+                                    if (pm != null) {pm.worked(1);}
+                                }
+                                nextIncrementFinishedBandCount += incrementLengthNumBands;
+                                workDone++;
                             }
                         }
                     }
@@ -1410,6 +1463,10 @@ public class AngularTopComponent extends ToolTopComponent {
         private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
+
+            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
+            int workDone = 0;
+
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
                     return null;
@@ -1424,11 +1481,10 @@ public class AngularTopComponent extends ToolTopComponent {
                     pinToEnergies.put(pin, bandToEnergy);
                 }
 
-
                 int numBands = angularBands.length;
-                double incrementLengthNumBands = (totalWorkPlanned != 0) ? numBands / totalWorkPlanned : numBands;
-                int bandCountThisIncrement = 0;
-
+                double incrementLengthNumBands = (totalWorkPlannedPerAngleView > 0) ? numBands / totalWorkPlannedPerAngleView : numBands;
+                double nextIncrementFinishedBandCount = incrementLengthNumBands;
+                int bandCount = 0;
 
                 for (Band angularBand : angularBands) {
                     double energy;
@@ -1454,12 +1510,13 @@ public class AngularTopComponent extends ToolTopComponent {
                         series.add(angle_axis, energy);
                     }
 
-                    bandCountThisIncrement++;
-                    if (bandCountThisIncrement > incrementLengthNumBands) {
+                    bandCount++;
+                    if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
                         if (totalWorkPlanned != 0) {
                             if (pm != null) {pm.worked(1);}
                         }
-                        bandCountThisIncrement = 0;
+                        nextIncrementFinishedBandCount += incrementLengthNumBands;
+                        workDone++;
                     }
                 }
                 if (pm != null && pm.isCanceled()) {
