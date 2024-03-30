@@ -117,6 +117,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private AbstractButton showGridButton;
 
     private boolean tipShown;
+    private boolean spectrumViewToolIsOpen;
     private ProductSceneView currentView;
     private Product currentProduct;
     private ChartPanel chartPanel;
@@ -128,6 +129,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private boolean isUserInducedAutomaticAdjustmentChosen;
 
     public SpectrumTopComponent() {
+        System.out.println("Spectrum View Tool is Open");
+        spectrumViewToolIsOpen = false;
+
         tipShown = true;
         productNodeHandler = new ProductNodeHandler();
         pinSelectionChangeListener = new PinSelectionChangeListener();
@@ -301,10 +305,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
 //                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
 //                            "obs_per_view:view_time_offsets");
                 }
+
+                // todo New 10:02pm Friday night
+                boolean showProgressMonitor = false;
+                if (getAllSpectra() == null && getAllSpectra().length == 0) {
+                    showProgressMonitor = true;
+                }
+
                 if (!rasterToSpectraMap.containsKey(currentView.getRaster())) {
+                    showProgressMonitor = true;
                     setUpSpectra();
                 }
-                recreateChart();
+
+                recreateChart(showProgressMonitor);
 
             }
             updateUIState();
@@ -442,6 +455,17 @@ public class SpectrumTopComponent extends ToolTopComponent {
         filterButton.setName("filterButton");
         filterButton.setEnabled(false);
         filterButton.addActionListener(e -> {
+
+            final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
+            if (selectedProductSceneView != null) {
+                selectedProductSceneView.addPixelPositionListener(pixelPositionListener);
+                setCurrentView(selectedProductSceneView);
+            }
+
+            updateChart(true);
+
+            System.out.println("Listening to filterButton");
+
             selectSpectralBands();
             recreateChart();
         });
@@ -450,8 +474,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showSpectrumForCursorButton.addActionListener(e -> {
             if (showSpectrumForCursorButton.isSelected()) {
+                System.out.println("Listening to showSpectrumForCursorButton - true");
                 recreateChart(true);
             } else {
+                System.out.println("Listening to showSpectrumForCursorButton - false");
                 recreateChart();
             }
         });
@@ -468,9 +494,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 plotMarker.setInvisible();
             }
             if (showSpectraForSelectedPinsButton.isSelected()) {
+                System.out.println("Listening to showSpectraForSelectedPinsButton - true");
                 recreateChart(true);
             } else {
-            recreateChart();
+                System.out.println("Listening to showSpectraForSelectedPinsButton -false");
+                recreateChart();
             }
         });
         showSpectraForSelectedPinsButton.setName("showSpectraForSelectedPinsButton");
@@ -485,9 +513,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 plotMarker.setInvisible();
             }
             if (showSpectraForAllPinsButton.isSelected()) {
+                System.out.println("Listening to showSpectraForAllPinsButton - true");
                 recreateChart(true);
             } else {
-            recreateChart();
+                System.out.println("Listening to showSpectraForAllPinsButton - false");
+                recreateChart();
             }
         });
         showSpectraForAllPinsButton.setName("showSpectraForAllPinsButton");
@@ -613,64 +643,85 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private  void recreateChart() {
+        System.out.println("INSIDE: recreateChart()");
+
         recreateChart(false);
     }
 
     private void recreateChart(boolean showProgress) {
+        System.out.println("INSIDE: recreateChart(boolean showProgress)");
+        System.out.println("SnapApp.getDefault().getInstanceName() = " + SnapApp.getDefault().getInstanceName() );
 
-        if (!showProgress) {
-            chartHandler.updateData(null);
-            chartHandler.updateChart();
-            chartPanel.repaint();
-            updateUIState();
+        // This should not occur but just in case
+        if (!spectrumViewToolIsOpen) {
             return;
         }
 
 
-        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                "Collecting Spectral Data") {
+        if (showProgress) {
+            System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 1");
 
-            @Override
-            protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+            ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
+                    "Collecting Spectral Data") {
 
-                pm.beginTask("Collecting spectral data: this can take several minutes on larger files", 100);
+                @Override
+                protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+
+                    pm.beginTask("Collecting spectral data: this can take several minutes on larger files", 100);
 
 
-                try {
-                    chartHandler.updateData(pm);
-                    if (pm != null && pm.isCanceled()) {
-                        showSpectraForAllPinsButton.setSelected(false);
-                        showSpectrumForCursorButton.setSelected(false);
-                        showSpectraForSelectedPinsButton.setSelected(false);
-                        componentClosed();
-//                        chartHandler.setEmptyPlot();
-//                        chartHandler.removeCursorSpectraFromDataset();
+                    try {
+                        System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
+
+                        chartHandler.updateData(pm);
+                        if (pm != null && pm.isCanceled()) {
+                            componentClosed();
+                            pm.done();
+                        }
+                        if (pm != null) {
+                            pm.worked(1);
+                        }
+                        chartHandler.updateChart();
+
+                        updateChart(true);
+                        if (pm != null) {
+                            pm.worked(1);
+                        }
+                        chartPanel.repaint();
+                        if (pm != null) {
+                            pm.worked(1);
+                        }
+                        updateUIState();
+                        System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
+
+                    } finally {
+                        System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS Finally");
+
+                        if (pm != null && pm.isCanceled()) {
+                            componentClosed();
+                        }
                         pm.done();
                     }
-                    if (pm != null) {pm.worked(1);}
-        chartHandler.updateChart();
-//                    updateChart(true);
-                    if (pm != null) {pm.worked(1);}
-        chartPanel.repaint();
-                    if (pm != null) {pm.worked(1);}
-        updateUIState();
-                } finally {
-                    if (pm != null && pm.isCanceled()) {
-                        showSpectraForAllPinsButton.setSelected(false);
-                        showSpectrumForCursorButton.setSelected(false);
-                        showSpectraForSelectedPinsButton.setSelected(false);
-                        componentClosed();
-//                        chartHandler.setEmptyPlot();
-//                        chartHandler.removeCursorSpectraFromDataset();
-                    }
-                    pm.done();
-    }
 
-                return null;
-            }
-        };
+                    System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS END");
 
-        pmSwingWorker.executeWithBlocking();
+                    return null;
+                }
+            };
+
+            pmSwingWorker.executeWithBlocking();
+            System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS END2");
+
+
+        } else {
+            System.out.println("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS");
+
+            chartHandler.updateData(null);
+            chartHandler.updateChart();
+            chartPanel.repaint();
+            updateUIState();
+            System.out.println("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS END");
+        }
     }
 
 
@@ -786,30 +837,70 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     @Override
     protected void productSceneViewSelected(ProductSceneView view) {
-        view.addPixelPositionListener(pixelPositionListener);
-        setCurrentView(view);
+        if (spectrumViewToolIsOpen) {
+            /// todo 10:35pm Friday
+            showSpectraForAllPinsButton.setSelected(false);
+            showSpectrumForCursorButton.setSelected(false);
+            showSpectraForSelectedPinsButton.setSelected(false);
+
+                System.out.println("Listening: productSceneViewSelected");
+                view.addPixelPositionListener(pixelPositionListener);
+                setCurrentView(view);
+                updateChart(true);
+
+        }
     }
 
     @Override
     protected void productSceneViewDeselected(ProductSceneView view) {
-        view.removePixelPositionListener(pixelPositionListener);
-        setCurrentView(null);
+        if (spectrumViewToolIsOpen) {
+            /// todo 10:35pm Friday
+            showSpectraForAllPinsButton.setSelected(false);
+            showSpectrumForCursorButton.setSelected(false);
+            showSpectraForSelectedPinsButton.setSelected(false);
+
+            System.out.println("Listening: productSceneViewDeselected");
+            view.removePixelPositionListener(pixelPositionListener);
+            setCurrentView(null);
+            chartHandler.setEmptyPlot();
+        }
     }
 
     @Override
     protected void componentOpened() {
+        System.out.println("Listening: componentOpened");
+        spectrumViewToolIsOpen = true;
+
+        /// todo 10:35pm Friday
+        showSpectraForAllPinsButton.setSelected(false);
+        showSpectrumForCursorButton.setSelected(false);
+        showSpectraForSelectedPinsButton.setSelected(false);
+
         final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
         if (selectedProductSceneView != null) {
+
+
             selectedProductSceneView.addPixelPositionListener(pixelPositionListener);
             setCurrentView(selectedProductSceneView);
+            updateChart(true);
         }
     }
 
     @Override
     protected void componentClosed() {
+        System.out.println("Listening: componentClosed");
+        spectrumViewToolIsOpen = false;
+
         if (currentView != null) {
             currentView.removePixelPositionListener(pixelPositionListener);
+            setCurrentView(null);
         }
+        showSpectraForAllPinsButton.setSelected(false);
+        showSpectrumForCursorButton.setSelected(false);
+        showSpectraForSelectedPinsButton.setSelected(false);
+
+        chartHandler.setEmptyPlot();
+        removeCursorSpectraFromDataset();
     }
 
     public boolean showsValidCursorSpectra() {
@@ -1005,6 +1096,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     totalWorkPlanned = 45;
                 }
 
+                System.out.println("totalWorkPlanned=" + totalWorkPlanned);
 
                 fillDatasetWithPinSeries(spectra, dataset, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
@@ -1106,7 +1198,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
                             bandCountThisIncrement++;
                             if (bandCountThisIncrement > incrementLengthNumBands) {
-//                                if (pm != null) {pm.worked(1);}
+                                if (pm != null) {pm.worked(1);}
                                 bandCountThisIncrement = 0;
                             }
                         }
@@ -1136,9 +1228,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                     showsValidCursorSpectra = true;
                                 }
                             }
+
                             bandCountThisIncrement++;
                             if (bandCountThisIncrement > incrementLengthNumBands) {
-//                                if (pm != null) {pm.worked(1);}
+                                if (pm != null) {pm.worked(1);}
                                 bandCountThisIncrement = 0;
                             }
                         }
@@ -1170,8 +1263,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             Placemark[] pins = getDisplayedPins();
+
+            totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
+            System.out.println("Number of pins =" + pins.length);
+            System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
+
             for (Placemark pin : pins) {
-                totalWorkPlanned = (int) Math.floor(totalWorkPlanned / pins.length);
                 List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
                     return;
