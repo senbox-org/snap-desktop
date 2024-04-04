@@ -23,7 +23,7 @@ import java.awt.*;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.StatisticsTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 60),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 10)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_StatisticsTopComponent_Name",
