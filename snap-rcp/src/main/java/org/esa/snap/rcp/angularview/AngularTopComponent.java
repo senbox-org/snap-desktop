@@ -88,7 +88,7 @@ import static java.lang.Math.abs;
 @ActionReferences({
 //        @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Angular"),
-        @ActionReference(path = "Toolbars/Spectral Angular View")
+        @ActionReference(path = "Toolbars/Spectral Angular View", position = 20)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AngularTopComponent_Name", preferredID = "AngularTopComponent")
 @NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularViewWnd"})
@@ -139,7 +139,7 @@ public class AngularTopComponent extends ToolTopComponent {
     public List<AngularBand> scattering_angle_Bands = new ArrayList<>();
 
     public AngularTopComponent() {
-        System.out.println("Angular View Tool is Open");
+        // System.out.println("Angular View Tool is Open");
         angularViewToolIsOpen = false;
 
         tipShown = true;
@@ -453,7 +453,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
             updateChart(true);
 
-            System.out.println("Listening to filterButton");
+            // System.out.println("Listening to filterButton");
 
             selectAngularBands();
             recreateChart();
@@ -463,10 +463,10 @@ public class AngularTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showAngularViewsForCursorButton.addActionListener(e -> {
             if (showAngularViewsForCursorButton.isSelected()) {
-                System.out.println("Listening to showAngularViewsForCursorButton - true");
+                // System.out.println("Listening to showAngularViewsForCursorButton - true");
                 runProgressMonitorForCursor();
             } else {
-                System.out.println("Listening to showAngularViewsForCursorButton - false");
+                // System.out.println("Listening to showAngularViewsForCursorButton - false");
                 recreateChart();
             }
         });
@@ -484,10 +484,10 @@ public class AngularTopComponent extends ToolTopComponent {
                 plotMarker.setInvisible();
             }
             if (showAngularViewsForSelectedPinsButton.isSelected()) {
-                System.out.println("Listening to showAngularViewsForSelectedPinsButton - true");
+                // System.out.println("Listening to showAngularViewsForSelectedPinsButton - true");
                 recreateChart(true);
             } else {
-                System.out.println("Listening to showAngularViewsForSelectedPinsButton -false");
+                // System.out.println("Listening to showAngularViewsForSelectedPinsButton -false");
                 recreateChart();
             }
         });
@@ -503,10 +503,10 @@ public class AngularTopComponent extends ToolTopComponent {
                 plotMarker.setInvisible();
             }
             if (showAngularViewsForAllPinsButton.isSelected()) {
-                System.out.println("Listening to showAngularViewsForAllPinsButton - true");
+                // System.out.println("Listening to showAngularViewsForAllPinsButton - true");
                 recreateChart(true);
             } else {
-                System.out.println("Listening to showAngularViewsForAllPinsButton - false");
+                // System.out.println("Listening to showAngularViewsForAllPinsButton - false");
                 recreateChart();
             }
         });
@@ -695,7 +695,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
 
     private void runProgressMonitorForCursor() {
-        System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
+        // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
 
         ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
                 "Collecting Angular Data") {
@@ -707,12 +707,13 @@ public class AngularTopComponent extends ToolTopComponent {
                 pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
-                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
+                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
                     updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
+                        cancelActions();
                         pm.done();
                         return null;
                     }
@@ -720,42 +721,43 @@ public class AngularTopComponent extends ToolTopComponent {
                     chartPanel.repaint();
 
                     updateUIState();
-                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
+                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
 
                 } finally {
-                    System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
+                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
 
                     if (pm != null && pm.isCanceled()) {
+                        cancelActions();
                         return null;
                     }
                     pm.done();
                 }
 
-                System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END");
+                // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END");
 
                 return null;
             }
         };
 
         pmSwingWorker.executeWithBlocking();
-        System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END2");
+        // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END2");
 
     }
 
 
 
     private  void recreateChart() {
-        System.out.println("INSIDE Angular View: recreateChart()");
+        // System.out.println("INSIDE Angular View: recreateChart()");
 
         recreateChart(false);
     }
 
 
     private void recreateChart(boolean showProgress) {
-        System.out.println("INSIDE Angular View: recreateChart(boolean showProgress)");
+        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress)");
 
         if (showProgress) {
-            System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 1");
+            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 1");
 
             ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
                     "Collecting Angular Data") {
@@ -767,10 +769,11 @@ public class AngularTopComponent extends ToolTopComponent {
                     pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                     try {
-                        System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
+                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
 
                         chartHandler.updateData(pm, (totalWorkPlanned - 10));
                         if (pm != null && pm.isCanceled()) {
+                            cancelActions();
                             pm.done();
                             return null;
                         }
@@ -780,35 +783,36 @@ public class AngularTopComponent extends ToolTopComponent {
                         chartPanel.repaint();
 
                         updateUIState();
-                        System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 3");
+                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 3");
 
                     } finally {
-                        System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS Finally");
+                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS Finally");
 
                         if (pm != null && pm.isCanceled()) {
+                            cancelActions();
                             return null;
                         }
                         pm.done();
                     }
 
-                    System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END");
+                    // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END");
 
                     return null;
                 }
             };
 
             pmSwingWorker.executeWithBlocking();
-            System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END2");
+            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END2");
 
 
         } else {
-            System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - NO PROGRESS");
+            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - NO PROGRESS");
 
             chartHandler.updateData(null, 0);
             chartHandler.updateChart();
             chartPanel.repaint();
             updateUIState();
-            System.out.println("INSIDE Angular View Tool: recreateChart(boolean showProgress) - NO PROGRESS END");
+            // System.out.println("INSIDE Angular View Tool: recreateChart(boolean showProgress) - NO PROGRESS END");
         }
     }
 
@@ -969,10 +973,23 @@ public class AngularTopComponent extends ToolTopComponent {
         chartHandler.removeCursorAngularViewsFromDataset();
     }
 
+
+
+    protected void cancelActions() {
+        showAngularViewsForAllPinsButton.setSelected(false);
+        showAngularViewsForCursorButton.setSelected(false);
+        showAngularViewsForSelectedPinsButton.setSelected(false);
+
+        chartHandler.setEmptyPlot();
+        removeCursorAngularViewsFromDataset();
+        updateUIState();
+    }
+
+
     @Override
     protected void productSceneViewSelected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
-            System.out.println("Listening Angular View Tool: productSceneViewSelected");
+            // System.out.println("Listening Angular View Tool: productSceneViewSelected");
             showAngularViewsForAllPinsButton.setSelected(false);
             showAngularViewsForCursorButton.setSelected(false);
             showAngularViewsForSelectedPinsButton.setSelected(false);
@@ -986,7 +1003,7 @@ public class AngularTopComponent extends ToolTopComponent {
     @Override
     protected void productSceneViewDeselected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
-            System.out.println("Listening Angular View Tool: productSceneViewDeselected");
+            // System.out.println("Listening Angular View Tool: productSceneViewDeselected");
             showAngularViewsForAllPinsButton.setSelected(false);
             showAngularViewsForCursorButton.setSelected(false);
             showAngularViewsForSelectedPinsButton.setSelected(false);
@@ -999,7 +1016,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
     @Override
     protected void componentOpened() {
-        System.out.println("Listening Angular View Tool: componentOpened");
+        // System.out.println("Listening Angular View Tool: componentOpened");
         angularViewToolIsOpen = true;
 
         showAngularViewsForAllPinsButton.setSelected(false);
@@ -1016,7 +1033,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
     @Override
     protected void componentClosed() {
-        System.out.println("Listening Angular View Tool: componentClosed");
+        // System.out.println("Listening Angular View Tool: componentClosed");
         angularViewToolIsOpen = false;
 
         showAngularViewsForAllPinsButton.setSelected(false);
@@ -1226,10 +1243,11 @@ public class AngularTopComponent extends ToolTopComponent {
                     totalWorkPlanned = totalWorkPlanned/2;
                 }
 
-                System.out.println("totalWorkPlanned=" + totalWorkPlanned);
+                // System.out.println("totalWorkPlanned=" + totalWorkPlanned);
 
                 fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
+                    cancelActions();
                     return;
                 }
                 fillDatasetWithCursorSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
@@ -1339,6 +1357,7 @@ public class AngularTopComponent extends ToolTopComponent {
                     if (!currentProduct.isMultiSize()) {
                         for (Band angularBand : angularBands) {
                             if (pm != null && pm.isCanceled()) {
+                                cancelActions();
                                 return;
                             }
                             final float viewAngle = angularBand.getAngularValue();
@@ -1372,6 +1391,7 @@ public class AngularTopComponent extends ToolTopComponent {
                     } else {
                         for (Band angularBand : angularBands) {
                             if (pm != null && pm.isCanceled()) {
+                                cancelActions();
                                 return;
                             }
                             final float viewAngle = angularBand.getAngularValue();
@@ -1420,10 +1440,12 @@ public class AngularTopComponent extends ToolTopComponent {
                         }
                     }
                     if (pm != null && pm.isCanceled()) {
+                        cancelActions();
                         return;
                     }
                     updateRenderer(dataset.getSeriesCount(), Color.BLACK, angularView, chart);
                     if (pm != null && pm.isCanceled()) {
+                        cancelActions();
                         return;
                     }
                     dataset.addSeries(series);
@@ -1448,12 +1470,13 @@ public class AngularTopComponent extends ToolTopComponent {
             Placemark[] pins = getDisplayedPins();
 
             totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
-            System.out.println("Number of pins =" + pins.length);
-            System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
+            // System.out.println("Number of pins =" + pins.length);
+            // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
 
             for (Placemark pin : pins) {
                 List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
+                    cancelActions();
                     return;
                 }
                 pinSeries.forEach(dataset::addSeries);
@@ -1469,6 +1492,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
+                    cancelActions();
                     return null;
                 }
                 XYSeries series = new XYSeries(angularView.getName() + "_" + pin.getLabel());
@@ -1520,10 +1544,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     }
                 }
                 if (pm != null && pm.isCanceled()) {
+                    cancelActions();
                     return null;
                 }
                 updateRenderer(seriesIndex++, pinColor, angularView, chart);
                 if (pm != null && pm.isCanceled()) {
+                    cancelActions();
                     return null;
                 }
                 pinSeries.add(series);
