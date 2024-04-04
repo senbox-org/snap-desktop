@@ -472,14 +472,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 
         rangeXCheckBox = new JCheckBox(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_LABEL);
+        rangeXCheckBox.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_TOOLTIP);
 
         rangeXLowerLabel = new JLabel(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MIN_LABEL);
         rangeXLowerTextField = new JTextField("1234567890");
+        rangeXLowerLabel.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MIN_TOOLTIP);
+        rangeXLowerTextField.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MIN_TOOLTIP);
         rangeXLowerTextField.setMinimumSize(rangeXLowerTextField.getPreferredSize());
         rangeXLowerTextField.setPreferredSize(rangeXLowerTextField.getPreferredSize());
 
         rangeXUpperLabel = new JLabel(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MAX_LABEL);
         rangeXUpperTextField = new JTextField("1234567890");
+        rangeXUpperLabel.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MAX_TOOLTIP);
+        rangeXUpperTextField.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MAX_TOOLTIP);
         rangeXUpperTextField.setMinimumSize(rangeXUpperTextField.getPreferredSize());
         rangeXUpperTextField.setPreferredSize(rangeXUpperTextField.getPreferredSize());
         rangeXUpperTextField.setText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_XAXIS_MAX_DEFAULT);
@@ -487,14 +492,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 
         rangeYCheckBox = new JCheckBox(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_SET_BOUNDS_LABEL);
+        rangeYCheckBox.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_SET_BOUNDS_TOOLTIP);
 
         rangeYLowerLabel = new JLabel(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MIN_LABEL);
         rangeYLowerTextField = new JTextField("1234567890");
+        rangeYLowerLabel.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MIN_TOOLTIP);
+        rangeYLowerTextField.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MIN_TOOLTIP);
         rangeYLowerTextField.setMinimumSize(rangeYLowerTextField.getPreferredSize());
         rangeYLowerTextField.setPreferredSize(rangeYLowerTextField.getPreferredSize());
 
         rangeYUpperLabel = new JLabel(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MAX_LABEL);
         rangeYUpperTextField = new JTextField("1234567890");
+        rangeYUpperLabel.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MAX_TOOLTIP);
+        rangeYUpperTextField.setToolTipText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MAX_TOOLTIP);
         rangeYUpperTextField.setMinimumSize(rangeYUpperTextField.getPreferredSize());
         rangeYUpperTextField.setPreferredSize(rangeYUpperTextField.getPreferredSize());
         rangeYUpperTextField.setText(SpectrumViewController.PROPERTY_SPECTRUM_VIEW_YAXIS_MAX_DEFAULT);
