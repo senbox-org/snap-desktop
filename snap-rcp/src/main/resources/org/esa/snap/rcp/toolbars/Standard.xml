@@ -14,7 +14,6 @@
         <Toolbar name="Geometry Shapes" visible="true"/>
         <Toolbar name="Geometry Lines" visible="false"/>
         <Toolbar name="Pins" visible="true"/>
-        <Toolbar name="Analysis" visible="true"/>
         <Toolbar name="Spectral Angular View" visible="true"/>
         <Toolbar name="Soft Button" visible="true"/>
         <Toolbar name="GPT Processing" visible="false"/>
@@ -22,6 +21,8 @@
         <Toolbar name="Ground Control Points" visible="false"/>
         <!--<Toolbar name="Tools" visible="false"/>-->
         <Toolbar name="Image" visible="true"/>
+        <Toolbar name="Analysis" visible="true"/>
+
         <Toolbar name="Info" visible="false"/>
         <Toolbar name="Memory" visible="false" align="right"/>
         <Toolbar name="Miscellaneous" visible="false"/>

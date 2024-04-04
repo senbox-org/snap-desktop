@@ -40,7 +40,7 @@ import javax.swing.Icon;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 10),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 40)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ScatterPlotTopComponent_Name",
