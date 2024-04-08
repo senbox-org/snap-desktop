@@ -2,6 +2,7 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 10.0.0
+    [SNAP-3660] CollocationOp parameter renamed
     [SNAP-3640] Sentinel-5 nc Geocoding not loaded
     [SNAP-3601] Sentinel-5 nc files load problem in SNAP
     [SNAP-3626] GPT generates two outputs
