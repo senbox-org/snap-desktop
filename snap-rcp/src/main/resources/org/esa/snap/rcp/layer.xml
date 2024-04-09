@@ -325,22 +325,22 @@
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapToolboxesUpdate_URL"/>
             </file>
-            <file name="snap_supported_plugins_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Supported Plugins"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapSupportedPlugins_URL"/>
-            </file>
-            <file name="snap_community_plugins_update_center.instance">
-                <attr name="displayName" stringvalue="SNAP Community Plugins"/>
-                <attr name="enabled" boolvalue="true"/>
-                <attr name="instanceCreate"
-                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
-                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapCommunityPlugins_URL"/>
-            </file>
+<!--            <file name="snap_supported_plugins_update_center.instance">-->
+<!--                <attr name="displayName" stringvalue="SNAP Supported Plugins"/>-->
+<!--                <attr name="enabled" boolvalue="true"/>-->
+<!--                <attr name="instanceCreate"-->
+<!--                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>-->
+<!--                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>-->
+<!--                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapSupportedPlugins_URL"/>-->
+<!--            </file>-->
+<!--            <file name="snap_community_plugins_update_center.instance">-->
+<!--                <attr name="displayName" stringvalue="SNAP Community Plugins"/>-->
+<!--                <attr name="enabled" boolvalue="true"/>-->
+<!--                <attr name="instanceCreate"-->
+<!--                      methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>-->
+<!--                <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>-->
+<!--                <attr name="url" bundlevalue="org.netbeans.core.ui.Bundle#CTL_SnapCommunityPlugins_URL"/>-->
+<!--            </file>-->
         </folder>
     </folder>
 
