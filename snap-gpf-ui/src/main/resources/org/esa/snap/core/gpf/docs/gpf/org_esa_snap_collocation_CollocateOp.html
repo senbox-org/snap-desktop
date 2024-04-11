@@ -24,8 +24,8 @@
 </table>
 <h2>Description</h2>
 This operator is used to spatially collocate two data products. It requires two source products,
- a {@code master} product which provides the Coordinate reference system and grid into which
- the raster data sets of the {@code slave} product are resampled to.
+ a {@code reference} product which provides the Coordinate reference system and grid into which
+ the raster data sets of the {@code secondary} product are resampled to.
 <h2>Sources</h2>
 <table>
 <tr>
@@ -33,16 +33,16 @@ This operator is used to spatially collocate two data products. It requires two 
   <th>Description</th>
 </tr>
 <tr>
-  <td><code>master</code></td>
+  <td><code>reference</code></td>
   <td>The source product which serves as master.</td>
 </tr>
 <tr>
-  <td><code>slaveProduct</code></td>
+  <td><code>secondaryProduct</code></td>
   <td>The source product which serves as slave.</td>
 </tr>
 <tr>
   <td><code>sourceProducts</code></td>
-  <td>The source product which serves as slave.</td>
+  <td>The source product which serves as secondary.</td>
 </tr>
 </table>
 <h2>Parameters</h2>
@@ -62,10 +62,10 @@ This operator is used to spatially collocate two data products. It requires two 
   <td></td>
 </tr>
 <tr>
-  <td><code>masterProductName</code></td>
+  <td><code>referenceProductName</code></td>
   <td><code>String</code></td>
   <td><code></code></td>
-  <td>The name of the master product.</td>
+  <td>The name of the reference product.</td>
   <td></td>
 </tr>
 <tr>
@@ -86,42 +86,42 @@ This operator is used to spatially collocate two data products. It requires two 
     <td><code>copySecondaryMetadata</code></td>
     <td><code>boolean</code></td>
     <td><code>false</code></td>
-    <td>Copies also the metadata of the secondary (slave) products to the target</td>
+    <td>Copies also the metadata of the secondary products to the target</td>
     <td></td>
   </tr>
   <tr>
-    <td><code>renameMasterComponents</code></td>
+    <td><code>renameReferenceComponents</code></td>
     <td><code>boolean</code></td>
     <td><code>true</code></td>
-    <td>Whether or not components of the master product shall be renamed in the target product.</td>
+    <td>Whether or not components of the reference product shall be renamed in the target product.</td>
     <td></td>
   </tr>
   <tr>
-    <td><code>renameSlaveComponents</code></td>
+    <td><code>renameSecondaryComponents</code></td>
     <td><code>boolean</code></td>
     <td><code>true</code></td>
-  <td>Whether or not components of the slave product shall be renamed in the target product.</td>
+  <td>Whether or not components of the secondary product shall be renamed in the target product.</td>
   <td></td>
 </tr>
 <tr>
-  <td><code>masterComponentPattern</code></td>
+  <td><code>referenceComponentPattern</code></td>
   <td><code>String</code></td>
   <td><code>${ORIGINAL_NAME}_M</code></td>
-  <td>The text pattern to be used when renaming master components.</td>
+  <td>The text pattern to be used when renaming reference components.</td>
   <td></td>
 </tr>
 <tr>
-  <td><code>slaveComponentPattern</code></td>
+  <td><code>secondaryComponentPattern</code></td>
   <td><code>String</code></td>
   <td><code>${ORIGINAL_NAME}_S${SLAVE_NUMBER_ID}</code></td>
-  <td>The text pattern to be used when renaming slave components.</td>
+  <td>The text pattern to be used when renaming ssecondary components.</td>
   <td></td>
 </tr>
 <tr>
   <td><code>resamplingType</code></td>
   <td><code>ResamplingType</code></td>
   <td><code>NEAREST_NEIGHBOUR</code></td>
-  <td>The method to be used when resampling the slave grid onto the master grid.</td>
+  <td>The method to be used when resampling the secondary grid onto the reference grid.</td>
   <td></td>
 </tr>
 </table>
