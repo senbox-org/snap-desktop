@@ -225,7 +225,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://step.esa.int/updatecenter/10.0/snap/updates.xml.gz"/>
 				<attr name="category" stringvalue="SNAP Core"/>
 				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Core.png"/>
             </file>
@@ -235,7 +235,7 @@
                 <attr name="instanceCreate"
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
-                <attr name="url" urlvalue="https://step.esa.int/updatecenter/9.0/snap-toolboxes/updates.xml.gz"/>
+                <attr name="url" urlvalue="https://step.esa.int/updatecenter/10.0/snap-toolboxes/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Toolboxes"/>
 				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Toolboxes.png"/>
             </file>
@@ -246,7 +246,7 @@
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url"
-                      urlvalue="https://step.esa.int/updatecenter/9.0/snap-supported-plugins/updates.xml.gz"/>
+                      urlvalue="https://step.esa.int/updatecenter/10.0/snap-supported-plugins/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Supported Plugins"/>
 				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Supported.png"/>
             </file>
@@ -257,7 +257,7 @@
                       methodvalue="org.netbeans.modules.autoupdate.updateprovider.AutoupdateCatalogFactory.createUpdateProvider"/>
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.autoupdate.UpdateProvider"/>
                 <attr name="url"
-                      urlvalue="https://step.esa.int/updatecenter/9.0/snap-community-plugins/updates.xml.gz"/>
+                      urlvalue="https://step.esa.int/updatecenter/10.0/snap-community-plugins/updates.xml.gz"/>
                 <attr name="category" stringvalue="SNAP Community Plugins"/>
 				<attr name="iconBase" stringvalue="org/esa/snap/rcp/icons/Community.png"/>
             </file>
