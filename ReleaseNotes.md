@@ -33,7 +33,8 @@ Release Notes - Sentinel Application Platform
 	[SNAP-1601] Custom SNAP Plugin Dialog
 	[SNAP-1619] Sentinel-3 WST products have issues with geolocation since PUG v3.35
 	[SNAP-1639] Required dependency not declared
-	[SNAP-2065] S2 Resampling Error “Failed to Read Data for level 0 and rectangle”
+	[SNAP-2065] S2 Resampling Error "Failed to Read Data for level 0 and rectangle"
+    [SNAP-2115] S2Resampling can't handle S2 data other format as SAFE
 	[SNAP-3446] Get rid of duplicated library of jai-core
     [SNAP-3471] Copernicus DEM complications when coregistering S1
 	[SNAP-3487] Space in path to zipped ZNAP product leads to IllegalArgumentException
@@ -50,7 +51,10 @@ Release Notes - Sentinel Application Platform
 	[SNAP-3532] SNAP crashes with SIGKILL when opening S2 product on Mac platform
 	[SNAP-3533] PolarView animation not stopped on product close
 	[SNAP-3534] Product Library issues on SNAP10
+    [SNAP-3549] Product Library - CDAS: "Bad request" when searching Sentinel-2 products by 'Product Name'
 	[SNAP-3576] AddElevation does not report error on doExecute
+    [SNAP-3595] No help for the operator 'Multi-size Mosaic'
+    [SNAP-3600] Help content is either missing, non-existent, out-of-date, or with errors
     [SNAP-3601] Sentinel-5 nc files load problem in SNAP
 	[SNAP-3605] IllegalStateException while creating HSV image
     [SNAP-3626] GPT generates two outputs
@@ -70,10 +74,13 @@ Release Notes - Sentinel Application Platform
     [SNAP-3440] Consider to compile the internal GDAL distribution also for AARCH64-bit platform
     [SNAP-3517] Increment the TAO version used on SNAP Product Library
     [SNAP-3541] Compile the Open-JPEG native libraries for AARCH64-bit platform
+    [SNAP-3567] Update GDAL to version 3.7.2
     [SNAP-3568] Enable SNAP Community Plugins Update Center by default in SNAP
     [SNAP-3584] NetCDF reader geocoding read performance
+    [SNAP-3587] Update SNAP AboutBoxes links to point to the Release Notes pages hosted on the STEP website
     [SNAP-3591] SNAP removes Ubuntu's snap directories
     [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
+    [SNAP-3612] Product library - remove Scihub
 
 ### Requirement
     [SNAP-937] Consider renaming of snappy
