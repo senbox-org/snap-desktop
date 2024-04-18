@@ -39,27 +39,11 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.xmlpull.mxp1.MXParser;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
@@ -83,17 +67,6 @@ public class OperatorMenu {
     private final Action aboutAction;
     private final String lastDirPreferenceKey;
 
-    /**
-     * @deprecated since BEAM 5, use {@link #OperatorMenu(Component, OperatorDescriptor, OperatorParameterSupport, AppContext, String)} instead
-     */
-    @Deprecated
-    public OperatorMenu(Component parentComponent,
-                        Class<? extends Operator> opType,
-                        OperatorParameterSupport parameterSupport,
-                        String helpId) {
-        this(parentComponent, getOperatorDescriptor(opType), parameterSupport, null, helpId);
-    }
-
     public OperatorMenu(Component parentComponent,
                         OperatorDescriptor opDescriptor,
                         OperatorParameterSupport parameterSupport,
@@ -109,6 +82,48 @@ public class OperatorMenu {
         saveParametersAction = new SaveParametersAction();
         displayParametersAction = new DisplayParametersAction();
         aboutAction = new AboutOperatorAction();
+    }
+
+    static XppDom createDom(String xml) {
+        XppDomWriter domWriter = new XppDomWriter();
+        new HierarchicalStreamCopier().copy(new XppReader(new StringReader(xml), new MXParser()), domWriter);
+        return domWriter.getConfiguration();
+    }
+
+    static void escapeXmlElements(DomElement domElement) {
+        domElement.setValue(StringEscapeUtils.ESCAPE_XML10.translate(domElement.getValue()));
+        String[] attributeNames = domElement.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            domElement.setAttribute(attributeName, StringEscapeUtils.ESCAPE_XML10.translate(domElement.getAttribute(attributeName)));
+        }
+        DomElement[] children = domElement.getChildren();
+        for (DomElement child : children) {
+            escapeXmlElements(child);
+        }
+    }
+
+    private static String makeHtmlConform(String text) {
+        return text.replace("\n", "<br/>");
+    }
+
+    private static OperatorDescriptor getOperatorDescriptor(Class<? extends Operator> opType) {
+        String operatorAlias = OperatorSpi.getOperatorAlias(opType);
+
+        OperatorDescriptor operatorDescriptor;
+        OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
+        operatorDescriptor = spiRegistry.getOperatorSpi(operatorAlias).getOperatorDescriptor();
+        if (operatorDescriptor == null) {
+            Class<?>[] declaredClasses = opType.getDeclaredClasses();
+            for (Class<?> declaredClass : declaredClasses) {
+                if (OperatorSpi.class.isAssignableFrom(declaredClass)) {
+                    operatorDescriptor = spiRegistry.getOperatorSpi(declaredClass.getName()).getOperatorDescriptor();
+                }
+            }
+        }
+        if (operatorDescriptor == null) {
+            throw new IllegalStateException("Not able to find SPI for operator class '" + opType.getName() + "'");
+        }
+        return operatorDescriptor;
     }
 
     /**
@@ -142,6 +157,60 @@ public class OperatorMenu {
             menuItem.setEnabled(false);
         }
         return menuItem;
+    }
+
+    private FileNameExtensionFilter createParameterFileFilter() {
+        return new FileNameExtensionFilter("GPF Parameter Files (XML)", "xml");
+    }
+
+    private void showInformationDialog(String title, Component component) {
+        final ModalDialog modalDialog = new ModalDialog(UIUtils.getRootWindow(parentComponent),
+                title,
+                AbstractDialog.ID_OK,
+                null); /*I18N*/
+        modalDialog.setContent(component);
+        modalDialog.show();
+    }
+
+    String getOperatorName() {
+        return opDescriptor.getAlias() != null ? opDescriptor.getAlias() : opDescriptor.getName();
+    }
+
+    @SuppressWarnings("ConcatenationWithEmptyString")
+    String getOperatorAboutText() {
+        return makeHtmlConform(String.format("" +
+                        "<html>" +
+                        "<h2>%s Operator</h2>" +
+                        "<table>" +
+                        "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
+                        "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
+                        "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
+                        "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
+                getOperatorName(),
+                getOperatorName(),
+                opDescriptor.getVersion(),
+                opDescriptor.getName(),
+                opDescriptor.getDescription(),
+                opDescriptor.getAuthors(),
+                opDescriptor.getCopyright()
+        ));
+    }
+
+    private void applyCurrentDirectory(JFileChooser fileChooser) {
+        if (appContext != null) {
+            String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+            String lastDir = appContext.getPreferences().getPropertyString(lastDirPreferenceKey, homeDirPath);
+            fileChooser.setCurrentDirectory(new File(lastDir));
+        }
+    }
+
+    private void preserveCurrentDirectory(JFileChooser fileChooser) {
+        if (appContext != null) {
+            String lastDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+            appContext.getPreferences().setPropertyString(lastDirPreferenceKey, lastDir);
+        }
     }
 
     private class LoadParametersAction extends AbstractAction {
@@ -199,12 +268,6 @@ public class OperatorMenu {
 
     }
 
-    static XppDom createDom(String xml) {
-        XppDomWriter domWriter = new XppDomWriter();
-        new HierarchicalStreamCopier().copy(new XppReader(new StringReader(xml), new MXParser()), domWriter);
-        return domWriter.getConfiguration();
-    }
-
     private class SaveParametersAction extends AbstractAction {
 
         private static final String TITLE = "Save Parameters";
@@ -228,7 +291,7 @@ public class OperatorMenu {
                     preserveCurrentDirectory(fileChooser);
                     File selectedFile = fileChooser.getSelectedFile();
                     selectedFile = FileUtils.ensureExtension(selectedFile,
-                                                             "." + parameterFileFilter.getExtensions()[0]);
+                            "." + parameterFileFilter.getExtensions()[0]);
                     DomElement domElement = parameterSupport.toDomElement();
                     escapeXmlElements(domElement);
                     String xmlString = domElement.toXml();
@@ -250,22 +313,6 @@ public class OperatorMenu {
                 bw.write(s);
             }
         }
-    }
-
-    static void escapeXmlElements(DomElement domElement) {
-        domElement.setValue(StringEscapeUtils.ESCAPE_XML10.translate(domElement.getValue()));
-        String[] attributeNames = domElement.getAttributeNames();
-        for (String attributeName : attributeNames) {
-            domElement.setAttribute(attributeName, StringEscapeUtils.ESCAPE_XML10.translate(domElement.getAttribute(attributeName)));
-        }
-        DomElement[] children = domElement.getChildren();
-        for (DomElement child : children) {
-            escapeXmlElements(child);
-        }
-    }
-
-    private FileNameExtensionFilter createParameterFileFilter() {
-        return new FileNameExtensionFilter("GPF Parameter Files (XML)", "xml");
     }
 
     private class DisplayParametersAction extends AbstractAction {
@@ -300,7 +347,6 @@ public class OperatorMenu {
         }
     }
 
-
     private class AboutOperatorAction extends AbstractAction {
 
         AboutOperatorAction() {
@@ -310,80 +356,6 @@ public class OperatorMenu {
         @Override
         public void actionPerformed(ActionEvent event) {
             showInformationDialog("About " + getOperatorName(), new JLabel(getOperatorAboutText()));
-        }
-    }
-
-    private void showInformationDialog(String title, Component component) {
-        final ModalDialog modalDialog = new ModalDialog(UIUtils.getRootWindow(parentComponent),
-                                                        title,
-                                                        AbstractDialog.ID_OK,
-                                                        null); /*I18N*/
-        modalDialog.setContent(component);
-        modalDialog.show();
-    }
-
-    String getOperatorName() {
-        return opDescriptor.getAlias() != null ? opDescriptor.getAlias() : opDescriptor.getName();
-    }
-
-    @SuppressWarnings("ConcatenationWithEmptyString")
-    String getOperatorAboutText() {
-        return makeHtmlConform(String.format("" +
-                        "<html>" +
-                        "<h2>%s Operator</h2>" +
-                        "<table>" +
-                        "<tr><td><b>Name:</b></td><td><code>%s</code></td></tr>" +
-                        "<tr><td><b>Version:</b></td><td>%s</td></tr>" +
-                        "<tr><td><b>Full name:</b></td><td><code>%s</code></td></tr>" +
-                        "<tr><td><b>Description:</b></td><td>%s</td></tr>" +
-                        "<tr><td><b>Authors:</b></td><td>%s</td></tr>" +
-                        "<tr><td><b>Copyright:</b></td><td>%s</td></tr></table></html>",
-                getOperatorName(),
-                getOperatorName(),
-                opDescriptor.getVersion(),
-                opDescriptor.getName(),
-                opDescriptor.getDescription(),
-                opDescriptor.getAuthors(),
-                opDescriptor.getCopyright()
-        ));
-    }
-
-    private static String makeHtmlConform(String text) {
-        return text.replace("\n", "<br/>");
-    }
-
-    private static OperatorDescriptor getOperatorDescriptor(Class<? extends Operator> opType) {
-        String operatorAlias = OperatorSpi.getOperatorAlias(opType);
-
-        OperatorDescriptor operatorDescriptor;
-        OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
-        operatorDescriptor = spiRegistry.getOperatorSpi(operatorAlias).getOperatorDescriptor();
-        if (operatorDescriptor == null) {
-            Class<?>[] declaredClasses = opType.getDeclaredClasses();
-            for (Class<?> declaredClass : declaredClasses) {
-                if (OperatorSpi.class.isAssignableFrom(declaredClass)) {
-                    operatorDescriptor = spiRegistry.getOperatorSpi(declaredClass.getName()).getOperatorDescriptor();
-                }
-            }
-        }
-        if (operatorDescriptor == null) {
-            throw new IllegalStateException("Not able to find SPI for operator class '" + opType.getName() + "'");
-        }
-        return operatorDescriptor;
-    }
-
-    private void applyCurrentDirectory(JFileChooser fileChooser) {
-        if (appContext != null) {
-            String homeDirPath = SystemUtils.getUserHomeDir().getPath();
-            String lastDir = appContext.getPreferences().getPropertyString(lastDirPreferenceKey, homeDirPath);
-            fileChooser.setCurrentDirectory(new File(lastDir));
-        }
-    }
-
-    private void preserveCurrentDirectory(JFileChooser fileChooser) {
-        if (appContext != null) {
-            String lastDir = fileChooser.getCurrentDirectory().getAbsolutePath();
-            appContext.getPreferences().setPropertyString(lastDirPreferenceKey, lastDir);
         }
     }
 

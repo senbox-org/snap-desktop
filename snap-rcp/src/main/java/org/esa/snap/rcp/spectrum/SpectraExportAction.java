@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.spectrum;
 
 import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.diagram.DiagramGraph;
@@ -28,6 +29,7 @@ import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 //import org.esa.snap.visat.VisatApp;
 
@@ -58,11 +60,13 @@ class SpectraExportAction extends AbstractAction {
             }
         }
         DiagramGraph[] pinGraphs = spectrumGraphList.toArray(new DiagramGraph[0]);
-        //todo move diagramgraphio to snap
+
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        final PreferencesPropertyMap preferencesPropertyMap = new PreferencesPropertyMap(preferences);
         DiagramGraphIO.writeGraphs(SwingUtilities.getWindowAncestor(spectrumTopComponent),
                                    "Export Pin Spectra",
                                    new SnapFileFilter[]{DiagramGraphIO.SPECTRA_CSV_FILE_FILTER},
-                                   SnapApp.getDefault().getPreferencesPropertyMap(),
+                                   preferencesPropertyMap,
                                    pinGraphs);
     }
 
