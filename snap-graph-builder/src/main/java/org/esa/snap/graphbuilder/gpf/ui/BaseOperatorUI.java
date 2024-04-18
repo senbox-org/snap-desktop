@@ -208,7 +208,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 }
             }
         }
-        return bandNames.toArray(new String[bandNames.size()]);
+        return bandNames.toArray(new String[0]);
     }
 
     protected String[] getGeometries() {

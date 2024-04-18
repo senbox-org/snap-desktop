@@ -90,6 +90,7 @@
             <tocitem text="Product/Band Information" target="informationDialog"/>
             <tocitem text="Band Transect Profile Plot" target="profilePlotDialog"/>
             <tocitem text="Correlative Plot" target="correlativePlotDialog"/>
+            <tocitem text="Band Statistics (New)" target="statistics"/>
             <tocitem text="Band Statistics" target="statisticsDialog"/>
             <tocitem text="Metadata Plot" target="metadataPlotDialog"/>
         </tocitem>

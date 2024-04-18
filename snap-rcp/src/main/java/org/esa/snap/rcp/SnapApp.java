@@ -106,6 +106,21 @@ public class SnapApp {
     private Engine engine;
 
     /**
+     * Constructor.
+     * <p>
+     * As this class is a registered service, the constructor is not supposed to be called directly.
+     */
+    public SnapApp() {
+        productManager = new ProductManager();
+        // Register a provider that delivers an UndoManager for a Product instance.
+        UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
+        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
+        productManager.addListener(undoManagerProvider);
+        productManager.addListener(new MultiSizeWarningListener());
+        selectionChangeSupports = new HashMap<>();
+    }
+
+    /**
      * Gets the SNAP application singleton which provides access to various SNAP APIs and resources.
      * <p>
      * The the method basically returns
@@ -124,18 +139,71 @@ public class SnapApp {
     }
 
     /**
-     * Constructor.
-     * <p>
-     * As this class is a registered service, the constructor is not supposed to be called directly.
+     * The method changes the default look and feel to FlatLaf Light on Windows, if the user has not changed the look and feel before.
+     * Because of two reasons. First, it looks nicer, and second but more important, it fixes a bug in the Windows look and feel.
+     * The bug is that icons disappear in the Analysis menu when one of the items clicked. It occurs in SNAP 10 with JDK11 and Netbeans 11.3.
      */
-    public SnapApp() {
-        productManager = new ProductManager();
-        // Register a provider that delivers an UndoManager for a Product instance.
-        UndoManagerProvider undoManagerProvider = new UndoManagerProvider();
-        ExtensionManager.getInstance().register(Product.class, undoManagerProvider);
-        productManager.addListener(undoManagerProvider);
-        productManager.addListener(new MultiSizeWarningListener());
-        selectionChangeSupports = new HashMap<>();
+    private static void initialiseLookAndFeel() {
+        if (Utilities.isWindows()) {
+            Preferences lafPreference = NbPreferences.root().node("laf");
+            if (lafPreference == null || lafPreference.get("laf", null) == null) {
+                try {
+                    UIManager.setLookAndFeel(FlatLightLaf.class.getName());
+                    lafPreference.put("laf", FlatLightLaf.class.getName());
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                         UnsupportedLookAndFeelException e) {
+                    LOG.warning("Could not set FlatLaf Light Look and Feel");
+                }
+            }
+        }
+    }
+
+    private static void initImageIO() {
+        // todo - actually this should be done in the activator of ceres-jai which does not exist yet
+        Lookup.Result<ModuleInfo> moduleInfos = Lookup.getDefault().lookupResult(ModuleInfo.class);
+        String ceresJaiCodeName = "org.esa.snap.ceres.jai";
+        Optional<? extends ModuleInfo> info = moduleInfos.allInstances().stream().filter(
+                moduleInfo -> ceresJaiCodeName.equals(moduleInfo.getCodeName())).findFirst();
+
+        if (info.isPresent()) {
+            ClassLoader classLoader = info.get().getClassLoader();
+            IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
+            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageReaderSpi.class, classLoader));
+            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageWriterSpi.class, classLoader));
+        } else {
+            LOG.warning(String.format("Module '%s' not found. Not able to load image-IO services.", ceresJaiCodeName));
+        }
+    }
+
+    private static String getOperatorName(Operator operator) {
+        String operatorName = operator.getSpi().getOperatorDescriptor().getAlias();
+        if (operatorName == null) {
+            operatorName = operator.getSpi().getOperatorDescriptor().getName();
+        }
+        return operatorName;
+    }
+
+    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
+        switch (hint) {
+            case VIEW:
+                if (viewNode != null) {
+                    return viewNode;
+                } else {
+                    return explorerNode;
+                }
+            case EXPLORER:
+                if (explorerNode != null) {
+                    return explorerNode;
+                } else {
+                    return viewNode;
+                }
+            case AUTO:
+            default:
+                if (sceneView != null && sceneView.hasFocus()) {
+                    return viewNode;
+                }
+                return explorerNode;
+        }
     }
 
     /**
@@ -182,15 +250,6 @@ public class SnapApp {
     }
 
     /**
-     * @return The (display) name of this application.
-     * @deprecated use {@link #getInstanceName()}
-     */
-    @Deprecated
-    public String getAppName() {
-        return getInstanceName();
-    }
-
-    /**
      * @return The SNAP application's name. The default is {@code "SNAP"}.
      */
     public String getInstanceName() {
@@ -206,20 +265,6 @@ public class SnapApp {
      */
     public Preferences getPreferences() {
         return NbPreferences.forModule(getClass());
-    }
-
-    /**
-     * Gets the {@link #getPreferences() preferences} wrapped by a {@link PropertyMap}.
-     * <p>
-     * Its main use is to provide compatibility for SNAP heritage GUI code (from BEAM & NEST) which used
-     * the {@link PropertyMap} interface.
-     *
-     * @return The user's application preferences as {@link PropertyMap} instance.
-     * @deprecated Use {@link #getPreferences()} or {@link Config#preferences()} instead.
-     */
-    @Deprecated
-    public PropertyMap getPreferencesPropertyMap() {
-        return new PreferencesPropertyMap(getPreferences());
     }
 
     /**
@@ -450,6 +495,7 @@ public class SnapApp {
                 message.append("\n\nDo you want to save them?");
             }
             Dialogs.Answer answer = Dialogs.requestDecision("Exit", message.toString(), true, null);
+            // decision request cancelled --> cancel SNAP shutdown
             if (answer == Dialogs.Answer.YES) {
                 //Save Products in reverse order is necessary because derived products must be saved first
                 Collections.reverse(modifiedProducts);
@@ -460,126 +506,10 @@ public class SnapApp {
                         return false;
                     }
                 }
-            } else if (answer == Dialogs.Answer.CANCELLED) {
-                // decision request cancelled --> cancel SNAP shutdown
-                return false;
-            }
+            } else return answer != Dialogs.Answer.CANCELLED;
         }
 
         return true;
-    }
-
-    /**
-     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
-     * <p>
-     * NetBeans {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
-     * as possible. It is guaranteed that execution of all {@code runnable}s is finished
-     * before the startup sequence is claimed over.
-     */
-    @OnStart
-    public static class StartOp implements Runnable {
-
-        @Override
-        public void run() {
-            LOG.info("Starting SNAP Desktop");
-            try {
-                SnapApp.getDefault().onStart();
-            } finally {
-                initImageIO();
-                SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
-                SnapApp.getDefault().initGPF();
-            }
-        }
-    }
-
-
-    /**
-     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
-     * <p>
-     * NetBeans {@code @OnShowing}: Annotation to place on a {@code Runnable} with default constructor which should be invoked as soon as the window
-     * system is shown. The {@code Runnable}s are invoked in AWT event dispatch thread one by one
-     */
-    @OnShowing
-    public static class ShowingOp implements Runnable {
-
-        @Override
-        public void run() {
-            LOG.info("Showing SNAP Desktop");
-            SnapApp.getDefault().onShowing();
-        }
-    }
-
-    /**
-     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
-     * <p>
-     * NetBeans {@code @OnStop}: Annotation that can be applied to {@code Runnable} or {@code Callable<Boolean>}
-     * subclasses with default constructor which will be invoked during shutdown sequence or when the
-     * module is being shutdown.
-     * <p>
-     * First of all call {@code Callable}s are consulted to allow or deny proceeding with the shutdown.
-     * <p>
-     * If the shutdown is approved, all {@code Runnable}s registered are acknowledged and can perform the shutdown
-     * cleanup. The {@code Runnable}s are invoked in parallel. It is guaranteed their execution is finished before
-     * the shutdown sequence is over.
-     */
-    @OnStop
-    public static class MaybeStopOp implements Callable {
-
-        @Override
-        public Boolean call() {
-            LOG.info("Request to stop SNAP Desktop");
-            return SnapApp.getDefault().onTryStop();
-        }
-    }
-
-    /**
-     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
-     */
-    @OnStop
-    public static class StopOp implements Runnable {
-
-        @Override
-        public void run() {
-            LOG.info("Stopping SNAP Desktop");
-            SnapApp.getDefault().onStop();
-        }
-    }
-
-    /**
-     * The method changes the default look and feel to FlatLaf Light on Windows, if the user has not changed the look and feel before.
-     * Because of two reasons. First, it looks nicer, and second but more important, it fixes a bug in the Windows look and feel.
-     * The bug is that icons disappear in the Analysis menu when one of the items clicked. It occurs in SNAP 10 with JDK11 and Netbeans 11.3.
-     */
-    private static void initialiseLookAndFeel() {
-        if (Utilities.isWindows()) {
-            Preferences lafPreference = NbPreferences.root().node("laf");
-            if (lafPreference == null || lafPreference.get("laf", null) == null) {
-                try {
-                    UIManager.setLookAndFeel(FlatLightLaf.class.getName());
-                    lafPreference.put("laf", FlatLightLaf.class.getName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException e) {
-                    LOG.warning("Could not set FlatLaf Light Look and Feel");
-                }
-            }
-        }
-    }
-
-    private static void initImageIO() {
-        // todo - actually this should be done in the activator of ceres-jai which does not exist yet
-        Lookup.Result<ModuleInfo> moduleInfos = Lookup.getDefault().lookupResult(ModuleInfo.class);
-        String ceresJaiCodeName = "org.esa.snap.ceres.jai";
-        Optional<? extends ModuleInfo> info = moduleInfos.allInstances().stream().filter(
-                moduleInfo -> ceresJaiCodeName.equals(moduleInfo.getCodeName())).findFirst();
-
-        if (info.isPresent()) {
-            ClassLoader classLoader = info.get().getClassLoader();
-            IIORegistry iioRegistry = IIORegistry.getDefaultInstance();
-            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageReaderSpi.class, classLoader));
-            iioRegistry.registerServiceProviders(IIORegistry.lookupProviders(ImageWriterSpi.class, classLoader));
-        } else {
-            LOG.warning(String.format("Module '%s' not found. Not able to load image-IO services.", ceresJaiCodeName));
-        }
     }
 
     private void initGPF() {
@@ -594,14 +524,6 @@ public class SnapApp {
             SnapAppGPFOperatorExecutor snapAppGPFOperatorExecutor = new SnapAppGPFOperatorExecutor(operator);
             snapAppGPFOperatorExecutor.executeWithBlocking();
         });
-    }
-
-    private static String getOperatorName(Operator operator) {
-        String operatorName = operator.getSpi().getOperatorDescriptor().getAlias();
-        if (operatorName == null) {
-            operatorName = operator.getSpi().getOperatorDescriptor().getName();
-        }
-        return operatorName;
     }
 
     private void updateMainFrameTitle(ProductSceneView sceneView) {
@@ -661,7 +583,6 @@ public class SnapApp {
         }
     }
 
-
     private String appendTitleSuffix(String title) {
         String appendix = !Utilities.isMac() ? String.format(" - %s", getInstanceName()) : "";
         return title + appendix;
@@ -678,26 +599,96 @@ public class SnapApp {
 
     }
 
-    private static <T extends ProductNode> T getProductNode(T explorerNode, T viewNode, ProductSceneView sceneView, SelectionSourceHint hint) {
-        switch (hint) {
-            case VIEW:
-                if (viewNode != null) {
-                    return viewNode;
-                } else {
-                    return explorerNode;
-                }
-            case EXPLORER:
-                if (explorerNode != null) {
-                    return explorerNode;
-                } else {
-                    return viewNode;
-                }
-            case AUTO:
-            default:
-                if (sceneView != null && sceneView.hasFocus()) {
-                    return viewNode;
-                }
-                return explorerNode;
+    /**
+     * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
+     */
+    public enum SelectionSourceHint {
+        /**
+         * The scene view shall be preferred as selection source.
+         */
+        VIEW,
+        /**
+         * The product explorer shall be preferred as selection source.
+         */
+        EXPLORER,
+        /**
+         * The primary selection source is automatically detected.
+         */
+        AUTO,
+    }
+
+    /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnStart}: {@code Runnable}s defined by various modules are invoked in parallel and as soon
+     * as possible. It is guaranteed that execution of all {@code runnable}s is finished
+     * before the startup sequence is claimed over.
+     */
+    @OnStart
+    public static class StartOp implements Runnable {
+
+        @Override
+        public void run() {
+            LOG.info("Starting SNAP Desktop");
+            try {
+                SnapApp.getDefault().onStart();
+            } finally {
+                initImageIO();
+                SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
+                SnapApp.getDefault().initGPF();
+            }
+        }
+    }
+
+    /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnShowing}: Annotation to place on a {@code Runnable} with default constructor which should be invoked as soon as the window
+     * system is shown. The {@code Runnable}s are invoked in AWT event dispatch thread one by one
+     */
+    @OnShowing
+    public static class ShowingOp implements Runnable {
+
+        @Override
+        public void run() {
+            LOG.info("Showing SNAP Desktop");
+            SnapApp.getDefault().onShowing();
+        }
+    }
+
+    /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     * <p>
+     * NetBeans {@code @OnStop}: Annotation that can be applied to {@code Runnable} or {@code Callable<Boolean>}
+     * subclasses with default constructor which will be invoked during shutdown sequence or when the
+     * module is being shutdown.
+     * <p>
+     * First of all call {@code Callable}s are consulted to allow or deny proceeding with the shutdown.
+     * <p>
+     * If the shutdown is approved, all {@code Runnable}s registered are acknowledged and can perform the shutdown
+     * cleanup. The {@code Runnable}s are invoked in parallel. It is guaranteed their execution is finished before
+     * the shutdown sequence is over.
+     */
+    @OnStop
+    public static class MaybeStopOp implements Callable {
+
+        @Override
+        public Boolean call() {
+            LOG.info("Request to stop SNAP Desktop");
+            return SnapApp.getDefault().onTryStop();
+        }
+    }
+
+    /**
+     * This non-API class is public as an implementation detail. Don't use it, it may be removed anytime.
+     */
+    @OnStop
+    public static class StopOp implements Runnable {
+
+        @Override
+        public void run() {
+            LOG.info("Stopping SNAP Desktop");
+            SnapApp.getDefault().onStop();
         }
     }
 
@@ -723,7 +714,7 @@ public class SnapApp {
      */
     private static class UndoManagerProvider implements ExtensionFactory, ProductManager.Listener {
 
-        private Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
+        private final Map<Object, UndoRedo.Manager> undoManagers = new HashMap<>();
 
         @Override
         public Class<?>[] getExtensionTypes() {
@@ -779,7 +770,8 @@ public class SnapApp {
         @Override
         @Deprecated
         public PropertyMap getPreferences() {
-            return getDefault().getPreferencesPropertyMap();
+            final Preferences preferences = getDefault().getPreferences();
+            return new PreferencesPropertyMap(preferences);
         }
 
         @Override
@@ -841,23 +833,5 @@ public class SnapApp {
             operator.execute(pm);
             return null;
         }
-    }
-
-    /**
-     * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
-     */
-    public enum SelectionSourceHint {
-        /**
-         * The scene view shall be preferred as selection source.
-         */
-        VIEW,
-        /**
-         * The product explorer shall be preferred as selection source.
-         */
-        EXPLORER,
-        /**
-         * The primary selection source is automatically detected.
-         */
-        AUTO,
     }
 }
