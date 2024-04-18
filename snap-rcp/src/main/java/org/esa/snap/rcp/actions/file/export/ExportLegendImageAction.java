@@ -20,6 +20,7 @@ import org.esa.snap.core.datamodel.ImageLegend;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
@@ -56,6 +57,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.util.prefs.Preferences;
 
 @ActionID(
         category = "File",
@@ -136,7 +138,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
     @Override
     protected void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view, String imageBaseName) {
         legendParamGroup = createLegendParamGroup();
-        legendParamGroup.setParameterValues(SnapApp.getDefault().getPreferencesPropertyMap(), null);
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        legendParamGroup.setParameterValues(new PreferencesPropertyMap(preferences), null);
 
         modifyHeaderText(legendParamGroup, view.getRaster());
         fileChooser.setDialogTitle(SnapApp.getDefault().getInstanceName() + " - export Colour Legend Image"); /*I18N*/
@@ -315,7 +318,8 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         @Override
         protected void onOK() {
-            getParamGroup().getParameterValues(SnapApp.getDefault().getPreferencesPropertyMap());
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            getParamGroup().getParameterValues(new PreferencesPropertyMap(preferences));
             super.onOK();
         }
 
