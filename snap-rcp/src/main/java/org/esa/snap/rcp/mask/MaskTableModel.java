@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.ui.PackageDefaults;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
@@ -93,7 +94,7 @@ class MaskTableModel extends AbstractTableModel {
             "Visibility",
             "Name",
             "Type",
-            "Colour",
+            PackageDefaults.COLOR_SPELLING,
             "Transparency",
             "Description",
     };

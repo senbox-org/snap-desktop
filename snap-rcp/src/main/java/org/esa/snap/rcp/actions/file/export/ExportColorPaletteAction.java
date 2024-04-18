@@ -20,6 +20,7 @@ import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.NamingConvention;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.prefs.Preferences;
 
 /**
  * This action exports the color palette of the selected product.
@@ -184,8 +186,7 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
     }
 
     private static PropertyMap getPreferences() {
-        return SnapApp.getDefault().getPreferencesPropertyMap();
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        return new PreferencesPropertyMap(preferences);
     }
-
-
 }

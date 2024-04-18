@@ -21,6 +21,7 @@ import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.Debug;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.UIUtils;
@@ -35,6 +36,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -79,32 +81,8 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         return new OpenImageViewAction(rasterDataNode);
     }
 
-    /**
-     * @deprecated since v8.0.0, no replacement
-     */
-    public static void showImageView(RasterDataNode rasterDataNode) {
-        new OpenImageViewAction().openRasterDataNode(rasterDataNode);
-    }
-
     public static void openImageView(RasterDataNode rasterDataNode) {
         new OpenImageViewAction().openRasterDataNode(rasterDataNode);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        execute();
-    }
-
-
-    public void execute() {
-        Collection<? extends RasterDataNode> selectedRasterD = getSelectedRasterDataNodes();
-        if (Objects.nonNull(selectedRasterD)) {
-            for (RasterDataNode rasterDataNode : selectedRasterD) {
-                openRasterDataNode(rasterDataNode);
-            }
-        } else if (Objects.nonNull(rasterDataNode)) {
-            openRasterDataNode(rasterDataNode);
-        }
     }
 
     public static ProductSceneViewTopComponent getProductSceneViewTopComponent(RasterDataNode raster) {
@@ -118,23 +96,6 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         ProductSceneViewTopComponent component = getProductSceneViewTopComponent(raster);
         return component != null ? component.getView() : null;
     }
-
-    /**
-     * @deprecated since v8.0.0, no replacement
-     */
-    public static void updateProductSceneViewImage(final ProductSceneView view) {
-        SwingUtilities.invokeLater(view::updateImage);
-    }
-
-    /**
-     * @deprecated since v8.0.0, no replacement
-     */
-    public static void updateProductSceneViewImages(final RasterDataNode[] rasters) {
-        updateProductSceneViewImages(rasters, ProductSceneViewImageUpdater.DEFAULT);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ProductSceneView helper methods
 
     public static void updateProductSceneViewImages(final RasterDataNode[] rasters, ProductSceneViewImageUpdater updateMethod) {
         List<ProductSceneView> views = WindowUtilities.getOpened(ProductSceneViewTopComponent.class).map(ProductSceneViewTopComponent::getView).collect(Collectors.toList());
@@ -151,6 +112,25 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
             if (updateView) {
                 SwingUtilities.invokeLater(() -> updateMethod.updateView(view));
             }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        execute();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ProductSceneView helper methods
+
+    public void execute() {
+        Collection<? extends RasterDataNode> selectedRasterD = getSelectedRasterDataNodes();
+        if (Objects.nonNull(selectedRasterD)) {
+            for (RasterDataNode rasterDataNode : selectedRasterD) {
+                openRasterDataNode(rasterDataNode);
+            }
+        } else if (Objects.nonNull(rasterDataNode)) {
+            openRasterDataNode(rasterDataNode);
         }
     }
 
@@ -256,8 +236,10 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
             if (existingView != null) {
                 sceneImage = new ProductSceneImage(raster, existingView);
             } else {
+                final Preferences preferences = SnapApp.getDefault().getPreferences();
+                final PreferencesPropertyMap configuration = new PreferencesPropertyMap(preferences);
                 sceneImage = new ProductSceneImage(raster,
-                        SnapApp.getDefault().getPreferencesPropertyMap(),
+                        configuration,
                         SubProgressMonitor.create(pm, 1));
             }
             sceneImage.initVectorDataCollectionLayer();

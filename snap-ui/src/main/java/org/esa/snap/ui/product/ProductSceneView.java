@@ -72,10 +72,7 @@ import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.ui.BasicView;
-import org.esa.snap.ui.PixelPositionListener;
-import org.esa.snap.ui.PopupMenuHandler;
-import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.*;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
@@ -165,7 +162,7 @@ public class ProductSceneView extends BasicView
      * Name of property of selected pin
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
-    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = PackageDefaults.IMAGE_BACKGROUND_COLOR;
 
 
     private ProductSceneImage sceneImage;
@@ -375,14 +372,6 @@ public class ProductSceneView extends BasicView
     @Override
     public Object getCoordinateReferenceSystem() {
         return sceneImage.getCoordinateReferenceSystem();
-    }
-
-    /**
-     * @deprecated since BEAM 4.7
-     */
-    @Deprecated
-    public LayerContext getLayerContext() {
-        return sceneImage;
     }
 
     public LayerCanvas getLayerCanvas() {
@@ -859,19 +848,7 @@ public class ProductSceneView extends BasicView
         return null;
     }
 
-    /**
-     * @return The selected feature figures.
-     * @since BEAM 4.7
-     * @deprecated since BEAM 4.10, use {@link #getFeatureFigures(boolean)} instead
-     */
-    @Deprecated
-    public SimpleFeatureFigure[] getSelectedFeatureFigures() {
-        ArrayList<SimpleFeatureFigure> selectedFigures = new ArrayList<>();
-        collectFeatureFigures(figureEditor.getFigureSelection(), selectedFigures);
-        return selectedFigures.toArray(new SimpleFeatureFigure[selectedFigures.size()]);
-    }
-
-    /**
+   /**
      * Gets either the selected figures, or all the figures of the currently selected layer.
      *
      * @param selectedOnly If {@code true}, only selected figures are returned.

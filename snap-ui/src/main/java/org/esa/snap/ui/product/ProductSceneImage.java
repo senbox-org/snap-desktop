@@ -44,6 +44,7 @@ import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.layer.RasterImageLayerType;
 import org.esa.snap.core.layer.RgbImageLayerType;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.ui.PackageDefaults;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -306,7 +307,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final LayerType noDataType = LayerTypeRegistry.getLayerType(NoDataLayerType.class);
         final PropertySet configTemplate = noDataType.createLayerConfig(null);
 
-        final Color color = configuration.getPropertyColor("noDataOverlay.color", Color.ORANGE);
+        final Color color = configuration.getPropertyColor("noDataOverlay.color", NoDataLayerType.DEFAULT_COLOR);
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_COLOR, color);
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_RASTER, getRaster());
         final Layer layer = noDataType.createLayer(this, configTemplate);
