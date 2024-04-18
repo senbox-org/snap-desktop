@@ -513,19 +513,4 @@ public class WorldMapPane extends JPanel {
         public void panStopped(MouseEvent event) {
         }
     }
-
-    /**
-     * Set the worldmap's scale.
-     *
-     * @param scale the scale.
-     * @deprecated since 4.10.1, use layer canvas for zooming instead
-     */
-    @Deprecated
-    public void setScale(final float scale) {
-        if (getScale() != scale && scale > 0) {
-            final float oldValue = getScale();
-            getLayerCanvas().getViewport().setZoomFactor(scale);
-            firePropertyChange("scale", oldValue, scale);
-        }
-    }
 }
