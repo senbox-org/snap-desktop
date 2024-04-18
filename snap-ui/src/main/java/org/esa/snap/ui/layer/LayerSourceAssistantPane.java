@@ -44,7 +44,7 @@ public class LayerSourceAssistantPane extends AssistantPane implements LayerSour
 
     @Override
     public LayerContext getLayerContext() {
-        return getSelectedProductSceneView().getLayerContext();
+        return getSelectedProductSceneView().getSceneImage();
     }
 
     @Override

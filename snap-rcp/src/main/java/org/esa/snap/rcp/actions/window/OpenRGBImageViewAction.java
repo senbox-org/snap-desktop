@@ -23,6 +23,7 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
@@ -41,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -72,39 +74,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
         product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (product != null) {
-            openProductSceneViewRGB(product, HELP_ID);
-        }
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx(HELP_ID);
-    }
-
-    public void openProductSceneViewRGB(Product rgbProduct, final String helpId) {
-        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-        final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
-
-        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), rgbProduct,
-                openedProducts, defaultBandIndices);
-
-        final String title = "Select RGB-Image Channels";
-        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
-        if (!ok) {
-            return;
-        }
-        final RGBImageProfile rgbProfile = profilePane.getRgbProfile();
-        if (profilePane.getStoreProfileInProduct()) {
-            RGBImageProfile.storeRgbaExpressions(rgbProduct, rgbProfile.getRgbaExpressions());
-        }
-
-        final String sceneName = createSceneName(rgbProduct, profilePane.getSelectedProfile(), "RGB");
-        openProductSceneViewRGB(sceneName, rgbProduct, rgbProfile);
     }
 
     public static int[] getDefaultBandIndices(final Product product) {
@@ -141,39 +110,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return bandIndices;
     }
 
-    private void openProductSceneViewRGB(final String name, final Product product, final RGBImageProfile rgbImageProfile) {
-        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
-                SnapApp.getDefault().getMainFrame(),
-                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + "'") {
-
-            @Override
-            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
-                return createProductSceneImageRGB(name, product, rgbImageProfile, pm);
-            }
-
-            @Override
-            protected void done() {
-                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
-
-                String errorMsg = "The RGB image view could not be created.";
-                try {
-                    ProductSceneView productSceneView = new ProductSceneView(get());
-                    openDocumentWindow(productSceneView);
-                } catch (OutOfMemoryError e) {
-                    Dialogs.showOutOfMemoryError(errorMsg);
-                    return;
-                } catch (Exception e) {
-                    SnapApp.getDefault().handleError(errorMsg, e);
-                    return;
-                }
-                SnapApp.getDefault().setStatusBarMessage("");
-            }
-        };
-        SnapApp.getDefault().setStatusBarMessage("Creating RGB image view...");  /*I18N*/
-        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
-        worker.execute();
-    }
-
     public static ProductSceneViewTopComponent openDocumentWindow(final ProductSceneView view) {
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
         ProductSceneViewTopComponent psvTopComponent = new ProductSceneViewTopComponent(view, undoManager);
@@ -183,38 +119,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
         return psvTopComponent;
 
-    }
-
-    private ProductSceneImage createProductSceneImageRGB(String name, final Product product, RGBImageProfile rgbImageProfile,
-                                                         ProgressMonitor pm) {
-        Band[] rgbBands = null;
-        boolean errorOccurred = false;
-        ProductSceneImage productSceneImage = null;
-        try {
-            pm.beginTask("Creating RGB image...", 2);
-            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
-            productSceneImage = new ProductSceneImage(name, rgbBands[0],
-                    rgbBands[1],
-                    rgbBands[2],
-                    SnapApp.getDefault().getPreferencesPropertyMap(),
-                    SubProgressMonitor.create(pm, 1));
-            productSceneImage.initVectorDataCollectionLayer();
-            productSceneImage.initMaskCollectionLayer();
-
-            final RGBChannelDef userRgbChannelDef = mergeRgbChannelDefs(rgbImageProfile, rgbBands);
-            final ImageInfo imageInfo = new ImageInfo(userRgbChannelDef);
-            productSceneImage.setImageInfo(imageInfo);
-
-        } catch (Exception e) {
-            errorOccurred = true;
-            throw e;
-        } finally {
-            pm.done();
-            if (rgbBands != null) {
-                releaseRgbBands(rgbBands, errorOccurred);
-            }
-        }
-        return productSceneImage;
     }
 
     static RGBChannelDef mergeRgbChannelDefs(RGBImageProfile rgbImageProfile, Band[] rgbBands) {
@@ -345,5 +249,109 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         nameBuilder.append(operation);
 
         return nameBuilder.toString();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (product != null) {
+            openProductSceneViewRGB(product, HELP_ID);
+        }
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(HELP_ID);
+    }
+
+    public void openProductSceneViewRGB(Product rgbProduct, final String helpId) {
+        final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+        final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
+
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        final PreferencesPropertyMap preferencesPropertyMap = new PreferencesPropertyMap(preferences);
+        final RGBImageProfilePane profilePane = new RGBImageProfilePane(preferencesPropertyMap, rgbProduct,
+                openedProducts, defaultBandIndices);
+
+        final String title = "Select RGB-Image Channels";
+        final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
+        if (!ok) {
+            return;
+        }
+        final RGBImageProfile rgbProfile = profilePane.getRgbProfile();
+        if (profilePane.getStoreProfileInProduct()) {
+            RGBImageProfile.storeRgbaExpressions(rgbProduct, rgbProfile.getRgbaExpressions());
+        }
+
+        final String sceneName = createSceneName(rgbProduct, profilePane.getSelectedProfile(), "RGB");
+        openProductSceneViewRGB(sceneName, rgbProduct, rgbProfile);
+    }
+
+    private void openProductSceneViewRGB(final String name, final Product product, final RGBImageProfile rgbImageProfile) {
+        final SwingWorker<ProductSceneImage, Object> worker = new ProgressMonitorSwingWorker<ProductSceneImage, Object>(
+                SnapApp.getDefault().getMainFrame(),
+                SnapApp.getDefault().getInstanceName() + " - Creating image for '" + name + "'") {
+
+            @Override
+            protected ProductSceneImage doInBackground(ProgressMonitor pm) throws Exception {
+                return createProductSceneImageRGB(name, product, rgbImageProfile, pm);
+            }
+
+            @Override
+            protected void done() {
+                SnapApp.getDefault().getMainFrame().setCursor(Cursor.getDefaultCursor());
+
+                String errorMsg = "The RGB image view could not be created.";
+                try {
+                    ProductSceneView productSceneView = new ProductSceneView(get());
+                    openDocumentWindow(productSceneView);
+                } catch (OutOfMemoryError e) {
+                    Dialogs.showOutOfMemoryError(errorMsg);
+                    return;
+                } catch (Exception e) {
+                    SnapApp.getDefault().handleError(errorMsg, e);
+                    return;
+                }
+                SnapApp.getDefault().setStatusBarMessage("");
+            }
+        };
+        SnapApp.getDefault().setStatusBarMessage("Creating RGB image view...");  /*I18N*/
+        UIUtils.setRootFrameWaitCursor(SnapApp.getDefault().getMainFrame());
+        worker.execute();
+    }
+
+    private ProductSceneImage createProductSceneImageRGB(String name, final Product product, RGBImageProfile rgbImageProfile,
+                                                         ProgressMonitor pm) {
+        Band[] rgbBands = null;
+        boolean errorOccurred = false;
+        ProductSceneImage productSceneImage = null;
+        try {
+            pm.beginTask("Creating RGB image...", 2);
+
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            final PreferencesPropertyMap preferencesPropertyMap = new PreferencesPropertyMap(preferences);
+
+            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
+            productSceneImage = new ProductSceneImage(name, rgbBands[0],
+                    rgbBands[1],
+                    rgbBands[2],
+                    preferencesPropertyMap,
+                    SubProgressMonitor.create(pm, 1));
+            productSceneImage.initVectorDataCollectionLayer();
+            productSceneImage.initMaskCollectionLayer();
+
+            final RGBChannelDef userRgbChannelDef = mergeRgbChannelDefs(rgbImageProfile, rgbBands);
+            final ImageInfo imageInfo = new ImageInfo(userRgbChannelDef);
+            productSceneImage.setImageInfo(imageInfo);
+
+        } catch (Exception e) {
+            errorOccurred = true;
+            throw e;
+        } finally {
+            pm.done();
+            if (rgbBands != null) {
+                releaseRgbBands(rgbBands, errorOccurred);
+            }
+        }
+        return productSceneImage;
     }
 }
