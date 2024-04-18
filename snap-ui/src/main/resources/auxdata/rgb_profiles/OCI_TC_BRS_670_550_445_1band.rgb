@@ -1,0 +1,10 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# which uses a red, green and blue band for the
+# respective RGB color model channels same as TC_BRS suite
+#
+name=OCI_TC_BRS_670_550_445_1band
+red=log(rhos_670/0.01)/log(1/0.01)
+green=log(rhos_550/0.01)/log(1/0.01)
+blue=log(rhos_445/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_670) and \!nan(rhos_550) and \!nan(rhos_445)

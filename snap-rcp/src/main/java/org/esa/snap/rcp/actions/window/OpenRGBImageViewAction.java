@@ -23,17 +23,24 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.util.PreferencesPropertyMap;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.RGBImageProfilePane;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneImage;
 import org.esa.snap.ui.product.ProductSceneView;
-import org.openide.awt.*;
-import org.openide.util.HelpCtx;
-import org.openide.util.NbBundle;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.awt.UndoRedo;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,6 +48,7 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
@@ -66,16 +74,16 @@ import java.util.stream.Collectors;
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "rgbImageProfile";
-    private final Product product;
 
     public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
-        product = node.getProduct();
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
+        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
         if (product != null) {
             openProductSceneViewRGB(product, HELP_ID);
         }
@@ -85,12 +93,14 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     public HelpCtx getHelpCtx() {
         return new HelpCtx(HELP_ID);
     }
-
     public void openProductSceneViewRGB(Product rgbProduct, final String helpId) {
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
 
-        final RGBImageProfilePane profilePane = new RGBImageProfilePane(SnapApp.getDefault().getPreferencesPropertyMap(), rgbProduct,
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        PropertyMap propertyMap = new PreferencesPropertyMap(preferences);
+
+        final RGBImageProfilePane profilePane = new RGBImageProfilePane(propertyMap, rgbProduct,
                 openedProducts, defaultBandIndices);
 
         final String title = "Select RGB-Image Channels";
@@ -192,11 +202,15 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         ProductSceneImage productSceneImage = null;
         try {
             pm.beginTask("Creating RGB image...", 2);
-            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions());
+            rgbBands = allocateRgbBands(product, rgbImageProfile.getRgbaExpressions(), rgbImageProfile.getValidPixelExpression());
+
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            PropertyMap propertyMap = new PreferencesPropertyMap(preferences);
+
             productSceneImage = new ProductSceneImage(name, rgbBands[0],
                     rgbBands[1],
                     rgbBands[2],
-                    SnapApp.getDefault().getPreferencesPropertyMap(),
+                    propertyMap,
                     SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
@@ -216,6 +230,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         }
         return productSceneImage;
     }
+
 
     static RGBChannelDef mergeRgbChannelDefs(RGBImageProfile rgbImageProfile, Band[] rgbBands) {
         final RGBChannelDef defFromProfile = rgbImageProfile.getRgbChannelDef();
@@ -247,7 +262,9 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         return defFromProfile;
     }
 
-    public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions) {
+    public static Band[] allocateRgbBands(final Product product, final String[] rgbaExpressions, final String validPixelExpression) {
+
+
         final Band[] rgbBands = new Band[3]; // todo - set to [4] as soon as we support alpha
         final boolean productModificationState = product.isModified();
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
@@ -283,7 +300,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
                         determineWidth(expression, products, elementIndex),
                         determineHeight(expression, products, elementIndex),
                         RGBImageProfile.RGB_BAND_NAMES[i],
-                        expression, products);
+                        expression, validPixelExpression, products);
             }
             rgbBands[i] = rgbBand;
         }
@@ -346,4 +363,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
         return nameBuilder.toString();
     }
+
+
+
+
+
+
 }
