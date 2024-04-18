@@ -1,0 +1,87 @@
+<!--
+  ~ Copyright (C) 2014 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head><script id="f5_cspm">(function(){var f5_cspm={f5_p:'NBIILLKNICDMNEGHNJLCMKEDMCPKKLBNOOLBHPPKDODJDMLPPMFEKEONINFDBPOAJDCBPDFDAAAIHKPDJKEAEILOAADFFECEOGCNMCLJELCHINOCHAPPMIEMGFPHFNEA',setCharAt:function(str,index,chr){if(index>str.length-1)return str;return str.substr(0,index)+chr+str.substr(index+1);},get_byte:function(str,i){var s=(i/16)|0;i=(i&15);s=s*32;return((str.charCodeAt(i+16+s)-65)<<4)|(str.charCodeAt(i+s)-65);},set_byte:function(str,i,b){var s=(i/16)|0;i=(i&15);s=s*32;str=f5_cspm.setCharAt(str,(i+16+s),String.fromCharCode((b>>4)+65));str=f5_cspm.setCharAt(str,(i+s),String.fromCharCode((b&15)+65));return str;},set_latency:function(str,latency){latency=latency&0xffff;str=f5_cspm.set_byte(str,40,(latency>>8));str=f5_cspm.set_byte(str,41,(latency&0xff));str=f5_cspm.set_byte(str,35,2);return str;},wait_perf_data:function(){try{var wp=window.performance.timing;if(wp.loadEventEnd>0){var res=wp.loadEventEnd-wp.navigationStart;if(res<60001){var cookie_val=f5_cspm.set_latency(f5_cspm.f5_p,res);window.document.cookie='f5avr1779101917aaaaaaaaaaaaaaaa_cspm_='+encodeURIComponent(cookie_val)+';path=/';}
+return;}}
+catch(err){return;}
+setTimeout(f5_cspm.wait_perf_data,100);return;},go:function(){var chunk=window.document.cookie.split(/\s*;\s*/);for(var i=0;i<chunk.length;++i){var pair=chunk[i].split(/\s*=\s*/);if(pair[0]=='f5_cspm'&&pair[1]=='1234')
+{var d=new Date();d.setTime(d.getTime()-1000);window.document.cookie='f5_cspm=;expires='+d.toUTCString()+';path=/;';setTimeout(f5_cspm.wait_perf_data,100);}}}}
+f5_cspm.go();}());</script>
+    <title>Sentinel Toolbox Help - The Angular Band Chooser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            The Angular Band Chooser
+        </td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg"
+                                                                                     border="0"></a></td>
+    </tr>
+</table>
+
+<p>
+    The angular band chooser is accessed by clicking <img src="images/icons/Filter24.gif"> in the
+    <a href="AngularViewWindow.html">Angular View</a>.
+    You can use the angular band chooser to set which angular bands to display in the angular view.
+    and to alter their appearance.<br>
+    See below for a screenshot.
+</p>
+
+<p align="center"><img src="images/AngularBandChooser.png"></p>
+
+<p>
+    Spectra are defined as band groups.
+    You can add or change groups using the product's <a href="PropertyEditor.html">Property Editor</a>.
+    Bands which are not included in a group will be displayed as "Other" or "Angular bands".<br>
+</p>
+
+<p>
+    You can select or deselect an angular band by checking the box next to its name.
+    Clicking <img src="images/icons/PlusSquaredButton.gif"> will bring up a sub-table which allows you to select
+    and deselect distinct bands.
+</p>
+
+<p class="inote">
+    <b>Tip:</b> When you have made a sub-selection of bands within angular bands and
+    then checked the respective angular band box, checking it again will bring back your selection.
+</p>
+
+<p>
+    In addition, you can choose a line style, a symbol, and the symbol size for each angular band.
+    You can also choose to use no symbol.
+</p>
+
+<p>The Angular Band Chooser provides the following tool buttons:<br><br>
+
+<table cellpadding=2 cellspacing=0 border=0>
+    <tr>
+        <td><img src="images/icons/document-open.png"></td>
+        <td>Imports band configurations from a file.</td>
+    </tr>
+    <tr>
+        <td><img src="images/icons/document-save.png"></td>
+        <td>Exports band configurations to a file.</td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

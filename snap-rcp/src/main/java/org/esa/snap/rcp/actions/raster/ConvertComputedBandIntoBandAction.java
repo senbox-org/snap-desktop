@@ -97,6 +97,8 @@ public class ConvertComputedBandIntoBandAction extends AbstractAction implements
         realBand.setValidPixelExpression(computedBand.getValidPixelExpression());
         realBand.setUnit(computedBand.getUnit());
         realBand.setSpectralWavelength(computedBand.getSpectralWavelength());
+        realBand.setAngularValue(computedBand.getAngularValue());
+        realBand.setAngularBandIndex(computedBand.getAngularBandIndex());
         realBand.setGeophysicalNoDataValue(computedBand.getGeophysicalNoDataValue());
         realBand.setNoDataValueUsed(computedBand.isNoDataValueUsed());
         if (computedBand.isStxSet()) {
