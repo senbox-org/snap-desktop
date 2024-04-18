@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.UIUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -28,18 +29,18 @@ import javax.swing.Icon;
 
 @TopComponent.Description(
         preferredID = "ScatterPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/ScatterPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.CORRELATIVE_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "CorrelativePlot",
+        mode = PackageDefaults.CORRELATIVE_PLOT_WS_MODE,
         openAtStartup = false,
         position = 5
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.ScatterPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 10),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 40)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ScatterPlotTopComponent_Name",
