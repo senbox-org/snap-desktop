@@ -16,12 +16,7 @@
 
 package org.esa.snap.core.gpf.ui;
 
-import com.bc.ceres.binding.ConversionException;
-import com.bc.ceres.binding.DefaultPropertySetDescriptor;
-import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.PropertySetDescriptor;
-import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DefaultDomConverter;
 import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
@@ -78,10 +73,9 @@ public class OperatorParameterSupport {
      * enable custom updating.
      *
      * @param operatorDescriptor The operator descriptor.
-     * @param propertySet      The property set (can be null). If supplied a parameter map is required as well.
-     * @param parameterMap     the parameter map (can be null)
-     * @param parameterUpdater The parameter updater (can be null)
-     *
+     * @param propertySet        The property set (can be null). If supplied a parameter map is required as well.
+     * @param parameterMap       the parameter map (can be null)
+     * @param parameterUpdater   The parameter updater (can be null)
      */
     public OperatorParameterSupport(OperatorDescriptor operatorDescriptor,
                                     PropertySet propertySet,
@@ -89,26 +83,6 @@ public class OperatorParameterSupport {
                                     ParameterUpdater parameterUpdater) {
         Assert.notNull(operatorDescriptor, "operatorDescriptor");
         init(null, operatorDescriptor, propertySet, parameterMap, parameterUpdater);
-    }
-
-    /**
-     * @deprecated since BEAM 5, use {@link #OperatorParameterSupport(OperatorDescriptor)} instead
-     */
-    @Deprecated
-    public OperatorParameterSupport(Class<? extends Operator> opType) {
-        this(opType, null, null, null);
-    }
-
-    /**
-     * @deprecated since BEAM 5, use {@link #OperatorParameterSupport(OperatorDescriptor, PropertySet, Map, ParameterUpdater)}
-     */
-    @Deprecated
-    public OperatorParameterSupport(Class<? extends Operator> opType,
-                                    PropertySet propertySet,
-                                    Map<String, Object> parameterMap,
-                                    ParameterUpdater parameterUpdater) {
-        Assert.notNull(opType, "opType");
-        init(opType, null, propertySet, parameterMap, parameterUpdater);
     }
 
     private void init(Class<? extends Operator> opType,
@@ -152,14 +126,6 @@ public class OperatorParameterSupport {
     }
 
     public PropertySet getPropertySet() {
-        return propertySet;
-    }
-
-    /**
-     * @deprecated since BEAM 5, use {@link #getPropertySet()}
-     */
-    @Deprecated
-    public PropertySet getPopertySet() {
         return propertySet;
     }
 
