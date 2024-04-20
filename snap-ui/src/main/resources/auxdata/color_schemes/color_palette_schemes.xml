@@ -1339,11 +1339,11 @@
 
     <Scheme name="CI">
         <VERBOSE_NAME>CI (Cyanobacteria Index)</VERBOSE_NAME>
-        <MIN>0.0001</MIN>
-        <MAX>0.01</MAX>
+        <MIN>0.000065</MIN>
+        <MAX>0.063096</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <STANDARD_FILENAME>cyan256.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>cyan256.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Cyanobacteria Index</COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>
