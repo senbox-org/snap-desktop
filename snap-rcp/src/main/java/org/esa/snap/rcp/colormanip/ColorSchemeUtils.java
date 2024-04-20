@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.colormanip;
 
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Histogram;
@@ -45,7 +46,12 @@ public class ColorSchemeUtils {
         ColorSchemeManager colorPaletteSchemes = ColorSchemeManager.getDefault();
 
         if (configuration != null && configuration.getPropertyBool(PROPERTY_SCHEME_AUTO_APPLY_KEY, PROPERTY_SCHEME_AUTO_APPLY_DEFAULT)) {
-            ColorSchemeInfo colorSchemeInfo = getColorPaletteInfoByBandNameLookup(productSceneView);
+            String bandName = productSceneView.getRaster().getName().trim();
+//            String mission = ProductUtils.getMetaData(productSceneView.getProduct(), ProductUtils.METADATA_POSSIBLE_SENSOR_KEYS);
+//            if (mission == null || mission.length() == 0) {
+//                mission = productSceneView.getProduct().getProductType();
+//            }
+            ColorSchemeInfo colorSchemeInfo = ColorSchemeInfo.getColorPaletteInfoByBandNameLookup(bandName, productSceneView.getProduct());
 
             if (colorSchemeInfo != null) {
                 imageInfoSet = ColorSchemeUtils.setImageInfoToColorScheme(colorSchemeInfo, productSceneView);
@@ -242,24 +248,24 @@ public class ColorSchemeUtils {
     }
 
 
-    public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
-
-        ColorSchemeManager colorSchemeManager = ColorSchemeManager.getDefault();
-        if (colorSchemeManager != null) {
-
-            String bandName = productSceneView.getBaseImageLayer().getName().trim();
-            bandName = bandName.substring(bandName.indexOf(" ")).trim();
-
-            ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = colorSchemeManager.getColorSchemeLookupInfos();
-            for (ColorSchemeLookupInfo colorSchemeLookupInfo : colorSchemeLookupInfos) {
-                if (colorSchemeLookupInfo.isMatch(bandName)) {
-                    return colorSchemeManager.getColorSchemeInfoBySchemeId(colorSchemeLookupInfo.getScheme_id());
-                }
-            }
-        }
-
-        return null;
-    }
+//    public static ColorSchemeInfo getColorPaletteInfoByBandNameLookup(ProductSceneView productSceneView) {
+//
+//        ColorSchemeManager colorSchemeManager = ColorSchemeManager.getDefault();
+//        if (colorSchemeManager != null) {
+//
+//            String bandName = productSceneView.getBaseImageLayer().getName().trim();
+//            bandName = bandName.substring(bandName.indexOf(" ")).trim();
+//
+//            ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = colorSchemeManager.getColorSchemeLookupInfos();
+//            for (ColorSchemeLookupInfo colorSchemeLookupInfo : colorSchemeLookupInfos) {
+//                if (colorSchemeLookupInfo.isMatch(bandName)) {
+//                    return colorSchemeManager.getColorSchemeInfoBySchemeId(colorSchemeLookupInfo.getScheme_id());
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
 
     public static boolean getLogScaledFromScheme(PropertyMap configuration, ColorSchemeInfo colorSchemeInfo, ColorPaletteDef colorPaletteDef) {
@@ -844,29 +850,29 @@ public class ColorSchemeUtils {
 
         // RGB Options
 
-        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MIN_KEY);
+        preferenceKey = getPreferenceContextKey(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
             try {
                 double value = Double.parseDouble(preferenceValue);
-                ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
+                RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT = value;
             } catch (NumberFormatException ex) {
                 errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, INVALID_NUMBER);
             }
         }
-        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
+        showEffectiveDefault(preferenceKey, Double.toString(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT));
 
 
-        preferenceKey = getPreferenceContextKey(PROPERTY_RGB_OPTIONS_MAX_KEY);
+        preferenceKey = getPreferenceContextKey(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY);
         preferenceValue = Config.instance().preferences().get(preferenceKey, null);
         if (preferenceValue != null && preferenceValue.length() > 0) {
             try {
                 double value = Double.parseDouble(preferenceValue);
 
-                if (value > ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
-                    ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
+                if (value > RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT) {
+                    RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT = value;
                 } else {
-                    String msg = PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + PROPERTY_RGB_OPTIONS_MIN_KEY;
+                    String msg = RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY + " cannot be less than " + RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY;
                     errorMsg += createPropertyErrorMessage(preferenceKey, preferenceValue, msg);
                 }
             } catch (NumberFormatException ex) {
@@ -874,7 +880,7 @@ public class ColorSchemeUtils {
             }
 
         }
-        showEffectiveDefault(preferenceKey, Double.toString(PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
+        showEffectiveDefault(preferenceKey, Double.toString(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT));
 
 
         if (errorMsg != null && errorMsg.length() > 0) {
