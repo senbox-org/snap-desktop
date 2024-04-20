@@ -21,7 +21,6 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.core.jexp.impl.AbstractSymbol;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.util.NamingConvention;
-import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.layer.AbstractLayerConfigurationEditor;
 
 import java.awt.Color;
