@@ -60,11 +60,12 @@ import java.util.stream.Collectors;
 @ActionRegistration(
         displayName = "#CTL_OpenRGBImageViewAction_MenuText",
         popupText = "#CTL_OpenRGBImageViewAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
+        iconBase = "org/esa/snap/rcp/icons/RgbImage24.png",
         lazy = true
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
+        @ActionReference(path = "Toolbars/Image", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
