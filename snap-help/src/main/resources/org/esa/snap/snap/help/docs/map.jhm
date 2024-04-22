@@ -11,6 +11,7 @@
     <mapID target="doc" url="images/HelpDoc.jpg"/>
 
     <mapID target="snapOverview" url="general/overview/SnapOverview.html"/>
+    <mapID target="seadasOverview" url="general/overview/SeadasOverview.html"/>
     <mapID target="snapDefinitions" url="general/overview/SnapDefinitions.html"/>
     <mapID target="snapDataSources" url="general/overview/SnapDataSources.html"/>
     <mapID target="snapRelatedLinks" url="general/overview/SnapRelatedLinks.html"/>

@@ -151,7 +151,7 @@ public class SnapApp {
                     UIManager.setLookAndFeel(FlatLightLaf.class.getName());
                     lafPreference.put("laf", FlatLightLaf.class.getName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException e) {
+                        UnsupportedLookAndFeelException e) {
                     LOG.warning("Could not set FlatLaf Light Look and Feel");
                 }
             }
@@ -256,7 +256,7 @@ public class SnapApp {
         try {
             return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
         } catch (Exception e) {
-            return "SNAP";
+            return SystemUtils.getApplicationName();
         }
     }
 
@@ -590,14 +590,18 @@ public class SnapApp {
 
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
-
         if (instanceName != null && instanceName.length() > 0) {
+            if (SystemUtils.isMainframeTitleIncludeVersion()) {
+                String version = SystemUtils.getReleaseVersion();
+                if (version != null && version.length() > 0) {
+                    return String.format("%s %s", instanceName, version);
+                }
+            }
             return String.format("%s", instanceName);
-        } else {
-            return String.format("[%s]", "Empty");
         }
-
+        return String.format("[%s]", "Empty");
     }
+
 
     /**
      * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source
