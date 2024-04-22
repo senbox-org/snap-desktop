@@ -18,7 +18,9 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.runtime.internal.Platform;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.RgbDefaults;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.util.ImageUtilities;
@@ -219,8 +221,8 @@ class ImageInfoEditorSupport {
 
     private void setRGBminmax() {
         PropertyMap configuration = form.getFormModel().getProductSceneView().getSceneImage().getConfiguration();
-        double rgbMin = configuration.getPropertyDouble(ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
-        double rgbMax = configuration.getPropertyDouble(ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, ColorManipulationDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
+        double rgbMin = configuration.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MIN_DEFAULT);
+        double rgbMax = configuration.getPropertyDouble(RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_KEY, RgbDefaults.PROPERTY_RGB_OPTIONS_MAX_DEFAULT);
 
         imageInfoEditor.setRGBminmax(rgbMin, rgbMax);
     }

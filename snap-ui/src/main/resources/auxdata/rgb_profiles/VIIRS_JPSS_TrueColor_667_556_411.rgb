@@ -1,0 +1,11 @@
+# RGB-Image Configuration Profile
+# VIIRS_TrueColor_(667,556,411)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=VIIRS_JPSS_TrueColor_Log(667,556,411)
+red=log(rhos_667/0.01)/log(1/0.01)
+green=log(rhos_556/0.01)/log(1/0.01)
+blue=log(rhos_411/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_667) and \!nan(rhos_556) and \!nan(rhos_411) and LAT >= -90 and LAT <= 90
