@@ -16,6 +16,7 @@
 package org.esa.snap.rcp.mask;
 
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -31,7 +32,7 @@ import javax.swing.event.ListSelectionListener;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "rightSlidingSide",
+        mode = PackageDefaults.MASK_MANAGER_MODE,
         openAtStartup = true,
         position = 20
 )

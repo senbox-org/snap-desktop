@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.placemark.InsertPinInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,7 +35,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/" + PackageDefaults.PIN_TOOL_TOOLBAR_NAME,
         position = 130
 )
 @Messages({
@@ -52,7 +53,7 @@ public class PinToolAction extends ToolAction {
         super(lookup, new InsertPinInteractor());
         putValue(NAME, Bundle.CTL_PinToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PinToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PinTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.PIN_TOOL_ICON, false));
     }
 
     @Override
