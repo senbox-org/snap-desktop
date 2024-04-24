@@ -101,12 +101,12 @@ public class GraphNodeList {
 
     void updateGraphNodes(final GraphContext graphContext) throws GraphException {
         if (graphContext != null) {
-            for (GraphNode n : nodeList) {
-                final NodeContext context = graphContext.getNodeContext(n.getNode());
+            for (GraphNode node : nodeList) {
+                final NodeContext context = graphContext.getNodeContext(node.getNode());
                 if(context.getOperator() != null) {
-                    n.setSourceProducts(context.getSourceProducts());
+                    node.setSourceProducts(context.getSourceProducts());
                 }
-                n.updateParameters();
+                node.updateParameters();
             }
         }
     }

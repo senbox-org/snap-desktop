@@ -20,6 +20,7 @@ import org.openide.util.HelpCtx;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -245,6 +246,10 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      */
     @Override
     public void applyChanges() {
+        final TableCellEditor tableCellEditor = this.credentialsListTable.getCellEditor();
+        if (tableCellEditor != null) {
+            tableCellEditor.stopCellEditing();
+        }
         if (isChanged()) {
             try {
                 RepositoriesCredentialsController repositoriesCredentialsController = RepositoriesCredentialsController.getInstance();
@@ -257,7 +262,7 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
                 this.downloadAllPages = changedDownloadAllPagesEnabled;
                 this.nrRecordsOnPage = changedNrRecordsOnPage;
                 AppContext appContext = SnapApp.getDefault().getAppContext();
-                appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2);
+                SwingUtilities.invokeLater(() -> appContext.getApplicationWindow().firePropertyChange(REMOTE_PRODUCTS_REPOSITORY_CREDENTIALS, 1, 2));
             } catch (Exception ex) {
                 String title = "Error saving remote repositories credentials";
                 String msg = "Unable to save Remote Repositories Credentials to SNAP configuration file." + " Details: " + ex.getMessage();
@@ -369,9 +374,12 @@ public class RepositoriesCredentialsControllerUI extends DefaultConfigController
      * Runs the event associated with button for removing remote repository credential.
      */
     private void runRemoveCredentialEvent() {
-        credentialsListTable.getDefaultEditor(JTextField.class).stopCellEditing();
         int selectedRowIndex = credentialsListTable.getSelectedRow();
         if (selectedRowIndex >= 0) {
+            final TableCellEditor tableCellEditor = credentialsListTable.getDefaultEditor(JTextField.class);
+            if (tableCellEditor != null) {
+                tableCellEditor.stopCellEditing();
+            }
             RepositoriesCredentialsTableModel repositoriesCredentialsTableModel = (RepositoriesCredentialsTableModel) credentialsListTable.getModel();
             repositoriesCredentialsTableModel.remove(selectedRowIndex);
         } else {

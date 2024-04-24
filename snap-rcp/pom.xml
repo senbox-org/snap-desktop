@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>10.0.0-SNAPSHOT</version>
+        <version>11.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-rcp</artifactId>
@@ -56,8 +56,8 @@
                         <publicPackage>org.esa.snap.rcp.about</publicPackage>
                         <publicPackage>org.esa.snap.rcp.actions.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.util.*</publicPackage>
-						<publicPackage>org.jfree.*</publicPackage>
-						<publicPackage>eu.esa.snap.netbeans.*</publicPackage>
+                        <publicPackage>org.jfree.*</publicPackage>
+                        <publicPackage>eu.esa.snap.netbeans.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -183,6 +183,11 @@
             <artifactId>org-openide-util-ui</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-libs-flatlaf</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-core-startup</artifactId>
             <version>${netbeans.version}</version>
@@ -265,7 +270,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-gpf</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
         </dependency>
@@ -290,12 +295,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-			<scope>test</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-			<scope>test</scope>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

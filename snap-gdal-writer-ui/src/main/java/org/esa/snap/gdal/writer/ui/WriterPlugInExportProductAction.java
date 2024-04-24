@@ -77,7 +77,7 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
             }
             fileName += selectedFileFilter.getDriverInfo().getExtensionName();
             try {
-                Method setFileNameMethod = fileChooser.getUI().getClass().getDeclaredMethod("setFileName", String.class);
+                Method setFileNameMethod = fileChooser.getUI().getClass().getMethod("setFileName", String.class);
                 setFileNameMethod.invoke(fileChooser.getUI(), fileName);
             } catch (Exception e) {
                 throw new IllegalStateException(e);
@@ -87,7 +87,7 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
         fileChooser.addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, event -> {
             if (event.getOldValue() != null && event.getNewValue() == null) {
                 try {
-                    Method getFileName = fileChooser.getUI().getClass().getDeclaredMethod("getFileName");
+                    Method getFileName = fileChooser.getUI().getClass().getMethod("getFileName");
                     this.enteredFileName = (String) getFileName.invoke(fileChooser.getUI());
                 } catch (Exception e) {
                     throw new IllegalStateException(e);
