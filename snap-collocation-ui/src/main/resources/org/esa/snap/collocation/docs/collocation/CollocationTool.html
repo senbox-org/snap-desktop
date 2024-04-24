@@ -37,13 +37,13 @@
 <p>
     The <em>Collocation Tool</em> allows to collocate spatially
     overlapping products. Collocating products implies that the pixel
-    values of slave products are resampled into the geographical
-    raster of the master product.
+    values of secondary products are resampled into the geographical
+    raster of the reference product.
 </p>
 
 <p>
     In order to avoid naming conflicts, the Collocation Tool allows to rename both
-    master and slave components such as bands, flag codings and bitmask definitions
+    reference and secondary components such as bands, flag codings and bitmask definitions
     according to a user defined pattern.
 </p>
 
@@ -51,32 +51,32 @@
 
 <p>
     When products are collocated, a new product is created which contains a
-    copy of all components of the master product, i.e. band data, tie-point grids,
-    flag codings, bitmask definitions, and metadata. The components of the slave
+    copy of all components of the reference product, i.e. band data, tie-point grids,
+    flag codings, bitmask definitions, and metadata. The components of the secondary
     products are transfered in a different manner:
 </p>
 
 <p>
-    The band data of the slave products are resampled into the geographical
-    raster of the master product. The user may choose between three different
-    resampling methods: <a href="../general/ResamplingMethods.html">Nearest
-    Neighbour</a>, <a href="../general/ResamplingMethods.html">Bilinear
-    Interpolation</a>, and <a href="../general/ResamplingMethods.html">Cubic
+    The band data of the secondary products are resampled into the geographical
+    raster of the reference product. The user may choose between three different
+    resampling methods: <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Nearest
+    Neighbour</a>, <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Bilinear
+    Interpolation</a>, and <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Cubic
     Convolution</a>. For flag bands and bands where a valid-pixel expression
     is defined, the Nearest Neighbour method is used.
-    In order to establish a mapping between the samples in the master and the
-    slave rasters, the geographical position of a master sample is used to find
-    the corresponding sample in the slave raster. If there is no sample for a
-    requested geographical position, the master sample is set to the no-data
-    value which was defined for the slave band. The collocation algorithm
-    requires accurate geopositioning information for both master and slave
+    In order to establish a mapping between the samples in the reference and the
+    secondary rasters, the geographical position of a reference sample is used to find
+    the corresponding sample in the secondary raster. If there is no sample for a
+    requested geographical position, the output sample is set to the no-data
+    value which was defined for the secondary band. The collocation algorithm
+    requires accurate geopositioning information for both reference and secondary
     products. When necessary, accurate geopositioning information may be provided
-    by <a href="../visat/GcpManagement.html">ground control points</a>.
+    by <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/GcpManagement.html">ground control points</a>.
 </p>
 
 <p>
-    As for the master product, the tie-point grids, flag codings and bitmask
-    definitions of the slave products are copied. Slave product metadata are not
+    As for the reference product, the tie-point grids, flag codings and bitmask
+    definitions of the secondary products are copied. Secondary product metadata are not
     transfered.
 </p>
 
@@ -103,16 +103,16 @@
 <h5>Source Products Group</h5>
 
 <p class="i1">
-    <b>Master:</b>
-    Here the user specifies the master product. The combo box presents
-    a list of all products opened in the Sentinel Toolbox. The user may select one of these
+    <b>Reference:</b>
+    Here the user specifies the reference product. The combo box presents
+    a list of all products opened in SNAP. The user may select one of these
     or, by clicking on the button next to the combo box, choose a product
     from the file system.
 </p>
 
 <p class="i1">
-    <b>Slave:</b>
-    Here the user specifies the slave products. The user may select products
+    <b>Secondary Products:</b>
+    Here the user specifies the secondary products. The user may select products
     opened in SNAP or products from the file system.
 </p>
 
@@ -131,36 +131,36 @@
 
 <p class="i1">
     <b>Open in SNAP:</b>
-    Used to specify whether the target product should be opened in the Sentinel Toolbox.
-    When the target product is not saved, it is opened in the Sentinel Toolbox automatically.
+    Used to specify whether the target product should be opened in SNAP after processing.
+    When the target product is not saved, it is opened in SNAP automatically.
 </p>
 
 <h5>Component Renaming Group</h5>
 
 <p class="i1">
     Each product consists of different components, such as bands, flag codings and
-    bitmask definitions. In order to avoid naming conflicts between master and slave
+    bitmask definitions. In order to avoid naming conflicts between reference and secondary
     product components, the user can specify a renaming pattern.
 </p>
 
 <p class="i1">
-    <b>Rename master components:</b>
-    By checking or unchecking this option the automatic renaming of master product
+    <b>Rename reference components:</b>
+    By checking or unchecking this option the automatic renaming of reference product
     components can be activated or deactivated, respectively. If activated, all
-    components of the master product are renamed according to the
+    components of the reference product are renamed according to the
     pattern given in the text field next to the check box. The expression
     <code>${ORIGINAL_NAME}</code> can be used to refer to the original name of the
     component.
 </p>
 
 <p class="i1">
-    <b>Rename slave components:</b>
-    By checking or unchecking this option the automatic renaming of slave product
+    <b>Rename secondary components:</b>
+    By checking or unchecking this option the automatic renaming of secondary product
     components can be activated or deactivated, respectively. If activated, all
-    components of the slave products are renamed according to the
+    components of the secondary products are renamed according to the
     pattern given in the text field next to the check box. The expression
-    <code>${ORIGINAL_NAME}</code> or <code>${SLAVE_NUMBER_ID}</code> can be used
-    to refer to the original name of the component or the id of the slave (0,1,2...)
+    <code>${ORIGINAL_NAME}</code> or <code>${SECONDARY_NUMBER_ID}</code> can be used
+    to refer to the original name of the component or the id of the secondary (0,1,2...)
     respectively.
 </p>
 
@@ -169,11 +169,11 @@
 <p class="i1">
     <b>Method:</b>
     The combo box presents several resampling methods:
-    <a href="../general/ResamplingMethods.html">Nearest
-        Neighbour</a>, <a href="../general/ResamplingMethods.html">Bilinear
-    Interpolation</a>, and <a href="../general/ResamplingMethods.html">Cubic
-    Convolution</a>. When the slave product contains a band where a valid-pixel
-    expression is defined, only the <a href="../general/ResamplingMethods.html">Nearest
+    <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Nearest
+        Neighbour</a>, <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Bilinear
+    Interpolation</a>, and <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Cubic
+    Convolution</a>. When the secondary product contains a band where a valid-pixel
+    expression is defined, only the <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/ResamplingMethods.html">Nearest
     Neighbour</a> method is presented.
 </p>
 

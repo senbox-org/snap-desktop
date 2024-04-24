@@ -20,13 +20,11 @@ import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductFilter;
-import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.SourceProductDescriptor;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,10 +33,10 @@ import java.util.HashMap;
  */
 public class DefaultIOParametersPanel extends JPanel {
 
-    private ArrayList<SourceProductSelector> sourceProductSelectorList;
-    private HashMap<SourceProductDescriptor, SourceProductSelector> sourceProductSelectorMap;
-    private AppContext appContext;
-    private boolean targetProductSelectorDisplay;
+    private final ArrayList<SourceProductSelector> sourceProductSelectorList;
+    private final HashMap<SourceProductDescriptor, SourceProductSelector> sourceProductSelectorMap;
+    private final AppContext appContext;
+    private final boolean targetProductSelectorDisplay;
 
     public DefaultIOParametersPanel(AppContext appContext, OperatorDescriptor descriptor, TargetProductSelector targetProductSelector, boolean targetProductSelectorDisplay) {
         this.appContext = appContext;
@@ -84,15 +82,6 @@ public class DefaultIOParametersPanel extends JPanel {
 
     public DefaultIOParametersPanel(AppContext appContext, OperatorDescriptor descriptor, TargetProductSelector targetProductSelector) {
         this(appContext, descriptor, targetProductSelector, true);
-    }
-
-    /**
-     * @deprecated since BEAM 5, use {@link #DefaultIOParametersPanel(AppContext, OperatorDescriptor, TargetProductSelector)}
-     */
-    @Deprecated
-    public DefaultIOParametersPanel(AppContext appContext, OperatorSpi operatorSpi,
-                                    TargetProductSelector targetProductSelector) {
-        this(appContext, operatorSpi.getOperatorDescriptor(), targetProductSelector);
     }
 
     public boolean getTargetProductSelectorDisplay() {

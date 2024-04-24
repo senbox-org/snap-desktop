@@ -18,21 +18,14 @@ package org.esa.snap.core.gpf.ui;
 
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import org.esa.snap.core.datamodel.CrsGeoCoding;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductFilter;
-import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.crs.CrsForm;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.GeneralPath;
@@ -127,7 +120,7 @@ public class CollocationCrsForm extends CrsForm {
         public boolean accept(Product collocationProduct) {
             final Product referenceProduct = getReferenceProduct();
             if (referenceProduct == collocationProduct ||
-                collocationProduct.getSceneGeoCoding() == null) {
+                    collocationProduct.getSceneGeoCoding() == null) {
                 return false;
             }
             if (referenceProduct == null) {
@@ -135,8 +128,8 @@ public class CollocationCrsForm extends CrsForm {
             }
             final GeoCoding geoCoding = collocationProduct.getSceneGeoCoding();
             if (geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos() && (geoCoding instanceof CrsGeoCoding)) {
-                final GeneralPath[] sourcePath = ProductUtils.createGeoBoundaryPaths(referenceProduct);
-                final GeneralPath[] collocationPath = ProductUtils.createGeoBoundaryPaths(collocationProduct);
+                final GeneralPath[] sourcePath = GeoUtils.createGeoBoundaryPaths(referenceProduct);
+                final GeneralPath[] collocationPath = GeoUtils.createGeoBoundaryPaths(collocationProduct);
                 for (GeneralPath path : sourcePath) {
                     Rectangle bounds = path.getBounds();
                     for (GeneralPath colPath : collocationPath) {
@@ -149,6 +142,4 @@ public class CollocationCrsForm extends CrsForm {
             return false;
         }
     }
-
-
 }

@@ -325,8 +325,10 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
 
     public void setData(List<File> sourceProductFiles, File slaveGraphFile, String slaveProductsFormaName) {
         String[] sourceFiles = new String[sourceProductFiles.size()];
-        for (int i=0; i<sourceProductFiles.size(); i++) {
-            sourceFiles[i] = sourceProductFiles.get(i).getPath();
+        int i = 0;
+        for (final File file : sourceProductFiles){
+            sourceFiles[i] = file.getPath();
+            ++i;
         }
         setListItems(sourceFiles, SOURCE_PRODUCT_FILES_PROPERTY);
         setPropertyValue(slaveGraphFile.getPath(), SLAVE_GRAPH_FILE_PATH_PROPERTY);

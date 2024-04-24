@@ -91,14 +91,14 @@ public class CollocationUI extends BaseOperatorUI {
         }
 
         paramMap.clear();
-        paramMap.put("masterProductName", masterCombo.getSelectedItem());
+        paramMap.put("referenceProductName", masterCombo.getSelectedItem());
         paramMap.put("targetProductName", "_collocated");
         paramMap.put("targetProductType", productTypeField.getText());
         paramMap.put("copySecondaryMetadata", copySecMetadataCheckBox.isSelected());
-        paramMap.put("renameMasterComponents", renameMasterCheckBox.isSelected());
-        paramMap.put("renameSlaveComponents", renameSlaveCheckBox.isSelected());
-        paramMap.put("masterComponentPattern", masterPatternField.getText());
-        paramMap.put("slaveComponentPattern", slavePatternField.getText());
+        paramMap.put("renameReferenceComponents", renameMasterCheckBox.isSelected());
+        paramMap.put("renameSecondaryComponents", renameSlaveCheckBox.isSelected());
+        paramMap.put("referenceComponentPattern", masterPatternField.getText());
+        paramMap.put("secondaryComponentPattern", slavePatternField.getText());
         paramMap.put("resamplingType", resampleTypeCombo.getSelectedItem());
 
     }
@@ -142,9 +142,9 @@ public class CollocationUI extends BaseOperatorUI {
 
 
         JPanel masterSelectionPanel = new JPanel(new GridLayout(1, 2));
-        PropertyDescriptor descriptorMasterProductName = propertySet.getProperty("masterProductName").getDescriptor();
-        JLabel masterSelectionLabel = new JLabel("Master product name");
-        masterSelectionLabel.setToolTipText(descriptorMasterProductName.getAttribute("description").toString());
+        PropertyDescriptor descriptorReferenceProductName = propertySet.getProperty("referenceProductName").getDescriptor();
+        JLabel masterSelectionLabel = new JLabel("Reference product name");
+        masterSelectionLabel.setToolTipText(descriptorReferenceProductName.getAttribute("description").toString());
         masterSelectionPanel.add(masterSelectionLabel);
         masterSelectionPanel.add(masterCombo);
 
@@ -163,28 +163,28 @@ public class CollocationUI extends BaseOperatorUI {
         secMetaPanel.add(copySecMetadataCheckBox);
 
         JPanel renameMasterPanel = new JPanel(new GridLayout(1, 1));
-        PropertyDescriptor descriptorRenameMaster = propertySet.getProperty("renameMasterComponents").getDescriptor();
+        PropertyDescriptor descriptorRenameMaster = propertySet.getProperty("renameReferenceComponents").getDescriptor();
         renameMasterCheckBox = new JCheckBox(descriptorRenameMaster.getAttribute("displayName").toString());
         renameMasterCheckBox.setSelected(true);
         renameMasterCheckBox.setToolTipText(descriptorRenameMaster.getAttribute("description").toString());
         renameMasterPanel.add(renameMasterCheckBox);
 
         JPanel renameSlavePanel = new JPanel(new GridLayout(1, 1));
-        PropertyDescriptor descriptorRenameSlave = propertySet.getProperty("renameSlaveComponents").getDescriptor();
+        PropertyDescriptor descriptorRenameSlave = propertySet.getProperty("renameSecondaryComponents").getDescriptor();
         renameSlaveCheckBox = new JCheckBox(descriptorRenameSlave.getAttribute("displayName").toString());
         renameSlaveCheckBox.setSelected(true);
         renameSlaveCheckBox.setToolTipText(descriptorRenameSlave.getAttribute("description").toString());
         renameSlavePanel.add(renameSlaveCheckBox);
 
         JPanel masterPatternPanel = new JPanel(new GridLayout(1, 2));
-        PropertyDescriptor descriptorMasterPattern = propertySet.getProperty("masterComponentPattern").getDescriptor();
+        PropertyDescriptor descriptorMasterPattern = propertySet.getProperty("referenceComponentPattern").getDescriptor();
         JLabel masterPatternLabel = new JLabel(descriptorMasterPattern.getAttribute("displayName").toString());
         masterPatternLabel.setToolTipText(descriptorMasterPattern.getAttribute("description").toString());
         masterPatternPanel.add(masterPatternLabel);
         masterPatternPanel.add(masterPatternField);
 
         JPanel slavePatternPanel = new JPanel(new GridLayout(1, 2));
-        PropertyDescriptor descriptorSlavePattern = propertySet.getProperty("slaveComponentPattern").getDescriptor();
+        PropertyDescriptor descriptorSlavePattern = propertySet.getProperty("secondaryComponentPattern").getDescriptor();
         JLabel slavePatternLabel = new JLabel(descriptorSlavePattern.getAttribute("displayName").toString());
         slavePatternLabel.setToolTipText(descriptorSlavePattern.getAttribute("description").toString());
         slavePatternPanel.add(slavePatternLabel);
