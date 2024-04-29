@@ -3,7 +3,9 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 11.0.0
     
+    [SNAP-3680] Update MERIS auxdata module
     [SNAP-3636] ZNAP product not opened after processing
+    [SNAP-1585] GeoCodingFactory should be updated or removed
 
 # SNAP 10.0.0
 
