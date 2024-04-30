@@ -65,6 +65,7 @@ import java.util.stream.Collectors;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
+        @ActionReference(path = "Toolbars/Image", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
