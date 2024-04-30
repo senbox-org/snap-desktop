@@ -6,11 +6,12 @@ import org.esa.snap.ui.loading.GenericRunnable;
 import org.esa.snap.worldwind.productlibrary.PolygonMouseListener;
 import org.esa.snap.worldwind.productlibrary.PolygonsLayerModel;
 import org.esa.snap.worldwind.productlibrary.WorldMap3DPanel;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class WorldMapPanelWrapperImpl extends org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper{
+public class WorldMapPanelWrapperImpl extends WorldMapPanelWrapper {
     public WorldMapPanelWrapperImpl(PolygonMouseListener mouseListener, Color backgroundColor, PropertyMap persistencePreferences) {
         super(mouseListener, backgroundColor, persistencePreferences);
     }
@@ -23,12 +24,12 @@ public class WorldMapPanelWrapperImpl extends org.esa.snap.worldwind.productlibr
 
     private static class InitWorldMap3DPanelRunnable extends AbstractRunnable<WorldMap3DPanel> {
 
-        private final org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper worldWindowPanel;
+        private final WorldMapPanelWrapper worldWindowPanel;
         private final boolean flatEarth;
         private final boolean removeExtraLayers;
         private final PolygonsLayerModel polygonsLayerModel;
 
-        public InitWorldMap3DPanelRunnable(org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper worldWindowPanel, boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
+        public InitWorldMap3DPanelRunnable(WorldMapPanelWrapper worldWindowPanel, boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
             this.polygonsLayerModel = polygonsLayerModel;
             this.worldWindowPanel = worldWindowPanel;
             this.flatEarth = flatEarth;

@@ -3,15 +3,93 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 11.0.0
     
+    [SNAP-3680] Update MERIS auxdata module
     [SNAP-3636] ZNAP product not opened after processing
+    [SNAP-1585] GeoCodingFactory should be updated or removed
 
-# New in SNAP 10.0.0
-    [SNAP-3640] Sentinel-5 nc Geocoding not loaded
+# SNAP 10.0.0
+
+## New in SNAP 10.0
+
+    Update SNAP to run with JDK 11
+    Update 3rd party libraries to the latest version
+    Update NetBeans platform
+    Update SNAPPY to run with Python 3.10 & improved SNAPPY installation
+    New browsing, voting, and commenting functionalities added to SNAP Plugin Dialog
+    Integrate Copernicus DataSpace in SNAP Product Library
+    Update Open-JPEG, NetCDF, and GDAL libraries to run on AARCH-64 MacOs
+
+## List of solved issues
+
+### Task
+    [SNAP-1581] Apply fixes for XStream security issues
+    [SNAP-3538] Integration of Online Help in SNAP
+
+### Sub-task
+    [SNAP-3470] Extract doc-window and tiled-editors modules from snap-desktop and use it as library
+    [SNAP-3472] Consolidate JNI implementations
+    [SNAP-3481] Remove jdom1 library and replace the usage with jdom2
+
+#### Bug
+	[SNAP-653] Update ImageIO-Ext
+	[SNAP-936] snappy can't be used along with dask
+	[SNAP-1432] Help is missing for Land-Cover-Mask operator
+	[SNAP-1571] Application menu entries with MacOS Ventura not shown
+	[SNAP-1572] Help for CSV vector data import is not clear about the separator char
+	[SNAP-1601] Custom SNAP Plugin Dialog
+	[SNAP-1619] Sentinel-3 WST products have issues with geolocation since PUG v3.35
+	[SNAP-1639] Required dependency not declared
+	[SNAP-2065] S2 Resampling Error "Failed to Read Data for level 0 and rectangle"
+    [SNAP-2115] S2Resampling can't handle S2 data other format as SAFE
+	[SNAP-3446] Get rid of duplicated library of jai-core
+    [SNAP-3471] Copernicus DEM complications when coregistering S1
+	[SNAP-3487] Space in path to zipped ZNAP product leads to IllegalArgumentException
+	[SNAP-3498] Help files don't open on dev build
+	[SNAP-3501] Resampling losing product description
+	[SNAP-3505] Move GDAL reader & writer into SNAP
+	[SNAP-3507] Move general-purpose implementations from opttbx-commons to snap
+    [SNAP-3518] Datum not transfered from GCPGeoCoding
+	[SNAP-3521] Labels are not shown in WorldWind View
+	[SNAP-3523] Retrieving the installed GDAL versions not work on some Docker containers
+	[SNAP-3526] S2 cannot be opened from installed SNAP 10 - "GDAL NOT initialised!" error
+	[SNAP-3527] GDAL Internal distribution install on Mac failure, due to hash missmatch
+	[SNAP-3530] Wrong unit requested
+	[SNAP-3532] SNAP crashes with SIGKILL when opening S2 product on Mac platform
+	[SNAP-3533] PolarView animation not stopped on product close
+	[SNAP-3534] Product Library issues on SNAP10
+    [SNAP-3549] Product Library - CDAS: "Bad request" when searching Sentinel-2 products by 'Product Name'
+	[SNAP-3576] AddElevation does not report error on doExecute
+    [SNAP-3595] No help for the operator 'Multi-size Mosaic'
+    [SNAP-3600] Help content is either missing, non-existent, out-of-date, or with errors
     [SNAP-3601] Sentinel-5 nc files load problem in SNAP
+	[SNAP-3605] IllegalStateException while creating HSV image
     [SNAP-3626] GPT generates two outputs
-    [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
-    [SNAP-3591] SNAP removes Ubuntu's snap directories
+    [SNAP-3640] Sentinel-5 nc Geocoding not loaded
+    [SNAP-3660] CollocationOp parameter renamed
+
+### Improvement
+    [SNAP-626] Make snappy compatible with Python 3.7
+    [SNAP-709] All plugins are marked as 'Community Contributed Plugin'
+    [SNAP-760] Help is not in line with Convert-Datatype operator
+    [SNAP-843] Documentation for GLCM should be enhanced
+    [SNAP-858] Documentation of Terrain Mask should be improved
+    [SNAP-953] ENL and Coef Variation not explained in help
+    [SNAP-1043] Improved snappy installation
+    [SNAP-1579] The two green dudes in the Plugin Manager shall be changed or removed
+    [SNAP-1591] Update Product Library for CDAS
+    [SNAP-3440] Consider to compile the internal GDAL distribution also for AARCH64-bit platform
+    [SNAP-3517] Increment the TAO version used on SNAP Product Library
+    [SNAP-3541] Compile the Open-JPEG native libraries for AARCH64-bit platform
+    [SNAP-3567] Update GDAL to version 3.7.2
+    [SNAP-3568] Enable SNAP Community Plugins Update Center by default in SNAP
     [SNAP-3584] NetCDF reader geocoding read performance
+    [SNAP-3587] Update SNAP AboutBoxes links to point to the Release Notes pages hosted on the STEP website
+    [SNAP-3591] SNAP removes Ubuntu's snap directories
+    [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
+    [SNAP-3612] Product library - remove Scihub
+
+### Requirement
+    [SNAP-937] Consider renaming of snappy
 
 # New in SNAP 9.0.6
     [SNAP-3473] Improve behaviour of output parameters dialog in Reprojection tool
