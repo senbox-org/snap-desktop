@@ -94,6 +94,7 @@ class BandMathsDialog extends ModalDialog {
     private static final String PROPERTY_NAME_BAND_DESC = "bandDescription";
     private static final String PROPERTY_NAME_BAND_UNIT = "bandUnit";
     private static final String PROPERTY_NAME_BAND_WAVELENGTH = "bandWavelength";
+    private static final String PROPERTY_NAME_BAND_ANGULAR_VALUE = "bandAngularValue";
 
     private final ProductNodeList<Product> productsList;
     private final BindingContext bindingContext;
@@ -119,6 +120,7 @@ class BandMathsDialog extends ModalDialog {
     private String bandUnit;
     @SuppressWarnings("UnusedDeclaration")
     private float bandWavelength;
+    private float angularValue;
 
     private static int numNewBands = 0;
 
@@ -211,6 +213,7 @@ class BandMathsDialog extends ModalDialog {
         band.setDescription(bandDescription);
         band.setUnit(bandUnit);
         band.setSpectralWavelength(bandWavelength);
+        band.setAngularValue(angularValue);
         band.setGeophysicalNoDataValue(noDataValue);
         band.setNoDataValueUsed(noDataValueUsed);
         band.setValidPixelExpression(validMaskExpression);
@@ -280,6 +283,13 @@ class BandMathsDialog extends ModalDialog {
                                 "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
         GridBagUtils.addToPanel(panel, components[0], gbc,
                                 "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
+//
+//        gbc.gridy = ++line;
+//        components = createComponents(PROPERTY_NAME_BAND_ANGULAR_VALUE, TextFieldEditor.class);
+//        GridBagUtils.addToPanel(panel, components[1], gbc,
+//                "weightx=0, insets.top=3, gridwidth=1, fill=HORIZONTAL, anchor=WEST");
+//        GridBagUtils.addToPanel(panel, components[0], gbc,
+//                "weightx=1, insets.top=3, gridwidth=2, fill=HORIZONTAL, anchor=WEST");
 
         gbc.gridy = ++line;
         components = createComponents(PROPERTY_NAME_SAVE_EXPRESSION_ONLY, CheckBoxEditor.class);
@@ -401,6 +411,10 @@ class BandMathsDialog extends ModalDialog {
         descriptor = container.getDescriptor(PROPERTY_NAME_BAND_WAVELENGTH);
         descriptor.setDisplayName("Spectral wavelength");
         descriptor.setDescription("The physical unit for the new band.");
+
+//        descriptor = container.getDescriptor(PROPERTY_NAME_BAND_ANGULAR_VALUE);
+//        descriptor.setDisplayName("View Angle");
+//        descriptor.setDescription("The physical unit for the new band.");
 
         descriptor = container.getDescriptor(PROPERTY_NAME_EXPRESSION);
         descriptor.setDisplayName("Band maths expression");
