@@ -13,7 +13,7 @@
         <tocitem text="The 'pconvert' Tool" target="pconvertTool"/>
     </tocitem>
 
-    <tocitem text="Sentinel Toolbox Application">
+    <tocitem text="SeaDAS Application">
         <tocitem text="General Concepts">
             <tocitem text="Introduction" target="desktop"/>
             <tocitem text="Main Menu Bar" target="menuBar"/>
@@ -97,7 +97,7 @@
         <tocitem text="Layer">
             <tocitem text="The Layer Menu" target="layerMenu"/>
             <tocitem text="No-Data Overlay" target="noDataOverlay"/>
-            <tocitem text="Graticule Overlay" target="graticuleOverlay"/>
+            <tocitem text="Map Gridlines Overlay" target="graticuleOverlay"/>
             <tocitem text="Annotation Metadata Overlay" target="annotationMetadataOverlay"/>
             <tocitem text="Color Bar Legend" target="colorBarLegend"/>
             <tocitem text="Layer Manager" target="showLayerManagerWnd"/>
