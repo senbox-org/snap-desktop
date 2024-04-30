@@ -136,6 +136,14 @@ public abstract class WorldMapPanelWrapper extends JPanel {
         }
     }
 
+    public void refresh(){
+        if (worldMap3DPanel != null) {
+            worldMap3DPanel.initializeBackend(false);
+            worldMap3DPanel.reshape(0, 0, 0, 0);
+            worldMap3DPanel.revalidate();
+        }
+    }
+
     private void processLeftMouseClick(MouseEvent mouseEvent) {
         Point.Double clickedPoint = this.currentWorldMap.convertPointToDegrees(mouseEvent.getPoint());
         if (clickedPoint != null) {
@@ -235,6 +243,7 @@ public abstract class WorldMapPanelWrapper extends JPanel {
             parent.revalidate();
             parent.repaint();
         }
+        refresh();
 
         // save the world map panel to the preferences
         if (worldMapPanelId != null) {

@@ -217,6 +217,7 @@ public abstract class AbstractProductsRepositoryPanel extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(this.componentDimension.getGapBetweenColumns(), 0));
         centerPanel.add(label, BorderLayout.WEST);
         centerPanel.add(selectionAreaParameterComponent.getComponent(), BorderLayout.CENTER);
+        this.worlWindPanel.refresh();
         return centerPanel;
     }
 }
