@@ -1,10 +1,8 @@
-package org.esa.snap.product.library.ui.v2.worldwind;
+package org.esa.snap.worldwind.productlibrary;
 
 import gov.nasa.worldwind.geom.Position;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.product.library.ui.v2.thread.AbstractRunnable;
 import org.esa.snap.ui.loading.CircularProgressIndicatorLabel;
-import org.esa.snap.ui.loading.GenericRunnable;
 import org.esa.snap.ui.loading.SwingUtils;
 
 import javax.swing.*;
@@ -20,7 +18,7 @@ import java.util.List;
 /**
  * The panel containing the earth globe.
  */
-public class WorldMapPanelWrapper extends JPanel {
+public abstract class WorldMapPanelWrapper extends JPanel {
 
     private static final String PREFERENCES_KEY_LAST_WORLD_MAP_PANEL = "last_world_map_panel";
 
@@ -39,7 +37,7 @@ public class WorldMapPanelWrapper extends JPanel {
     public static final Cursor SELECTION_CURSOR = Cursor.getPredefinedCursor(1);
     public static final Cursor DEFAULT_CURSOR = Cursor.getDefaultCursor();
 
-    private final PolygonsLayerModel polygonsLayerModel;
+    protected final PolygonsLayerModel polygonsLayerModel;
     private final WorldMap2DPanel worldMap2DPanel;
 
     private WorldMap3DPanel worldMap3DPanel;
@@ -47,7 +45,7 @@ public class WorldMapPanelWrapper extends JPanel {
     private PolygonMouseListener mouseListener;
     private final PropertyMap persistencePreferences;
 
-    public WorldMapPanelWrapper(PolygonMouseListener mouseListener, Color backgroundColor, PropertyMap persistencePreferences) {
+    protected WorldMapPanelWrapper(PolygonMouseListener mouseListener, Color backgroundColor, PropertyMap persistencePreferences) {
         super(new GridBagLayout());
 
         this.mouseListener = mouseListener;
@@ -80,10 +78,7 @@ public class WorldMapPanelWrapper extends JPanel {
         }
     }
 
-    public void addWorldMapPanelAsync(boolean flat3DEarth, boolean removeExtraLayers) {
-        InitWorldMap3DPanelRunnable thread = new InitWorldMap3DPanelRunnable(this, flat3DEarth, removeExtraLayers, this.polygonsLayerModel);
-        thread.executeAsync(); // start the thread
-    }
+    public abstract void addWorldMapPanelAsync(boolean flat3DEarth, boolean removeExtraLayers);
 
     public void clearSelectedArea() {
         if (this.currentWorldMap != null) {
@@ -247,7 +242,7 @@ public class WorldMapPanelWrapper extends JPanel {
         }
     }
 
-    private void addWorldWindowPanel(WorldMap3DPanel worldMap3DPanel) {
+    public void addWorldWindowPanel(WorldMap3DPanel worldMap3DPanel) {
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -285,52 +280,5 @@ public class WorldMapPanelWrapper extends JPanel {
             }
         }
         addWorldMapPanel(worldMapPanel, null);
-    }
-
-    private static class InitWorldMap3DPanelRunnable extends AbstractRunnable<WorldMap3DPanel> {
-
-        private final WorldMapPanelWrapper worldWindowPanel;
-        private final boolean flatEarth;
-        private final boolean removeExtraLayers;
-        private final PolygonsLayerModel polygonsLayerModel;
-
-        public InitWorldMap3DPanelRunnable(WorldMapPanelWrapper worldWindowPanel, boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
-            this.polygonsLayerModel = polygonsLayerModel;
-            this.worldWindowPanel = worldWindowPanel;
-            this.flatEarth = flatEarth;
-            this.removeExtraLayers = removeExtraLayers;
-        }
-
-        @Override
-        protected WorldMap3DPanel execute() throws Exception {
-            return new WorldMap3DPanel(this.flatEarth, this.removeExtraLayers, this.polygonsLayerModel);
-        }
-
-        @Override
-        protected String getExceptionLoggingMessage() {
-            return "Failed to create the world window panel.";
-        }
-
-        @Override
-        protected final void successfullyExecuting(WorldMap3DPanel result) {
-            GenericRunnable<WorldMap3DPanel> runnable = new GenericRunnable<WorldMap3DPanel>(result) {
-                @Override
-                protected void execute(WorldMap3DPanel item) {
-                    worldWindowPanel.addWorldWindowPanel(item);
-                }
-            };
-            SwingUtilities.invokeLater(runnable);
-        }
-
-        @Override
-        protected void failedExecuting(Exception exception) {
-            GenericRunnable<Exception> runnable = new GenericRunnable<Exception>(exception) {
-                @Override
-                protected void execute(Exception item) {
-                    worldWindowPanel.addWorldWindowPanel(null);
-                }
-            };
-            SwingUtilities.invokeLater(runnable);
-        }
     }
 }
