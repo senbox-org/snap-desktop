@@ -146,12 +146,14 @@ public class OutputGeometryFormModel {
     }
 
     private void updateProductSize() {
-        if (targetCrs != null && sourceProduct != null) {
-            Double pixelSizeX = propertyContainer.getValue("pixelSizeX");
-            Double pixelSizeY = propertyContainer.getValue("pixelSizeY");
-            Rectangle productSize = ImageGeometry.calculateProductSize(sourceProduct, targetCrs, pixelSizeX, pixelSizeY);
-            propertyContainer.setValue("width", productSize.width);
-            propertyContainer.setValue("height", productSize.height);
+        if (isFitProductSize()) {
+            if (targetCrs != null && sourceProduct != null) {
+                Double pixelSizeX = propertyContainer.getValue("pixelSizeX");
+                Double pixelSizeY = propertyContainer.getValue("pixelSizeY");
+                Rectangle productSize = ImageGeometry.calculateProductSize(sourceProduct, targetCrs, pixelSizeX, pixelSizeY);
+                propertyContainer.setValue("width", productSize.width);
+                propertyContainer.setValue("height", productSize.height);
+            }
         }
     }
 
