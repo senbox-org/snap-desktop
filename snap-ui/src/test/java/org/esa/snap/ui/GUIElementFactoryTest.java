@@ -16,27 +16,16 @@
 
 package org.esa.snap.ui;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Test;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 
-public class GUIElementFactoryTest extends TestCase {
+import static org.junit.Assert.*;
 
-    public GUIElementFactoryTest(String testName) {
-        super(testName);
-    }
+public class GUIElementFactoryTest {
 
-    public static Test suite() {
-        return new TestSuite(GUIElementFactoryTest.class);
-    }
-
+    @Test
     public void testAddComponentsToBorderPanel() {
         BorderLayout bl = new BorderLayout();
         JPanel panel = new JPanel(bl);
@@ -47,10 +36,11 @@ public class GUIElementFactoryTest extends TestCase {
         BorderLayoutUtils.addToPanel(panel, centerComp, westComp, place);
 
         assertEquals(2, panel.getComponentCount());
-        assertEquals(true, panel.isAncestorOf(centerComp));
-        assertEquals(true, panel.isAncestorOf(westComp));
+        assertTrue(panel.isAncestorOf(centerComp));
+        assertTrue(panel.isAncestorOf(westComp));
     }
 
+    @Test
     public void testGridBagPanel_fourParams() {
         GridBagLayout gbl = new GridBagLayout();
         JPanel panel = new JPanel(gbl);
@@ -76,6 +66,7 @@ public class GUIElementFactoryTest extends TestCase {
         assertEquals(1, gbc.gridwidth);
     }
 
+    @Test
     public void testGridBagPanel_sevenParams() {
         GridBagLayout gbl = new GridBagLayout();
         JPanel panel = new JPanel(gbl);
@@ -102,6 +93,7 @@ public class GUIElementFactoryTest extends TestCase {
         assertEquals(1, gbc.gridwidth);
     }
 
+    @Test
     public void testGridBagPanel_eightParams() {
         GridBagLayout gbl = new GridBagLayout();
         JPanel panel = new JPanel(gbl);
@@ -109,7 +101,7 @@ public class GUIElementFactoryTest extends TestCase {
 
         final GridBagConstraints gbconstraints = GridBagUtils.createDefaultConstraints();
         GridBagUtils.setAttributes(gbconstraints,
-                                   "gridx=2, gridy=4, anchor=SOUTHEAST, weighty=1.3, insets.top=5, gridwidth=3");
+                "gridx=2, gridy=4, anchor=SOUTHEAST, weighty=1.3, insets.top=5, gridwidth=3");
         GridBagUtils.addToPanel(panel, comp, gbconstraints);
 
         GridBagConstraints gbc = gbl.getConstraints(comp);
@@ -128,7 +120,7 @@ public class GUIElementFactoryTest extends TestCase {
         assertEquals(3, gbc.gridwidth);
     }
 
-
+    @Test
     public void testSetAttributes() {
         GridBagConstraints gbc = new GridBagConstraints();
 

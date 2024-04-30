@@ -48,7 +48,6 @@ import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
 import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.subset.PixelSubsetRegion;
-import org.esa.snap.core.util.BeamConstants;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.Guardian;
 import org.esa.snap.core.util.ProductUtils;
@@ -403,7 +402,7 @@ public class ProductSubsetDialog extends ModalDialog {
             return null;
         }
         return new ProductNodeSubsetPane(product.getTiePointGrids(),
-                                         new String[]{BeamConstants.LAT_DS_NAME, BeamConstants.LON_DS_NAME},
+                                         new String[]{"latitude", "longitude"},
                                          true);
     }
 
@@ -415,7 +414,7 @@ public class ProductSubsetDialog extends ModalDialog {
             return null;
         }
         // metadata elements must be added to includeAlways list
-        // to ensure that they are selected if isIgnoreMetada is set to false
+        // to ensure that they are selected if isIgnoreMetadata is set to false
         if (givenProductSubsetDef != null && !givenProductSubsetDef.isIgnoreMetadata()) {
             metaNodes = new String[metadataElements.length];
             for (int i = 0; i < metadataElements.length; i++) {

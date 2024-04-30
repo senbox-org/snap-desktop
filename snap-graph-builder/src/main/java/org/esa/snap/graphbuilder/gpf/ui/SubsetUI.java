@@ -143,7 +143,9 @@ public class SubsetUI extends BaseOperatorUI {
         referenceCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateParametersReferenceBand();
+                if (referenceCombo.isEnabled()) {
+                    updateParametersReferenceBand();
+                }
             }
         });
         subSamplingX.addChangeListener(new ChangeListener() {
@@ -287,7 +289,7 @@ public class SubsetUI extends BaseOperatorUI {
         getGeoRegion();
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
-        } else {
+        } else if(sourceProducts!=null) {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
     }
@@ -422,20 +424,26 @@ public class SubsetUI extends BaseOperatorUI {
         final String regionYStr = regionY.getText();
         if (regionYStr != null && !regionYStr.isEmpty())
             y = Integer.parseInt(regionYStr);
+        final String widthStr = width.getText();
+        if (widthStr != null && !widthStr.isEmpty())
+            w = Integer.parseInt(widthStr);
+        final String heightStr = height.getText();
+        if (heightStr != null && !heightStr.isEmpty())
+            h = Integer.parseInt(heightStr);
 
         getGeoRegion();
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
         } else {
-            paramMap.put("region", new Rectangle(x,y,w-x,h-y));
+            paramMap.put("region", new Rectangle(x,y,w,h));
         }
         paramMap.put("copyMetadata", copyMetadata.isSelected());
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {
             regionX.setText(String.valueOf(x));
             regionY.setText(String.valueOf(y));
-            width.setText(String.valueOf(w-x));
-            height.setText(String.valueOf(h-y));
+            width.setText(String.valueOf(w));
+            height.setText(String.valueOf(h));
         }
         if (sourceProducts != null && sourceProducts.length > 0) {
             worldMapUI.getModel().setAutoZoomEnabled(true);

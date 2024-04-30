@@ -38,6 +38,7 @@ import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.dataop.barithm.RasterDataSymbol;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
+import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -67,6 +68,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
@@ -466,9 +468,12 @@ class BandMathsDialog extends ModalDialog {
     private ActionListener createEditExpressionButtonListener() {
         return e -> {
             Product[] compatibleProducts = getCompatibleProducts();
+
+            final Preferences preferences = SnapApp.getDefault().getPreferences();
+            final PreferencesPropertyMap preferencesPropertyMap = new PreferencesPropertyMap(preferences);
             ProductExpressionPane pep = ProductExpressionPane.createGeneralExpressionPane(compatibleProducts,
                                                                                           targetProduct,
-                                                                                          SnapApp.getDefault().getPreferencesPropertyMap());
+                                                                                          preferencesPropertyMap);
             pep.setCode(getExpression());
             int status = pep.showModalDialog(getJDialog(), "Band Maths Expression Editor");
             if (status == ModalDialog.ID_OK) {

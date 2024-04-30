@@ -37,31 +37,27 @@ import org.openide.util.HelpCtx;
 import org.openide.util.LookupListener;
 
 import javax.media.jai.operator.BandSelectDescriptor;
-import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
-import java.awt.Cursor;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 public abstract class AbstractExportImageAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
+    public static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
+
     protected static final String[] BMP_FORMAT_DESCRIPTION = {"BMP", "bmp", "BMP - Microsoft Windows Bitmap"};
     protected static final String[] PNG_FORMAT_DESCRIPTION = {"PNG", "png", "PNG - Portable Network Graphics"};
     protected static final String[] JPEG_FORMAT_DESCRIPTION = {"JPEG", "jpg,jpeg", "JPEG - Joint Photographic Experts Group"};
     protected static final String[] GEOTIFF_FORMAT_DESCRIPTION = {"GeoTIFF", "tif,tiff", "GeoTIFF - TIFF with geo-location"};
-    protected static final String[] TIFF_FORMAT_DESCRIPTION = {"TIFF", "tif,tiff", "TIFF - Tagged Image File Format"};
 
     // not yet used
 //    private static final String[] JPEG2K_FORMAT_DESCRIPTION = {"JPEG2000", "jpg,jpeg", "JPEG 2000 - Joint Photographic Experts Group"};
-
+    protected static final String[] TIFF_FORMAT_DESCRIPTION = {"TIFF", "tif,tiff", "TIFF - Tagged Image File Format"};
     private static final String[] TRANSPARENCY_IMAGE_FORMATS = new String[]{"TIFF", "PNG"};
-
-    private static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
-
-    private String dialogTitle = null;
-    private String helpId;
+    private String dialogTitle;
+    private final String helpId;
 
     public AbstractExportImageAction(String name, String helpId) {
         super(name);
@@ -70,6 +66,21 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         Config.instance().load();
     }
 
+    protected static boolean isTransparencySupportedByFormat(String formatName) {
+        for (final String format : TRANSPARENCY_IMAGE_FORMATS) {
+            if (format.equalsIgnoreCase(formatName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected static SnapFileFilter createFileFilter(String[] description) {
+        final String formatName = description[0];
+        final String formatExt = description[1];
+        final String formatDescr = description[2];
+        return new SnapFileFilter(formatName, formatExt, formatDescr);
+    }
 
     @Override
     public HelpCtx getHelpCtx() {
@@ -82,7 +93,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
             return;
         }
         final String lastDir = Config.instance().preferences().get(IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                                                                   SystemUtils.getUserHomeDir().getPath());
+                SystemUtils.getUserHomeDir().getPath());
 
         final File currentDir = new File(lastDir);
 
@@ -132,7 +143,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         String imageFormat = fileFilter != null ? fileFilter.getFormatName() : "TIFF";
         if (imageFormat.equals(GEOTIFF_FORMAT_DESCRIPTION[0]) && !entireImageSelected) {
             final String msg = "GeoTIFF is not applicable to image clippings. Please select 'Full scene' option." +
-                                   "\nShall TIFF format be used instead?";
+                    "\nShall TIFF format be used instead?";
             Dialogs.Answer status = Dialogs.requestDecision(dialogTitle, msg, true, null);
             if (status == Dialogs.Answer.YES) {
                 imageFormat = "TIFF";
@@ -149,7 +160,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
 
     protected void exportImage(final String imageFormat, final ProductSceneView view, final boolean entireImageSelected, final File file) {
         final SaveImageSwingWorker worker = new SaveImageSwingWorker(SnapApp.getDefault(), "Save Image", imageFormat, view,
-                                                                     entireImageSelected, file);
+                entireImageSelected, file);
         worker.executeWithBlocking();
     }
 
@@ -159,23 +170,6 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
 
     protected abstract void configureFileChooser(SnapFileChooser fileChooser, ProductSceneView view,
                                                  String imageBaseName);
-
-    protected static boolean isTransparencySupportedByFormat(String formatName) {
-        final String[] formats = TRANSPARENCY_IMAGE_FORMATS;
-        for (final String format : formats) {
-            if (format.equalsIgnoreCase(formatName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected static SnapFileFilter createFileFilter(String[] description) {
-        final String formatName = description[0];
-        final String formatExt = description[1];
-        final String formatDescr = description[2];
-        return new SnapFileFilter(formatName, formatExt, formatDescr);
-    }
 
     private class SaveImageSwingWorker extends ProgressMonitorSwingWorker {
 

@@ -15,22 +15,21 @@
  */
 package org.esa.snap.ui.diagram;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 
-public class DiagramAxisTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class DiagramAxisTest {
 
     DiagramAxis diagramAxis;
     private EventCounter eventCounter;
 
-    public DiagramAxisTest(String s) {
-        super(s);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         Diagram diagram = new Diagram();
         diagramAxis = new DiagramAxis();
@@ -39,15 +38,15 @@ public class DiagramAxisTest extends TestCase {
         diagram.addChangeListener(eventCounter);
     }
 
+    @Test
     public void testProperties() {
-
         eventCounter.reset();
         diagramAxis.setName("bibo");
         assertEquals("bibo", diagramAxis.getName());
         assertEquals(1, eventCounter.counts);
 
         diagramAxis.setName(null);
-        assertEquals(null, diagramAxis.getName());
+        assertNull(diagramAxis.getName());
         assertEquals(2, eventCounter.counts);
 
         diagramAxis.setUnit("bibo");
@@ -55,7 +54,7 @@ public class DiagramAxisTest extends TestCase {
         assertEquals(3, eventCounter.counts);
 
         diagramAxis.setUnit(null);
-        assertEquals(null, diagramAxis.getUnit());
+        assertNull(diagramAxis.getUnit());
         assertEquals(4, eventCounter.counts);
 
         assertEquals(1.0, diagramAxis.getUnitFactor(), 1e-10);
@@ -85,6 +84,7 @@ public class DiagramAxisTest extends TestCase {
         assertEquals(8, eventCounter.counts);
     }
 
+    @Test
     public void testSetSubDivision() {
         diagramAxis.setSubDivision(12.4, 83.6, 7, 4);
         assertEquals(12.4, diagramAxis.getMinValue(), 1e-9);
@@ -94,6 +94,7 @@ public class DiagramAxisTest extends TestCase {
         assertEquals(3, eventCounter.counts);
     }
 
+    @Test
     public void testSetOptimalSubDivision() {
         diagramAxis.setValueRange(13.1, 16.2);
         assertEquals(1, eventCounter.counts);
@@ -105,6 +106,7 @@ public class DiagramAxisTest extends TestCase {
         assertEquals(4, eventCounter.counts);
     }
 
+    @Test
     public void testGetOptimalTickDistance() {
         assertEquals(10d, DiagramAxis.getOptimalTickDistance(12, 31, 3), 1e-6);
         assertEquals(0.1d, DiagramAxis.getOptimalTickDistance(0.12, 0.31, 3), 1e-9);
@@ -148,9 +150,11 @@ public class DiagramAxisTest extends TestCase {
 
     private static class EventCounter implements DiagramChangeListener {
         int counts = 0;
+
         public void reset() {
-                       counts = 0;
+            counts = 0;
         }
+
         public void diagramChanged(Diagram diagram) {
             counts++;
         }

@@ -361,7 +361,7 @@ public class GraphExecuter extends Observable {
             lastLoadedGraphFile = file;
 
         } catch (Throwable e) {
-            throw new GraphException("Unable to load graph " + fileStream.toString() + '\n' + e.getMessage());
+            throw new GraphException("Unable to load graph " + fileStream + '\n' + e.getMessage());
         }
     }
 

@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.esa.snap</groupId>
         <artifactId>snap-desktop</artifactId>
-        <version>10.0.0-SNAPSHOT</version>
+        <version>11.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>snap-product-library-ui-v2</artifactId>
@@ -69,31 +69,16 @@
             <artifactId>snap-graph-builder</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-worldwind</artifactId>
+            <version>${snap.version}</version>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>snap-remote-products-repository</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>gov.nasa</groupId>
-            <artifactId>worldwind</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>gov.nasa</groupId>
-            <artifactId>worldwindx</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt-main</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all-main</artifactId>
-            <version>2.4.0</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -119,70 +104,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
-        </dependency>
-
-        <!-- natives -->
-
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-windows-amd64</classifier>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-windows-i586</classifier>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-linux-amd64</classifier>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-linux-i586</classifier>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-macosx-universal</classifier>
-            <version>2.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <classifier>natives-windows-amd64</classifier>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <classifier>natives-windows-i586</classifier>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <classifier>natives-linux-amd64</classifier>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <classifier>natives-linux-i586</classifier>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all</artifactId>
-            <classifier>natives-macosx-universal</classifier>
-            <version>2.4.0</version>
         </dependency>
     </dependencies>
 

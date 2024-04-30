@@ -16,14 +16,17 @@
 
 package org.esa.snap.rcp.statistics;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class XYImagePlotTest extends TestCase {
+import static org.junit.Assert.*;
 
+public class XYImagePlotTest {
+
+    @Test
     public void testDefaultValues() {
         final XYImagePlot imagePlot = new XYImagePlot();
 
@@ -38,6 +41,7 @@ public class XYImagePlotTest extends TestCase {
         assertTrue(imagePlot.isRangeGridlinesVisible());
     }
 
+    @Test
     public void testImage() {
         final XYImagePlot imagePlot = new XYImagePlot();
 
@@ -52,6 +56,7 @@ public class XYImagePlotTest extends TestCase {
         assertEquals(new Rectangle(0, 0, 16, 9), imagePlot.getImageDataBounds());
     }
 
+    @Test
     public void testImageDataBounds() {
         final XYImagePlot imagePlot = new XYImagePlot();
         assertNull(imagePlot.getDataset());
@@ -66,6 +71,7 @@ public class XYImagePlotTest extends TestCase {
         assertNotNull(imagePlot.getDataset());
     }
 
+    @Test
     public void testImageSourceArea() {
         final XYImagePlot imagePlot = new XYImagePlot();
         final BufferedImage image = new BufferedImage(200, 100, BufferedImage.TYPE_INT_ARGB);
@@ -96,5 +102,4 @@ public class XYImagePlotTest extends TestCase {
         assertEquals(50, area.width);
         assertEquals(30, area.height);
     }
-
 }

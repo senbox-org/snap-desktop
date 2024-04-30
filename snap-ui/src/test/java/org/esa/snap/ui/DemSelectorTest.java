@@ -16,10 +16,13 @@
 
 package org.esa.snap.ui;
 
-import junit.framework.TestCase;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamValidateException;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Description of DemSelectorTest
@@ -27,22 +30,23 @@ import org.esa.snap.core.param.ParamValidateException;
  * @author Norman Fomferra
  * @version $Revision$  $Date$
  */
-public class DemSelectorTest extends TestCase {
+public class DemSelectorTest {
 
     private DemSelector _demSelector;
     private MyParamChangeListener _paramChangeListener;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         _paramChangeListener = new MyParamChangeListener();
         _demSelector = new DemSelector(_paramChangeListener);
-
     }
 
+    @Test
     public void test_UsingExternalDEM_IsDefault() {
         assertTrue(_demSelector.isUsingExternalDem());
     }
 
+    @Test
     public void test_SetUsingExternalDem() throws ParamValidateException {
         _demSelector.setUsingExternalDem(true);
 
@@ -51,6 +55,7 @@ public class DemSelectorTest extends TestCase {
         assertEquals("", _paramChangeListener.getCallString());
     }
 
+    @Test
     public void test_SetUsingProductDem() throws ParamValidateException {
         _demSelector.setUsingProductDem(true);
 
@@ -60,6 +65,7 @@ public class DemSelectorTest extends TestCase {
         assertEquals("useProductDem|useExternalDem|", _paramChangeListener.getCallString());
     }
 
+    @Test
     public void test_ToggleUsingDem() throws ParamValidateException {
         _demSelector.setUsingProductDem(true);
         _demSelector.setUsingExternalDem(true);
@@ -70,7 +76,7 @@ public class DemSelectorTest extends TestCase {
     }
 
     private static class MyParamChangeListener implements ParamChangeListener {
-    StringBuilder callString = new  StringBuilder();
+        StringBuilder callString = new StringBuilder();
 
         public String getCallString() {
             return callString.toString();
@@ -78,7 +84,7 @@ public class DemSelectorTest extends TestCase {
 
         public void parameterValueChanged(ParamChangeEvent event) {
             callString.append(event.getParameter().getName());
-            callString.append("|")  ;
+            callString.append("|");
         }
     }
 }

@@ -15,13 +15,19 @@
  */
 package org.esa.snap.ui;
 
-import junit.framework.TestCase;
 import org.esa.snap.GlobalTestConfig;
 import org.esa.snap.GlobalTestTools;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
+
+import static org.esa.snap.core.util.Guardian.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * <code>FileHistory</code> is a fixed-size array for the pathes of files opened/saved by a user. If a new file is added
@@ -31,7 +37,7 @@ import java.util.prefs.Preferences;
  * @author Norman Fomferra
  * @version $Revision$  $Date$
  */
-public class FileHistoryTest extends TestCase {
+public class FileHistoryTest {
 
     private File _a;
     private File _b;
@@ -39,11 +45,7 @@ public class FileHistoryTest extends TestCase {
     private File _d;
     private File _e;
 
-    public FileHistoryTest(String name) {
-        super(name);
-    }
-
-    @Override
+    @Before
     public void setUp() {
         GlobalTestTools.deleteTestDataOutputDirectory();
         _a = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "A.dim");
@@ -62,11 +64,12 @@ public class FileHistoryTest extends TestCase {
         }
     }
 
-    @Override
+    @After
     public void tearDown() {
         GlobalTestTools.deleteTestDataOutputDirectory();
     }
 
+    @Test
     public void testFileHistory() {
         assertTrue(_a.getAbsolutePath() + " does not exist", _a.exists());
         assertTrue(_b.getAbsolutePath() + " does not exist", _b.exists());

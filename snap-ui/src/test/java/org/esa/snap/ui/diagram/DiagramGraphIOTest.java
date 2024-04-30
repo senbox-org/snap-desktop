@@ -16,14 +16,18 @@
 
 package org.esa.snap.ui.diagram;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-public class DiagramGraphIOTest extends TestCase {
+import static org.esa.snap.core.util.Debug.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
+public class DiagramGraphIOTest {
+
+    @Test
     public void testIOWithEqualXValues() throws IOException {
         double[] expectedXValues = new double[]{0, 1, 2, 3, 4, 5};
         double[] expectedY1Values = new double[]{0, 1, 4, 9, 16, 25};
@@ -38,6 +42,7 @@ public class DiagramGraphIOTest extends TestCase {
         testIO(expectedGraphs);
     }
 
+    @Test
     public void testIOWithDifferentXValues() throws IOException {
         double[] expectedX1Values = new double[]{0, 1, 2, 3, 4, 5};
         double[] expectedY1Values = new double[]{0, 1, 2, 3, 5, 8};
@@ -47,7 +52,7 @@ public class DiagramGraphIOTest extends TestCase {
                 new DefaultDiagramGraph("x1", expectedX1Values, "y1", expectedY1Values),
                 new DefaultDiagramGraph("x2", expectedX2Values, "y2", expectedY2Values),
         };
-       testIO(expectedGraphs);
+        testIO(expectedGraphs);
     }
 
     private void testIO(DiagramGraph[] expectedGraphs) throws IOException {
@@ -80,5 +85,4 @@ public class DiagramGraphIOTest extends TestCase {
             assertEquals(expectedGraph.getYValueAt(i), actualGraph.getYValueAt(i), 1e-10);
         }
     }
-
 }

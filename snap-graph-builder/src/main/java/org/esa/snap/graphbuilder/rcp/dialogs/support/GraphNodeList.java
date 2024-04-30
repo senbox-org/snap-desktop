@@ -100,6 +100,18 @@ public class GraphNodeList {
         }
     }
 
+    void updateGraphNodes(final GraphContext graphContext) throws GraphException {
+        if (graphContext != null) {
+            for (GraphNode node : nodeList) {
+                final NodeContext context = graphContext.getNodeContext(node.getNode());
+                if(context.getOperator() != null) {
+                    node.setSourceProducts(context.getSourceProducts());
+                }
+                node.updateParameters();
+            }
+        }
+    }
+
     void updateGraphNode(GraphNode graphNode, NodeContext context) throws GraphException {
         if (context.getOperator() != null) {
             graphNode.setSourceProducts(context.getSourceProducts());
