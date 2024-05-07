@@ -12,7 +12,7 @@ import org.esa.snap.product.library.ui.v2.repository.remote.DownloadProgressStat
 import org.esa.snap.product.library.ui.v2.repository.remote.RemoteProductsRepositoryPanel;
 import org.esa.snap.product.library.ui.v2.repository.remote.download.DownloadingProductProgressCallback;
 import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
-import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapper;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.SaveProductData;
 import org.esa.snap.remote.products.repository.RemoteMission;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;

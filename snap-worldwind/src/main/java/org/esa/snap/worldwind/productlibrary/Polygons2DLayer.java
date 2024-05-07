@@ -1,4 +1,4 @@
-package org.esa.snap.product.library.ui.v2.worldwind;
+package org.esa.snap.worldwind.productlibrary;
 
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.grender.Rendering;
