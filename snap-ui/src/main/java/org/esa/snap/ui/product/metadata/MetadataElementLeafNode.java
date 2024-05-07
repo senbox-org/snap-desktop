@@ -18,9 +18,9 @@ import java.util.List;
  */
 class MetadataElementLeafNode extends AbstractNode {
 
-    private MetadataTableLeaf leaf;
+    private final MetadataTableLeaf leaf;
 
-    public MetadataElementLeafNode(MetadataTableLeaf leaf) {
+    MetadataElementLeafNode(MetadataTableLeaf leaf) {
         this(leaf, new InstanceContent());
     }
 
@@ -46,24 +46,14 @@ class MetadataElementLeafNode extends AbstractNode {
 
     private PropertySupport[] createAttributeProperties() {
         List<PropertySupport> attributePropertyList = new ArrayList<>();
-        final int type = leaf.getDataType();
-        switch (type) {
-            case ProductData.TYPE_INT32:
-                attributePropertyList.add(new IntegerProperty("Value"));
-                break;
-            case ProductData.TYPE_UINT32:
-                if(leaf.getData() instanceof ProductData.UTC) {
-                    attributePropertyList.add(new StringProperty("Value"));
-                    break;
-                }
-                attributePropertyList.add(new UIntegerProperty("Value"));
-                break;
-            case ProductData.TYPE_FLOAT64:
-                attributePropertyList.add(new DoubleProperty("Value"));
-                break;
-            default:
-                attributePropertyList.add(new StringProperty("Value"));
+
+        final int numElems = leaf.getData().getNumElems();
+        if (numElems > 0) {
+            addDataTypeSpecificProperty(leaf, attributePropertyList);
+        } else {
+            attributePropertyList.add(new EmptyProperty("Value"));
         }
+
         PropertySupport.ReadOnly<String> typeProperty =
                 new PropertySupport.ReadOnly<String>("Type", String.class, "Type", null) {
                     @Override
@@ -97,6 +87,27 @@ class MetadataElementLeafNode extends AbstractNode {
         return attributePropertyList.toArray(new PropertySupport[attributePropertyList.size()]);
     }
 
+    void addDataTypeSpecificProperty(MetadataTableLeaf leaf, List<PropertySupport> attributePropertyList) {
+        final int dataType = leaf.getDataType();
+        switch (dataType) {
+            case ProductData.TYPE_INT32:
+                attributePropertyList.add(new IntegerProperty("Value"));
+                break;
+            case ProductData.TYPE_UINT32:
+                if (leaf.getData() instanceof ProductData.UTC) {
+                    attributePropertyList.add(new StringProperty("Value"));
+                    break;
+                }
+                attributePropertyList.add(new UIntegerProperty("Value"));
+                break;
+            case ProductData.TYPE_FLOAT64:
+                attributePropertyList.add(new DoubleProperty("Value"));
+                break;
+            default:
+                attributePropertyList.add(new StringProperty("Value"));
+        }
+    }
+
     public class IntegerProperty extends PropertySupport.ReadOnly<Integer> {
 
         public IntegerProperty(String name) {
@@ -108,6 +119,7 @@ class MetadataElementLeafNode extends AbstractNode {
             return leaf.getData().getElemInt();
         }
     }
+
     public class UIntegerProperty extends PropertySupport.ReadOnly<Long> {
 
         public UIntegerProperty(String name) {
@@ -144,4 +156,15 @@ class MetadataElementLeafNode extends AbstractNode {
         }
     }
 
+    public static class EmptyProperty extends PropertySupport.ReadOnly<String> {
+
+        public EmptyProperty(String name) {
+            super(name, String.class, name, null);
+        }
+
+        @Override
+        public String getValue() throws IllegalAccessException, InvocationTargetException {
+            return "<empty>";
+        }
+    }
 }
