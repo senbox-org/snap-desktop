@@ -685,6 +685,26 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     }
 
             );
+            if (band.getAngularValue() != Band.ANGULAR_VIEW_NULL_VALUE) {
+                set.put(new PropertySupport.ReadWrite<Float>("angularValue", Float.class, "View Angle",
+                                "The view angle") {
+                            @Override
+                            public Float getValue() {
+                                return band.getAngularValue();
+                            }
+
+                            @Override
+                            public void setValue(Float newValue) {
+                                float oldValue = band.getAngularValue();
+                                performUndoableProductNodeEdit("Edit Angular Value",
+                                        band,
+                                        node -> node.setAngularValue(newValue),
+                                        node -> node.setAngularValue(oldValue));
+                            }
+                        }
+
+                );
+            }
             Property<RasterDataNode[]> ancillaryVariables = new PropertySupport.ReadWrite<RasterDataNode[]>("ancillaryVariables",
                     RasterDataNode[].class,
                     "Ancillary Variables",
@@ -753,6 +773,8 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 if (band.getSpectralBandwidth() > 0.0) {
                     append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
                 }
+            } else if (band.getDate() != null) {
+                append(tooltip, String.format("%s", band.getDate()));
             }
             append(tooltip, String.format("%d x %d pixels", band.getRasterWidth(), band.getRasterHeight()));
             if (band instanceof VirtualBand) {
