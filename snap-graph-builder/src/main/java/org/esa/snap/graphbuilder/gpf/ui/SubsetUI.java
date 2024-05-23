@@ -68,6 +68,7 @@ public class SubsetUI extends BaseOperatorUI {
     private final JButton geoUpdateButton = new JButton("Update");
     private Geometry geoRegion = null;
     private static final int MIN_SUBSET_SIZE = 1;
+    private Dimension currentProductSize = new Dimension(0, 0);
 
     private int getRasterReferenceWidth()
     {
@@ -183,11 +184,16 @@ public class SubsetUI extends BaseOperatorUI {
             height.setText(String.valueOf(region.height));
         }
         if (sourceProducts != null && sourceProducts.length > 0) {
-            if (region == null || region.width == 0)
-                width.setText(String.valueOf(sourceProducts[0].getSceneRasterWidth()));
-            if (region == null || region.height == 0)
-                height.setText(String.valueOf(sourceProducts[0].getSceneRasterHeight()));
+            final int currentSceneRasterWidth = currentProductSize.width;
+            final int currentSceneRasterHeight = currentProductSize.height;
+            final int productSceneRasterWidth = sourceProducts[0].getSceneRasterWidth();
+            final int productSceneRasterHeight = sourceProducts[0].getSceneRasterHeight();
+            if (region == null || region.width == 0 || currentSceneRasterWidth != productSceneRasterWidth)
+                width.setText(String.valueOf(productSceneRasterWidth));
+            if (region == null || region.height == 0 || currentSceneRasterHeight != productSceneRasterHeight)
+                height.setText(String.valueOf(productSceneRasterHeight));
 
+            currentProductSize = sourceProducts[0].getSceneRasterSize();
             worldMapUI.getModel().setAutoZoomEnabled(true);
             worldMapUI.getModel().setProducts(sourceProducts);
             worldMapUI.getModel().setSelectedProduct(sourceProducts[0]);
