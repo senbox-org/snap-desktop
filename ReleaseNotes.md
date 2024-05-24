@@ -3,11 +3,15 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 11.0.0
     
+    [SNAP-3684] Support PACE OCI L1C data
+    [SNAP-3683] Support PACE OCI L1B data
     [SNAP-3680] Update MERIS auxdata module
+    [SNAP-3658] S3 FRP not opening
     [SNAP-3636] ZNAP product not opened after processing
+    [SNAP-1691] Improve Presentation of FRP data
+    [SNAP-1684] Support SL FRP data of processing baseline FRP_NTC.004.07.00
     [SNAP-1585] GeoCodingFactory should be updated or removed
-
-# SNAP 10.0.0
+    [SNAP-1157] Let Product implement Closeable
 
 ## New in SNAP 10.0
 
