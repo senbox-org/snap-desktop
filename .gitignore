@@ -28,3 +28,4 @@ launch.sh
 snap-desktop.sh
 gpt.sh
 *~
+/snap-main/dependency-reduced-pom.xml
