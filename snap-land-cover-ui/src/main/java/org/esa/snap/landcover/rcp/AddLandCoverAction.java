@@ -16,6 +16,8 @@
 package org.esa.snap.landcover.rcp;
 
 import org.esa.snap.landcover.dataio.LandCoverFactory;
+import org.esa.snap.landcover.dataio.LandCoverModelDescriptor;
+import org.esa.snap.landcover.dataio.LandCoverModelRegistry;
 import org.esa.snap.landcover.gpf.AddLandCoverOp;
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
@@ -46,14 +48,18 @@ import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.esa.snap.landcover.gpf.AddLandCoverOp.AddLandCover;
 
@@ -85,6 +91,9 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
     private final Lookup lkp;
     private Product product;
     public static final String DIALOG_TITLE = "Add Land Cover Band";
+
+    private final DefaultMutableTreeNode landCoverNamesRoot = new DefaultMutableTreeNode("Land Cover Models");
+    private final Map<String, DefaultMutableTreeNode> folderMap = new HashMap<>();
 
     public AddLandCoverAction() {
         this(Utilities.actionsGlobalContext());
@@ -146,7 +155,7 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         // sort the list
         final List<String> sortedNames = Arrays.asList(Names);
         java.util.Collections.sort(sortedNames);
-        Names = sortedNames.toArray(new String[sortedNames.size()]);
+        Names = sortedNames.toArray(new String[0]);
 
         final AddLandCoverOp.LandCoverParameters dialogData = new AddLandCoverOp.LandCoverParameters(Names[0], ResamplingFactory.NEAREST_NEIGHBOUR_NAME);
         final PropertySet propertySet = PropertyContainer.createObjectBacked(dialogData);
@@ -156,9 +165,10 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         configureBandNameProperty(propertySet, "bandName", product);
         final BindingContext ctx = new BindingContext(propertySet);
 
-        final JList landCoverList = new JList();
-        landCoverList.setVisibleRowCount(10);
-        ctx.bind("name", new SingleSelectionListComponentAdapter(landCoverList, product));
+        final JTree landCoverTree = new JTree(landCoverNamesRoot);
+        ctx.bind("name", new SingleSelectionListComponentAdapter(landCoverTree, product));
+
+        populateNamesTree(landCoverTree);
 
         final JTextField bandNameField = new JTextField();
         bandNameField.setColumns(30);
@@ -175,10 +185,10 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         final JPanel parameterPanel = new JPanel(tableLayout);
         /*row 0*/
         parameterPanel.add(new JLabel("Land Cover Model:"));
-        parameterPanel.add(new JScrollPane(landCoverList));
+        parameterPanel.add(new JScrollPane(landCoverTree));
         /*row 1*/
         parameterPanel.add(new JLabel("Resampling method:"));
-        final JComboBox resamplingCombo = new JComboBox(ResamplingFactory.resamplingNames);
+        final JComboBox<String> resamplingCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
         parameterPanel.add(resamplingCombo);
         ctx.bind("resamplingMethod", resamplingCombo);
         parameterPanel.add(new JLabel("Integer data types will use nearest neighbour"));
@@ -193,6 +203,36 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         }
 
         return null;
+    }
+
+    private void populateNamesTree(final JTree landCoverTree) {
+
+        String[] names = LandCoverFactory.getNameList();
+        // sort the list
+        final java.util.List<String> sortedNames = Arrays.asList(names);
+        java.util.Collections.sort(sortedNames);
+        names = sortedNames.toArray(new String[0]);
+
+        final LandCoverModelRegistry registry = LandCoverModelRegistry.getInstance();
+        for(String name : names) {
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+            final LandCoverModelDescriptor descriptor = registry.getDescriptor(name);
+            String grouping = descriptor.getGrouping();
+            if(grouping != null) {
+                DefaultMutableTreeNode folderNode = folderMap.get(grouping);
+                if(folderNode == null) {
+                    folderNode = new DefaultMutableTreeNode(grouping);
+                    landCoverNamesRoot.add(folderNode);
+                    folderMap.put(grouping, folderNode);
+                }
+                folderNode.add(node);
+            } else {
+                landCoverNamesRoot.add(node);
+            }
+        }
+        landCoverTree.setRootVisible(true);
+        landCoverTree.setVisibleRowCount(10);
+        landCoverTree.expandRow(0);
     }
 
     private static void configureNameProperty(PropertySet propertySet, String propertyName, String[] names, String defaultValue) {
@@ -211,15 +251,14 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         descriptor.setValidator(new BandNameValidator(product));
     }
 
-    private static class SingleSelectionListComponentAdapter extends ComponentAdapter implements ListSelectionListener, PropertyChangeListener {
+    private static class SingleSelectionListComponentAdapter extends ComponentAdapter implements TreeSelectionListener, PropertyChangeListener {
 
-        private final JList list;
+        private final JTree list;
         private final Product product;
 
-        public SingleSelectionListComponentAdapter(final JList list, final Product product) {
+        public SingleSelectionListComponentAdapter(final JTree list, final Product product) {
             this.list = list;
             this.product = product;
-            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
 
         @Override
@@ -229,22 +268,21 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
 
         @Override
         public void bindComponents() {
-            updateListModel();
             getPropertyDescriptor().addAttributeChangeListener(this);
-            list.addListSelectionListener(this);
+            list.addTreeSelectionListener(this);
         }
 
         @Override
         public void unbindComponents() {
             getPropertyDescriptor().removeAttributeChangeListener(this);
-            list.removeListSelectionListener(this);
+            list.removeTreeSelectionListener(this);
         }
 
         @Override
         public void adjustComponents() {
             Object value = getBinding().getPropertyValue();
             if (value != null) {
-                list.setSelectedValue(value, true);
+              //  list.setSelectionPaths(value, true);
             } else {
                 list.clearSelection();
             }
@@ -253,7 +291,11 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (evt.getSource() == getPropertyDescriptor() && evt.getPropertyName().equals("valueSet")) {
-                updateListModel();
+                ValueSet valueSet = getPropertyDescriptor().getValueSet();
+                if (valueSet != null) {
+                    // list.setListData(valueSet.getItems());
+                    adjustComponents();
+                }
             }
         }
 
@@ -261,34 +303,30 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
             return getBinding().getContext().getPropertySet().getDescriptor(getBinding().getPropertyName());
         }
 
-        private void updateListModel() {
-            ValueSet valueSet = getPropertyDescriptor().getValueSet();
-            if (valueSet != null) {
-                list.setListData(valueSet.getItems());
-                adjustComponents();
-            }
-        }
-
         @Override
-        public void valueChanged(ListSelectionEvent event) {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
+        public void valueChanged(TreeSelectionEvent event) {
             if (getBinding().isAdjustingComponents()) {
                 return;
             }
             final Property property = getBinding().getContext().getPropertySet().getProperty(getBinding().getPropertyName());
-            Object selectedValue = list.getSelectedValue();
-            try {
-                property.setValue(selectedValue);
 
-                final Property bandNameProperty = getBinding().getContext().getPropertySet().getProperty("bandName");
-                bandNameProperty.setValueFromText(AddLandCoverOp.getValidBandName((String) selectedValue, product));
+            TreePath newPath = event.getNewLeadSelectionPath();
+            if (newPath != null) {
+                DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) newPath.getLastPathComponent();
+                String selectedValue = selectedNode.getUserObject().toString();
 
-                // Now model is in sync with UI
-                getBinding().clearProblem();
-            } catch (ValidationException e) {
-                getBinding().reportProblem(e);
+                try {
+                    System.out.println("Selected node: " + selectedValue);
+                    property.setValue(selectedValue);
+
+                    final Property bandNameProperty = getBinding().getContext().getPropertySet().getProperty("bandName");
+                    bandNameProperty.setValueFromText(AddLandCoverOp.getValidBandName(selectedValue, product));
+
+                    // Now model is in sync with UI
+                    getBinding().clearProblem();
+                } catch (ValidationException e) {
+                    getBinding().reportProblem(e);
+                }
             }
         }
     }
