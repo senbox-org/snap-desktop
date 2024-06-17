@@ -1,8 +1,8 @@
 package org.esa.snap.ui.product;
 
 import com.jidesoft.swing.CheckBoxTree;
+import eu.esa.snap.core.datamodel.group.BandGrouping;
 import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.GridBagUtils;
@@ -37,7 +37,7 @@ public class GroupedBandChoosingStrategy implements BandChoosingStrategy {
     private JCheckBox selectAllCheckBox;
     private JCheckBox selectNoneCheckBox;
     private boolean multipleProducts;
-    private Product.AutoGrouping autoGrouping;
+    private BandGrouping autoGrouping;
     private CheckBoxTree checkBoxTree;
     private final Map<Band, String> allBandsMap;
     private final Map<Band, String> selectedBandsMap;
@@ -45,7 +45,7 @@ public class GroupedBandChoosingStrategy implements BandChoosingStrategy {
     private final Map<TiePointGrid, String> selectedGridsMap;
 
     public GroupedBandChoosingStrategy(Band[] allBands, Band[] selectedBands, TiePointGrid[] allTiePointGrids,
-                                       TiePointGrid[] selectedTiePointGrids, Product.AutoGrouping autoGrouping, boolean multipleProducts) {
+                                       TiePointGrid[] selectedTiePointGrids, BandGrouping autoGrouping, boolean multipleProducts) {
         allBandsMap = createBandMap(allBands);
         selectedBandsMap = createBandMap(selectedBands);
         allGridsMap = createTiepointGridMap(allTiePointGrids);

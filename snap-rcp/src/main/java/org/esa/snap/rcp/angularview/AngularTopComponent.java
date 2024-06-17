@@ -18,6 +18,7 @@ package org.esa.snap.rcp.angularview;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import eu.esa.snap.core.datamodel.group.BandGrouping;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -34,7 +35,6 @@ import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.angularview.*;
-import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYTitleAnnotation;
@@ -846,7 +846,7 @@ public class AngularTopComponent extends ToolTopComponent {
 //                        "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
 //                        "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets");
 //            }
-            final Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
+            final BandGrouping autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
                 final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
                 DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
@@ -1802,7 +1802,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
         private void addBandToAngularViews(Band band) {
             DisplayableAngularview[] allAngularViews = rasterToAngularMap.get(currentView.getRaster());
-            Product.AutoGrouping autoGrouping = currentProduct.getAutoGrouping();
+            BandGrouping autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
                 final int bandIndex = autoGrouping.indexOf(band.getName());
                 final DisplayableAngularview angularView;
