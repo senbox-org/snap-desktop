@@ -6,7 +6,7 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
-import eu.esa.snap.core.datamodel.group.BandGrouping;
+import eu.esa.snap.core.datamodel.group.BandGroup;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.FlagCoding;
 import org.esa.snap.core.datamodel.IndexCoding;
@@ -106,7 +106,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         private void refreshGroup() {
             final ProductNodeGroup<Band> productBandGroup = product.getBandGroup();
             if (group != productBandGroup) {
-                final BandGrouping autoGrouping = product.getAutoGrouping();
+                final BandGroup autoGrouping = product.getAutoGrouping();
                 if (autoGrouping != null) {
                     final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
                     group.removeAll();
@@ -151,7 +151,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         private void refreshGroup() {
             final ProductNodeGroup<TiePointGrid> productTiePointGridGroup = product.getTiePointGridGroup();
             if (group != productTiePointGridGroup) {
-                final BandGrouping autoGrouping = product.getAutoGrouping();
+                final BandGroup autoGrouping = product.getAutoGrouping();
                 if (autoGrouping != null) {
                     final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
                     group.removeAll();
@@ -208,7 +208,7 @@ abstract class PNGGroup<T extends ProductNode> extends PNGroup<T> {
         private void refreshGroup() {
             final ProductNodeGroup<Mask> productMaskGroup = product.getMaskGroup();
             if (group != productMaskGroup) {
-                final BandGrouping autoGrouping = product.getAutoGrouping();
+                final BandGroup autoGrouping = product.getAutoGrouping();
                 if (autoGrouping != null) {
                     final int groupIndex = autoGrouping.indexOf(group.getDisplayName());
                     group.removeAll();
