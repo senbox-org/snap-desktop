@@ -17,7 +17,7 @@ package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
-import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGrouping;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -495,7 +495,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         if (availableSpectralBands.length == 0) {
             spectra = new DisplayableSpectrum[]{};
         } else {
-            final BandGroup autoGrouping = currentProduct.getAutoGrouping();
+            final BandGrouping autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
                 final int selectedSpectrumIndex = autoGrouping.indexOf(raster.getName());
                 DisplayableSpectrum[] autoGroupingSpectra = new DisplayableSpectrum[autoGrouping.size()];
@@ -1187,7 +1187,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private void addBandToSpectra(Band band) {
             DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
-            BandGroup autoGrouping = currentProduct.getAutoGrouping();
+            BandGrouping autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
                 final int bandIndex = autoGrouping.indexOf(band.getName());
                 final DisplayableSpectrum spectrum;

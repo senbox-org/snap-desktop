@@ -5,7 +5,7 @@
  */
 package org.esa.snap.rcp.nodes;
 
-import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGrouping;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
@@ -168,7 +168,7 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
         set.put(new PropertySupport.ReadWrite<String>("bandGrouping", String.class, "Band Grouping", "The product's band grouping") {
             @Override
             public String getValue() {
-                final BandGroup autoGrouping = getProduct().getAutoGrouping();
+                final BandGrouping autoGrouping = getProduct().getAutoGrouping();
                 if (autoGrouping == null) {
                     return "";
                 } else {
@@ -178,8 +178,8 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
             @Override
             public void setValue(String s) throws IllegalArgumentException {
-                BandGroup oldValue = getProduct().getAutoGrouping();
-                BandGroup newValue = BandGroup.parse(s);
+                BandGrouping oldValue = getProduct().getAutoGrouping();
+                BandGrouping newValue = BandGrouping.parse(s);
                 performUndoableProductNodeEdit("Edit Band-Grouping",
                                                getProduct(),
                                                node -> node.setAutoGrouping(newValue),
