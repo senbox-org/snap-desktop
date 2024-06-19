@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.nodes;
 
 import com.bc.ceres.core.Assert;
+import eu.esa.snap.core.datamodel.group.BandGrouping;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Product;
@@ -110,7 +111,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
         @Override
         protected boolean createKeys(List<Object> list) {
-            final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            final BandGrouping autoGrouping = getProduct().getAutoGrouping();
             if (autoGrouping == null) {
                 for (int i = 0; i < group.getNodeCount(); i++) {
                     list.add(group.get(i));
@@ -172,7 +173,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
         @Override
         protected boolean createKeys(List<Object> list) {
-            final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            final BandGrouping autoGrouping = getProduct().getAutoGrouping();
             if (autoGrouping == null) {
                 for (int i = 0; i < group.getNodeCount(); i++) {
                     list.add(group.get(i));
@@ -235,7 +236,7 @@ abstract class PNGroupingGroup extends PNGroup<Object> {
 
         @Override
         protected boolean createKeys(List<Object> list) {
-            final Product.AutoGrouping autoGrouping = getProduct().getAutoGrouping();
+            final BandGrouping autoGrouping = getProduct().getAutoGrouping();
             if (autoGrouping == null) {
                 for (int i = 0; i < group.getNodeCount(); i++) {
                     list.add(group.get(i));
