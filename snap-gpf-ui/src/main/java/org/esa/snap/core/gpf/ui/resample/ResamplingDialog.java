@@ -746,9 +746,9 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
         private void reactToSourceProductChange(Product product) {
             if (product != null) {
-                resolutionSpinner.setValue(determineResolutionFromProduct(product));
+                resolutionSpinner.setValue(new Double(determineResolutionFromProduct(product)));
             } else {
-                resolutionSpinner.setValue(0);
+                resolutionSpinner.setValue(0.0);
             }
         }
 
