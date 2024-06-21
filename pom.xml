@@ -349,11 +349,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gdal-*.zip</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>
