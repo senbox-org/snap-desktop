@@ -24,18 +24,24 @@ import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.landcover.dataio.LandCoverFactory;
+import org.esa.snap.landcover.dataio.LandCoverModelDescriptor;
+import org.esa.snap.landcover.dataio.LandCoverModelRegistry;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.SnapFileChooser;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,9 +49,11 @@ import java.util.Map;
  */
 public class AddLandCoverOpUI extends BaseOperatorUI {
 
-    private final JList<String> landCoverNamesList = new JList<>();
+    private final DefaultMutableTreeNode landCoverNamesRoot = new DefaultMutableTreeNode("Land Cover Models");
+    private final Map<String, DefaultMutableTreeNode> folderMap = new HashMap<>();
+    private final JTree landCoverNamesTree = new JTree(landCoverNamesRoot);
 
-    private final JList<File> externalFileList = new JList();
+    private final JList<File> externalFileList = new JList<>();
     private final JButton externalFileBrowseButton = new JButton("...");
 
     private final JComboBox<String> resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
@@ -58,12 +66,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         initializeOperatorUI(operatorName, parameterMap);
         final JComponent panel = createPanel();
 
-        String[] Names = LandCoverFactory.getNameList();
-        // sort the list
-        final java.util.List<String> sortedNames = Arrays.asList(Names);
-        java.util.Collections.sort(sortedNames);
-        Names = sortedNames.toArray(new String[sortedNames.size()]);
-        landCoverNamesList.setListData(Names);
+        populateNamesTree();
 
         initParameters();
 
@@ -75,11 +78,41 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
                     externalFileList.removeAll();
                     externalFileList.setListData(files);
                     externalFileList.setSelectionInterval(0, externalFileList.getModel().getSize()-1);
-                    landCoverNamesList.clearSelection();
+                    landCoverNamesTree.clearSelection();
                 }
             }
         });
         return new JScrollPane(panel);
+    }
+
+    private void populateNamesTree() {
+        landCoverNamesTree.removeAll();
+
+        String[] names = LandCoverFactory.getNameList();
+        // sort the list
+        final java.util.List<String> sortedNames = Arrays.asList(names);
+        java.util.Collections.sort(sortedNames);
+        names = sortedNames.toArray(new String[0]);
+
+        final LandCoverModelRegistry registry = LandCoverModelRegistry.getInstance();
+        for(String name : names) {
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
+            final LandCoverModelDescriptor descriptor = registry.getDescriptor(name);
+            String grouping = descriptor.getGrouping();
+            if(grouping != null) {
+                DefaultMutableTreeNode folderNode = folderMap.get(grouping);
+                if(folderNode == null) {
+                    folderNode = new DefaultMutableTreeNode(grouping);
+                    landCoverNamesRoot.add(folderNode);
+                    folderMap.put(grouping, folderNode);
+                }
+                folderNode.add(node);
+            } else {
+                landCoverNamesRoot.add(node);
+            }
+        }
+        landCoverNamesTree.setRootVisible(true);
+        landCoverNamesTree.expandRow(0);
     }
 
     private static File[] getSelectedFiles() {
@@ -115,9 +148,20 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
 
         final String[] selectedLandCoverNames = (String[]) paramMap.get("landCoverNames");
         if (selectedLandCoverNames != null) {
-            int[] sel = getListIndices(selectedLandCoverNames, LandCoverFactory.getNameList());
-            landCoverNamesList.setSelectedIndices(sel);
-            int[] s = landCoverNamesList.getSelectedIndices();
+
+            List<TreePath> paths = new ArrayList<>();
+            for(String name : selectedLandCoverNames) {
+                TreePath path = new TreePath(landCoverNamesRoot);
+                DefaultMutableTreeNode folderNode = folderMap.get(name);
+                if(folderNode != null) {
+                    path = path.pathByAddingChild(folderNode);
+                }
+                path = path.pathByAddingChild(name);
+                //path = path.pathByAddingChild(new DefaultMutableTreeNode(name));
+
+                paths.add(path);
+            }
+            landCoverNamesTree.setSelectionPaths(paths.toArray(new TreePath[0]));
         }
         resamplingMethodCombo.setSelectedItem(paramMap.get("resamplingMethod"));
 
@@ -136,28 +180,6 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         }
     }
 
-    private static int[] getListIndices(final String[] selectedList, final String[] fullList) {
-        int[] selectionIndices = new int[selectedList.length];
-        int j = 0;
-        for (String n : selectedList) {
-            for (int i = 0; i < fullList.length; ++i) {
-                if (fullList[i].equals(n)) {
-                    selectionIndices[j++] = i;
-                    break;
-                }
-            }
-        }
-        return selectionIndices;
-    }
-
-    private static String[] getListStrings(final int[] selectedList, final String[] fullList) {
-        final ArrayList<String> stringList = new ArrayList<>(selectedList.length);
-        for (int i : selectedList) {
-            stringList.add(fullList[i]);
-        }
-        return stringList.toArray(new String[stringList.size()]);
-    }
-
     @Override
     public UIValidation validateParameters() {
 
@@ -168,15 +190,19 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
     public void updateParameters() {
         if (!hasSourceProducts()) return;
 
-        final String[] names = getListStrings(landCoverNamesList.getSelectedIndices(), LandCoverFactory.getNameList());
-        if (names.length > 0) {
-            paramMap.put("landCoverNames", names);
+        TreePath[] treePaths = landCoverNamesTree.getSelectionPaths();
+        List<String> names = new ArrayList<>();
+        for(TreePath treePath : treePaths) {
+            names.add(treePath.getLastPathComponent().toString());
+        }
+        if (!names.isEmpty()) {
+            paramMap.put("landCoverNames", names.toArray(new String[0]));
         } else {
             paramMap.put("landCoverNames", new String[] {});
         }
         paramMap.put("resamplingMethod", resamplingMethodCombo.getSelectedItem());
         if (!externalFileList.getSelectedValuesList().isEmpty()) {
-            final File[] files = externalFileList.getSelectedValuesList().toArray(new File[externalFileList.getSelectedValuesList().size()]);
+            final File[] files = externalFileList.getSelectedValuesList().toArray(new File[0]);
             paramMap.put("externalFiles", files);
         }
     }
@@ -187,7 +213,8 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         final GridBagConstraints gbc = DialogUtils.createGridBagConstraints();
 
         gbc.gridy++;
-        DialogUtils.addComponent(contentPane, gbc, "Land Cover Model:", landCoverNamesList);
+        landCoverNamesTree.setVisibleRowCount(10);
+        DialogUtils.addComponent(contentPane, gbc, "Land Cover Model:", landCoverNamesTree);
         gbc.gridy++;
         externalFileList.setFixedCellWidth(500);
         DialogUtils.addInnerPanel(contentPane, gbc, new JLabel("External Files"), externalFileList, externalFileBrowseButton);
