@@ -1,7 +1,7 @@
 package org.esa.snap.ui.product;
 
 import com.bc.ceres.swing.TableLayout;
-import eu.esa.snap.core.datamodel.group.BandGrouping;
+import eu.esa.snap.core.datamodel.group.BandGroup;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.TiePointGrid;
@@ -29,7 +29,7 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
     private boolean addLoadSaveConfigurationButtons;
 
     public BandChooser(Window parent, String title, String helpID,
-                       Band[] allBands, Band[] selectedBands, BandGrouping autoGrouping,
+                       Band[] allBands, Band[] selectedBands, BandGroup autoGrouping,
                        boolean addLoadSaveConfigurationButtons) {
         super(parent, title, ModalDialog.ID_OK_CANCEL, helpID);
         this.addLoadSaveConfigurationButtons = addLoadSaveConfigurationButtons;
