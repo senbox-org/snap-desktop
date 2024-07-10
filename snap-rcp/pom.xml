@@ -51,6 +51,7 @@
                         </dependency>
                     </moduleDependencies>
                     <publicPackages>
+                        <publicPackage>eu.esa.snap.rcp.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.*</publicPackage>
                         <publicPackage>org.esa.snap.rcp.scripting</publicPackage>
                         <publicPackage>org.esa.snap.rcp.about</publicPackage>
