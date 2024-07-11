@@ -1,8 +1,7 @@
 package eu.esa.snap.rcp.bandgroup;
 
-import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
@@ -13,11 +12,9 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @TopComponent.Description(
         preferredID = "BandGroupManagerTopComponent",
@@ -44,25 +41,61 @@ import java.nio.file.Paths;
 })
 public class BandGroupManagerTopComponent extends ToolTopComponent {
 
-    private final BandGroupsManager bandGroupsManager;
+    private final BandGroupsManagerController controller;
+    private JComboBox<String> groupNamesCBox;
 
     public BandGroupManagerTopComponent() throws IOException {
-        // @todo 1 tb/tb initialize this at engine startup.
-        final File appDataDir = SystemUtils.getApplicationDataDir();
-        final Path appDataPath = Paths.get(appDataDir.getAbsolutePath());
-        final Path configDir = appDataPath.resolve("config");
-        BandGroupsManager.initialize(configDir);
-        bandGroupsManager = BandGroupsManager.getInstance();
-
+        controller = new BandGroupsManagerController();
         initUi();
+        updateUIState();
     }
 
     private void initUi() {
+        // add / remove / edit
+        // save
         setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(4, 4, 4, 4));
+        setDisplayName("Band Groups Manager");
 
-        JPanel mainPane = new JPanel(new BorderLayout(4, 4));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+        mainPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
 
-        add(mainPane, BorderLayout.CENTER);
+        JPanel productPanel = new JPanel(new BorderLayout());
+        productPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Selected Product Bands"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        mainPanel.add(productPanel);
+
+        JPanel groupEditPanel = new JPanel(new BorderLayout());
+        groupEditPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Edit Band Grouping"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        mainPanel.add(groupEditPanel);
+
+        JPanel groupListPanel = new JPanel(new BorderLayout());
+        groupListPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Manage Band Groupings"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+        groupNamesCBox = new JComboBox<>();
+        groupNamesCBox.setName("Band Groups");
+        groupNamesCBox.addActionListener(e -> {
+            updateBandGroupSelection();
+        });
+
+        groupListPanel.add(groupNamesCBox, BorderLayout.PAGE_START);
+        mainPanel.add(groupListPanel);
+
+        add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private void updateUIState() {
+        final String[] bandGroupNames = controller.getBandGroupNames();
+        groupNamesCBox.removeAllItems();
+        for (final String groupName : bandGroupNames) {
+            groupNamesCBox.addItem(groupName);
+        }
     }
 
     @Override
@@ -73,11 +106,36 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     @Override
     protected void productSceneViewSelected(ProductSceneView view) {
         final Product product = view.getProduct();
-        bandGroupsManager.addGroupsOfProduct(product);
+        controller.setSelectedProduct(product);
+        updateUIState();
     }
 
     @Override
     protected void productSceneViewDeselected(ProductSceneView view) {
-        bandGroupsManager.removeGroupsOfProduct();
+        controller.deselectProduct();
+        updateUIState();
+    }
+
+    @Override
+    protected void productSelected(Product product) {
+        controller.setSelectedProduct(product);
+        updateUIState();
+    }
+
+    @Override
+    protected void productDeselected(Product product) {
+        controller.deselectProduct();
+        updateUIState();
+    }
+
+    protected void updateBandGroupSelection() {
+        String selectedGroup = (String) groupNamesCBox.getSelectedItem();
+        if (StringUtils.isNullOrEmpty(selectedGroup)) {
+            // clear band group editor
+        } else {
+            // get BandGroup from manager
+            // set to editor
+            // trigger repaint (?)
+        }
     }
 }

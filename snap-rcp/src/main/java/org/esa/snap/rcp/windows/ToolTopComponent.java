@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.windows;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.netbeans.api.annotations.common.NonNull;
@@ -38,6 +39,15 @@ public abstract class ToolTopComponent extends TopComponent {
                 productSceneViewSelected(newValue);
             }
         });
+
+        SnapApp.getDefault().getSelectionSupport(Product.class).addHandler((oldValue, newValue) -> {
+            if (oldValue != null) {
+                productDeselected(oldValue);
+            }
+            if (newValue != null) {
+                productSelected(newValue);
+            }
+        });
     }
 
     public ProductSceneView getSelectedProductSceneView() {
@@ -48,5 +58,11 @@ public abstract class ToolTopComponent extends TopComponent {
     }
 
     protected void productSceneViewDeselected(@NonNull ProductSceneView view) {
+    }
+
+    protected void productSelected(@NonNull Product product) {
+    }
+
+    protected void productDeselected(@NonNull Product product) {
     }
 }
