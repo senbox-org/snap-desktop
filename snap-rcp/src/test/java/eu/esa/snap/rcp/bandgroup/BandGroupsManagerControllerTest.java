@@ -3,9 +3,10 @@ package eu.esa.snap.rcp.bandgroup;
 import com.bc.ceres.annotation.STTM;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupImpl;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class BandGroupsManagerControllerTest {
 
@@ -43,5 +44,18 @@ public class BandGroupsManagerControllerTest {
         assertEquals(2, groupNames.length);
         assertEquals("<unnamed>(F*BT_*n ...)", groupNames[0]);
         assertEquals("horst", groupNames[1]);
+    }
+
+    @Test
+    @STTM("SNAP-3709")
+    public void testGroupExists() {
+        final BandGroupsManager bandGroupsManager = new BandGroupsManager();
+        final BandGroupsManagerController controller = new BandGroupsManagerController(bandGroupsManager);
+
+        assertFalse(controller.groupExists("unknown"));
+
+        bandGroupsManager.add(new BandGroupImpl("yes_its_me", new String[] {"martha", "agatha"}));
+        assertFalse(controller.groupExists("unknown"));
+        assertTrue(controller.groupExists("yes_its_me"));
     }
 }
