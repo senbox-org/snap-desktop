@@ -49,11 +49,12 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     private JComboBox<String> groupNamesCBox;
     private JTextField groupNameTextField;
     private JTextArea bandNamesTextField;
+    private JButton editOkButton;
 
     public BandGroupManagerTopComponent() throws IOException {
         controller = new BandGroupsManagerController();
         initUi();
-        updateUIState();
+        updateGroupNamesBox(null);
     }
 
     private void initUi() {
@@ -105,11 +106,11 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> {
+        editOkButton = new JButton("OK");
+        editOkButton.addActionListener(e -> {
             editOk();
         });
-        buttonPanel.add(okButton);
+        buttonPanel.add(editOkButton);
 
         final JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(e -> {
@@ -123,45 +124,70 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     }
 
     private JPanel createGroupListPanel() {
-        final JPanel groupListPanel = new JPanel(new BorderLayout());
-        groupListPanel.setBorder(BorderFactory.createCompoundBorder(
+        JPanel groupListPanel = new JPanel(new BorderLayout());
+
+        final JPanel containerPanel = new JPanel();
+        containerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Manage Band Groupings"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.PAGE_AXIS));
 
         groupNamesCBox = new JComboBox<>();
         groupNamesCBox.setName("Band Groups");
         groupNamesCBox.addActionListener(e -> {
             updateBandGroupSelection();
         });
-        groupListPanel.add(groupNamesCBox, BorderLayout.PAGE_START);
+        groupNamesCBox.setMaximumSize(new Dimension(300, 25));
+
+        containerPanel.add(groupNamesCBox);
+
+        final JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(""),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
 
         final JButton addButton = new JButton("Add");
         addButton.addActionListener(e -> {
             addNewBandGroup();
         });
-        groupListPanel.add(addButton, BorderLayout.WEST);
+        buttonsPanel.add(addButton);
 
         final JButton removeButton = new JButton("Remove");
         removeButton.addActionListener(e -> {
             removeBandGroup();
         });
-        groupListPanel.add(removeButton, BorderLayout.EAST);
+        buttonsPanel.add(removeButton);
 
         final JButton saveButton = new JButton("Save");
         saveButton.addActionListener(e -> {
             saveBandGroups();
         });
-        groupListPanel.add(saveButton, BorderLayout.PAGE_END);
+        buttonsPanel.add(saveButton);
 
-        return groupListPanel;
+        containerPanel.add(buttonsPanel);
+
+        groupListPanel.add(containerPanel, BorderLayout.PAGE_START);
+
+        return containerPanel;
     }
 
-    private void updateUIState() {
+    private void updateGroupNamesBox(String selectedName) {
         final String[] bandGroupNames = controller.getBandGroupNames();
         groupNamesCBox.removeAllItems();
+        int idx = 0;
+        int selectedIdx = -1;
         for (final String groupName : bandGroupNames) {
             groupNamesCBox.addItem(groupName);
+            if (groupName.equals(selectedName)) {
+                selectedIdx = idx;
+            }
+            ++idx;
         }
+        if (selectedIdx < 0) {
+            selectedIdx = 0;
+        }
+        groupNamesCBox.setSelectedIndex(selectedIdx);
     }
 
     @Override
@@ -173,25 +199,25 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     protected void productSceneViewSelected(ProductSceneView view) {
         final Product product = view.getProduct();
         controller.setSelectedProduct(product);
-        updateUIState();
+        updateGroupNamesBox(null);
     }
 
     @Override
     protected void productSceneViewDeselected(ProductSceneView view) {
         controller.deselectProduct();
-        updateUIState();
+        updateGroupNamesBox(null);
     }
 
     @Override
     protected void productSelected(Product product) {
         controller.setSelectedProduct(product);
-        updateUIState();
+        updateGroupNamesBox(null);
     }
 
     @Override
     protected void productDeselected(Product product) {
         controller.deselectProduct();
-        updateUIState();
+        updateGroupNamesBox(null);
     }
 
     protected void updateBandGroupSelection() {
@@ -199,13 +225,32 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
         if (StringUtils.isNullOrEmpty(selectedGroup)) {
             clearEditPanel();
         } else {
-            // @todo tb/tb
-            // foresee that groups from product do not have a name
-            // check if group is editable - if not -> set edit components to read-only (eventally add message text)
-            // foresee that the return value might be null
             final BandGroupImpl group = controller.getGroup(selectedGroup);
+            if (group == null) {
+                clearEditPanel();
+                return;
+            }
+
+            final boolean editable = group.isEditable();
+            setBandGroupEditable(editable);
+
             groupNameTextField.setText(group.getName());
+
+            final StringBuilder textFieldEntry = new StringBuilder();
+            for (String[] items : group) {
+                for (final String item : items) {
+                    textFieldEntry.append(item);
+                    textFieldEntry.append(System.lineSeparator());
+                }
+            }
+            bandNamesTextField.setText(textFieldEntry.toString());
         }
+    }
+
+    private void setBandGroupEditable(boolean editable) {
+        groupNameTextField.setEditable(editable);
+        bandNamesTextField.setEditable(editable);
+        editOkButton.setEnabled(editable);
     }
 
     protected void saveBandGroups() {
@@ -219,10 +264,8 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     }
 
     protected void addNewBandGroup() {
-        // @todo tb/tb
-        // clear fields of edit panel
         clearEditPanel();
-        updateUIState();
+        setBandGroupEditable(true);
     }
 
     private void clearEditPanel() {
@@ -231,11 +274,15 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     }
 
     protected void removeBandGroup() {
-        // @todo tb/tb
-        // getSelected band group
-        // check if editable
-        // - if so: remove
-        // - if not: show dialog
+        final String groupToRemove = (String) groupNamesCBox.getSelectedItem();
+
+        if (groupToRemove.startsWith("<unnamed>")) {
+            Dialogs.showWarning("This band group is supplied by the product.\nIt cannot be edited.");
+        } else {
+            controller.removeGroup(groupToRemove);
+
+            updateGroupNamesBox(null);
+        }
     }
 
     protected void editOk() {
@@ -262,11 +309,12 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
         final String[] bandNames = parseTextFieldContent(bandNamesText);
         controller.storeGroup(newBandGroupName, bandNames);
-        updateUIState();
+        updateGroupNamesBox(newBandGroupName);
     }
 
     protected void editCancel() {
-        // @todo
+        clearEditPanel();
+        updateGroupNamesBox(null);
     }
 
     static String[] parseTextFieldContent(String bandNamesText) {

@@ -42,7 +42,7 @@ public class BandGroupsManagerController {
             }
         }
 
-        return null;
+        return bandGroupsManager.getGroupsOfProduct();
     }
 
     void storeGroup(String groupName, String[] bandNames) {
@@ -66,6 +66,10 @@ public class BandGroupsManagerController {
 
     public void saveBandGroups() throws IOException {
         bandGroupsManager.save();
+    }
+
+    public void removeGroup(String groupName) {
+        bandGroupsManager.remove(groupName);
     }
 
     static String[] getBandGroupNames(BandGroup[] bandGroups) {

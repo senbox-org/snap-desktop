@@ -58,4 +58,32 @@ public class BandGroupsManagerControllerTest {
         assertFalse(controller.groupExists("unknown"));
         assertTrue(controller.groupExists("yes_its_me"));
     }
+
+    @Test
+    @STTM("SNAP-3709")
+    public void testRemoveGroup_notExisting() {
+        final BandGroupsManager bandGroupsManager = new BandGroupsManager();
+        bandGroupsManager.add(new BandGroupImpl("Im_in", new String[] {"one", "two"}));
+        final BandGroupsManagerController controller = new BandGroupsManagerController(bandGroupsManager);
+
+        controller.removeGroup("unknown_group");
+
+        final BandGroup[] bandGroups = bandGroupsManager.get();
+        assertEquals(1, bandGroups.length);
+    }
+
+    @Test
+    @STTM("SNAP-3709")
+    public void testRemoveGroup() {
+        final BandGroupsManager bandGroupsManager = new BandGroupsManager();
+        bandGroupsManager.add(new BandGroupImpl("to_be_removed", new String[] {"one", "two"}));
+        bandGroupsManager.add(new BandGroupImpl("stays_in", new String[] {"three", "four"}));
+        final BandGroupsManagerController controller = new BandGroupsManagerController(bandGroupsManager);
+
+        controller.removeGroup("to_be_removed");
+
+        final BandGroup[] bandGroups = bandGroupsManager.get();
+        assertEquals(1, bandGroups.length);
+        assertEquals("stays_in", bandGroups[0].getName());
+    }
 }
