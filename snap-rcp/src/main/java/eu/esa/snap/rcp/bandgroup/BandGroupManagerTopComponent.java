@@ -318,6 +318,6 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     }
 
     static String[] parseTextFieldContent(String bandNamesText) {
-        return StringUtils.split(bandNamesText, new char[]{'\n', ','}, true);
+        return StringUtils.split(bandNamesText.trim(), new char[]{'\n', ','}, true);
     }
 }

@@ -25,4 +25,14 @@ public class BandGroupsManagerTopComponentTest {
         assertEquals(3, strings.length);
         assertEquals("ref_09", strings[2]);
     }
+
+    @Test
+    @STTM("SNAP-3709")
+    public void testParseTextFieldContentIsTrimmed() {
+        final String mixedSeparatorList = " ref_11,ref_08\n ref_09\n  ";
+        final String[] strings = BandGroupManagerTopComponent.parseTextFieldContent(mixedSeparatorList);
+        assertEquals(3, strings.length);
+        assertEquals("ref_11", strings[0]);
+        assertEquals("ref_09", strings[2]);
+    }
 }
