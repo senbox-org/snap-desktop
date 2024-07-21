@@ -3,6 +3,7 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.runtime.Version;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import com.formdev.flatlaf.FlatLightLaf;
 import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
@@ -33,6 +34,7 @@ import org.openide.awt.StatusDisplayer;
 import org.openide.awt.ToolbarPool;
 import org.openide.awt.UndoRedo;
 import org.openide.modules.ModuleInfo;
+import org.openide.modules.Modules;
 import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.util.*;
@@ -254,7 +256,9 @@ public class SnapApp {
      */
     public String getInstanceName() {
         try {
-            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
+            final ModuleInfo moduleInfo = Modules.getDefault().ownerOf(SnapApp.class);
+            Version specVersion = Version.parseVersion(moduleInfo.getImplementationVersion() );
+            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation") + " " + specVersion.getMajor();
         } catch (Exception e) {
             return "SNAP";
         }
