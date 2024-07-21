@@ -163,7 +163,7 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         final ImageIcon shapeIcon = SpectrumShapeProvider.getShapeIcon(spectrum.getSymbolIndex());
         spectraPanel.add(collapseButton);
         final TristateCheckBox tristateCheckBox = new TristateCheckBox();
-        tristateCheckBox.setState(selectionAdmin.getState(index));
+        tristateCheckBox.setState(isSelected(spectrum));
         tristateCheckBox.addActionListener(new TristateCheckboxListener(index));
         tristateCheckBoxes[index] = tristateCheckBox;
         spectraPanel.add(tristateCheckBox);
@@ -209,6 +209,13 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
             }
         });
         spectraPanel.add(shapeSizeComboBox);
+    }
+
+    private static int isSelected(DisplayableSpectrum spectrum) {
+        if (spectrum.isSelected()) {
+            return TristateCheckBox.STATE_SELECTED;
+        }
+        return TristateCheckBox.STATE_UNSELECTED;
     }
 
     private void toggleCollapsed(int index) {
