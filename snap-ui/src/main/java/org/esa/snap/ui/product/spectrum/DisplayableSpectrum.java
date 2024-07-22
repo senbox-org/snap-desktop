@@ -42,9 +42,10 @@ public class DisplayableSpectrum implements Spectrum {
     public void addBand(SpectrumBand band) {
         Assert.notNull(band);
         bands.add(band);
+        /*
         if(band.isSelected()) {
             setSelected(true);
-        }
+        }*/
         updateUnit();
     }
 

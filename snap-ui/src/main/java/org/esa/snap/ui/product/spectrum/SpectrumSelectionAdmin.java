@@ -7,35 +7,46 @@ import java.util.List;
 
 class SpectrumSelectionAdmin {
 
-    private List<List<Boolean>> bandSelectionStates;
-    private List<Integer> numbersOfSelectedBands;
-    private List<Integer> currentStates;
+    private final List<List<BandSelectionState>> bandSelectionStates;
+    private final List<Integer> numbersOfSelectedBands;
+    private final List<Integer> currentStates;
 
     SpectrumSelectionAdmin() {
-        bandSelectionStates = new ArrayList<List<Boolean>>();
+        bandSelectionStates = new ArrayList<List<BandSelectionState>>();
         numbersOfSelectedBands = new ArrayList<Integer>();
         currentStates = new ArrayList<Integer>();
     }
 
     void evaluateSpectrumSelections(DisplayableSpectrum spectrum) {
-        List<Boolean> selected = new ArrayList<Boolean>();
+        List<BandSelectionState> selected = new ArrayList<BandSelectionState>();
         int numberOfSelectedBands = 0;
         for (int i = 0; i < spectrum.getSpectralBands().length; i++) {
             final boolean bandSelected = spectrum.isBandSelected(i);
-            selected.add(bandSelected);
+            final BandSelectionState bandSelectionState = new BandSelectionState();
+            bandSelectionState.setSelected(bandSelected);
+            selected.add(bandSelectionState);
             if (bandSelected) {
                 numberOfSelectedBands++;
             }
         }
         bandSelectionStates.add(selected);
         numbersOfSelectedBands.add(numberOfSelectedBands);
+
         currentStates.add(-1);
-        evaluateState(bandSelectionStates.size() - 1);
+        final int index = bandSelectionStates.size() - 1;
+        if (spectrum.isSelected()) {
+            currentStates.set(index, TristateCheckBox.STATE_UNSELECTED);
+        } else {
+            currentStates.set(index, TristateCheckBox.STATE_SELECTED);
+        }
+
+        //evaluateState(bandSelectionStates.size() - 1);
     }
 
     boolean isBandSelected(int row, int i) {
         if (currentStates.get(row) == TristateCheckBox.STATE_MIXED) {
-            return bandSelectionStates.get(row).get(i);
+            final List<BandSelectionState> bst = bandSelectionStates.get(row);
+            return bst.get(i).isSelected();
         } else return currentStates.get(row) == TristateCheckBox.STATE_SELECTED;
     }
 
@@ -46,7 +57,9 @@ class SpectrumSelectionAdmin {
         } else if (numberOfBands == bandSelectionStates.get(index).size()) {
             currentStates.set(index, TristateCheckBox.STATE_SELECTED);
         } else {
-            currentStates.set(index, TristateCheckBox.STATE_MIXED);
+            //
+            // currentStates.set(index, TristateCheckBox.STATE_MIXED);
+            currentStates.set(index, TristateCheckBox.STATE_UNSELECTED);
         }
     }
 
@@ -62,16 +75,16 @@ class SpectrumSelectionAdmin {
         if (isBandSelected(row, bandRow) != selected) {
             updateBandSelections(row, bandRow, selected);
             updateNumberOfSelectedBands(selected, row);
-            evaluateState(row);
+            //evaluateState(row);
         }
     }
 
     private void updateBandSelections(int row, int bandRow, boolean selected) {
-        bandSelectionStates.get(row).set(bandRow, selected);
+        bandSelectionStates.get(row).get(bandRow).setSelected(selected);
         if (currentStates.get(row) != TristateCheckBox.STATE_MIXED) {
             for (int i = 0; i < bandSelectionStates.get(row).size(); i++) {
                 if (i != bandRow) {
-                    bandSelectionStates.get(row).set(i, !selected);
+                    bandSelectionStates.get(row).get(i).setSelected(!selected);
                 }
             }
         }

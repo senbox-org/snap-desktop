@@ -1,0 +1,85 @@
+<!--
+  ~ Copyright (C) 2024 Brockmann Consult GmbH (info@brockmann-consult.de)
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Band Group Editor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Band Grouping Editor
+        </td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg" border=0></a></td>
+    </tr>
+</table>
+
+
+<h3>Band Grouping Editor</h3>
+
+<p>
+    This dialog allows you define, edit and manage Band Groups. A Band Group is a list of Bands of a product that can be
+    grouped and given a group name. This functionality is similar to the auto-grouping entities provided by the ProductReader.
+
+    User defined groups can be used in the <a href="ProductSubsetDialog.html">Product Subset Dialog</a> and in the <a href="SpectrumWindow.html">SpectrumView</a>
+    to simplify handling of common band group definitions that are frequently used.
+
+    The Band Group definitions are kept as a user-defined property and saved in a text file for easy manual editing of sharing.
+    This file is stored at .snap/config/user_band_groups.json.
+</p>
+
+<center>
+    <img src="images/BandGroupEditor.png">
+</center>
+
+
+<h4>Manage Band Groupings</h4>
+
+<p>
+    This panel allow to manage the user defined Band Groups. The drop-down list contains all Band Groups defined by the user.
+    You can:
+</p>
+
+<ul>
+    <li>Add: create a new Band Group definitions. The Edit Band Grouping panel will be cleared and allows editing.</li>
+    <li>Remove: removes the currently selected Band Group definition from the list.</li>
+    <li>Store: saves the changes to the configuration file.</li>
+</ul>
+
+<h4>Edit Band Grouping</h4>
+
+<p>
+    In this panel you can create and edit/modify Band Groups. To name a band group add the name in the appropriate text box.
+    In the text-box Band Names, you can add the band names that shall be grouped. Names must be formatted either as one
+    line, comma separated or as line separated band names.
+</p>
+<p>
+    Pressing OK adds the Band Group to the list, Pressing Cancel reverts the editing.
+</p>
+
+
+
+<hr>
+</body>
+</html>
+
+<!--page visited by UK-->
