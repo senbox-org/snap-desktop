@@ -184,10 +184,10 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
             }
             ++idx;
         }
-        if (selectedIdx < 0) {
-            selectedIdx = 0;
+
+        if (selectedIdx >= 0) {
+            groupNamesCBox.setSelectedIndex(selectedIdx);
         }
-        groupNamesCBox.setSelectedIndex(selectedIdx);
     }
 
     @Override
