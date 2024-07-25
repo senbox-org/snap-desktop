@@ -2269,8 +2269,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = primaryStatisticsField.toString();
             }
 
-            if (row < statsSpreadsheet[0].length) {
-                statsSpreadsheet[row][idx] = entry;
+            if (row < statsSpreadsheet.length) {
+                statsSpreadsheet[row][idx] = entry;  // todo Here it is
             }
         }
     }
