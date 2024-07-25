@@ -2270,7 +2270,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             }
 
             if (row < statsSpreadsheet.length) {
-                statsSpreadsheet[row][idx] = entry;  // todo Here it is
+                statsSpreadsheet[row][idx] = entry;  
             }
         }
     }
