@@ -149,7 +149,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         FileRefNum("File#"),
         BandName("Band"),
         MaskName("ROI_Mask"),
-        QualityMaskName("Flag_Mask");
+        QualityMaskName("Flag_Mask"),
+        Wavelength("Wavelength");
 
         PrimaryStatisticsFields(String name) {
             this.name = name;
@@ -1753,6 +1754,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             fieldIdx++;
             primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.QualityMaskName, fieldIdx);
             fieldIdx++;
+            primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.Wavelength, fieldIdx);
+            fieldIdx++;
+
 
             stxFieldsStartIdx = fieldIdx;
             fieldIdx += numStxFields;
@@ -1949,10 +1953,16 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         }
 
 
+
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.FileRefNum, getProduct().getRefNo());
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.BandName, raster.getName());
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.MaskName, maskName);
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.QualityMaskName, qualityMaskName);
+
+
+        Float wavelength = getProduct().getBand(raster.getName()).getSpectralWavelength();
+        String wavelengthString = (wavelength > 0) ? Double.toString(getProduct().getBand(raster.getName()).getSpectralWavelength()) : "";
+        addFieldToSpreadsheet(row, PrimaryStatisticsFields.Wavelength, wavelengthString);
 
         addFieldToSpreadsheet(row, MetaDataFields.TimeMetaDataBreak, COLUMN_BREAK);
         addFieldToSpreadsheet(row, MetaDataFields.StartDate, startDateString);
@@ -2241,7 +2251,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = header;
             }
 
-            if (row < statsSpreadsheet[0].length) {
+            if (row < statsSpreadsheet.length) {
                 statsSpreadsheet[row][idx] = entry;
             }
         }
@@ -2255,7 +2265,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = fileMetaDataField.toString();
             }
 
-            if (row < statsSpreadsheet[0].length) {
+            if (row < statsSpreadsheet.length) {
                 statsSpreadsheet[row][idx] = entry;
             }
         }
