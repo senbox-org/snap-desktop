@@ -150,7 +150,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         BandName("Band"),
         MaskName("ROI_Mask"),
         QualityMaskName("Flag_Mask"),
-        Wavelength("Wavelength");
+        Wavelength("Wavelength"),
+        ViewAngle("Angle*");
 
         PrimaryStatisticsFields(String name) {
             this.name = name;
@@ -1774,8 +1775,11 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 fieldIdx++;
                 metaDataFieldsHashMap.put(MetaDataFields.BandDescription, fieldIdx);
                 fieldIdx++;
-
             }
+
+
+            primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.ViewAngle, fieldIdx);
+            fieldIdx++;
 
 
             if (includeMaskMetaData) {
@@ -1961,8 +1965,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
 
         Float wavelength = getProduct().getBand(raster.getName()).getSpectralWavelength();
-        String wavelengthString = (wavelength > 0) ? Double.toString(getProduct().getBand(raster.getName()).getSpectralWavelength()) : "";
+        String wavelengthString = (wavelength > 0) ? Float.toString(getProduct().getBand(raster.getName()).getSpectralWavelength()) : "";
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.Wavelength, wavelengthString);
+
+        Float viewAngle = getProduct().getBand(raster.getName()).getAngularValue();
+        String viewAngleString = (viewAngle == -360 && viewAngle <= 360) ? Double.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
+        addFieldToSpreadsheet(row, PrimaryStatisticsFields.ViewAngle, viewAngleString);
+
 
         addFieldToSpreadsheet(row, MetaDataFields.TimeMetaDataBreak, COLUMN_BREAK);
         addFieldToSpreadsheet(row, MetaDataFields.StartDate, startDateString);
