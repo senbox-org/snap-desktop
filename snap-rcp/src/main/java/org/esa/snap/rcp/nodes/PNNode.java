@@ -550,7 +550,14 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
         void updateDisplayName(Band band) {
             super.updateDisplayName(band);
             if (band.getSpectralWavelength() > 0.0) {
-                setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+                int wavelengthInt = Math.round(band.getSpectralWavelength());
+                float wavelengthIntFloat = (float) (wavelengthInt * 1.0);
+                if (wavelengthIntFloat == band.getSpectralWavelength()) {
+                    setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+                } else {
+                    String wavelengthString = Float.toString(band.getSpectralWavelength());
+                    setDisplayName(band.getName() + " (" + wavelengthString + ")");
+                }
             }
         }
 
