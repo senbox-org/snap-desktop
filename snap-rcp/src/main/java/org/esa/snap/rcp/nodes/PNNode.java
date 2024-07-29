@@ -556,7 +556,7 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                     setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
                 } else {
                     String wavelengthString = Float.toString(band.getSpectralWavelength());
-                    setDisplayName(band.getName() + " (" + wavelengthString + ")");
+                    setDisplayName(band.getName() + " (" + wavelengthString + " nm)");
                 }
             }
         }
