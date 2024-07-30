@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 @TopComponent.Description(
         preferredID = "BandGroupManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/BandGroupManager.gif",
+        iconBase = "org/esa/snap/rcp/icons/BandGroupsManager.gif",
         persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(
