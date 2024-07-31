@@ -16,12 +16,19 @@
 
 package org.esa.snap.rcp.statistics;
 
+<<<<<<< Updated upstream
+=======
+import org.esa.snap.ui.PackageDefaults;
+import org.esa.snap.ui.UIUtils;
+>>>>>>> Stashed changes
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
+
+import javax.swing.*;
 
 @TopComponent.Description(
         preferredID = "HistogramPlotTopComponent",
@@ -57,8 +64,19 @@ public class HistogramPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new HistogramPanel(this, Bundle.CTL_HistogramPlotTopComponent_HelpId());
+        final Icon largeIcon = UIUtils.loadImageIcon("icons/" + PackageDefaults.HISTOGRAM_PLOT_ICON);
+        final String chartTitle = HistogramPanel.CHART_TITLE;
+        final HistogramPanel histogramPlotPanel = new HistogramPanel(this, Bundle.CTL_HistogramPlotTopComponent_HelpId());
+        final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, Bundle.CTL_HistogramPlotTopComponent_HelpId(), chartTitle, largeIcon);
+        histogramPlotPanel.setAlternativeView(tableViewPanel);
+        tableViewPanel.setAlternativeView(histogramPlotPanel);
+        return histogramPlotPanel;
     }
+
+//    @Override
+//    protected PagePanel createPagePanel() {
+//        return new HistogramPanel(this, Bundle.CTL_HistogramPlotTopComponent_HelpId());
+//    }
 
     @Override
     public HelpCtx getHelpCtx() {

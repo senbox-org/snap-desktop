@@ -84,7 +84,7 @@ class DensityPlotPanel extends ChartPagePanel {
             "The plot will be computed when you click the 'Refresh View' button.\n" +
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
-    private static final String CHART_TITLE = "Scatter Plot";
+    public static final String CHART_TITLE = "Scatter Plot";
 
     private final static String PROPERTY_NAME_AUTO_MIN_MAX = "autoMinMax";
     private final static String PROPERTY_NAME_MIN = "min";

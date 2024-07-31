@@ -16,12 +16,19 @@
 
 package org.esa.snap.rcp.statistics;
 
+<<<<<<< Updated upstream
+=======
+import org.esa.snap.ui.PackageDefaults;
+import org.esa.snap.ui.UIUtils;
+>>>>>>> Stashed changes
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
+
+import javax.swing.*;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
@@ -55,8 +62,19 @@ public class DensityPlotTopComponent extends AbstractStatisticsTopComponent {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
+        final Icon largeIcon = UIUtils.loadImageIcon("icons/" + PackageDefaults.DENSITY_PLOT_ICON);
+        final String chartTitle = DensityPlotPanel.CHART_TITLE;
+        final DensityPlotPanel densityPlotPanel = new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
+        final TableViewPagePanel tableViewPanel = new TableViewPagePanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId(), chartTitle, largeIcon);
+        densityPlotPanel.setAlternativeView(tableViewPanel);
+        tableViewPanel.setAlternativeView(densityPlotPanel);
+        return densityPlotPanel;
     }
+
+//    @Override
+//    protected PagePanel createPagePanel() {
+//        return new DensityPlotPanel(this, Bundle.CTL_DensityPlotTopComponent_HelpId());
+//    }
 
     @Override
     public HelpCtx getHelpCtx() {

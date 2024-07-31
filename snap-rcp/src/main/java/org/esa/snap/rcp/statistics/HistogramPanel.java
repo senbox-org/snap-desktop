@@ -76,7 +76,7 @@ class HistogramPanel extends ChartPagePanel {
             "If a band is selected, a histogram can be created by hitting the 'Refresh View' button.\n" +
             HELP_TIP_MESSAGE + "\n" +
             ZOOM_TIP_MESSAGE;
-    private static final String CHART_TITLE = "Histogram";
+    public static final String CHART_TITLE = "Histogram";
 
     public static final String PROPERTY_NAME_NUM_BINS = "numBins";
     public static final String PROPERTY_NAME_LOGARITHMIC_HISTOGRAM = "histogramLogScaled";
