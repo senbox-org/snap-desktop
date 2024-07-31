@@ -164,7 +164,7 @@
         <DESCRIPTION>Uncertainty in Chlorophyll a concentration</DESCRIPTION>
     </Scheme>
 
-    <Scheme name="chlor_a_">
+    <Scheme name="chlor_a">
         <PRIMARY>true</PRIMARY>
         <VERBOSE_NAME>Chlorophyll a</VERBOSE_NAME>
         <MIN>0.01</MIN>
