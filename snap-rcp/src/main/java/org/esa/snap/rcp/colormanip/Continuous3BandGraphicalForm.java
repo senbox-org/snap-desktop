@@ -28,6 +28,7 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.util.PropertyMap;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
@@ -135,9 +136,9 @@ public class Continuous3BandGraphicalForm implements ColorManipulationChildForm 
         contentPanel.add(imageInfoEditor, BorderLayout.CENTER);
 
         moreOptionsForm.getBindingContext().addPropertyChangeListener(GAMMA_PROPERTY,
-                                                                      evt -> handleGammaChanged());
+                evt -> handleGammaChanged());
         moreOptionsForm.getBindingContext().addPropertyChangeListener(CHANNEL_SOURCE_NAME_PROPERTY,
-                                                                      this::handleChannelSourceNameChanged);
+                this::handleChannelSourceNameChanged);
     }
 
     public Component getContentPanel() {

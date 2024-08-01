@@ -1,0 +1,11 @@
+# RGB-Image Configuration Profile
+# OCI_TrueColor_(670,555,413)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=OCI_TrueColor_Log(670,555,413)_L1B_9band
+red=log(((rhot_red_669.4861+rhot_red_670.7295+rhot_red_671.9758)/3)/0.01)/log(1/0.01)
+green=log(((rhot_blue_552.465+rhot_blue_554.9926+rhot_blue_557.52386)/3)/0.01)/log(1/0.01)
+blue=log(((rhot_blue_410.03412+rhot_blue_412.5074+rhot_blue_414.99075)/3)/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhot_red_669.4861) and \!nan(rhot_red_670.7295) and \!nan(rhot_red_671.9758) and \!nan(rhot_blue_552.465) and \!nan(rhot_blue_554.9926) and \!nan(rhot_blue_557.52386) and \!nan(rhot_blue_410.03412) and \!nan(rhot_blue_412.5074) and \!nan(rhot_blue_414.99075)

@@ -16,7 +16,7 @@
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Color Manipulation / Colour Manipulation</title>
+    <title>Sentinel Toolbox Help - Color Manager</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -25,7 +25,7 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Color / Colour Manipulation
+            Color Manager
         </td>
 
         <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
@@ -33,9 +33,6 @@
                 border="0"></a></td>
     </tr>
 </table>
-
-<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
-    SNAP application, elsewhere in your application the spelling may be "colour"</p>
 
 
 <h3>Overview</h3>
@@ -46,7 +43,7 @@
     band or tie-point grid, the image loads with the color settings of the band
     stored within the data file itself (BEAM-DIMAP format only) or for other files it applies default color
     settings as defined in the
-    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Color Manipulation).
+    <a href="ColorManipulationPreferences.html">Preferences</a> (/Tools/Options/Color Manager).
 
 </p>
 
@@ -59,10 +56,10 @@
     image then only the Sliders editor is used.
 </p>
 
-<p>To open the Color Manipulation tool window, use the corresponding icon
+<p>To open the Color Manager tool window, use the corresponding icon
     <img src="images/icons/ContrastStretch24.gif" alt="Contrast/Palette Window" border="0">
-    in the "Tool Windows" toolbar or select <i>/Tool Windows/Color Manipulation</i>
-    from the main menu. Changes made within the Color Manipulation tool window will directly become effective in the
+    in the "Tool Windows" toolbar or select <i>/Tool Windows/Color Manager</i>
+    from the main menu. Changes made within the Color Manager tool window will directly become effective in the
     image of the currently selected band.
 </p>
 
@@ -133,8 +130,9 @@
     <li><b>Scheme Selector</b>: This selector is used to specify a pre-defined color scheme. Once you choose a color
         scheme, all components
         and the image will be updated with the parameters (palette, range and scaling) of the color scheme. These color
-        schemes are configured in an xml file which you can edit if you wish to add/modify color schemes
-        (~/.snap/auxdata/color_schemes/color_palette_schemes.xml).  If a scheme was automatically applied via bandname-lookup
+        schemes are configured in xml files.  A user editable file for custom schemes is at
+        (~/.snap/auxdata/color_schemes/color_palette_schemes_user.xml or ~/.seadas9/auxdata/color_schemes/color_palette_schemes_user.xml).
+        If a scheme was automatically applied via bandname-lookup
         when you opened the view window of the band, then this selector should display the scheme which has been applied.
         Any subsequent changes to scheme parameters will cause this selector to be set to "None" (indicating that the
         scheme no longer is being used in the image).

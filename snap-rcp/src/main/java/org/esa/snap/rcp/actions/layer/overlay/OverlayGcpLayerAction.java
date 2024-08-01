@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -21,7 +22,7 @@ import org.openide.util.NbBundle;
 @ActionRegistration(displayName = "#CTL_OverlayGcpLayerActionName")
 @ActionReferences({
         @ActionReference(path = "Menu/Layer", position = 40),
-        @ActionReference(path = "Toolbars/Overlay", position = 40)
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GCP_TOGGLE_TOOLBAR, position = 40)
 })
 @NbBundle.Messages({
         "CTL_OverlayGcpLayerActionName=GCP Overlay",
