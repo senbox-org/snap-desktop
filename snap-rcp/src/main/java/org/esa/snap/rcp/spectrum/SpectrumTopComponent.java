@@ -1147,7 +1147,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
         rasterToSpectraMap.put(raster, spectra.toArray(new DisplayableSpectrum[0]));
     }
-    
+
 
     private DisplayableSpectrum[] getAllSpectra() {
         if (currentView == null || !rasterToSpectraMap.containsKey(currentView.getRaster())) {
