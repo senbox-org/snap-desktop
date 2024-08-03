@@ -1,0 +1,12 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# which uses a red, green and blue band for the
+# respective RGB color model channels similar to MODIS bands
+# RSRs were obtained from: https://www.researchgate.net/publication/3204170_Terra_MODIS_on-orbit_spectral_characterization_and_performance?
+#
+name=OCI_TC_MODISA_RSR_3Band
+red=log((1/2.65)*(0.8*rhos_630 + 0.85*rhos_645 + 1.0*rhos_660)/0.01)/log(1/0.01)
+green=log((1/2.9)*(1.0*rhos_550 + 0.95*rhos_555 + 0.95*rhos_560)/3/0.01)/log(1/0.01)
+blue=log((1/2.75)*(1.0*rhos_460  + 0.85*rhos_465 + 0.9*rhos_470)/3/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_635) and \!nan(rhos_645) and \!nan(rhos_655) and \!nan(rhos_550)  and \!nan(rhos_555) and \!nan(rhos_560) and \!nan(rhos_460) and \!nan(rhos_465) and \!nan(rhos_470) and LAT >\= -90 and LAT <\= 90
+

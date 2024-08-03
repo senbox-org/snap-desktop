@@ -84,6 +84,17 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
     }
 
     private void insertPlacemark(ProductSceneView view) {
+        if (!view.isPinOverlayEnabled()) {
+            view.setPinOverlayEnabled(true);
+        }
+        if (!view.isVectorOverlayEnabled()) {
+            view.setVectorOverlayEnabled(true);
+        }
+        if (!view.isGcpOverlayEnabled()) {
+            view.setGcpOverlayEnabled(true);
+        }
+
+
         Product product = view.getProduct();
         final String[] uniqueNameAndLabel = PlacemarkNameFactory.createUniqueNameAndLabel(placemarkDescriptor,
                                                                                           product);
