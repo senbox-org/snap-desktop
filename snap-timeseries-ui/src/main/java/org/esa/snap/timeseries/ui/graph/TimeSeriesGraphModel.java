@@ -39,6 +39,8 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -413,8 +415,10 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
     private AxisMapping createDisplayAxisMapping(AbstractTimeSeries timeSeries) {
         final List<String> eoVariables = displayController.getEoVariablesToDisplay();
         if (eoVariables.size() == 0) {
-            final Product.AutoGrouping autoGrouping = this.getCurrentView().getProduct().getAutoGrouping();
-            eoVariables.addAll(autoGrouping.stream().map(strings -> strings[0]).collect(Collectors.toList()));
+            final BandGroup autoGrouping = this.getCurrentView().getProduct().getAutoGrouping();
+            if (autoGrouping != null) {
+                eoVariables.addAll(autoGrouping.stream().map(strings -> strings[0]).collect(Collectors.toList()));
+            }
         }
         final List<String> insituVariables = displayController.getInsituVariablesToDisplay();
         final AxisMapping axisMapping = timeSeries.getAxisMapping();
