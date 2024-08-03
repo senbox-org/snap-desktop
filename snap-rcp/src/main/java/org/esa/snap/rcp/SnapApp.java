@@ -258,7 +258,8 @@ public class SnapApp {
         try {
             final ModuleInfo moduleInfo = Modules.getDefault().ownerOf(SnapApp.class);
             Version specVersion = Version.parseVersion(moduleInfo.getImplementationVersion() );
-            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation") + " " + specVersion.getMajor();
+//            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation") + " " + specVersion.getMajor();
+            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
         } catch (Exception e) {
             return SystemUtils.getApplicationName();
         }
