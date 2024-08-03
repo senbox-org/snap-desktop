@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,18 +26,18 @@ import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "DensityPlotTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/DensityPlot.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.DENSITY_PLOT_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "ScatterPlot",
+        mode = PackageDefaults.DENSITY_PLOT_WS_MODE,
         openAtStartup = false,
         position = 10
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.DensityPlotTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 20),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/Analysis", position = 20)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_DensityPlotTopComponent_Name",
