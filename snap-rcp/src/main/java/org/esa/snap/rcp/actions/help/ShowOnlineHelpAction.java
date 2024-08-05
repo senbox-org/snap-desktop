@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 })
 public class ShowOnlineHelpAction extends AbstractAction {
     /** URl for the online help. */
-    private static final String DEFAULT_ONLINE_HELP_URL = "https://step.esa.int/main/doc/online-help";
+    private static final String DEFAULT_ONLINE_HELP_URL = "https://seadas.gsfc.nasa.gov/help/";
 
     /**
      * Launches the default browser to display the tutorials.
