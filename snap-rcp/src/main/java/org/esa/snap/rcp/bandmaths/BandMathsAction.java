@@ -17,7 +17,6 @@
 package org.esa.snap.rcp.bandmaths;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.datamodel.RasterDataNode;
@@ -26,47 +25,69 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.HelpCtx;
+import org.openide.util.*;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
+/**
+ * This action creates a band using a mathematical expression
+ * Enablement: when a product is selected
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles
+ * @author Bing Yang
+ */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including enablement, tooltips and related icon.
+
 @ActionID(
         category = "Tools",
         id = "BandMathsAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_BandMathsAction_MenuText",
-        popupText = "#CTL_BandMathsAction_MenuText",
-//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif", // icon is not nice
+        displayName = "#CTL_BandMathsAction_Name",
         lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
+        @ActionReference(path = "Toolbars/Raster", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 10),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 20)
 })
 @Messages({
-        "CTL_BandMathsAction_MenuText=Band Maths...",
-        "CTL_BandMathsAction_ShortDescription=Create a new band using an arbitrary mathematical expression"
+        "CTL_BandMathsAction_Name=Math Band",
+        "CTL_BandMathsAction_ShortDescription=Creates a new band using an arbitrary mathematical expression"
 })
-public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
+public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "bandArithmetic";
 
+    private Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
+
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "MathBand24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "MathBand16.png";
+
     public BandMathsAction() {
-        super(Bundle.CTL_BandMathsAction_MenuText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
-        final ProductManager productManager = SnapApp.getDefault().getProductManager();
-        setEnabled(productManager.getProductCount() > 0);
-        productManager.addListener(new PMListener());
+        super(Bundle.CTL_BandMathsAction_Name());
+        putValue(NAME, Bundle.CTL_BandMathsAction_Name()+"...");
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
+        this.viewResult = lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
     @Override
@@ -93,21 +114,27 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         bandMathsDialog.show();
     }
 
-    private class PMListener implements ProductManager.Listener {
 
-        @Override
-        public void productAdded(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        @Override
-        public void productRemoved(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        private void updateEnableState() {
-            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
-        }
-
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JMenuItem menuItem = new JMenuItem(this);
+        return menuItem;
     }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JButton button = new JButton(this);
+        button.setText(null);
+        return button;
+    }
+
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
+
+    protected void updateEnabledState() {
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null );
+    }
+
 }

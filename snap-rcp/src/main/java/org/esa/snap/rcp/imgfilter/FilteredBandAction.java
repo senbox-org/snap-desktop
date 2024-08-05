@@ -32,19 +32,26 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+
+
+/**
+ * This action applies a filter to creates a filtered band.
+ * Enablement: when a band is selected
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles
+ * @author Bing Yang
+ */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including enablement, tooltips and related icon.
+
 
 
 @ActionID(
@@ -52,30 +59,38 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         id = "FilteredBandAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_FilteredBandAction_MenuText",
-        popupText = "#CTL_FilteredBandAction_MenuText",
+        displayName = "#CTL_FilteredBandAction_Name",
         lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 10),
+        @ActionReference(path = "Toolbars/Raster", position = 20),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 40,separatorAfter = 45)
 })
 @NbBundle.Messages({
-        "CTL_FilteredBandAction_MenuText=Filtered Band...",
-        "CTL_FilteredBandAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
+        "CTL_FilteredBandAction_Name=Filter Band",
+        "CTL_FilteredBandAction_ShortDescription=Creates a new band by applying a filter to the current band"
 })
-public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction {
+public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
 
     private Lookup lookup;
     private Lookup.Result<RasterDataNode> result;
 
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "FilterBand24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "FilterBand16.png";
 
     public FilteredBandAction() {
         this(Utilities.actionsGlobalContext());
     }
 
     public FilteredBandAction(Lookup lookup){
-        super(Bundle.CTL_FilteredBandAction_MenuText());
+        super(Bundle.CTL_FilteredBandAction_Name());
+        putValue(NAME, Bundle.CTL_FilteredBandAction_Name()+"...");
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_FilteredBandAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
@@ -187,6 +202,20 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         }
         return null;
     }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JMenuItem menuItem = new JMenuItem(this);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JButton button = new JButton(this);
+        button.setText(null);
+        return button;
+    }
+
 
 }
 
