@@ -22,6 +22,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.layer.NoDataLayerType;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;
@@ -108,11 +109,11 @@ public final class NoDataLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class NoDataBean {
 
-        @Preference(label = "No-data overlay colour",
+        @Preference(label = "No-Data Overlay " + NamingConvention.COLOR_MIXED_CASE,
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_COLOR)
         Color noDataOverlayColor = NoDataLayerType.DEFAULT_COLOR;
 
-        @Preference(label = "No-data overlay transparency",
+        @Preference(label = "No-Data Overlay Transparency",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY,
                 interval = "[0.0,1.0]")
         double noDataOverlayTransparency = 0.3;
