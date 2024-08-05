@@ -1,0 +1,371 @@
+<!--@author Daniel Knowles-->
+
+
+<html>
+<head>
+<title>Sentinel Toolbox Help - Annotation Metadata Overlay</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+	<tr class="header">
+		<td class="header">&nbsp;
+			Annotation Metadata Overlay
+		</td>
+
+		<td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+				src="../images/snap_header.jpg"
+				border="0"></a></td>
+	</tr>
+</table>
+
+<!--<head>-->
+<!--    <title>SeaDAS Help - Annotation Metadata Overlay</title>-->
+<!--    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">-->
+<!--    <link rel="stylesheet" href="../style.css">-->
+<!--</head>-->
+
+<!--<body>-->
+
+<!--<table class="headerTop" width="100%">-->
+<!--    <tr class="headerTop">-->
+<!--        <td class="headerTop" align="left" width="100%">-->
+<!--			&nbsp;&nbsp;SeaDAS Help-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--<table class="headerMain" width="100%">-->
+<!--    <tr class="headerMain">-->
+<!--        <td class="headerMain" align="left" width="75">-->
+<!--            <a href="index.html">-->
+<!--                <img src="../images/seadas_icon.png" height="35" border="0">-->
+<!--            </a>-->
+<!--        </td>-->
+
+<!--        <td class="headerMain" align="center" width="90%">-->
+<!--                Annotation Metadata Layer-->
+<!--        </td>-->
+<!--        <td class="headerMain" align="right" width="75">-->
+<!--            <a href="index.html">-->
+<!--                <img src="../images/nasa_icon.png" height="40" border="0">-->
+<!--            </a>-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--<table class="headerBottom" width="100%">-->
+<!--	<tr class="headerBottom">-->
+<!--		<td class="headerBottom" align="left" width="100%">-->
+<!--			&nbsp;-->
+<!--		</td>-->
+<!--	</tr>-->
+<!--</table>-->
+
+<br><br>
+<p align="center">
+	<img src="images/icons/AnnotationLayer24.png" height="35" border="0">
+</p>
+<br>
+
+<p>
+	The Annotation Metadata Layer tool creates an image overlay containing user text annotation
+	along with user selected project file properties and file metadata.
+	Parameters of the Annotation Metadata Layer are editable in the Layer Editor as well as in the Preferences
+</p>
+<br>
+
+
+<p align="center">
+	<img src="images/Annotation_Example.png" width="700" border="0"><br><br>
+	<i>Image 1: Annotation Metadata Layer shown over a MODIS Aqua level-2 scene image<br>
+	Divided into 3 sections: Header Annotation (shown at top), <br>
+		Margin Annotation (shown at right), Foot Annotation (shown at bottom)</i>
+</p>
+<br>
+
+
+<br>
+<h4>Editor: Header Annotation</h4>
+<pre>
+Specifies the annotation text and metadata parameters which
+go in the Header Annotation section.
+
+&#8227; Show Header Annotation:
+		Toggles on/off the Header Annotation section.
+
+&#8227; Header Location:
+		General anchor location of the Header Annotation section.
+
+&#8227; Header Gap:
+		Gap between the Header Annotation section and the image scene (in
+		percentage of image size).
+
+&#8227; Header Text:
+		Freeform text
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
+			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+
+&#8227; Convert Header Carets to Superscripts:
+		Converts carets found in the text to superscripts.
+		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+</pre>
+
+
+
+
+<h4>Editor: Margin Annotation</h4>
+<pre>
+Specifies the annotation text and metadata parameters which
+go in the Margin Annotation section.
+
+&#8227; Show Margin Annotation:
+		Toggles on/off the Margin Annotation section.
+
+&#8227; Margin Location:
+		General anchor location of the Margin Annotation section.
+		Note that this location is not limited to being in the margin.
+
+&#8227; Margin Gap:
+		Gap between the margin annotation section and the image scene (in
+		percentage of image size).
+
+&#8227; Margin Text:
+		Freeform text
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
+			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+
+&#8227; PROPERTIES Section Heading:
+		Heading to display for the PROPERTIES section
+
+&#8227; PROPERTIES List:
+		A comma delimited list of desired project file properties.
+
+&#8227; PROPERTIES Show All:
+		Displays all project file properties.
+
+&#8227; FILE_META Section Heading:
+		Heading to display for the FILE_META section
+
+&#8227; FILE_META List:
+		A comma delimited list of desired file metadata.
+
+&#8227; FILE_META Show All*:
+		Displays all FILE_META (but does not show many of the
+		potentially massive list of Processing Control Parameters).
+
+&#8227; FILE_META Show All (Processing Control Parameters):
+		Displays all the Processing Control Parameters which are part
+		of the FILE_META.
+
+&#8227; BAND_META Section Heading:
+		Heading to display for the BAND_META section
+
+&#8227; BAND_META List:
+		A comma delimited list of desired band metadata.
+
+&#8227; BAND_META Show All:
+		Displays all the BAND_META.
+
+&#8227; Attribute Delimiter:
+		Delimiter to use when displaying value pair listing of metadata.
+
+&#8227; Convert Margin Carets to Superscripts:
+		Converts carets found in the text to superscripts.
+		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+</pre>
+
+
+
+<h4>Editor: Footer Annotation</h4>
+<pre>
+Specifies the annotation text and metadata parameters which
+go in the Footer Annotation section.
+
+&#8227; Show Footer Annotation:
+		Toggles on/off the Footer Annotation section.
+
+&#8227; Footer Location:
+		General anchor location of the Footer Annotation section.
+
+&#8227; Footer Gap:
+		Gap between the Header Annotation section and the image scene (in
+		percentage of image size).
+
+&#8227; Footer Text:
+		Freeform text
+        Supports inline replacement variables for metadata:
+            &lt;PROPERTY={key}&gt;
+            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+        Supports several html tags:
+			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+
+&#8227; Convert Footer Carets to Superscripts:
+		Converts carets found in the text to superscripts.
+		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+
+&#8227; Show My Info:
+		Displays user info (see preferences)
+</pre>
+
+
+
+
+<h4>Editor: Header Font Formatting</h4>
+<pre>
+Specifies the font formatting for the Header Annotation section.
+
+&#8227; Header Font Size:
+		Size of the header text font
+
+&#8227; Header Font Color:
+		Color of the header text
+
+&#8227; Header Font Type:
+		Font name of the header text
+
+&#8227; Header Font Italic:
+		Set header text as italic font
+
+&#8227; Header Font Bold:
+		Set header text as bold font
+</pre>
+
+
+
+<h4>Editor: Margin Font Formatting</h4>
+<pre>
+Specifies the font formatting for the Margin Annotation section.
+
+&#8227; Margin Font Size:
+		Size of the margin text font
+
+&#8227; Margin Font Color:
+		Color of the margin text
+
+&#8227; Margin Font Type:
+		Font name of the margin text
+
+&#8227; Margin Font Italic:
+		Set margin text as italic font
+
+&#8227; Margin Font Bold:
+		Set margin text as bold font
+</pre>
+
+
+
+
+
+<h4>Editor: Footer Font Formatting</h4>
+<pre>
+Specifies the font formatting for the Footer Annotation section.
+
+&#8227; Footer Font Size:
+		Size of the footer text font
+
+&#8227; Footer Font Color:
+		Color of the footer text
+
+&#8227; Footer Font Type:
+		Font name of the footer text
+
+&#8227; Footer Font Italic:
+		Set footer text as italic font
+
+&#8227; Footer Font Bold:
+		Set footer text as bold font
+</pre>
+
+
+<br><br>
+
+<table class="headerBottom" width="100%">
+	<tr class="headerBottom">
+		<td class="headerBottom" align="left" width="100%">
+			&nbsp;
+		</td>
+	</tr>
+</table>
+
+
+
+
+
+<h4>Inline Project File PROPERTY Replacement Variables (Reference List)</h4>
+
+<pre>
+The following is a list of all the "PROPERTY" inline variables for project files.
+
+File level information properties:
+    &lt;PROPERTY=file_location&gt;
+    &lt;PROPERTY=product_type&gt;
+    &lt;PROPERTY=scene_start_time&gt;
+    &lt;PROPERTY=scene_end_time&gt;
+
+Band level information properties:
+    &lt;PROPERTY=band&gt;
+    &lt;PROPERTY=units&gt;
+    &lt;PROPERTY=band_description&gt;
+    &lt;PROPERTY=scene_height&gt;
+    &lt;PROPERTY=scene_width&gt;
+    &lt;PROPERTY=scene_size&gt;    -(combines scene_width and scene_height)
+    &lt;PROPERTY=wavelength&gt;
+    &lt;PROPERTY=angle&gt;
+    &lt;PROPERTY=flag_coding&gt;
+    &lt;PROPERTY=valid_pixel_expression&gt;
+    &lt;PROPERTY=no_data_value&gt;
+    &lt;PROPERTY=is_no_data_value_set&gt;
+    &lt;PROPERTY=is_no_data_value_used&gt;
+    &lt;PROPERTY=is_scaling_applied&gt;
+    &lt;PROPERTY=scaling_factor&gt;
+    &lt;PROPERTY=scaling_offset&gt;
+    &lt;PROPERTY=is_log_scaled&gt;
+    &lt;PROPERTY=is_palette_log_scaled&gt;
+    &lt;PROPERTY=node_display_names&gt;
+    &lt;PROPERTY=node_names&gt;
+
+
+</pre>
+
+
+<h4>Inline Metadata Replacement Variables</h4>
+
+<pre>
+File level metadata can be accessed with any of the following:
+    &lt;FILE_META={key}&gt;
+    &lt;GLOBAL_ATTRIBUTE={key}&gt;
+    &lt;GLOBAL_ATTR={key}&gt;
+
+Band level metadata can be accessed with any of the following:
+    &lt;BAND_META={key}&gt;
+    &lt;BAND_ATTRIBUTE={key}&gt;
+    &lt;BAND_ATTR={key}&gt;
+</pre>
+
+
+
+<!--<object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">-->
+<!--	&lt;!&ndash; Enter the URL below &ndash;&gt;-->
+<!--	<param name="content" value="http://www.netbeans.org/kb/41/freeform-config.html">-->
+<!--	&lt;!&ndash; Enter the display text below. The <html> and <u> make the text look like a link. &ndash;&gt;-->
+<!--	<param name="text" value="<html><u>https://seadas.gsfc.nasa.gov//tutorials/video_tutorials</u></html>">-->
+<!--	<param name="textFontSize" value="medium">-->
+<!--	<param name="textColor" value="blue">-->
+<!--</object>-->
+
+
+
+</body>
+</html>

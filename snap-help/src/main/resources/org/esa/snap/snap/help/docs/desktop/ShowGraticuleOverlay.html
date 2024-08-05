@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Graticule Overlay (Map Gridlines)</title>
+    <title>Sentinel Toolbox Help - Map Gridlines Overlay (Graticules)</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 
@@ -13,46 +13,115 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Graticule Overlay (Map Gridlines)</td>
+            Map Gridlines Overlay (Graticules)</td>
 
         <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border=0></a></td>
     </tr>
 </table>
 
-<h4><img src="images/icons/GraticuleOverlay24.gif"> &nbsp;&nbsp;
-    Graticule Overlay (Map Gridlines)</h4>
 
+
+
+<!--<head>-->
+<!--    <title>SeaDAS Help - Map Gridlines Overlay</title>-->
+<!--    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">-->
+<!--    <link rel="stylesheet" href="../style.css">-->
+<!--</head>-->
+
+<!--<body>-->
+
+<!--<table class="headerTop" width="100%">-->
+<!--    <tr class="headerTop">-->
+<!--        <td class="headerTop" align="left" width="100%">-->
+<!--            &nbsp;&nbsp;SeaDAS Help-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--<table class="headerMain" width="100%">-->
+<!--    <tr class="headerMain">-->
+<!--        <td class="headerMain" align="left" width="75">-->
+<!--            <a href="index.html">-->
+<!--                <img src="../images/seadas_icon.png" height="35" border="0">-->
+<!--            </a>-->
+<!--        </td>-->
+
+<!--        <td class="headerMain" align="center" width="90%">-->
+<!--            Map Gridlines Layer-->
+<!--        </td>-->
+<!--        <td class="headerMain" align="right" width="75">-->
+<!--            <a href="index.html">-->
+<!--                <img src="../images/nasa_icon.png" height="40" border="0">-->
+<!--            </a>-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<!--<table class="headerBottom" width="100%">-->
+<!--    <tr class="headerBottom">-->
+<!--        <td class="headerBottom" align="left" width="100%">-->
+<!--            &nbsp;-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--</table>-->
+
+<br><br>
+<p align="center">
+    <img src="images/icons/GraticuleOverlay24.png" height="35" border="0">
+</p>
+<br>
 
 <p>
-    The Graticule Overlay tool creates a map gridlines layer over the selected band's <a href="ProductSceneView.html">Image View</a>.
+    The Map Gridlines Overlay tool creates a map gridlines layer over the selected band's <a href="ProductSceneView.html">Image View</a>.
     This layer can include gridlines, coordinate labels, a border.
+    Parameters of the Map Gridlines Layer are editable in the Layer Editor as well as in the Preferences
 </p>
 
+
+<br>
+
+
 <p align="center">
-    <img src="images/GraticuleOverlay.png"><br><br>
-    <i>Image 1: Map gridlines (graticules) placed over a mapped (reprojected) image<br>
-        derived from a MODIS Aqua level-2 scene</i>
+    <img src="images/MapGridlines_Example.png" width="450" border="0"><br><br>
+    <i>Image 1: Map Gridlines Layer shown over a MODIS Aqua level-2 scene image</i>
 </p>
+<br>
+
+<!--<br>-->
+<!--<h4>Editor: Grid Spacing</h4>-->
+<!--<pre>-->
+<!--The latitude and longitude step sizes may be set directly where the value represents-->
+<!--    degrees between the gridlines. Note: the gridlines are placed at the nearest most sensible degree-->
+<!--    value.-->
+
+<!--&#8227; Latitude Spacing:-->
+<!--        Sets latitude step size (Setting this to zero uses 'Number of Gridlines' field for Auto-Sizing).-->
+
+<!--&#8227; Longitude Spacing:-->
+<!--        Sets latitude step size (Setting this to zero uses 'Number of Gridlines' field for Auto-Sizing).-->
+<!--</pre>-->
+
+
 
 <h3>Location</h3>
 <p>
-    <b>Layer Toggle</b> - The graticule layer is toggled on and off via the graticule icon in the <i>Overlay</i> toolbar
+    <b>Layer Toggle</b> - The Map Gridlines layer is toggled on and off via the Map Gridlines icon in the <i>Overlay</i> toolbar
     or
-    <i>Layer-&gt;Graticule Overlay</i> within the menu system. Initially the graticule layer does not exist, but is
+    <i>Layer-&gt;Map Gridlines Overlay</i> within the menu system. Initially the Map Gridlines layer does not exist, but is
     created during the first
-    instance of the graticule layer being toggled on. Default settings are applied when the graticule layer is
+    instance of the Map Gridlines layer being toggled on. Default settings are applied when the Map Gridlines layer is
     created.<br><br>
 
-    <b>Layer Editor</b> - Subsequent to the creation of the graticule layer, any of the properties such as font size,
+    <b>Layer Editor</b> - Subsequent to the creation of the Map Gridlines layer, any of the properties such as font size,
     line spacing, etc., may
     be edited by using the <i>Layer Editor</i>. This editor is accessed by opening the <i>Layer Manager</i>, clicking on
     the word
-    <i>Graticule</i> (this selects the layer as the active layer), and then either clicking of the pencil icon within
+    <i>Map Gridlines</i> (this selects the layer as the active layer), and then either clicking of the pencil icon within
     the
     <i>Layer Manager</i> or selecting <i>Layer-&gt;Layer Editor</i> from within the menu system.<br><br>
 
-    <b>Preferences Editor</b> - To edit the default values of the graticule layer properties go to
-    <i>Tools-&gt;Options-&gt;Layer-&gt;Graticule Layer</i>. (see <a href="OptionsDialog.html#graticulelayer">Options
+    <b>Preferences Editor</b> - To edit the default values of the Map Gridlines layer properties go to
+    <i>Tools-&gt;Options-&gt;Layer-&gt;Map Gridlines Layer</i>. (see <a href="OptionsDialog.html#graticulelayer">Options
     Dialog</a>)
 </p>
 <br>

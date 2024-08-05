@@ -1,0 +1,11 @@
+# RGB-Image Configuration Profile
+# MERIS_TrueColor_(665,560,413)_Log
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=MERIS_TrueColor_Log(665,560,413)
+red=log(rhos_665/0.01)/log(1/0.01)
+green=log(rhos_560/0.01)/log(1/0.01)
+blue=log(rhos_413/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_665) and \!nan(rhos_560) and \!nan(rhos_413) and LAT >= -90 and LAT <= 90
