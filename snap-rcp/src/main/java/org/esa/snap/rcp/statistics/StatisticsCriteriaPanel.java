@@ -1830,6 +1830,10 @@ public class StatisticsCriteriaPanel {
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT);
     }
 
+    public boolean getPreferencesBandMetaDataViewAngleEnabled() {
+        return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_DEFAULT);
+    }
+
     public boolean getPreferencesBinningInfoEnabled() {
         return preferences.getBoolean(StatisticsTopComponent.PROPERTY_BINNING_INFO_KEY, StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT);
     }

@@ -90,6 +90,7 @@ public final class StatisticsController extends DefaultConfigController {
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BINNING_INFO_KEY, StatisticsTopComponent.PROPERTY_BINNING_INFO_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_KEY, StatisticsTopComponent.PROPERTY_HISTOGRAM_STATS_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT);
+        initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_KEY, StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_FILE_METADATA_KEY, StatisticsTopComponent.PROPERTY_FILE_METADATA_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_MASK_METADATA_KEY, StatisticsTopComponent.PROPERTY_MASK_METADATA_DEFAULT);
         initPropertyDefaults(context, StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_KEY, StatisticsTopComponent.PROPERTY_PROJECTION_METADATA_DEFAULT);
@@ -387,6 +388,11 @@ public final class StatisticsController extends DefaultConfigController {
                 key = StatisticsTopComponent.PROPERTY_BAND_METADATA_KEY,
                 description = StatisticsTopComponent.PROPERTY_BAND_METADATA_TOOLTIP)
         boolean includeBandMetadata = StatisticsTopComponent.PROPERTY_BAND_METADATA_DEFAULT;
+
+        @Preference(label = StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_LABEL,
+                key = StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_KEY,
+                description = StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_TOOLTIP)
+        boolean includeBandMetadataViewAngle = StatisticsTopComponent.PROPERTY_BAND_METADATA_VIEW_ANGLE_DEFAULT;
 
         @Preference(label = StatisticsTopComponent.PROPERTY_FILE_METADATA_LABEL,
                 key = StatisticsTopComponent.PROPERTY_FILE_METADATA_KEY,
