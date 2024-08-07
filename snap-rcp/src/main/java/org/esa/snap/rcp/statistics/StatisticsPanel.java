@@ -1973,7 +1973,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         if (statisticsCriteriaPanel.getPreferencesBandMetaDataViewAngleEnabled()) {
             Float viewAngle = getProduct().getBand(raster.getName()).getAngularValue();
-            String viewAngleString = (viewAngle == -360 && viewAngle <= 360) ? Double.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
+            String viewAngleString = (viewAngle >= -360 && viewAngle <= 360) ? Float.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
             addFieldToSpreadsheet(row, PrimaryStatisticsFields.ViewAngle, viewAngleString);
         }
 
