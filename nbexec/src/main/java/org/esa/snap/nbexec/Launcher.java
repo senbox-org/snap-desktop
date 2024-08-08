@@ -128,21 +128,19 @@ public class Launcher {
         //     ...
         //
         Set<Patch> patches = parseClusterPatches(argList);
-
-        Stream<Path> etcFiles;
-        try {
-            etcFiles = Files.list(etcDir);
+        List<Path> clustersFiles;
+        try (Stream<Path> etcFiles = Files.list(etcDir)) {
+            clustersFiles = etcFiles
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().endsWith(CLUSTERS_EXT))
+                    .collect(Collectors.toList());
+            if (clustersFiles.isEmpty()) {
+                throw new IllegalStateException(String.format("no '*.clusters' file found in '%s'", etcDir));
+            } else if (clustersFiles.size() > 1) {
+                throw new IllegalStateException(String.format("multiple '*.clusters' files found in '%s'", etcDir));
+            }
         } catch (IOException e) {
             throw new IllegalStateException(e);
-        }
-        List<Path> clustersFiles = etcFiles
-                .filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().endsWith(CLUSTERS_EXT))
-                .collect(Collectors.toList());
-        if (clustersFiles.isEmpty()) {
-            throw new IllegalStateException(String.format("no '*.clusters' file found in '%s'", etcDir));
-        } else if (clustersFiles.size() > 1) {
-            throw new IllegalStateException(String.format("multiple '*.clusters' files found in '%s'", etcDir));
         }
 
         Path clustersFile = clustersFiles.get(0);
@@ -266,15 +264,13 @@ public class Launcher {
             // So what?
         }
 
-        final String _userDir = userDir;
 
         Path restartExeFile;
-        try {
-            Optional<Path> restartFileResult = Files.list(installationDir.resolve("bin"))
+        try (Stream<Path> list = Files.list(installationDir.resolve("bin"))) {
+            restartExeFile = list
                     .filter(Files::isExecutable)
                     .filter(p -> p.getFileName().toString().startsWith("restart."))
-                    .findFirst();
-            restartExeFile = restartFileResult.get();
+                    .findFirst().orElse(null);
         } catch (Exception e) {
             restartExeFile = null;
         }
@@ -290,7 +286,7 @@ public class Launcher {
                     try {
                         new ProcessBuilder().command(_restartExeFile.toString(), pid).start();
                     } catch (IOException e) {
-                        Logger.getLogger("").log(Level.SEVERE, "Failed to restart: " + _restartExeFile.toString(), e);
+                        Logger.getLogger("").log(Level.SEVERE, "Failed to restart: " + _restartExeFile, e);
                         //SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Failed to restart:\n" + e.getMessage()));
                     }
                 }
@@ -305,7 +301,7 @@ public class Launcher {
     private Set<Patch> parseClusterPatches(LinkedList<String> argList) {
         Set<Patch> patches = new LinkedHashSet<>();
         // Add Maven-specific output directory for application module
-        patches.add(Patch.parse("../../../$/target/classes"));
+        //patches.add(Patch.parse("../../../$/target/classes"));
         while (true) {
             String patchPatterns = parseArg(argList, "--patches");
             if (patchPatterns != null) {

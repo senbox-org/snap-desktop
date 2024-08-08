@@ -111,7 +111,7 @@ public class ProductOpener {
                 filters.add(snapFileFilter);
             }
         }
-        Collections.sort(filters, (f1, f2) -> {
+        filters.sort((f1, f2) -> {
             String d1 = f1.getDescription();
             String d2 = f2.getDescription();
             return d1 != null ? d1.compareTo(d2) : d2 == null ? 0 : 1;
@@ -221,13 +221,13 @@ public class ProductOpener {
             PluginEntry entry;
             if (formatName == null && plugin == null) {
                 final Map<DecodeQualification, List<PluginEntry>> plugins = getPluginsForFile(file);
-                if (plugins.isEmpty() || (plugins.get(DecodeQualification.INTENDED).size() == 0 && plugins.get(DecodeQualification.SUITABLE).size() == 0)) {
+                if (plugins.isEmpty() || (plugins.get(DecodeQualification.INTENDED).isEmpty() && plugins.get(DecodeQualification.SUITABLE).isEmpty())) {
                     Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file));
                     continue;
                 } else if (plugins.get(DecodeQualification.INTENDED).size() == 1) {
                     entry = plugins.get(DecodeQualification.INTENDED).get(0);
                     fileFormatName = entry.plugin.getFormatNames()[0];
-                } else if (plugins.get(DecodeQualification.INTENDED).size() == 0 && plugins.get(DecodeQualification.SUITABLE).size() == 1) {
+                } else if (plugins.get(DecodeQualification.INTENDED).isEmpty() && plugins.get(DecodeQualification.SUITABLE).size() == 1) {
                     entry = plugins.get(DecodeQualification.SUITABLE).get(0);
                     fileFormatName = entry.plugin.getFormatNames()[0];
                 } else {
@@ -240,7 +240,7 @@ public class ProductOpener {
                         return null;
                     }
                 }
-            } else if (formatName == null && plugin != null) {
+            } else if (formatName == null) {
                 fileFormatName = plugin.getFormatNames()[0];
             } else {
                 fileFormatName = formatName;
@@ -266,10 +266,12 @@ public class ProductOpener {
         possiblePlugIns.put(DecodeQualification.INTENDED, new ArrayList<>());
         possiblePlugIns.put(DecodeQualification.SUITABLE, new ArrayList<>());
         allReaderPlugIns.forEachRemaining(plugIn -> {
-            final DecodeQualification qualification = plugIn.getDecodeQualification(file);
-            if (qualification != DecodeQualification.UNABLE) {
-                possiblePlugIns.get(qualification).add(new PluginEntry(plugIn, qualification));
-            }
+            try {
+                final DecodeQualification qualification = plugIn.getDecodeQualification(file);
+                if (qualification != DecodeQualification.UNABLE) {
+                    possiblePlugIns.get(qualification).add(new PluginEntry(plugIn, qualification));
+                }
+            } catch (Throwable ignored) { }
         });
         return possiblePlugIns;
     }
@@ -325,12 +327,15 @@ public class ProductOpener {
         Object answer = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.OK_OPTION.equals(answer)) {
             boolean storeResult = decisionCheckBox.isSelected();
-            String selectedFormatName = ((ProductReaderPlugIn) pluginsCombobox.getSelectedItem()).getFormatNames()[0];
-            if (storeResult) {
-                SnapApp.getDefault().getPreferences().put(prefKeyFormat, selectedFormatName);
-                SnapApp.getDefault().getPreferences().put(PREFERENCES_KEY_DONT_SHOW_DIALOG, "true");
+            final ProductReaderPlugIn selectedItem = (ProductReaderPlugIn) pluginsCombobox.getSelectedItem();
+            if (selectedItem != null) {
+                String selectedFormatName = (selectedItem).getFormatNames()[0];
+                if (storeResult) {
+                    SnapApp.getDefault().getPreferences().put(prefKeyFormat, selectedFormatName);
+                    SnapApp.getDefault().getPreferences().put(PREFERENCES_KEY_DONT_SHOW_DIALOG, "true");
+                }
+                return selectedFormatName;
             }
-            return selectedFormatName;
         }
 
         return null;

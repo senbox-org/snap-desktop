@@ -16,7 +16,7 @@
     <description>Desktop GUI for SNAP based on NetBeans Platform</description>
 
     <properties>
-        <netbeans.version>RELEASE113</netbeans.version>
+        <netbeans.version>RELEASE210</netbeans.version>
         <snap-gui-lib.version>1.2.0</snap-gui-lib.version>
         <snap-help-system.version>1.0.0</snap-help-system.version>
         <user.language>en</user.language>
