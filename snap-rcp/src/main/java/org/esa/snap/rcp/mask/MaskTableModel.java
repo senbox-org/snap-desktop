@@ -30,11 +30,18 @@ import java.awt.Color;
 
 class MaskTableModel extends AbstractTableModel {
 
+//    private static final int IDX_VISIBILITY = 0;
+//    private static final int IDX_NAME = 1;
+//    private static final int IDX_TYPE = 2;
+//    private static final int IDX_COLOR = 3;
+//    private static final int IDX_TRANSPARENCY = 4;
+//    private static final int IDX_DESCRIPTION = 5;
+
     private static final int IDX_VISIBILITY = 0;
     private static final int IDX_NAME = 1;
-    private static final int IDX_TYPE = 2;
-    private static final int IDX_COLOR = 3;
-    private static final int IDX_TRANSPARENCY = 4;
+    private static final int IDX_COLOR = 2;
+    private static final int IDX_TRANSPARENCY = 3;
+    private static final int IDX_TYPE = 4;
     private static final int IDX_DESCRIPTION = 5;
 
     /**
@@ -42,9 +49,9 @@ class MaskTableModel extends AbstractTableModel {
      */
     private static final int[] IDXS_MODE_MANAG_NO_BAND = {
             IDX_NAME,
-            IDX_TYPE,
             IDX_COLOR,
             IDX_TRANSPARENCY,
+            IDX_TYPE,
             IDX_DESCRIPTION,
     };
 
@@ -54,9 +61,9 @@ class MaskTableModel extends AbstractTableModel {
     private static final int[] IDXS_MODE_MANAG_BAND = {
             IDX_VISIBILITY,
             IDX_NAME,
-            IDX_TYPE,
             IDX_COLOR,
             IDX_TRANSPARENCY,
+            IDX_TYPE,
             IDX_DESCRIPTION,
     };
 
@@ -84,37 +91,37 @@ class MaskTableModel extends AbstractTableModel {
     private static final Class[] COLUMN_CLASSES = {
             Boolean.class,
             String.class,
-            String.class,
             Color.class,
             Double.class,
+            String.class,
             String.class,
     };
 
     private static final String[] COLUMN_NAMES = {
             "Visibility",
             "Name",
-            "Type",
             PackageDefaults.COLOR_SPELLING,
             "Transparency",
+            "Type",
             "Description",
     };
 
     private static final boolean[] COLUMN_EDITABLE_STATES = {
             true,
             true,
+            true,
+            true,
             false,
-            true,
-            true,
             true,
     };
 
     static int[] INITIAL_COLUMN_WIDTHS = {
             24,
-            60,
-            60,
-            60,
+            90,
             40,
-            320,
+            40,
+            60,
+            400,
     };
 
     private final MaskPNL maskPNL;
