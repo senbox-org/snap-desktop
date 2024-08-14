@@ -194,6 +194,14 @@ public abstract class BaseOperatorUI implements OperatorUI {
     }
 
     /**
+     * Method used for test purposes only
+     * @return  The current property set
+     */
+    public PropertySet getPropertySet() {
+        return this.propertySet;
+    }
+
+    /**
      * The method check if there are at least one multi-size source product
      *
      * @return false if there is not multi-size source product
