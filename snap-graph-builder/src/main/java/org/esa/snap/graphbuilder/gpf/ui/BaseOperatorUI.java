@@ -107,8 +107,21 @@ public abstract class BaseOperatorUI implements OperatorUI {
             try {
                 propertySet.setDefaultValues();
             } catch (IllegalStateException e) {
-                // todo - handle exception here
-                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        } else {
+            // SNAP-3794 Handle possible parameter aliases from the incoming map
+            final Property[] properties = this.propertySet.getProperties();
+            for (Property property : properties) {
+                final PropertyDescriptor descriptor = property.getDescriptor();
+                final String alias = descriptor.getAlias();
+                if (alias != null && paramMap.containsKey(alias)) {
+                    try {
+                        property.setValue(paramMap.get(alias));
+                    } catch (ValidationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }
     }
