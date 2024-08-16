@@ -1818,6 +1818,10 @@ public class AngularTopComponent extends ToolTopComponent {
         }
 
         private void removeBandFromAngularViews(Band band) {
+            if (currentView == null) {
+                return;
+            }
+
             DisplayableAngularview[] allAngularViews = rasterToAngularMap.get(currentView.getRaster());
             for (DisplayableAngularview displayableAngularView : allAngularViews) {
                 Band[] angularBands = displayableAngularView.getAngularBands();
