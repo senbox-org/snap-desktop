@@ -179,9 +179,22 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        addSectionBreak(GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
+
+        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
+        labelsRotationLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
+        labelsRotationLatPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
+        labelsRotationLatPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
+        labelsRotationLatPD.setDefaultConverter();
+        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLatPD);
+
+        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
+        labelsRotationLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
+        labelsRotationLonPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
+        labelsRotationLonPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
+        labelsRotationLonPD.setDefaultConverter();
+        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLonPD);
 
 
 
@@ -201,57 +214,11 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME, Boolean.class);
-        labelsItalicsPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
-        labelsItalicsPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL);
-        labelsItalicsPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP);
-        labelsItalicsPD.setDefaultConverter();
-        addPropertyDescriptor(labelsItalicsPD);
 
-        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME, Boolean.class);
-        labelsBoldPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT);
-        labelsBoldPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_BOLD_LABEL);
-        labelsBoldPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_BOLD_TOOLTIP);
-        labelsBoldPD.setDefaultConverter();
-        addPropertyDescriptor(labelsBoldPD);
+        addSectionBreak(GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP);
 
-        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
-        labelsRotationLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
-        labelsRotationLatPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
-        labelsRotationLatPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
-        labelsRotationLatPD.setDefaultConverter();
-        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
-        addPropertyDescriptor(labelsRotationLatPD);
-
-        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
-        labelsRotationLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
-        labelsRotationLonPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
-        labelsRotationLonPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
-        labelsRotationLonPD.setDefaultConverter();
-        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
-        addPropertyDescriptor(labelsRotationLonPD);
-
-        PropertyDescriptor labelsFontPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
-        boolean fontExists = false;
-        for (String font : fontNameArray) {
-            if (GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT.equals(font)) {
-                fontExists = true;
-                break;
-            }
-        }
-        if (fontExists) {
-        labelsFontPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT);
-        } else {
-            labelsFontPD.setDefaultValue(defaultFont.toString());
-        }
-
-        labelsFontPD.setDefaultValue(defaultFont.toString());
-        labelsFontPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL);
-        labelsFontPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP);
-//        labelsFontPD.setValueSet(new ValueSet(GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_SET));
-        labelsFontPD.setValueSet(new ValueSet(fontNameArray));
-        labelsFontPD.setDefaultConverter();
-        addPropertyDescriptor(labelsFontPD);
 
         PropertyDescriptor labelSizePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME, Integer.class);
         labelSizePD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT);
@@ -267,6 +234,47 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         labelColorPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_COLOR_TOOLTIP);
         labelColorPD.setDefaultConverter();
         addPropertyDescriptor(labelColorPD);
+
+
+        PropertyDescriptor labelsFontPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_FONT_NAME, String.class);
+        boolean fontExists = false;
+        for (String font : fontNameArray) {
+            if (GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT.equals(font)) {
+                fontExists = true;
+                break;
+            }
+        }
+        if (fontExists) {
+            labelsFontPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT);
+        } else {
+            labelsFontPD.setDefaultValue(defaultFont.toString());
+        }
+
+        labelsFontPD.setDefaultValue(defaultFont.toString());
+        labelsFontPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL);
+        labelsFontPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP);
+//        labelsFontPD.setValueSet(new ValueSet(GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_SET));
+        labelsFontPD.setValueSet(new ValueSet(fontNameArray));
+        labelsFontPD.setDefaultConverter();
+        addPropertyDescriptor(labelsFontPD);
+
+
+
+        PropertyDescriptor labelsItalicsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME, Boolean.class);
+        labelsItalicsPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT);
+        labelsItalicsPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL);
+        labelsItalicsPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP);
+        labelsItalicsPD.setDefaultConverter();
+        addPropertyDescriptor(labelsItalicsPD);
+
+        PropertyDescriptor labelsBoldPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME, Boolean.class);
+        labelsBoldPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT);
+        labelsBoldPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_BOLD_LABEL);
+        labelsBoldPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_BOLD_TOOLTIP);
+        labelsBoldPD.setDefaultConverter();
+        addPropertyDescriptor(labelsBoldPD);
+
+
 
 
         // Gridlines Section
