@@ -1236,6 +1236,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private void addBandToSpectra(Band band) {
+            if (currentView == null) {
+                return;
+            }
             DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
             BandGroup autoGrouping = currentProduct.getAutoGrouping();
             if (autoGrouping != null) {
@@ -1253,6 +1256,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         private void removeBandFromSpectra(Band band) {
+            if (currentView == null) {
+                return;
+            }
             DisplayableSpectrum[] allSpectra = rasterToSpectraMap.get(currentView.getRaster());
             for (DisplayableSpectrum displayableSpectrum : allSpectra) {
                 Band[] spectralBands = displayableSpectrum.getSpectralBands();
