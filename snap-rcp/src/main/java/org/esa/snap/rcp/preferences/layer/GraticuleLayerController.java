@@ -512,11 +512,18 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
 
 
-        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
-                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
-                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP)
-        boolean cornerLabelsSection = true;
 
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP,
+                interval = "[0.00,90.0]")
+        double labelsRotationLat = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP,
+                interval = "[0.00,90.0]")
+        double labelsRotationLon = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT;
 
 
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL,
@@ -530,36 +537,13 @@ public final class GraticuleLayerController extends DefaultConfigController {
         boolean labelsDecimal = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT;
 
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP)
-        boolean labelsItalic = GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT;
+        @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
+                key = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_NAME,
+                description = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_TOOLTIP)
+        boolean cornerLabelsSection = true;
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_BOLD_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_BOLD_TOOLTIP)
-        boolean labelsBold = GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT;
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_FONT_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP,
-                valueSet = {GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_1,
-                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_2,
-                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_3,
-                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_4})
-        String labelsFont = GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT;
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLon = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLat = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT;
 
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_SIZE_LABEL,
                 key = GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME,
@@ -571,6 +555,28 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 key = GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
                 description = GraticuleLayerType.PROPERTY_LABELS_COLOR_TOOLTIP)
         Color labelsColor = GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT;
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_FONT_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_FONT_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_FONT_TOOLTIP,
+                valueSet = {GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_1,
+                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_2,
+                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_3,
+                        GraticuleLayerType.PROPERTY_LABELS_FONT_VALUE_4})
+        String labelsFont = GraticuleLayerType.PROPERTY_LABELS_FONT_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ITALIC_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_ITALIC_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_ITALIC_TOOLTIP)
+        boolean labelsItalic = GraticuleLayerType.PROPERTY_LABELS_ITALIC_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_BOLD_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_BOLD_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_BOLD_TOOLTIP)
+        boolean labelsBold = GraticuleLayerType.PROPERTY_LABELS_BOLD_DEFAULT;
+
+
 
 
         // Gridlines Section
