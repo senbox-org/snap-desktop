@@ -49,7 +49,8 @@ public class ShowOnlineHelpAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        final String url = Config.instance().preferences().get("snap.online.help.url", DEFAULT_ONLINE_HELP_URL);
-        DesktopHelper.browse(url + "?version=" + SystemUtils.getReleaseVersion());
+//        final String url = Config.instance().preferences().get("snap.online.help.url", DEFAULT_ONLINE_HELP_URL);
+//        DesktopHelper.browse(url + "?version=" + SystemUtils.getReleaseVersion());
+        DesktopHelper.browse(DEFAULT_ONLINE_HELP_URL);
     }
 }
