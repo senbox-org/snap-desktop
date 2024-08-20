@@ -463,6 +463,30 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 description = GraticuleLayerType.PROPERTY_LABELS_SECTION_TOOLTIP)
         boolean labelsSection = true;
 
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP,
+                interval = "[0.00,90.0]")
+        double labelsRotationLat = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP,
+                interval = "[0.00,90.0]")
+        double labelsRotationLon = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT;
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP)
+        boolean labelsSuffix = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL,
+                key = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
+                description = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP)
+        boolean labelsDecimal = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT;
+
+
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_NORTH_LABEL,
                 key = GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME,
                 description = GraticuleLayerType.PROPERTY_LABELS_NORTH_TOOLTIP)
@@ -513,28 +537,6 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
 
 
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLat = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP,
-                interval = "[0.00,90.0]")
-        double labelsRotationLon = GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT;
-
-
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP)
-        boolean labelsSuffix = GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL,
-                key = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME,
-                description = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP)
-        boolean labelsDecimal = GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT;
 
 
         @Preference(label = GraticuleLayerType.PROPERTY_CORNER_LABELS_SECTION_LABEL,
