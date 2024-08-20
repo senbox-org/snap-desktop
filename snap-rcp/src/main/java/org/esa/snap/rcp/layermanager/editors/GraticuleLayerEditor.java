@@ -109,6 +109,39 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
                 GraticuleLayerType.PROPERTY_LABELS_SECTION_LABEL,
                 GraticuleLayerType.PROPERTY_LABELS_SECTION_TOOLTIP);
 
+        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
+        labelsRotationLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
+        labelsRotationLatPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
+        labelsRotationLatPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
+        labelsRotationLatPD.setDefaultConverter();
+        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLatPD);
+
+        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
+        labelsRotationLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
+        labelsRotationLonPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
+        labelsRotationLonPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
+        labelsRotationLonPD.setDefaultConverter();
+        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(labelsRotationLonPD);
+
+
+
+        PropertyDescriptor labelsSuffixPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, Boolean.class);
+        labelsSuffixPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
+        labelsSuffixPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL);
+        labelsSuffixPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP);
+        labelsSuffixPD.setDefaultConverter();
+        addPropertyDescriptor(labelsSuffixPD);
+
+        PropertyDescriptor labelsDecimalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME, Boolean.class);
+        labelsDecimalPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT);
+        labelsDecimalPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL);
+        labelsDecimalPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP);
+        labelsDecimalPD.setDefaultConverter();
+        addPropertyDescriptor(labelsDecimalPD);
+
+
         PropertyDescriptor labelsNorthPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, Boolean.class);
         labelsNorthPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
         labelsNorthPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_NORTH_LABEL);
@@ -180,37 +213,7 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        PropertyDescriptor labelsRotationLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, Double.class);
-        labelsRotationLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
-        labelsRotationLatPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_LABEL);
-        labelsRotationLatPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_TOOLTIP);
-        labelsRotationLatPD.setDefaultConverter();
-        labelsRotationLatPD.setValueRange(new ValueRange(0, 90));
-        addPropertyDescriptor(labelsRotationLatPD);
 
-        PropertyDescriptor labelsRotationLonPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, Double.class);
-        labelsRotationLonPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
-        labelsRotationLonPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_LABEL);
-        labelsRotationLonPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_TOOLTIP);
-        labelsRotationLonPD.setDefaultConverter();
-        labelsRotationLonPD.setValueRange(new ValueRange(0, 90));
-        addPropertyDescriptor(labelsRotationLonPD);
-
-
-
-        PropertyDescriptor labelsSuffixPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_NAME, Boolean.class);
-        labelsSuffixPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_DEFAULT);
-        labelsSuffixPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_LABEL);
-        labelsSuffixPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_SUFFIX_NSWE_TOOLTIP);
-        labelsSuffixPD.setDefaultConverter();
-        addPropertyDescriptor(labelsSuffixPD);
-
-        PropertyDescriptor labelsDecimalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_NAME, Boolean.class);
-        labelsDecimalPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_DEFAULT);
-        labelsDecimalPD.setDisplayName(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_LABEL);
-        labelsDecimalPD.setDescription(GraticuleLayerType.PROPERTY_LABELS_DECIMAL_VALUE_TOOLTIP);
-        labelsDecimalPD.setDefaultConverter();
-        addPropertyDescriptor(labelsDecimalPD);
 
 
 
