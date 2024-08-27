@@ -57,6 +57,7 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SliderBoxImageDisplay;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.util.GeoCodingUtil;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -549,7 +550,7 @@ public class ProductSubsetDialog extends ModalDialog {
             setThumbnailSubsampling();
             final Dimension imageSize = getScaledImageSize();
             thumbnailLoader = new ProgressMonitorSwingWorker<BufferedImage, Object>(this,
-                                                                                    "Loading thumbnail image...") {
+                    "Loading thumbnail image...") {
 
                 @Override
                 protected BufferedImage doInBackground(ProgressMonitor pm) throws Exception {
@@ -1274,6 +1275,18 @@ public class ProductSubsetDialog extends ModalDialog {
                 productNodeCheck.setSelected(selected);
                 productNodeCheck.setFont(SMALL_PLAIN_FONT);
                 productNodeCheck.addActionListener(productNodeCheckListener);
+
+                if (productNode instanceof TiePointGrid) {
+
+                    GeoCoding geoCoding = product.getSceneGeoCoding();
+                    if (GeoCodingUtil.geoCodingUsesTiePointGrid(geoCoding, name)) {
+                        productNodeCheck.setEnabled(false);
+                    }
+                } else if (productNode instanceof Band) {
+                    if (name.equals("longitude") || name.equals("latitude")) {
+                        productNodeCheck.setEnabled(false);
+                    }
+                }
 
                 if (includeAlways != null
                     && StringUtils.containsIgnoreCase(includeAlways, name)) {
