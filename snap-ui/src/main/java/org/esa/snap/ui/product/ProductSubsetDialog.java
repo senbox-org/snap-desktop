@@ -27,6 +27,7 @@ import com.bc.ceres.grender.support.DefaultViewport;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
@@ -48,6 +49,7 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.SliderBoxImageDisplay;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.util.GeoCodingUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,10 +60,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -387,7 +387,9 @@ public class ProductSubsetDialog extends ModalDialog {
         if (bands.length == 0) {
             return null;
         }
-        return new ProductNodeSubsetPane(product.getBands(), true);
+        return new ProductNodeSubsetPane(product.getBands(),
+                new String[]{"latitude", "longitude"},
+                true);
     }
 
     private ProductNodeSubsetPane createTiePointGridSubsetPane() {
@@ -395,8 +397,11 @@ public class ProductSubsetDialog extends ModalDialog {
         if (tiePointGrids.length == 0) {
             return null;
         }
+        String[] geoCodingTiePointNames = GeoCodingUtil.getTiePointGridsFromGeoCoding(product.getSceneGeoCoding());
+        String[] alwaysIncludedTiePointGridNames = ArrayUtils.addAll(geoCodingTiePointNames, "latitude", "longitude");
+
         return new ProductNodeSubsetPane(product.getTiePointGrids(),
-                new String[]{"latitude", "longitude"},
+                alwaysIncludedTiePointGridNames,
                 true);
     }
 

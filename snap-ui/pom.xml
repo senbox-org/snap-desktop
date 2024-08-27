@@ -111,6 +111,11 @@
             <artifactId>snap-virtual-file-system-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
