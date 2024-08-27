@@ -13,19 +13,24 @@ public class GeoCodingUtilTest {
 
     @Test
     @STTM("SNAP-1506")
-    public void testGeoCodingUsesTiePointGrid() {
+    public void testTiePointGridsFromGeoCoding() {
+
+        double subSamplingX = 2.0;
+        double subSamplingY = 1.0;
 
         ComponentGeoCoding geoCoding = mock(ComponentGeoCoding.class);
-        GeoRaster geoRaster = mock(GeoRaster.class);
+        GeoRaster geoRaster1 = new GeoRaster(new double[] {54.0, 54.5}, new double[] {10.0, 10.4}, "longitude", "latitude", 2, 2, 2, 2, 100, 0, 0, subSamplingX, subSamplingY);
+        GeoRaster geoRaster2 = new GeoRaster( new double[] {54.0, 54.5}, new double[] {10.0, 10.4}, "longitude", "latitude", 2, 2, 2, 2, 100, 0, 0, subSamplingX, subSamplingX);
+        GeoRaster geoRaster3 = new GeoRaster( new double[] {54.0, 54.5}, new double[] {10.0, 10.4}, "longitude", "latitude", 2, 2, 2, 2, 100, 0, 0, subSamplingY, subSamplingY);
 
-        when(geoCoding.getGeoRaster()).thenReturn(geoRaster);
-        when(geoRaster.getSubsamplingX()).thenReturn(2.0);
-        when(geoRaster.getSubsamplingY()).thenReturn(1.0);
-        when(geoRaster.getLonVariableName()).thenReturn("longitude");
-        when(geoRaster.getLatVariableName()).thenReturn("latitude");
+        when(geoCoding.getGeoRaster()).thenReturn(geoRaster1);
+        assertArrayEquals(GeoCodingUtil.getTiePointGridsFromGeoCoding(geoCoding), new String[]{"longitude"});
 
-        assertTrue(GeoCodingUtil.geoCodingUsesTiePointGrid(geoCoding, "longitude"));
-        assertFalse(GeoCodingUtil.geoCodingUsesTiePointGrid(geoCoding, "latitude"));
-        assertFalse(GeoCodingUtil.geoCodingUsesTiePointGrid(geoCoding, "someOtherName"));
+        when(geoCoding.getGeoRaster()).thenReturn(geoRaster2);
+        assertArrayEquals(GeoCodingUtil.getTiePointGridsFromGeoCoding(geoCoding), new String[]{"longitude", "latitude"});
+
+        when(geoCoding.getGeoRaster()).thenReturn(geoRaster3);
+        assertArrayEquals(GeoCodingUtil.getTiePointGridsFromGeoCoding(geoCoding), new String[0]);
+
     }
 }
