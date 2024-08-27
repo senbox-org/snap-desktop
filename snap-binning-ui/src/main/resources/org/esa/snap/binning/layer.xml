@@ -8,7 +8,7 @@
                 <attr name="delegate"
                       methodvalue="org.esa.snap.rcp.actions.file.ImportProductAction.create"/>
                 <attr name="displayName"
-                      stringvalue="Binned SeaDAS data"/>
+                      stringvalue="SeaDAS Binned"/>
                 <attr name="formatName"
                       stringvalue="Binned_data_product"/>
                 <attr name="useAllFileFilter"
@@ -23,10 +23,12 @@
         <folder name="File">
             <folder name="Import">
                 <folder name="Optical Sensors">
-                    <file name="org-esa-snap-binning-ImportBinnedProduct.shadow">
-                        <attr name="originalFile"
-                              stringvalue="Actions/Readers/org-esa-snap-binning-ImportBinnedProduct.instance"/>
-                    </file>
+                    <folder name="SeaDAS">
+                        <file name="org-esa-snap-binning-ImportBinnedProduct.shadow">
+                            <attr name="originalFile"
+                                  stringvalue="Actions/Readers/org-esa-snap-binning-ImportBinnedProduct.instance"/>
+                        </file>
+                    </folder>
                 </folder>
             </folder>
         </folder>

@@ -18,6 +18,7 @@ package org.esa.snap.rcp.spectrum;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glevel.MultiLevelModel;
 import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -28,7 +29,10 @@ import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
-import org.esa.snap.ui.*;
+import org.esa.snap.ui.AbstractDialog;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.PixelPositionListener;
+import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.*;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -69,6 +73,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
@@ -97,6 +102,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private final ProductNodeListenerAdapter productNodeHandler;
     private final PinSelectionChangeListener pinSelectionChangeListener;
     private final PixelPositionListener pixelPositionListener;
+    private final BandGroupsManager bandGroupsManager;
 
     private AbstractButton filterButton;
     private AbstractButton showSpectrumForCursorButton;
@@ -121,7 +127,20 @@ public class SpectrumTopComponent extends ToolTopComponent {
         rasterToSpectraMap = new HashMap<>();
         rasterToSpectralBandsMap = new HashMap<>();
         pixelPositionListener = new CursorSpectrumPixelPositionListener(this);
+        bandGroupsManager = getBandGroupsManager();
+
         initUI();
+    }
+
+    private BandGroupsManager getBandGroupsManager() {
+        final BandGroupsManager bandGroupsManager;
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+        } catch (IOException e) {
+            Dialogs.showError(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return bandGroupsManager;
     }
 
     //package local for testing
@@ -489,60 +508,91 @@ public class SpectrumTopComponent extends ToolTopComponent {
         if (currentView == null) {
             return;
         }
-        DisplayableSpectrum[] spectra;
+
         final RasterDataNode raster = currentView.getRaster();
         final SpectrumBand[] availableSpectralBands = getAvailableSpectralBands(raster);
         if (availableSpectralBands.length == 0) {
-            spectra = new DisplayableSpectrum[]{};
-        } else {
-            final BandGroup autoGrouping = currentProduct.getAutoGrouping();
-            if (autoGrouping != null) {
-                final int selectedSpectrumIndex = autoGrouping.indexOf(raster.getName());
-                DisplayableSpectrum[] autoGroupingSpectra = new DisplayableSpectrum[autoGrouping.size()];
-                final Iterator<String[]> iterator = autoGrouping.iterator();
-                int i = 0;
-                while (iterator.hasNext()) {
-                    final String[] autoGroupingNameAsArray = iterator.next();
-                    StringBuilder spectrumNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
-                    if (autoGroupingNameAsArray.length > 1) {
-                        for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
-                            String autoGroupingNamePart = autoGroupingNameAsArray[j];
-                            spectrumNameBuilder.append("_").append(autoGroupingNamePart);
+            rasterToSpectraMap.put(raster, new DisplayableSpectrum[0]);
+            return;
+        }
+
+        int displayIndex = 0;
+        final List<DisplayableSpectrum> spectra = new ArrayList<>();
+        final BandGroup[] userBandGroups = bandGroupsManager.getMatchingProduct(currentProduct);
+        if (userBandGroups.length > 0) {
+            final DisplayableSpectrum[] userGroupingSpectra = new DisplayableSpectrum[userBandGroups.length];
+            for (int i = 0; i < userBandGroups.length; i++) {
+                final int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final BandGroup userBandGroup = userBandGroups[i];
+                final DisplayableSpectrum spectrum = new DisplayableSpectrum(userBandGroup.getName(), symbolIndex);
+                spectrum.setSelected(false);
+                spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+
+                String[] bandNames = userBandGroup.getMatchingBandNames(currentProduct);
+                for (final String bandName : bandNames) {
+                    for (SpectrumBand availableSpectralBand : availableSpectralBands) {
+                        if (availableSpectralBand.getName().equals(bandName)) {
+                            spectrum.addBand(availableSpectralBand);
                         }
                     }
-                    final String spectrumName = spectrumNameBuilder.toString();
-                    int symbolIndex = SpectrumShapeProvider.getValidIndex(i, false);
-                    DisplayableSpectrum spectrum = new DisplayableSpectrum(spectrumName, symbolIndex);
-                    spectrum.setSelected(i == selectedSpectrumIndex);
-                    spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(i));
-                    autoGroupingSpectra[i] = spectrum;
-                    i++;
                 }
-                List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
-                for (SpectrumBand availableSpectralBand : availableSpectralBands) {
-                    final String bandName = availableSpectralBand.getName();
-                    final int spectrumIndex = autoGrouping.indexOf(bandName);
-                    if (spectrumIndex != -1) {
-                        autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);
-                    } else {
-                        ungroupedBandsList.add(availableSpectralBand);
+
+                userGroupingSpectra[i] = spectrum;
+            }
+
+            spectra.addAll(Arrays.asList(userGroupingSpectra));
+        }
+
+        final BandGroup autoGrouping = currentProduct.getAutoGrouping();
+        if (autoGrouping != null) {
+            final int selectedSpectrumIndex = autoGrouping.indexOf(raster.getName());
+            DisplayableSpectrum[] autoGroupingSpectra = new DisplayableSpectrum[autoGrouping.size()];
+            final Iterator<String[]> iterator = autoGrouping.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                final String[] autoGroupingNameAsArray = iterator.next();
+                StringBuilder spectrumNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
+                if (autoGroupingNameAsArray.length > 1) {
+                    for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
+                        String autoGroupingNamePart = autoGroupingNameAsArray[j];
+                        spectrumNameBuilder.append("_").append(autoGroupingNamePart);
                     }
                 }
-                if (ungroupedBandsList.size() == 0) {
-                    spectra = autoGroupingSpectra;
-                } else {
-                    final DisplayableSpectrum[] spectraFromUngroupedBands =
-                            createSpectraFromUngroupedBands(ungroupedBandsList.toArray(new SpectrumBand[0]),
-                                    SpectrumShapeProvider.getValidIndex(i, false), i);
-                    spectra = new DisplayableSpectrum[autoGroupingSpectra.length + spectraFromUngroupedBands.length];
-                    System.arraycopy(autoGroupingSpectra, 0, spectra, 0, autoGroupingSpectra.length);
-                    System.arraycopy(spectraFromUngroupedBands, 0, spectra, autoGroupingSpectra.length, spectraFromUngroupedBands.length);
-                }
-            } else {
-                spectra = createSpectraFromUngroupedBands(availableSpectralBands, 1, 0);
+                final String spectrumName = spectrumNameBuilder.toString();
+                int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                DisplayableSpectrum spectrum = new DisplayableSpectrum(spectrumName, symbolIndex);
+                spectrum.setSelected(i == selectedSpectrumIndex);
+                spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+                autoGroupingSpectra[i] = spectrum;
+                i++;
             }
+            List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
+            for (SpectrumBand availableSpectralBand : availableSpectralBands) {
+                final String bandName = availableSpectralBand.getName();
+                final int spectrumIndex = autoGrouping.indexOf(bandName);
+                if (spectrumIndex != -1) {
+                    autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);
+                } else {
+                    ungroupedBandsList.add(availableSpectralBand);
+                }
+            }
+            if (ungroupedBandsList.isEmpty()) {
+                spectra.addAll(Arrays.asList(autoGroupingSpectra));
+            } else {
+                int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final DisplayableSpectrum[] spectraFromUngroupedBands =
+                        createSpectraFromUngroupedBands(ungroupedBandsList.toArray(new SpectrumBand[0]),
+                                validIndex, i);
+                spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+            }
+        } else {
+            DisplayableSpectrum[] spectraFromUngroupedBands = createSpectraFromUngroupedBands(availableSpectralBands, 1, 0);
+            spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
         }
-        rasterToSpectraMap.put(raster, spectra);
+        rasterToSpectraMap.put(raster, spectra.toArray(new DisplayableSpectrum[0]));
     }
 
     private DisplayableSpectrum[] getAllSpectra() {

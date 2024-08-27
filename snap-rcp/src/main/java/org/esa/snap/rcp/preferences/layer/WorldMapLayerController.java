@@ -24,6 +24,7 @@ import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.layer.WorldMapLayerType;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.netbeans.spi.options.OptionsPanelController;
@@ -103,9 +104,9 @@ public final class WorldMapLayerController extends DefaultConfigController {
         });
         box.addActionListener(e -> {
             try {
-                property.setValue(box.getSelectedItem().toString());
+                updateProperty(box, property);
             } catch (ValidationException e1) {
-                e1.printStackTrace(); // very basic exception handling because exception is not expected to be thrown
+                SnapApp.getDefault().getLogger().severe(e1.getMessage());
             }
         });
         DefaultComboBoxModel<WorldMapLayerType> model = new DefaultComboBoxModel<>(worldMapLayerTypes.toArray(new WorldMapLayerType[worldMapLayerTypes.size()]));
@@ -124,6 +125,13 @@ public final class WorldMapLayerController extends DefaultConfigController {
         parent.add(pageUI, BorderLayout.CENTER);
         parent.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
         return parent;
+    }
+
+    static void updateProperty(JComboBox<WorldMapLayerType> box, Property property) throws ValidationException {
+        final WorldMapLayerType selectedItem = (WorldMapLayerType) box.getSelectedItem();
+        if (selectedItem != null) {
+            property.setValue(selectedItem.getLabel());
+        }
     }
 
     @Override

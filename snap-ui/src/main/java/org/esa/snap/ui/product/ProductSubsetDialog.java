@@ -25,19 +25,10 @@ import com.bc.ceres.grender.Viewport;
 import com.bc.ceres.grender.support.BufferedImageRendering;
 import com.bc.ceres.grender.support.DefaultViewport;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
+import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.dataio.ProductSubsetDef;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.Mask;
-import org.esa.snap.core.datamodel.MetadataElement;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.TiePointGrid;
-import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
@@ -60,24 +51,15 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.util.GeoCodingUtil;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.Rectangle;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -96,17 +78,18 @@ public class ProductSubsetDialog extends ModalDialog {
     private static final Font SMALL_PLAIN_FONT = new Font("SansSerif", Font.PLAIN, 10);
     private static final Font SMALL_ITALIC_FONT = SMALL_PLAIN_FONT.deriveFont(Font.ITALIC);
 
-    private Product product;
+    private final Product product;
     private ProductSubsetDef productSubsetDef;
-    private ProductSubsetDef givenProductSubsetDef;
+    private final ProductSubsetDef givenProductSubsetDef;
     private JLabel memLabel;
     private SpatialSubsetPane spatialSubsetPane;
     private ProductNodeSubsetPane bandSubsetPane;
     private ProductNodeSubsetPane tiePointGridSubsetPane;
     private ProductNodeSubsetPane metadataSubsetPane;
-    private double memWarnLimit;
+    private final double memWarnLimit;
     private static final double DEFAULT_MEM_WARN_LIMIT = 1000.0;
-    private AtomicBoolean updatingUI;
+    private final AtomicBoolean updatingUI;
+    private final BandGroupsManager bandGroupsManager;
 
     /**
      * Constructs a new subset dialog.
@@ -161,6 +144,7 @@ public class ProductSubsetDialog extends ModalDialog {
         this.productSubsetDef = new ProductSubsetDef("undefined");
         this.memWarnLimit = memWarnLimit;
         updatingUI = new AtomicBoolean(false);
+        bandGroupsManager = getBandGroupsManager();
         createUI();
     }
 
@@ -195,7 +179,7 @@ public class ProductSubsetDialog extends ModalDialog {
         final Set<String> notIncludedNames = new TreeSet<>();
         String[] nodeNames = productSubsetDef.getNodeNames();
         if (nodeNames != null) {
-            final List<String> includedNodeNames = Arrays.asList(nodeNames);
+            final String[] includedNodeNames = nodeNames;
             for (final String nodeName : includedNodeNames) {
                 final RasterDataNode rasterDataNode = product.getRasterDataNode(nodeName);
                 if (rasterDataNode != null) {
@@ -212,18 +196,18 @@ public class ProductSubsetDialog extends ModalDialog {
             }
 
             final String pattern = "The following dataset(s) are referenced but not included\n" +
-                                   "in your current subset definition:\n" +
-                                   "{0}\n" +
-                                   "If you do not include these dataset(s) into your selection,\n" +
-                                   "you might get unexpected results while working with the\n" +
-                                   "resulting product.\n\n" +
-                                   "Do you wish to include the referenced dataset(s) into your\n" +
-                                   "subset definition?\n"; /*I18N*/
+                    "in your current subset definition:\n" +
+                    "{0}\n" +
+                    "If you do not include these dataset(s) into your selection,\n" +
+                    "you might get unexpected results while working with the\n" +
+                    "resulting product.\n\n" +
+                    "Do you wish to include the referenced dataset(s) into your\n" +
+                    "subset definition?\n"; /*I18N*/
             final MessageFormat format = new MessageFormat(pattern);
             int status = JOptionPane.showConfirmDialog(getJDialog(),
-                                                       format.format(new Object[]{nameListText.toString()}),
-                                                       "Incomplete Subset Definition", /*I18N*/
-                                                       JOptionPane.YES_NO_CANCEL_OPTION);
+                    format.format(new Object[]{nameListText.toString()}),
+                    "Incomplete Subset Definition", /*I18N*/
+                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (status == JOptionPane.YES_OPTION) {
                 final String[] nodenames = notIncludedNames.toArray(new String[notIncludedNames.size()]);
                 productSubsetDef.addNodeNames(nodenames);
@@ -314,13 +298,13 @@ public class ProductSubsetDialog extends ModalDialog {
         boolean ok = true;
         if (numFlagDs > 0 && !flagDsInSubset) {
             int status = JOptionPane.showConfirmDialog(getJDialog(),
-                                                       "No flag dataset selected.\n\n"
-                                                       + "If you do not include a flag dataset in the subset,\n"
-                                                       + "you will not be able to create bitmask overlays.\n\n"
-                                                       + "Do you wish to include the available flag dataset(s)\n"
-                                                       + "in the current subset?\n",
-                                                       "No Flag Dataset Selected",
-                                                       JOptionPane.YES_NO_CANCEL_OPTION
+                    "No flag dataset selected.\n\n"
+                            + "If you do not include a flag dataset in the subset,\n"
+                            + "you will not be able to create bitmask overlays.\n\n"
+                            + "Do you wish to include the available flag dataset(s)\n"
+                            + "in the current subset?\n",
+                    "No Flag Dataset Selected",
+                    JOptionPane.YES_NO_CANCEL_OPTION
             );
             if (status == JOptionPane.YES_OPTION) {
                 productSubsetDef.addNodeNames(flagDsNameList.toArray(new String[numFlagDs]));
@@ -342,8 +326,18 @@ public class ProductSubsetDialog extends ModalDialog {
         super.onCancel();
     }
 
+    private BandGroupsManager getBandGroupsManager() {
+        final BandGroupsManager bandGroupsManager;
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return bandGroupsManager;
+    }
+
     private void createUI() {
-        memLabel = new JLabel("####", JLabel.RIGHT);
+        memLabel = new JLabel("####", SwingConstants.RIGHT);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         setComponentName(tabbedPane, "TabbedPane");
@@ -403,8 +397,8 @@ public class ProductSubsetDialog extends ModalDialog {
             return null;
         }
         return new ProductNodeSubsetPane(product.getTiePointGrids(),
-                                         new String[]{"latitude", "longitude"},
-                                         true);
+                new String[]{"latitude", "longitude"},
+                true);
     }
 
     private ProductNodeSubsetPane createAnnotationSubsetPane() {
@@ -442,7 +436,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private void updateSubsetDefRegion(int x1, int y1, int x2, int y2, int sx, int sy) {
         productSubsetDef.setSubsetRegion(new PixelSubsetRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0));
-        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(productSubsetDef.getRegion(),product,productSubsetDef.getNodeNames()));
+        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(productSubsetDef.getRegion(), product, productSubsetDef.getNodeNames()));
         productSubsetDef.setSubSampling(sx, sy);
         updateMemDisplay();
     }
@@ -509,7 +503,7 @@ public class ProductSubsetDialog extends ModalDialog {
         String _oldReference;
 
         private SpatialSubsetPane() {
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 referenceCombo = new JComboBox();
                 for (String bandName : product.getBandNames()) {
                     referenceCombo.addItem(bandName);
@@ -519,9 +513,9 @@ public class ProductSubsetDialog extends ModalDialog {
                 referenceCombo.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        int w ;
-                        int h ;
-                        if(product.isMultiSize()) {
+                        int w;
+                        int h;
+                        if (product.isMultiSize()) {
                             w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
                             h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
                         } else {
@@ -535,7 +529,7 @@ public class ProductSubsetDialog extends ModalDialog {
                         paramX2.getProperties().setMaxValue(w - 1);
                         paramY2.getProperties().setMaxValue(h - 1);
 
-                        updateUIState(new ParamChangeEvent(this,new Parameter("geo_"),null ));
+                        updateUIState(new ParamChangeEvent(this, new Parameter("geo_"), null));
                         _oldReference = (String) referenceCombo.getSelectedItem();
                     }
                 });
@@ -579,29 +573,29 @@ public class ProductSubsetDialog extends ModalDialog {
 
 
             imageScrollPane = new JScrollPane(imageCanvas);
-            imageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            imageScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             imageScrollPane.getVerticalScrollBar().setUnitIncrement(20);
-            imageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            imageScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             imageScrollPane.getHorizontalScrollBar().setUnitIncrement(20);
             imageScrollPane.getViewport().setExtentSize(new Dimension(MAX_THUMBNAIL_WIDTH, 2 * MAX_THUMBNAIL_WIDTH));
             setComponentName(imageScrollPane, "ImageScrollPane");
 
 
-            subsetWidthLabel = new JLabel("####", JLabel.RIGHT);
-            subsetHeightLabel = new JLabel("####", JLabel.RIGHT);
+            subsetWidthLabel = new JLabel("####", SwingConstants.RIGHT);
+            subsetHeightLabel = new JLabel("####", SwingConstants.RIGHT);
 
 
             int sceneWidth;
             int sceneHeight;
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
                 sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
             } else {
                 sceneWidth = product.getSceneRasterWidth();
                 sceneHeight = product.getSceneRasterHeight();
             }
-            sourceWidthLabel = new JLabel(String.valueOf(sceneWidth), JLabel.RIGHT);
-            sourceHeightLabel = new JLabel(String.valueOf(sceneHeight), JLabel.RIGHT);
+            sourceWidthLabel = new JLabel(String.valueOf(sceneWidth), SwingConstants.RIGHT);
+            sourceHeightLabel = new JLabel(String.valueOf(sceneHeight), SwingConstants.RIGHT);
 
             setToVisibleButton = new JButton("Use Preview");/*I18N*/
             setToVisibleButton.setMnemonic('v');
@@ -670,7 +664,7 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.addToPanel(textInputPane, fixSceneHeightCheck, gbc, "gridx=1,gridy=8");
 
             JPanel referencePanel = new JPanel();
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 BoxLayout boxlayoutRef = new BoxLayout(referencePanel, BoxLayout.X_AXIS);
                 referencePanel.setLayout(boxlayoutRef);
                 referencePanel.add(new JLabel("Reference Band:"));
@@ -682,7 +676,6 @@ public class ProductSubsetDialog extends ModalDialog {
             centerPanel.setLayout(boxlayout);
             centerPanel.add(referencePanel);
             centerPanel.add(textInputPane);
-
 
 
             setLayout(new BorderLayout(4, 4));
@@ -713,20 +706,20 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.setAttributes(gbc, "insets.top=4");
             GridBagUtils.addToPanel(geoCoordinatesPane, new JLabel("North latitude bound:"), gbc, "gridx=0,gridy=0");
             GridBagUtils.addToPanel(geoCoordinatesPane, UIUtils.createSpinner(paramNorthLat1, 1.0, "#0.00#"),
-                                    gbc, "gridx=1,gridy=0");
+                    gbc, "gridx=1,gridy=0");
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(geoCoordinatesPane, new JLabel("West longitude bound:"), gbc, "gridx=0,gridy=1");
             GridBagUtils.addToPanel(geoCoordinatesPane, UIUtils.createSpinner(paramWestLon1, 1.0, "#0.00#"),
-                                    gbc, "gridx=1,gridy=1");
+                    gbc, "gridx=1,gridy=1");
 
             GridBagUtils.setAttributes(gbc, "insets.top=4");
             GridBagUtils.addToPanel(geoCoordinatesPane, new JLabel("South latitude bound:"), gbc, "gridx=0,gridy=2");
             GridBagUtils.addToPanel(geoCoordinatesPane, UIUtils.createSpinner(paramSouthLat2, 1.0, "#0.00#"),
-                                    gbc, "gridx=1,gridy=2");
+                    gbc, "gridx=1,gridy=2");
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(geoCoordinatesPane, new JLabel("East longitude bound:"), gbc, "gridx=0,gridy=3");
             GridBagUtils.addToPanel(geoCoordinatesPane, UIUtils.createSpinner(paramEastLon2, 1.0, "#0.00#"),
-                                    gbc, "gridx=1,gridy=3");
+                    gbc, "gridx=1,gridy=3");
             return geoCoordinatesPane;
         }
 
@@ -739,26 +732,26 @@ public class ProductSubsetDialog extends ModalDialog {
             GridBagUtils.setAttributes(gbc, "insets.top=4");
             GridBagUtils.addToPanel(pixelCoordinatesPane, new JLabel("Scene start X:"), gbc, "gridx=0,gridy=0");
             GridBagUtils.addToPanel(pixelCoordinatesPane, UIUtils.createSpinner(paramX1, 25, "#0"),
-                                    gbc, "gridx=1,gridy=0");
+                    gbc, "gridx=1,gridy=0");
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(pixelCoordinatesPane, new JLabel("Scene start Y:"), gbc, "gridx=0,gridy=1");
             GridBagUtils.addToPanel(pixelCoordinatesPane, UIUtils.createSpinner(paramY1, 25, "#0"),
-                                    gbc, "gridx=1,gridy=1");
+                    gbc, "gridx=1,gridy=1");
 
             GridBagUtils.setAttributes(gbc, "insets.top=4");
             GridBagUtils.addToPanel(pixelCoordinatesPane, new JLabel("Scene end X:"), gbc, "gridx=0,gridy=2");
             GridBagUtils.addToPanel(pixelCoordinatesPane, UIUtils.createSpinner(paramX2, 25, "#0"),
-                                    gbc, "gridx=1,gridy=2");
+                    gbc, "gridx=1,gridy=2");
             GridBagUtils.setAttributes(gbc, "insets.top=1");
             GridBagUtils.addToPanel(pixelCoordinatesPane, new JLabel("Scene end Y:"), gbc, "gridx=0,gridy=3");
             GridBagUtils.addToPanel(pixelCoordinatesPane, UIUtils.createSpinner(paramY2, 25, "#0"),
-                                    gbc, "gridx=1,gridy=3");
+                    gbc, "gridx=1,gridy=3");
             return pixelCoordinatesPane;
         }
 
         private void setThumbnailSubsampling() {
-            int w ;
-            if(product.isMultiSize()) {
+            int w;
+            if (product.isMultiSize()) {
                 w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
             } else {
                 w = product.getSceneRasterWidth();
@@ -788,7 +781,7 @@ public class ProductSubsetDialog extends ModalDialog {
             int y2 = y1 + sliderBoxBounds.height * thumbNailSubSampling;
             int w = product.getSceneRasterWidth();
             int h = product.getSceneRasterHeight();
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
                 h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
             }
@@ -898,7 +891,7 @@ public class ProductSubsetDialog extends ModalDialog {
             pg.addParameter(paramEastLon2);
 
             boolean canUseGeocoding;
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 canUseGeocoding = canUseGeoCoordinates(product.getBand((String) referenceCombo.getSelectedItem()));
             } else {
                 canUseGeocoding = canUseGeoCoordinates(product);
@@ -909,9 +902,9 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void addPixelParameter(ParamGroup pg) {
-            int w ;
-            int h ;
-            if(product.isMultiSize()) {
+            int w;
+            int h;
+            if (product.isMultiSize()) {
                 w = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
                 h = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
             } else {
@@ -928,7 +921,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
             if (givenProductSubsetDef != null) {
                 Rectangle region;
-                if(product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null) {
+                if (product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null) {
                     region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem());
                 } else {
                     region = givenProductSubsetDef.getRegion();
@@ -996,7 +989,7 @@ public class ProductSubsetDialog extends ModalDialog {
             if (updatingUI.compareAndSet(false, true)) {
                 try {
                     boolean canUseGeocoding;
-                    if(product.isMultiSize()) {
+                    if (product.isMultiSize()) {
                         canUseGeocoding = canUseGeoCoordinates(product.getBand((String) referenceCombo.getSelectedItem()));
                     } else {
                         canUseGeocoding = canUseGeoCoordinates(product);
@@ -1005,9 +998,9 @@ public class ProductSubsetDialog extends ModalDialog {
                         final String parmName = event.getParameter().getName();
                         if (parmName.startsWith("geo_")) {
                             final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
-                                                              (Double) paramWestLon1.getValue());
+                                    (Double) paramWestLon1.getValue());
                             final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
-                                                              (Double) paramEastLon2.getValue());
+                                    (Double) paramEastLon2.getValue());
 
                             updateXYParams(geoPos1, geoPos2);
                         } else if (parmName.startsWith("source_x") || parmName.startsWith("source_y")) {
@@ -1023,27 +1016,27 @@ public class ProductSubsetDialog extends ModalDialog {
                     int sx = ((Number) paramSX.getValue()).intValue();
                     int sy = ((Number) paramSY.getValue()).intValue();
 
-                    if(product.isMultiSize()) {
+                    if (product.isMultiSize()) {
 
-                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap (computeROIToPositiveAxis(x1,y1,x2,y2),
-                                                                                 (String) referenceCombo.getSelectedItem(),
-                                                                                 product, null));
+                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(computeROIToPositiveAxis(x1, y1, x2, y2),
+                                (String) referenceCombo.getSelectedItem(),
+                                product, null));
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     } else {
-                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(computeROIToPositiveAxis(x1,y1,x2,y2), 0));
+                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(computeROIToPositiveAxis(x1, y1, x2, y2), 0));
                         productSubsetDef.setSubSampling(sx, sy);
                         updateMemDisplay();
                     }
 
                     Dimension s;
-                    if(product.isMultiSize()) {
+                    if (product.isMultiSize()) {
                         s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
-                                                                product.getSceneRasterHeight(),
-                                                                (String) referenceCombo.getSelectedItem());
+                                product.getSceneRasterHeight(),
+                                (String) referenceCombo.getSelectedItem());
                     } else {
                         s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
-                                                                product.getSceneRasterHeight());
+                                product.getSceneRasterHeight());
                     }
 
                     subsetWidthLabel.setText(String.valueOf(s.getWidth()));
@@ -1052,7 +1045,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
                     int sceneWidth;
                     int sceneHeight;
-                    if(product.isMultiSize()) {
+                    if (product.isMultiSize()) {
                         sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
                         sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
                     } else {
@@ -1078,32 +1071,31 @@ public class ProductSubsetDialog extends ModalDialog {
             }
         }
 
-        private Rectangle computeROIToPositiveAxis(int x1,int y1, int x2, int y2)
-        {
+        private Rectangle computeROIToPositiveAxis(int x1, int y1, int x2, int y2) {
             // keep positive dimensions of the ROI
             int diffX = x2 - x1;
             int diffY = y2 - y1;
-            if(diffX<0)
-                x1=x1+diffX-1;
-            if(diffY<0)
-                y1=y1+diffY-1;
-            return new Rectangle(x1, y1, Math.abs(diffX)+1,  Math.abs(diffY)+1);
+            if (diffX < 0)
+                x1 = x1 + diffX - 1;
+            if (diffY < 0)
+                y1 = y1 + diffY - 1;
+            return new Rectangle(x1, y1, Math.abs(diffX) + 1, Math.abs(diffY) + 1);
         }
 
         private void syncLatLonWithXYParams() {
             final PixelPos pixelPos1 = new PixelPos(((Number) paramX1.getValue()).intValue(),
-                                                    ((Number) paramY1.getValue()).intValue());
+                    ((Number) paramY1.getValue()).intValue());
             final PixelPos pixelPos2 = new PixelPos(((Number) paramX2.getValue()).intValue(),
-                                                    ((Number) paramY2.getValue()).intValue());
+                    ((Number) paramY2.getValue()).intValue());
             GeoCoding geoCoding;
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
             } else {
                 geoCoding = product.getSceneGeoCoding();
             }
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
-            if(geoPos1.isValid()) {
+            if (geoPos1.isValid()) {
                 double lat = geoPos1.getLat();
                 lat = MathUtils.crop(lat, -90.0, 90.0);
                 paramNorthLat1.setValue(lat, ex -> true);
@@ -1123,7 +1115,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
             GeoCoding geoCoding;
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
             } else {
                 geoCoding = product.getSceneGeoCoding();
@@ -1134,26 +1126,26 @@ public class ProductSubsetDialog extends ModalDialog {
             }
             final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
             if (!pixelPos2.isValid()) {
-                if(product.isMultiSize()) {
+                if (product.isMultiSize()) {
                     pixelPos2.setLocation(product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
-                                          product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
+                            product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
                 } else {
                     pixelPos2.setLocation(product.getSceneRasterWidth(),
-                                          product.getSceneRasterHeight());
+                            product.getSceneRasterHeight());
                 }
 
             }
-            final Rectangle.Float region = new Rectangle.Float();
+            final Rectangle2D.Float region = new Rectangle2D.Float();
             region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
-            final Rectangle.Float productBounds;
-            if(product.isMultiSize()) {
-                productBounds = new Rectangle.Float(0, 0,
-                                                    product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
-                                                    product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
+            final Rectangle2D.Float productBounds;
+            if (product.isMultiSize()) {
+                productBounds = new Rectangle2D.Float(0, 0,
+                        product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
+                        product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
             } else {
-                productBounds = new Rectangle.Float(0, 0,
-                                                    product.getSceneRasterWidth(),
-                                                    product.getSceneRasterHeight());
+                productBounds = new Rectangle2D.Float(0, 0,
+                        product.getSceneRasterWidth(),
+                        product.getSceneRasterHeight());
             }
 
             Rectangle2D finalRegion = productBounds.createIntersection(region);
@@ -1168,7 +1160,7 @@ public class ProductSubsetDialog extends ModalDialog {
 
             final int w;
             final int h;
-            if(product.isMultiSize()) {
+            if (product.isMultiSize()) {
                 w = (product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth() - 1) / thumbNailSubSampling + 1;
                 h = (product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight() - 1) / thumbNailSubSampling + 1;
             } else {
@@ -1181,8 +1173,8 @@ public class ProductSubsetDialog extends ModalDialog {
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
 
-            final AffineTransform i2mTransform ;
-            if(product.isMultiSize()) {
+            final AffineTransform i2mTransform;
+            if (product.isMultiSize()) {
                 i2mTransform = Product.findImageToModelTransform(product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding());
             } else {
                 i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
@@ -1205,7 +1197,7 @@ public class ProductSubsetDialog extends ModalDialog {
             BufferedImage image = null;
             try {
                 MultiLevelSource multiLevelSource = ColoredBandImageMultiLevelSource.create(thumbNailBand,
-                                                                                            SubProgressMonitor.create(pm, 1));
+                        SubProgressMonitor.create(pm, 1));
                 final ImageLayer imageLayer = new ImageLayer(multiLevelSource);
                 final int imageWidth = imgSize.width;
                 final int imageHeight = imgSize.height;
@@ -1240,12 +1232,14 @@ public class ProductSubsetDialog extends ModalDialog {
 
     private class ProductNodeSubsetPane extends JPanel {
 
-        private ProductNode[] productNodes;
-        private String[] includeAlways;
+        private final ProductNode[] productNodes;
+        private final String[] includeAlways;
         private List<JCheckBox> checkers;
         private JCheckBox allCheck;
         private JCheckBox noneCheck;
-        private boolean selected;
+        private final boolean selected;
+        private JCheckBox selectBandCheck;
+        private JComboBox<String> groupNamesBox;
 
         private ProductNodeSubsetPane(ProductNode[] productNodes, boolean selected) {
             this(productNodes, null, selected);
@@ -1289,7 +1283,7 @@ public class ProductSubsetDialog extends ModalDialog {
                 }
 
                 if (includeAlways != null
-                    && StringUtils.containsIgnoreCase(includeAlways, name)) {
+                        && StringUtils.containsIgnoreCase(includeAlways, name)) {
                     productNodeCheck.setSelected(true);
                     productNodeCheck.setEnabled(false);
                 } else if (givenProductSubsetDef != null) {
@@ -1306,20 +1300,16 @@ public class ProductSubsetDialog extends ModalDialog {
             }
             // Add a last 'filler' row
             GridBagUtils.addToPanel(checkersPane, new JLabel(" "), gbc,
-                                    "gridwidth=2,weightx=1,weighty=1,gridx=0,gridy=" + productNodes.length);
+                    "gridwidth=2,weightx=1,weighty=1,gridx=0,gridy=" + productNodes.length);
 
             ActionListener allCheckListener = e -> {
-                if (e.getSource() == allCheck) {
-                    checkAllProductNodes(true);
-                } else if (e.getSource() == noneCheck) {
-                    checkAllProductNodes(false);
-                }
-                updateUIState();
+                handleSelectCheckBoxes(e);
             };
 
             allCheck = new JCheckBox("Select all");
             allCheck.setName("selectAll");
             allCheck.setMnemonic('a');
+            allCheck.setSelected(true);
             allCheck.addActionListener(allCheckListener);
 
             noneCheck = new JCheckBox("Select none");
@@ -1327,15 +1317,34 @@ public class ProductSubsetDialog extends ModalDialog {
             noneCheck.setMnemonic('n');
             noneCheck.addActionListener(allCheckListener);
 
+            selectBandCheck = new JCheckBox("Select band group");
+            selectBandCheck.setName("SelectBandGroup");
+            selectBandCheck.setMnemonic('b');
+            selectBandCheck.addActionListener(allCheckListener);
+
+            final BandGroup[] bandGroups = bandGroupsManager.getMatchingProduct(product);
+            final String[] groupNames = new String[bandGroups.length];
+            for (int i = 0; i < bandGroups.length; i++) {
+                groupNames[i] = bandGroups[i].getName();
+            }
+            groupNamesBox = new JComboBox<>(groupNames);
+            if (groupNames.length == 0) {
+                groupNamesBox.setEnabled(false);
+                selectBandCheck.setEnabled(false);
+            }
+            groupNamesBox.addActionListener(e -> {handleSelectCheckBoxes(e);});
+
             JScrollPane scrollPane = new JScrollPane(checkersPane);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
             scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(20);
 
             JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
             buttonRow.add(allCheck);
             buttonRow.add(noneCheck);
+            buttonRow.add(selectBandCheck);
+            buttonRow.add(groupNamesBox);
 
             setLayout(new BorderLayout());
             add(scrollPane, BorderLayout.CENTER);
@@ -1346,8 +1355,33 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         void updateUIState() {
-            allCheck.setSelected(areAllProductNodesChecked(true));
-            noneCheck.setSelected(areAllProductNodesChecked(false));
+            if (allCheck.isSelected()) {
+                noneCheck.setSelected(false);
+                selectBandCheck.setSelected(false);
+            } else if (noneCheck.isSelected()) {
+                allCheck.setSelected(false);
+                selectBandCheck.setSelected(false);
+            } else {
+                allCheck.setSelected(false);
+                noneCheck.setSelected(false);
+            }
+            updateSubsetDefNodeNameList();
+        }
+
+        void handleSelectCheckBoxes(ActionEvent e) {
+            if (e.getSource() == allCheck) {
+                checkAllProductNodes(true);
+                noneCheck.setSelected(false);
+                selectBandCheck.setSelected(false);
+            } else if (e.getSource() == noneCheck) {
+                checkAllProductNodes(false);
+                allCheck.setSelected(false);
+                selectBandCheck.setSelected(false);
+            } else {
+                checkProductNodesOfGroup();
+                allCheck.setSelected(false);
+                noneCheck.setSelected(false);
+            }
             updateSubsetDefNodeNameList();
         }
 
@@ -1370,6 +1404,30 @@ public class ProductSubsetDialog extends ModalDialog {
                 if (checker.isEnabled()) {
                     checker.setSelected(checked);
                 }
+            }
+        }
+
+        void checkProductNodesOfGroup() {
+            final BandGroup[] bandGroups = bandGroupsManager.getMatchingProduct(product);
+            final String selectedBandGroupName = (String) groupNamesBox.getSelectedItem();
+
+            BandGroup selectedBandGroup = null;
+            for (final BandGroup bandGroup : bandGroups) {
+                if (bandGroup.getName().equals(selectedBandGroupName)) {
+                    selectedBandGroup = bandGroup;
+                    break;
+                }
+            }
+            final String[] bandNames = selectedBandGroup.getMatchingBandNames(product);
+            for (JCheckBox checker : checkers) {
+                boolean bandContained = false;
+                for (final String bandName : bandNames) {
+                    if (checker.getText().equals(bandName)) {
+                        bandContained = true;
+                        break;
+                    }
+                }
+                checker.setSelected(bandContained);
             }
         }
 
