@@ -103,6 +103,7 @@
     <mapID target="rgbImageProfile" url="desktop/RGBImageProfile.html"/>
     <mapID target="bandArithmetic" url="desktop/BandMaths.html"/>
     <mapID target="vectorDataManagement" url="desktop/VectorDataManagement.html"/>
+    <mapID target="bandGroupsEditor" url="desktop/BandGroupEditor.html"/>
 
     <mapID target="options" url="desktop/OptionsDialog.html"/>
     <mapID target="options-write" url="desktop/OptionsDialog.html#writeoptions"/>
