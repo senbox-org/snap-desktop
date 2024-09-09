@@ -17,12 +17,14 @@ package org.esa.snap.worldwind.layers;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 /**
  * Base layer class
  */
 public abstract class BaseLayer extends RenderableLayer {
     protected Product selectedProduct = null;
+    protected RasterDataNode selectedRaster = null;
 
     public void setSelectedProduct(final Product product) {
         selectedProduct = product;
@@ -32,4 +34,7 @@ public abstract class BaseLayer extends RenderableLayer {
         return selectedProduct;
     }
 
+    public void setSelectedRaster(final RasterDataNode raster) {
+        selectedRaster = raster;
+    }
 }

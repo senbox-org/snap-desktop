@@ -19,6 +19,7 @@ import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.Layer;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import javax.swing.JPanel;
 
@@ -36,6 +37,8 @@ public interface WWLayer extends Layer {
     void setSelectedProduct(final Product product);
 
     Product getSelectedProduct();
+
+    void setSelectedRaster(final RasterDataNode raster);
 
     void updateInfoAnnotation(final SelectEvent event);
 }

@@ -86,7 +86,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     public String[] getProductNames() {
         final List<String> list = new ArrayList<>(outlineTable.keySet());
         Collections.sort(list);
-        return list.toArray(new String[outlineTable.size()]);
+        return list.toArray(new String[0]);
     }
 
     private static String getUniqueName(final Product product) {
@@ -171,7 +171,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         final SwingWorker worker = new SwingWorker() {
 
             @Override
-            protected SurfaceImage doInBackground() throws Exception {
+            protected SurfaceImage doInBackground() {
                 try {
                     final Product newProduct = createSubsampledProduct(product);
                     final Band band = newProduct.getBandAt(0);
@@ -220,68 +220,94 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private void addOutline(final Product product) {
 
-        final int step = Math.max(16, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 250);
-        final GeneralPath[] boundaryPaths = org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true);
+        final int prodWidth = product.getSceneRasterWidth();
+        final int prodHeight = product.getSceneRasterHeight();
+        final int step = Math.max(16, (prodWidth + prodHeight) / 250);
+        final List<GeneralPath> boundaryPaths = new ArrayList<>(List.of(
+                org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true)));
 
-        final Polyline[] polyLineList = new Polyline[boundaryPaths.length];
-        int i = 0;
-        int numPoints = 0;
-        float centreLat = 0;
-        float centreLon = 0;
-
-        for (GeneralPath boundaryPath : boundaryPaths) {
-            final PathIterator it = boundaryPath.getPathIterator(null);
-            final float[] floats = new float[2];
-            final List<Position> positions = new ArrayList<>(4);
-
-            it.currentSegment(floats);
-            final Position firstPosition = new Position(Angle.fromDegreesLatitude(floats[1]),
-                                                        Angle.fromDegreesLongitude(floats[0]), 0.0);
-            positions.add(firstPosition);
-            centreLat += floats[1];
-            centreLon += floats[0];
-            it.next();
-            numPoints++;
-
-            while (!it.isDone()) {
-                it.currentSegment(floats);
-                positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
-                                           Angle.fromDegreesLongitude(floats[0]), 0.0));
-
-                centreLat += floats[1];
-                centreLon += floats[0];
-                it.next();
-                numPoints++;
+        final List<GeneralPath> bandBoundaryPaths = new ArrayList<>();
+        for(Band band : product.getBands()) {
+            if(band.getGeoCoding() != null &&
+                    !(band.getRasterWidth() == prodWidth && band.getRasterHeight() == prodHeight)) {
+                bandBoundaryPaths.addAll(List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true)));
             }
-            // close the loop
-            positions.add(firstPosition);
-
-            centreLat = centreLat / numPoints;
-            centreLon = centreLon / numPoints;
-
-
-            polyLineList[i] = new Polyline();
-            polyLineList[i].setFollowTerrain(true);
-            polyLineList[i].setPositions(positions);
-
-            // ADDED
-            //polyLineList[i].setColor(new Color(1f, 0f, 0f, 0.99f));
-            //polyLineList[i].setLineWidth(10);
-
-            addRenderable(polyLineList[i]);
-            ++i;
         }
 
-        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
+        final List<Polyline> polyLineList = new ArrayList<>();
+        for (GeneralPath boundaryPath : boundaryPaths) {
+            Polyline polyLine = createPolyLine(boundaryPath);
 
+            addRenderable(polyLine);
+            polyLineList.add(polyLine);
+        }
+
+        for (GeneralPath boundaryPath : bandBoundaryPaths) {
+            Polyline polyLine = createPolyLine(boundaryPath);
+
+            polyLine.setColor(new Color(0.8f, 0.8f, 0.9f, 0.60f));
+            polyLine.setStippleFactor(5);
+            polyLine.setLineWidth(2.5);
+
+            addRenderable(polyLine);
+            polyLineList.add(polyLine);
+        }
+
+        Position centrePos = calculateBoundingSphereCenter(polyLineList.get(0));
         PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
         ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         ppm.setEnableDecluttering(true);
 
         addRenderable(ppm);
 
-        outlineTable.put(getUniqueName(product), polyLineList);
-        labelTable.put(getUniqueName(product), ppm);
+        String name = getUniqueName(product);
+        outlineTable.put(name, polyLineList.toArray(new Polyline[0]));
+        labelTable.put(name, ppm);
+    }
+
+    private Position calculateBoundingSphereCenter(final Polyline polyline) {
+
+        double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
+        double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
+
+        for (Position pos : polyline.getPositions()) {
+            minLat = Math.min(minLat, pos.getLatitude().getRadians());
+            maxLat = Math.max(maxLat, pos.getLatitude().getRadians());
+            minLon = Math.min(minLon, pos.getLongitude().getRadians());
+            maxLon = Math.max(maxLon, pos.getLongitude().getRadians());
+        }
+
+        double centerLat = (minLat + maxLat) / 2.0;
+        double centerLon = (minLon + maxLon) / 2.0;
+
+        return new Position(Angle.fromRadiansLatitude(centerLat),
+                Angle.fromRadiansLongitude(centerLon), 0.0);
+    }
+
+    private Polyline createPolyLine(final GeneralPath boundaryPath) {
+        final PathIterator it = boundaryPath.getPathIterator(null);
+        final float[] floats = new float[2];
+        final List<Position> positions = new ArrayList<>();
+
+        it.currentSegment(floats);
+        final Position firstPosition = new Position(Angle.fromDegreesLatitude(floats[1]),
+                Angle.fromDegreesLongitude(floats[0]), 0.0);
+        positions.add(firstPosition);
+        it.next();
+
+        while (!it.isDone()) {
+            it.currentSegment(floats);
+            positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
+                    Angle.fromDegreesLongitude(floats[0]), 0.0));
+            it.next();
+        }
+        // close the loop
+        positions.add(firstPosition);
+
+        Polyline polyline = new Polyline();
+        polyline.setFollowTerrain(true);
+        polyline.setPositions(positions);
+        return polyline;
     }
 
     private void addWaveProduct(final Product product) {
@@ -294,8 +320,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         int cnt = 0;
 
         int numPoints = 0;
-        float centreLat = 0;
-        float centreLon = 0;
+        double centreLat = 0;
+        double centreLon = 0;
 
         for (MetadataElement geoElem : geoElemList) {
             final double lat = geoElem.getAttributeDouble("center_lat", 0.0) / Constants.oneMillion;
@@ -310,7 +336,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             final GeoUtils.LatLonHeading corner3 = GeoUtils.vincenty_direct(new GeoPos(r2.lat, r2.lon), 2500, heading - 90.0);
             final GeoUtils.LatLonHeading corner4 = GeoUtils.vincenty_direct(new GeoPos(r2.lat, r2.lon), 2500, heading + 90.0);
 
-            final List<Position> positions = new ArrayList<>(4);
+            final List<Position> positions = new ArrayList<>();
             positions.add(new Position(Angle.fromDegreesLatitude(corner1.lat), Angle.fromDegreesLongitude(corner1.lon), 0.0));
             positions.add(new Position(Angle.fromDegreesLatitude(corner2.lat), Angle.fromDegreesLongitude(corner2.lon), 0.0));
             positions.add(new Position(Angle.fromDegreesLatitude(corner4.lat), Angle.fromDegreesLongitude(corner4.lon), 0.0));
@@ -348,8 +374,9 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         ppm.setEnableDecluttering(true);
         addRenderable(ppm);
 
-        outlineTable.put(getUniqueName(product), lineList);
-        labelTable.put(getUniqueName(product), ppm);
+        String name = getUniqueName(product);
+        outlineTable.put(name, lineList);
+        labelTable.put(name, ppm);
     }
 
     private PointPlacemark getLabelPlacemark(Position pos, String label) {
@@ -364,9 +391,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     public void removeProduct(final Product product) {
-        removeOutline(getUniqueName(product));
-        removeImage(getUniqueName(product));
-        removeLabel(getUniqueName(product));
+        String name = getUniqueName(product);
+        removeOutline(name);
+        removeImage(name);
+        removeLabel(name);
     }
 
     private void removeOutline(String imagePath) {

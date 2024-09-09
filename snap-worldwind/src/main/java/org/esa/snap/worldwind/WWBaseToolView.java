@@ -24,6 +24,7 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.worldwind.layers.WWLayer;
@@ -104,6 +105,19 @@ public abstract class WWBaseToolView extends ToolTopComponent {
             gotoProduct(product);
             getWwd().redrawNow();
             eyePosition = getWwd().getView().getEyePosition();
+        }
+    }
+
+    public void setSelectedRaster(final RasterDataNode raster) {
+
+        final LayerList layerList = getWwd().getModel().getLayers();
+        layerList.stream().filter(layer -> layer instanceof WWLayer).forEach(layer -> {
+            final WWLayer wwLayer = (WWLayer) layer;
+            wwLayer.setSelectedRaster(raster);
+        });
+
+        if (isVisible()) {
+            getWwd().redrawNow();
         }
     }
 

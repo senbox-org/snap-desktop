@@ -18,6 +18,7 @@ package org.esa.snap.worldwind;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -148,6 +149,10 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                         } else {
                             setSelectedProduct(null);
                         }
+                    });
+
+                    SnapApp.getDefault().getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
+                        setSelectedRaster(newValue);
                     });
 
                     setProducts(SnapApp.getDefault().getProductManager().getProducts());
