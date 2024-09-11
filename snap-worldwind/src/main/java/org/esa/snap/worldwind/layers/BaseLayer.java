@@ -15,9 +15,17 @@
  */
 package org.esa.snap.worldwind.layers;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
+
+import java.awt.*;
+import java.util.List;
 
 /**
  * Base layer class
@@ -25,6 +33,11 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 public abstract class BaseLayer extends RenderableLayer {
     protected Product selectedProduct = null;
     protected RasterDataNode selectedRaster = null;
+
+    protected final static Material RED_MATERIAL = new Material(Color.RED);
+    protected final static Material ORANGE_MATERIAL = new Material(Color.ORANGE);
+    protected final static Material GREEN_MATERIAL = new Material(Color.GREEN);
+    protected final static Material WHITE_MATERIAL = new Material(Color.WHITE);
 
     public void setSelectedProduct(final Product product) {
         selectedProduct = product;
@@ -36,5 +49,22 @@ public abstract class BaseLayer extends RenderableLayer {
 
     public void setSelectedRaster(final RasterDataNode raster) {
         selectedRaster = raster;
+    }
+
+    public Path createPath(final List<Position> positions,
+                           final Material normalMaterial, final Material highlightMaterial) {
+        Path polyLine = new Path(positions);
+        polyLine.setSurfacePath(true);
+        polyLine.setFollowTerrain(true);
+
+        ShapeAttributes pathAttributes = new BasicShapeAttributes();
+        pathAttributes.setOutlineMaterial(normalMaterial);
+        polyLine.setAttributes(pathAttributes);
+
+        ShapeAttributes highlightAtributes = new BasicShapeAttributes();
+        highlightAtributes.setOutlineMaterial(highlightMaterial);
+        polyLine.setHighlightAttributes(highlightAtributes);
+
+        return polyLine;
     }
 }

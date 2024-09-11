@@ -22,10 +22,13 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import gov.nasa.worldwind.render.Polyline;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.SurfaceImage;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Band;
@@ -49,8 +52,7 @@ import javax.swing.JSlider;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
@@ -74,11 +76,17 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private boolean enableSurfaceImages;
 
-    private final ConcurrentHashMap<String, Polyline[]> outlineTable = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Path[]> outlineTable = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SurfaceImage> imageTable = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, PointPlacemark> labelTable = new ConcurrentHashMap<>();
 
     public WorldWindowGLCanvas theWWD = null;
+
+    static class Outline {
+        Path[] productLineList;
+        Path[] bandLineList;
+        PointPlacemark label;
+    }
 
     public DefaultProductLayer() {
         this.setName("Products");
@@ -118,7 +126,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (img != null)
             return img.getOpacity();
         else {
-            final Polyline[] lineList = outlineTable.get(name);
+            final Path[] lineList = outlineTable.get(name);
             return lineList != null ? 1 : 0;
         }
     }
@@ -134,11 +142,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (selectedProduct != null) {
             final String selName = getUniqueName(selectedProduct);
             for (String name : outlineTable.keySet()) {
-                final Polyline[] lineList = outlineTable.get(name);
+                final Path[] lineList = outlineTable.get(name);
                 final boolean highlight = name.equals(selName);
-                for (Polyline line : lineList) {
+                for (Path line : lineList) {
                     line.setHighlighted(highlight);
-                    line.setHighlightColor(Color.RED);
                 }
             }
         }
@@ -151,11 +158,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (selectedRaster != null) {
             final String selName = getUniqueName(selectedProduct);
             for (String name : outlineTable.keySet()) {
-                final Polyline[] lineList = outlineTable.get(name);
+                final Path[] lineList = outlineTable.get(name);
                 final boolean highlight = name.equals(selName);
-                for (Polyline line : lineList) {
+                for (Path line : lineList) {
                     line.setHighlighted(highlight);
-                    line.setHighlightColor(Color.GREEN);
+                    line.getAttributes().setOutlineMaterial(GREEN_MATERIAL);
                 }
             }
         }
@@ -280,9 +287,9 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         boolean showProductBoundary = bandsToProcess.isEmpty() || bandsToProcess.size() != product.getNumBands();
 
-        final List<Polyline> polyLineList = new ArrayList<>();
+        final List<Path> polyLineList = new ArrayList<>();
         for (GeneralPath boundaryPath : boundaryPaths) {
-            Polyline polyLine = createPolyLine(boundaryPath);
+            Path polyLine = createPolyLine(boundaryPath);
 
             if(showProductBoundary) {
                 addRenderable(polyLine);
@@ -291,11 +298,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         }
 
         for (GeneralPath boundaryPath : bandBoundaryPaths) {
-            Polyline polyLine = createPolyLine(boundaryPath);
-
-            polyLine.setColor(new Color(0.8f, 0.8f, 0.9f, 0.60f));
-            //polyLine.setStippleFactor(5);
-            //polyLine.setLineWidth(2.5);
+            Path polyLine = createPolyLine(boundaryPath);
 
             addRenderable(polyLine);
             polyLineList.add(polyLine);
@@ -309,11 +312,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         addRenderable(ppm);
 
         String name = getUniqueName(product);
-        outlineTable.put(name, polyLineList.toArray(new Polyline[0]));
+        outlineTable.put(name, polyLineList.toArray(new Path[0]));
         labelTable.put(name, ppm);
     }
 
-    private Position calculateBoundingSphereCenter(final Polyline polyline) {
+    private Position calculateBoundingSphereCenter(final Path polyline) {
 
         double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
         double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
@@ -332,7 +335,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                 Angle.fromRadiansLongitude(centerLon), 0.0);
     }
 
-    private Polyline createPolyLine(final GeneralPath boundaryPath) {
+    private Path createPolyLine(final GeneralPath boundaryPath) {
         final PathIterator it = boundaryPath.getPathIterator(null);
         final float[] floats = new float[2];
         final List<Position> positions = new ArrayList<>();
@@ -352,10 +355,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         // close the loop
         positions.add(firstPosition);
 
-        Polyline polyline = new Polyline();
-        polyline.setFollowTerrain(true);
-        polyline.setPositions(positions);
-        return polyline;
+        return createPath(positions, WHITE_MATERIAL, RED_MATERIAL);
     }
 
     private void addWaveProduct(final Product product) {
@@ -364,7 +364,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (ggADS == null) return;
 
         final MetadataElement[] geoElemList = ggADS.getElements();
-        final Polyline[] lineList = new Polyline[geoElemList.length];
+        final Path[] lineList = new Path[geoElemList.length];
         int cnt = 0;
 
         int numPoints = 0;
@@ -405,9 +405,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
             numPoints += 4;
 
-            final Polyline line = new Polyline();
-            line.setFollowTerrain(true);
-            line.setPositions(positions);
+            final Path line = createPath(positions, WHITE_MATERIAL, RED_MATERIAL);
 
             addRenderable(line);
             lineList[cnt++] = line;
@@ -446,9 +444,9 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     private void removeOutline(String imagePath) {
-        final Polyline[] lineList = this.outlineTable.get(imagePath);
+        final Path[] lineList = this.outlineTable.get(imagePath);
         if (lineList != null) {
-            for (Polyline line : lineList) {
+            for (Path line : lineList) {
                 this.removeRenderable(line);
             }
             this.outlineTable.remove(imagePath);
