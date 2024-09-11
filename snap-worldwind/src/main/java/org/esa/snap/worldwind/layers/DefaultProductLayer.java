@@ -61,6 +61,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default Product Layer draws product outline
@@ -134,6 +139,23 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                 for (Polyline line : lineList) {
                     line.setHighlighted(highlight);
                     line.setHighlightColor(Color.RED);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setSelectedRaster(final RasterDataNode raster) {
+        super.setSelectedRaster(raster);
+
+        if (selectedRaster != null) {
+            final String selName = getUniqueName(selectedProduct);
+            for (String name : outlineTable.keySet()) {
+                final Polyline[] lineList = outlineTable.get(name);
+                final boolean highlight = name.equals(selName);
+                for (Polyline line : lineList) {
+                    line.setHighlighted(highlight);
+                    line.setHighlightColor(Color.GREEN);
                 }
             }
         }
@@ -222,23 +244,49 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         final int prodWidth = product.getSceneRasterWidth();
         final int prodHeight = product.getSceneRasterHeight();
-        final int step = Math.max(16, (prodWidth + prodHeight) / 250);
-        final List<GeneralPath> boundaryPaths = new ArrayList<>(List.of(
-                org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true)));
+        final int step = Math.max(50, (prodWidth + prodHeight) / 30);
 
         final List<GeneralPath> bandBoundaryPaths = new ArrayList<>();
-        for(Band band : product.getBands()) {
-            if(band.getGeoCoding() != null &&
+        final List<Band> bandsToProcess = new ArrayList<>();
+        for (Band band : product.getBands()) {
+            if (band.getGeoCoding() != null &&
                     !(band.getRasterWidth() == prodWidth && band.getRasterHeight() == prodHeight)) {
-                bandBoundaryPaths.addAll(List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true)));
+                bandsToProcess.add(band);
             }
         }
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Future<List<GeneralPath>> productBoundaryPathsFuture = executor.submit(() ->
+                    List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true)));
+
+        for (final Band band : bandsToProcess) {
+            executor.submit(() -> {
+                List<GeneralPath> paths = List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true));
+                synchronized (bandBoundaryPaths) {
+                    bandBoundaryPaths.addAll(paths);
+                }
+            });
+        }
+
+        executor.shutdown();
+
+        List<GeneralPath> boundaryPaths = null;
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            boundaryPaths = productBoundaryPathsFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        boolean showProductBoundary = bandsToProcess.isEmpty() || bandsToProcess.size() != product.getNumBands();
 
         final List<Polyline> polyLineList = new ArrayList<>();
         for (GeneralPath boundaryPath : boundaryPaths) {
             Polyline polyLine = createPolyLine(boundaryPath);
 
-            addRenderable(polyLine);
+            if(showProductBoundary) {
+                addRenderable(polyLine);
+            }
             polyLineList.add(polyLine);
         }
 
@@ -246,8 +294,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             Polyline polyLine = createPolyLine(boundaryPath);
 
             polyLine.setColor(new Color(0.8f, 0.8f, 0.9f, 0.60f));
-            polyLine.setStippleFactor(5);
-            polyLine.setLineWidth(2.5);
+            //polyLine.setStippleFactor(5);
+            //polyLine.setLineWidth(2.5);
 
             addRenderable(polyLine);
             polyLineList.add(polyLine);
