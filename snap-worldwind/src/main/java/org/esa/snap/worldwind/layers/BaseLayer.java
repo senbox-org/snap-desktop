@@ -59,11 +59,13 @@ public abstract class BaseLayer extends RenderableLayer {
 
         ShapeAttributes pathAttributes = new BasicShapeAttributes();
         pathAttributes.setOutlineMaterial(normalMaterial);
+        pathAttributes.setEnableAntialiasing(true);
         polyLine.setAttributes(pathAttributes);
 
-        ShapeAttributes highlightAtributes = new BasicShapeAttributes();
-        highlightAtributes.setOutlineMaterial(highlightMaterial);
-        polyLine.setHighlightAttributes(highlightAtributes);
+        ShapeAttributes highlightAttributes = new BasicShapeAttributes();
+        highlightAttributes.setOutlineMaterial(highlightMaterial);
+        highlightAttributes.setEnableAntialiasing(true);
+        polyLine.setHighlightAttributes(highlightAttributes);
 
         return polyLine;
     }

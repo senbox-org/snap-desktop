@@ -18,17 +18,13 @@ package org.esa.snap.worldwind.layers;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.SurfaceImage;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Band;
@@ -39,6 +35,7 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.GPF;
+import org.esa.snap.core.jexp.impl.AbstractFunction;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.eo.Constants;
@@ -76,16 +73,22 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private boolean enableSurfaceImages;
 
-    private final ConcurrentHashMap<String, Path[]> outlineTable = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ProductOutline> outlineTable = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SurfaceImage> imageTable = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, PointPlacemark> labelTable = new ConcurrentHashMap<>();
 
     public WorldWindowGLCanvas theWWD = null;
 
-    static class Outline {
+    static class ProductOutline {
         Path[] productLineList;
-        Path[] bandLineList;
+        BandOutline[] bandOutlines;
+        boolean showProductBoundary;
         PointPlacemark label;
+    }
+
+    static class BandOutline {
+        Path[] bandLineList;
+        String bandName;
+        PointPlacemark bandLabel;
     }
 
     public DefaultProductLayer() {
@@ -123,16 +126,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     public double getOpacity(String name) {
         final SurfaceImage img = imageTable.get(name);
-        if (img != null)
+        if (img != null) {
             return img.getOpacity();
-        else {
-            final Path[] lineList = outlineTable.get(name);
-            return lineList != null ? 1 : 0;
+        } else {
+            return outlineTable.get(name) != null ? 1 : 0;
         }
-    }
-
-    public void updateInfoAnnotation(final SelectEvent event) {
-
     }
 
     @Override
@@ -142,10 +140,18 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (selectedProduct != null) {
             final String selName = getUniqueName(selectedProduct);
             for (String name : outlineTable.keySet()) {
-                final Path[] lineList = outlineTable.get(name);
+                final ProductOutline productOutline = outlineTable.get(name);
                 final boolean highlight = name.equals(selName);
-                for (Path line : lineList) {
-                    line.setHighlighted(highlight);
+                if(productOutline.showProductBoundary) {
+                    for (Path line : productOutline.productLineList) {
+                        line.setHighlighted(highlight);
+                    }
+                } else {
+                    for(BandOutline bandOutline : productOutline.bandOutlines) {
+                        for (Path line : bandOutline.bandLineList) {
+                            line.setHighlighted(highlight);
+                        }
+                    }
                 }
             }
         }
@@ -158,11 +164,15 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (selectedRaster != null) {
             final String selName = getUniqueName(selectedProduct);
             for (String name : outlineTable.keySet()) {
-                final Path[] lineList = outlineTable.get(name);
-                final boolean highlight = name.equals(selName);
-                for (Path line : lineList) {
-                    line.setHighlighted(highlight);
-                    line.getAttributes().setOutlineMaterial(GREEN_MATERIAL);
+                final ProductOutline productOutline = outlineTable.get(name);
+                final boolean isProduct = name.equals(selName);
+
+                for(BandOutline bandOutline : productOutline.bandOutlines) {
+                    boolean highlight = isProduct && bandOutline.bandName.equals(selectedRaster.getName());
+                    bandOutline.bandLabel.setVisible(highlight);
+                    for (Path line : bandOutline.bandLineList) {
+                        line.setHighlighted(highlight);
+                    }
                 }
             }
         }
@@ -253,28 +263,39 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         final int prodHeight = product.getSceneRasterHeight();
         final int step = Math.max(50, (prodWidth + prodHeight) / 30);
 
-        final List<GeneralPath> bandBoundaryPaths = new ArrayList<>();
-        final List<Band> bandsToProcess = new ArrayList<>();
-        for (Band band : product.getBands()) {
-            if (band.getGeoCoding() != null &&
-                    !(band.getRasterWidth() == prodWidth && band.getRasterHeight() == prodHeight)) {
-                bandsToProcess.add(band);
-            }
-        }
-
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         Future<List<GeneralPath>> productBoundaryPathsFuture = executor.submit(() ->
                     List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true)));
 
-        for (final Band band : bandsToProcess) {
-            executor.submit(() -> {
-                List<GeneralPath> paths = List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true));
-                synchronized (bandBoundaryPaths) {
-                    bandBoundaryPaths.addAll(paths);
-                }
-            });
-        }
+        final List<BandOutline> bandOutlines = new ArrayList<>();
+        for (Band band : product.getBands()) {
+            if (band.getGeoCoding() != null &&
+                    !(band.getRasterWidth() == prodWidth && band.getRasterHeight() == prodHeight)) {
+                executor.submit(() -> {
+                    List<GeneralPath> paths = List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true));
+                    synchronized (bandOutlines) {
+                        List<Path> bandBoundaryPaths = new ArrayList<>();
+                        for (GeneralPath bandBoundaryPath : paths) {
+                            bandBoundaryPaths.add(createPolyLine(bandBoundaryPath));
+                        }
 
+                        Position centrePos = calculateBoundingSphereCenter(bandBoundaryPaths.get(0));
+                        PointPlacemark ppm = getLabelPlacemark(centrePos, band.getName());
+                        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                        ppm.setEnableDecluttering(true);
+                        ppm.setVisible(false);
+
+                        addRenderable(ppm);
+
+                        BandOutline bandOutline = new BandOutline();
+                        bandOutline.bandName = band.getName();
+                        bandOutline.bandLineList = bandBoundaryPaths.toArray(new Path[0]);
+                        bandOutline.bandLabel = ppm;
+                        bandOutlines.add(bandOutline);
+                    }
+                });
+            }
+        }
         executor.shutdown();
 
         List<GeneralPath> boundaryPaths = null;
@@ -285,26 +306,27 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             Thread.currentThread().interrupt();
         }
 
-        boolean showProductBoundary = bandsToProcess.isEmpty() || bandsToProcess.size() != product.getNumBands();
+        boolean showProductBoundary = bandOutlines.isEmpty() || bandOutlines.size() != product.getNumBands();
 
-        final List<Path> polyLineList = new ArrayList<>();
-        for (GeneralPath boundaryPath : boundaryPaths) {
-            Path polyLine = createPolyLine(boundaryPath);
+        final List<Path> productLineList = new ArrayList<>();
+        if(boundaryPaths != null) {
+            for (GeneralPath boundaryPath : boundaryPaths) {
+                Path polyLine = createPolyLine(boundaryPath);
 
-            if(showProductBoundary) {
+                if (showProductBoundary) {
+                    addRenderable(polyLine);
+                }
+                productLineList.add(polyLine);
+            }
+        }
+
+        for (BandOutline bandOutline : bandOutlines) {
+            for(Path polyLine : bandOutline.bandLineList) {
                 addRenderable(polyLine);
             }
-            polyLineList.add(polyLine);
         }
 
-        for (GeneralPath boundaryPath : bandBoundaryPaths) {
-            Path polyLine = createPolyLine(boundaryPath);
-
-            addRenderable(polyLine);
-            polyLineList.add(polyLine);
-        }
-
-        Position centrePos = calculateBoundingSphereCenter(polyLineList.get(0));
+        Position centrePos = calculateBoundingSphereCenter(productLineList.get(0));
         PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
         ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         ppm.setEnableDecluttering(true);
@@ -312,8 +334,12 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         addRenderable(ppm);
 
         String name = getUniqueName(product);
-        outlineTable.put(name, polyLineList.toArray(new Path[0]));
-        labelTable.put(name, ppm);
+        ProductOutline productOutline = new ProductOutline();
+        productOutline.productLineList = productLineList.toArray(new Path[0]);
+        productOutline.bandOutlines = bandOutlines.toArray(new BandOutline[0]);
+        productOutline.label = ppm;
+        productOutline.showProductBoundary = showProductBoundary;
+        outlineTable.put(name, productOutline);
     }
 
     private Position calculateBoundingSphereCenter(final Path polyline) {
@@ -421,8 +447,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         addRenderable(ppm);
 
         String name = getUniqueName(product);
-        outlineTable.put(name, lineList);
-        labelTable.put(name, ppm);
+        ProductOutline productOutline = new ProductOutline();
+        productOutline.productLineList = lineList;
+        productOutline.label = ppm;
+        outlineTable.put(name, productOutline);
     }
 
     private PointPlacemark getLabelPlacemark(Position pos, String label) {
@@ -440,15 +468,21 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         String name = getUniqueName(product);
         removeOutline(name);
         removeImage(name);
-        removeLabel(name);
     }
 
     private void removeOutline(String imagePath) {
-        final Path[] lineList = this.outlineTable.get(imagePath);
-        if (lineList != null) {
-            for (Path line : lineList) {
+        final ProductOutline productOutline = this.outlineTable.get(imagePath);
+        if (productOutline != null) {
+            for (Path line : productOutline.productLineList) {
                 this.removeRenderable(line);
             }
+            for(BandOutline bandOutline : productOutline.bandOutlines) {
+                for (Path line : bandOutline.bandLineList) {
+                    this.removeRenderable(line);
+                }
+                this.removeRenderable(bandOutline.bandLabel);
+            }
+            this.removeRenderable(productOutline.label);
             this.outlineTable.remove(imagePath);
         }
     }
@@ -458,14 +492,6 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (si != null) {
             this.removeRenderable(si);
             this.imageTable.remove(imagePath);
-        }
-    }
-
-    private void removeLabel(String imagePath) {
-        final PointPlacemark ppm = this.labelTable.get(imagePath);
-        if (ppm != null) {
-            this.removeRenderable(ppm);
-            this.labelTable.remove(ppm);
         }
     }
 

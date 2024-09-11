@@ -84,8 +84,27 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         final Position origPos = theView.getEyePosition();
         final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding != null && origPos != null) {
-            final GeoPos centre = product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2,
-                                                                                product.getSceneRasterHeight() / 2), null);
+            final GeoPos centre = geoCoding.getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2.0,
+                                                      product.getSceneRasterHeight() / 2.0), null);
+            centre.normalize();
+            theView.setEyePosition(Position.fromDegrees(centre.getLat(), centre.getLon(), origPos.getElevation()));
+        }
+    }
+
+    private void gotoRaster(final RasterDataNode raster) {
+        if (raster == null) return;
+
+        final GeoCoding geoCoding = raster.getGeoCoding();
+        if(geoCoding == null) {
+            gotoProduct(raster.getProduct());
+            return;
+        }
+
+        final View theView = getWwd().getView();
+        final Position origPos = theView.getEyePosition();
+        if (origPos != null) {
+            final GeoPos centre = geoCoding.getGeoPos(new PixelPos(raster.getRasterWidth() / 2.0,
+                    raster.getRasterHeight() / 2.0), null);
             centre.normalize();
             theView.setEyePosition(Position.fromDegrees(centre.getLat(), centre.getLon(), origPos.getElevation()));
         }
@@ -117,7 +136,9 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         });
 
         if (isVisible()) {
+            gotoRaster(raster);
             getWwd().redrawNow();
+            eyePosition = getWwd().getView().getEyePosition();
         }
     }
 

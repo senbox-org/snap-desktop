@@ -40,5 +40,5 @@ public interface WWLayer extends Layer {
 
     void setSelectedRaster(final RasterDataNode raster);
 
-    void updateInfoAnnotation(final SelectEvent event);
+    default void updateInfoAnnotation(final SelectEvent event) {}
 }
