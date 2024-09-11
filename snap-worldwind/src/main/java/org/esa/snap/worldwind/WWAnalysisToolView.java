@@ -25,16 +25,15 @@ import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwindx.examples.WMSLayersPanel;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
 import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
-import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -115,7 +114,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         setLayout(new BorderLayout(4, 4));
         setBorder(new EmptyBorder(4, 4, 4, 4));
         add(createControl(), BorderLayout.CENTER);
-        //SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
 
     public JComponent createControl() {
@@ -279,19 +277,21 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         }
                     });
 
-                    // update world map window with the information of the currently activated  product scene view.
+                    // update world map window with the information of the currently activated product scene view.
                     final SnapApp snapApp = SnapApp.getDefault();
                     snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
-                        @Override
-                        public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                            if (newValue != null) {
-                                setSelectedProduct(newValue.getProduct());
-                            } else {
-                                setSelectedProduct(null);
-                            }
+                    snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+                        if (newValue != null) {
+                            setSelectedProduct(newValue.getProduct());
+                        } else {
+                            setSelectedProduct(null);
                         }
                     });
+
+                    snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
+                        setSelectedRaster(newValue);
+                    });
+
                     setProducts(snapApp.getProductManager().getProducts());
                     setSelectedProduct(snapApp.getSelectedProduct(VIEW));
 
