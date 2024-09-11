@@ -35,7 +35,6 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.jexp.impl.AbstractFunction;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.eo.Constants;
@@ -72,10 +71,7 @@ import java.util.concurrent.TimeUnit;
 public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private boolean enableSurfaceImages;
-
     private final ConcurrentHashMap<String, ProductOutline> outlineTable = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, SurfaceImage> imageTable = new ConcurrentHashMap<>();
-
     public WorldWindowGLCanvas theWWD = null;
 
     static class ProductOutline {
@@ -83,12 +79,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         BandOutline[] bandOutlines;
         boolean showProductBoundary;
         PointPlacemark label;
+        SurfaceImage image;
     }
 
     static class BandOutline {
         Path[] bandLineList;
         String bandName;
         PointPlacemark bandLabel;
+        SurfaceImage bandImage;
     }
 
     public DefaultProductLayer() {
@@ -113,24 +111,29 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     public void setOpacity(double opacity) {
         super.setOpacity(opacity);
 
-        for (Map.Entry<String, SurfaceImage> entry : this.imageTable.entrySet()) {
-            entry.getValue().setOpacity(opacity);
+        for (ProductOutline outline : outlineTable.values()) {
+            if(outline.image != null) {
+                outline.image.setOpacity(opacity);
+            }
         }
     }
 
     public void setOpacity(String name, double opacity) {
-        final SurfaceImage img = imageTable.get(name);
-        if (img != null)
-            img.setOpacity(opacity);
+        final ProductOutline outline = outlineTable.get(name);
+        if (outline != null && outline.image != null) {
+            outline.image.setOpacity(opacity);
+        }
     }
 
     public double getOpacity(String name) {
-        final SurfaceImage img = imageTable.get(name);
-        if (img != null) {
-            return img.getOpacity();
-        } else {
-            return outlineTable.get(name) != null ? 1 : 0;
+        final ProductOutline outline = outlineTable.get(name);
+        if (outline != null) {
+            if(outline.image != null) {
+                return outline.image.getOpacity();
+            }
+            return 1;
         }
+        return 0;
     }
 
     @Override
@@ -161,7 +164,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     public void setSelectedRaster(final RasterDataNode raster) {
         super.setSelectedRaster(raster);
 
-        if (selectedRaster != null) {
+        if (selectedRaster != null && selectedProduct != null) {
             final String selName = getUniqueName(selectedProduct);
             for (String name : outlineTable.keySet()) {
                 final ProductOutline productOutline = outlineTable.get(name);
@@ -192,16 +195,17 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                 addWaveProduct(product);
             }
         } else {
-
-            if (enableSurfaceImages) {
-                if (InputProductValidator.isMapProjected(product) && product.getSceneGeoCoding() != null) {
-                    addSurfaceImage(product);
-                }
-            }
-
             // add outline
             addOutline(product);
+
+            if (enableSurfaceImages && canAddSurfaceImage(product)) {
+                addSurfaceImage(product);
+            }
         }
+    }
+
+    private boolean canAddSurfaceImage(final Product product) {
+        return product.getSceneGeoCoding() != null && InputProductValidator.isMapProjected(product);
     }
 
     private void addSurfaceImage(final Product product) {
@@ -242,12 +246,12 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             public void done() {
 
                 try {
-                    if (imageTable.contains(name))
-                        removeImage(name);
                     final SurfaceImage si = (SurfaceImage) get();
                     if (si != null) {
                         addRenderable(si);
-                        imageTable.put(name, si);
+
+                        ProductOutline outline = outlineTable.get(name);
+                        outline.image = si;
                     }
                 } catch (Exception e) {
                     Dialogs.showError(e.getMessage());
@@ -465,33 +469,23 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     public void removeProduct(final Product product) {
-        String name = getUniqueName(product);
-        removeOutline(name);
-        removeImage(name);
-    }
+        String imagePath = getUniqueName(product);
 
-    private void removeOutline(String imagePath) {
         final ProductOutline productOutline = this.outlineTable.get(imagePath);
         if (productOutline != null) {
             for (Path line : productOutline.productLineList) {
-                this.removeRenderable(line);
+                removeRenderable(line);
             }
             for(BandOutline bandOutline : productOutline.bandOutlines) {
                 for (Path line : bandOutline.bandLineList) {
-                    this.removeRenderable(line);
+                    removeRenderable(line);
                 }
-                this.removeRenderable(bandOutline.bandLabel);
+                removeRenderable(bandOutline.bandLabel);
+                removeRenderable(bandOutline.bandImage);
             }
-            this.removeRenderable(productOutline.label);
-            this.outlineTable.remove(imagePath);
-        }
-    }
-
-    private void removeImage(String imagePath) {
-        final SurfaceImage si = this.imageTable.get(imagePath);
-        if (si != null) {
-            this.removeRenderable(si);
-            this.imageTable.remove(imagePath);
+            removeRenderable(productOutline.label);
+            removeRenderable(productOutline.image);
+            outlineTable.remove(imagePath);
         }
     }
 
@@ -539,7 +533,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         //theSelectedObjectLabel = new JLabel("Selected: ");
 
         final JPanel opacityPanel = new JPanel(new BorderLayout(5, 5));
-        opacityPanel.add(new JLabel("Opacity"), BorderLayout.WEST);
+        opacityPanel.add(new JLabel("Image Opacity"), BorderLayout.WEST);
         opacityPanel.add(opacitySlider, BorderLayout.CENTER);
         return opacityPanel;
     }
