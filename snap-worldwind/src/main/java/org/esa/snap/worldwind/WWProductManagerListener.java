@@ -19,6 +19,8 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 
+import javax.swing.*;
+
 /**
  * WWProductManagerListener
  */
@@ -32,9 +34,13 @@ public class WWProductManagerListener implements ProductManager.Listener {
 
     @Override
     public void productAdded(ProductManager.Event event) {
-        final Product product = event.getProduct();
-        wwView.setProducts(SnapApp.getDefault().getProductManager().getProducts());
-        wwView.setSelectedProduct(product);
+        new Thread(() -> {
+            final Product product = event.getProduct();
+            SwingUtilities.invokeLater(() -> {
+                wwView.setProducts(SnapApp.getDefault().getProductManager().getProducts());
+                wwView.setSelectedProduct(product);
+            });
+        }).start();
     }
 
     @Override

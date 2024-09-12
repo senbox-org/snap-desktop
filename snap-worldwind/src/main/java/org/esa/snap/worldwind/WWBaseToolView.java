@@ -24,12 +24,16 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.worldwind.layers.BaseLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.openide.windows.WindowManager;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base WorldWind ToolView
@@ -66,12 +70,9 @@ public abstract class WWBaseToolView extends ToolTopComponent {
     }
 
     public Product getSelectedProduct() {
-        final LayerList layerList = getWwd().getModel().getLayers();
-        for (Layer layer : layerList) {
-            if (layer instanceof WWLayer) {
-                final WWLayer wwLayer = (WWLayer) layer;
-                return wwLayer.getSelectedProduct();
-            }
+        final List<WWLayer> layerList = getWWLayers();
+        for (WWLayer wwLayer : layerList) {
+            return wwLayer.getSelectedProduct();
         }
         return null;
     }
@@ -83,8 +84,27 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         final Position origPos = theView.getEyePosition();
         final GeoCoding geoCoding = product.getSceneGeoCoding();
         if (geoCoding != null && origPos != null) {
-            final GeoPos centre = product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2,
-                                                                                product.getSceneRasterHeight() / 2), null);
+            final GeoPos centre = geoCoding.getGeoPos(new PixelPos(product.getSceneRasterWidth() / 2.0,
+                                                      product.getSceneRasterHeight() / 2.0), null);
+            centre.normalize();
+            theView.setEyePosition(Position.fromDegrees(centre.getLat(), centre.getLon(), origPos.getElevation()));
+        }
+    }
+
+    private void gotoRaster(final RasterDataNode raster) {
+        if (raster == null) return;
+
+        final GeoCoding geoCoding = raster.getGeoCoding();
+        if(geoCoding == null) {
+            gotoProduct(raster.getProduct());
+            return;
+        }
+
+        final View theView = getWwd().getView();
+        final Position origPos = theView.getEyePosition();
+        if (origPos != null) {
+            final GeoPos centre = geoCoding.getGeoPos(new PixelPos(raster.getRasterWidth() / 2.0,
+                    raster.getRasterHeight() / 2.0), null);
             centre.normalize();
             theView.setEyePosition(Position.fromDegrees(centre.getLat(), centre.getLon(), origPos.getElevation()));
         }
@@ -94,11 +114,10 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         if (product == getSelectedProduct() && eyePosition == getWwd().getView().getEyePosition())
             return;
 
-        final LayerList layerList = getWwd().getModel().getLayers();
-        layerList.stream().filter(layer -> layer instanceof WWLayer).forEach(layer -> {
-            final WWLayer wwLayer = (WWLayer) layer;
+        List<WWLayer> wwLayers = getWWLayers();
+        for(WWLayer wwLayer : wwLayers) {
             wwLayer.setSelectedProduct(product);
-        });
+        }
 
         if (isVisible()) {
             gotoProduct(product);
@@ -107,34 +126,70 @@ public abstract class WWBaseToolView extends ToolTopComponent {
         }
     }
 
-    public void setProducts(final Product[] products) {
-        WorldWindowGLCanvas wwd = getWwd();
+    public void setSelectedRaster(final RasterDataNode raster) {
+
+        List<WWLayer> wwLayers = getWWLayers();
+        for(WWLayer wwLayer : wwLayers) {
+            wwLayer.setSelectedRaster(raster);
+        }
+
+        if (isVisible()) {
+            gotoRaster(raster);
+            getWwd().redrawNow();
+            eyePosition = getWwd().getView().getEyePosition();
+        }
+    }
+
+    protected List<WWLayer> getWWLayers() {
+        final List<WWLayer> wwLayers = new ArrayList<>();
         final LayerList layerList = getWwd().getModel().getLayers();
         layerList.stream().filter(layer -> layer instanceof WWLayer).forEach(layer -> {
-            final WWLayer wwLayer = (WWLayer) layer;
-            for (Product prod : products) {
+            wwLayers.add((WWLayer) layer);
+        });
+        return wwLayers;
+    }
+
+    private List<WWLayer> getSuitableLayers(List<WWLayer> wwLayers, final Product product) {
+
+        final List<WWLayer> intendedLayers = new ArrayList<>();
+        final List<WWLayer> suitableLayers = new ArrayList<>();
+        for (WWLayer wwLayer : wwLayers) {
+            BaseLayer.Suitability suitability = wwLayer.getSuitability(product);
+            if (suitability == BaseLayer.Suitability.INTENDED) {
+                intendedLayers.add(wwLayer);
+            } else if (suitability == BaseLayer.Suitability.SUITABLE) {
+                suitableLayers.add(wwLayer);
+            }
+        }
+        return intendedLayers.isEmpty() ? suitableLayers : intendedLayers;
+    }
+
+    public void setProducts(final Product[] products) {
+        WorldWindowGLCanvas wwd = getWwd();
+        List<WWLayer> wwLayers = getWWLayers();
+        for (Product prod : products) {
+            List<WWLayer> suitableLayers = getSuitableLayers(wwLayers, prod);
+            for(WWLayer wwLayer : suitableLayers) {
                 try {
                     wwLayer.addProduct(prod, wwd);
                 } catch (Exception e) {
                     SnapApp.getDefault().handleError("WorldWind unable to add product " + prod.getName(), e);
                 }
             }
-        });
+        }
     }
 
     public void removeProduct(final Product product) {
         if (getSelectedProduct() == product)
             setSelectedProduct(null);
 
-        final LayerList layerList = getWwd().getModel().getLayers();
-        layerList.stream().filter(layer -> layer instanceof WWLayer).forEach(layer -> {
-            final WWLayer wwLayer = (WWLayer) layer;
+        List<WWLayer> wwLayers = getWWLayers();
+        for(WWLayer wwLayer : wwLayers) {
             wwLayer.removeProduct(product);
-        });
+        }
 
         if (isVisible()) {
             getWwd().redrawNow();
         }
     }
-
 }

@@ -19,6 +19,7 @@ import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.Layer;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 
 import javax.swing.JPanel;
 
@@ -26,6 +27,8 @@ import javax.swing.JPanel;
  * World Wind renderable layer
  */
 public interface WWLayer extends Layer {
+
+    BaseLayer.Suitability getSuitability(Product product);
 
     void addProduct(Product product, WorldWindowGLCanvas wwd);
 
@@ -37,5 +40,7 @@ public interface WWLayer extends Layer {
 
     Product getSelectedProduct();
 
-    void updateInfoAnnotation(final SelectEvent event);
+    void setSelectedRaster(final RasterDataNode raster);
+
+    default void updateInfoAnnotation(final SelectEvent event) {}
 }
