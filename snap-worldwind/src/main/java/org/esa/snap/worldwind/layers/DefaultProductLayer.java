@@ -42,10 +42,8 @@ import org.esa.snap.engine_utilities.eo.GeoUtils;
 import org.esa.snap.engine_utilities.gpf.InputProductValidator;
 import org.esa.snap.rcp.util.Dialogs;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.SwingWorker;
+
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -72,7 +70,6 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     private boolean enableSurfaceImages;
     private final ConcurrentHashMap<String, ProductOutline> outlineTable = new ConcurrentHashMap<>();
-    public WorldWindowGLCanvas theWWD = null;
 
     static class ProductOutline {
         Path[] productLineList;
@@ -103,25 +100,27 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return list.toArray(new String[0]);
     }
 
-    private static String getUniqueName(final Product product) {
-        return product.getProductRefString() + product.getName();
-    }
-
     @Override
     public void setOpacity(double opacity) {
         super.setOpacity(opacity);
 
-        for (ProductOutline outline : outlineTable.values()) {
-            if(outline.image != null) {
-                outline.image.setOpacity(opacity);
-            }
+        for (String name : outlineTable.keySet()) {
+            setOpacity(name, opacity);
         }
     }
 
     public void setOpacity(String name, double opacity) {
         final ProductOutline outline = outlineTable.get(name);
-        if (outline != null && outline.image != null) {
-            outline.image.setOpacity(opacity);
+        if (outline != null) {
+            if(outline.image != null) {
+                outline.image.setOpacity(opacity);
+            } else {
+                for(BandOutline bandOutline : outline.bandOutlines) {
+                    if(bandOutline.bandImage != null) {
+                        bandOutline.bandImage.setOpacity(opacity);
+                    }
+                }
+            }
         }
     }
 
@@ -130,6 +129,12 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         if (outline != null) {
             if(outline.image != null) {
                 return outline.image.getOpacity();
+            } else {
+                for(BandOutline bandOutline : outline.bandOutlines) {
+                    if(bandOutline.bandImage != null) {
+                        return bandOutline.bandImage.getOpacity();
+                    }
+                }
             }
             return 1;
         }
@@ -181,8 +186,13 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         }
     }
 
+    @Override
+    public Suitability getSuitability(Product product) {
+        return Suitability.SUITABLE;
+    }
+
+    @Override
     public void addProduct(final Product product, WorldWindowGLCanvas wwd) {
-        theWWD = wwd;
 
         final String name = getUniqueName(product);
         if (this.outlineTable.get(name) != null)
@@ -468,6 +478,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return ppm;
     }
 
+    @Override
     public void removeProduct(final Product product) {
         String imagePath = getUniqueName(product);
 
@@ -481,10 +492,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                     removeRenderable(line);
                 }
                 removeRenderable(bandOutline.bandLabel);
-                removeRenderable(bandOutline.bandImage);
+                if(bandOutline.bandImage != null) {
+                    removeRenderable(bandOutline.bandImage);
+                }
             }
             removeRenderable(productOutline.label);
-            removeRenderable(productOutline.image);
+            if(productOutline.image != null) {
+                removeRenderable(productOutline.image);
+            }
             outlineTable.remove(imagePath);
         }
     }
@@ -517,6 +532,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return productSubset;
     }
 
+    @Override
     public JPanel getControlPanel(final WorldWindowGLCanvas wwd) {
         final JSlider opacitySlider = new JSlider();
         opacitySlider.setMaximum(100);

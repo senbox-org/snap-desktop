@@ -103,7 +103,7 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
     private void initialize(final JPanel mainPane) {
         final WWView toolView = this;
 
-        final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
+        final SwingWorker<Object, Object> worker = new SwingWorker<>() {
             @Override
             protected Object doInBackground() {
                 // Create the WorldWindow.

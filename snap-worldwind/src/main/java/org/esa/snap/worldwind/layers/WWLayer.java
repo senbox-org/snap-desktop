@@ -28,6 +28,8 @@ import javax.swing.JPanel;
  */
 public interface WWLayer extends Layer {
 
+    BaseLayer.Suitability getSuitability(Product product);
+
     void addProduct(Product product, WorldWindowGLCanvas wwd);
 
     void removeProduct(Product product);

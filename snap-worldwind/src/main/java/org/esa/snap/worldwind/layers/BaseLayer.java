@@ -39,6 +39,12 @@ public abstract class BaseLayer extends RenderableLayer {
     protected final static Material GREEN_MATERIAL = new Material(Color.GREEN);
     protected final static Material WHITE_MATERIAL = new Material(Color.WHITE);
 
+    public enum Suitability { UNSUITABLE, SUITABLE, INTENDED }
+
+    protected static String getUniqueName(final Product product) {
+        return product.getProductRefString() + product.getName();
+    }
+
     public void setSelectedProduct(final Product product) {
         selectedProduct = product;
     }

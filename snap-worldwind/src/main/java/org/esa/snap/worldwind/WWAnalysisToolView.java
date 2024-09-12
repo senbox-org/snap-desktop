@@ -56,6 +56,7 @@ import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -267,12 +268,9 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                                 //System.out.println("getCorners " + surface.getSector().getCorners());
                             }
                             */
-                            final LayerList layerList = getWwd().getModel().getLayers();
-                            for (Layer layer : layerList) {
-                                if (layer instanceof WWLayer) {
-                                    final WWLayer wwLayer = (WWLayer) layer;
-                                    wwLayer.updateInfoAnnotation(event);
-                                }
+                            final List<WWLayer> layerList = getWWLayers();
+                            for (WWLayer wwLayer : layerList) {
+                                wwLayer.updateInfoAnnotation(event);
                             }
                         }
                     });
@@ -309,13 +307,9 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         final JPanel controlPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        final LayerList layerList = getWwd().getModel().getLayers();
-        for (Layer layer : layerList) {
-            if (layer instanceof WWLayer) {
-                final WWLayer wwLayer = (WWLayer) layer;
-                final JPanel layerControlPanel = wwLayer.getControlPanel(getWwd());
-                controlPanel.add(layerControlPanel);
-            }
+        final List<WWLayer> layerList = getWWLayers();
+        for (WWLayer wwLayer : layerList) {
+            controlPanel.add(wwLayer.getControlPanel(getWwd()));
         }
 
         return controlPanel;
