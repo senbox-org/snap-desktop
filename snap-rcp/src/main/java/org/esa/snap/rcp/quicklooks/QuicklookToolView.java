@@ -28,11 +28,9 @@ import org.esa.snap.core.dataop.downloadable.StatusProgressMonitor;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenRGBImageViewAction;
-import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
-import org.netbeans.api.annotations.common.NullAllowed;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -63,11 +61,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -101,14 +98,14 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
     private Product currentProduct;
     private final SortedSet<Product> productSet;
-    private final SortedSet<String> quicklookNameSet = new TreeSet<>();
+    private final Map<Product, ProductState> productStateMap = new HashMap<>();
     private final JComboBox<String> quicklookNameCombo = new JComboBox<>();
     private final JLabel nameLabel = new JLabel();
     private final ImagePanel imgPanel = new ImagePanel();
     private final BufferedImage noDataImage;
     private JScrollPane imgScrollPanel;
-    private JButton nextBtn, prevBtn, startBtn, endBtn, openBtn, closeBtn, refreshBtn, viewBtn;
-    private ButtonActionListener actionListener = new ButtonActionListener();
+    private JButton nextBtn, prevBtn, startBtn, endBtn, openRGBBtn, refreshBtn, viewBtn;
+    private final ButtonActionListener actionListener = new ButtonActionListener();
     private boolean updateQuicklooks = false;
     private ProductNode oldNode = null;
 
@@ -116,17 +113,29 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
     private static final String DEFAULT_QUICKLOOK = "Default";
 
-    private static final ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
-    private static final ImageIcon closeIcon = TangoIcons.actions_list_remove(TangoIcons.Res.R22);
-
     private static final ImageIcon firstIcon = TangoIcons.actions_go_first(TangoIcons.Res.R22);
     private static final ImageIcon lastIcon = TangoIcons.actions_go_last(TangoIcons.Res.R22);
     private static final ImageIcon nextIcon = TangoIcons.actions_go_next(TangoIcons.Res.R22);
     private static final ImageIcon previousIcon = TangoIcons.actions_go_previous(TangoIcons.Res.R22);
     private static final ImageIcon refreshIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
 
+    private static final ImageIcon openIcon = TangoIcons.actions_document_open(TangoIcons.Res.R22);
     private static final ImageIcon singleViewIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_single24.png", ThumbnailPanel.class);
     private static final ImageIcon thumbnailViewIcon = UIUtils.loadImageIcon("/org/esa/snap/rcp/icons/view_thumbnails24.png", ThumbnailPanel.class);
+
+    static class ProductState {
+        SortedSet<String> quicklookNameSet;
+        String selectedQuicklookName;
+
+        public ProductState(Product product) {
+            this.quicklookNameSet = new TreeSet<>();
+            this.quicklookNameSet.add(DEFAULT_QUICKLOOK);
+            for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
+                this.quicklookNameSet.add(product.getQuicklookGroup().get(i).getName());
+            }
+            this.selectedQuicklookName = DEFAULT_QUICKLOOK;
+        }
+    }
 
     public QuicklookToolView() {
         setLayout(new BorderLayout());
@@ -138,34 +147,31 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         final SnapApp snapApp = SnapApp.getDefault();
         snapApp.getProductManager().addListener(new ProductManagerListener());
 
-        productSet = new TreeSet<>(new Comparator<Product>() {
-            public int compare(Product p1, Product p2) {
-                int ref1 = p1.getRefNo();
-                int ref2 = p2.getRefNo();
-                return ref1 < ref2 ? -1 : ref1 == ref2 ? 0 : 1;
-            }
+        productSet = new TreeSet<>((p1, p2) -> {
+            int ref1 = p1.getRefNo();
+            int ref2 = p2.getRefNo();
+            return Integer.compare(ref1, ref2);
         });
 
-        quicklookNameSet.add(DEFAULT_QUICKLOOK);
         addProducts();
 
         updateButtons();
 
         quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
-        quicklookNameCombo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showProduct(currentProduct);
+        quicklookNameCombo.addActionListener(e -> {
+            if(!productSet.isEmpty()) {
+                String selectedQuicklookName = (String)quicklookNameCombo.getSelectedItem();
+                if(currentProduct != null && selectedQuicklookName != null && quicklookNameCombo.getItemCount() > 1) {
+                    productStateMap.get(currentProduct).selectedQuicklookName = selectedQuicklookName;
+                    showQuicklook(currentProduct);
+                }
             }
         });
 
-        snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
-            @Override
-            public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                if (newValue != null && newValue != oldNode) {
-                    showProduct(newValue.getProduct());
-                    oldNode = newValue;
-                }
+        snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+            if (newValue != null && newValue != oldNode) {
+                showProduct(newValue.getProduct());
+                oldNode = newValue;
             }
         });
     }
@@ -202,12 +208,8 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 //        });
 //        sidePanel.add(viewBtn);
 
-        openBtn = createButton("Open", "Open RGB", sidePanel, actionListener, openIcon);
-        sidePanel.add(openBtn);
-
-// todo why is this here?
-        closeBtn = createButton("Close", "Close Product", sidePanel, actionListener, closeIcon);
-//        sidePanel.add(closeBtn);
+        openRGBBtn = createButton("OpenRGB", "Open RGB", sidePanel, actionListener, openIcon);
+        sidePanel.add(openRGBBtn);
 
         return sidePanel;
     }
@@ -269,12 +271,11 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
             currentProduct = null;
         }
 
-        openBtn.setEnabled(currentProduct != null);
-        closeBtn.setEnabled(currentProduct != null);
+        openRGBBtn.setEnabled(currentProduct != null);
     }
 
     private static BufferedImage createNoDataImage() {
-        final int w = 100, h = 100;
+        final int w = 200, h = 200;
         final BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = image.createGraphics();
 
@@ -287,8 +288,8 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
         g.setColor(Color.DARK_GRAY);
         g.setStroke(new BasicStroke(1));
-        g.drawLine(0, 0, 0 + w, h);
-        g.drawLine(0 + w, 0, 0, h);
+        g.drawLine(0, 0, w, h);
+        g.drawLine(w, 0, 0, h);
         g.drawRect(0, 0, w - 1, h - 1);
 
         return image;
@@ -320,7 +321,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                 return;
             }
 
-            ProgressMonitorSwingWorker<Boolean, Object> worker = new ProgressMonitorSwingWorker<Boolean, Object>
+            ProgressMonitorSwingWorker<Boolean, Object> worker = new ProgressMonitorSwingWorker<>
                     (SnapApp.getDefault().getMainFrame(), "Loading quicklooks") {
                 @Override
                 protected Boolean doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
@@ -331,17 +332,13 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                         if(pm.isCanceled())
                             break;
 
-                        final Thread worker = new Thread() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    quicklook.getImage(SubProgressMonitor.create(pm, 1));
-                                } catch (Throwable e) {
-                                    SystemUtils.LOG.warning("Unable to create quicklook for " + quicklook.getProductFile() + '\n' + e.getMessage());
-                                }
+                        final Thread worker = new Thread(() -> {
+                            try {
+                                quicklook.getImage(SubProgressMonitor.create(pm, 1));
+                            } catch (Throwable e) {
+                                SystemUtils.LOG.warning("Unable to create quicklook for " + quicklook.getProductFile() + '\n' + e.getMessage());
                             }
-                        };
+                        });
 
                         threadList.add(worker);
                         worker.start();
@@ -396,7 +393,13 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         if (product == null) {
             return;
         }
+        currentProduct = product;
+        updateQuicklookNameCombo();
 
+        showQuicklook(product);
+    }
+
+    private void showQuicklook(final Product product) {
         final String qlName = (String)quicklookNameCombo.getSelectedItem();
         if(qlName != null) {
             final Quicklook quicklook;
@@ -410,7 +413,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                 quicklook.addListener(this);
                 if ((quicklook.hasImage() || quicklook.hasCachedImage())) {
                     setImage(product, quicklook);
-                } else if (quicklook != null && updateQuicklooks) {
+                } else if (updateQuicklooks) {
                     if (product.getFileLocation() != null) {
                         loadImage(product, quicklook);
                     }
@@ -427,11 +430,11 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         final StatusProgressMonitor qlPM = new StatusProgressMonitor(StatusProgressMonitor.TYPE.SUBTASK);
         qlPM.beginTask("Creating quicklook " + product.getName() + "... ", 100);
 
-        ProgressMonitorSwingWorker<BufferedImage, Object> loader = new ProgressMonitorSwingWorker<BufferedImage, Object>
+        ProgressMonitorSwingWorker<BufferedImage, Object> loader = new ProgressMonitorSwingWorker<>
                 (SnapApp.getDefault().getMainFrame(), "Loading quicklook image...") {
 
             @Override
-            protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
+            protected BufferedImage doInBackground(com.bc.ceres.core.ProgressMonitor pm) {
 
                 return quicklook.getImage(qlPM);
             }
@@ -473,54 +476,32 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
     private synchronized void addProduct(final Product product) {
         productSet.add(product);
-        for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
-            quicklookNameSet.add(product.getQuicklookGroup().get(i).getName());
-        }
+        final ProductState productState = new ProductState(product);
+        this.productStateMap.put(product, productState);
         updateQuicklookNameCombo();
     }
 
     private synchronized void removeProduct(final Product product) {
+        if(currentProduct == product) {
+            currentProduct = null;
+        }
         productSet.remove(product);
-        cleanUpQuicklookNameSet();
+        productStateMap.remove(product);
         updateQuicklookNameCombo();
     }
 
-    private void cleanUpQuicklookNameSet() {
-        Set<String> toRemove = new HashSet<>();
-        for(String name : quicklookNameSet) {
-            if(name.equals(DEFAULT_QUICKLOOK))
-                continue;
-
-            boolean exists = false;
-            for(Product product : productSet) {
-                for(int i=0; i < product.getQuicklookGroup().getNodeCount(); ++i) {
-                    if(name.equals(product.getQuicklookGroup().get(i).getName())) {
-                        exists = true;
-                        break;
-                    }
-                }
-            }
-            if(!exists) {
-                toRemove.add(name);
-            }
-        }
-        for(String name : toRemove) {
-            quicklookNameSet.remove(name);
-        }
-    }
-
     private void updateQuicklookNameCombo() {
-        String selected = (String)quicklookNameCombo.getSelectedItem();
         quicklookNameCombo.removeAllItems();
-        for(String name : quicklookNameSet) {
+        if(currentProduct == null) {
+            return;
+        }
+        final ProductState productState = productStateMap.get(currentProduct);
+        quicklookNameCombo.setSelectedItem(productState.selectedQuicklookName);
+        for(String name : productState.quicklookNameSet) {
             quicklookNameCombo.addItem(name);
         }
         // restore selection
-        if(selected != null && ((DefaultComboBoxModel)quicklookNameCombo.getModel()).getIndexOf(selected) != -1 ) {
-            quicklookNameCombo.setSelectedItem(selected);
-        } else {
-            quicklookNameCombo.setSelectedItem(DEFAULT_QUICKLOOK);
-        }
+        quicklookNameCombo.setSelectedItem(productState.selectedQuicklookName);
     }
 
     private Product getFirstProduct() {
@@ -559,22 +540,10 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         return null;
     }
 
-    private void openProduct() {
+    private void openRGB() {
         if(currentProduct != null) {
             final OpenRGBImageViewAction rgbAction = new OpenRGBImageViewAction(currentProduct);
             rgbAction.openProductSceneViewRGB(currentProduct, "");
-        }
-    }
-
-    private void closeProduct() {
-        if (currentProduct != null) {
-            Product productToClose = currentProduct;
-            if(productToClose == getLastProduct()) {
-                showProduct(getPreviousProduct());
-            } else {
-                showProduct(getNextProduct());
-            }
-            SnapApp.getDefault().getProductManager().removeProduct(productToClose);
         }
     }
 
@@ -628,7 +597,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
 
         public void mousePressed(MouseEvent e) {
             if (e.getClickCount() == 2 && currentProduct != null) {
-                openProduct();
+                openRGB();
             }
         }
 
@@ -663,11 +632,8 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
                         loadProducts((String)quicklookNameCombo.getSelectedItem());
                     }
                     break;
-                case "Open":
-                    openProduct();
-                    break;
-                case "Close":
-                    closeProduct();
+                case "OpenRGB":
+                    openRGB();
                     break;
             }
         }
@@ -695,34 +661,20 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
         final JPopupMenu popup = new JPopupMenu();
 
         final JMenuItem zoomInItem = new JMenuItem("Zoom in");
-        zoomInItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                if(zoom < 10) {
-                    zoom += 2;
-                }
+        zoomInItem.addActionListener(e -> {
+            if(zoom < 10) {
+                zoom += 2;
             }
         });
         popup.add(zoomInItem);
 
         final JMenuItem zoomOutItem = new JMenuItem("Zoom out");
-        zoomOutItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                if(zoom > 2) {
-                    zoom -= 2;
-                }
+        zoomOutItem.addActionListener(e -> {
+            if(zoom > 2) {
+                zoom -= 2;
             }
         });
         popup.add(zoomOutItem);
-
-        popup.addSeparator();
-
-        final JMenuItem closeItem = new JMenuItem("Close Product");
-        closeItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                closeProduct();
-            }
-        });
-        popup.add(closeItem);
 
         return popup;
     }
