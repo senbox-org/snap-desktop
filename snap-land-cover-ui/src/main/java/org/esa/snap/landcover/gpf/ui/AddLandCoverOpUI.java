@@ -49,12 +49,12 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
 
     private final DefaultMutableTreeNode landCoverNamesRoot = new DefaultMutableTreeNode("Land Cover Models");
     private final Map<String, DefaultMutableTreeNode> folderMap = new HashMap<>();
-    private final JTree landCoverNamesTree = new JTree(landCoverNamesRoot);
+    final JTree landCoverNamesTree = new JTree(landCoverNamesRoot);
 
-    private final JList<File> externalFileList = new JList<>();
+    final JList<File> externalFileList = new JList<>();
     private final JButton externalFileBrowseButton = new JButton("...");
 
-    private final JComboBox<String> resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
+    final JComboBox<String> resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
 
     private static final String lastLandcoverPathKey = "snap.external.landcoverDir";
 
@@ -81,7 +81,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         return new JScrollPane(panel);
     }
 
-    private void populateNamesTree() {
+    void populateNamesTree() {
         landCoverNamesTree.removeAll();
 
         String[] names = LandCoverFactory.getNameList();
@@ -152,8 +152,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
                 if(folderNode != null) {
                     path = path.pathByAddingChild(folderNode);
                 }
-                path = path.pathByAddingChild(name);
-                //path = path.pathByAddingChild(new DefaultMutableTreeNode(name));
+                path = path.pathByAddingChild(new DefaultMutableTreeNode(name));
 
                 paths.add(path);
             }
