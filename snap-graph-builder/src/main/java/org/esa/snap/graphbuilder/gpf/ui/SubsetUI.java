@@ -166,6 +166,10 @@ public class SubsetUI extends BaseOperatorUI {
     public void initParameters() {
         OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
 
+        if(paramMap.get("copyMetadata") != null){
+            copyMetadata.setSelected((Boolean)paramMap.get("copyMetadata"));
+        }
+
         String _oldSelected = (String) referenceCombo.getSelectedItem();
         referenceCombo.removeAllItems();
         for (int i = 0 ; i < bandList.getModel().getSize() ; i++) {
@@ -237,6 +241,7 @@ public class SubsetUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
         OperatorUIUtils.updateParamList(bandList, paramMap, "bandNames");
+        paramMap.put("copyMetadata", copyMetadata.isSelected());
 
         paramMap.remove("referenceBand");
         if(sourceProducts != null ) {
@@ -310,8 +315,6 @@ public class SubsetUI extends BaseOperatorUI {
         } else {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
-
-        paramMap.put("copyMetadata", copyMetadata.isSelected());
     }
 
     public void updateParametersSubSamplingX() {
@@ -443,7 +446,7 @@ public class SubsetUI extends BaseOperatorUI {
         } else {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
-        paramMap.put("copyMetadata", copyMetadata.isSelected());
+
         final Rectangle region = (Rectangle)paramMap.get("region");
         if(region != null) {
             regionX.setText(String.valueOf(x));

@@ -42,14 +42,14 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
 
     private final JList<String> bandList = new JList<>();
 
-    private final JComboBox<String> landCoverBandCombo = new JComboBox<>();
+    final JComboBox<String> landCoverBandCombo = new JComboBox<>();
     private final JLabel validLandCoverClassesLabel = new JLabel("Valid land cover classes:");
     private final JList<String> validLandCoverClassesList = new JList<>();
     private final JScrollPane validLandCoverClassesScroll = new JScrollPane(validLandCoverClassesList);
     private final JLabel validPixelExpressionLabel = new JLabel("Valid pixel expression:");
-    private final JTextArea validPixelExpressionText = new JTextArea();
+    final JTextArea validPixelExpressionText = new JTextArea();
 
-    private final JCheckBox includeOtherBandsCheckBox = new JCheckBox("Include all other bands");
+    final JCheckBox includeOtherBandsCheckBox = new JCheckBox("Include all other bands");
     private final Map<Integer, Integer> classMap = new HashMap<>();
     private final Map<Integer, String> classNameMap = new HashMap<>();
 
@@ -131,7 +131,7 @@ public class LandCoverMaskOpUI extends BaseOperatorUI {
         return namesList.toArray(new String[0]);
     }
 
-    private String[] getLandCoverClasses(final String landCoverBandName) {
+    String[] getLandCoverClasses(final String landCoverBandName) {
         final List<String> classList = new ArrayList<>();
         if (landCoverBandName != null) {
             final Band srcBand = sourceProducts[0].getBand(landCoverBandName);
