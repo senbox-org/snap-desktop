@@ -273,7 +273,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         final int prodWidth = product.getSceneRasterWidth();
         final int prodHeight = product.getSceneRasterHeight();
-        final int step = Math.max(50, (prodWidth + prodHeight) / 30);
+        final int step = Math.max(50, (prodWidth + prodHeight) / 10);
 
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
