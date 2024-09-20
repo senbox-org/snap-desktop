@@ -34,10 +34,10 @@ public abstract class BaseLayer extends RenderableLayer {
     protected Product selectedProduct = null;
     protected RasterDataNode selectedRaster = null;
 
-    protected final static Material RED_MATERIAL = new Material(Color.RED);
-    protected final static Material ORANGE_MATERIAL = new Material(Color.ORANGE);
-    protected final static Material GREEN_MATERIAL = new Material(Color.GREEN);
-    protected final static Material WHITE_MATERIAL = new Material(Color.WHITE);
+    public final static Material RED_MATERIAL = new Material(Color.RED);
+    public final static Material ORANGE_MATERIAL = new Material(Color.ORANGE);
+    public final static Material GREEN_MATERIAL = new Material(Color.GREEN);
+    public final static Material WHITE_MATERIAL = new Material(Color.WHITE);
 
     public enum Suitability { UNSUITABLE, SUITABLE, INTENDED }
 
