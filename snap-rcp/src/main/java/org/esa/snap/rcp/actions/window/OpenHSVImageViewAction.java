@@ -87,11 +87,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
             final Preferences preferences = SnapApp.getDefault().getPreferences();
             final PreferencesPropertyMap configuration = new PreferencesPropertyMap(preferences);
             productSceneImage = new ProductSceneImage(name,
-                    rgbBands[0],
-                    rgbBands[1],
-                    rgbBands[2],
-                    configuration,
-                    SubProgressMonitor.create(pm, 1));
+                                                      rgbBands[0],
+                                                      rgbBands[1],
+                                                      rgbBands[2],
+                                                      configuration,
+                                                      SubProgressMonitor.create(pm, 1));
             productSceneImage.initVectorDataCollectionLayer();
             productSceneImage.initMaskCollectionLayer();
         } catch (Exception e) {
@@ -112,7 +112,9 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         //normvalue = min(max(((v- min)/range),0), 1);
         boolean modified = product.isModified();
 
-        final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
+        final ProductManager productManager = SnapApp.getDefault().getProductManager();
+        final Product[] products = productManager.getProducts();
+        final int productIndex = productManager.getProductIndex(product);
 
         int i = 0;
         for (String exp : hsvExpressions) {
@@ -120,7 +122,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
 
             final String checkForNoDataValue = "";//getCheckForNoDataExpression(product, exp);
 
-            final Band virtBand = createVirtualBand(product, products, exp, "tmpVirtBand" + i);
+            final Band virtBand = createVirtualBand(product, products, productIndex, exp, "tmpVirtBand" + i);
 
             final Stx stx = virtBand.getStx(false, ProgressMonitor.NULL);
             if (stx != null) {
@@ -146,11 +148,11 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         return checkForNoData.toString();
     }
 
-    private static Band createVirtualBand(final Product product, final Product[] products, final String expression, final String name) {
+    private static Band createVirtualBand(final Product product, final Product[] products, int contextProductIndex, final String expression, final String name) {
         int width = product.getSceneRasterWidth();
         int height = product.getSceneRasterHeight();
         try {
-            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products);
+            final RasterDataNode[] refRasters = BandArithmetic.getRefRasters(expression, products, contextProductIndex);
             if (refRasters.length > 0) {
                 width = refRasters[0].getRasterWidth();
                 height = refRasters[0].getRasterHeight();
@@ -160,10 +162,10 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         }
 
         final VirtualBand virtBand = new VirtualBand(name,
-                ProductData.TYPE_FLOAT64,
-                width,
-                height,
-                expression);
+                                                     ProductData.TYPE_FLOAT64,
+                                                     width,
+                                                     height,
+                                                     expression);
         virtBand.setNoDataValueUsed(true);
         product.addBand(virtBand);
         return virtBand;
@@ -223,8 +225,8 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
 
         final Preferences preferences = SnapApp.getDefault().getPreferences();
         final HSVImageProfilePane profilePane = new HSVImageProfilePane(new PreferencesPropertyMap(preferences),
-                hsvProduct,
-                openedProducts, defaultBandIndices);
+                                                                        hsvProduct,
+                                                                        openedProducts, defaultBandIndices);
 
         final String title = "Select HSV-Image Channels";
         final boolean ok = profilePane.showDialog(SnapApp.getDefault().getMainFrame(), title, helpId);
