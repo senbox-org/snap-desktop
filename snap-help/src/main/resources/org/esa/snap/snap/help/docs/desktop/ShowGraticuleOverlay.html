@@ -87,19 +87,6 @@
 </p>
 <br>
 
-<!--<br>-->
-<!--<h4>Editor: Grid Spacing</h4>-->
-<!--<pre>-->
-<!--The latitude and longitude step sizes may be set directly where the value represents-->
-<!--    degrees between the gridlines. Note: the gridlines are placed at the nearest most sensible degree-->
-<!--    value.-->
-
-<!--&#8227; Latitude Spacing:-->
-<!--        Sets latitude step size (Setting this to zero uses 'Number of Gridlines' field for Auto-Sizing).-->
-
-<!--&#8227; Longitude Spacing:-->
-<!--        Sets latitude step size (Setting this to zero uses 'Number of Gridlines' field for Auto-Sizing).-->
-<!--</pre>-->
 
 
 
@@ -131,94 +118,179 @@
 <h3>Properties</h3>
 
 
-<p>
-    <b>Grid Spacing</b> - The latitude and longitude step sizes may be set directly where the value represents
-    degrees between the gridlines.
-    Setting this field to zero results in Auto-Sizing. The Auto-Sizing algorithm will set the gridline spacing to a reasonable
-    value such that there are about 3-5 lines. Also note that lines are placed at the nearest most sensible degree
-    value.
-</p>
-<ul>
-    <li><b>Latitude</b> - sets latitude step size</li>
-    <li><b>Longitude</b> - sets longitude step size</li>
-</ul>
+<br>
+<h4>---- Grid Spacing ----</h4>
+<pre>
+These fields govern how many grid lines get created and their major and minor spacing.
+
+&#x2022; Latitude Spacing:
+    Spacing between latitude gridlines (in degrees).
+    &#x25E6; Note: Setting this field to zero results in auto-spacing (uses the field "Number of Gridlines").
+      Lines are placed at the nearest "rounded" degree value.
+
+&#x2022; Longitude Spacing:
+    Spacing between longitude gridlines (in degrees).
+    &#x25E6; Note: Setting this field to zero results in auto-spacing (uses the field "Number of Gridlines").
+      Lines are placed at the nearest "rounded" degree value.
+
+&#x2022; Number of Gridlines (auto-spacing):
+    Spacing used when "Latitude Spacing" and/or "Longitude Spacing" set to zero.
+    &#x25E6; Note: If both "Latitude Spacing" and "Longitude Spacing" are being set, spacing is in set to be the same on both axis.
+
+&#x2022; Minor Steps Between Gridlines:
+    Number of points being drawn (anchored to) between the major gridlines.
+</pre>
 
 
-<p>
-    <b>Labels</b> - Formatting and placement of the text labels associated with the map gridlines indicating geographic position.
-</p>
-<ul>
-    <li><b>North</b> - Display north labels</li>
-    <li><b>South</b> - Display south labels</li>
-    <li><b>West</b> - Display west labels</li>
-    <li><b>East</b> - Display east labels</li>
-    <li><b>Suffix (N,S,W,E)</b> - Format label text with suffix (N,S,W,E) instead of (+/-)</li>
-    <li><b>Decimal Value</b> - Format label text with decimal value instead of degrees/minutes/seconds</li>
-    <li><b>Put on Inside</b> - Put labels inside of the data image.  In this case a backdrop is added to the labels.</li>
-    <li><b>Italic</b> - Format label text font in italic</li>
-    <li><b>Bold</b> - Format label text font in bold</li>
-    <li><b>Rotation (Latitude)</b> - Rotate latitude labels (0 degrees = perpendicular)</li>
-    <li><b>Rotation (Longitude)</b> - Rotate longitude labels (0 degrees = perpendicular)</li>
-    <li><b>Font</b> - Set the font of the labels</li>
-    <li><b>Size</b> - Set the size of the labels</li>
-    <li><b>Color</b> - Set the color of the labels</li>
-</ul>
+<br>
+<h4>---- Labels ----</h4>
+<pre>
+Configuration options for the labels: isibility, placement, and text-formatting of the map gridlines labels associated which indicate geographic position.
+
+&#x2022; Labels Rotation (Latitude):
+    Rotate latitude labels (0 degrees = perpendicular).
+
+&#x2022; Labels Rotation (Longitude):
+    Rotate longitude labels (0 degrees = perpendicular).
+
+&#x2022; Labels Suffix (N,S,W,E):
+    Format label text with suffix (N,S,W,E) instead of (+/-).
+
+&#x2022; Labels Decimal Value:
+    Format label text with decimal value instead of degrees/minutes/seconds.
+
+&#x2022; Show North Labels:
+    Displays north (top axis) labels.
+
+&#x2022; Show South Labels:
+    Displays south (bottom axis) labels.
+
+&#x2022; Show West Labels:
+    Displays west (left axis) labels.
+
+&#x2022; Show East Labels:
+    Displays east (right axis) labels.
+
+&#x2022; Show North Corner Labels:
+    Display north corner labels.
+
+&#x2022; Show South Corner Labels:
+    Display south corner labels.
+
+&#x2022; Show West Corner Labels:
+    Display west corner labels.
+
+&#x2022; Show East Corner Labels:
+    Display east corner labels.
+
+&#x2022; Put Labels Inside:
+    Put labels inside of the data image (also see backdrop options below).
+</pre>
 
 
 
-<p>
-    <b>Gridlines</b> - Formatting of the map gridlines.
-</p>
-<ul>
-    <li><b>Show</b> - Display the gridlines</li>
-    <li><b>Width</b> - Set the width of the gridlines</li>
-    <li><b>Dash Length</b> - Set dash length of gridlines or set to solid gridlines (0=SOLID)</li>
-    <li><b>Transparency</b> - Set the transparency of the gridlines</li>
-    <li><b>Color</b> - Set the color of the gridlines</li>
-</ul>
+<br>
+<h4>---- Labels Formatting ----</h4>
+<pre>
+Configuration options for the labels: font-formatting of the map gridlines labels associated which indicate geographic position.
+
+&#x2022; Labels Font Size:
+    Set size of the label text.
+
+&#x2022; Labels Font Color:
+    Set color of the label text.
+
+&#x2022; Label Font Type:
+    Set the text font of the labels.
+
+&#x2022; Labels Font Italic:
+    Format label text font in italic.
+
+&#x2022; Labels Font Bold:
+    Format label text font in bold.
+</pre>
 
 
 
-<p>
-    <b>Border</b> - Formatting of the image border.
-</p>
-<ul>
-    <li><b>Show</b> - Display the border</li>
-    <li><b>Width</b> - Set the width of the border</li>
-    <li><b>Color</b> - Set the color of the border</li>
-</ul>
+<br>
+<h4>---- Gridlines ----</h4>
+<pre>
+Configuration options for the gridlines.
+
+&#x2022; Show:
+    Display gridlines.
+
+&#x2022; Gridline Width:
+    Set the width of the gridlines.
+
+&#x2022; Gridline Dash Length:
+    Set dash length of gridlines or set to solid gridlines (0=SOLID).
+
+&#x2022; Gridline Transparency:
+    Set the transparency of the gridlines.
+
+&#x2022; Gridline Color:
+    Set the color of the gridlines.
+</pre>
 
 
-<p>
-    <b>Tickmarks</b> - Formatting of the tickmarks.
-</p>
-<ul>
-    <li><b>Show</b> - Display the tickmarks</li>
-    <li><b>Put Inside</b> - Placement of the tickmarks towards the inside of the image</li>
-    <li><b>Width</b> - Set the width of the tickmarks</li>
-    <li><b>Color</b> - Set the color of the tickmarks</li>
-</ul>
+
+<br>
+<h4>---- Border ----</h4>
+<pre>
+Configuration options for the image border.
+
+&#x2022; Show:
+    Display image border.
+
+&#x2022; Border Width:
+    Set the width of the border.
+
+&#x2022; Border Color:
+    Set the color of the border.
+</pre>
 
 
 
-<p>
-    <b>Corner Labels</b> - Display the labels for the corner pixels of the image.
-</p>
-<ul>
-    <li><b>North</b> - Display the north corner label</li>
-    <li><b>South</b> - Display the south corner label</li>
-    <li><b>West</b> - Display the west corner label</li>
-    <li><b>East</b> - Display the east corner label</li>
-</ul>
+
+<br>
+<h4>---- Tickmarks ----</h4>
+<pre>
+Configuration options for the label tickmarks.
+
+&#x2022; Show:
+    Display tickmarks.
+
+&#x2022; Put Tickmarks Inside:
+    Place tickmarks on the inside of the data image.
+
+&#x2022; Tickmarks Length:
+    Set the length of the tickmarks.
+
+&#x2022; Tickmarks Color:
+    Set the color of the tickmarks.
+</pre>
 
 
-<p>
-    <b>Inside Labels Backdrop</b> - Formatting of the backdrop used when displaying labels inside of the image.
-</p>
-<ul>
-    <li><b>Transparency</b> - Set the transparency of the inside label backdrop</li>
-    <li><b>Color</b> - Set the color of the inside label backdrop</li>
-</ul>
+
+
+<br>
+<h4>---- Inside Labels Backdrop ----</h4>
+<pre>
+Configuration options for backdrop of labels placed on the inside of the image.
+
+&#x2022; Labels Backdrop Transparency:
+    Set transparency of the backdrop of the inside labels.
+
+&#x2022; Labels Backdrop Color:
+    Set the color of the backdrop of the inside labels.
+</pre>
+
+
+
+
+
+
 <br>
 
 <h3>Notes, Pitfalls and Issues</h3>
