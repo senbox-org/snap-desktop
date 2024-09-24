@@ -114,383 +114,405 @@
 </p>
 <br>
 
+
 <br>
-<h4>Editor: Title</h4>
+<h4>---- Orientation ----</h4>
+<pre>
+These fields set the orientation parameters of the color bar legend.
+
+&#x2022;  Angle:
+    Sets the alignment of the color bar to either vertical or horizontal.
+    &#x25E6; Best Fit:
+        Places colorbar vertically or horizontally based on comparison of scene aspect
+        ratio with the value of 'Scene Aspect Ratio'
+    &#x25E6; Horizontal:
+        Places colorbar horizontally on the image
+    &#x25E6; Vertical:
+        Places colorbar vertically on the image
+
+&#x2022;  Scene Aspect Ratio: [PREFERENCES]
+    The scene ratio which governs horizontal vs vertical placement when Angle='Best Fit'
+
+&#x2022;  Title Placement: [PREFERENCES]
+    Determines where to place the colorbar title on the legend for a vertically aligned colorbar.
+
+&#x2022;  Reverse Palette &amp; Labels:
+    Reverses the direction of the palette along with it's labels.
+</pre>
+
+
+
+<br>
+<h4>---- General Sizing ----</h4>
+<!--<pre>-->
+&#x2022; Scale to Scene Size: [LAYER TOOL ONLY]
+Resizes the full legend image to a percentage of the size the scene image
+as specified with the value of 'Scene Size Scaling'.
+&#x25E6; No Scaling:
+Use Colorbar Length and Colorbar Width fields with no scaling to scene image.
+&#x25E6; Scale by Colorbar Thickness:
+Scale by thickness of colorbar relative to the average dimensions of the scene.
+&#x25E6; Scale by Colorbar Length:
+Scale by length of colorbar relative to the side of the scene which it is next to.
+
+&#x2022; Scene Size Scaling: [LAYER TOOL ONLY]
+The percentage which is used when 'Scale to Scene Size' is specified.
+
+&#x2022; Scale to File Size: [EXPORT TOOL ONLY]
+Resizes the full legend image to the size specified in the textfield "File Size".
+
+&#x2022; File Size: [EXPORT TOOL ONLY]
+Width (in pixels) of legend image file (height if vertical image) if "Scale to File Size" has been selected.
+
+
+&#x2022; Color Bar Length: [PREFERENCES]
+Length (in pixels) of the color bar (just the color bar itself and
+not the full color bar legend image.)
+
+&#x2022; Color Bar Width: [PREFERENCES]
+Width/thickness (in pixels) of the color bar (just the color bar itself and
+not the full color bar legend image.)
+</pre>
+
+
+
+
+<br>
+<h4>---- Title -----</h4>
 <pre>
 These fields are the text to be placed as the title of the color bar legend.
 
-&#8227; Show Title:
-        Whether or not to display the "Title Text" on the color bar legend image
+&#x2022; Show Title:
+    Whether or not to display the "Title Text" on the color bar legend image
 
-&#8227; Apply Scheme Title/Units (Band Lookup):
-        Performs a lookup based on band name to retrieve any pre-set titles and/or units.
-        Default scheme files:
-            ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup.xml
-            ~/.seadas9/auxdata/color_schemes/color_palette_schemes.xml
-        User editable scheme files:
-            ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup_user.xml
-            ~/.seadas9/auxdata/color_schemes/color_palette_schemes_user.xml
+&#x2022; Apply Scheme Title/Units (Band Lookup):
+    Performs a lookup based on band name to retrieve any pre-set titles and/or units.
+    &#x25E6; Default scheme files:
+        ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup.xml
+        ~/.seadas9/auxdata/color_schemes/color_palette_schemes.xml
+    &#x25E6; User editable scheme files:
+        ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup_user.xml
+        ~/.seadas9/auxdata/color_schemes/color_palette_schemes_user.xml
 
-&#8227; Title:
-        The text to be placed as the title of the color bar.
-        Supports inline replacement variables for metadata:
-            &lt;PROPERTY={key}&gt;
-            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
-            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
-        Supports several html tags:
-            &lt;i&gt;, &lt;b&gt;, &lt;sup&gt;, &lt;sub&gt;
+&#x2022; Title:
+    The text to be placed as the title of the color bar.
+    &#x25E6; Supports inline replacement variables for metadata:
+        &lt;PROPERTY={key}&gt;
+        &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+        &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+    &#x25E6; Supports several html tags:
+        &lt;i&gt;, &lt;b&gt;, &lt;sup&gt;, &lt;sub&gt;
 </pre>
 
-
-<h4>Editor: Units</h4>
+<br>
+<h4>---- Units ----</h4>
 <pre>
 These fields are the text to be placed as the units of the color bar legend.
 
-&#8227; Show Units:
-        Whether or not to display the "Units Text" on the color bar legend image.
+&#x2022; Show Units:
+    Whether or not to display the "Units Text" on the color bar legend image.
 
-&#8227; Units:
-        The text to be placed as the units of the color bar.
-        Supports inline replacement variables for metadata:
-            &lt;PROPERTY={key}&gt;
-            &lt;GLOBAL_ATTRIBUTE={key}&gt;
-            &lt;BAND_ATTRIBUTE={key}&gt;
-        Supports several html tags:
-            &lt;i&gt;, &lt;b&gt;, &lt;sup&gt;, &lt;sub&gt;
+&#x2022; Units:
+    The text to be placed as the units of the color bar.
+    &#x25E6; Supports inline replacement variables for metadata:
+        &lt;PROPERTY={key}&gt;
+        &lt;GLOBAL_ATTRIBUTE={key}&gt;
+        &lt;BAND_ATTRIBUTE={key}&gt;
+    &#x25E6; Supports several html tags:
+        &lt;i&gt;, &lt;b&gt;, &lt;sup&gt;, &lt;sub&gt;
 
-&#8227; Units Null Value:
-        The text to be placed as the units when units are null.
+&#x2022; Units Null Value: [PREFERENCES]
+    The text to be placed as the units when units are null.
 
-&#8227; Add Units Parenthesis:
-        Adds parenthesis around the units placed on the color bar.
+&#x2022; Add Units Parenthesis: [PREFERENCES]
+    Adds parenthesis around the units placed on the color bar.
 
-&#8227; Convert Carets to Superscripts:
-        Converts carets found in the text to superscripts.
-        (i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+&#x2022; Convert Carets to Superscripts:
+    Converts carets found in the text to superscripts.
+    (i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
 </pre>
 
 
-<h4>Editor: Labels</h4>
+<br>
+<h4>---- Labels ----</h4>
 <pre>
 These fields determine the actual data values and data formatting to use for the tick marks labels.
 
 
-&#8227; Show Labels:
-        Whether or not to display the "Labels Text" on the color bar legend image.
+&#x2022; Show Labels:
+    Whether or not to display the "Labels Text" on the color bar legend image.
 
+<<<<<<< Updated upstream
 &#8227; Apply Scheme Tick Values (Band Lookup):
         Performs a lookup based on band name to retrieve any pre-set tick values.
         Default scheme files:
-            ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup.xml
-            ~/.seadas9/auxdata/color_schemes/color_palette_schemes.xml
+            ~/.seadas8/auxdata/color_schemes/color_palette_scheme_lookup.xml
+            ~/.seadas8/auxdata/color_schemes/color_palette_schemes.xml
         User editable scheme files:
-            ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup_user.xml
-            ~/.seadas9/auxdata/color_schemes/color_palette_schemes_user.xml
+            ~/.seadas8/auxdata/color_schemes/color_palette_scheme_lookup_user.xml
+            ~/.seadas8/auxdata/color_schemes/color_palette_schemes_user.xml
+=======
+&#x2022; Apply Scheme Tick Values (Band Lookup):
+    Performs a lookup based on band name to retrieve any pre-set tick values.
+    &#x25E6; Default scheme files:
+        ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup.xml
+        ~/.seadas9/auxdata/color_schemes/color_palette_schemes.xml
+    &#x25E6; User editable scheme files:
+        ~/.seadas9/auxdata/color_schemes/color_palette_scheme_lookup_user.xml
+        ~/.seadas9/auxdata/color_schemes/color_palette_schemes_user.xml
+>>>>>>> Stashed changes
 
-&#8227; Label Value Mode:
-        Sets the actual data values of the labels:
-            &#8226; Generated Values:
-                The values will be auto-generated based on the number of desired
-                tick marks as specified in the "Label Count" textfield in this section.
-            &#8226; Entered Values:
-                The values used are manually entered in the "Label Values" textfield.
-            &#8226; Palette Values:
-                Exact values will be used which are in the palette definition file.
+&#x2022; Label Value Mode:
+    Sets the actual data values of the labels:
+        &#x25E6; Generated Values:
+            The values will be auto-generated based on the number of desired
+            tick marks as specified in the "Label Count" textfield in this section.
+        &#x25E6; Entered Values:
+            The values used are manually entered in the "Label Values" textfield.
+        &#x25E6; Palette Values:
+            Exact values will be used which are in the palette definition file.
 
-&#8227; Label Count:
-        The desired number of tick marks to be auto-generated onto the color bar
-        (only used for Mode: "Generated Values").
+&#x2022; Label Count:
+    The desired number of tick marks to be auto-generated onto the color bar
+    (only used for Mode: "Generated Values").
 
-&#8227; Label Values:
-        The values are manually entered here when in mode "Entered Values".
-        The labels are placed in the corresponding data location on the color bar.
-        In this mode values will appear with data format exactly as they are entered and no decimal
-        place adjustments occur.
-        You may use the following value-text pairs syntax to use custom text to represent numbers:
-        "{NUMBER}:{TEXT}, NUMBER:{TEXT}", (For example "Label Values" = "0.01:low, 1.0:medium, 20.0:high")
+&#x2022; Label Values:
+    The values are manually entered here when in mode "Entered Values".
+    The labels are placed in the corresponding data location on the color bar.
+    &#x25E6; In this mode values will appear with data format exactly as they are entered and no decimal
+    place adjustments occur.
+    &#x25E6; You may use the following value-text pairs syntax to use custom text to represent numbers:
+    "{NUMBER}:{TEXT}, NUMBER:{TEXT}", (For example "Label Values" = "0.01:low, 1.0:medium, 20.0:high")
 
-&#8227; Label Scaling:
-        A multiplier to apply to the displayed label value.  Note that using
-        a value not equal to "1.0" will essentially change your units and you may wish to adjust
-        your "Units Text" accordingly.  For example: if the raw data value is 0.001 and units are meters,
-        then setting "Label Scaling" = "1000" will display the data as "1" on the color bar, and then you
-        correspondingly specify "Units Text" = "(millimeters)".
+&#x2022; Label Scaling:
+    A multiplier to apply to the displayed label value.
+    &#x25E6; Note that using a value not equal to "1.0" will essentially change
+    your units and you may wish to adjust your "Units Text" accordingly.
+    For example: if the raw data value is 0.001 and units are meters,
+    then setting "Label Scaling" = "1000" will display the data as "1" on the color bar, and then you
+    correspondingly specify "Units Text" = "(millimeters)".
 
-&#8227; Auto-Fill Label Values Textfield:
-        Auto-populate the Label Values field with the generated values.  This is useful
-        is you wish to edit the auto-generated values, but it has the side effect of causing the other entry textfields
-        of the Color Bar Legend Tool entry form to be wide.
+&#x2022; Auto-Fill Label Values Textfield:
+    Auto-populate the Label Values field with the generated values.  This is useful
+    is you wish to edit the auto-generated values, but it has the side effect of causing the other entry textfields
+    of the Color Bar Legend Tool entry form to be wide.
 
-&#8227; Decimal Places:
-        The decimal places to use (Note: does not apply to Mode = "Entered Values")
+&#x2022; Decimal Places:
+    The decimal places to use (Note: does not apply to Mode = "Entered Values")
 
-&#8227; Force Trailing Decimal Zeros:
-        Force the full decimal places by adding all trailing zeros instead of truncating.
-        For example if "Trailing Decimal Places" is selected and "Decimal Places" = "2" then the raw data value "0.2"
-        will be displayed as "0.20" instead of "0.2". (Note: does not apply to "Mode" = "Entered Values")
+&#x2022; Force Trailing Decimal Zeros:
+    Force the full decimal places by adding all trailing zeros instead of truncating.
+    For example if "Trailing Decimal Places" is selected and "Decimal Places" = "2" then the raw data value "0.2"
+    will be displayed as "0.20" instead of "0.2". (Note: does not apply to "Mode" = "Entered Values")
 </pre>
 
 
 
-<h4>Editor: Orientation</h4>
-<pre>
-These fields set the orientation parameters of the color bar legend.
-
-&#8227; Angle:
-        Sets the alignment of the color bar to either vertical or horizontal.
-            &#8226; Best Fit:
-                Places colorbar vertically or horizontally based on comparison of scene aspect
-                ratio with the value of 'Scene Aspect Ratio'
-            &#8226; Horizontal:
-                Places colorbar horizontally on the image
-            &#8226; Vertical:
-                Places colorbar vertically on the image
-
-&#8227; Scene Aspect Ratio:
-        The scene ratio which governs horizontal vs vertical placement when Angle='Best Fit'
-
-&#8227; Title Placement:
-        Determines where to place the colorbar title on the legend for a vertically aligned colorbar.
-
-&#8227; Reverse Palette &amp; Labels:
-        Reverses the direction of the palette along with it's labels.
-</pre>
-
-
-<h4>Editor: Sizing</h4>
-<pre>
-&#8227; Scale to Scene Size (LAYER TOOL ONLY):
-        Resizes the full legend image to a percentage of the size the scene image
-        as specified with the value of 'Scene Size Scaling'.
-            &#8226; No Scaling:
-                Use Colorbar Length and Colorbar Width fields with no scaling to scene image.
-            &#8226; Scale by Colorbar Thickness:
-                Scale by thickness of colorbar relative to the average dimensions of the scene.
-            &#8226; Scale by Colorbar Length:
-                Scale by length of colorbar relative to the side of the scene which it is next to.
-
-&#8227; Scene Size Scaling (LAYER TOOL ONLY):
-        The percentage which is used when 'Scale to Scene Size' is specified.
-
-&#8227; Scale to File Size (EXPORT TOOL ONLY):
-        Resizes the full legend image to the size specified in the textfield "File Size".
-
-&#8227; File Size (EXPORT TOOL ONLY):
-        Width (in pixels) of legend image file (height if vertical image) if "Scale to File Size" has been selected.
-
-
-&#8227; Color Bar Length:
-        Length (in pixels) of the color bar (just the color bar itself and
-        not the full color bar legend image.)
-
-&#8227; Color Bar Width:
-        Width/thickness (in pixels) of the color bar (just the color bar itself and
-        not the full color bar legend image.)
-</pre>
 
 
 
-<h4>Editor: Location (Layer Tool Only)</h4>
+<br>
+<h4>---- Location [Layer Tool Only] ----</h4>
 <pre>
 These fields set the placement location anchor of the color bar image legend on the scene image.
 
-&#8227; Inside Scene Image (LAYER TOOL ONLY):
-        Place color bar inside/outside scene image bounds.
+&#x2022; Inside Scene Image:
+    Place color bar inside/outside scene image bounds.
 
-&#8227; Location (Horizontal) (LAYER TOOL ONLY):
-        Anchor location for placement of horizontal colorbar on the scene image.
+&#x2022; Location (Horizontal):
+    Anchor location for placement of horizontal colorbar on the scene image.
 
-&#8227; Location (Vertical) (LAYER TOOL ONLY):
-        Anchor location for placement of vertical colorbar on the scene image.
+&#x2022; Location (Vertical):
+    Anchor location for placement of vertical colorbar on the scene image.
 
-&#8227; Location Offset (Outside) (LAYER TOOL ONLY):
-        Gap (in by percentage of average scene dimensions) between colorbar legend and edge
-        of scene image when placed outside of scene image.
+&#x2022; Location Offset (Outside):
+    Gap (in by percentage of average scene dimensions) between colorbar legend and edge
+    of scene image when placed outside of scene image.
 
-&#8227; Location Offset (Inside) (LAYER TOOL ONLY):
-        Gap (in by percentage of average scene dimensions) between colorbar legend and edge
-        of scene image when placed inside of scene image.
+&#x2022; Location Offset (Inside):
+    Gap (in by percentage of average scene dimensions) between colorbar legend and edge
+    of scene image when placed inside of scene image.
 
-&#8227; Location Shift (LAYER TOOL ONLY):
-        Shift colorbar location along edge of scene by percentage of average scene dimensions.
+&#x2022; Location Shift:
+    Shift colorbar location along edge of scene by percentage of average scene dimensions.
 </pre>
 
 
 
-
-<h4>Editor: Title Font Formatting</h4>
+<br>
+<h4>---- Title Formatting ----</h4>
 <pre>
 Specifies the font formatting for the title text.
 
-&#8227; Title Font Size:
-		Size of the title text font
+&#x2022; Title Font Size:
+    Size of the title text font
 
-&#8227; Title Font Color:
-		Color of the title text
+&#x2022; Title Font Color:
+    Color of the title text
 
-&#8227; Title Font Type:
-		Font name of the title text
+&#x2022; Title Font Type:
+    Font name of the title text
 
-&#8227; Title Font Italic:
-		Set title text as italic font
+&#x2022; Title Font Italic:
+    Set title text as italic font
 
-&#8227; Title Font Bold:
-		Set title text as bold font
+&#x2022; Title Font Bold:
+    Set title text as bold font
 </pre>
 
 
-
-<h4>Editor: Units Font Formatting</h4>
+<br>
+<h4>---- Units Formatting ----</h4>
 <pre>
 Specifies the font formatting for the units text.
 
-&#8227; Units Font Size:
-		Size of the units text font
+&#x2022; Units Font Size:
+    Size of the units text font
 
-&#8227; Units Font Color:
-		Color of the units text
+&#x2022; Units Font Color:
+    Color of the units text
 
-&#8227; Units Font Type:
-		Font name of the units text
+&#x2022; Units Font Type:
+    Font name of the units text
 
-&#8227; Units Font Italic:
-		Set units text as italic font
+&#x2022; Units Font Italic:
+    Set units text as italic font
 
-&#8227; Units Font Bold:
-		Set units text as bold font
+&#x2022; Units Font Bold:
+    Set units text as bold font
 </pre>
 
-
-<h4>Editor: Labels Font Formatting</h4>
+<br>
+<h4>---- Labels Formatting ----</h4>
 <pre>
 Specifies the font formatting for the labels text.
 
-&#8227; Labels Font Size:
-		Size of the labels text font
+&#x2022; Labels Font Size:
+    Size of the labels text font
 
-&#8227; Labels Font Color:
-		Color of the labels text
+&#x2022; Labels Font Color:
+    Color of the labels text
 
-&#8227; Labels Font Type:
-		Font name of the labels text
+&#x2022; Labels Font Type:
+    Font name of the labels text
 
-&#8227; Labels Font Italic:
-		Set labels text as italic font
+&#x2022; Labels Font Italic:
+    Set labels text as italic font
 
-&#8227; Labels Font Bold:
-		Set labels text as bold font
+&#x2022; Labels Font Bold:
+    Set labels text as bold font
 </pre>
 
-
-<h4>Editor: Tickmarks</h4>
+<br>
+<h4>---- Tickmarks ----</h4>
 <pre>
 Specifies the formatting of the colorbar tickmarks.
 
-&#8227; Show Tickmarks:
-        Whether or not to display the colorbar tickmarks.
+&#x2022; Show Tickmarks:
+    Whether or not to display the colorbar tickmarks.
 
-&#8227; Tickmarks Length:
-        Length of the tickmarks.
+&#x2022; Tickmarks Length:
+    Length of the tickmarks.
 
-&#8227; Tickmarks Width:
-		Width of the tickmarks.
+&#x2022; Tickmarks Width:
+    Width of the tickmarks.
 
-&#8227; Tickmarks Color:
-		Color of the tickmarks.
+&#x2022; Tickmarks Color:
+    Color of the tickmarks.
 </pre>
 
 
-
-<h4>Editor: Colorbar Border</h4>
+<br>
+<h4>---- Colorbar Border ----</h4>
 <pre>
-Specifies the formatting of the colorbar border.
+    Specifies the formatting of the colorbar border.
 
-&#8227; Show Colorbar Border:
-        Whether or not to display a border around the colorbar.
+&#x2022; Show Colorbar Border:
+    Whether or not to display a border around the colorbar.
 
-&#8227; Colorbar Border Width:
-		Width of the colorbar border.
+&#x2022; Colorbar Border Width:
+    Width of the colorbar border.
 
-&#8227; Colorbar Border Color:
-		Color of the colorbar border.
+&#x2022; Colorbar Border Color:
+    Color of the colorbar border.
 </pre>
 
 
-
-<h4>Editor: Legend Backdrop Border</h4>
+<br>
+<h4>---- Legend Border ----</h4>
 <pre>
-Specifies the formatting of the legend backdrop border.
+    Specifies the formatting of the legend backdrop border.
 
-&#8227; Show Legend Backdrop Border:
-        Whether or not to display a border around the legend backdrop.
+&#x2022; Show Legend Backdrop Border:
+    Whether or not to display a border around the legend backdrop.
 
-&#8227; Legend Backdrop Border Width:
-		Width of the legend backdrop border.
+&#x2022; Legend Backdrop Border Width:
+    Width of the legend backdrop border.
 
-&#8227; Legend Backdrop Border Color:
-		Color of the legend backdrop border.
+&#x2022; Legend Backdrop Border Color:
+    Color of the legend backdrop border.
 </pre>
 
 
-
-<h4>Editor: Legend Backdrop</h4>
+<br>
+<h4>---- Legend Backdrop ----</h4>
 <pre>
-Specifies the formatting of the legend backdrop.
+    Specifies the formatting of the legend backdrop.
 
-&#8227; Show Legend Backdrop:
-        Whether or not to display the legend backdrop.
+&#x2022; Show Legend Backdrop:
+    Whether or not to display the legend backdrop.
 
-&#8227; Legend Backdrop Transparency:
-		Transparency of the legend backdrop.
+&#x2022; Legend Backdrop Transparency:
+    Transparency of the legend backdrop.
 
-&#8227; Legend Backdrop Color:
-		Color of the legend backdrop.
+&#x2022; Legend Backdrop Color:
+    Color of the legend backdrop.
 </pre>
 
 
-
-<h4>Editor: Margins</h4>
+<br>
+<h4>---- Margins ----</h4>
 <pre>
-Specifies the margins within the colorbar legend.
+    Specifies the margins within the colorbar legend.
 
-&#8227; Top Margin:
-        Inner gap at top of legend (relative to colorbar)
+&#x2022; Top Margin:
+    Inner gap at top of legend (relative to colorbar)
 
-&#8227; Bottom Margin:
-        Inner gap at bottom of legend (relative to colorbar)
+&#x2022; Bottom Margin:
+    Inner gap at bottom of legend (relative to colorbar)
 
-&#8227; Left Margin:
-        Inner gap at left of legend (relative to colorbar)
+&#x2022; Left Margin:
+    Inner gap at left of legend (relative to colorbar)
 
-&#8227; right Margin:
-        Inner gap at right of legend (relative to colorbar)
+&#x2022; right Margin:
+    Inner gap at right of legend (relative to colorbar)
 
-&#8227; Title Gap:
-Gap between title and colorbar
+&#x2022; Title Gap:
+    Gap between title and colorbar
 
-&#8227; Label Gap:
-Gap between labels and colorbar
+&#x2022; Label Gap:
+    Gap between labels and colorbar
 </pre>
 
 
 
 <!--<h4>Editor: Colors Override (EXPORT TOOL ONLY)</h4>-->
 <!--<pre>-->
-<!--&#8227; Black/White Color Override (EXPORT TOOL ONLY):-->
+<!--&#x2022; Black/White Color Override (EXPORT TOOL ONLY):-->
 <!--        Overrides all color fields with a black letters on white background color scheme.-->
 <!--        This exists to enable a different (but generic) default color setup for the Color Bar Export Tool than the Color Bar Layer Tool.-->
 <!--</pre>-->
 
 
-
+<br>
 <h4>Preferences Editor: Color Bar Export Tool (EXPORT TOOL ONLY)</h4>
 <pre>
-&#8227; Show Editor (EXPORT TOOL ONLY):
+&#x2022; Show Editor (EXPORT TOOL ONLY):
         This configuration when TRUE displays the editor GUI first when you use the "Export
         Color Bar Legend" tool.  Otherwise you get a file selector GUI and may access the editor GUI through the "Properties"
         button on the file selector GUI.
 
-&#8227; Black/White Color Override (EXPORT TOOL ONLY):
+&#x2022; Black/White Color Override (EXPORT TOOL ONLY):
         Overrides all color fields with a black letters on white background color scheme.
         This exists to enable a different (but generic) default color setup for the Color Bar Export Tool than the Color Bar Layer Tool.
 </pre>

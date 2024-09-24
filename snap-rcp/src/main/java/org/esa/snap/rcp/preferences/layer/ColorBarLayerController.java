@@ -558,6 +558,84 @@ public final class ColorBarLayerController extends DefaultConfigController {
     static class ColorBarBean {
 
 
+        // Orientation
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP)
+        boolean orientationSection = true;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
+                valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2,
+                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION3})
+        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_LABEL,
+                key = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_KEY,
+                description = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_TOOLTIP)
+        double sceneAspectBestFit = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
+                key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
+                description = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP,
+                valueSet = {ColorBarLayerType.VERTICAL_TITLE_LEFT,
+                        ColorBarLayerType.VERTICAL_TITLE_RIGHT,
+                        ColorBarLayerType.VERTICAL_TITLE_TOP,
+                        ColorBarLayerType.VERTICAL_TITLE_BOTTOM})
+        String titleVerticalLocation = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL,
+                key = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
+                description = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP)
+        boolean reversePaletteAndLabels = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT;
+
+
+
+        // Sizing Section
+
+        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_LABEL,
+                key = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY,
+                description = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_TOOLTIP)
+        boolean sizing = true;
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP,
+                valueSet = {ColorBarLayerType.SCENE_SCALING_OFF,
+                        ColorBarLayerType.SCENE_SCALING_LENGTH,
+                        ColorBarLayerType.SCENE_SCALING_WIDTH})
+        String applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL + " (LAYER ONLY)",
+                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
+                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP,
+                interval = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_INTERVAL)
+        double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
+
+
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
+                key = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP)
+        boolean exportUseLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT;
+
+        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
+                key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
+                description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
+        int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
+
+
+
+
+
+
+
 
 
 
@@ -709,45 +787,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 
 
 
-        // Orientation
-
-        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_ORIENTATION_SECTION_TOOLTIP)
-        boolean orientationSection = true;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_LABEL,
-                key = ColorBarLayerType.PROPERTY_ORIENTATION_KEY,
-                description = ColorBarLayerType.PROPERTY_ORIENTATION_TOOLTIP,
-                valueSet = {ColorBarLayerType.PROPERTY_ORIENTATION_OPTION1,
-                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION2,
-                        ColorBarLayerType.PROPERTY_ORIENTATION_OPTION3})
-        String orientation = ColorBarLayerType.PROPERTY_ORIENTATION_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_LABEL,
-                key = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_KEY,
-                description = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_TOOLTIP)
-        double sceneAspectBestFit = ColorBarLayerType.PROPERTY_SCENE_ASPECT_BEST_FIT_DEFAULT;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_LABEL,
-                key = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_KEY,
-                description = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_TOOLTIP,
-                valueSet = {ColorBarLayerType.VERTICAL_TITLE_LEFT,
-                        ColorBarLayerType.VERTICAL_TITLE_RIGHT,
-                        ColorBarLayerType.VERTICAL_TITLE_TOP,
-                        ColorBarLayerType.VERTICAL_TITLE_BOTTOM})
-        String titleVerticalLocation = ColorBarLayerType.PROPERTY_LOCATION_TITLE_VERTICAL_DEFAULT;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_LABEL,
-                key = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_KEY,
-                description = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_TOOLTIP)
-        boolean reversePaletteAndLabels = ColorBarLayerType.PROPERTY_ORIENTATION_REVERSE_PALETTE_DEFAULT;
-
-
-
-
 
 
 
@@ -758,50 +797,6 @@ public final class ColorBarLayerController extends DefaultConfigController {
 //                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_KEY,
 //                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SECTION_TOOLTIP)
 //        boolean sizeScalingSection = true;
-
-
-        // Sizing Section
-
-        @Preference(label = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_LABEL,
-                key = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_KEY,
-                description = ColorBarLayerType.PROPERTY_LEGEND_SIZING_SECTION_TOOLTIP)
-        boolean sizing = true;
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_LABEL + " (LAYER ONLY)",
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_TOOLTIP,
-                valueSet = {ColorBarLayerType.SCENE_SCALING_OFF,
-                        ColorBarLayerType.SCENE_SCALING_LENGTH,
-                        ColorBarLayerType.SCENE_SCALING_WIDTH})
-        String applyImageScaling = ColorBarLayerType.PROPERTY_IMAGE_SCALING_APPLY_SIZE_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_LABEL + " (LAYER ONLY)",
-                key = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_KEY,
-                description = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_TOOLTIP,
-                interval = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_INTERVAL)
-        double legendScalingPercent = ColorBarLayerType.PROPERTY_IMAGE_SCALING_SIZE_DEFAULT;
-
-
-
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
-                key = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_TOOLTIP)
-        boolean exportUseLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_USE_LEGEND_WIDTH_DEFAULT;
-
-        @Preference(label = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_LABEL + " (EXPORT ONLY)",
-                key = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_KEY,
-                description = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_TOOLTIP)
-        int exportLegendWidth = ColorBarLayerType.PROPERTY_EXPORT_LEGEND_WIDTH_DEFAULT;
-
-
-
-
-
-
-
-
-
 
 
 
