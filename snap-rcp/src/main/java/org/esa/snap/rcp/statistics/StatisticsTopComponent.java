@@ -135,6 +135,11 @@ public class StatisticsTopComponent extends AbstractStatisticsTopComponent {
     public static final String PROPERTY_BAND_METADATA_TOOLTIP = "Include band metadata in statistics results";
     public static final boolean PROPERTY_BAND_METADATA_DEFAULT = true;
 
+    public static final String PROPERTY_BAND_METADATA_VIEW_ANGLE_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".include.band.metadata.view.angle";
+    public static final String PROPERTY_BAND_METADATA_VIEW_ANGLE_LABEL = "Include Band MetaData: View Angle (Polarimeters)";
+    public static final String PROPERTY_BAND_METADATA_VIEW_ANGLE_TOOLTIP = "Include view angle of band metadata in statistics results";
+    public static final boolean PROPERTY_BAND_METADATA_VIEW_ANGLE_DEFAULT = true;
+
     public static final String PROPERTY_FILE_METADATA_KEY = PROPERTY_FIELDS_KEY_SUFFIX + ".include.file.metadata";
     public static final String PROPERTY_FILE_METADATA_LABEL = "Include File MetaData";
     public static final String PROPERTY_FILE_METADATA_TOOLTIP = "Include file metadata in statistics results";

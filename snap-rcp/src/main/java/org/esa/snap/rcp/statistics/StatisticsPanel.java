@@ -149,7 +149,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         FileRefNum("File#"),
         BandName("Band"),
         MaskName("ROI_Mask"),
-        QualityMaskName("Flag_Mask");
+        QualityMaskName("Flag_Mask"),
+        Wavelength("Wavelength"),
+        ViewAngle("View Angle*");
 
         PrimaryStatisticsFields(String name) {
             this.name = name;
@@ -1753,6 +1755,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             fieldIdx++;
             primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.QualityMaskName, fieldIdx);
             fieldIdx++;
+            primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.Wavelength, fieldIdx);
+            fieldIdx++;
+
 
             stxFieldsStartIdx = fieldIdx;
             fieldIdx += numStxFields;
@@ -1770,7 +1775,12 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 fieldIdx++;
                 metaDataFieldsHashMap.put(MetaDataFields.BandDescription, fieldIdx);
                 fieldIdx++;
+            }
 
+
+            if (statisticsCriteriaPanel.getPreferencesBandMetaDataViewAngleEnabled()) {
+                primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.ViewAngle, fieldIdx);
+                fieldIdx++;
             }
 
 
@@ -1949,10 +1959,23 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         }
 
 
+
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.FileRefNum, getProduct().getRefNo());
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.BandName, raster.getName());
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.MaskName, maskName);
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.QualityMaskName, qualityMaskName);
+
+
+        Float wavelength = getProduct().getBand(raster.getName()).getSpectralWavelength();
+        String wavelengthString = (wavelength > 0) ? Float.toString(getProduct().getBand(raster.getName()).getSpectralWavelength()) : "";
+        addFieldToSpreadsheet(row, PrimaryStatisticsFields.Wavelength, wavelengthString);
+
+
+        if (statisticsCriteriaPanel.getPreferencesBandMetaDataViewAngleEnabled()) {
+            Float viewAngle = getProduct().getBand(raster.getName()).getAngularValue();
+            String viewAngleString = (viewAngle >= -360 && viewAngle <= 360) ? Float.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
+            addFieldToSpreadsheet(row, PrimaryStatisticsFields.ViewAngle, viewAngleString);
+        }
 
         addFieldToSpreadsheet(row, MetaDataFields.TimeMetaDataBreak, COLUMN_BREAK);
         addFieldToSpreadsheet(row, MetaDataFields.StartDate, startDateString);
@@ -2241,7 +2264,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = header;
             }
 
-            if (row < statsSpreadsheet[0].length) {
+            if (row < statsSpreadsheet.length) {
                 statsSpreadsheet[row][idx] = entry;
             }
         }
@@ -2255,7 +2278,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = fileMetaDataField.toString();
             }
 
-            if (row < statsSpreadsheet[0].length) {
+            if (row < statsSpreadsheet.length) {
                 statsSpreadsheet[row][idx] = entry;
             }
         }
@@ -2269,8 +2292,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 statsSpreadsheet[0][idx] = primaryStatisticsField.toString();
             }
 
-            if (row < statsSpreadsheet[0].length) {
-                statsSpreadsheet[row][idx] = entry;
+            if (row < statsSpreadsheet.length) {
+                statsSpreadsheet[row][idx] = entry;  
             }
         }
     }
