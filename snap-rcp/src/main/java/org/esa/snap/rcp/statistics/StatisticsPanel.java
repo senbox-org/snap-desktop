@@ -151,7 +151,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         MaskName("ROI_Mask"),
         QualityMaskName("Flag_Mask"),
         Wavelength("Wavelength"),
-        ViewAngle("Angle*");
+        ViewAngle("View Angle*");
 
         PrimaryStatisticsFields(String name) {
             this.name = name;
@@ -1778,8 +1778,10 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             }
 
 
-            primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.ViewAngle, fieldIdx);
-            fieldIdx++;
+            if (statisticsCriteriaPanel.getPreferencesBandMetaDataViewAngleEnabled()) {
+                primaryStatisticsFieldsHashMap.put(PrimaryStatisticsFields.ViewAngle, fieldIdx);
+                fieldIdx++;
+            }
 
 
             if (includeMaskMetaData) {
@@ -1968,10 +1970,12 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         String wavelengthString = (wavelength > 0) ? Float.toString(getProduct().getBand(raster.getName()).getSpectralWavelength()) : "";
         addFieldToSpreadsheet(row, PrimaryStatisticsFields.Wavelength, wavelengthString);
 
-        Float viewAngle = getProduct().getBand(raster.getName()).getAngularValue();
-        String viewAngleString = (viewAngle == -360 && viewAngle <= 360) ? Double.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
-        addFieldToSpreadsheet(row, PrimaryStatisticsFields.ViewAngle, viewAngleString);
 
+        if (statisticsCriteriaPanel.getPreferencesBandMetaDataViewAngleEnabled()) {
+            Float viewAngle = getProduct().getBand(raster.getName()).getAngularValue();
+            String viewAngleString = (viewAngle >= -360 && viewAngle <= 360) ? Float.toString(getProduct().getBand(raster.getName()).getAngularValue()) : "";
+            addFieldToSpreadsheet(row, PrimaryStatisticsFields.ViewAngle, viewAngleString);
+        }
 
         addFieldToSpreadsheet(row, MetaDataFields.TimeMetaDataBreak, COLUMN_BREAK);
         addFieldToSpreadsheet(row, MetaDataFields.StartDate, startDateString);
