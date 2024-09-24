@@ -18,9 +18,9 @@ package org.esa.snap.worldwind;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -47,7 +47,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
  */
 @TopComponent.Description(
         preferredID = "WWWorldMapToolView",
-        iconBase = "org/esa/snap/icons/earth.png",
+        iconBase = "org/esa/snap/worldwind/icons/earth.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
@@ -71,8 +71,6 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
     public static String useFlatEarth = "snap.worldwind.useFlatEarth";
 
-    private ProductSceneView currentView;
-
     private static final boolean includeStatusBar = true;
     private final boolean flatWorld;
 
@@ -80,7 +78,6 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
         setDisplayName(Bundle.CTL_WorldWindTopComponentName());
         flatWorld = Config.instance().preferences().getBoolean(useFlatEarth, false);
         initComponents();
-        SnapApp.getDefault().getSelectionSupport(ProductSceneView.class).addHandler((oldValue, newValue) -> setCurrentView(newValue));
     }
 
     private void initComponents() {
@@ -106,7 +103,7 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
     private void initialize(final JPanel mainPane) {
         final WWView toolView = this;
 
-        final SwingWorker<Object, Object> worker = new SwingWorker<Object, Object>() {
+        final SwingWorker<Object, Object> worker = new SwingWorker<>() {
             @Override
             protected Object doInBackground() {
                 // Create the WorldWindow.
@@ -141,8 +138,10 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                     layerList.add(fixingPlaceNameLayer);
                     fixingPlaceNameLayer.setEnabled(true);
 
-                    SnapApp.getDefault().getProductManager().addListener(new WWProductManagerListener(toolView));
-                    SnapApp.getDefault().getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+                    // update world map window with the information of the currently activated product scene view.
+                    final SnapApp snapApp = SnapApp.getDefault();
+                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
+                    snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
                         if (newValue != null) {
                             setSelectedProduct(newValue.getProduct());
                         } else {
@@ -150,8 +149,12 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                         }
                     });
 
-                    setProducts(SnapApp.getDefault().getProductManager().getProducts());
-                    setSelectedProduct(SnapApp.getDefault().getSelectedProduct(VIEW));
+                    snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
+                        setSelectedRaster(newValue);
+                    });
+
+                    setProducts(snapApp.getProductManager().getProducts());
+                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
                 } catch (Throwable e) {
                     SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
                 }
@@ -159,11 +162,5 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
             }
         };
         worker.execute();
-    }
-
-    public void setCurrentView(final ProductSceneView newView) {
-        if (currentView != newView) {
-            currentView = newView;
-        }
     }
 }

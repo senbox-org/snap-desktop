@@ -15,15 +15,11 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
-import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
-import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
-import org.opengis.filter.temporal.Before;
-import org.openide.util.lookup.Lookups;
 
 import javax.swing.*;
 import java.awt.GridBagConstraints;
@@ -31,7 +27,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Map;
 
 /**
@@ -57,16 +52,8 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         final JComponent panel = createPanel();
         initParameters();
 
-        useSRTMCheckBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                useSRTM = (e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
-        invertGeometryCheckBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                invertGeometry = (e.getStateChange() == ItemEvent.SELECTED);
-            }
-        });
+        useSRTMCheckBox.addItemListener(e -> useSRTM = (e.getStateChange() == ItemEvent.SELECTED));
+        invertGeometryCheckBox.addItemListener(e -> invertGeometry = (e.getStateChange() == ItemEvent.SELECTED));
 
         final RadioListener myListener = new RadioListener();
         landMask.addActionListener(myListener);
@@ -102,15 +89,6 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         Integer shorelineExtension = (Integer) paramMap.get("shorelineExtension");
         shorelineExtensionTextField.setText(shorelineExtension == null ? "0" : shorelineExtension.toString());
-
-        if(hasSourceProducts()){
-            boolean isMultiSizeProducts = hasMultiSizeProducts();
-            if(isMultiSizeProducts) {
-                Dialogs.showError("The multi-size source product is not supported."
-                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
-                +"in the graph builder.");
-            }
-        }
     }
 
     @Override
@@ -130,22 +108,13 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
             paramMap.put("invertGeometry", invertGeometry);
         }
 
-        Integer shorelineExtension = 0;
+        int shorelineExtension = 0;
         try {
             shorelineExtension = Integer.parseInt(shorelineExtensionTextField.getText());
-        }catch (Exception e) {
-            shorelineExtension = 0;
+        }catch (Exception ignored) {
         }
         paramMap.put("shorelineExtension", shorelineExtension);
         paramMap.put("useSRTM", useSRTM);
-        if(hasSourceProducts()){
-            boolean isMultiSizeProducts = hasMultiSizeProducts();
-            if(isMultiSizeProducts) {
-                throw new IllegalArgumentException("The multi-size source product is not supported."
-                +"Please, use resampling processor before. Or use the default graph 'Raster/Land Sea Mask For Multi-size Source.xml'"
-                +"in the graph builder.");
-            }
-        }
     }
 
     private JComponent createPanel() {

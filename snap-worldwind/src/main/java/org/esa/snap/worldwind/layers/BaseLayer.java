@@ -15,14 +15,35 @@
  */
 package org.esa.snap.worldwind.layers;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
+
+import java.awt.*;
+import java.util.List;
 
 /**
  * Base layer class
  */
 public abstract class BaseLayer extends RenderableLayer {
     protected Product selectedProduct = null;
+    protected RasterDataNode selectedRaster = null;
+
+    public final static Material RED_MATERIAL = new Material(Color.RED);
+    public final static Material ORANGE_MATERIAL = new Material(Color.ORANGE);
+    public final static Material GREEN_MATERIAL = new Material(Color.GREEN);
+    public final static Material WHITE_MATERIAL = new Material(Color.WHITE);
+
+    public enum Suitability { UNSUITABLE, SUITABLE, INTENDED }
+
+    protected static String getUniqueName(final Product product) {
+        return product.getProductRefString() + product.getName();
+    }
 
     public void setSelectedProduct(final Product product) {
         selectedProduct = product;
@@ -32,4 +53,26 @@ public abstract class BaseLayer extends RenderableLayer {
         return selectedProduct;
     }
 
+    public void setSelectedRaster(final RasterDataNode raster) {
+        selectedRaster = raster;
+    }
+
+    public Path createPath(final List<Position> positions,
+                           final Material normalMaterial, final Material highlightMaterial) {
+        Path polyLine = new Path(positions);
+        polyLine.setSurfacePath(true);
+        polyLine.setFollowTerrain(true);
+
+        ShapeAttributes pathAttributes = new BasicShapeAttributes();
+        pathAttributes.setOutlineMaterial(normalMaterial);
+        pathAttributes.setEnableAntialiasing(true);
+        polyLine.setAttributes(pathAttributes);
+
+        ShapeAttributes highlightAttributes = new BasicShapeAttributes();
+        highlightAttributes.setOutlineMaterial(highlightMaterial);
+        highlightAttributes.setEnableAntialiasing(true);
+        polyLine.setHighlightAttributes(highlightAttributes);
+
+        return polyLine;
+    }
 }
