@@ -15,10 +15,10 @@
     <DESCRIPTION/>
   </KEY>
 
-<!--  <KEY REGEX="^angstrom_.+">-->
-<!--    <SCHEME_ID>angstrom_</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^angstrom_.+">-->
+  <!--    <SCHEME_ID>angstrom_</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
 
 
@@ -37,10 +37,10 @@
     <DESCRIPTION/>
   </KEY>
 
-<!--  <KEY REGEX="^aot_.+">-->
-<!--    <SCHEME_ID>aot_</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^aot_.+">-->
+  <!--    <SCHEME_ID>aot_</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
 
 
@@ -63,27 +63,22 @@
     <DESCRIPTION/>
   </KEY>
 
-  <KEY REGEX="^chlor_a$">
-    <SCHEME_ID>chlor_a</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
 
-  <KEY REGEX="^chlor_a_unc$">
+
+  <KEY REGEX="^chlor_a_unc($|_.+)">
     <SCHEME_ID>chlor_a_unc</SCHEME_ID>
     <DESCRIPTION/>
   </KEY>
 
-<!--  <KEY REGEX="^chlor_a_ow.+">-->
-<!--    <SCHEME_ID>NONE</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^chlor_a_ow.+">-->
+  <!--    <SCHEME_ID>NONE</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
-<!--  <KEY REGEX="^chlor_a_.+">-->
-<!--    <SCHEME_ID>chlor_a_</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
-
-
+  <KEY REGEX="^chlor_a($|_.+)">
+    <SCHEME_ID>chlor_a</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
 
 
   <KEY REGEX="^ipar($|_.+)">
@@ -103,14 +98,14 @@
     <DESCRIPTION/>
   </KEY>
 
-<!--  <KEY REGEX="^Kd_(PAR|unc).+">-->
-<!--    <SCHEME_ID>NONE</SCHEME_ID>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^Kd_(PAR|unc).+">-->
+  <!--    <SCHEME_ID>NONE</SCHEME_ID>-->
+  <!--  </KEY>-->
 
-<!--  <KEY REGEX="^Kd_.+">-->
-<!--    <SCHEME_ID>Kd_</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^Kd_.+">-->
+  <!--    <SCHEME_ID>Kd_</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
 
 
@@ -139,10 +134,10 @@
 
 
 
-<!--  <KEY REGEX="^poc_stramski_hybrid$">-->
-<!--    <SCHEME_ID>poc_stramski_hybrid</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^poc_stramski_hybrid$">-->
+  <!--    <SCHEME_ID>poc_stramski_hybrid</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
   <KEY REGEX="^poc_unc($|_.+)">
     <SCHEME_ID>NONE</SCHEME_ID>
@@ -154,10 +149,10 @@
     <DESCRIPTION/>
   </KEY>
 
-<!--  <KEY REGEX="^poc_.+">-->
-<!--    <SCHEME_ID>poc_</SCHEME_ID>-->
-<!--    <DESCRIPTION/>-->
-<!--  </KEY>-->
+  <!--  <KEY REGEX="^poc_.+">-->
+  <!--    <SCHEME_ID>poc_</SCHEME_ID>-->
+  <!--    <DESCRIPTION/>-->
+  <!--  </KEY>-->
 
 
   <KEY REGEX="^Rrs_(vc|brightness)_.+">

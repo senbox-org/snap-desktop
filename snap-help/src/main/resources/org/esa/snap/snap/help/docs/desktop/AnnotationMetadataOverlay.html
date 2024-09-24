@@ -3,9 +3,9 @@
 
 <html>
 <head>
-<title>Sentinel Toolbox Help - Annotation Metadata Overlay</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="../style.css">
+	<title>Sentinel Toolbox Help - Annotation Metadata Overlay</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -32,7 +32,7 @@
 <!--<table class="headerTop" width="100%">-->
 <!--    <tr class="headerTop">-->
 <!--        <td class="headerTop" align="left" width="100%">-->
-<!--			&nbsp;&nbsp;SeaDAS Help-->
+<!--            &nbsp;&nbsp;SeaDAS Help-->
 <!--        </td>-->
 <!--    </tr>-->
 <!--</table>-->
@@ -57,11 +57,11 @@
 <!--</table>-->
 
 <!--<table class="headerBottom" width="100%">-->
-<!--	<tr class="headerBottom">-->
-<!--		<td class="headerBottom" align="left" width="100%">-->
-<!--			&nbsp;-->
-<!--		</td>-->
-<!--	</tr>-->
+<!--    <tr class="headerBottom">-->
+<!--        <td class="headerBottom" align="left" width="100%">-->
+<!--            &nbsp;-->
+<!--        </td>-->
+<!--    </tr>-->
 <!--</table>-->
 
 <br><br>
@@ -81,211 +81,211 @@
 <p align="center">
 	<img src="images/Annotation_Example.png" width="700" border="0"><br><br>
 	<i>Image 1: Annotation Metadata Layer shown over a MODIS Aqua level-2 scene image<br>
-	Divided into 3 sections: Header Annotation (shown at top), <br>
+		Divided into 3 sections: Header Annotation (shown at top), <br>
 		Margin Annotation (shown at right), Foot Annotation (shown at bottom)</i>
 </p>
 <br>
 
 
 <br>
-<h4>Editor: Header Annotation</h4>
+<h4>---- Header Annotation ----</h4>
 <pre>
 Specifies the annotation text and metadata parameters which
 go in the Header Annotation section.
 
-&#8227; Show Header Annotation:
-		Toggles on/off the Header Annotation section.
+&#x2022; Show Header Annotation:
+    Toggles on/off the Header Annotation section.
 
-&#8227; Header Location:
-		General anchor location of the Header Annotation section.
+&#x2022; Header Location:
+    General anchor location of the Header Annotation section.
 
-&#8227; Header Gap:
-		Gap between the Header Annotation section and the image scene (in
-		percentage of image size).
+&#x2022; Header Gap:
+    Gap between the Header Annotation section and the image scene (in
+    percentage of image size).
 
-&#8227; Header Text:
-		Freeform text
-        Supports inline replacement variables for metadata:
-            &lt;PROPERTY={key}&gt;
-            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
-            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
-        Supports several html tags:
-			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+&#x2022; Header Text:
+    Freeform text
+    &#x25E6; Supports inline replacement variables for metadata:
+        &lt;PROPERTY={key}&gt;
+        &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+        &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+    &#x25E6; Supports several html tags:
+        &lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
-&#8227; Convert Header Carets to Superscripts:
-		Converts carets found in the text to superscripts.
-		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+&#x2022; Convert Header Carets to Superscripts:
+    Converts carets found in the text to superscripts.
+    &#x25E6; (i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
 </pre>
 
 
 
-
-<h4>Editor: Margin Annotation</h4>
+<br>
+<h4>---- Margin Annotation ----</h4>
 <pre>
 Specifies the annotation text and metadata parameters which
 go in the Margin Annotation section.
 
-&#8227; Show Margin Annotation:
-		Toggles on/off the Margin Annotation section.
+&#x2022; Show Margin Annotation:
+    Toggles on/off the Margin Annotation section.
 
-&#8227; Margin Location:
-		General anchor location of the Margin Annotation section.
-		Note that this location is not limited to being in the margin.
+&#x2022; Margin Location:
+    General anchor location of the Margin Annotation section.
+    &#x25E6; Note that this location is not limited to being in the margin.
 
-&#8227; Margin Gap:
-		Gap between the margin annotation section and the image scene (in
-		percentage of image size).
+&#x2022; Margin Gap:
+    Gap between the margin annotation section and the image scene (in
+    percentage of image size).
 
-&#8227; Margin Text:
-		Freeform text
-        Supports inline replacement variables for metadata:
-            &lt;PROPERTY={key}&gt;
-            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
-            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
-        Supports several html tags:
-			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+&#x2022; Margin Text:
+    Freeform text
+    &#x25E6; Supports inline replacement variables for metadata:
+        &lt;PROPERTY={key}&gt;
+        &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+        &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+    &#x25E6; Supports several html tags:
+        &lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
-&#8227; PROPERTIES Section Heading:
-		Heading to display for the PROPERTIES section
+&#x2022; PROPERTIES Section Heading:
+    Heading to display for the PROPERTIES section
 
-&#8227; PROPERTIES List:
-		A comma delimited list of desired project file properties.
+&#x2022; PROPERTIES List:
+    A comma delimited list of desired project file properties.
 
-&#8227; PROPERTIES Show All:
-		Displays all project file properties.
+&#x2022; PROPERTIES Show All:
+    Displays all project file properties.
 
-&#8227; FILE_META Section Heading:
-		Heading to display for the FILE_META section
+&#x2022; FILE_META Section Heading:
+    Heading to display for the FILE_META section
 
-&#8227; FILE_META List:
-		A comma delimited list of desired file metadata.
+&#x2022; FILE_META List:
+    A comma delimited list of desired file metadata.
 
-&#8227; FILE_META Show All*:
-		Displays all FILE_META (but does not show many of the
-		potentially massive list of Processing Control Parameters).
+&#x2022; FILE_META Show All*:
+    Displays all FILE_META (but does not show many of the
+    potentially massive list of Processing Control Parameters).
 
-&#8227; FILE_META Show All (Processing Control Parameters):
-		Displays all the Processing Control Parameters which are part
-		of the FILE_META.
+&#x2022; FILE_META Show All (Processing Control Parameters):
+    Displays all the Processing Control Parameters which are part
+    of the FILE_META.
 
-&#8227; BAND_META Section Heading:
-		Heading to display for the BAND_META section
+&#x2022; BAND_META Section Heading:
+    Heading to display for the BAND_META section
 
-&#8227; BAND_META List:
-		A comma delimited list of desired band metadata.
+&#x2022; BAND_META List:
+    A comma delimited list of desired band metadata.
 
-&#8227; BAND_META Show All:
-		Displays all the BAND_META.
+&#x2022; BAND_META Show All:
+    Displays all the BAND_META.
 
-&#8227; Attribute Delimiter:
-		Delimiter to use when displaying value pair listing of metadata.
+&#x2022; Attribute Delimiter:
+    Delimiter to use when displaying value pair listing of metadata.
 
-&#8227; Convert Margin Carets to Superscripts:
-		Converts carets found in the text to superscripts.
-		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+&#x2022; Convert Margin Carets to Superscripts:
+    Converts carets found in the text to superscripts.
+    &#x25E6; (i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
 </pre>
 
 
-
-<h4>Editor: Footer Annotation</h4>
+<br>
+<h4>---- Footer Annotation ----</h4>
 <pre>
 Specifies the annotation text and metadata parameters which
 go in the Footer Annotation section.
 
-&#8227; Show Footer Annotation:
-		Toggles on/off the Footer Annotation section.
+&#x2022; Show Footer Annotation:
+    Toggles on/off the Footer Annotation section.
 
-&#8227; Footer Location:
-		General anchor location of the Footer Annotation section.
+&#x2022; Footer Location:
+    General anchor location of the Footer Annotation section.
 
-&#8227; Footer Gap:
-		Gap between the Header Annotation section and the image scene (in
-		percentage of image size).
+&#x2022; Footer Gap:
+    Gap between the Header Annotation section and the image scene (in
+    percentage of image size).
 
-&#8227; Footer Text:
-		Freeform text
-        Supports inline replacement variables for metadata:
-            &lt;PROPERTY={key}&gt;
-            &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
-            &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
-        Supports several html tags:
-			&lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
+&#x2022; Footer Text:
+    Freeform text
+    &#x25E6; Supports inline replacement variables for metadata:
+        &lt;PROPERTY={key}&gt;
+        &lt;FILE_META={key}&gt; (alternate key name &lt;GLOBAL_ATTRIBUTE={key}&gt;
+        &lt;BAND_META={key}&gt; (alternate key name &lt;BAND_ATTRIBUTE={key}&gt;
+    &#x25E6; Supports several html tags:
+        &lt;i&gt;, &lt;b&gt;, &lt;br&gt;, &lt;sup&gt;, &lt;sub&gt;
 
-&#8227; Convert Footer Carets to Superscripts:
-		Converts carets found in the text to superscripts.
-		(i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
+&#x2022; Convert Footer Carets to Superscripts:
+    Converts carets found in the text to superscripts.
+    &#x25E6; (i.e. 'e = mc^2' would display as 'e = mc<sup>2</sup>')
 
-&#8227; Show My Info:
-		Displays user info (see preferences)
+&#x2022; Show My Info:
+    Displays user info (see preferences)
 </pre>
 
 
 
-
-<h4>Editor: Header Font Formatting</h4>
+<br>
+<h4>---- Header Font Formatting ----</h4>
 <pre>
 Specifies the font formatting for the Header Annotation section.
 
-&#8227; Header Font Size:
-		Size of the header text font
+&#x2022; Header Font Size:
+    Size of the header text font
 
-&#8227; Header Font Color:
-		Color of the header text
+&#x2022; Header Font Color:
+    Color of the header text
 
-&#8227; Header Font Type:
-		Font name of the header text
+&#x2022; Header Font Type:
+    Font name of the header text
 
-&#8227; Header Font Italic:
-		Set header text as italic font
+&#x2022; Header Font Italic:
+    Set header text as italic font
 
-&#8227; Header Font Bold:
-		Set header text as bold font
+&#x2022; Header Font Bold:
+    Set header text as bold font
 </pre>
 
 
-
-<h4>Editor: Margin Font Formatting</h4>
+<br>
+<h4>---- Margin Font Formatting ----</h4>
 <pre>
 Specifies the font formatting for the Margin Annotation section.
 
-&#8227; Margin Font Size:
-		Size of the margin text font
+&#x2022; Margin Font Size:
+    Size of the margin text font
 
-&#8227; Margin Font Color:
-		Color of the margin text
+&#x2022; Margin Font Color:
+    Color of the margin text
 
-&#8227; Margin Font Type:
-		Font name of the margin text
+&#x2022; Margin Font Type:
+    Font name of the margin text
 
-&#8227; Margin Font Italic:
-		Set margin text as italic font
+&#x2022; Margin Font Italic:
+    Set margin text as italic font
 
-&#8227; Margin Font Bold:
-		Set margin text as bold font
+&#x2022; Margin Font Bold:
+    Set margin text as bold font
 </pre>
 
 
 
 
-
-<h4>Editor: Footer Font Formatting</h4>
+<br>
+<h4>---- Footer Font Formatting ----</h4>
 <pre>
 Specifies the font formatting for the Footer Annotation section.
 
-&#8227; Footer Font Size:
-		Size of the footer text font
+&#x2022; Footer Font Size:
+    Size of the footer text font
 
-&#8227; Footer Font Color:
-		Color of the footer text
+&#x2022; Footer Font Color:
+    Color of the footer text
 
-&#8227; Footer Font Type:
-		Font name of the footer text
+&#x2022; Footer Font Type:
+    Font name of the footer text
 
-&#8227; Footer Font Italic:
-		Set footer text as italic font
+&#x2022; Footer Font Italic:
+    Set footer text as italic font
 
-&#8227; Footer Font Bold:
-		Set footer text as bold font
+&#x2022; Footer Font Bold:
+    Set footer text as bold font
 </pre>
 
 
@@ -357,12 +357,12 @@ Band level metadata can be accessed with any of the following:
 
 
 <!--<object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">-->
-<!--	&lt;!&ndash; Enter the URL below &ndash;&gt;-->
-<!--	<param name="content" value="http://www.netbeans.org/kb/41/freeform-config.html">-->
-<!--	&lt;!&ndash; Enter the display text below. The <html> and <u> make the text look like a link. &ndash;&gt;-->
-<!--	<param name="text" value="<html><u>https://seadas.gsfc.nasa.gov//tutorials/video_tutorials</u></html>">-->
-<!--	<param name="textFontSize" value="medium">-->
-<!--	<param name="textColor" value="blue">-->
+<!--    &lt;!&ndash; Enter the URL below &ndash;&gt;-->
+<!--    <param name="content" value="http://www.netbeans.org/kb/41/freeform-config.html">-->
+<!--    &lt;!&ndash; Enter the display text below. The <html> and <u> make the text look like a link. &ndash;&gt;-->
+<!--    <param name="text" value="<html><u>https://seadas.gsfc.nasa.gov//tutorials/video_tutorials</u></html>">-->
+<!--    <param name="textFontSize" value="medium">-->
+<!--    <param name="textColor" value="blue">-->
 <!--</object>-->
 
 
