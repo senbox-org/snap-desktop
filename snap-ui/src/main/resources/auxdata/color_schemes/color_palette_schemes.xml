@@ -23,26 +23,14 @@
         <MIN>-0.15</MIN>
         <MAX>2.2</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Aerosol Angstrom Exponent</COLORBAR_TITLE>
         <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
         <COLORBAR_LABELS>-0.15, 0, 0.5, 1.0, 1.5, 2.0, 2.2</COLORBAR_LABELS>
         <DESCRIPTION>Angstrom coefficient</DESCRIPTION>
     </Scheme>
 
-    <Scheme name="angstrom_">
-        <VERBOSE_NAME/>
-        <MIN>-0.15</MIN>
-        <MAX>2.2</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-        <COLORBAR_TITLE>Aerosol Angstrom Exponent &lt;i&gt;&lt;sub&gt;&lt;PROPERTY=band&gt;&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
-        <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
-        <COLORBAR_LABELS>-0.15, 0, 0.5, 1.0, 1.5, 2.0, 2.2</COLORBAR_LABELS>
-        <DESCRIPTION>Angstrom coefficient</DESCRIPTION>
-    </Scheme>
 
     <Scheme name="aot">
         <PRIMARY>true</PRIMARY>
@@ -50,28 +38,14 @@
         <MIN>0.0</MIN>
         <MAX>0.25</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Aerosol Optical Thickness at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
         <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
         <DESCRIPTION>Aerosol optical thickness</DESCRIPTION>
     </Scheme>
 
-
-    <Scheme name="aot_">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME></VERBOSE_NAME>
-        <MIN>0.0</MIN>
-        <MAX>0.25</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-        <COLORBAR_TITLE>Aerosol Optical Thickness at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;&lt;PROPERTY=band&gt;&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
-        <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
-        <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
-        <DESCRIPTION>Aerosol optical thickness</DESCRIPTION>
-    </Scheme>
 
 
     <Scheme name="aot_dt">
@@ -80,8 +54,8 @@
         <MIN>0.0</MIN>
         <MAX>0.25</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Aerosol Optical Thickness at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;Dark Target Algorithm&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
         <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
         <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
@@ -95,8 +69,8 @@
         <MIN>0.0</MIN>
         <MAX>0.25</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Aerosol Optical Thickness at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;Deep Blue Algorithm&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
         <COLORBAR_UNITS>(dimensionless)</COLORBAR_UNITS>
         <COLORBAR_LABELS>0,0.05,0.1,0.15,0.2,0.25</COLORBAR_LABELS>
@@ -111,8 +85,8 @@
         <MIN>450</MIN>
         <MAX>575</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Apparent Visible Wavelength</COLORBAR_TITLE>
         <COLORBAR_LABELS>450,475,500,525,550,575</COLORBAR_LABELS>
         <DESCRIPTION>Apparent Visible Wavelength</DESCRIPTION>
@@ -125,8 +99,8 @@
         <MIN>0.0</MIN>
         <MAX>1000.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>   -->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Phytoplankton Carbon</COLORBAR_TITLE>
         <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
         <COLORBAR_LABELS>0,200,400,600,800,1000</COLORBAR_LABELS>
@@ -140,13 +114,28 @@
         <MIN>0.0</MIN>
         <MAX>1000.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Phytoplankton Carbon</COLORBAR_TITLE>
         <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
         <COLORBAR_LABELS>0,200,400,600,800,1000</COLORBAR_LABELS>
         <DESCRIPTION>Phytoplankton Carbon</DESCRIPTION>
     </Scheme>
+
+    <Scheme name="chlor_a">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Chlorophyll a</VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
+    </Scheme>
+
+
 
 
 
@@ -156,37 +145,24 @@
         <MIN>0.001</MIN>
         <MAX>100.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
-        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
         <COLORBAR_LABELS>0.001,0.01,0.1,1,10,100</COLORBAR_LABELS>
         <DESCRIPTION>Uncertainty in Chlorophyll a concentration</DESCRIPTION>
     </Scheme>
 
-    <Scheme name="chlor_a">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME>Chlorophyll a</VERBOSE_NAME>
-        <MIN>0.01</MIN>
-        <MAX>20.0</MAX>
-        <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration &lt;i&gt;&lt;sub&gt;&lt;PROPERTY=band&gt;&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
-        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
-        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
-        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
-    </Scheme>
+
 
     <Scheme name="chl">
         <PRIMARY>true</PRIMARY>
-<!--        <VERBOSE_NAME>Chl</VERBOSE_NAME>-->
+        <!--        <VERBOSE_NAME>Chl</VERBOSE_NAME>-->
         <MIN>0.01</MIN>
         <MAX>20.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-<!--        <COLORBAR_TITLE>Chlorophyll Concentration</COLORBAR_TITLE>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <!--        <COLORBAR_TITLE>Chlorophyll Concentration</COLORBAR_TITLE>-->
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
         <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
     </Scheme>
@@ -198,8 +174,8 @@
         <MIN>0.0</MIN>
         <MAX>0.0025</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Instantaneous Photosynthetically Available Radiation</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,0.0005,0.001,0.0015,0.002,0.0025</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -212,8 +188,8 @@
         <MIN>0.01</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Diffuse Attenuation Coefficient at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,5</COLORBAR_LABELS>
         <DESCRIPTION>Diffuse attenuation coefficient at 490 nm</DESCRIPTION>
@@ -226,9 +202,9 @@
         <MIN>0.01</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-<!--        <COLORBAR_TITLE>Diffuse Attenuation Coefficient at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;Lee Algorithm&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <!--        <COLORBAR_TITLE>Diffuse Attenuation Coefficient at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;Lee Algorithm&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>-->
         <COLORBAR_TITLE>Diffuse Attenuation Coefficient at &lt;PROPERTY=wavelength&gt; nm </COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,5</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -242,8 +218,8 @@
         <MIN>0.01</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Diffuse Attenuation Coefficient at &lt;PROPERTY=wavelength&gt; nm &lt;i&gt;&lt;sub&gt;&lt;PROPERTY=band&gt;&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,5</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -256,8 +232,8 @@
         <MIN>0.0</MIN>
         <MAX>0.05</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Fluorescence Line Height</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0,0.01,0.02,0.03,0.04,0.05</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -269,8 +245,8 @@
         <MIN>0.0</MIN>
         <MAX>76.2</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Photosynthetically Available Radiation</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,20,40,60,76.2</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -282,8 +258,8 @@
         <MIN>1.0e-05</MIN>
         <MAX>0.05</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Particulate Inorganic Carbon</COLORBAR_TITLE>
         <COLORBAR_LABELS>1e-5,1e-4,1e-3,0.01,0.05</COLORBAR_LABELS>
         <DESCRIPTION>Particulate Inorganic Carbon</DESCRIPTION>
@@ -297,8 +273,8 @@
         <MIN>10</MIN>
         <MAX>1000</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Particulate Organic Carbon &lt;i&gt;&lt;sub&gt;D. Stramski, 2022 (hybrid version)&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
         <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
         <DESCRIPTION>Particulate Organic Carbon, D. Stramski, 2022 (hybrid version)</DESCRIPTION>
@@ -310,23 +286,9 @@
         <MIN>10</MIN>
         <MAX>1000</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Particulate Organic Carbon</COLORBAR_TITLE>
-        <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
-        <DESCRIPTION>Particulate Organic Carbon</DESCRIPTION>
-    </Scheme>
-
-
-    <Scheme name="poc_">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME></VERBOSE_NAME>
-        <MIN>10</MIN>
-        <MAX>1000</MAX>
-        <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
-        <COLORBAR_TITLE>Particulate Organic Carbon &lt;i&gt;&lt;sub&gt;&lt;PROPERTY=band&gt;&lt;&#47;i&gt;&lt;&#47;sub&gt;</COLORBAR_TITLE>
         <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
         <DESCRIPTION>Particulate Organic Carbon</DESCRIPTION>
     </Scheme>
@@ -339,8 +301,8 @@
         <MIN>0.0001</MIN>
         <MAX>0.003</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance Uncertainty at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.0006,0.0012,0.0018,0.0024,0.003</COLORBAR_LABELS>
         <DESCRIPTION>Uncertainty in remote sensing reflectance at [0-450] nm</DESCRIPTION>
@@ -351,8 +313,8 @@
         <MIN>0.0001</MIN>
         <MAX>0.0015</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance Uncertainty at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.0003,0.0006,0.0009,0.0012,0.0015</COLORBAR_LABELS>
         <DESCRIPTION>Uncertainty in remote sensing reflectance at [451-560] nm</DESCRIPTION>
@@ -363,8 +325,8 @@
         <MIN>0.0001</MIN>
         <MAX>0.0005</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance Uncertainty at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.0002,0.0003,0.0004,0.0005</COLORBAR_LABELS>
         <DESCRIPTION>Uncertainty in remote sensing reflectance at [561-2400] nm</DESCRIPTION>
@@ -377,8 +339,8 @@
         <MIN>0.0</MIN>
         <MAX>0.025</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_TITLE_ALT>&lt;PROPERTY=band&gt;: Remote Sensing Reflectance</COLORBAR_TITLE_ALT>
         <COLORBAR_LABELS>0.0,0.005,0.01,0.015,0.02,0.025</COLORBAR_LABELS>
@@ -390,8 +352,8 @@
         <MIN>0.0</MIN>
         <MAX>0.02</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_TITLE_ALT>&lt;PROPERTY=band&gt;: Remote Sensing Reflectance</COLORBAR_TITLE_ALT>
         <COLORBAR_LABELS>0.0,0.005,0.01,0.015,0.02</COLORBAR_LABELS>
@@ -403,8 +365,8 @@
         <MIN>0.0</MIN>
         <MAX>0.015</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0,0.003,0.006,0.009,0.012,0.015</COLORBAR_LABELS>
         <DESCRIPTION>Remote sensing reflectance at [460-2400] nm</DESCRIPTION>
@@ -416,8 +378,8 @@
         <MIN>-0.01</MIN>
         <MAX>0.1</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Remote Sensing Reflectance</COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Remote sensing reflectance</DESCRIPTION>
@@ -436,8 +398,8 @@
         <LOG_SCALE>false</LOG_SCALE>
         <COLORBAR_TITLE>Intensity (&lt;PROPERTY=angle&gt;°, &lt;PROPERTY=wavelength&gt; nm)</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,100,200,300,400,500</COLORBAR_LABELS>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <DESCRIPTION>PACE Intensity</DESCRIPTION>
     </Scheme>
 
@@ -449,8 +411,8 @@
         <LOG_SCALE>false</LOG_SCALE>
         <COLORBAR_TITLE>Intensity (&lt;PROPERTY=angle&gt;°, &lt;PROPERTY=wavelength&gt; nm)</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,100,200,300,400,500</COLORBAR_LABELS>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <DESCRIPTION>PACE Intensity</DESCRIPTION>
     </Scheme>
     <!--  END   PACE HARP  -->
@@ -471,8 +433,8 @@
         <MIN>0.0</MIN>
         <MAX>350.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Calibrated TOA (Top of Atmosphere) Radiance</COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Calibrated TOA (Top of Atmosphere) Radiance</DESCRIPTION>
@@ -484,8 +446,8 @@
         <MIN>0.0</MIN>
         <MAX>1.016</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance</COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Water-Leaving Radiance</DESCRIPTION>
@@ -496,8 +458,8 @@
         <MIN>0.0</MIN>
         <MAX>50.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,40,50</COLORBAR_LABELS>
         <DESCRIPTION>Water-Leaving Radiance at [0 - 400] nm</DESCRIPTION>
@@ -508,8 +470,8 @@
         <MIN>0.0</MIN>
         <MAX>38.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,38</COLORBAR_LABELS>
         <DESCRIPTION>Water-leaving radiance at [441-480] nm</DESCRIPTION>
@@ -519,8 +481,8 @@
         <MIN>0.0</MIN>
         <MAX>25.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,5,10,15,20,25</COLORBAR_LABELS>
         <DESCRIPTION>Water-leaving radiance at [480-525] nm</DESCRIPTION>
@@ -530,8 +492,8 @@
         <MIN>0.0</MIN>
         <MAX>12.5</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,2.5,5,7.5,10,12.5</COLORBAR_LABELS>
         <DESCRIPTION>Water-leaving radiance at [526-599] nm</DESCRIPTION>
@@ -541,8 +503,8 @@
         <MIN>0.0</MIN>
         <MAX>10.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,2,4,6,8,10</COLORBAR_LABELS>
         <DESCRIPTION>Water-leaving radiance at [600-2400] nm</DESCRIPTION>
@@ -554,8 +516,8 @@
         <MIN>0.0</MIN>
         <MAX>1.016</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance</COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Normalized Water-Leaving Radiance</DESCRIPTION>
@@ -566,8 +528,8 @@
         <MIN>0.0</MIN>
         <MAX>50.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,40,50</COLORBAR_LABELS>
         <DESCRIPTION>Normalized Water-Leaving Radiance at [0 - 400] nm</DESCRIPTION>
@@ -578,8 +540,8 @@
         <MIN>0.0</MIN>
         <MAX>38.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,38</COLORBAR_LABELS>
         <DESCRIPTION>Normalized water-leaving radiance at [441-480] nm</DESCRIPTION>
@@ -589,8 +551,8 @@
         <MIN>0.0</MIN>
         <MAX>25.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,5,10,15,20,25</COLORBAR_LABELS>
         <DESCRIPTION>Normalized water-leaving radiance at [480-525] nm</DESCRIPTION>
@@ -600,8 +562,8 @@
         <MIN>0.0</MIN>
         <MAX>12.5</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,2.5,5,7.5,10,12.5</COLORBAR_LABELS>
         <DESCRIPTION>Normalized water-leaving radiance at [526-599] nm</DESCRIPTION>
@@ -611,8 +573,8 @@
         <MIN>0.0</MIN>
         <MAX>10.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Normalized Water-Leaving Radiance at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0,2,4,6,8,10</COLORBAR_LABELS>
         <DESCRIPTION>Normalized water-leaving radiance at [600-2400] nm</DESCRIPTION>
@@ -657,8 +619,8 @@
         <MIN>1.0000e-03</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Total Absorption at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.001,0.003,0.01,0.1,0.3,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (a)</DESCRIPTION>
@@ -670,8 +632,8 @@
         <MIN>0.2</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Total Absorption at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.2,0.4,0.6,0.8,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (a)</DESCRIPTION>
@@ -682,8 +644,8 @@
         <MIN>0.3</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Total Absorption at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.3,0.4,0.5,0.6,0.7,0.8,0.9,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (a)</DESCRIPTION>
@@ -694,8 +656,8 @@
         <MIN>0.4</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Total Absorption at &lt;PROPERTY=wavelength&gt; nm</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.4,0.5,0.6,0.7,0.8,0.9,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (a)</DESCRIPTION>
@@ -706,8 +668,8 @@
         <MIN>0.001</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.001,0.003,0.01,0.1,0.3,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (adg)</DESCRIPTION>
@@ -719,8 +681,8 @@
         <MIN>0.0</MIN>
         <MAX>2.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0,0.5,1.0,1.5,2.0</COLORBAR_LABELS>
         <DESCRIPTION>Spectral slope for gelbstof and detrital absorption</DESCRIPTION>
@@ -732,8 +694,8 @@
         <MIN>0.001</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.001,0.003,0.01,0.1,0.3,1</COLORBAR_LABELS>
         <DESCRIPTION>Absorption (aph)</DESCRIPTION>
@@ -745,8 +707,8 @@
         <MIN>0.0001</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.001,0.01,0.1,1,5</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -758,8 +720,8 @@
         <MIN>0.0001</MIN>
         <MAX>0.1</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.001,0.01,0.1</COLORBAR_LABELS>
         <DESCRIPTION>Total backscatter</DESCRIPTION>
@@ -770,8 +732,8 @@
         <MIN>0.0001</MIN>
         <MAX>0.1</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.001,0.01,0.1</COLORBAR_LABELS>
         <DESCRIPTION>Particle backscatter</DESCRIPTION>
@@ -782,8 +744,8 @@
         <MIN>0.0001</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0001,0.001,0.01,0.1,1,5</COLORBAR_LABELS>
         <DESCRIPTION></DESCRIPTION>
@@ -803,7 +765,7 @@
         <MAX>70</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_sss.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Sea Surface Salinity Reference</DESCRIPTION>
@@ -817,8 +779,8 @@
         <MIN>-1.0</MIN>
         <MAX>1.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Spectral slope for particle backscatter</DESCRIPTION>
@@ -828,8 +790,8 @@
         <MIN>1.0e-04</MIN>
         <MAX>0.01</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Backscattering coefficient of seawater</DESCRIPTION>
@@ -841,8 +803,8 @@
         <MIN>1.0e-04</MIN>
         <MAX>0.1</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Total backscatter</DESCRIPTION>
@@ -854,8 +816,8 @@
         <MIN>0.001</MIN>
         <MAX>10</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Biogenic Silica</DESCRIPTION>
@@ -866,7 +828,7 @@
         <MAX>318.15</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_sst.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Sea Surface Temperature (VIIRSN)</DESCRIPTION>
@@ -876,8 +838,8 @@
         <MIN>5.e-05</MIN>
         <MAX>0.05</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>5e-5,0.0002,0.001,0.005,0.05</COLORBAR_LABELS>
         <DESCRIPTION>Calcite Concentration</DESCRIPTION>
@@ -887,8 +849,8 @@
         <MIN>0</MIN>
         <MAX>7</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>CDOM Index</DESCRIPTION>
@@ -899,8 +861,8 @@
         <MIN>0.0</MIN>
         <MAX>5.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Chi-square per degree of freedom</DESCRIPTION>
@@ -911,8 +873,8 @@
         <MIN>0.0</MIN>
         <MAX>100.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Chlorophyll a relative error, OWT algorithm</DESCRIPTION>
@@ -922,8 +884,8 @@
         <MIN>-12000.0</MIN>
         <MAX>15000.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>-12000,-6000,0,7500,15000</COLORBAR_LABELS>
         <DESCRIPTION>Elevation</DESCRIPTION>
@@ -933,8 +895,8 @@
         <MIN>0.85</MIN>
         <MAX>1.231</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Epsilon of aerosol correction</DESCRIPTION>
@@ -945,7 +907,7 @@
         <MAX>0.9152</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
@@ -956,7 +918,7 @@
         <MAX>0.92</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
@@ -966,8 +928,8 @@
         <MIN>0.0</MIN>
         <MAX>1.016</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>Aerosol optical thickness</COLORBAR_LABELS>
         <DESCRIPTION>Flags</DESCRIPTION>
@@ -977,8 +939,8 @@
         <MIN>0.0</MIN>
         <MAX>0.05</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0.0,0.01,0.02,0.03,0.04,0.05</COLORBAR_LABELS>
         <DESCRIPTION>Fluorescence Line Height</DESCRIPTION>
@@ -988,8 +950,8 @@
         <MIN>0.0</MIN>
         <MAX>0.05</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Fluorescence Quantum Yield</DESCRIPTION>
@@ -1018,8 +980,8 @@
         <MIN>1.3</MIN>
         <MAX>1.4</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Index of refraction of seawater</DESCRIPTION>
@@ -1029,8 +991,8 @@
         <MIN>1</MIN>
         <MAX>8</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Dominant optical Water Type</DESCRIPTION>
@@ -1040,8 +1002,8 @@
         <MIN>0</MIN>
         <MAX>1</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Normalized optical Water Type</DESCRIPTION>
@@ -1053,8 +1015,8 @@
         <MIN>0</MIN>
         <MAX>65500</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Number of pixels per bin</DESCRIPTION>
@@ -1066,7 +1028,7 @@
         <MAX>0.4</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>sm.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Soil Moisture</DESCRIPTION>
@@ -1111,8 +1073,8 @@
         <MIN>0.0</MIN>
         <MAX>0.1</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Relative Rrs difference</DESCRIPTION>
@@ -1122,8 +1084,8 @@
         <MIN>0</MIN>
         <MAX>20</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Scatterometer Wind Speed</DESCRIPTION>
@@ -1133,8 +1095,8 @@
         <MIN>0</MIN>
         <MAX>65500</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Number of scenes per bin</DESCRIPTION>
@@ -1144,8 +1106,8 @@
         <MIN>0.0</MIN>
         <MAX>90.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-<!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0,15,30,45,60,75,90</COLORBAR_LABELS>
         <DESCRIPTION>Solar Zenith Angle</DESCRIPTION>
@@ -1156,7 +1118,7 @@
         <MAX>70</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_sss.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Sea Surface Salinity</DESCRIPTION>
@@ -1168,7 +1130,7 @@
         <MAX>45.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_sst.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>0,10,20,30,40,45</COLORBAR_LABELS>
         <!--        <COLORBAR_LABELS>0:0°,10:10°,20:20°,30:30°,40:40°,45:45°</COLORBAR_LABELS>-->
@@ -1182,7 +1144,7 @@
         <MAX>180.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>2,50,100,150,180</COLORBAR_LABELS>
         <DESCRIPTION>Secchi Depth</DESCRIPTION>
@@ -1194,7 +1156,7 @@
         <MAX>180.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>5,50,100,150,180</COLORBAR_LABELS>
         <DESCRIPTION>Euphotic Depth</DESCRIPTION>
@@ -1206,7 +1168,7 @@
         <MAX>65.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>2,10,20,30,40,50,60,65</COLORBAR_LABELS>
         <DESCRIPTION>Heated Layer Depth</DESCRIPTION>
@@ -1218,7 +1180,7 @@
         <MAX>180.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>oceancolor_zphotic.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>5,50,100,150,180</COLORBAR_LABELS>
         <DESCRIPTION>Photic Depth at 50% Light (Lee)</DESCRIPTION>
@@ -1255,8 +1217,8 @@
         <MIN>-12000.0</MIN>
         <MAX>15000.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>gray_scale.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME>gray_scale.cpdthe</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>-12000,-6000,0,7500,15000</COLORBAR_LABELS>
         <DESCRIPTION>Elevation (with respect to sea-level in meters)</DESCRIPTION>
@@ -1278,7 +1240,7 @@
         <MAX>8500.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>topography.cpd</STANDARD_FILENAME>
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Topography (Colormap used in the ETOPO1 global relief map)</DESCRIPTION>
@@ -1302,8 +1264,8 @@
         <MIN>0.01</MIN>
         <MAX>20.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-<!--        <STANDARD_FILENAME>universal_bluered.cpd</STANDARD_FILENAME>-->
-<!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Chlorophyll</COLORBAR_TITLE>
         <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,20</COLORBAR_LABELS>
         <DESCRIPTION>Chlorophyll a concentration with universal (color-blind compliant) blue to red color palette
@@ -1340,8 +1302,8 @@
     <!--        <MIN>0</MIN>-->
     <!--        <MAX>255</MAX>-->
     <!--        <LOG_SCALE>false</LOG_SCALE>-->
-    <!--        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>-->
-    <!--        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>-->
+    <!--        <STANDARD_FILENAME></STANDARD_FILENAME>-->
+    <!--        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>-->
     <!--        <COLORBAR_TITLE></COLORBAR_TITLE>-->
     <!--        <COLORBAR_LABELS></COLORBAR_LABELS>-->
     <!--        <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>-->
