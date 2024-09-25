@@ -2,6 +2,7 @@ package org.esa.snap.ui.product.spectrum;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -42,9 +43,10 @@ public class DisplayableSpectrum implements Spectrum {
     public void addBand(SpectrumBand band) {
         Assert.notNull(band);
         bands.add(band);
+        /*
         if(band.isSelected()) {
             setSelected(true);
-        }
+        }*/
         updateUnit();
     }
 
