@@ -142,6 +142,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private boolean isCodeInducedAxisChange;
     private boolean isUserInducedAutomaticAdjustmentChosen;
 
+    private int workDone = 0;
+
     public SpectrumTopComponent() {
         // System.out.println("Spectrum View Tool is Open");
         spectrumViewToolIsOpen = false;
@@ -605,7 +607,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 runProgressMonitorForCursor();
             } else {
                 // System.out.println("Listening to showSpectrumForCursorButton - false");
-                recreateChart();
+//                recreateChart();
             }
         });
         showSpectrumForCursorButton.setName("showSpectrumForCursorButton");
@@ -904,18 +906,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
         // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
 
         ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                "Collecting Spectral Data") {
+                "Collecting Spectral Data for cursor") {
 
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
                 int totalWorkPlanned = 100;
+                workDone = 0;
                 pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
                     // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
-                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
+                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 20));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
@@ -965,13 +968,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
                     int totalWorkPlanned = 100;
+                    workDone = 0;
                     pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlanned);
 
 
                     try {
                         // System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm,(totalWorkPlanned - 10));
+                        chartHandler.updateData(pm,(totalWorkPlanned - 20));
                         if (pm != null && pm.isCanceled()) {
                             cancelActions();
                             pm.done();
@@ -1235,7 +1239,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_SPECTRAL_BANDS = "No spectral bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_SPECTRA_SELECTED = "No spectra selected";
-        private static final String MESSAGE_COLLECTING_SPECTRAL_INFORMATION = "Collecting spectral information...";
+        private static final String MESSAGE_COLLECTING_SPECTRAL_INFORMATION = "Collecting data (possible memory limitations)...";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1591,7 +1595,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
             if (isShowingCursorSpectrum() && currentView != null) {
                 int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned / spectra.size());
-                int workDone = 0;
 
                 for (DisplayableSpectrum spectrum : spectra) {
                     XYSeries series = new XYSeries(spectrum.getName());
@@ -1711,7 +1714,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
             int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned / spectra.size());
-            int workDone = 0;
             // System.out.println("totalWorkPlannedPerSpectra=" + totalWorkPlannedPerSpectra);
 
             for (DisplayableSpectrum spectrum : spectra) {
