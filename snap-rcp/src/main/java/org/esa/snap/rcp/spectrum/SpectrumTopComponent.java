@@ -22,7 +22,6 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.core.util.math.Array;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
@@ -142,7 +141,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private boolean isCodeInducedAxisChange;
     private boolean isUserInducedAutomaticAdjustmentChosen;
 
-    private int workDone = 0;
+    private int workDoneMaster = 0;
+    private int totalWorkPlannedMaster = 100;
 
     public SpectrumTopComponent() {
         // System.out.println("Spectrum View Tool is Open");
@@ -607,7 +607,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 runProgressMonitorForCursor();
             } else {
                 // System.out.println("Listening to showSpectrumForCursorButton - false");
-//                recreateChart();
+                recreateChart();
             }
         });
         showSpectrumForCursorButton.setName("showSpectrumForCursorButton");
@@ -911,14 +911,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                int totalWorkPlanned = 100;
-                workDone = 0;
-                pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlanned);
+                totalWorkPlannedMaster = 100;
+                workDoneMaster = 0;
+                pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
                 try {
                     // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
-                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 20));
+                    updateData(0, 0, 0, true, pm, (totalWorkPlannedMaster - 10));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
@@ -967,30 +967,38 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                    int totalWorkPlanned = 100;
-                    workDone = 0;
-                    pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlanned);
+                    totalWorkPlannedMaster = 100;
+                    workDoneMaster = 0;
+                    pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
 
                     try {
-                        // System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
+//                         System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm,(totalWorkPlanned - 20));
+                        chartHandler.updateData(pm,(totalWorkPlannedMaster - 10));
                         if (pm != null && pm.isCanceled()) {
                             cancelActions();
                             pm.done();
                             return null;
                         }
+//                        System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
+
 
                         chartHandler.updateChart();
 
                         updateChart(true);
                         if (pm != null) {
-                            pm.worked(1);
+                            if (workDoneMaster > totalWorkPlannedMaster) {
+                                pm.worked(1);
+                            }
                         }
+//                         System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 4");
+
                         chartPanel.repaint();
                         if (pm != null) {
-                            pm.worked(1);
+                            if (workDoneMaster > totalWorkPlannedMaster) {
+                                pm.worked(1);
+                            }
                         }
                         updateUIState();
                         // System.out.println("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
@@ -1063,10 +1071,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             spectrumNameBuilder.append("_").append(autoGroupingNamePart);
                         }
                     }
+
                     final String spectrumName = spectrumNameBuilder.toString();
                     int symbolIndex = SpectrumShapeProvider.getValidIndex(i, false);
                     DisplayableSpectrum spectrum = new DisplayableSpectrum(spectrumName, symbolIndex);
-                    spectrum.setSelected(i == selectedSpectrumIndex);
+                    if (spectrumName != null)  {
+                        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+                        if (view != null && view.getRaster().getName().startsWith(spectrumName)) {
+                            spectrum.setSelected(i == selectedSpectrumIndex);
+                        } else {
+                            spectrum.setSelected(false);
+                        }
+                    }
+
                     spectrum.setLineStyle(SpectrumStrokeProvider.getStroke(i));
                     autoGroupingSpectra[i] = spectrum;
                     i++;
@@ -1507,10 +1524,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
             if (rasterLevel >= 0) {
 
                 if (getDisplayedPins().length > 0 && isShowingCursorSpectrum()) {
-                    totalWorkPlanned = totalWorkPlanned/2;
+                    totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / 2.0);
                 }
 
-                // System.out.println("totalWorkPlanned=" + totalWorkPlanned);
+                System.out.println("totalWorkPlanned=" + totalWorkPlanned);
 
                 fillDatasetWithPinSeries(spectra, dataset, chart, pm, totalWorkPlanned);
                 // System.out.println("Finish fillDatasetWithPinSeries");
@@ -1588,13 +1605,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     bounds.getUpperBound() + delta);
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithCursorSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             showsValidCursorSpectra = false;
             if (modelP == null) {
                 return;
             }
+
+            int workDone2 = 0;
             if (isShowingCursorSpectrum() && currentView != null) {
-                int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned / spectra.size());
+                int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned2 / spectra.size());
 
                 for (DisplayableSpectrum spectrum : spectra) {
                     XYSeries series = new XYSeries(spectrum.getName());
@@ -1619,12 +1638,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                                    if (totalWorkPlanned2 != 0) {
+                                        if (pm != null) {pm.worked(1);}
+                                    }
+                                    workDoneMaster++;
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
                         }
                     } else {
@@ -1656,13 +1682,22 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                                    if (totalWorkPlanned2 != 0) {
+                                        if (pm != null) {pm.worked(1);}
+                                    }
+                                    workDoneMaster++;
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
+
                         }
                     }
                     if (pm != null && pm.isCanceled()) {
@@ -1692,29 +1727,40 @@ public class SpectrumTopComponent extends ToolTopComponent {
             return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
-        private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithPinSeries(List<DisplayableSpectrum> spectra, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             Placemark[] pins = getDisplayedPins();
 
-            totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
-            // System.out.println("Number of pins =" + pins.length);
-            // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
+            // it seems like most of the work is done on first pin so setting this to false for now
+            boolean splitWorkAcrossPins = false;
+            if (splitWorkAcrossPins) {
+                totalWorkPlanned2 = (int) Math.floor(1.0 * totalWorkPlanned2 / pins.length);
+            }
+
+//            System.out.println("Number of pins =" + pins.length);
+//            System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned2);
 
             for (Placemark pin : pins) {
-                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart, pm, totalWorkPlanned);
+//                System.out.println("Processing a pin");
+                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), spectra, chart, pm, totalWorkPlanned2);
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
+//                System.out.println("Processing a pin (PART 2)");
+
                 pinSeries.forEach(dataset::addSeries);
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableSpectrum> spectra, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableSpectrum> spectra, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
-            int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned / spectra.size());
-            // System.out.println("totalWorkPlannedPerSpectra=" + totalWorkPlannedPerSpectra);
+            int workDone2 = 0;
+
+            int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned2 / spectra.size());
+//             System.out.println("spectra.size()=" + spectra.size());
+//             System.out.println("totalWorkPlannedPerSpectra=" + totalWorkPlannedPerSpectra);
 
             for (DisplayableSpectrum spectrum : spectra) {
                 if (pm != null && pm.isCanceled()) {
@@ -1755,26 +1801,42 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     }
 
                     bandCount++;
-                    if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                        if (totalWorkPlanned != 0) {
-                            if (pm != null) {pm.worked(1);}
+
+                    if (bandCount > nextIncrementFinishedBandCount) {
+//                        System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+//                        System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                        if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                            if (totalWorkPlanned2 != 0) {
+                                if (pm != null) {pm.worked(1);}
+                            }
+                            workDoneMaster++;
+                            workDone2++;
                         }
+
                         nextIncrementFinishedBandCount += incrementLengthNumBands;
-                        workDone++;
                     }
+
                 }
 
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+
+//                System.out.println("test1");
+
                 updateRenderer(seriesIndex, pinColor, spectrum, chart);
                 seriesIndex++;
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+//                System.out.println("test2");
+
                 pinSeries.add(series);
+//                System.out.println("test3");
+
             }
             return pinSeries;
         }
