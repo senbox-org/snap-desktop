@@ -118,6 +118,7 @@
             <classifier>natives-linux-i586</classifier>
             <version>2.3.2</version>
         </dependency>
+        <!-- TODO check on mac intel if worldwind can still be worked with after commenting this out -->
 <!--        <dependency>-->
 <!--            <groupId>org.jogamp.gluegen</groupId>-->
 <!--            <artifactId>gluegen-rt</artifactId>-->
@@ -155,6 +156,7 @@
             <classifier>natives-linux-i586</classifier>
             <version>2.3.2</version>
         </dependency>
+        <!-- TODO check on mac intel if worldwind can still be worked with after commenting this out -->
         <!--<dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
