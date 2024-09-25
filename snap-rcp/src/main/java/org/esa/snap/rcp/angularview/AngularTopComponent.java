@@ -138,6 +138,8 @@ public class AngularTopComponent extends ToolTopComponent {
     public List<AngularBand> sensor_zenith_Bands = new ArrayList<>();
     public List<AngularBand> scattering_angle_Bands = new ArrayList<>();
 
+    private int workDone = 0;
+
     public AngularTopComponent() {
         // System.out.println("Angular View Tool is Open");
         angularViewToolIsOpen = false;
@@ -704,6 +706,7 @@ public class AngularTopComponent extends ToolTopComponent {
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
                 int totalWorkPlanned = 100;
+                workDone = 0;
                 pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
@@ -766,6 +769,7 @@ public class AngularTopComponent extends ToolTopComponent {
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
                     int totalWorkPlanned = 100;
+                    workDone = 0;
                     pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                     try {
@@ -1060,7 +1064,7 @@ public class AngularTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
-        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
+        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting data (possible memory limitations)...";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1343,7 +1347,6 @@ public class AngularTopComponent extends ToolTopComponent {
             }
             if (isShowingCursorAngularView() && currentView != null) {
                 int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-                int workDone = 0;
 
                 for (DisplayableAngularview angularView : angularViews) {
                     XYSeries series = new XYSeries(angularView.getName());
@@ -1488,7 +1491,6 @@ public class AngularTopComponent extends ToolTopComponent {
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
             int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-            int workDone = 0;
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
