@@ -56,7 +56,13 @@ public class ParametersPanel extends VerticalScrollablePanel {
                 Number defaultValue = (param.getDefaultValue() == null) ? null : (Number)param.getDefaultValue();
                 parameterComponent = new NumberParameterComponent(param.getName(), param.getType(), defaultValue, param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
             } else if (param.getType() == LocalDateTime.class || param.getType() == LocalDateTime[].class) {
-                parameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                final DateParameterComponent dateParameterComponent = new DateParameterComponent(param.getName(), param.getLabel(), param.isRequired(), textFieldPreferredHeight, textFieldBackgroundColor);
+                if (param.getName().toLowerCase().startsWith("start")) {
+                    dateParameterComponent.setParameterValue(LocalDateTime.now().minusDays(1));
+                } else if (param.getName().toLowerCase().startsWith("end")) {
+                    dateParameterComponent.setParameterValue(LocalDateTime.now());
+                }
+                parameterComponent = dateParameterComponent;
             } else if (param.getType() == String[].class) {
                 String defaultValue = (param.getDefaultValue() == null) ? null : param.getDefaultValue().toString();
                 if(param.getName().toLowerCase().contentEquals("password")){
