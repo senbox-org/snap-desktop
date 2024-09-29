@@ -80,9 +80,10 @@ public class DownloadProductListTimerRunnable extends AbstractProgressTimerRunna
                     if (!isFinished()) {
                         updatePageProductsLater(pageResults, totalProductCount, retrievedProductCount);
                         if (!downloadsAllPages() && retrievedProductCount < totalProductCount) {
-                            hideProgressPanelLater();
                             synchronized (lock) {
                                 try {
+                                    lock.wait(500);
+                                    hideProgressPanelLater();
                                     lock.wait();
                                 } catch (InterruptedException e) {
                                     Thread.currentThread().interrupt();
