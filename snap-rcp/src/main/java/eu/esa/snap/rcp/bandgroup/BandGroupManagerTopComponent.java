@@ -3,10 +3,12 @@ package eu.esa.snap.rcp.bandgroup;
 import eu.esa.snap.core.datamodel.group.BandGroupImpl;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.runtime.Engine;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -45,7 +47,10 @@ import java.util.logging.Logger;
 })
 public class BandGroupManagerTopComponent extends ToolTopComponent {
 
+    private static final String HELP_ID = "bandGroupsEditor";
+
     private final BandGroupsManagerController controller;
+
     private JComboBox<String> groupNamesCBox;
     private JTextField groupNameTextField;
     private JTextArea bandNamesTextField;
@@ -71,6 +76,7 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
         final JPanel groupListPanel = createGroupListPanel();
         mainPanel.add(groupListPanel);
+
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -167,6 +173,11 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
         containerPanel.add(buttonsPanel);
 
+        final AbstractButton helpButton = ToolButtonFactory.createButton(new HelpAction(this), false);
+        helpButton.setName("helpButton");
+        helpButton.setToolTipText("Help.");
+        containerPanel.add(helpButton);
+
         groupListPanel.add(containerPanel, BorderLayout.PAGE_START);
 
         return containerPanel;
@@ -192,7 +203,7 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx(Bundle.CTL_BandGroupManagerTopComponent_HelpId());
+        return new HelpCtx(HELP_ID);
     }
 
     @Override

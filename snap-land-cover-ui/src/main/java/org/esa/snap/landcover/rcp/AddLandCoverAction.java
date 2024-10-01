@@ -313,10 +313,12 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
             TreePath newPath = event.getNewLeadSelectionPath();
             if (newPath != null) {
                 DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) newPath.getLastPathComponent();
+                if(!selectedNode.isLeaf()) {
+                    return;
+                }
                 String selectedValue = selectedNode.getUserObject().toString();
 
                 try {
-                    System.out.println("Selected node: " + selectedValue);
                     property.setValue(selectedValue);
 
                     final Property bandNameProperty = getBinding().getContext().getPropertySet().getProperty("bandName");

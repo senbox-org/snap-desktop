@@ -27,31 +27,22 @@ import java.util.HashMap;
  */
 public class ProductRenderablesInfo {
 
-    public ArrayList<AnalyticSurface> owiAnalyticSurfaces = null;
-    public ArrayList<AnalyticSurface> oswAnalyticSurfaces = null;
-    public ArrayList<AnalyticSurface> rvlAnalyticSurfaces = null;
+    public final ArrayList<AnalyticSurface> owiAnalyticSurfaces = new ArrayList<>();
+    public final ArrayList<AnalyticSurface> oswAnalyticSurfaces = new ArrayList<>();
+    public final ArrayList<AnalyticSurface> rvlAnalyticSurfaces = new ArrayList<>();
 
-    public ArrayList<BufferWrapper> owiAnalyticSurfaceValueBuffers = null;
-    public ArrayList<BufferWrapper> oswAnalyticSurfaceValueBuffers = null;
-    public ArrayList<BufferWrapper> rvlAnalyticSurfaceValueBuffers = null;
+    public final ArrayList<BufferWrapper> owiAnalyticSurfaceValueBuffers = new ArrayList<>();
+    public final ArrayList<BufferWrapper> oswAnalyticSurfaceValueBuffers = new ArrayList<>();
+    public final ArrayList<BufferWrapper> rvlAnalyticSurfaceValueBuffers = new ArrayList<>();
 
-    public HashMap<String, ArrayList<Renderable>> theRenderableListHash;
+    public final HashMap<String, ArrayList<Renderable>> theRenderableListHash = new HashMap<>();
 
     public ProductRenderablesInfo() {
         super();
 
-        theRenderableListHash = new HashMap<>();
         theRenderableListHash.put("owi", new ArrayList<>());
         theRenderableListHash.put("osw", new ArrayList<>());
         theRenderableListHash.put("rvl", new ArrayList<>());
-
-        owiAnalyticSurfaces = new ArrayList<>();
-        oswAnalyticSurfaces = new ArrayList<>();
-        rvlAnalyticSurfaces = new ArrayList<>();
-
-        owiAnalyticSurfaceValueBuffers = new ArrayList<>();
-        oswAnalyticSurfaceValueBuffers = new ArrayList<>();
-        rvlAnalyticSurfaceValueBuffers = new ArrayList<>();
     }
 
     public void setAnalyticSurfaceAndBuffer(AnalyticSurface analyticSurface, BufferWrapper analyticSurfaceValueBuffer, String comp) {
