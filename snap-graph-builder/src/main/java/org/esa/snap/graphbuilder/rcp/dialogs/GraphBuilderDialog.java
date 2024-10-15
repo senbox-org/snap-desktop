@@ -98,16 +98,16 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
-    private JLabel statusLabel = null;
+    JLabel statusLabel = null;
     private String lastWarningMsg = "";
 
-    private JPanel progressPanel = null;
-    private JProgressBar progressBar = null;
+    JPanel progressPanel = null;
+    JProgressBar progressBar = null;
     private LabelBarProgressMonitor progBarMonitor = null;
     private JLabel progressMsgLabel = null;
     private boolean initGraphEnabled = true;
 
-    private final GraphExecuter graphEx;
+    GraphExecuter graphEx;
     private boolean isProcessing = false;
     private boolean allowGraphBuilding = true;
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
@@ -118,7 +118,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
-    private JTabbedPane tabbedPanel = null;
+    JTabbedPane tabbedPanel = null;
     private GraphNode selectedNode;
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID) {
@@ -487,7 +487,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     /**
      * Removes all tabs and clears the graph
      */
-    private void clearGraph() {
+    public void clearGraph() {
 
         initGraphEnabled = false;
         tabbedPanel.removeAll();
@@ -559,7 +559,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @return true if validation passes
      */
-    private boolean validateAllNodes() {
+    public boolean validateAllNodes() {
 
         if (isProcessing) return false;
 
@@ -641,6 +641,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             switch(eventType) {
                 case ADD_EVENT:
                     tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
+                    if(node.getOperatorUI().hasError()) {
+                        statusLabel.setText(node.getOperatorUI().getErrorMessage());
+                    }
                     refreshGraph();
                     break;
                 case REMOVE_EVENT:
