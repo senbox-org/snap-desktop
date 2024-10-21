@@ -49,6 +49,17 @@ public abstract class BaseOperatorUI implements OperatorUI {
     protected Map<String, Object> paramMap = null;
     protected Product[] sourceProducts = null;
     protected String operatorName = "";
+    private String errorMessage = null;
+
+    @Override
+    public boolean hasError() {
+        return errorMessage != null;
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
     private static Converter getItemConverter(final Object obj) {
         return ConverterRegistry.getInstance().getConverter(obj.getClass());
@@ -107,7 +118,8 @@ public abstract class BaseOperatorUI implements OperatorUI {
             try {
                 propertySet.setDefaultValues();
             } catch (IllegalStateException e) {
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e); do not throw or the UI will not be created
+                errorMessage = e.getMessage();
             }
         } else {
             // SNAP-3794 Handle possible parameter aliases from the incoming map
@@ -119,7 +131,8 @@ public abstract class BaseOperatorUI implements OperatorUI {
                     try {
                         property.setValue(paramMap.get(alias));
                     } catch (ValidationException e) {
-                        throw new RuntimeException(e);
+                        //throw new RuntimeException(e); do not throw or the UI will not be created
+                        errorMessage = e.getMessage();
                     }
                 }
             }
@@ -245,7 +258,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 }
             }
         }
-        return geometryNames.toArray(new String[geometryNames.size()]);
+        return geometryNames.toArray(new String[0]);
     }
 
     private void setParamsToConfiguration(final XppDom config) {

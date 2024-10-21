@@ -46,4 +46,8 @@ public interface OperatorUI {
     void convertToDOM(XppDomElement parentElement) throws GraphException;
 
     Map<String, Object> getParameters();
+
+    boolean hasError();
+
+    String getErrorMessage();
 }
