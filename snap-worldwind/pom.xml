@@ -110,7 +110,7 @@
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
             <classifier>natives-linux-amd64</classifier>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
@@ -135,7 +135,7 @@
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
             <classifier>natives-linux-amd64</classifier>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
