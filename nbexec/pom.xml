@@ -15,6 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jvm.version>21</jvm.version>
     </properties>
 
     <dependencies>
@@ -67,8 +68,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${jvm.version}</source>
+                    <target>${jvm.version}</target>
                 </configuration>
             </plugin>
             <plugin>
