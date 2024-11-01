@@ -1,13 +1,13 @@
 package org.esa.snap.ui.product;
 
+import eu.esa.snap.core.datamodel.group.BandGroup;
 import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.GridBagUtils;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -25,11 +25,14 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
     private Band[] selectedBands;
     private TiePointGrid[] allTiePointGrids;
     private TiePointGrid[] selectedTiePointGrids;
-    private boolean multipleProducts;
+    private BandGroup[] allBandGroups;
+    private final boolean multipleProducts;
     private int numSelected;
     private JCheckBox[] checkBoxes;
     private JCheckBox selectAllCheckBox;
     private JCheckBox selectNoneCheckBox;
+    private JCheckBox selectBandCheck;
+    private Product product;
 
     public DefaultBandChoosingStrategy(Band[] allBands, Band[] selectedBands, TiePointGrid[] allTiePointGrids,
                                        TiePointGrid[] selectedTiePointGrids, boolean multipleProducts) {
@@ -49,8 +52,13 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
         if (this.selectedTiePointGrids == null) {
             this.selectedTiePointGrids = new TiePointGrid[0];
         }
-        BandSorter.sort(allBands);
         this.multipleProducts = multipleProducts;
+    }
+
+    public DefaultBandChoosingStrategy(Band[] selectedBands, TiePointGrid[] selectedTiePointGrids, BandGroup[] allBandGroups, Product product, boolean multipleProducts) {
+        this(product.getBands(), selectedBands, product.getTiePointGrids(), selectedTiePointGrids, multipleProducts);
+        this.product = product;
+        this.allBandGroups = allBandGroups;
     }
 
     @Override
@@ -179,12 +187,25 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
         selectNoneCheckBox.setSelected(numSelected == 0);
         selectNoneCheckBox.setEnabled(numSelected > 0);
         selectNoneCheckBox.updateUI();
+
+        if (selectBandCheck != null && (selectAllCheckBox.isSelected() || selectNoneCheckBox.isSelected())) {
+            selectBandCheck.setSelected(false);
+        }
+        selectBandCheck.updateUI();
     }
 
     @Override
     public void setCheckBoxes(JCheckBox selectAllCheckBox, JCheckBox selectNoneCheckBox) {
         this.selectAllCheckBox = selectAllCheckBox;
         this.selectNoneCheckBox = selectNoneCheckBox;
+        updateCheckBoxStates();
+    }
+
+    @Override
+    public void setAdvancedCheckBoxes(JCheckBox selectAllCheckBox, JCheckBox selectNoneCheckBox, JCheckBox selectBandCheck) {
+        this.selectAllCheckBox = selectAllCheckBox;
+        this.selectNoneCheckBox = selectNoneCheckBox;
+        this.selectBandCheck = selectBandCheck;
         updateCheckBoxStates();
     }
 
@@ -197,6 +218,38 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
     @Override
     public void selectNone() {
         select(false);
+    }
+
+    @Override
+    public void selectBandGroup(String selectedBandGroupName) {
+        BandGroup selectedBandGroup = getSelectedBandGroup(selectedBandGroupName);
+
+        if (selectedBandGroup != null) {
+            final String[] bandNames = selectedBandGroup.getMatchingBandNames(this.product);
+            for (JCheckBox checker : checkBoxes) {
+                boolean bandContained = false;
+                for (final String bandName : bandNames) {
+                    if (checker.getText().equals(bandName)) {
+                        bandContained = true;
+                        break;
+                    }
+                }
+                checker.setSelected(bandContained);
+            }
+            this.numSelected = bandNames.length;
+            updateCheckBoxStates();
+        }
+    }
+
+    private BandGroup getSelectedBandGroup(String selectedBandGroup) {
+        if (this.allBandGroups != null) {
+            for (final BandGroup bandGroup : this.allBandGroups) {
+                if (bandGroup.getName().equals(selectedBandGroup)) {
+                    return bandGroup;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

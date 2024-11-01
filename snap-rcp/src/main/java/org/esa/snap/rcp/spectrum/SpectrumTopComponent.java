@@ -518,7 +518,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         int displayIndex = 0;
         final List<DisplayableSpectrum> spectra = new ArrayList<>();
-        final BandGroup[] userBandGroups = bandGroupsManager.getMatchingProduct(currentProduct);
+        final BandGroup[] userBandGroups = bandGroupsManager.getGroupsMatchingProduct(currentProduct);
         if (userBandGroups.length > 0) {
             final DisplayableSpectrum[] userGroupingSpectra = new DisplayableSpectrum[userBandGroups.length];
             for (int i = 0; i < userBandGroups.length; i++) {
