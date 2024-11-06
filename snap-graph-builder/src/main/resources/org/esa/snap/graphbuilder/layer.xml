@@ -35,6 +35,14 @@
             <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.ReprojectionUI"/>
             <attr name="operatorName" stringvalue="Reproject"/>
         </file>
+        <file name="org.esa.snap.graphbuilder.gpf.ui.RasterToVectorUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.RasterToVectorUI"/>
+            <attr name="operatorName" stringvalue="Raster-To-Vector"/>
+        </file>
+        <file name="org.esa.snap.graphbuilder.gpf.ui.QuantizationUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.graphbuilder.gpf.ui.QuantizationUI"/>
+            <attr name="operatorName" stringvalue="Quantization"/>
+        </file>
     </folder>
 
 </filesystem>
