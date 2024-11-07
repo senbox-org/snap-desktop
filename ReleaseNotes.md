@@ -1,6 +1,9 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 12.0.0
+    [SNAP-3758] Error subsetting Sentinel-1 image
+
 # New in SNAP 11.0.0
     
     [SNAP-3709] Update GUI - use of band groups
