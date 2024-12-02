@@ -3,8 +3,7 @@ package org.esa.snap.ui.product;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.TiePointGrid;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 interface BandChoosingStrategy {
 
@@ -18,9 +17,13 @@ interface BandChoosingStrategy {
 
     void setCheckBoxes(JCheckBox selectAllCheckBox, JCheckBox selectNoneCheckBox);
 
+    void setAdvancedCheckBoxes(JCheckBox selectAllCheckBox, JCheckBox selectNoneCheckBox, JCheckBox selectBandCheck);
+
     void selectAll();
 
     void selectNone();
+
+    void selectBandGroup(String selectedBandGroupName);
 
     boolean atLeastOneBandSelected();
 
