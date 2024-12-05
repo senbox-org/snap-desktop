@@ -7,8 +7,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.GridBagUtils;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -340,6 +339,11 @@ public class GroupedBandChoosingStrategy implements BandChoosingStrategy {
     }
 
     @Override
+    public void setAdvancedCheckBoxes(JCheckBox selectAllCheckBox, JCheckBox selectNoneCheckBox, JCheckBox selectBandCheck) {
+
+    }
+
+    @Override
     public void selectAll() {
         checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPath(new TreePath(checkBoxTree.getModel().getRoot()));
     }
@@ -347,6 +351,11 @@ public class GroupedBandChoosingStrategy implements BandChoosingStrategy {
     @Override
     public void selectNone() {
         checkBoxTree.getCheckBoxTreeSelectionModel().clearSelection();
+    }
+
+    @Override
+    public void selectBandGroup(String selectedBandGroupName) {
+
     }
 
     @Override
