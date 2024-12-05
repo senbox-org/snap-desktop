@@ -1,6 +1,10 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+
+# New in SNAP 11.0.1
+    [SNAP-3893] NullPointerException in Band Groups Manager
+
 # New in SNAP 11.0.0
     
     [SNAP-3839] Reorganise import menu
