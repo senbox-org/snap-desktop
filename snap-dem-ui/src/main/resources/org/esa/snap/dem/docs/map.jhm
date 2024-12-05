@@ -14,5 +14,6 @@
     <mapID target="importSRTM1sec" url="readers/ImportSRTM1sec.html"/>
 
     <mapID target="FillHoleOp" url="operators/FillHoleOp.html"/>
+    <mapID target="ComputeSlopeAspectOp" url="operators/ComputeSlopeAspectOp.html"/>
 
 </map>
