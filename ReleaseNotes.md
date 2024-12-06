@@ -3,6 +3,7 @@ Release Notes - Sentinel Application Platform
 
 
 # New in SNAP 11.0.1
+    [SNAP-3894] Issue with Compute Slope and Aspect tool - user complaint
     [SNAP-3893] NullPointerException in Band Groups Manager
     [SNAP-3892] New band group not correctly considered for band subset
 
