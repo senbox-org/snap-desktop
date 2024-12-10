@@ -286,6 +286,9 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
     protected void removeBandGroup() {
         final String groupToRemove = (String) groupNamesCBox.getSelectedItem();
+        if (StringUtils.isNullOrEmpty(groupToRemove)) {
+            return;
+        }
 
         if (groupToRemove.startsWith("<unnamed>")) {
             Dialogs.showWarning("This band group is supplied by the product.\nIt cannot be edited.");
