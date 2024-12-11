@@ -1314,7 +1314,7 @@ public class ProductSubsetDialog extends ModalDialog {
             selectBandCheck.setMnemonic('b');
             selectBandCheck.addActionListener(allCheckListener);
 
-            final BandGroup[] bandGroups = bandGroupsManager.getMatchingProduct(product);
+            final BandGroup[] bandGroups = bandGroupsManager.getGroupsMatchingProduct(product);
             final String[] groupNames = new String[bandGroups.length];
             for (int i = 0; i < bandGroups.length; i++) {
                 groupNames[i] = bandGroups[i].getName();
@@ -1400,7 +1400,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         void checkProductNodesOfGroup() {
-            final BandGroup[] bandGroups = bandGroupsManager.getMatchingProduct(product);
+            final BandGroup[] bandGroups = bandGroupsManager.getGroupsMatchingProduct(product);
             final String selectedBandGroupName = (String) groupNamesBox.getSelectedItem();
 
             BandGroup selectedBandGroup = null;

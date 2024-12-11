@@ -23,6 +23,7 @@
             <plugin>
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
+                <version>14.0</version>
                 <configuration>
                     <!-- necessary because of issue described here:
                     http://mail-archives.apache.org/mod_mbox/netbeans-dev/201906.mbox/%3cCAArD4mAMKOXQtxCwcMdB2tVEXCNirEfKT4+c=0-rUm6YDg8EHg@mail.gmail.com%3e

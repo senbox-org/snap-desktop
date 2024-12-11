@@ -20,9 +20,6 @@ public class GDALMenuActionRegister implements Runnable, GDALWriterPlugInListene
 
     private static final Logger logger = Logger.getLogger(GDALMenuActionRegister.class.getName());
 
-    public GDALMenuActionRegister() {
-    }
-
     @Override
     public void run() {
         GDALInstallInfo.INSTANCE.setListener(this);
@@ -44,9 +41,9 @@ public class GDALMenuActionRegister implements Runnable, GDALWriterPlugInListene
     }
 
     private static void registerAction(String category, String menuPath, Action action) throws IOException {
-        String actionName = (String)action.getValue(Action.NAME);
+        final String actionName = (String)action.getValue(Action.NAME);
         // add update action
-        String originalFile = "Actions/" + category + "/" + actionName + ".instance";
+        final String originalFile = "Actions/" + category + "/" + actionName + ".instance";
         FileObject in = getFolderAt("Actions/" + category);
         FileObject obj = in.getFileObject(actionName, "instance");
         if (obj == null) {
@@ -66,17 +63,14 @@ public class GDALMenuActionRegister implements Runnable, GDALWriterPlugInListene
     }
 
     private static FileObject getFolderAt(String inputPath) throws IOException {
-        String parts[] = inputPath.split("/");
-        FileObject existing = FileUtil.getConfigFile(inputPath);
+        final String[] parts = inputPath.split("/");
+        final FileObject existing = FileUtil.getConfigFile(inputPath);
         if (existing != null)
             return existing;
 
         FileObject base = FileUtil.getConfigFile(parts[0]);
-        if (base == null) {
-            return null;
-        }
         for (int i = 1; i < parts.length; i++) {
-            String path = joinPath("/", Arrays.copyOfRange(parts, 0, i+1));
+            final String path = String.join("/", Arrays.copyOfRange(parts, 0, i + 1));
             FileObject next = FileUtil.getConfigFile(path);
             if (next == null) {
                 next = base.createFolder(parts[i]);
@@ -84,16 +78,5 @@ public class GDALMenuActionRegister implements Runnable, GDALWriterPlugInListene
             base = next;
         }
         return FileUtil.getConfigFile(inputPath);
-    }
-
-    private static String joinPath(String separator, String parts[]) {
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < parts.length; i++) {
-            if (i > 0) {
-                str.append(separator);
-            }
-            str.append(parts[i].toString());
-        }
-        return str.toString();
     }
 }

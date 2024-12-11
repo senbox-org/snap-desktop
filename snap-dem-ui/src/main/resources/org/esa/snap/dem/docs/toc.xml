@@ -19,6 +19,7 @@
         <tocitem text="Raster">
             <tocitem text="DEM Tools">
                 <tocitem text="Fill DEM Hole" target="FillHoleOp"/>
+                <tocitem text="Compute Slope and Aspect" target="ComputeSlopeAspectOp"/>
             </tocitem>
         </tocitem>
     </tocitem>

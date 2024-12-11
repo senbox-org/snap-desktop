@@ -49,6 +49,17 @@ public abstract class BaseOperatorUI implements OperatorUI {
     protected Map<String, Object> paramMap = null;
     protected Product[] sourceProducts = null;
     protected String operatorName = "";
+    private String errorMessage = null;
+
+    @Override
+    public boolean hasError() {
+        return errorMessage != null;
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
     private static Converter getItemConverter(final Object obj) {
         return ConverterRegistry.getInstance().getConverter(obj.getClass());
@@ -107,8 +118,23 @@ public abstract class BaseOperatorUI implements OperatorUI {
             try {
                 propertySet.setDefaultValues();
             } catch (IllegalStateException e) {
-                // todo - handle exception here
-                e.printStackTrace();
+                //throw new RuntimeException(e); do not throw or the UI will not be created
+                errorMessage = e.getMessage();
+            }
+        } else {
+            // SNAP-3794 Handle possible parameter aliases from the incoming map
+            final Property[] properties = this.propertySet.getProperties();
+            for (Property property : properties) {
+                final PropertyDescriptor descriptor = property.getDescriptor();
+                final String alias = descriptor.getAlias();
+                if (alias != null && paramMap.containsKey(alias)) {
+                    try {
+                        property.setValue(paramMap.get(alias));
+                    } catch (ValidationException e) {
+                        //throw new RuntimeException(e); do not throw or the UI will not be created
+                        errorMessage = e.getMessage();
+                    }
+                }
             }
         }
     }
@@ -181,6 +207,14 @@ public abstract class BaseOperatorUI implements OperatorUI {
     }
 
     /**
+     * Method used for test purposes only
+     * @return  The current property set
+     */
+    public PropertySet getPropertySet() {
+        return this.propertySet;
+    }
+
+    /**
      * The method check if there are at least one multi-size source product
      *
      * @return false if there is not multi-size source product
@@ -224,7 +258,7 @@ public abstract class BaseOperatorUI implements OperatorUI {
                 }
             }
         }
-        return geometryNames.toArray(new String[geometryNames.size()]);
+        return geometryNames.toArray(new String[0]);
     }
 
     private void setParamsToConfiguration(final XppDom config) {
