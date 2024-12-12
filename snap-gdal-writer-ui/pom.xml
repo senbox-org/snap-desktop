@@ -9,7 +9,7 @@
     <parent>
         <artifactId>snap-desktop</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>11.0.1-SNAPSHOT</version>
+        <version>11.0.1</version>
     </parent>
 
     <artifactId>snap-gdal-writer-ui</artifactId>
