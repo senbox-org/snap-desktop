@@ -305,7 +305,7 @@ public class QuicklookToolView extends TopComponent implements Thumbnail.Thumbna
             for (final Product product : productSet) {
                 if(product.getFileLocation() != null) {
                     final Quicklook quicklook;
-                    if (qlName.equals(DEFAULT_QUICKLOOK)) {
+                    if (qlName == null || qlName.equals(DEFAULT_QUICKLOOK)) {
                         quicklook = product.getDefaultQuicklook();
                     } else {
                         quicklook = product.getQuicklook(qlName);
