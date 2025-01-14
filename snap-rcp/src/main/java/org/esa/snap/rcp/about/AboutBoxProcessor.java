@@ -27,7 +27,7 @@ import java.util.Set;
  */
 @ServiceProvider(service = Processor.class)
 @SupportedAnnotationTypes("org.esa.snap.rcp.about.AboutBox")
-@SupportedSourceVersion(SourceVersion.RELEASE_11)
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class AboutBoxProcessor extends LayerGeneratingProcessor {
 
     @Override
