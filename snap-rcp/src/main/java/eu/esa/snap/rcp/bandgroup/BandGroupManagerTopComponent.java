@@ -286,6 +286,9 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
 
     protected void removeBandGroup() {
         final String groupToRemove = (String) groupNamesCBox.getSelectedItem();
+        if (StringUtils.isNullOrEmpty(groupToRemove)) {
+            return;
+        }
 
         if (groupToRemove.startsWith("<unnamed>")) {
             Dialogs.showWarning("This band group is supplied by the product.\nIt cannot be edited.");
@@ -329,6 +332,16 @@ public class BandGroupManagerTopComponent extends ToolTopComponent {
     }
 
     static String[] parseTextFieldContent(String bandNamesText) {
-        return StringUtils.split(bandNamesText.trim(), new char[]{'\n', ','}, true);
+        String[] bandNamesArray = StringUtils.split(bandNamesText.trim(), new char[]{'\n', ','}, true);
+        String[] result = new String[bandNamesArray.length];
+        for (int ii = 0; ii < bandNamesArray.length; ii++) {
+            String bandName = bandNamesArray[ii];
+            if (bandName.contains("*")) {
+                result[ii] = bandName;
+            } else {
+                result[ii] = bandName + "#" + bandName;
+            }
+        }
+        return result;
     }
 }

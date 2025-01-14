@@ -6,7 +6,7 @@
     <parent>
         <artifactId>snap-sta-adapters</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>11.0.0</version>
+        <version>11.0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>OTB-EdgeExtraction</artifactId>

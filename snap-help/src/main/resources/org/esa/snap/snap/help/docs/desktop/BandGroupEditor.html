@@ -43,13 +43,14 @@
     product, the selection by group is just checking for matching names.
 
     <p>
-    If e.g. a certain set of wavelengths is required as input, several names from different product types can be mixed into
-    a single group:
+        If e.g. a certain set of wavelengths is required as input, several names from different product types can be mixed into
+        a single group:
         "radiance_08, radiance_09, OA08_radiance, OA09_radiance, M08_radiance, M09_radiance"
-    will select 681nm and 709nm bands from OLCI and MERIS (old and new naming).
+        will select 681nm and 709nm bands from OLCI and MERIS (old and new naming).
 
     <p>
-    User defined groups can be used in the <a href="ProductSubsetDialog.html">Product Subset Dialog</a> and in the <a href="SpectrumWindow.html">SpectrumView</a>
+
+    User defined groups can be used in the <a href="ProductSubsetDialog.html">Product Subset Dialog</a>, the <a href="PinManagement.html">Pin Manager</a> and in the <a href="SpectrumWindow.html">SpectrumView</a>
     to simplify handling of common band group definitions that are frequently used.
 
     The Band Group definitions are kept as a user-defined property and saved in a text file for easy manual editing of sharing.
@@ -71,17 +72,15 @@
 <ul>
     <li>Add: create a new Band Group definitions. The Edit Band Grouping panel will be cleared and allows editing.</li>
     <li>Remove: removes the currently selected Band Group definition from the list.</li>
-    <li>Save: saves the changes to the configuration file.</li>
+    <li>Store: saves the changes to the configuration file.</li>
 </ul>
 
 <h4>Edit Band Grouping</h4>
 
 <p>
-    In this panel you can create and edit/modify Band Groups. To name a band group enter the name in the appropriate text box.
-    In the text-box "Band Names", you can add the band names that shall be grouped by entering the names manually. Names must be formatted either as one
+    In this panel you can create and edit/modify Band Groups. To name a band group add the name in the appropriate text box.
+    In the text-box Band Names, you can add the band names that shall be grouped. Names must be formatted either as one
     line, comma separated or as line separated band names.
-    <p>
-    Band groups defined by the product currently opened are displayed, if the product or a band of it are selected, but cannot be edited.
 </p>
 <p>
     Pressing OK adds the Band Group to the list, Pressing Cancel reverts the editing.
