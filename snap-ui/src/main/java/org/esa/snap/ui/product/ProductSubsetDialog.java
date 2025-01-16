@@ -926,7 +926,7 @@ public class ProductSubsetDialog extends ModalDialog {
             if (givenProductSubsetDef != null) {
                 Rectangle region;
                 if (product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null) {
-                    region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem());
+                    region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem()).getSubsetExtent();
                 } else {
                     region = givenProductSubsetDef.getRegion();
                 }
