@@ -25,12 +25,14 @@ import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
+import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.util.GeoUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.ui.product.ProductSubsetByPolygonUiComponents;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.swing.*;
@@ -60,6 +62,7 @@ public class SourceUI extends BaseOperatorUI {
     private static final String MASK_LIST_PARAMETER = "maskNames";
     private static final String PIXEL_REGION_PARAMETER = "pixelRegion";
     private static final String GEOMETRY_REGION_PARAMETER = "geometryRegion";
+    private static final String POLYGON_REGION_PARAMETER = "polygonRegion";
     private static final String COPY_METADATA_PARAMETER = "copyMetadata";
     private static final String ANY_FORMAT = "Any Format";
     private final JList bandList = new JList();
@@ -72,8 +75,11 @@ public class SourceUI extends BaseOperatorUI {
     private JCheckBox copyMetadata = new JCheckBox("Copy Metadata", true);
     private JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
     private JRadioButton geoCoordRadio = new JRadioButton("Geographic Coordinates");
+    private final JRadioButton vectorFileRadio = new JRadioButton("Polygon");
     private JPanel pixelPanel = new JPanel(new GridBagLayout());
     private JPanel geoPanel = new JPanel(new GridBagLayout());
+    private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.geoPanel);
+    private final JPanel vectorFilePanel = productSubsetByPolygonUiComponents.getImportVectorFilePanel();
     private JSpinner pixelCoordXSpinner;
     private JSpinner pixelCoordYSpinner;
     private JSpinner pixelCoordWidthSpinner;
@@ -116,6 +122,7 @@ public class SourceUI extends BaseOperatorUI {
         final Product selectedProduct = sourceProductSelector.getSelectedProduct();
         if (selectedProduct != null) {
             updateFormatNamesCombo(selectedProduct.getFileLocation());
+            resetProductSubsetByPolygon(selectedProduct);
         }
         return new JScrollPane(panel);
     }
@@ -202,11 +209,16 @@ public class SourceUI extends BaseOperatorUI {
         OperatorUIUtils.updateParamList(maskList, paramMap, MASK_LIST_PARAMETER);
         paramMap.remove(PIXEL_REGION_PARAMETER);
         paramMap.remove(GEOMETRY_REGION_PARAMETER);
+        paramMap.remove(POLYGON_REGION_PARAMETER);
+        final Rectangle pixelRegion = new Rectangle(((Number) pixelCoordXSpinner.getValue()).intValue(), ((Number) pixelCoordYSpinner.getValue()).intValue(), ((Number) pixelCoordWidthSpinner.getValue()).intValue(), ((Number) pixelCoordHeightSpinner.getValue()).intValue());
         if (pixelCoordRadio.isSelected()) {
-            paramMap.put(PIXEL_REGION_PARAMETER, new Rectangle(((Number) pixelCoordXSpinner.getValue()).intValue(), ((Number) pixelCoordYSpinner.getValue()).intValue(), ((Number) pixelCoordWidthSpinner.getValue()).intValue(), ((Number) pixelCoordHeightSpinner.getValue()).intValue()));
+            paramMap.put(PIXEL_REGION_PARAMETER, pixelRegion);
         }
         if (geoCoordRadio.isSelected()) {
             paramMap.put(GEOMETRY_REGION_PARAMETER, getGeometry());
+        }
+        if (vectorFileRadio.isSelected()) {
+            paramMap.put(POLYGON_REGION_PARAMETER, getPolygon());
         }
         paramMap.put(COPY_METADATA_PARAMETER, copyMetadata.isSelected());
     }
@@ -227,6 +239,7 @@ public class SourceUI extends BaseOperatorUI {
                     pixelCoordRadio.setSelected(true);
                     pixelPanel.setVisible(true);
                     geoPanel.setVisible(false);
+                    vectorFilePanel.setVisible(false);
 
                     // also reset pixel coords
                     pixelCoordXSpinner.setValue(0);
@@ -238,6 +251,8 @@ public class SourceUI extends BaseOperatorUI {
                     pixelPanelChanged();
                     // sync geo coords
                     syncLatLonWithXYParams();
+                    // reset subset polygon
+                    resetProductSubsetByPolygon(prod);
                 }
             }
         }
@@ -265,9 +280,11 @@ public class SourceUI extends BaseOperatorUI {
         pixelCoordRadio.setSelected(true);
         pixelCoordRadio.setActionCommand("pixelCoordRadio");
         geoCoordRadio.setActionCommand("geoCoordRadio");
+        vectorFileRadio.setActionCommand("vectorFileRadio");
         ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
+        group.add(vectorFileRadio);
         advancedOptionsBtn.addActionListener(e -> {
             advancedOptionsPanel.setVisible(!advancedOptionsPanel.isVisible());
             advancedOptionsBtn.setText(advancedOptionsPanel.isVisible() ? "Without Advanced options" : "Advanced options");
@@ -276,10 +293,17 @@ public class SourceUI extends BaseOperatorUI {
         pixelCoordRadio.addActionListener(e -> {
             pixelPanel.setVisible(true);
             geoPanel.setVisible(false);
+            vectorFilePanel.setVisible(false);
         });
         geoCoordRadio.addActionListener(e -> {
             pixelPanel.setVisible(false);
             geoPanel.setVisible(true);
+            vectorFilePanel.setVisible(false);
+        });
+        vectorFileRadio.addActionListener(e -> {
+            pixelPanel.setVisible(false);
+            geoPanel.setVisible(false);
+            vectorFilePanel.setVisible(true);
         });
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
@@ -314,9 +338,10 @@ public class SourceUI extends BaseOperatorUI {
         gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, gapBetweenColumns);
         advancedOptionsPanel.add(new JScrollPane(maskList), gbc);
 
-        JPanel regionTypePanel = new JPanel(new GridLayout(1, 2));
+        JPanel regionTypePanel = new JPanel(new GridLayout(1, 3));
         regionTypePanel.add(pixelCoordRadio);
         regionTypePanel.add(geoCoordRadio);
+        regionTypePanel.add(vectorFileRadio);
 
         gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
         advancedOptionsPanel.add(regionTypePanel, gbc);
@@ -327,6 +352,10 @@ public class SourceUI extends BaseOperatorUI {
         gbc = SwingUtils.buildConstraints(0, 5, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
         advancedOptionsPanel.add(geoPanel, gbc);
         geoPanel.setVisible(false);
+
+        gbc = SwingUtils.buildConstraints(0, 6, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 2, 1, gapBetweenRows, 0);
+        advancedOptionsPanel.add(vectorFilePanel, gbc);
+        vectorFilePanel.setVisible(false);
 
         return contentPanel;
     }
@@ -623,6 +652,19 @@ public class SourceUI extends BaseOperatorUI {
             return GeoUtils.computeGeometryUsingPixelRegion(geoCoding, bounds);
         }
         return null;
+    }
+
+    private org.locationtech.jts.geom.Polygon getPolygon() {
+        if (productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+            return productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygon();
+        }
+        return null;
+    }
+
+    private void resetProductSubsetByPolygon(Product product){
+        final MetadataInspector.Metadata productMetadata = new MetadataInspector.Metadata(product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        productMetadata.setGeoCoding(product.getSceneGeoCoding());
+        productSubsetByPolygonUiComponents.setTargetProductMetadata(productMetadata);
     }
 
     private class SourceSelectionChangeListener implements SelectionChangeListener {
