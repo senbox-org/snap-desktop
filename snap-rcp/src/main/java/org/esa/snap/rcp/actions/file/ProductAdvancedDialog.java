@@ -13,6 +13,7 @@ import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.ui.loading.AbstractModalDialog;
 import org.esa.snap.ui.loading.LoadingIndicator;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.ui.product.ProductSubsetByPolygonUiComponents;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.swing.*;
@@ -42,9 +43,11 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
 
     private final JRadioButton pixelCoordRadio;
     private final JRadioButton geoCoordRadio;
+    private final JRadioButton vectorFileRadio;
 
     private final JPanel pixelPanel;
     private final JPanel geoPanel;
+    private final JPanel vectorFilePanel;
 
     private JScrollPane scrollPaneMask;
 
@@ -67,6 +70,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
     private MetadataInspector metadataInspector;
     private File file;
     private ProductSubsetDef productSubsetDef;
+    private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.getJDialog());
 
     public ProductAdvancedDialog(Window parent, String title, MetadataInspector metadataInspector, File file) {
         super(parent, title, true, null);
@@ -83,9 +87,11 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
 
         pixelCoordRadio = new JRadioButton("Pixel Coordinates");
         geoCoordRadio = new JRadioButton("Geographic Coordinates");
+        vectorFileRadio = new JRadioButton("Polygon");
 
         pixelPanel = new JPanel(new GridBagLayout());
         geoPanel = new JPanel(new GridBagLayout());
+        vectorFilePanel = productSubsetByPolygonUiComponents.getImportVectorFilePanel();
     }
 
     @Override
@@ -132,14 +138,17 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         pixelCoordRadio.setSelected(true);
         pixelCoordRadio.setActionCommand("pixelCoordRadio");
         geoCoordRadio.setActionCommand("geoCoordRadio");
+        vectorFileRadio.setActionCommand("vectorFileRadio");
         ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
+        group.add(vectorFileRadio);
         pixelCoordRadio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pixelPanel.setVisible(true);
                 geoPanel.setVisible(false);
+                vectorFilePanel.setVisible(false);
             }
         });
         geoCoordRadio.addActionListener(new ActionListener() {
@@ -147,7 +156,13 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
             public void actionPerformed(ActionEvent e) {
                 pixelPanel.setVisible(false);
                 geoPanel.setVisible(true);
+                vectorFilePanel.setVisible(false);
             }
+        });
+        vectorFileRadio.addActionListener(e -> {
+            pixelPanel.setVisible(false);
+            geoPanel.setVisible(false);
+            vectorFilePanel.setVisible(true);
         });
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
@@ -165,9 +180,10 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         gbc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST, 1, 1, gapBetweenRows, gapBetweenColumns);
         contentPanel.add(scrollPaneMask, gbc);
 
-        JPanel regionTypePanel = new JPanel(new GridLayout(1, 2));
+        JPanel regionTypePanel = new JPanel(new GridLayout(1, 3));
         regionTypePanel.add(pixelCoordRadio);
         regionTypePanel.add(geoCoordRadio);
+        regionTypePanel.add(vectorFileRadio);
 
         gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 2, 1, gapBetweenRows, 0);
         contentPanel.add(regionTypePanel, gbc);
@@ -179,6 +195,9 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         contentPanel.add(geoPanel, gbc);
         geoPanel.setVisible(false);
 
+        gbc = SwingUtils.buildConstraints(0, 6, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST, 2, 1, gapBetweenRows, 0);
+        contentPanel.add(vectorFilePanel, gbc);
+        vectorFilePanel.setVisible(false);
         return contentPanel;
     }
 
@@ -340,6 +359,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
 
     private void onSuccessfullyLoadingProductMetadata(MetadataInspector.Metadata result){
         this.readerInspectorExposeParameters = result;
+        this.productSubsetByPolygonUiComponents.setTargetProductMetadata(result);
         productWidth = result.getProductWidth();
         productHeight = result.getProductHeight();
 
@@ -564,7 +584,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
     }
 
     private void createSubsetDef() {
-        if (pixelPanel.isVisible()) {
+        if (pixelPanel.isVisible() || vectorFilePanel.isVisible()) {
             updateSubsetDefNodeNameList(false);
         } else if (geoPanel.isVisible() && geoCoordRadio.isEnabled()) {
             updateSubsetDefNodeNameList(true);
@@ -606,6 +626,13 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
                         ((Integer)pixelCoordYSpinner.getValue()),
                         ((Integer)pixelCoordWidthSpinner.getValue()),
                         ((Integer)pixelCoordHeightSpinner.getValue()), 0);
+            }
+        }
+        if (vectorFileRadio.isSelected() && productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+            productSubsetDef.setSubsetPolygon(productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygon());
+            final Rectangle subsetFromVectorFileExtent = productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getExtentOfPolygon();
+            if (subsetFromVectorFileExtent != null) {
+                subsetRegion = new PixelSubsetRegion(subsetFromVectorFileExtent.x, subsetFromVectorFileExtent.y, subsetFromVectorFileExtent.width, subsetFromVectorFileExtent.height, 0);
             }
         }
         productSubsetDef.setSubsetRegion(subsetRegion);
