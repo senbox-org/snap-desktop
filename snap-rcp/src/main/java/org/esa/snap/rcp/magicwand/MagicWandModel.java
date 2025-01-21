@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.magicwand;
 
 import com.bc.ceres.core.Assert;
-import com.bc.ceres.glevel.MultiLevelImage;
+import com.bc.ceres.multilevel.MultiLevelImage;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 import org.esa.snap.core.datamodel.Band;
@@ -31,7 +31,6 @@ import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.util.ObjectUtils;
 import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.StringUtils;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 
 import javax.media.jai.Interpolation;
 import java.awt.*;

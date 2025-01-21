@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.angularview;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.multilevel.MultiLevelModel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import org.esa.snap.core.datamodel.*;

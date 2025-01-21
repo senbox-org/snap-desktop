@@ -6,7 +6,7 @@ import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.util.math.MathUtils;
 
 
-import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.multilevel.MultiLevelModel;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.AffineTransform;
