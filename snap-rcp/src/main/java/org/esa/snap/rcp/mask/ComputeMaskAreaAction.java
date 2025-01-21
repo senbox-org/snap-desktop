@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.glevel.MultiLevelImage;
+import com.bc.ceres.multilevel.MultiLevelImage;
 import com.bc.ceres.swing.progress.DialogProgressMonitor;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;

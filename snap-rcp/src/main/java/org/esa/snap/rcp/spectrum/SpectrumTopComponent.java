@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.multilevel.MultiLevelModel;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
