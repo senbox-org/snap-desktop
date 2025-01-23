@@ -140,12 +140,9 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
 
     void applyFilteredGrids() {
         if (product != null) {
-            Band[] allBands = product.getBands();
-            TiePointGrid[] allGrids = product.getTiePointGrids();
             BandChooser bandChooser = new BandChooser(SwingUtilities.getWindowAncestor(this),
-                    "Available Bands And Tie Point Grids",
-                    getHelpId(), false,
-                    allBands, selectedBands, allGrids, selectedGrids, true);
+                    "Available Bands And Tie Point Grids", getHelpId(), false,
+                    selectedBands, selectedGrids, product, true);
             if (bandChooser.show() == ModalDialog.ID_OK) {
                 selectedBands = bandChooser.getSelectedBands();
                 selectedGrids = bandChooser.getSelectedTiePointGrids();

@@ -17,17 +17,13 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.glevel.MultiLevelModel;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.util.Debug;
-import org.esa.snap.core.util.ProductUtils;
 import org.esa.snap.core.util.math.IndexValidator;
 import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.diagram.AbstractDiagramGraph;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Comparator;
 

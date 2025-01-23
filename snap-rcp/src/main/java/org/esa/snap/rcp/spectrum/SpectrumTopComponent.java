@@ -16,7 +16,7 @@
 package org.esa.snap.rcp.spectrum;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.multilevel.MultiLevelModel;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
@@ -95,6 +95,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
     public static final String ID = SpectrumTopComponent.class.getName();
 
     private static final String SUPPRESS_MESSAGE_KEY = "plugin.spectrum.tip";
+
+    private boolean wasOpenedBefore = false;
 
     private final Map<RasterDataNode, DisplayableSpectrum[]> rasterToSpectraMap;
     private final Map<RasterDataNode, List<SpectrumBand>> rasterToSpectralBandsMap;
@@ -518,7 +520,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         int displayIndex = 0;
         final List<DisplayableSpectrum> spectra = new ArrayList<>();
-        final BandGroup[] userBandGroups = bandGroupsManager.getMatchingProduct(currentProduct);
+        final BandGroup[] userBandGroups = bandGroupsManager.getGroupsMatchingProduct(currentProduct);
         if (userBandGroups.length > 0) {
             final DisplayableSpectrum[] userGroupingSpectra = new DisplayableSpectrum[userBandGroups.length];
             for (int i = 0; i < userBandGroups.length; i++) {
@@ -646,6 +648,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     @Override
     protected void componentOpened() {
+        if (this.wasOpenedBefore) {
+            setUpSpectra();
+        } else {
+            this.wasOpenedBefore = true;
+        }
         final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
         if (selectedProductSceneView != null) {
             selectedProductSceneView.addPixelPositionListener(pixelPositionListener);

@@ -2,20 +2,17 @@ package org.esa.snap.ui.product;
 
 import com.bc.ceres.swing.TableLayout;
 import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.ui.ModalDialog;
 
-import javax.swing.AbstractButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +24,12 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
     private final boolean selectAtLeastOneBand;
     private BandChoosingStrategy strategy;
     private boolean addLoadSaveConfigurationButtons;
+    private BandGroup[] bandGroups;
+    private boolean bandGroupsPresent;
+    private JCheckBox selectAllCheckBox;
+    private JCheckBox selectNoneCheckBox;
+    private JCheckBox selectBandCheck;
+    private JComboBox selectGroupNamesBox;
 
     public BandChooser(Window parent, String title, String helpID,
                        Band[] allBands, Band[] selectedBands, BandGroup autoGrouping,
@@ -36,6 +39,7 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
         boolean multipleProducts = bandsAndGridsFromMoreThanOneProduct(allBands, null);
         strategy = new GroupedBandChoosingStrategy(allBands, selectedBands, null, null, autoGrouping, multipleProducts);
         selectAtLeastOneBand = false;
+        this.bandGroupsPresent = false;
         initUI();
     }
 
@@ -51,9 +55,27 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
         super(parent, title, ModalDialog.ID_OK_CANCEL, helpID);
         this.addLoadSaveConfigurationButtons = addLoadSaveConfigurationButtons;
         boolean multipleProducts = bandsAndGridsFromMoreThanOneProduct(allBands, allTiePointGrids);
-        strategy = new DefaultBandChoosingStrategy(allBands, selectedBands, allTiePointGrids, selectedTiePointGrids,
-                                                   multipleProducts);
+        strategy = new DefaultBandChoosingStrategy(allBands, selectedBands, allTiePointGrids, selectedTiePointGrids, multipleProducts);
         this.selectAtLeastOneBand = selectAtLeastOneBand;
+        this.bandGroupsPresent = false;
+        initUI();
+    }
+
+    public BandChooser(Window parent, String title, String helpID, boolean selectAtLeastOneBand,
+                       Band[] selectedBands,
+                       TiePointGrid[] selectedTiePointGrids,
+                       Product product,
+                       boolean addLoadSaveConfigurationButtons) {
+
+        super(parent, title, ModalDialog.ID_OK_CANCEL, helpID);
+        this.addLoadSaveConfigurationButtons = addLoadSaveConfigurationButtons;
+        BandGroupsManager bandGroupsManager = getBandGroupsManager();
+        this.bandGroups = bandGroupsManager.getGroupsMatchingProduct(product);
+        boolean multipleProducts = bandsAndGridsFromMoreThanOneProduct(product.getBands(), product.getTiePointGrids());
+
+        strategy = new DefaultBandChoosingStrategy(selectedBands, selectedTiePointGrids, bandGroups, product, multipleProducts);
+        this.selectAtLeastOneBand = selectAtLeastOneBand;
+        this.bandGroupsPresent = true;
         initUI();
     }
 
@@ -72,6 +94,16 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
         return productSet.size() > 1;
     }
 
+    private BandGroupsManager getBandGroupsManager() {
+        final BandGroupsManager bandGroupsManager;
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return bandGroupsManager;
+    }
+
     @Override
     public int show() {
         strategy.updateCheckBoxStates();
@@ -81,27 +113,49 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
     private void initUI() {
         JPanel checkersPane = strategy.createCheckersPane();
 
-        JCheckBox selectAllCheckBox = new JCheckBox("Select all");
+        ActionListener allCheckListener = e -> {
+            handleSelectCheckBoxes(e);
+        };
+
+        selectAllCheckBox = new JCheckBox("Select all");
         selectAllCheckBox.setMnemonic('a');
-        selectAllCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                strategy.selectAll();
-            }
-        });
+        selectAllCheckBox.addActionListener(allCheckListener);
 
-        JCheckBox selectNoneCheckBox = new JCheckBox("Select none");
+        selectNoneCheckBox = new JCheckBox("Select none");
         selectNoneCheckBox.setMnemonic('n');
-        selectNoneCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                strategy.selectNone();
+        selectNoneCheckBox.addActionListener(allCheckListener);
+
+        if (bandGroupsPresent) {
+            selectBandCheck = new JCheckBox("Select band group");
+            selectBandCheck.setMnemonic('b');
+            selectBandCheck.setFocusable(false);
+            selectBandCheck.addActionListener(allCheckListener);
+
+            final String[] groupNames = bandGroups != null ? new String[bandGroups.length] : new String[0];
+            for (int i = 0; i < groupNames.length; i++) {
+                groupNames[i] = bandGroups[i].getName();
             }
-        });
 
-        strategy.setCheckBoxes(selectAllCheckBox, selectNoneCheckBox);
+            selectGroupNamesBox = new JComboBox<>(groupNames);
+            if (groupNames.length == 0) {
+                selectGroupNamesBox.setEnabled(false);
+                selectBandCheck.setEnabled(false);
+            }
+            selectGroupNamesBox.addActionListener(allCheckListener);
 
-        final JPanel checkPane = new JPanel(new BorderLayout());
-        checkPane.add(selectAllCheckBox, BorderLayout.WEST);
-        checkPane.add(selectNoneCheckBox, BorderLayout.CENTER);
+            strategy.setAdvancedCheckBoxes(selectAllCheckBox, selectNoneCheckBox, selectBandCheck);
+        } else {
+            strategy.setCheckBoxes(selectAllCheckBox, selectNoneCheckBox);
+        }
+
+
+        final JPanel checkPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
+        checkPane.add(selectAllCheckBox);
+        checkPane.add(selectNoneCheckBox);
+        if (bandGroupsPresent) {
+            checkPane.add(selectBandCheck);
+            checkPane.add(selectGroupNamesBox);
+        }
 
         TableLayout layout = new TableLayout(1);
         layout.setTablePadding(4, 4);
@@ -126,6 +180,20 @@ public class BandChooser extends ModalDialog implements LoadSaveRasterDataNodesC
         content.add(checkPane, BorderLayout.SOUTH);
         content.setMinimumSize(new Dimension(0, 100));
         setContent(content);
+    }
+
+    void handleSelectCheckBoxes(ActionEvent e) {
+        if (e.getSource() == this.selectAllCheckBox) {
+            strategy.selectAll();
+        } else if (e.getSource() == this.selectNoneCheckBox) {
+            strategy.selectNone();
+        } else if (bandGroupsPresent) {
+            if (e.getSource() == this.selectGroupNamesBox) {
+                selectBandCheck.setSelected(true);
+            }
+            String selectedBandGroupName = (String) this.selectGroupNamesBox.getSelectedItem();
+            strategy.selectBandGroup(selectedBandGroupName);
+        }
     }
 
     @Override
