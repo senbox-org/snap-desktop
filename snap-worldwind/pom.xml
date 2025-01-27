@@ -84,12 +84,12 @@
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt-main</artifactId>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all-main</artifactId>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- natives -->
@@ -122,7 +122,7 @@
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
             <classifier>natives-macosx-universal</classifier>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
 
         <dependency>
@@ -153,7 +153,7 @@
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
             <classifier>natives-macosx-universal</classifier>
-            <version>2.4.0</version>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- netbeans platform -->
