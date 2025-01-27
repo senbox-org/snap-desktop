@@ -81,7 +81,7 @@ Reads the specified file as product. This operator may serve as a source node in
         <td><code></code></td>
         <td>The subset region in pixel coordinates.
             Use the following format: {x>,{y>,{width>,{height>
-            If not given, the entire scene is used. The 'geoRegion' parameter has precedence over this parameter.
+            If not given, the entire scene is used. The 'geoRegion' and 'polygonRegion' parameters has precedence over this parameter.
         </td>
         <td></td>
     </tr>
@@ -95,6 +95,35 @@ Reads the specified file as product. This operator may serve as a source node in
             If not given, the entire scene is used.
         </td>
         <td></td>
+    </tr>
+    <tr>
+        <td><code>polygonRegion</code></td>
+        <td><code>Geometry</code></td>
+        <td><code></code></td>
+        <td>The subset region in pixel coordinates using WKT-format,
+            e.g. POLYGON(({x1} {y1}, {x2} {y2}, ..., {x1} {y1}))
+            (make sure to quote the option due to spaces in {geometry}).
+            If not given, the entire scene is used.
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><code>vectorFile</code></td>
+        <td><code>File</code></td>
+        <td><code></code></td>
+        <td>The vector file from which the polygon is read.</td>
+        <td>Supported vector file formats:
+            <ul>
+                <li>SHAPEFILE (*.shp)</li>
+                <li>KML (*.kml)</li>
+                <li>KMZ (*.kmz)</li>
+                <li>GEOJSON (*.json)</li>
+                <li>WKT (*.wkt)</li>
+                <li>TXT (*.txt)</li>
+                <li>PLACEMARK (*.placemark)</li>
+                <li>PNX (*.pnx)</li>
+            </ul>
+        </td>
     </tr>
     <tr>
         <td><code>useAdvancedOptions</code></td>
