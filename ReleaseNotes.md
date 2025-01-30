@@ -26,7 +26,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-1684] Support SL FRP data of processing baseline FRP_NTC.004.07.00
     [SNAP-1585] GeoCodingFactory should be updated or removed
     [SNAP-1157] Let Product implement Closeable
-	[SNAP-3718] Lancover UI should use a tree rather than a long list
+	[SNAP-3718] Landcover UI should use a tree rather than a long list
 	[SRM-112]	Support STAC client
 	[SRM-186]	Seamless automated access to the ESA WorldCover 10m dataset
 
