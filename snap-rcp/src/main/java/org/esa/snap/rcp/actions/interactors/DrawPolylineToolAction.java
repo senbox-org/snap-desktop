@@ -37,7 +37,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @ActionReference(
         path = "Toolbars/" + PackageDefaults.DRAW_POLYLINE_TOOLBAR,
-        position = 160
+        position = 200
 )
 @Messages({
                   "CTL_DrawPolylineToolActionText=Draw Polyline",
