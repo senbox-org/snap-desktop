@@ -5,14 +5,14 @@
 
 <Configuration>
     <Row>
-        <Toolbar name="File" visible="false"/>
+        <Toolbar name="File Open" visible="true"/>
         <Toolbar name="Raster" visible="true"/>
         <Toolbar name="SeaDAS Toolbox" visible="true"/>
         <Toolbar name="Overlay" visible="true"/>
         <Toolbar name="Interactors" visible="true"/>
         <Toolbar name="Geometry" visible="false"/>
         <Toolbar name="Geometry Shapes" visible="true"/>
-        <Toolbar name="Geometry Lines" visible="false"/>
+        <Toolbar name="Geometry Lines" visible="true"/>
         <Toolbar name="Pins" visible="true"/>
         <Toolbar name="Spectral Angular View" visible="true"/>
         <Toolbar name="Soft Button" visible="true"/>
@@ -32,6 +32,7 @@
         <Toolbar name="Time Series" visible="false"/>
         <Toolbar name="Clipboard" visible="false"/>
         <Toolbar name="UndoRedo" visible="false"/>
+        <Toolbar name="File" visible="false"/>
         <Toolbar name="Window Arrangement" visible="false"/>
     </Row>
 </Configuration>
