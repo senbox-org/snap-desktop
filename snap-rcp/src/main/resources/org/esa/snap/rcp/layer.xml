@@ -13,7 +13,7 @@
 
             <file name="org-openide-actions-SaveAction.shadow_hidden"/>
             <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
-            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+<!--            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>-->
 
             <attr name="position" intvalue="100"/>
             <folder name="Session">
