@@ -37,7 +37,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @ActionReference(
         path = "Toolbars/" + PackageDefaults.DRAW_ELLIPSE_TOOLBAR,
-        position = 190
+        position = 160
 )
 @Messages({
                   "CTL_DrawEllipseToolActionText=Draw Ellipse",

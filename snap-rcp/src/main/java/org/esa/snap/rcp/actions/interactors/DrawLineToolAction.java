@@ -37,7 +37,7 @@ import org.openide.util.NbBundle.Messages;
 )
 @ActionReference(
         path = "Toolbars/" + PackageDefaults.DRAW_LINE_ICON_TOOLBAR,
-        position = 150
+        position = 190
 )
 @Messages({
                   "CTL_DrawLineToolActionText=Draw Line",
