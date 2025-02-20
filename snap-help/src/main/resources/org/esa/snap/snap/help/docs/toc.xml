@@ -139,6 +139,10 @@
                 <tocitem text="Mask Pixels" target="exportMaskPixels"/>
                 <tocitem text="Transect Pixels" target="exportTransectPixels"/>
             </tocitem>
+            <tocitem text="Raster to Vector" >
+                <tocitem text="Quantization" target="QuantizationAction"/>
+                <tocitem text="Raster to Vector" target="RasterToVectorAction"/>
+            </tocitem>
         </tocitem>
         <tocitem text="Optical">
             <tocitem text="Product Spectrum" target="showSpectrumWnd"/>

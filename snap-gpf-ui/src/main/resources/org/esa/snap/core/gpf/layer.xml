@@ -1,10 +1,44 @@
 <filesystem>
 
     <folder name="Actions">
+        <folder name="Operators">
+            <file name="org-esa-snap-core-gpf-common-rtv-Quantization-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.core.gpf.ui.rtv.QuantizationAction.create"/>
+                <attr name="displayName" stringvalue="Quantization"/>
+                <attr name="dialogTitle" stringvalue="Quantization"/>
+                <attr name="operatorName" stringvalue="Quantization"/>
+                <attr name="targetProductNameSuffix" stringvalue="_rl"/>
+                <attr name="helpId" stringvalue="QuantizationAction"/>
+            </file>
+            <file name="org-esa-snap-core-gpf-common-rtv-RasterToVector-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.core.gpf.ui.DefaultOperatorAction.create"/>
+                <attr name="displayName" stringvalue="Raster to Vector"/>
+                <attr name="dialogTitle" stringvalue="Raster to Vector"/>
+                <attr name="operatorName" stringvalue="Raster-To-Vector"/>
+                <attr name="targetProductNameSuffix" stringvalue="_rtv"/>
+                <attr name="helpId" stringvalue="RasterToVectorAction"/>
+            </file>
+        </folder>
 
     </folder>
 
     <folder name="Menu">
+        <folder name="Raster">
+            <folder name="Raster to Vector">
+                <attr name="position" intvalue="10000"/>
+                <file name="org-esa-snap-core-gpf-common-rtv-Quantization-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-core-gpf-common-rtv-Quantization-Action.instance"/>
+                    <attr name="position" intvalue="10001"/>
+                </file>
+
+                <file name="org-esa-snap-core-gpf-common-rtv-RasterToVector-Action.shadow">
+                    <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-core-gpf-common-rtv-RasterToVector-Action.instance"/>
+                    <attr name="position" intvalue="10002"/>
+                </file>
+            </folder>
+        </folder>
 
     </folder>
 
