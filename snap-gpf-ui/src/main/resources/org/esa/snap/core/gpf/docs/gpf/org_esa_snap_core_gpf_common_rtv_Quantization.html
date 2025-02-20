@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Quantization Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Quantization Operator</td>
+        <td class="header" align="right">
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Quantization Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>QuantizationOp</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.core.gpf.common.rtv.QuantizationOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Converts the pixels with values belonging to an interval to a fixed, integer value</td></tr>
+  <tr><td><b>Version:</b></td><td>1.0</td></tr>
+</table>
+<h2>Description</h2>
+The <code>QuantizationOp</code> converts all pixels with values within given intervals to fixed, integer values.
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProduct</code></td>
+  <td>The source product.</td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>bandName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>The name of the band to convert.</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>intervalsMap</code></td>
+  <td><code>Map&lt;Integer, Range&gt;</code></td>
+  <td><code></code></td>
+  <td>The set of intervals to use for conversion. If the pixel is within one of the ranges, it is replaced with the associated integer value for that range. Values which are outside all ranges are replaced with 0.</td>
+  <td></td>
+</tr>
+</table>
+<hr/>
+</body>
+</html>
