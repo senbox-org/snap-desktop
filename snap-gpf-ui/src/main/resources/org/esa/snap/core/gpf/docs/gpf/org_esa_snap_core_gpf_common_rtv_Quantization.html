@@ -48,14 +48,14 @@ The <code>QuantizationOp</code> converts all pixels with values within given int
   <td><code>bandName</code></td>
   <td><code>String</code></td>
   <td><code></code></td>
-  <td>The name of the band to convert. If not provided, the first band containing integer values is selected.</td>
+  <td>The name of the band to convert.</td>
   <td></td>
 </tr>
 <tr>
   <td><code>intervalsMap</code></td>
-  <td><code>Map<Integer, Range></code></td>
+  <td><code>Map&lt;Integer, Range&gt;</code></td>
   <td><code></code></td>
-  <td>The set of intervals to use for conversion. If the pixel is within one of the ranges, it is replaced with the associated integer value for that range. Values which are outside all ranges are repcaed with 0.</td>
+  <td>The set of intervals to use for conversion. If the pixel is within one of the ranges, it is replaced with the associated integer value for that range. Values which are outside all ranges are replaced with 0.</td>
   <td></td>
 </tr>
 </table>

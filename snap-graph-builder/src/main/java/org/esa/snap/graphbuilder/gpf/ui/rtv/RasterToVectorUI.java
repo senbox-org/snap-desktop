@@ -13,40 +13,25 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
-package org.esa.snap.graphbuilder.gpf.ui;
+package org.esa.snap.graphbuilder.gpf.ui.rtv;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
 
-import javax.media.jai.util.Range;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
+import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
+import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.ui.AppContext;
-import org.netbeans.modules.autoupdate.ui.UpdateUnitProviderPanel;
 
 /**
  * User interface for Raster To Vector
@@ -78,15 +63,25 @@ public class RasterToVectorUI extends BaseOperatorUI {
 
 	@Override
 	public void initParameters() {
+		if (sourceProducts == null)
+			return;
 
 		final String[] availableBands = getBandNames();
-		final Object selectedItem = bandCombo.getSelectedItem();
+		final String  strSelectedBand = bandCombo.getSelectedItem() != null ?  (String)bandCombo.getSelectedItem()
+											:paramMap.get("bandName") != null ?  (String)paramMap.get("bandName") : null;
+		bandCombo.setEnabled(false);
 		bandCombo.removeAllItems();
 		for (String s : availableBands) {
 			bandCombo.addItem(s);
 		}
-		if (selectedItem != null) {
-			bandCombo.setSelectedItem(selectedItem);
+		bandCombo.setSelectedItem(null);
+		bandCombo.setEnabled(true);
+		if (strSelectedBand != null) {
+			if (Arrays.stream(availableBands).filter(b-> b.equalsIgnoreCase(strSelectedBand)).count() > 0){
+				bandCombo.setSelectedItem(strSelectedBand);
+			}else{
+				paramMap.remove("bandName");
+			}
 		}
 	}
 
@@ -101,10 +96,10 @@ public class RasterToVectorUI extends BaseOperatorUI {
 	}
 
 	private void updateParametersBand() {
-		final String selectedBand = (String) bandCombo.getSelectedItem();
-		if (selectedBand != null && !selectedBand.isBlank()) {
+		String strSelectedBand = (String) bandCombo.getSelectedItem();
+		if (strSelectedBand != null && !strSelectedBand.isBlank()) {
 			paramMap.remove("bandName");
-			paramMap.put("bandName", selectedBand);
+			paramMap.put("bandName", strSelectedBand);
 		}
 	}
 
