@@ -2,9 +2,20 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 12.0.0
-    [SNAP-3758] Error subsetting Sentinel-1 image
-    [SNAP-3514] Problem reading SST-CCI Level 4 data
+    [SNAP-3946] Exception when adding WKT to a product without GeoCoding
+    [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
+    [SNAP-3914] pconvert not writing RGB images from PACE OCI L2 AOP products
+    [SNAP-3912] SNAP 12 is unable to read S2 products
+    [SNAP-3904] SNAP cannot open EnMAP products retrieved from DLR
+    [SNAP-3897] Refactor glayer module
+    [SNAP-3886] Testfile Merra not correctly flipped
     [SNAP-3885] Bugs when reading CCI products
+    [SNAP-3872] Exporting as ZNAP fails when paths have spaces
+    [SNAP-3869] NPE in BandGroupsManager
+    [SNAP-3843] ZNAP reader not releasing file handles properly
+    [SNAP-3758] Error subsetting Sentinel-1 image
+    [SNAP-3730] Update to use GraalVM
+    [SNAP-3514] Problem reading SST-CCI Level 4 data
 
 # New in SNAP 11.0.1
     [SNAP-3894] Issue with Compute Slope and Aspect tool - user complaint
