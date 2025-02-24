@@ -32,7 +32,8 @@ public class ProductSubsetByPolygonUiComponents {
     private final JButton importVectorFileButton = new JButton(IMPORT_VECTOR_FILE_BUTTON_TEXT);
     private final JButton importWktStringButton = new JButton(IMPORT_WKT_STRING_BUTTON_TEXT);
     private final JTextField vectorFileField = new JTextField();
-    private final JTextField polygonField = new JTextField();
+    private final JTextField pixelPolygonField = new JTextField();
+    private final JTextField geoPolygonField = new JTextField();
     private final JPanel vectorFilePanel = new JPanel(new GridBagLayout());
     private final JPanel wktStringPanel = new JPanel(new GridBagLayout());
     private final JTextArea wktStringInput = new JTextArea(16, 32);
@@ -63,13 +64,19 @@ public class ProductSubsetByPolygonUiComponents {
         geobc = SwingUtils.buildConstraints(1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 10, 0);
         vectorFilePanel.add(vectorFileField, geobc);
         geobc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 10, 0);
-        vectorFilePanel.add(new JLabel("Polygon:"), geobc);
+        vectorFilePanel.add(new JLabel("Polygon (pixel/image coordinates [X,Y]):"), geobc);
         geobc = SwingUtils.buildConstraints(1, 2, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 10, 0);
-        vectorFilePanel.add(polygonField, geobc);
+        vectorFilePanel.add(pixelPolygonField, geobc);
+        geobc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 10, 0);
+        vectorFilePanel.add(new JLabel("Polygon (geographic/map coordinates [Lat,Lon]):"), geobc);
+        geobc = SwingUtils.buildConstraints(1, 3, GridBagConstraints.HORIZONTAL, GridBagConstraints.CENTER, 1, 1, 10, 0);
+        vectorFilePanel.add(geoPolygonField, geobc);
         vectorFileField.setEditable(false);
         vectorFileField.setPreferredSize(new Dimension(100, 25));
-        polygonField.setEditable(false);
-        polygonField.setPreferredSize(new Dimension(100, 25));
+        pixelPolygonField.setEditable(false);
+        pixelPolygonField.setPreferredSize(new Dimension(100, 25));
+        geoPolygonField.setEditable(false);
+        geoPolygonField.setPreferredSize(new Dimension(100, 25));
     }
 
     private void setupWKTStringPanel() {
@@ -127,7 +134,8 @@ public class ProductSubsetByPolygonUiComponents {
         this.productSubsetByPolygon.clear();
         this.wktStringInput.setText("");
         this.vectorFileField.setText("");
-        this.polygonField.setText("");
+        this.pixelPolygonField.setText("");
+        this.geoPolygonField.setText("");
     }
 
     private void importGeometryFromVectorFile(MetadataInspector.Metadata targetProductMetadata) {
@@ -162,7 +170,8 @@ public class ProductSubsetByPolygonUiComponents {
         try {
             readGeometryFromVectorFile(this.productSubsetByPolygon, vectorFile, targetProductMetadata);
             this.vectorFileField.setText(vectorFile.getAbsolutePath());
-            printPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
+            printPixelPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
+            printGeoPolygonOnField(this.productSubsetByPolygon.getSubsetGeoPolygon());
         } catch (Exception e) {
             if (e.getCause() instanceof IllegalArgumentException) {
                 final String msg = "Importing the polygon from a vector file, failed. Reason: " + e.getCause().getMessage();
@@ -197,7 +206,8 @@ public class ProductSubsetByPolygonUiComponents {
         try {
             readGeometryFromWKTString(this.productSubsetByPolygon, wktString, pixelCoordRadio.isSelected(), targetProductMetadata);
             this.vectorFileField.setText("");
-            printPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
+            printPixelPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
+            printGeoPolygonOnField(this.productSubsetByPolygon.getSubsetGeoPolygon());
         } catch (Exception e) {
             if (e.getCause() instanceof IllegalArgumentException) {
                 final String msg = "Importing the polygon from a WKT string, failed. Reason: " + e.getCause().getMessage();
@@ -211,9 +221,15 @@ public class ProductSubsetByPolygonUiComponents {
         }
     }
 
-    private void printPolygonOnField(Polygon polygon) {
+    private void printPixelPolygonOnField(Polygon polygon) {
         if (polygon != null && !polygon.isEmpty()) {
-            this.polygonField.setText(polygon.toText());
+            this.pixelPolygonField.setText(polygon.toText());
+        }
+    }
+
+    private void printGeoPolygonOnField(Polygon polygon) {
+        if (polygon != null && !polygon.isEmpty()) {
+            this.geoPolygonField.setText(polygon.toText());
         }
     }
 
