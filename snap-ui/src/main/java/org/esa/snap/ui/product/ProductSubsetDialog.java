@@ -1050,6 +1050,7 @@ public class ProductSubsetDialog extends ModalDialog {
                         product, null));
             } else {
                 productSubsetDef.setSubsetRegion(new PixelSubsetRegion(subsetRectangle, 0));
+                productSubsetDef.setSubsetPolygon(subsetPolygon);
             }
             updateMemDisplay();
         }
