@@ -5,16 +5,24 @@ Release Notes - Sentinel Application Platform
     [SNAP-3946] Exception when adding WKT to a product without GeoCoding
     [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
     [SNAP-3914] pconvert not writing RGB images from PACE OCI L2 AOP products
-    [SNAP-3912] SNAP 12 is unable to read S2 products
-    [SNAP-3904] SNAP cannot open EnMAP products retrieved from DLR
     [SNAP-3897] Refactor glayer module
+    [SNAP-3893] NullPointerException in Band Groups Manager
     [SNAP-3886] Testfile Merra not correctly flipped
     [SNAP-3885] Bugs when reading CCI products
     [SNAP-3872] Exporting as ZNAP fails when paths have spaces
     [SNAP-3869] NPE in BandGroupsManager
     [SNAP-3843] ZNAP reader not releasing file handles properly
+    [SNAP-3839] Re-organise import menu
+    [SNAP-3636] ZNAP product not opened after processing
+    [SNAP-3825] Scaling is not applied to coordinates   
+    [SNAP-3764] Integrate BandGroups in PinManager
     [SNAP-3758] Error subsetting Sentinel-1 image
+    [SNAP-3736] Ensure NetCDF compatibility with ESA/Copernicus data
     [SNAP-3730] Update to use GraalVM
+    [SNAP-3729] Update to JDK 21
+    [SNAP-3674] Handle tie-points girds smaller 2x2
+    [SNAP-3644] Wrongly listed services
+    [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
     [SNAP-3514] Problem reading SST-CCI Level 4 data
 
 # New in SNAP 11.0.1
