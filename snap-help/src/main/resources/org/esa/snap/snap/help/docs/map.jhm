@@ -129,7 +129,6 @@
     <mapID target="mosaicAction" url="desktop/Mosaic.html"/>
     <mapID target="mosaicAlgo" url="desktop/MosaicAlgo.html"/>
 
-
     <mapID target="demGETASSE30" url="desktop/GETASSE30ElevationModel.html"/>
     <mapID target="createDemRelatedBands" url="desktop/CreateDemRelatedBands.html"/>
     <mapID target="pixelGeoCodingSetup" url="desktop/PixelGeoCoding.html"/>
@@ -137,5 +136,8 @@
     <mapID target="geometryWKT" url="desktop/GeometryWKT.html"/>
     <mapID target="convertBand" url="desktop/ConvertComputedBand.html"/>
     <mapID target="displacementBands" url="desktop/CreateGCDisplacementBands.html"/>
+
+    <mapID target="QuantizationAction" url="desktop/Quantization.html"/>
+    <mapID target="RasterToVectorAction" url="desktop/RasterToVector.html"/>
 
 </map>

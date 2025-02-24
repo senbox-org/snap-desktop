@@ -17,7 +17,7 @@
 package org.esa.snap.rcp.angularview;
 
 import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.glevel.MultiLevelModel;
+import com.bc.ceres.multilevel.MultiLevelModel;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.util.Debug;

@@ -1,0 +1,17 @@
+#SNAP Colour Palette Definition File
+#Tue Jan 21 12:45:31 EST 2025
+color0=0,0,255
+color1=0,150,255
+color2=0,0,0,0
+color3=0,0,0,0
+color4=255,150,0
+color5=255,0,0
+numPoints=6
+sample0=0
+sample1=1
+sample2=2
+sample3=3
+sample4=4
+sample5=5
+autoDistribute=true
+isLogScaled=false

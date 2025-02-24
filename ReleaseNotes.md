@@ -2,9 +2,28 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 12.0.0
-    [SNAP-3758] Error subsetting Sentinel-1 image
-    [SNAP-3514] Problem reading SST-CCI Level 4 data
+    [SNAP-3946] Exception when adding WKT to a product without GeoCoding
+    [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
+    [SNAP-3914] pconvert not writing RGB images from PACE OCI L2 AOP products
+    [SNAP-3897] Refactor glayer module
+    [SNAP-3893] NullPointerException in Band Groups Manager
+    [SNAP-3886] Testfile Merra not correctly flipped
     [SNAP-3885] Bugs when reading CCI products
+    [SNAP-3872] Exporting as ZNAP fails when paths have spaces
+    [SNAP-3869] NPE in BandGroupsManager
+    [SNAP-3843] ZNAP reader not releasing file handles properly
+    [SNAP-3839] Re-organise import menu
+    [SNAP-3636] ZNAP product not opened after processing
+    [SNAP-3825] Scaling is not applied to coordinates   
+    [SNAP-3764] Integrate BandGroups in PinManager
+    [SNAP-3758] Error subsetting Sentinel-1 image
+    [SNAP-3736] Ensure NetCDF compatibility with ESA/Copernicus data
+    [SNAP-3730] Update to use GraalVM
+    [SNAP-3729] Update to JDK 21
+    [SNAP-3674] Handle tie-points girds smaller 2x2
+    [SNAP-3644] Wrongly listed services
+    [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
+    [SNAP-3514] Problem reading SST-CCI Level 4 data
 
 # New in SNAP 11.0.1
     [SNAP-3894] Issue with Compute Slope and Aspect tool - user complaint
@@ -26,7 +45,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-1684] Support SL FRP data of processing baseline FRP_NTC.004.07.00
     [SNAP-1585] GeoCodingFactory should be updated or removed
     [SNAP-1157] Let Product implement Closeable
-	[SNAP-3718] Lancover UI should use a tree rather than a long list
+	[SNAP-3718] Landcover UI should use a tree rather than a long list
 	[SRM-112]	Support STAC client
 	[SRM-186]	Seamless automated access to the ESA WorldCover 10m dataset
 

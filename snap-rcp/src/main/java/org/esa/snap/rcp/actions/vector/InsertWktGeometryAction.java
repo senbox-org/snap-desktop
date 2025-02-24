@@ -17,14 +17,12 @@
 package org.esa.snap.rcp.actions.vector;
 
 import com.bc.ceres.core.ProgressMonitor;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.esa.snap.core.datamodel.PlainFeatureFactory;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.interactors.InsertFigureInteractorInterceptor;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.VectorDataLayer;
@@ -32,27 +30,19 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -82,15 +72,15 @@ import java.awt.event.ActionEvent;
 })
 
 
-public class InsertWktGeometryAction extends AbstractAction implements ContextAwareAction,LookupListener {
+public class InsertWktGeometryAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private static final String DLG_TITLE = "Geometry from WKT";
-    private  Lookup.Result<ProductSceneView> result;
-    private  Lookup lookup;
+    private final Lookup.Result<ProductSceneView> result;
+    private final Lookup lookup;
     private long currentFeatureId = System.nanoTime();
 
 
-    public InsertWktGeometryAction(){
+    public InsertWktGeometryAction() {
         this(Utilities.actionsGlobalContext());
     }
 
@@ -98,7 +88,7 @@ public class InsertWktGeometryAction extends AbstractAction implements ContextAw
         super(Bundle.CTL_InsertWktGeometryAction_MenuText());
         this.lookup = lookup;
         result = lookup.lookupResult(ProductSceneView.class);
-        result.addLookupListener(WeakListeners.create(LookupListener.class,this,result));
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         setEnabled(false);
     }
 
@@ -124,16 +114,21 @@ public class InsertWktGeometryAction extends AbstractAction implements ContextAw
 
         SnapApp snapApp = SnapApp.getDefault();
         ModalDialog modalDialog = new ModalDialog(snapApp.getMainFrame(),
-                                                  Bundle.CTL_InsertWktGeometryAction_DialogTitle(),
-                                                  ModalDialog.ID_OK_CANCEL, null);
+                Bundle.CTL_InsertWktGeometryAction_DialogTitle(),
+                ModalDialog.ID_OK_CANCEL, null);
         modalDialog.setContent(contentPanel);
         modalDialog.center();
-        if (modalDialog.show() == ModalDialog.ID_OK) {
+        if (modalDialog.show() == AbstractDialog.ID_OK) {
             String wellKnownText = textArea.getText();
             if (wellKnownText == null || wellKnownText.isEmpty()) {
                 return;
             }
             ProductSceneView sceneView = snapApp.getSelectedProductSceneView();
+            if (sceneView.getProduct().getSceneGeoCoding() == null) {
+                Dialogs.showError(Bundle.CTL_InsertWktGeometryAction_MenuText(),
+                        "The product has no geo coding.");
+                return;
+            }
             VectorDataLayer vectorDataLayer = InsertFigureInteractorInterceptor.getActiveVectorDataLayer(sceneView);
             if (vectorDataLayer == null) {
                 return;
@@ -142,7 +137,8 @@ public class InsertWktGeometryAction extends AbstractAction implements ContextAw
             SimpleFeatureType wktFeatureType = PlainFeatureFactory.createDefaultFeatureType(DefaultGeographicCRS.WGS84);
             ListFeatureCollection newCollection = new ListFeatureCollection(wktFeatureType);
             SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(wktFeatureType);
-            SimpleFeature wktFeature = featureBuilder.buildFeature("ID" + Long.toHexString(currentFeatureId++));
+            SimpleFeature wktFeature = featureBuilder.buildFeature("ID" + Long.toHexString(currentFeatureId));
+            currentFeatureId++;
             Geometry geometry;
             try {
                 geometry = new WKTReader().read(wellKnownText);
@@ -160,7 +156,7 @@ public class InsertWktGeometryAction extends AbstractAction implements ContextAw
                     ProgressMonitor.NULL);
             if (productFeatures.isEmpty()) {
                 Dialogs.showError(Bundle.CTL_InsertWktGeometryAction_MenuText(),
-                                  "The geometry is not contained in the product.");
+                        "The geometry is not contained in the product.");
             } else {
                 vectorDataLayer.getVectorDataNode().getFeatureCollection().addAll(productFeatures);
             }

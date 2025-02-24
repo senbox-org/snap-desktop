@@ -16,7 +16,7 @@
 
 package org.esa.snap.rcp.actions.raster;
 
-import com.bc.ceres.glevel.MultiLevelImage;
+import com.bc.ceres.multilevel.MultiLevelImage;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.SnapApp;

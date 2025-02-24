@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Quantization</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Reprojection
+        </td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html">
+            <img src="../images/snap_header.jpg" border=0></a></td>
+    </tr>
+</table>
+
+<h3>Quantization Dialog</h3>
+
+<p>
+  The <code>QuantizationOp</code> converts all pixels with values within given intervals to fixed, integer values. 
+</p>
+
+<table border="0">
+    <tr>
+      <td colspan="2" style="border-width:0;" valign="top">
+        <h4>I/O Parameters</h4>
+      </td>
+    </tr>
+    <tr>
+        <td style="border-width:0;" valign="top">
+            <h5>Source Product</h5>
+
+            <p class="i1">
+                <b>Name:</b>
+                The name of the source product. The combo box presents a list of all products opened in SNAP. The user may select one of these or, by clicking on the button next to the combo box, choose a product from the file system.
+
+            <h5>Target Product</h5>
+
+            <p class="i1">
+                <b>Name:</b>
+                Used to specify the name of the target product.
+            </p>
+
+            <p class="i1">
+                <b>Save as:</b>
+                Used to specify whether the target product should be saved to the file system. 
+                The combo box presents a list of file formats.
+                The text field allows to specify a target directory.
+            </p>
+
+            <p class="i1">
+                <b>Open in SNAP:</b>
+                Used to specify whether the target product should be opened in SNAP.
+                When the target product is not saved, it is opened in SNAP automatically.
+            </p></td>
+        <td style="border-width:0;" valign="top"><img src="images/QuantizationIOParameters.png"></td>
+    </tr>    
+    <tr>
+      <td colspan="2" style="border-width:0;" valign="top">
+        <h4>Processing Parameters</h4>
+      </td>
+    </tr>
+    <tr>
+        <td style="border-width:0;" style="border-width:0;" valign="top">
+            <h5>Source band</h5>
+
+            <p class="i1">
+              The name of the band to convert.
+            </p>
+
+            <h5>Intervals</h5>
+
+            <p class="i1">
+              The set of intervals to use for conversion. If the pixel is within one of the ranges, it is replaced with the associated integer value for that range. Values which are outside all ranges are replaced with 0.
+            </p>
+        </td>
+        <td style="border-width:0;" valign="top"><img src="images/QuantizationProcessingParameters.png">
+        </td>
+    </tr>
+</table>
+
+<p> 
+  The target product will contain a single band named <code>converted_band</code>.
+</p>
+<hr/>
+</body>
+</html>
