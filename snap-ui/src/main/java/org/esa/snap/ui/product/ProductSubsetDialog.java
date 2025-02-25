@@ -519,10 +519,21 @@ public class ProductSubsetDialog extends ModalDialog {
         private SpatialSubsetPane() {
             if (product.isMultiSize()) {
                 referenceCombo = new JComboBox();
+                String initialReferenceBand = "";
+                Dimension maxSize = new Dimension(0, 0);
                 for (String bandName : product.getBandNames()) {
                     referenceCombo.addItem(bandName);
+                    final Dimension bandSize = product.getBand(bandName).getRasterSize();
+                    if (bandSize.width > maxSize.width || bandSize.height > maxSize.height) {
+                        maxSize = bandSize;
+                        initialReferenceBand = bandName;
+                    }
                 }
-                referenceCombo.setSelectedItem(product.getBandAt(0));
+                if (initialReferenceBand.isEmpty()) {
+                    referenceCombo.setSelectedIndex(0);
+                } else {
+                    referenceCombo.setSelectedItem(initialReferenceBand);
+                }
                 _oldReference = (String) referenceCombo.getSelectedItem();
                 referenceCombo.addActionListener(new ActionListener() {
                     @Override
