@@ -1208,8 +1208,16 @@ public class ProductSubsetDialog extends ModalDialog {
 
             paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
             paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
-            paramX2.setValue((int) finalRegion.getMaxX() - 1, ex -> true);
-            paramY2.setValue((int) finalRegion.getMaxY() - 1, ex -> true);
+            int maxX = (int) finalRegion.getMaxX();
+            if (maxX > productBounds.width - 1) {
+                maxX -= 1;
+            }
+            paramX2.setValue(maxX, ex -> true);
+            int maxY = (int) finalRegion.getMaxY();
+            if (maxY > productBounds.height - 1) {
+                maxY -= 1;
+            }
+            paramY2.setValue(maxY, ex -> true);
         }
 
         private Dimension getScaledImageSize() {
