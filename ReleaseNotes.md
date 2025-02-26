@@ -23,6 +23,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-3674] Handle tie-points girds smaller 2x2
     [SNAP-3644] Wrongly listed services
     [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
+    [SNAP-3592] java.lang.NoClassDefFoundError on dialogs help
     [SNAP-3514] Problem reading SST-CCI Level 4 data
 
 # New in SNAP 11.0.1

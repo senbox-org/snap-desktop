@@ -18,7 +18,7 @@
     <properties>
         <netbeans.version>RELEASE210</netbeans.version>
         <snap-gui-lib.version>1.2.0</snap-gui-lib.version>
-        <snap-help-system.version>1.0.0</snap-help-system.version>
+        <snap-help-system.version>1.0.2</snap-help-system.version>
         <user.language>en</user.language>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.java.binaries>**/classes</sonar.java.binaries>
