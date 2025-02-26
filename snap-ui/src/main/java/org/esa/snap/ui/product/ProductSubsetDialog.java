@@ -29,12 +29,24 @@ import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.apache.commons.lang3.ArrayUtils;
 import org.esa.snap.core.dataio.ProductSubsetDef;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.MetadataElement;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.jexp.Term;
+import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
 import org.esa.snap.core.param.ParamGroup;
@@ -60,8 +72,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -89,6 +103,7 @@ public class ProductSubsetDialog extends ModalDialog {
     private static final double DEFAULT_MEM_WARN_LIMIT = 1000.0;
     private final AtomicBoolean updatingUI;
     private final BandGroupsManager bandGroupsManager;
+    private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.getJDialog());
 
     /**
      * Constructs a new subset dialog.
@@ -168,6 +183,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         spatialSubsetPane.cancelThumbnailLoader();
+        spatialSubsetPane.updateProductSubset();
         if (productSubsetDef != null && productSubsetDef.isEntireProductSelected()) {
             productSubsetDef = null;
         }
@@ -365,7 +381,7 @@ public class ProductSubsetDialog extends ModalDialog {
             tabbedPane.addTab("Metadata Subset", metadataSubsetPane);
         }
 
-        tabbedPane.setPreferredSize(new Dimension(512, 380));
+        tabbedPane.setPreferredSize(new Dimension(600, 400));
         tabbedPane.setSelectedIndex(0);
 
         JPanel contentPane = new JPanel(new BorderLayout(4, 4));
@@ -438,13 +454,6 @@ public class ProductSubsetDialog extends ModalDialog {
         }
     }
 
-    private void updateSubsetDefRegion(int x1, int y1, int x2, int y2, int sx, int sy) {
-        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0));
-        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(productSubsetDef.getRegion(), product, productSubsetDef.getNodeNames()));
-        productSubsetDef.setSubSampling(sx, sy);
-        updateMemDisplay();
-    }
-
     private void updateSubsetDefNodeNameList() {
         /* We don't use this option! */
         productSubsetDef.setIgnoreMetadata(false);
@@ -480,6 +489,7 @@ public class ProductSubsetDialog extends ModalDialog {
     private class SpatialSubsetPane extends JPanel
             implements ActionListener, ParamChangeListener, SliderBoxImageDisplay.SliderBoxChangeListener {
 
+        final JTabbedPane tabbedPane = new JTabbedPane();
         private Parameter paramX1;
         private Parameter paramY1;
         private Parameter paramX2;
@@ -623,11 +633,15 @@ public class ProductSubsetDialog extends ModalDialog {
 
             JPanel textInputPane = GridBagUtils.createPanel();
             setComponentName(textInputPane, "TextInputPane");
-            final JTabbedPane tabbedPane = new JTabbedPane();
             setComponentName(tabbedPane, "coordinatePane");
             tabbedPane.addTab("Pixel Coordinates", createPixelCoordinatesPane());
             tabbedPane.addTab("Geo Coordinates", createGeoCoordinatesPane());
+            tabbedPane.addTab("Polygon", productSubsetByPolygonUiComponents.getImportVectorFilePanel());
             tabbedPane.setEnabledAt(1, canUseGeoCoordinates(product));
+
+            final MetadataInspector.Metadata productMetadata = new MetadataInspector.Metadata(product.getSceneRasterWidth(), product.getSceneRasterHeight());
+            productMetadata.setGeoCoding(product.getSceneGeoCoding());
+            productSubsetByPolygonUiComponents.setTargetProductMetadata(productMetadata);
 
             GridBagConstraints gbc = GridBagUtils.createConstraints(
                     "insets.left=7,anchor=WEST,fill=HORIZONTAL, weightx=1.0");
@@ -925,8 +939,8 @@ public class ProductSubsetDialog extends ModalDialog {
 
             if (givenProductSubsetDef != null) {
                 Rectangle region;
-                if (product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null) {
-                    region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem());
+                if (product.isMultiSize() && givenProductSubsetDef.getRegionMap() != null && givenProductSubsetDef.getRegionMap().containsKey((String) referenceCombo.getSelectedItem())) {
+                    region = givenProductSubsetDef.getRegionMap().get((String) referenceCombo.getSelectedItem()).getSubsetExtent();
                 } else {
                     region = givenProductSubsetDef.getRegion();
                 }
@@ -1000,79 +1014,116 @@ public class ProductSubsetDialog extends ModalDialog {
                     }
                     if (event != null && canUseGeocoding) {
                         final String parmName = event.getParameter().getName();
-                        if (parmName.startsWith("geo_")) {
-                            final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
-                                    (Double) paramWestLon1.getValue());
-                            final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
-                                    (Double) paramEastLon2.getValue());
-
-                            updateXYParams(geoPos1, geoPos2);
-                        } else if (parmName.startsWith("source_x") || parmName.startsWith("source_y")) {
-                            syncLatLonWithXYParams();
-                        }
-
+                        updateParams(parmName);
                     }
-                    int x1 = ((Number) paramX1.getValue()).intValue();
-                    int y1 = ((Number) paramY1.getValue()).intValue();
-                    int x2 = ((Number) paramX2.getValue()).intValue();
-                    int y2 = ((Number) paramY2.getValue()).intValue();
-
-                    int sx = ((Number) paramSX.getValue()).intValue();
-                    int sy = ((Number) paramSY.getValue()).intValue();
-
-                    if (product.isMultiSize()) {
-
-                        productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(computeROIToPositiveAxis(x1, y1, x2, y2),
-                                (String) referenceCombo.getSelectedItem(),
-                                product, null));
-                        productSubsetDef.setSubSampling(sx, sy);
-                        updateMemDisplay();
-                    } else {
-                        productSubsetDef.setSubsetRegion(new PixelSubsetRegion(computeROIToPositiveAxis(x1, y1, x2, y2), 0));
-                        productSubsetDef.setSubSampling(sx, sy);
-                        updateMemDisplay();
-                    }
-
-                    Dimension s;
-                    if (product.isMultiSize()) {
-                        s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
-                                product.getSceneRasterHeight(),
-                                (String) referenceCombo.getSelectedItem());
-                    } else {
-                        s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
-                                product.getSceneRasterHeight());
-                    }
-
-                    subsetWidthLabel.setText(String.valueOf(s.getWidth()));
-                    subsetHeightLabel.setText(String.valueOf(s.getHeight()));
-
-
-                    int sceneWidth;
-                    int sceneHeight;
-                    if (product.isMultiSize()) {
-                        sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
-                        sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
-                    } else {
-                        sceneWidth = product.getSceneRasterWidth();
-                        sceneHeight = product.getSceneRasterHeight();
-                    }
-                    sourceHeightLabel.setText(String.valueOf(sceneHeight));
-                    sourceWidthLabel.setText(String.valueOf(sceneWidth));
-
-
-                    setThumbnailSubsampling();
-                    int sliderBoxX1 = x1 / thumbNailSubSampling;
-                    int sliderBoxY1 = y1 / thumbNailSubSampling;
-                    int sliderBoxX2 = x2 / thumbNailSubSampling;
-                    int sliderBoxY2 = y2 / thumbNailSubSampling;
-                    int sliderBoxW = sliderBoxX2 - sliderBoxX1 + 1;
-                    int sliderBoxH = sliderBoxY2 - sliderBoxY1 + 1;
-                    Rectangle box = getScaledRectangle(new Rectangle(sliderBoxX1, sliderBoxY1, sliderBoxW, sliderBoxH));
-                    imageCanvas.setSliderBoxBounds(box);
+                    updateProductSubset();
+                    updateSubsetInfoUi();
+                    updateThumbnailUi();
                 } finally {
                     updatingUI.set(false);
                 }
             }
+        }
+
+        private void updateParams(String parmName){
+            if (parmName.startsWith("geo_")) {
+                final GeoPos geoPos1 = new GeoPos((Double) paramNorthLat1.getValue(),
+                        (Double) paramWestLon1.getValue());
+                final GeoPos geoPos2 = new GeoPos((Double) paramSouthLat2.getValue(),
+                        (Double) paramEastLon2.getValue());
+
+                updateXYParams(geoPos1, geoPos2);
+            } else if (parmName.startsWith("source_x") || parmName.startsWith("source_y")) {
+                syncLatLonWithXYParams();
+            }
+        }
+
+        private void updateProductSubset(){
+            int sx = ((Number) paramSX.getValue()).intValue();
+            int sy = ((Number) paramSY.getValue()).intValue();
+            productSubsetDef.setSubSampling(sx, sy);
+            final Rectangle subsetRectangle = getSubsetRectangle();
+            final org.locationtech.jts.geom.Polygon subsetPolygon = getSubsetPolygon();
+            if (product.isMultiSize()) {
+                productSubsetDef.setRegionMap(SubsetOp.computeRegionMap(subsetRectangle, subsetPolygon,
+                        (String) referenceCombo.getSelectedItem(),
+                        product, null));
+            } else {
+                productSubsetDef.setSubsetRegion(new PixelSubsetRegion(subsetRectangle, 0));
+                productSubsetDef.setSubsetPolygon(subsetPolygon);
+            }
+            updateMemDisplay();
+        }
+
+
+        private void updateSubsetInfoUi(){
+            final Dimension s;
+            if (product.isMultiSize()) {
+                s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
+                        product.getSceneRasterHeight(),
+                        (String) referenceCombo.getSelectedItem());
+            } else {
+                s = productSubsetDef.getSceneRasterSize(product.getSceneRasterWidth(),
+                        product.getSceneRasterHeight());
+            }
+            subsetWidthLabel.setText(String.valueOf(s.getWidth()));
+            subsetHeightLabel.setText(String.valueOf(s.getHeight()));
+            final int sceneWidth;
+            final int sceneHeight;
+            if (product.isMultiSize()) {
+                sceneWidth = product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth();
+                sceneHeight = product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight();
+            } else {
+                sceneWidth = product.getSceneRasterWidth();
+                sceneHeight = product.getSceneRasterHeight();
+            }
+            sourceHeightLabel.setText(String.valueOf(sceneHeight));
+            sourceWidthLabel.setText(String.valueOf(sceneWidth));
+        }
+
+        private void updateThumbnailUi(){
+            final int x1 = ((Number) paramX1.getValue()).intValue();
+            final int y1 = ((Number) paramY1.getValue()).intValue();
+            final int x2 = ((Number) paramX2.getValue()).intValue();
+            final int y2 = ((Number) paramY2.getValue()).intValue();
+            setThumbnailSubsampling();
+            final int sliderBoxX1 = x1 / thumbNailSubSampling;
+            final int sliderBoxY1 = y1 / thumbNailSubSampling;
+            final int sliderBoxX2 = x2 / thumbNailSubSampling;
+            final int sliderBoxY2 = y2 / thumbNailSubSampling;
+            final int sliderBoxW = sliderBoxX2 - sliderBoxX1 + 1;
+            final int sliderBoxH = sliderBoxY2 - sliderBoxY1 + 1;
+            final Rectangle box = getScaledRectangle(new Rectangle(sliderBoxX1, sliderBoxY1, sliderBoxW, sliderBoxH));
+            imageCanvas.setSliderBoxBounds(box);
+        }
+
+        private Rectangle getSubsetRectangle() {
+            try {
+                if (isOnPolygonTab() && productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+                    final GeoCoding geoCoding = getProductGeocoding();
+                    return productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getExtentOfPolygonProjectedToGeocoding(geoCoding);
+                } else {
+                    final int x1 = ((Number) paramX1.getValue()).intValue();
+                    final int y1 = ((Number) paramY1.getValue()).intValue();
+                    final int x2 = ((Number) paramX2.getValue()).intValue();
+                    final int y2 = ((Number) paramY2.getValue()).intValue();
+                    return computeROIToPositiveAxis(x1, y1, x2, y2);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private org.locationtech.jts.geom.Polygon getSubsetPolygon() {
+            if (isOnPolygonTab() && productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+                final GeoCoding geoCoding = getProductGeocoding();
+                return productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygonProjectedToGeocoding(geoCoding);
+            }
+            return null;
+        }
+
+        private boolean isOnPolygonTab(){
+            return tabbedPane.getSelectedIndex() == 2;
         }
 
         private Rectangle computeROIToPositiveAxis(int x1, int y1, int x2, int y2) {
@@ -1091,12 +1142,7 @@ public class ProductSubsetDialog extends ModalDialog {
                     ((Number) paramY1.getValue()).intValue());
             final PixelPos pixelPos2 = new PixelPos(((Number) paramX2.getValue()).intValue(),
                     ((Number) paramY2.getValue()).intValue());
-            GeoCoding geoCoding;
-            if (product.isMultiSize()) {
-                geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
-            } else {
-                geoCoding = product.getSceneGeoCoding();
-            }
+            final GeoCoding geoCoding = getProductGeocoding();
             final GeoPos geoPos1 = geoCoding.getGeoPos(pixelPos1, null);
             final GeoPos geoPos2 = geoCoding.getGeoPos(pixelPos2, null);
             if (geoPos1.isValid()) {
@@ -1118,12 +1164,7 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
-            GeoCoding geoCoding;
-            if (product.isMultiSize()) {
-                geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
-            } else {
-                geoCoding = product.getSceneGeoCoding();
-            }
+            final GeoCoding geoCoding = getProductGeocoding();
             final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
             if (!pixelPos1.isValid()) {
                 pixelPos1.setLocation(0, 0);
@@ -1177,17 +1218,23 @@ public class ProductSubsetDialog extends ModalDialog {
 
         private Rectangle getScaledRectangle(Rectangle rectangle) {
 
-            final AffineTransform i2mTransform;
-            if (product.isMultiSize()) {
-                i2mTransform = Product.findImageToModelTransform(product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding());
-            } else {
-                i2mTransform = Product.findImageToModelTransform(product.getSceneGeoCoding());
-            }
+            final GeoCoding geoCoding = getProductGeocoding();
+            final AffineTransform i2mTransform = Product.findImageToModelTransform(geoCoding);
             final double scaleX = i2mTransform.getScaleX();
             final double scaleY = i2mTransform.getScaleY();
             double scaleFactorY = Math.abs(scaleY / scaleX);
             final AffineTransform scaleTransform = AffineTransform.getScaleInstance(1.0, scaleFactorY);
             return scaleTransform.createTransformedShape(rectangle).getBounds();
+        }
+
+        private GeoCoding getProductGeocoding(){
+            final GeoCoding geoCoding;
+            if (product.isMultiSize()) {
+                geoCoding = product.getBand((String) referenceCombo.getSelectedItem()).getGeoCoding();
+            } else {
+                geoCoding = product.getSceneGeoCoding();
+            }
+            return geoCoding;
         }
 
         private BufferedImage createThumbNailImage(Dimension imgSize, ProgressMonitor pm) {
