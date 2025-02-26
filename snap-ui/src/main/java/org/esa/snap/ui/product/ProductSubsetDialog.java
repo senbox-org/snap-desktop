@@ -519,10 +519,21 @@ public class ProductSubsetDialog extends ModalDialog {
         private SpatialSubsetPane() {
             if (product.isMultiSize()) {
                 referenceCombo = new JComboBox();
+                String initialReferenceBand = "";
+                Dimension maxSize = new Dimension(0, 0);
                 for (String bandName : product.getBandNames()) {
                     referenceCombo.addItem(bandName);
+                    final Dimension bandSize = product.getBand(bandName).getRasterSize();
+                    if (bandSize.width > maxSize.width || bandSize.height > maxSize.height) {
+                        maxSize = bandSize;
+                        initialReferenceBand = bandName;
+                    }
                 }
-                referenceCombo.setSelectedItem(product.getBandAt(0));
+                if (initialReferenceBand.isEmpty()) {
+                    referenceCombo.setSelectedIndex(0);
+                } else {
+                    referenceCombo.setSelectedItem(initialReferenceBand);
+                }
                 _oldReference = (String) referenceCombo.getSelectedItem();
                 referenceCombo.addActionListener(new ActionListener() {
                     @Override
@@ -1197,8 +1208,16 @@ public class ProductSubsetDialog extends ModalDialog {
 
             paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
             paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
-            paramX2.setValue((int) finalRegion.getMaxX() - 1, ex -> true);
-            paramY2.setValue((int) finalRegion.getMaxY() - 1, ex -> true);
+            int maxX = (int) finalRegion.getMaxX();
+            if (maxX > productBounds.width - 1) {
+                maxX -= 1;
+            }
+            paramX2.setValue(maxX, ex -> true);
+            int maxY = (int) finalRegion.getMaxY();
+            if (maxY > productBounds.height - 1) {
+                maxY -= 1;
+            }
+            paramY2.setValue(maxY, ex -> true);
         }
 
         private Dimension getScaledImageSize() {
