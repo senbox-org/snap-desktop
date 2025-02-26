@@ -36,6 +36,10 @@
                     <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-modules-junitlib</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-modules-javahelp</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
