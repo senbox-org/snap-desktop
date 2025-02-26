@@ -16,11 +16,13 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 import org.esa.snap.core.datamodel.Product;
-import org.locationtech.jts.awt.PointShapeFactory.X;
+import org.esa.snap.core.metadata.MetadataInspector;
+import org.esa.snap.ui.product.ProductSubsetByPolygonUiComponents;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.graphbuilder.gpf.ui.worldmap.NestWorldMapPane;
@@ -33,19 +35,19 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Map;
 
 /**
  * User interface for Subset
  */
 public class SubsetUI extends BaseOperatorUI {
+
+    private static final String POLYGON_REGION_PARAMETER = "polygonRegion";
+    private static final String VECTOR_FILE_PARAMETER = "vectorFile";
 
     private final JList bandList = new JList();
 
@@ -60,13 +62,18 @@ public class SubsetUI extends BaseOperatorUI {
 
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
     private final JRadioButton geoCoordRadio = new JRadioButton("Geographic Coordinates");
+    private final JRadioButton vectorFileRadio = new JRadioButton("Polygon");
     private final JPanel pixelPanel = new JPanel(new GridBagLayout());
     private final JPanel geoPanel = new JPanel(new BorderLayout());
+    private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.geoPanel);
+    private final JPanel vectorFilePanel = productSubsetByPolygonUiComponents.getImportVectorFilePanel();
 
     private final WorldMapUI worldMapUI = new WorldMapUI();
     private final JTextField geoText = new JTextField("");
     private final JButton geoUpdateButton = new JButton("Update");
     private Geometry geoRegion = null;
+    private Polygon polygonRegion = null;
+    private File vectorFile = null;
     private static final int MIN_SUBSET_SIZE = 1;
     private Dimension currentProductSize = new Dimension(0, 0);
 
@@ -224,6 +231,16 @@ public class SubsetUI extends BaseOperatorUI {
             geoCoordRadio.setSelected(true);
             pixelPanel.setVisible(false);
             geoPanel.setVisible(true);
+            vectorFilePanel.setVisible(false);
+        }
+        polygonRegion = (Polygon) paramMap.get(POLYGON_REGION_PARAMETER);
+        vectorFile = (File) paramMap.get(VECTOR_FILE_PARAMETER);
+        if (polygonRegion != null || vectorFile != null) {
+            getPolygonRegion();
+            vectorFileRadio.setSelected(true);
+            pixelPanel.setVisible(false);
+            geoPanel.setVisible(false);
+            vectorFilePanel.setVisible(true);
         }
         //enable or disable referenceCombo depending on sourceProduct
         if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {
@@ -297,9 +314,13 @@ public class SubsetUI extends BaseOperatorUI {
 
         paramMap.remove("geoRegion");
         paramMap.remove("region");
+        paramMap.remove(POLYGON_REGION_PARAMETER);
         getGeoRegion();
+        getPolygonRegion();
         if (geoCoordRadio.isSelected() && geoRegion != null) {
             paramMap.put("geoRegion", geoRegion);
+        } else if (vectorFileRadio.isSelected() && polygonRegion != null) {
+            paramMap.put(POLYGON_REGION_PARAMETER, polygonRegion);
         } else if(sourceProducts!=null) {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
@@ -492,9 +513,13 @@ public class SubsetUI extends BaseOperatorUI {
         contentPane.add(copyMetadata, gbc);
 
         gbc.gridy++;
-        contentPane.add(pixelCoordRadio, gbc);
-        gbc.gridx = 1;
-        contentPane.add(geoCoordRadio, gbc);
+        gbc.gridwidth = 2;
+        final JPanel regionTypePanel = new JPanel(new GridLayout(1, 3));
+        regionTypePanel.add(pixelCoordRadio);
+        regionTypePanel.add(geoCoordRadio);
+        regionTypePanel.add(vectorFileRadio);
+        contentPane.add(regionTypePanel, gbc);
+        gbc.gridwidth = 1;
 
         gbc.gridy++;
         gbc.gridx = 0;
@@ -505,12 +530,15 @@ public class SubsetUI extends BaseOperatorUI {
         pixelCoordRadio.setSelected(true);
         pixelCoordRadio.setActionCommand("pixelCoordRadio");
         geoCoordRadio.setActionCommand("geoCoordRadio");
+        vectorFileRadio.setActionCommand("vectorFileRadio");
         ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
+        group.add(vectorFileRadio);
         RadioListener myListener = new RadioListener();
         pixelCoordRadio.addActionListener(myListener);
         geoCoordRadio.addActionListener(myListener);
+        vectorFileRadio.addActionListener(myListener);
 
         final GridBagConstraints pixgbc = DialogUtils.createGridBagConstraints();
         pixgbc.gridwidth = 1;
@@ -546,6 +574,8 @@ public class SubsetUI extends BaseOperatorUI {
         contentPane.add(pixelPanel, gbc);
         geoPanel.setVisible(false);
         contentPane.add(geoPanel, gbc);
+        vectorFilePanel.setVisible(false);
+        contentPane.add(vectorFilePanel, gbc);
 
         DialogUtils.fillPanel(contentPane, gbc);
 
@@ -571,13 +601,23 @@ public class SubsetUI extends BaseOperatorUI {
             if (e.getActionCommand().contains("pixelCoordRadio")) {
                 pixelPanel.setVisible(true);
                 geoPanel.setVisible(false);
+                vectorFilePanel.setVisible(false);
 
                 //reset geoRegion
                 geoRegion = null;
                 paramMap.put("geoRegion", geoRegion);
-            } else {
+            } else if (e.getActionCommand().contains("geoCoordRadio")){
                 pixelPanel.setVisible(false);
                 geoPanel.setVisible(true);
+                vectorFilePanel.setVisible(false);
+            } else {
+                pixelPanel.setVisible(false);
+                geoPanel.setVisible(false);
+                vectorFilePanel.setVisible(true);
+
+                //reset geoRegion
+                geoRegion = null;
+                paramMap.put("geoRegion", geoRegion);
             }
         }
     }
@@ -617,4 +657,20 @@ public class SubsetUI extends BaseOperatorUI {
         }
     }
 
+    private void getPolygonRegion() {
+        if (productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+            this.polygonRegion = productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygon();
+        } else {
+            if (sourceProducts != null && sourceProducts.length > 0) {
+                final MetadataInspector.Metadata productMetadata = new MetadataInspector.Metadata(sourceProducts[0].getSceneRasterWidth(), sourceProducts[0].getSceneRasterHeight());
+                productMetadata.setGeoCoding(sourceProducts[0].getSceneGeoCoding());
+                productSubsetByPolygonUiComponents.setTargetProductMetadata(productMetadata);
+                if (polygonRegion != null) {
+                    productSubsetByPolygonUiComponents.importGeometryFromWKTString(polygonRegion.toText(), productMetadata);
+                } else if (vectorFile != null) {
+                    productSubsetByPolygonUiComponents.importGeometryFromVectorFile(vectorFile, productMetadata);
+                }
+            }
+        }
+    }
 }

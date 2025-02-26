@@ -45,7 +45,7 @@
 <p>If you are not interested in the whole image, you may specify an area
     of the product to be loaded. You can select the area by dragging the blue
     surrounding rectangle in the preview (see figure above). You can also specify
-    the area manually either by pixel coordinates or by geo coordinates. If you drag
+    the area manually either by pixel coordinates, by geo coordinates or by a polygon. If you drag
     the rectangle, the field values change simultaneously.<br>
 </p>
 <p>You can also specify a sub-sampling, by setting the values of
@@ -62,6 +62,37 @@
     <b>NOTE:</b> Pins outside of the spatial subset area will not be preserved in the
     resulting product, because they are bound to the pixel coordinates of the product. <br/>
     GCPs are preserved, because they are bound to a geo-location.
+</p>
+
+<p>
+    A polygon can be defined in 2 ways:
+</p>
+<ul>
+    <li>by loading it from a supported vector file, which can be in the following formats:
+        <ul>
+            <li>SHAPEFILE (*.shp)</li>
+            <li>KML (*.kml)</li>
+            <li>KMZ (*.kmz)</li>
+            <li>GEOJSON (*.json)</li>
+            <li>WKT (*.wkt)</li>
+            <li>TXT (*.txt)</li>
+            <li>PLACEMARK (*.placemark)</li>
+            <li>PNX (*.pnx)</li>
+        </ul>
+    </li>
+    <li>
+        by defining it from a WKT string with pixel or geo coordinates
+    </li>
+</ul>
+
+<p align="center"><img src="images/SubsetDialogPolygon.png"><br>
+</p>
+
+<p class="inote">
+    <b>NOTE:</b> The defined polygon must have 3 valid points (intersects the product bounds) to be used.
+</p>
+<p class="inote">
+    <b>NOTE:</b> The multi-polygons are not supported.
 </p>
 
 <h4>Band Subset</h4>
