@@ -20,7 +20,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-3736] Ensure NetCDF compatibility with ESA/Copernicus data
     [SNAP-3730] Update to use GraalVM
     [SNAP-3729] Update to JDK 21
-    [SNAP-3674] Handle tie-points girds smaller 2x2
+    [SNAP-3674] Handle tie-points grids smaller 2x2
     [SNAP-3644] Wrongly listed services
     [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
     [SNAP-3592] java.lang.NoClassDefFoundError on dialogs help
@@ -32,7 +32,6 @@ Release Notes - Sentinel Application Platform
     [SNAP-3892] New band group not correctly considered for band subset
 
 # New in SNAP 11.0.0
-    
     [SNAP-3709] Update GUI - use of band groups
     [SNAP-3702] Introduce band groups
     [SNAP-3684] Support PACE OCI L1C data

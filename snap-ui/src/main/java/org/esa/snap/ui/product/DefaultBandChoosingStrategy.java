@@ -190,8 +190,8 @@ public class DefaultBandChoosingStrategy implements BandChoosingStrategy {
 
         if (selectBandCheck != null && (selectAllCheckBox.isSelected() || selectNoneCheckBox.isSelected())) {
             selectBandCheck.setSelected(false);
+            selectBandCheck.updateUI();
         }
-        selectBandCheck.updateUI();
     }
 
     @Override
