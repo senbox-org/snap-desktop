@@ -336,6 +336,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             selectSpectralBands();
             recreateChart();
         });
+        filterButton.setToolTipText("Filter bands");
 
         showSpectrumForCursorButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
