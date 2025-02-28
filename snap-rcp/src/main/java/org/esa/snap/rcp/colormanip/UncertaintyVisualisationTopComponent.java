@@ -61,6 +61,7 @@ import java.awt.Component;
 public class UncertaintyVisualisationTopComponent extends TopComponent {
 
     public static final String UNCERTAINTY_MODE_PROPERTY = "uncertaintyMode";
+    private static final String HELP_ID = "showUncertaintyManipulationWnd";
 
 
     public UncertaintyVisualisationTopComponent() {
@@ -72,7 +73,7 @@ public class UncertaintyVisualisationTopComponent extends TopComponent {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("showUncertaintyManipulationWnd");
+        return new HelpCtx(HELP_ID);
     }
 
     private static class UncertaintyFormModel extends ColorFormModel {
