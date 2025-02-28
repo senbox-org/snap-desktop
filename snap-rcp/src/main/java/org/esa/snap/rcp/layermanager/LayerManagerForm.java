@@ -142,26 +142,35 @@ class LayerManagerForm implements AbstractLayerForm {
 
         AbstractButton addButton = createToolButton("icons/Plus24.gif");
         addButton.addActionListener(new AddLayerActionListener());
+        addButton.setToolTipText("Add a new layer");
+
         removeLayerAction = new RemoveLayerAction();
         AbstractButton removeButton = ToolButtonFactory.createButton(removeLayerAction, false);
+        removeButton.setToolTipText("Remove the selected layer");
 
         openLayerEditorAction = new OpenLayerEditorAction();
-        AbstractButton openButton = ToolButtonFactory.createButton(openLayerEditorAction, false);
+        AbstractButton editButton = ToolButtonFactory.createButton(openLayerEditorAction, false);
+        editButton.setToolTipText("Edit the selected layer");
 
         zoomToLayerAction = new ZoomToLayerAction();
         AbstractButton zoomButton = ToolButtonFactory.createButton(zoomToLayerAction, false);
+        zoomButton.setToolTipText("Zoom to the selected layer");
 
         moveLayerUpAction = new MoveLayerUpAction();
         AbstractButton upButton = ToolButtonFactory.createButton(moveLayerUpAction, false);
+        upButton.setToolTipText("Move up the selected layer");
 
         moveLayerDownAction = new MoveLayerDownAction();
         AbstractButton downButton = ToolButtonFactory.createButton(moveLayerDownAction, false);
+        downButton.setToolTipText("Move down the selected layer");
 
         moveLayerLeftAction = new MoveLayerLeftAction();
         AbstractButton leftButton = ToolButtonFactory.createButton(moveLayerLeftAction, false);
+        leftButton.setToolTipText("Move the selected layer to parent group");
 
         moveLayerRightAction = new MoveLayerRightAction();
         AbstractButton rightButton = ToolButtonFactory.createButton(moveLayerRightAction, false);
+        rightButton.setToolTipText("Move the selected layer to child group");
 
         AbstractButton helpButton = createToolButton("icons/Help22.png");
         helpButton.setToolTipText("Help."); /*I18N*/
@@ -183,7 +192,7 @@ class LayerManagerForm implements AbstractLayerForm {
         gbc.gridy++;
         actionBar.add(removeButton, gbc);
         gbc.gridy++;
-        actionBar.add(openButton, gbc);
+        actionBar.add(editButton, gbc);
         gbc.gridy++;
         actionBar.add(zoomButton, gbc);
         gbc.gridy++;

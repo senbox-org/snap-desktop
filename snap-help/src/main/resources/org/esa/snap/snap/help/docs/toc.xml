@@ -30,6 +30,7 @@
                     <tocitem text="Pixel Info View" target="pixelInfoView"/>
                     <tocitem text="Navigation Window" target="showNavigationWnd"/>
                     <tocitem text="Colour Manipulation" target="showColorManipulationWnd"/>
+                    <tocitem text="Uncertainty Visualisation" target="showUncertaintyManipulationWnd"/>
                     <tocitem text="RGB-Image Profile" target="rgbImageProfile"/>
                     <tocitem text="Mask Management" target="showMaskManagerWnd"/>
                 </tocitem>
