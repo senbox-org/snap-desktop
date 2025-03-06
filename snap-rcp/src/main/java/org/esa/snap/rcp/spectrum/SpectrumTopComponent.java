@@ -242,6 +242,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
         chartHandler.setCollectingSpectralInformationMessage();
     }
 
+    void clearPrepareForUpdateMessage() {
+        chartHandler.setPlotMessage("");
+    }
+
     void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
         chartHandler.setPosition(pixelX, pixelY, level, pixelPosInRasterBounds);
         chartHandler.updateData();
@@ -580,9 +584,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     ungroupedBandsList.add(availableSpectralBand);
                 }
             }
-            if (ungroupedBandsList.isEmpty()) {
-                spectra.addAll(Arrays.asList(autoGroupingSpectra));
-            } else {
+            spectra.addAll(Arrays.asList(autoGroupingSpectra));
+            if (!ungroupedBandsList.isEmpty()) {
                 int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
                 ++displayIndex;
                 final DisplayableSpectrum[] spectraFromUngroupedBands =

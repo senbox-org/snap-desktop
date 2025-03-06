@@ -98,7 +98,7 @@ public class InsertFigureInteractorInterceptor extends AbstractInteractorInterce
         panel.add(new JScrollPane(listBox), BorderLayout.CENTER);
         ModalDialog dialog = new ModalDialog(SwingUtilities.getWindowAncestor(productSceneView),
                                              "Select Vector Data Container",
-                                             ModalDialog.ID_OK_CANCEL_HELP, "");
+                                             ModalDialog.ID_OK_CANCEL_HELP, "vectorDataManagement");
         dialog.setContent(panel);
         int i = dialog.show();
         if (i == ModalDialog.ID_OK) {
