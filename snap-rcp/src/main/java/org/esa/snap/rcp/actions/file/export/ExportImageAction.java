@@ -43,14 +43,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -99,10 +92,10 @@ public class ExportImageAction extends AbstractExportImageAction {
 
     private final static String[][] SCENE_IMAGE_FORMAT_DESCRIPTIONS = {
             PNG_FORMAT_DESCRIPTION,
-            GEOTIFF_FORMAT_DESCRIPTION,
-            JPEG_FORMAT_DESCRIPTION,
             TIFF_FORMAT_DESCRIPTION,
             BMP_FORMAT_DESCRIPTION,
+            JPEG_FORMAT_DESCRIPTION,
+            GEOTIFF_FORMAT_DESCRIPTION,
     };
     private static final String HELP_ID = "exportImageFile";
     private static final String AC_VIEW_RES = "viewRes";
@@ -124,6 +117,7 @@ public class ExportImageAction extends AbstractExportImageAction {
     private JRadioButton buttonFullResolution;
     private JRadioButton buttonUserResolution;
     private JRadioButton buttonFullRegion;
+    private JCheckBox alphaCheckBox;
 
 
     public ExportImageAction() {
@@ -170,6 +164,12 @@ public class ExportImageAction extends AbstractExportImageAction {
             fileChooser.setCurrentFilename(imageBaseName + "_" + view.getRaster().getName());
         }
 
+        final JPanel alphaPanel = new JPanel(new GridLayout(1, 1));
+        alphaPanel.setBorder(BorderFactory.createTitledBorder("Transparency"));
+        alphaCheckBox = new JCheckBox("Alpha Channel");
+        alphaCheckBox.setToolTipText("Use alpha channel to allow transparent imagery");
+        alphaPanel.add(alphaCheckBox);
+
         final JPanel regionPanel = new JPanel(new GridLayout(2, 1));
         regionPanel.setBorder(BorderFactory.createTitledBorder("Image Region"));
         buttonFullRegion = new JRadioButton("Full scene");
@@ -215,6 +215,7 @@ public class ExportImageAction extends AbstractExportImageAction {
         accessory.add(regionPanel);
         accessory.add(resolutionPanel);
         accessory.add(sizePanel);
+        accessory.add(alphaPanel);
 
         fileChooser.setAccessory(accessory);
         buttonVisibleRegion.addActionListener(e -> updateComponents(e.getActionCommand()));
@@ -274,8 +275,18 @@ public class ExportImageAction extends AbstractExportImageAction {
     }
 
     protected RenderedImage createImage(String imageFormat, ProductSceneView view) {
-        final boolean useAlpha = !BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) && !JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat);
+
+        boolean useAlpha = alphaCheckBox.isSelected();
+        if (BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) || JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat)) {
+            useAlpha = false;
+        }
+        // todo test this
+        if (JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat)) {
+            useAlpha = false;
+        }
+//        final boolean useAlpha = !BMP_FORMAT_DESCRIPTION[0].equals(imageFormat) && !JPEG_FORMAT_DESCRIPTION[0].equals(imageFormat);
         final boolean entireImage = isEntireImageSelected();
+
         return createImage(view, entireImage, sizeComponent.getDimension(), useAlpha, GEOTIFF_FORMAT_DESCRIPTION[0].equals(imageFormat));
     }
 
