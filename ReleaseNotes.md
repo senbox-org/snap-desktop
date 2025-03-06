@@ -2,9 +2,11 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 12.0.0
+    [SNAP-3953] Spectrum not working correctly for SYN data
     [SNAP-3946] Exception when adding WKT to a product without GeoCoding
     [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
     [SNAP-3929] Sentinel 2 Mosaicking - NullPointerException
+    [SNAP-3920] Help missing for dialog "Select Vector Data Container"
     [SNAP-3914] pconvert not writing RGB images from PACE OCI L2 AOP products
     [SNAP-3897] Refactor glayer module
     [SNAP-3893] NullPointerException in Band Groups Manager
