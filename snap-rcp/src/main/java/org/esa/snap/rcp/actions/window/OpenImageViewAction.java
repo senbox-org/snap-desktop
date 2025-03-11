@@ -16,10 +16,12 @@
 package org.esa.snap.rcp.actions.window;
 
 import com.bc.ceres.core.SubProgressMonitor;
+import com.bc.ceres.swing.progress.DialogProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.dataop.downloadable.DownloadStatusManager;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.PreferencesPropertyMap;
 import org.esa.snap.rcp.SnapApp;
@@ -57,6 +59,7 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
 
     private RasterDataNode rasterDataNode;
     private Lookup lookup;
+    private final String OPEN_IMAGE_VIEW_MESSAGE = "Opening image view...";
 
     public OpenImageViewAction() {
         this(Utilities.actionsGlobalContext());
@@ -177,7 +180,8 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
 
     private void openProductSceneView(RasterDataNode rasterDataNode) {
         SnapApp snapApp = SnapApp.getDefault();
-        snapApp.setStatusBarMessage("Opening image view...");
+        snapApp.setStatusBarMessage(OPEN_IMAGE_VIEW_MESSAGE);
+        DownloadStatusManager.getInstance().setPreviousMessage(OPEN_IMAGE_VIEW_MESSAGE);
 
         UIUtils.setRootFrameWaitCursor(snapApp.getMainFrame());
 
@@ -213,8 +217,25 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
                 }
             }
         };
+
+        registerDownloadListener(worker);
         worker.execute();
     }
+
+    private void registerDownloadListener(SwingWorker<ProductSceneImage, Object> worker) {
+        DownloadStatusManager.getInstance().addListener(event -> {
+            SwingUtilities.invokeLater(() -> {
+                if ((boolean) event.getNewValue()) {
+                    String message = DownloadStatusManager.getInstance().getCurrentDownload();
+                    DialogProgressMonitor pm = ((ProgressMonitorSwingWorker<ProductSceneImage, Object>) worker).getDialogProgressMonitor();
+                    if (pm != null) {
+                        pm.setTaskName(message);
+                    }
+                }
+            });
+        });
+    }
+
 
     private void openDocumentWindow(final ProductSceneView view) {
 
@@ -230,7 +251,7 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         Debug.assertNotNull(pm);
 
         try {
-            pm.beginTask("Creating image...", 1);
+            pm.beginTask(OPEN_IMAGE_VIEW_MESSAGE, 1);
 
             ProductSceneImage sceneImage;
             if (existingView != null) {
