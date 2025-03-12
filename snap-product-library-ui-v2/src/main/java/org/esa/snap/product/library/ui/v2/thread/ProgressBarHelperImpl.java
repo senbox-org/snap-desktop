@@ -89,6 +89,7 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
                     // the progress bar was hidden
                     setParametersEnabledWhileDownloading(false);
                 }
+                this.stopButton.setEnabled(true);
                 return true;
             }
             return false;
@@ -195,5 +196,11 @@ public abstract class ProgressBarHelperImpl implements ProgressBarHelper {
         if (oldVisible != visible) {
             this.progressBar.firePropertyChange(VISIBLE_PROGRESS_BAR, oldVisible, visible);
         }
+    }
+
+    public void stopRequested(){
+        this.stopButton.setEnabled(false);
+        this.progressBar.setIndeterminate(true);
+        this.messageLabel.setText("Stopping ...");
     }
 }

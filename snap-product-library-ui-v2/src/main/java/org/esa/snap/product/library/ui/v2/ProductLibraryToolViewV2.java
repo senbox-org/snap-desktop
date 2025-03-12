@@ -1060,6 +1060,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         }
         this.repositoryOutputProductListPanel.updateProductListCountTitle();
         this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
+        this.repositorySelectionPanel.getProgressBarHelper().stopRequested();
     }
 
     private void setHorizontalSplitPaneLeftComponent(AbstractProductsRepositoryPanel selectedProductsRepositoryPanel) {
