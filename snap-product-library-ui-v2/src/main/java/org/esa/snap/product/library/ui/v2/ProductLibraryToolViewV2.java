@@ -1052,7 +1052,6 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void cancelSearchingProductList() {
-        this.repositorySelectionPanel.getProgressBarHelper().hideProgressPanel();
         if (this.searchProductListThread != null) {
             this.searchProductListThread.cancelRunning(); // stop the thread
         }
