@@ -1056,6 +1056,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         if (this.searchProductListThread != null) {
             this.searchProductListThread.cancelRunning(); // stop the thread
         }
+        if (this.localRepositoryProductsThread != null) {
+            this.localRepositoryProductsThread.cancelRunning(); // stop the thread
+        }
         this.repositoryOutputProductListPanel.updateProductListCountTitle();
         this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
     }
