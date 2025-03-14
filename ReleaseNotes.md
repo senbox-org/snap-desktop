@@ -2,6 +2,9 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 12.0.0
+    [SNAP-3962] Colorpalettes lose label when persisted
+    [SNAP-3961] Colortable label problems
+    [SNAP-3953] Spectrum not working correctly for SYN data
     [SNAP-3946] Exception when adding WKT to a product without GeoCoding
     [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
     [SNAP-3929] Sentinel 2 Mosaicking - NullPointerException

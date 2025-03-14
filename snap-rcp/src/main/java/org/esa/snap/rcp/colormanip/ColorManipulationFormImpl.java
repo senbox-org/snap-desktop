@@ -776,33 +776,26 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             if (file != null && file.canRead()) {
                 try {
                     ColorPaletteDef colorPaletteDef;
-
                     if (file.getName().endsWith(FILE_EXTENSION_CPT)) {
                         colorPaletteDef = ColorPaletteDef.loadCpt(file);
                     } else {
                         colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(file);
                     }
 
-
                     final ColorPaletteDef currentCPD = targetImageInfo.getColorPaletteDef();
                     final double min = currentCPD.getMinDisplaySample();
                     final double max = currentCPD.getMaxDisplaySample();
 
                     final boolean isSourceLogScaled = buttonSourceLogScaled.isSelected();
-
-//                    final boolean isSourceLogScaled = colorPaletteDef.isLogScaled();
                     final boolean isTargetLogScaled = targetImageInfo.isLogScaled();
-
                     final boolean autoDistribute = !buttonCptValue.isSelected();
-//                    final boolean autoDistribute = true;
+
                     if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
                         targetImageInfo.setColorPaletteDef(colorPaletteDef, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
                         ColorSchemeInfo colorSchemeInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
                         targetImageInfo.setColorSchemeInfo(colorSchemeInfo);
                     }
 
-
-                    currentCPD.getFirstPoint().setLabel(file.getName());
                     getFormModel().setModifiedImageInfo(targetImageInfo);
                     getFormModel().applyModifiedImageInfo();
                     getChildForm().updateFormModel(getFormModel());
