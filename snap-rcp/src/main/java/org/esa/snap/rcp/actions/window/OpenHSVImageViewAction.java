@@ -62,9 +62,9 @@ import java.util.prefs.Preferences;
 public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Provider {
 
     private static final String HELP_ID = "hsvImageProfile";
-    private static final String r = "min(round( (floor((6*(h))%6)==0?(v): (floor((6*(h))%6)==1?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)): (floor((6*(h))%6)==2?((1-(s))*(v)): (floor((6*(h))%6)==3?((1-(s))*(v)): (floor((6*(h))%6)==4?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==5?(v):0)))))) *256), 255)";
-    private static final String g = "min(round( (floor((6*(h))%6)==0?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==1?(v): (floor((6*(h))%6)==2?(v): (floor((6*(h))%6)==3?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)): (floor((6*(h))%6)==4?((1-(s))*(v)): (floor((6*(h))%6)==5?((1-(s))*(v)):0)))))) *256), 255)";
-    private static final String b = "min(round( (floor((6*(h))%6)==0?((1-(s))*(v)): (floor((6*(h))%6)==1?((1-(s))*(v)): (floor((6*(h))%6)==2?((1-((s)*(1-((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==3?(v): (floor((6*(h))%6)==4?(v): (floor((6*(h))%6)==5?((1-((s)*((6*(h))%6)-floor((6*(h))%6)))*(v)):0)))))) *256), 255)";
+    private static final String r = "min(round( (floor((6*(h))%6)==0?(v): (floor((6*(h))%6)==1?((1-((s)*(((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==2?((1-(s))*(v)): (floor((6*(h))%6)==3?((1-(s))*(v)): (floor((6*(h))%6)==4?((1-((s)*(1-((6*(h))%6)+floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==5?(v):0)))))) *256), 255)";
+    private static final String g = "min(round( (floor((6*(h))%6)==0?((1-((s)*(1-((6*(h))%6)+floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==1?(v): (floor((6*(h))%6)==2?(v): (floor((6*(h))%6)==3?((1-((s)*(((6*(h))%6)-floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==4?((1-(s))*(v)): (floor((6*(h))%6)==5?((1-(s))*(v)):0)))))) *256), 255)";
+    private static final String b = "min(round( (floor((6*(h))%6)==0?((1-(s))*(v)): (floor((6*(h))%6)==1?((1-(s))*(v)): (floor((6*(h))%6)==2?((1-((s)*(1-((6*(h))%6)+floor((6*(h))%6))))*(v)): (floor((6*(h))%6)==3?(v): (floor((6*(h))%6)==4?(v): (floor((6*(h))%6)==5?((1-((s)*(((6*(h))%6)-floor((6*(h))%6))))*(v)):0)))))) *256), 255)";
     private final Product product;
 
     public OpenHSVImageViewAction(ProductNode node) {
@@ -171,7 +171,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         return virtBand;
     }
 
-    private static String[] convertHSVToRGBExpressions(final String[] hsvExpressions) {
+    public static String[] convertHSVToRGBExpressions(final String[] hsvExpressions) {
 
         final String h = hsvExpressions[0].isEmpty() ? "0" : hsvExpressions[0];
         final String s = hsvExpressions[1].isEmpty() ? "0" : hsvExpressions[1];
