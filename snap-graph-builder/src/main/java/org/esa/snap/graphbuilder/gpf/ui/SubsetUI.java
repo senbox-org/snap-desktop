@@ -659,7 +659,7 @@ public class SubsetUI extends BaseOperatorUI {
 
     private void getPolygonRegion() {
         if (productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
-            this.polygonRegion = productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygon();
+            this.polygonRegion = productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetGeoPolygon();
         } else {
             if (sourceProducts != null && sourceProducts.length > 0) {
                 final MetadataInspector.Metadata productMetadata = new MetadataInspector.Metadata(sourceProducts[0].getSceneRasterWidth(), sourceProducts[0].getSceneRasterHeight());
