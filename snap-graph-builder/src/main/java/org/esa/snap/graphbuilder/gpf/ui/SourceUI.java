@@ -656,7 +656,7 @@ public class SourceUI extends BaseOperatorUI {
 
     private org.locationtech.jts.geom.Polygon getPolygon() {
         if (productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
-            return productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetPolygon();
+            return productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getSubsetGeoPolygon();
         }
         return null;
     }
