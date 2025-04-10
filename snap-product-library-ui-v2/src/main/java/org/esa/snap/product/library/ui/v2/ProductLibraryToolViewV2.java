@@ -1052,12 +1052,15 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     }
 
     private void cancelSearchingProductList() {
-        this.repositorySelectionPanel.getProgressBarHelper().hideProgressPanel();
         if (this.searchProductListThread != null) {
             this.searchProductListThread.cancelRunning(); // stop the thread
         }
+        if (this.localRepositoryProductsThread != null) {
+            this.localRepositoryProductsThread.cancelRunning(); // stop the thread
+        }
         this.repositoryOutputProductListPanel.updateProductListCountTitle();
         this.downloadRemoteProductsHelper.cancelDownloadingProductsQuickLookImage();
+        this.repositorySelectionPanel.getProgressBarHelper().stopRequested();
     }
 
     private void setHorizontalSplitPaneLeftComponent(AbstractProductsRepositoryPanel selectedProductsRepositoryPanel) {
