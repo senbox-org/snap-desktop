@@ -1,6 +1,11 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 13.0.0
+    [SNAP-3950] Project creation and XML file extension
+    [SNAP-3949] Creation of project structure when opening non-existent project
+    [SNAP-3948] Projects menu items enabled by default
+
 # New in SNAP 12.0.0
     [SNAP-3962] Colorpalettes lose label when persisted
     [SNAP-3961] Colortable label problems
