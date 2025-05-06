@@ -2,13 +2,16 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 12.0.0
+    [SNAP-3959] Memory leak when downloading many elevation files
     [SNAP-3962] Colorpalettes lose label when persisted
     [SNAP-3961] Colortable label problems
+    [SNAP-3955] Improve messaging when adding DEM band
     [SNAP-3953] Spectrum not working correctly for SYN data
     [SNAP-3946] Exception when adding WKT to a product without GeoCoding
     [SNAP-3945] SeaDAS File Reader fails in GPT processing mode
     [SNAP-3929] Sentinel 2 Mosaicking - NullPointerException
     [SNAP-3920] Help missing for dialog "Select Vector Data Container"
+    [SNAP-3915] “Color Manipulation” -> “Apply to other bands” error in SNAP 11.0.1
     [SNAP-3914] pconvert not writing RGB images from PACE OCI L2 AOP products
     [SNAP-3897] Refactor glayer module
     [SNAP-3893] NullPointerException in Band Groups Manager
@@ -18,15 +21,16 @@ Release Notes - Sentinel Application Platform
     [SNAP-3869] NPE in BandGroupsManager
     [SNAP-3843] ZNAP reader not releasing file handles properly
     [SNAP-3839] Re-organise import menu
-    [SNAP-3636] ZNAP product not opened after processing
     [SNAP-3825] Scaling is not applied to coordinates   
     [SNAP-3764] Integrate BandGroups in PinManager
     [SNAP-3758] Error subsetting Sentinel-1 image
+    [SNAP-3752] Copernicus DEM elevation model fails at latitudes where resolution of DEM changes
     [SNAP-3736] Ensure NetCDF compatibility with ESA/Copernicus data
     [SNAP-3730] Update to use GraalVM
     [SNAP-3729] Update to JDK 21
     [SNAP-3674] Handle tie-points grids smaller 2x2
     [SNAP-3644] Wrongly listed services
+    [SNAP-3636] ZNAP product not opened after processing
     [SNAP-3597] Titled border "Source product" of the JPanel of the Read operator has wrong dimensions
     [SNAP-3592] java.lang.NoClassDefFoundError on dialogs help
     [SNAP-3514] Problem reading SST-CCI Level 4 data
