@@ -87,7 +87,7 @@ public class TargetUI extends BaseOperatorUI {
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
             final File file = (File) fileValue;
-            fileName = FileUtils.getFilenameWithoutExtension(file);
+            fileName = FileUtils.getFilenameWithoutAnyExtensions(file.getName());
         }
         if (sourceProducts != null && sourceProducts.length > 0) {
             boolean sourceProductsChange = false;
