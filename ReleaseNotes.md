@@ -6,6 +6,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-3949] Creation of project structure when opening non-existent project
     [SNAP-3948] Projects menu items enabled by default
     [SNAP-3916] Graph Builder - File name is extended with file extension several times for ZNAP format
+    [SNAP-4008] Land-Sea-Mask Op does not correctly persist the source bands selection
 
 # New in SNAP 12.0.0
     [SNAP-3962] Colorpalettes lose label when persisted
