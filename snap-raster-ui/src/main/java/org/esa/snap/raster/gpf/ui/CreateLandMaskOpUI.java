@@ -15,6 +15,7 @@
  */
 package org.esa.snap.raster.gpf.ui;
 
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -27,6 +28,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,11 +49,20 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
     private boolean invertGeometry = false;
     private boolean useSRTM = true;
 
+    private boolean uiReady = false;
+
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
-        initializeOperatorUI(operatorName, parameterMap);
-        final JComponent panel = createPanel();
-        initParameters();
+        this.operatorName = operatorName;
+        validateParamMap(parameterMap);
+        this.paramMap = parameterMap;
+
+        if (sourceProducts != null || paramMap.isEmpty()) {
+            initializeOperatorUI(operatorName, parameterMap);
+            initParameters();
+        }
+
+        JComponent panel = createPanel();
 
         useSRTMCheckBox.addItemListener(e -> useSRTM = (e.getStateChange() == ItemEvent.SELECTED));
         invertGeometryCheckBox.addItemListener(e -> invertGeometry = (e.getStateChange() == ItemEvent.SELECTED));
@@ -65,8 +77,13 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
-
         OperatorUIUtils.initParamList(bandList, getBandNames());
+
+        String[] selectedBands = (String[]) paramMap.get(OperatorUIUtils.SOURCE_BAND_NAMES);
+        if (selectedBands != null) {
+            setSelectedBands(bandList, selectedBands);
+        }
+
         final Boolean doLandMask = (Boolean) paramMap.get("landMask");
         if (doLandMask != null && doLandMask) {
             landMask.setSelected(true);
@@ -89,6 +106,22 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
         Integer shorelineExtension = (Integer) paramMap.get("shorelineExtension");
         shorelineExtensionTextField.setText(shorelineExtension == null ? "0" : shorelineExtension.toString());
+
+        this.uiReady = true;
+    }
+
+    private void setSelectedBands(JList bandList, String[] selectedBands) {
+        ListModel<String> model = bandList.getModel();
+        List<Integer> idxs = new ArrayList<>();
+        for (int i = 0; i < model.getSize(); i++) {
+            for (String name : selectedBands) {
+                if (name.equals(model.getElementAt(i))) {
+                    idxs.add(i);
+                }
+            }
+        }
+        int[] indices = idxs.stream().mapToInt(Integer::intValue).toArray();
+        bandList.setSelectedIndices(indices);
     }
 
     @Override
@@ -99,6 +132,7 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
+        if (!uiReady) return;
 
         OperatorUIUtils.updateParamList(bandList, paramMap, OperatorUIUtils.SOURCE_BAND_NAMES);
 
@@ -106,6 +140,9 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         if (geometryMask.isSelected()) {
             paramMap.put("geometry", geometries.getSelectedItem());
             paramMap.put("invertGeometry", invertGeometry);
+        } else {
+            paramMap.remove("geometry");
+            paramMap.remove("invertGeometry");
         }
 
         int shorelineExtension = 0;
@@ -154,6 +191,23 @@ public class CreateLandMaskOpUI extends BaseOperatorUI {
         DialogUtils.fillPanel(contentPane, gbc);
 
         return contentPane;
+    }
+
+    private void validateParamMap(Map<String, Object> parameterMap) {
+        if (parameterMap.containsKey("sourceBands")) {
+            Object sourceBands = parameterMap.get("sourceBands");
+            parameterMap.put(OperatorUIUtils.SOURCE_BAND_NAMES, sourceBands);
+            parameterMap.remove("sourceBands");
+        }
+    }
+
+    @Override
+    public void setSourceProducts(Product[] products) {
+        super.setSourceProducts(products);
+        if (getOperatorName() != null && !getOperatorName().isEmpty()) {
+            initializeOperatorUI(getOperatorName(), getParameters());
+            initParameters();
+        }
     }
 
     private class RadioListener implements ActionListener {
