@@ -127,7 +127,7 @@ public class BandMathsOpUI extends BaseOperatorUI {
 
         BandMathsOp.BandDescriptor[] bandDescriptors = (BandMathsOp.BandDescriptor[])paramMap.get("targetBandDescriptors");
         if(bandDescriptors != null && bandDescriptors.length > 0) {
-            bandDesc = bandDescriptors[1];
+            bandDesc = bandDescriptors[0];
         } else {
             bandDesc.name = "newBand";
             bandDesc.type = "float32";
