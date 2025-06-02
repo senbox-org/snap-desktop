@@ -65,6 +65,7 @@ public class SourceUI extends BaseOperatorUI {
     private static final String POLYGON_REGION_PARAMETER = "polygonRegion";
     private static final String COPY_METADATA_PARAMETER = "copyMetadata";
     private static final String ANY_FORMAT = "Any Format";
+    private boolean isInitialized = false;
     private final JList bandList = new JList();
     private final JList maskList = new JList();
     SourceProductSelector sourceProductSelector = null;
@@ -141,6 +142,7 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
+        if (isInitialized) return;
         assert (paramMap != null);
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
@@ -157,6 +159,7 @@ public class SourceUI extends BaseOperatorUI {
                 }
                 if (srcProduct == null) {
                     srcProduct = CommonReaders.readProduct(file);
+                    SnapApp.getDefault().getProductManager().addProduct(srcProduct);
                 }
                 if (sourceProductSelector.getSelectedProduct() == null || sourceProductSelector.getSelectedProduct().getFileLocation() != fileValue) {
                     sourceProductSelector.setSelectedProduct(srcProduct);
@@ -171,6 +174,7 @@ public class SourceUI extends BaseOperatorUI {
         } else {
             formatNameComboBox.setSelectedItem(ANY_FORMAT);
         }
+        isInitialized = true;
     }
 
     @Override

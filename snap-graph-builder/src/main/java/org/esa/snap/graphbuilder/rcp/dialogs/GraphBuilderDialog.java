@@ -95,6 +95,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private static final ImageIcon clearIcon = TangoIcons.actions_edit_clear(TangoIcons.Res.R22);
     private static final ImageIcon helpIcon = TangoIcons.apps_help_browser(TangoIcons.Res.R22);
     private static final ImageIcon infoIcon = TangoIcons.apps_accessories_text_editor(TangoIcons.Res.R22);
+    private static final ImageIcon validateIcon = TangoIcons.actions_view_refresh(TangoIcons.Res.R22);
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
@@ -164,7 +165,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         tabbedPanel = new JTabbedPane();
         //tabbedPanel.setTabPlacement(JTabbedPane.LEFT);
         tabbedPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tabbedPanel.addChangeListener(e -> tabChanged());
 
         statusLabel = new JLabel("");
         statusLabel.setForeground(new Color(255, 0, 0));
@@ -228,12 +228,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
 
         setContent(mainPanel);
-    }
-
-    private void tabChanged() {
-        if (changesAreDetected()) {
-            validateAllNodes();
-        }
     }
 
     private static boolean equals(Map<String, Object> a, Map<String, Object> b){
@@ -316,6 +310,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         final AbstractButton helpButton = DialogUtils.createButton("helpButton", "Help", helpIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
         helpButton.addActionListener(e -> OnHelp());
 
+        final AbstractButton validateButton = DialogUtils.createButton("validateButton", "Validate", validateIcon, panel, DialogUtils.ButtonStyle.TextAndIcon);
+        validateButton.addActionListener(e -> validateAllNodes());
+
         gbc.weightx = 0;
         if (allowGraphBuilding) {
             panel.add(loadButton, gbc);
@@ -324,6 +321,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
         panel.add(saveButton, gbc);
         panel.add(helpButton, gbc);
+        panel.add(validateButton, gbc);
         panel.add(processButton, gbc);
     }
 
@@ -463,6 +461,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 refreshGraph();
             }
             initGraphEnabled = true;
+            validateAllNodes();
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
         }
@@ -657,7 +656,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     }
                     break;
                 case CONNECT_EVENT:
-                    validateAllNodes();
+                    initGraphOnConnect();
                     break;
                 case REFRESH_EVENT:
                     refreshGraph();
@@ -671,6 +670,18 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 msg = e.toString();
             }
             statusLabel.setText(msg);
+        }
+    }
+
+    void initGraphOnConnect() {
+        try {
+            boolean prev = initGraphEnabled;
+            initGraphEnabled = true;
+            initGraph();
+            initGraphEnabled = prev;
+        } catch (Exception e) {
+            statusLabel.setForeground(Color.RED);
+            statusLabel.setText("Init error: " + e.getMessage());
         }
     }
 
