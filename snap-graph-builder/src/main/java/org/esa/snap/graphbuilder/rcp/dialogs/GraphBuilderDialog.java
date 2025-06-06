@@ -17,6 +17,8 @@ package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.binding.ConverterRegistry;
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.swing.selection.SelectionChangeEvent;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.common.ReadOp;
@@ -28,9 +30,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
-import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
-import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
+import org.esa.snap.graphbuilder.gpf.ui.*;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.prefs.Preferences;
 
 /**
  * Provides the User Interface for creating, loading and saving Graphs
@@ -99,7 +100,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
-    JLabel statusLabel = null;
+    StatusLabel  statusLabel = null;
     private String lastWarningMsg = "";
 
     JPanel progressPanel = null;
@@ -134,10 +135,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         graphEx = new GraphExecuter();
         graphEx.addObserver(this);
 
-        String lastDir = SnapApp.getDefault().getPreferences().get(LAST_GRAPH_PATH,
-                                                                   ResourceUtils.getGraphFolder("").toFile().getAbsolutePath());
+        final Preferences preferences = SnapApp.getDefault().getPreferences();
+        String lastDir = preferences.get(LAST_GRAPH_PATH, ResourceUtils.getGraphFolder("").toFile().getAbsolutePath());
         if (new File(lastDir).exists()) {
-            SnapApp.getDefault().getPreferences().put(LAST_GRAPH_PATH, lastDir);
+            preferences.put(LAST_GRAPH_PATH, lastDir);
         }
 
         initUI();
@@ -166,8 +167,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         //tabbedPanel.setTabPlacement(JTabbedPane.LEFT);
         tabbedPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
-        statusLabel = new JLabel("");
-        statusLabel.setForeground(new Color(255, 0, 0));
+        statusLabel = new StatusLabel();
 
         midPanel.add(tabbedPanel, BorderLayout.CENTER);
         midPanel.add(statusLabel, BorderLayout.SOUTH);
@@ -255,6 +255,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         return false;
     }
 
+    /*
     private boolean changesAreDetected() {
         boolean result = false;
         List<GraphStruct> currentStruct = GraphStruct.copyGraphStruct(this.graphEx.getGraphNodes());
@@ -285,6 +286,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
         return result;
     }
+     */
 
     private void initButtonPanel(final JPanel panel) {
         panel.setLayout(new GridBagLayout());
@@ -383,13 +385,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 result = graphEx.initGraph();
             }
             if (!result && allowGraphBuilding) {
-                statusLabel.setText("Graph is incomplete");
+                statusLabel.setErrorMessage("Graph is incomplete");
             }
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                statusLabel.setText("Error: " + e.getMessage());
+                statusLabel.setErrorMessage("Error: " + e.getMessage());
             } else {
-                statusLabel.setText("Error: " + e.toString());
+                statusLabel.setErrorMessage("Error: " + e);
             }
             result = false;
         }
@@ -425,9 +427,14 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     public void loadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File graphFile = Dialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
-        if (graphFile == null) return;
+        if (graphFile == null) {
+            return;
+        }
+        refreshGraph();
 
         loadGraph(graphFile);
+
+        refreshGraph();
     }
 
     /**
@@ -437,12 +444,13 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     public void loadGraph(final File file) {
         try {
+
             loadGraph(new FileInputStream(file), file);
             if (allowGraphBuilding) {
                 setTitle(file.getName());
             }
         } catch (IOException e) {
-            SnapApp.getDefault().handleError("Unable to load graph " + file.toString(), e);
+            SnapApp.getDefault().handleError("Unable to load graph " + file, e);
         }
     }
 
@@ -559,8 +567,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      * @return true if validation passes
      */
     public boolean validateAllNodes() {
-
-        if (isProcessing) return false;
+        if (isProcessing) {
+            return false;
+        }
 
         boolean isValid = true;
         final StringBuilder errorMsg = new StringBuilder(100);
@@ -580,20 +589,22 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
         }
 
-        statusLabel.setForeground(new Color(255, 0, 0));
-        statusLabel.setText("");
+
         final String warningStr = warningMsg.toString();
         if (!isValid) {
-            statusLabel.setText(errorMsg.toString());
+            statusLabel.setErrorMessage(errorMsg.toString());
             return false;
-        } else if (!warningStr.isEmpty()) {
+        }
+
+        if (!warningStr.isEmpty()) {
             if (warningStr.length() > 100 && !warningStr.equals(lastWarningMsg)) {
                 Dialogs.showWarning(warningStr);
                 lastWarningMsg = warningStr;
             } else {
-                statusLabel.setForeground(new Color(0, 100, 255));
-                statusLabel.setText("Warning: " + warningStr);
+                statusLabel.setWarningMessage("Warning: " + warningStr);
             }
+        } else {
+            statusLabel.setOkMessage("Validation OK");
         }
 
         return initGraph();
@@ -686,8 +697,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     private JComponent createOperatorTab(final GraphNode node) {
-
-        return node.getOperatorUI().CreateOpTab(node.getOperatorName(), node.getParameterMap(), appContext);
+        final OperatorUI operatorUI = node.getOperatorUI();
+        final JComponent opTab = operatorUI.CreateOpTab(node.getOperatorName(), node.getParameterMap(), appContext);
+        operatorUI.addSelectionChangeListener(new SourceSelectionChangeListener());
+        return opTab;
     }
 
     private class ProcessThread extends SwingWorker<GraphExecuter, Object> {
@@ -710,7 +723,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                 graphEx.executeGraph(pm);
 
             } catch (Throwable e) {
-                System.out.print(e.getMessage());
                 if (e.getMessage() != null && !e.getMessage().isEmpty())
                     statusLabel.setText(e.getMessage());
                 else
@@ -796,5 +808,19 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         RectangleConverter rectConverter = new RectangleConverter();
         converterRegistry.setConverter(Rectangle.class, rectConverter);
+    }
+
+    private class SourceSelectionChangeListener implements SelectionChangeListener {
+
+        public void selectionChanged(SelectionChangeEvent event) {
+            final Object selected = event.getSelection().getSelectedValue();
+            if (selected instanceof Product) {
+                validateAllNodes();
+            }
+        }
+
+        public void selectionContextChanged(SelectionChangeEvent event) {
+            //nothing to do tb 2025-06-06
+        }
     }
 }

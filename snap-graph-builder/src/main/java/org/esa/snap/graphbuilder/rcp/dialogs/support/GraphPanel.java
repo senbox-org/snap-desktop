@@ -423,7 +423,6 @@ public class GraphPanel extends JPanel implements ActionListener, PopupMenuListe
         connectingSourceFromHead = false;
         connectingSourceFromTail = false;
         connectSourceTargetNode = null;
-
         if (graphEx.getGraphNodeList().isGraphComplete()) {
             graphEx.notifyConnection();
         }
