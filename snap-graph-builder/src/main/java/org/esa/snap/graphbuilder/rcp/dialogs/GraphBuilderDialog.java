@@ -31,12 +31,7 @@ import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.graphbuilder.gpf.ui.*;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphStruct;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -47,38 +42,15 @@ import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicBorders;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.prefs.Preferences;
 
 /**
@@ -100,13 +72,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
     private final AppContext appContext;
     private GraphPanel graphPanel = null;
-    StatusLabel  statusLabel = null;
+    StatusLabel statusLabel = null;
     private String lastWarningMsg = "";
 
     JPanel progressPanel = null;
     JProgressBar progressBar = null;
     private LabelBarProgressMonitor progBarMonitor = null;
-    private JLabel progressMsgLabel = null;
     private boolean initGraphEnabled = true;
 
     GraphExecuter graphEx;
@@ -114,14 +85,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     private boolean allowGraphBuilding = true;
     private final List<ProcessingListener> listenerList = new ArrayList<>(1);
 
-    private Map<String, Object> selectedConfiguration = null;
-    private List<GraphStruct> previousConfiguration = new ArrayList<>();
-    private String selectedId = null;
-
     public final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
 
     JTabbedPane tabbedPanel = null;
-    private GraphNode selectedNode;
 
     public GraphBuilderDialog(final AppContext theAppContext, final String title, final String helpID) {
         this(theAppContext, title, helpID, true);
@@ -182,7 +148,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, midPanel);
             splitPane.setOneTouchExpandable(true);
             splitPane.setResizeWeight(0.4);
-            if(!allowGraphBuilding) {
+            if (!allowGraphBuilding) {
                 splitPane.setDividerLocation(0);
             }
             splitPane.setBorder(new BasicBorders.MarginBorder());
@@ -205,7 +171,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         progressBar.setStringPainted(true);
         progressPanel = new JPanel();
         progressPanel.setLayout(new BorderLayout(2, 2));
-        progressMsgLabel = new JLabel();
+
+        final JLabel progressMsgLabel = new JLabel();
         progressPanel.add(progressMsgLabel, BorderLayout.NORTH);
         progressPanel.add(progressBar, BorderLayout.CENTER);
 
@@ -229,64 +196,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
         setContent(mainPanel);
     }
-
-    private static boolean equals(Map<String, Object> a, Map<String, Object> b){
-        if (a == null && b == null)
-            return true;
-
-        if (a == null || b == null)
-            return false;
-
-        if (a.keySet().size() == b.keySet().size()) {
-            for (String key : a.keySet()) {
-                if (!b.containsKey(key))
-                    return false;
-                Object objA = a.get(key);
-                Object objB = b.get(key);
-                if (objA != null && objB != null) {
-                    if (!objA.toString().equals(objB.toString()))
-                        return false;
-                }
-                if (objA == null ^ objB == null)
-                    return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /*
-    private boolean changesAreDetected() {
-        boolean result = false;
-        List<GraphStruct> currentStruct = GraphStruct.copyGraphStruct(this.graphEx.getGraphNodes());
-        if (this.selectedId != null) {
-            if (GraphStruct.deepEqual(currentStruct, previousConfiguration)) {
-                result = !equals(this.selectedConfiguration, this.selectedNode.getOperatorUIParameterMap());
-            } else {
-                // the graph has changed and so you need to reverify
-                result = true;
-            }
-        }
-        this.previousConfiguration = currentStruct;
-        if (this.tabbedPanel.getSelectedIndex() >= 0){
-            this.selectedId = this.tabbedPanel.getTitleAt(this.tabbedPanel.getSelectedIndex());
-            for (GraphNode n: this.graphEx.getGraphNodes()) {
-                if (n.getID().equals(this.selectedId)) {
-                    this.selectedNode = (n);
-                    this.selectedConfiguration = new HashMap<>(n.getOperatorUIParameterMap());
-                }
-            }
-            if (this.selectedConfiguration == null) {
-                System.err.println("WARNING [org.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog]: Node `"+selectedId+"`not found");
-                this.selectedId = null;
-            }
-
-        } else {
-            this.selectedId = null;
-        }
-        return result;
-    }
-     */
 
     private void initButtonPanel(final JPanel panel) {
         panel.setLayout(new GridBagLayout());
@@ -362,8 +271,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         for (File file : files) {
             if (file.exists()) {
                 final int answer = JOptionPane.showOptionDialog(getJDialog(),
-                                                                "File " + file.getPath() + " already exists.\nWould you like to overwrite?", "Overwrite?",
-                                                                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                        "File " + file.getPath() + " already exists.\nWould you like to overwrite?", "Overwrite?",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
                 if (answer == JOptionPane.NO_OPTION) {
                     return false;
@@ -476,7 +385,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     private void refreshGraph() {
-        if(graphPanel != null) {
+        if (graphPanel != null) {
             graphPanel.repaint();
         }
     }
@@ -545,7 +454,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     private void OnInfo() {
         final PromptDialog dlg = new PromptDialog("Graph Description", "Description",
-                                                  graphEx.getGraphDescription(), PromptDialog.TYPE.TEXTAREA);
+                graphEx.getGraphDescription(), PromptDialog.TYPE.TEXTAREA);
         dlg.show();
         if (dlg.IsOK()) {
             try {
@@ -616,10 +525,6 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
     }
 
-    public void removeListener(final ProcessingListener listener) {
-        listenerList.remove(listener);
-    }
-
     private void notifyMSG(final ProcessingListener.MSG msg, final String text) {
         for (final ProcessingListener listener : listenerList) {
             listener.notifyMSG(msg, text);
@@ -631,6 +536,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             listener.notifyMSG(msg, fileList);
         }
     }
+
 
     /**
      * Implements the functionality of Observer participant of Observer Design Pattern to define a one-to-many
@@ -648,10 +554,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final GraphExecuter.GraphEvent event = (GraphExecuter.GraphEvent) data;
             final GraphNode node = (GraphNode) event.getData();
             final GraphExecuter.events eventType = event.getEventType();
-            switch(eventType) {
+            switch (eventType) {
                 case ADD_EVENT:
                     tabbedPanel.addTab(node.getID(), null, createOperatorTab(node), node.getID() + " Operator");
-                    if(node.getOperatorUI().hasError()) {
+                    if (node.getOperatorUI().hasError()) {
                         statusLabel.setText(node.getOperatorUI().getErrorMessage());
                     }
                     refreshGraph();
@@ -662,7 +568,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
                     break;
                 case SELECT_EVENT:
                     int newTabIndex = tabbedPanel.indexOfTab(node.getID());
-                    if(tabbedPanel.getSelectedIndex() != newTabIndex) {
+                    if (tabbedPanel.getSelectedIndex() != newTabIndex) {
                         tabbedPanel.setSelectedIndex(newTabIndex);
                     }
                     break;
@@ -761,20 +667,18 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     private ProcessingStats openTargetProducts(final File[] fileList) {
-        ProcessingStats stats = new ProcessingStats();
-        if (fileList.length != 0) {
-            for (File file : fileList) {
-                try {
-                    final Product product = CommonReaders.readProduct(file);
-                    if (product != null) {
-                        appContext.getProductManager().addProduct(product);
+        final ProcessingStats stats = new ProcessingStats();
+        for (File file : fileList) {
+            try {
+                final Product product = CommonReaders.readProduct(file);
+                if (product != null) {
+                    appContext.getProductManager().addProduct(product);
 
-                        stats.totalBytes += ProductFunctions.getRawStorageSize(product);
-                        stats.totalPixels = ProductFunctions.getTotalPixels(product);
-                    }
-                } catch (IOException e) {
-                    showErrorDialog(e.getMessage());
+                    stats.totalBytes += ProductFunctions.getRawStorageSize(product);
+                    stats.totalPixels = ProductFunctions.getTotalPixels(product);
                 }
+            } catch (IOException e) {
+                showErrorDialog(e.getMessage());
             }
         }
         return stats;
