@@ -27,6 +27,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.util.GeoUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.rcp.SnapApp;
@@ -142,30 +143,15 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
-        if (isInitialized) return;
+        if (isInitialized) {
+            return;
+        }
         assert (paramMap != null);
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
-            try {
-                final File file = (File) fileValue;
-                Product srcProduct = null;
-                // check if product is already opened
-                final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
-                for (Product openedProduct : openedProducts) {
-                    if (file.equals(openedProduct.getFileLocation())) {
-                        srcProduct = openedProduct;
-                        break;
-                    }
-                }
-                if (srcProduct == null) {
-                    srcProduct = CommonReaders.readProduct(file);
-                    SnapApp.getDefault().getProductManager().addProduct(srcProduct);
-                }
-                if (sourceProductSelector.getSelectedProduct() == null || sourceProductSelector.getSelectedProduct().getFileLocation() != fileValue) {
-                    sourceProductSelector.setSelectedProduct(srcProduct);
-                }
-            } catch (IOException e) {
-                // do nothing
+            final File file = (File) fileValue;
+            if (file.isFile()) {
+                setSelectedAsInitialProduct(file, fileValue);
             }
         }
         final Object formatValue = paramMap.get(FORMAT_PARAMETER);
@@ -178,6 +164,36 @@ public class SourceUI extends BaseOperatorUI {
     }
 
     @Override
+    public void addSelectionChangeListener(SelectionChangeListener listener) {
+        if (sourceProductSelector != null) {
+            sourceProductSelector.addSelectionChangeListener(listener);
+        }
+    }
+
+    private void setSelectedAsInitialProduct(File file, Object fileValue) {
+        try {
+            Product srcProduct = null;
+            // check if product is already opened
+            final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
+            for (Product openedProduct : openedProducts) {
+                if (file.equals(openedProduct.getFileLocation())) {
+                    srcProduct = openedProduct;
+                    break;
+                }
+            }
+            if (srcProduct == null) {
+                srcProduct = CommonReaders.readProduct(file);
+                SnapApp.getDefault().getProductManager().addProduct(srcProduct);
+            }
+            if (sourceProductSelector.getSelectedProduct() == null || sourceProductSelector.getSelectedProduct().getFileLocation() != fileValue) {
+                sourceProductSelector.setSelectedProduct(srcProduct);
+            }
+        } catch (IOException e) {
+            // do nothing
+        }
+    }
+
+    @Override
     public UIValidation validateParameters() {
         if (sourceProductSelector != null && sourceProductSelector.getSelectedProduct() == null) {
             return new UIValidation(UIValidation.State.ERROR, "Source product not selected");
@@ -187,6 +203,7 @@ public class SourceUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
+        boolean runValidate = false;
         if (sourceProductSelector != null) {
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {
@@ -200,6 +217,7 @@ public class SourceUI extends BaseOperatorUI {
                     OperatorUIUtils.initParamList(maskList, getGeometries());
                     pixelPanelChanged();
                     geoCodingChange();
+                    runValidate = true;
                 }
             }
         }
@@ -225,6 +243,10 @@ public class SourceUI extends BaseOperatorUI {
             paramMap.put(POLYGON_REGION_PARAMETER, getPolygon());
         }
         paramMap.put(COPY_METADATA_PARAMETER, copyMetadata.isSelected());
+
+        if (runValidate) {
+            validateParameters();
+        }
     }
 
     public void updateAdvancedOptionsUIAtProductChange() {

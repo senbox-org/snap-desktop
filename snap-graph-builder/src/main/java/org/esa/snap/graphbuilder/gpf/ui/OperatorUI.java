@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.gpf.ui;
 
 
 import com.bc.ceres.binding.dom.XppDomElement;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.graph.GraphException;
 import org.esa.snap.ui.AppContext;
@@ -50,4 +51,6 @@ public interface OperatorUI {
     boolean hasError();
 
     String getErrorMessage();
+
+    void addSelectionChangeListener(SelectionChangeListener listener);
 }
