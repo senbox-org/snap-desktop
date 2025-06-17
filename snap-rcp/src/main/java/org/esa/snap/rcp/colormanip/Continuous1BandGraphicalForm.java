@@ -18,6 +18,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.datamodel.*;
+
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.ImageInfoEditorModel;
 
