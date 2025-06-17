@@ -51,17 +51,21 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+
 /**
  * This action opens an RGB image view on the currently selected Product.
+ * Enablement: when a product is selected which contains at least 1 band
  *
  * @author Marco Peters
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Image" toolbar including enablement, tooltips and related icon.
+
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
-        displayName = "#CTL_OpenRGBImageViewAction_MenuText",
-        popupText = "#CTL_OpenRGBImageViewAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/RgbImage24.png",
-        lazy = true
+        displayName = "#CTL_OpenRGBImageViewAction_Name",
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
@@ -69,18 +73,41 @@ import java.util.stream.Collectors;
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",
-        "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
+        "CTL_OpenRGBImageViewAction_Name=RGB Image",
+        "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
 })
-public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
+public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "rgbImageProfile";
 
-    public OpenRGBImageViewAction(ProductNode node) {
-        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
-    }
+    private Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
 
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
+
+
+
+    // Governs enablement of the RGB GUI access
+    private final int MINUMUM_NUM_BANDS = 1;
+
+
+    public OpenRGBImageViewAction() {this(null);}
+
+    public OpenRGBImageViewAction(ProductNode node) {
+        super(Bundle.CTL_OpenRGBImageViewAction_Name());
+        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
+        this.viewResult = lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -88,12 +115,14 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         if (product != null) {
             openProductSceneViewRGB(product, HELP_ID);
         }
+
     }
 
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(HELP_ID);
     }
+
     public void openProductSceneViewRGB(Product rgbProduct, final String helpId) {
         final Product[] openedProducts = SnapApp.getDefault().getProductManager().getProducts();
         final int[] defaultBandIndices = getDefaultBandIndices(rgbProduct);
@@ -296,6 +325,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         for (int i = 0; i < rgbBands.length; i++) {
             String expression = rgbaExpressions[i].isEmpty() ? "0" : rgbaExpressions[i];
             Band rgbBand = moreProductsReferences ? null : product.getBand(expression);
+
             if (rgbBand == null) {
                 rgbBand = new ProductSceneView.RGBChannel(product,
                         determineWidth(expression, products, elementIndex),
@@ -366,8 +396,26 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
 
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JMenuItem menuItem = new JMenuItem(this);
+        return menuItem;
+    }
 
+    @Override
+    public Component getToolbarPresenter() {
+        JButton button = new JButton(this);
+        button.setText(null);
+        return button;
+    }
 
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
 
+    protected void updateEnabledState() {
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null && productNode.getProduct().getNumBands() > MINUMUM_NUM_BANDS);
+    }
 
 }
