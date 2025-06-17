@@ -15,6 +15,7 @@
  */
 package org.esa.snap.product.library.ui.v2;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.Credentials;
 import org.esa.snap.core.datamodel.Product;
@@ -141,7 +142,7 @@ import static java.lang.Math.min;
 )
 @TopComponent.Registration(
         mode = "rightSlidingSide",
-        openAtStartup = true,
+        openAtStartup = PackageDefaults.PRODUCT_LIBRARY_OPEN,
         position = 0
 )
 @ActionID(category = "Window", id = "org.esa.snap.product.library.ui.v2.ProductLibraryToolViewV2")

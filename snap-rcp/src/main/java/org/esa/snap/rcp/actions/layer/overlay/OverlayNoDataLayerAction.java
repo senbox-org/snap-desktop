@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -28,17 +29,25 @@ import org.openide.util.NbBundle;
         "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
+
+    boolean isSetByThisTool = false;
+
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayNoDataLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_NO_DATA_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayNoDataLayerActionToolTip());
     }
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
         return view.isNoDataOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -48,6 +57,7 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setNoDataOverlayEnabled(!getActionSelectionState(view));
     }
 
