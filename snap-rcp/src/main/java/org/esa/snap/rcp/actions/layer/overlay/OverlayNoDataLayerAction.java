@@ -5,6 +5,7 @@
  */
 package org.esa.snap.rcp.actions.layer.overlay;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -35,7 +36,7 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayNoDataLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/NoDataOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_NO_DATA_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayNoDataLayerActionToolTip());
     }
 
