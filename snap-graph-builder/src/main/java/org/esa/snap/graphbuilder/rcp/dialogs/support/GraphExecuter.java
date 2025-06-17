@@ -244,7 +244,6 @@ public class GraphExecuter extends Observable {
                 graphContext.init(null);
                 //todo recreateGraphContext();
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new GraphException(e.getMessage());
             } finally {
                 subGraphHandler.restore();

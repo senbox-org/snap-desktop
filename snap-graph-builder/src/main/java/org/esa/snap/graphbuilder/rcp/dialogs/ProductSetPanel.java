@@ -15,6 +15,7 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
@@ -295,7 +296,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             if(products.length < AUTO_POPULATE_DETAILS_LIMIT) {
                 tableModel.refresh();
             }
-
+            // new SelectionChangeEvent()
             pm.done();
         };
 

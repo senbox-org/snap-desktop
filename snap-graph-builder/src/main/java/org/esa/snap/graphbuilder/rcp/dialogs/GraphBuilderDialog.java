@@ -304,6 +304,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             }
             result = false;
         }
+        if (result) {
+            statusLabel.setOkMessage("Graph initialize OK");
+        }
         return result;
     }
 
@@ -516,6 +519,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             statusLabel.setOkMessage("Validation OK");
         }
 
+        // @todo 1 tb/tb is this the right place to initialize? The method is named "validate...()".
+        //  This is probably an unwanted side-effect tb 2025-06-13
         return initGraph();
     }
 
@@ -597,8 +602,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             initGraph();
             initGraphEnabled = prev;
         } catch (Exception e) {
-            statusLabel.setForeground(Color.RED);
-            statusLabel.setText("Init error: " + e.getMessage());
+            statusLabel.setErrorMessage("Init error: " + e.getMessage());
         }
     }
 
