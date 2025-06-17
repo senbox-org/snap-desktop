@@ -138,6 +138,9 @@ public class AngularTopComponent extends ToolTopComponent {
     public List<AngularBand> sensor_zenith_Bands = new ArrayList<>();
     public List<AngularBand> scattering_angle_Bands = new ArrayList<>();
 
+    private int workDoneMaster = 0;
+    private int totalWorkPlannedMaster = 100;
+
     public AngularTopComponent() {
         // System.out.println("Angular View Tool is Open");
         angularViewToolIsOpen = false;
@@ -703,13 +706,14 @@ public class AngularTopComponent extends ToolTopComponent {
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                int totalWorkPlanned = 100;
-                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
+                totalWorkPlannedMaster = 100;
+                workDoneMaster = 0;
+                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
                 try {
                     // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
-                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
+                    updateData(0, 0, 0, true, pm, (totalWorkPlannedMaster - 10));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
@@ -765,13 +769,14 @@ public class AngularTopComponent extends ToolTopComponent {
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                    int totalWorkPlanned = 100;
-                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
+                    totalWorkPlannedMaster = 100;
+                    workDoneMaster = 0;
+                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
                     try {
                         // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm, (totalWorkPlanned - 10));
+                        chartHandler.updateData(pm, (totalWorkPlannedMaster - 10));
                         if (pm != null && pm.isCanceled()) {
                             cancelActions();
                             pm.done();
@@ -850,6 +855,7 @@ public class AngularTopComponent extends ToolTopComponent {
             if (autoGrouping != null) {
                 final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
                 DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
+
                 final Iterator<String[]> iterator = autoGrouping.iterator();
                 int i = 0;
                 while (iterator.hasNext()) {
@@ -864,6 +870,14 @@ public class AngularTopComponent extends ToolTopComponent {
                     final String angularViewName = angularViewNameBuilder.toString();
                     int symbolIndex = AngularViewShapeProvider.getValidIndex(i, false);
                     DisplayableAngularview angularView = new DisplayableAngularview(angularViewName, symbolIndex);
+                    if (angularViewName != null)  {
+                        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+                        if (view != null && view.getRaster().getName().startsWith(angularViewName)) {
+                            angularView.setSelected(i == selectedAngularViewIndex);
+                        } else {
+                            angularView.setSelected(false);
+                        }
+                    }
                     angularView.setSelected(i == selectedAngularViewIndex);
                     angularView.setLineStyle(AngularViewStrokeProvider.getStroke(i));
                     autoGroupingAngularViews[i++] = angularView;
@@ -1060,7 +1074,7 @@ public class AngularTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
-        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
+        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting data (possible memory limitations)...";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1336,14 +1350,15 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             showsValidCursorAngularViews = false;
             if (modelP == null) {
                 return;
             }
+
+            int workDone2 = 0;
             if (isShowingCursorAngularView() && currentView != null) {
-                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-                int workDone = 0;
+                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
 
                 for (DisplayableAngularview angularView : angularViews) {
                     XYSeries series = new XYSeries(angularView.getName());
@@ -1380,12 +1395,19 @@ public class AngularTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                                    if (totalWorkPlanned2 != 0) {
+                                        if (pm != null) {pm.worked(1);}
+                                    }
+                                    workDoneMaster++;
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
                         }
                     } else {
@@ -1430,12 +1452,19 @@ public class AngularTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                                    if (totalWorkPlanned2 != 0) {
+                                        if (pm != null) {pm.worked(1);}
+                                    }
+                                    workDoneMaster++;
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
                         }
                     }
@@ -1469,7 +1498,12 @@ public class AngularTopComponent extends ToolTopComponent {
         private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             Placemark[] pins = getDisplayedPins();
 
-            totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
+            // it seems like most of the work is done on first pin so setting this to false for now
+            boolean splitWorkAcrossPins = false;
+            if (splitWorkAcrossPins) {
+                totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
+            }
+
             // System.out.println("Number of pins =" + pins.length);
             // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
 
@@ -1483,12 +1517,12 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
-            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-            int workDone = 0;
+            int workDone2 = 0;
+            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
@@ -1535,12 +1569,19 @@ public class AngularTopComponent extends ToolTopComponent {
                     }
 
                     bandCount++;
-                    if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                        if (totalWorkPlanned != 0) {
-                            if (pm != null) {pm.worked(1);}
+                    if (bandCount > nextIncrementFinishedBandCount) {
+                        System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                        System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                        if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                            if (totalWorkPlanned2 != 0) {
+                                if (pm != null) {pm.worked(1);}
+                            }
+                            workDoneMaster++;
+                            workDone2++;
                         }
+
                         nextIncrementFinishedBandCount += incrementLengthNumBands;
-                        workDone++;
                     }
                 }
                 if (pm != null && pm.isCanceled()) {

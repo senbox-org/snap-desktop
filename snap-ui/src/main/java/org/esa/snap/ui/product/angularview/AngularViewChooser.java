@@ -163,7 +163,8 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         final ImageIcon shapeIcon = AngularViewShapeProvider.getShapeIcon(angularView.getSymbolIndex());
         angularViewsPanel.add(collapseButton);
         final TristateCheckBox tristateCheckBox = new TristateCheckBox();
-        tristateCheckBox.setState(selectionAdmin.getState(index));
+        tristateCheckBox.setState(isSelected(angularView));
+
         tristateCheckBox.addActionListener(new TristateCheckboxListener(index));
         tristateCheckBoxes[index] = tristateCheckBox;
         angularViewsPanel.add(tristateCheckBox);
@@ -210,6 +211,14 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         });
         angularViewsPanel.add(shapeSizeComboBox);
     }
+
+    private static int isSelected(DisplayableAngularview angularview) {
+        if (angularview.isSelected()) {
+            return TristateCheckBox.STATE_SELECTED;
+        }
+        return TristateCheckBox.STATE_UNSELECTED;
+    }
+
 
     private void toggleCollapsed(int index) {
         final boolean isCollapsed = !collapsed[index];
