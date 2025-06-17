@@ -13,7 +13,7 @@
 
             <file name="org-openide-actions-SaveAction.shadow_hidden"/>
             <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
-            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+<!--            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>-->
 
             <attr name="position" intvalue="100"/>
             <folder name="Session">
@@ -205,7 +205,7 @@
             <attr name="position" intvalue="300"/>
         </folder>
 
-        <folder name="Geometry">
+        <folder name="Geometry Container">
             <attr name="position" intvalue="600"/>
         </folder>
 
@@ -213,9 +213,9 @@
             <attr name="position" intvalue="603"/>
         </folder>
 
-        <folder name="Geometry Lines">
-            <attr name="position" intvalue="605"/>
-        </folder>
+<!--        <folder name="Geometry Lines">-->
+<!--            <attr name="position" intvalue="605"/>-->
+<!--        </folder>-->
 
         <folder name="GPT Processing">
             <attr name="position" intvalue="610"/>
@@ -248,17 +248,17 @@
         </folder>
 
 
-        <folder name="Spectral Angular View">
-            <attr name="position" intvalue="648"/>
-        </folder>
 
         <folder name="Overlay">
             <attr name="position" intvalue="650"/>
         </folder>
 
+
+
         <folder name="Pins">
             <attr name="position" intvalue="655"/>
         </folder>
+
 
 
         <!--        <folder name="Processing">-->
@@ -274,20 +274,33 @@
 <!--            <attr name="position" intvalue="665"/>-->
 <!--        </folder>-->
 
+        <folder name="Range Finder">
+            <attr name="position" intvalue="660"/>
+        </folder>
+
         <folder name="Raster">
-            <attr name="position" intvalue="670"/>
+            <attr name="position" intvalue="665"/>
         </folder>
 
         <folder name="SeaDAS Toolbox">
-            <attr name="position" intvalue="635"/>
+            <attr name="position" intvalue="670"/>
         </folder>
 
         <folder name="Soft Button">
-            <attr name="position" intvalue="640"/>
+            <attr name="position" intvalue="673"/>
+        </folder>
+
+        <folder name="Spectral Angular View">
+            <attr name="position" intvalue="674"/>
+        </folder>
+
+
+        <folder name="Time Series">
+            <attr name="position" intvalue="675"/>
         </folder>
 
         <folder name="Tool Windows">
-            <attr name="position" intvalue="675"/>
+            <attr name="position" intvalue="676"/>
         </folder>
 
         <folder name="UndoRedo"> <!-- defined by NetBeans -->
