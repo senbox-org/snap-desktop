@@ -724,6 +724,10 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final Object selected = event.getSelection().getSelectedValue();
             if (selected instanceof Product) {
                 validateAllNodes();
+            } else if (selected instanceof File) {
+                if (ProductFunctions.isValidProduct((File) selected)) {
+                    validateAllNodes();
+                }
             }
         }
 

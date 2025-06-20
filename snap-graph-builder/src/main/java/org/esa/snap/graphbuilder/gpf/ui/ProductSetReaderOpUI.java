@@ -15,6 +15,7 @@
  */
 package org.esa.snap.graphbuilder.gpf.ui;
 
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import org.esa.snap.graphbuilder.rcp.dialogs.ProductSetPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.ui.AppContext;
@@ -31,13 +32,14 @@ import java.util.Map;
 public class ProductSetReaderOpUI extends BaseOperatorUI {
 
     private final FileTable productSetTable = new FileTable();
+    private ProductSetPanel panel;
 
     @Override
     public JComponent CreateOpTab(String operatorName, Map<String, Object> parameterMap, AppContext appContext) {
 
         initializeOperatorUI(operatorName, parameterMap);
 
-        ProductSetPanel panel = new ProductSetPanel(appContext, "", productSetTable, false, true);
+        panel = new ProductSetPanel(appContext, "", productSetTable, false, true);
         initParameters();
         return panel;
     }
@@ -49,8 +51,12 @@ public class ProductSetReaderOpUI extends BaseOperatorUI {
     }
 
     @Override
-    public UIValidation validateParameters() {
+    public void addSelectionChangeListener(SelectionChangeListener listener) {
+        panel.addSelectionChangeListener(listener);
+    }
 
+    @Override
+    public UIValidation validateParameters() {
         return new UIValidation(UIValidation.State.OK, "");
     }
 
