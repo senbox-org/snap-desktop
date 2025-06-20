@@ -19,6 +19,7 @@ import com.bc.ceres.binding.*;
 import com.bc.ceres.binding.dom.DomConverter;
 import com.bc.ceres.binding.dom.DomElement;
 import com.bc.ceres.binding.dom.XppDomElement;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
 import com.thoughtworks.xstream.io.xml.xppdom.XppDom;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.GPF;
@@ -93,6 +94,11 @@ public abstract class BaseOperatorUI implements OperatorUI {
 
     public String getOperatorName() {
         return operatorName;
+    }
+
+    @Override
+    public void addSelectionChangeListener(SelectionChangeListener listener) {
+        // default implementation does nothing tb 2025-06-06
     }
 
     protected void initializeOperatorUI(final String operatorName, final Map<String, Object> parameterMap) {

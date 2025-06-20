@@ -15,6 +15,11 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
+import com.bc.ceres.swing.selection.SelectionChangeEvent;
+import com.bc.ceres.swing.selection.SelectionChangeListener;
+import com.bc.ceres.swing.selection.support.DefaultSelection;
+import com.bc.ceres.swing.selection.support.DefaultSelectionContext;
+import com.bc.ceres.swing.selection.support.SelectionChangeSupport;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.SystemUtils;
@@ -48,6 +53,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ProductSet Panel to handle source and target selection
@@ -57,8 +63,9 @@ import java.util.ArrayList;
 public class ProductSetPanel extends JPanel implements TableModelListener {
 
     private final FileTable productSetTable;
+    private final List<Product> openProducts;
     private final TargetFolderSelector targetProductSelector;
-    private final AppContext appContext;
+    private final SelectionChangeSupport selectionChangeSupport;
     private String targetProductNameSuffix = "";
     private JPanel buttonPanel = null;
 
@@ -94,7 +101,6 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
     public ProductSetPanel(final AppContext theAppContext, final String title, final FileTable fileTable,
                            final boolean incTrgProduct, final boolean incButtonPanel) {
         super(new BorderLayout());
-        this.appContext = theAppContext;
         this.productSetTable = fileTable;
         setBorderTitle(title);
 
@@ -119,7 +125,14 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         }
         fileTable.getModel().addTableModelListener(this);
 
+        selectionChangeSupport = new SelectionChangeSupport();
+        openProducts = new ArrayList<>();
+
         updateComponents();
+    }
+
+    public void addSelectionChangeListener(SelectionChangeListener listener) {
+        selectionChangeSupport.addSelectionChangeListener(listener);
     }
 
     protected void setBorderTitle(final String title) {
@@ -185,7 +198,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             public void actionPerformed(final ActionEvent e) {
                 final File[] files = getFilePath(addButton, "Add Product");
                 if (files != null) {
-                    addProducts(tableModel, files);
+                    addProducts(tableModel, files); // call for validation is covered - refactor? tb 2025-06-20
                 }
             }
         });
@@ -205,6 +218,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                 final int rowCount = getFileCount();
                 if (rowCount == 1) {
                     tableModel.clear();
+                    selectionChangeSupport.fireSelectionChange(new SelectionChangeEvent(this, new DefaultSelectionContext(), new DefaultSelection()));
                     return;
                 }
                 final int[] selRows = table.getSelectedRows();
@@ -212,9 +226,16 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                 for (int row : selRows) {
                     filesToRemove.add(tableModel.getFileAt(row));
                 }
+
+                boolean hasRemoved = false;
                 for (File file : filesToRemove) {
                     int index = tableModel.getIndexOf(file);
                     tableModel.removeFile(index);
+                    hasRemoved = true;
+                }
+                if (hasRemoved) {
+                    tableModel.getFileAt(0);
+                    fireSelectionChanged(tableModel, null);
                 }
             }
         });
@@ -261,18 +282,23 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return panel;
     }
 
-    private static void addProducts(final FileTableModel tableModel, final File[] files) {
+    private void addProducts(final FileTableModel tableModel, final File[] files) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
             pm.beginTask("Populating table...", files.length);
+            File firstProductFile = null;
             for (File file : files) {
                 if (ProductFunctions.isValidProduct(file)) {
                     tableModel.addFile(file);
+                    firstProductFile = file;
                 }
                 pm.worked(1);
             }
             if(files.length < AUTO_POPULATE_DETAILS_LIMIT) {
                 tableModel.refresh();
+            }
+            if (firstProductFile != null) {
+                fireSelectionChanged(tableModel, firstProductFile);
             }
             pm.done();
         };
@@ -280,22 +306,44 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Adding Products", pm.getProgressHandle(), true, 50, 1000);
     }
 
-    private static void addAllOpenProducts(final FileTableModel tableModel) {
+    private void fireSelectionChanged(FileTableModel tableModel, File productFile) {
+        // @todo 1 CHECK call for graph validation - new SelectionChangeEvent()
+
+        DefaultSelection selection;
+        if (productFile != null) {
+            selection = new DefaultSelection(productFile);
+        } else {
+            final File selectedFile = tableModel.getFileAt(0);
+            if (selectedFile != null) {
+                selection = new DefaultSelection(selectedFile);
+            } else {
+                selection = new DefaultSelection();
+            }
+        }
+        selectionChangeSupport.fireSelectionChange(new SelectionChangeEvent(this, new DefaultSelectionContext(), selection));
+    }
+
+    private void addAllOpenProducts(final FileTableModel tableModel) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
             final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
             pm.beginTask("Populating table...", products.length);
+
+            File firstProductFile = null;
             for (Product prod : products) {
                 final File file = prod.getFileLocation();
                 if (file != null && file.exists()) {
                     tableModel.addFile(file);
+                    firstProductFile = file;
                 }
                 pm.worked(1);
             }
             if(products.length < AUTO_POPULATE_DETAILS_LIMIT) {
                 tableModel.refresh();
             }
-
+            if (firstProductFile != null) {
+                fireSelectionChanged(tableModel, firstProductFile);
+            }
             pm.done();
         };
 

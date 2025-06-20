@@ -25,12 +25,7 @@ import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
 import org.esa.snap.core.gpf.annotations.OperatorMetadata;
 import org.esa.snap.core.gpf.common.WriteOp;
-import org.esa.snap.core.gpf.graph.Graph;
-import org.esa.snap.core.gpf.graph.GraphContext;
-import org.esa.snap.core.gpf.graph.GraphException;
-import org.esa.snap.core.gpf.graph.GraphIO;
-import org.esa.snap.core.gpf.graph.GraphProcessor;
-import org.esa.snap.core.gpf.graph.Node;
+import org.esa.snap.core.gpf.graph.*;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.ReaderUtils;
@@ -39,19 +34,8 @@ import org.esa.snap.graphbuilder.gpf.ui.OperatorUIRegistry;
 import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 public class GraphExecuter extends Observable {
 
@@ -207,7 +191,7 @@ public class GraphExecuter extends Observable {
     }
 
     void notifyConnection() {
-        if(graphNodeList.getGraphNodes().length > 0) {
+        if (graphNodeList.getGraphNodes().length > 0) {
             notifyGraphEvent(new GraphEvent(events.CONNECT_EVENT, graphNodeList.getGraphNodes()[0]));
         }
     }
@@ -260,7 +244,6 @@ public class GraphExecuter extends Observable {
                 graphContext.init(null);
                 //todo recreateGraphContext();
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new GraphException(e.getMessage());
             } finally {
                 subGraphHandler.restore();
@@ -318,7 +301,7 @@ public class GraphExecuter extends Observable {
             filename = lastLoadedGraphFile.getAbsolutePath();
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
         final File filePath = Dialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
-                                                         null, LAST_GRAPH_PATH);
+                null, LAST_GRAPH_PATH);
         if (filePath != null)
             writeGraph(filePath.getAbsolutePath());
         return filePath;
@@ -348,18 +331,18 @@ public class GraphExecuter extends Observable {
     }
 
     public void loadGraph(final InputStream fileStream, final File file, final boolean addUI, final boolean wait) throws GraphException {
+        if (fileStream == null) {
+            return;
+        }
 
         try {
-            if (fileStream == null) return;
-
             final LoadGraphThread loadGraphThread = new LoadGraphThread(fileStream, addUI);
             loadGraphThread.execute();
-            if(wait) {
+            if (wait) {
                 loadGraphThread.get();
             }
 
             lastLoadedGraphFile = file;
-
         } catch (Throwable e) {
             throw new GraphException("Unable to load graph " + fileStream + '\n' + e.getMessage());
         }
@@ -377,7 +360,6 @@ public class GraphExecuter extends Observable {
         @Override
         protected Graph doInBackground() throws Exception {
             final Graph graphFromFile = GPFProcessor.readGraph(new InputStreamReader(fileStream), null);
-
             setGraph(graphFromFile, addUI);
             notifyGraphEvent(new GraphEvent(events.REFRESH_EVENT, null));
             return graphFromFile;
@@ -401,12 +383,13 @@ public class GraphExecuter extends Observable {
             final Node[] nodes = graph.getNodes();
             for (Node n : nodes) {
                 final GraphNode newGraphNode = new GraphNode(n);
-                if (presentationXML != null)
+                if (presentationXML != null) {
                     newGraphNode.setDisplayParameters(presentationXML);
+                }
                 graphNodeList.add(newGraphNode);
 
                 if (addUI) {
-                    OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName());
+                    final OperatorUI ui = OperatorUIRegistry.CreateOperatorUI(newGraphNode.getOperatorName());
                     if (ui == null) {
                         throw new GraphException("Unable to load " + newGraphNode.getOperatorName());
                     }
