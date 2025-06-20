@@ -37,7 +37,6 @@ class AngularGraph extends AbstractDiagramGraph {
     private Placemark placemark;
     private Band[] bands;
     private double[] energies;
-    private double[] wavelengths;
     private double[] view_angles;
     private final Range energyRange;
 //    private final Range view_angleRange;
@@ -177,7 +176,6 @@ class AngularGraph extends AbstractDiagramGraph {
         placemark = null;
         bands = null;
         energies = null;
-        wavelengths = null;
         view_angles = null;
         super.dispose();
     }
