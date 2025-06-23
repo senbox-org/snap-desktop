@@ -97,6 +97,7 @@
     <mapID target="informationDialog" url="desktop/InformationDialog.html"/>
     <mapID target="geoCodingInfoDialog" url="desktop/GeoCodingInfo.html"/>
     <mapID target="statisticsDialog" url="desktop/StatisticsDialog.html"/>
+    <mapID target="statistics" url="desktop/Statistics.html"/>
     <mapID target="histogramDialog" url="desktop/HistogramDialog.html"/>
     <mapID target="densityPlotDialog" url="desktop/DensityPlotDialog.html"/>
     <mapID target="correlativePlotDialog" url="desktop/CorrelativePlotDialog.html"/>
