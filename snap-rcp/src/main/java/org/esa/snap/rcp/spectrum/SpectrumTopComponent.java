@@ -401,6 +401,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
         chartHandler.setCollectingSpectralInformationMessage();
     }
 
+    void clearPrepareForUpdateMessage() {
+        chartHandler.setPlotMessage("");
+    }
 
     void updateData(int pixelX, int pixelY, int level, boolean pixelPosInRasterBounds) {
         updateData(pixelX, pixelY, level, pixelPosInRasterBounds, null,0);
@@ -617,6 +620,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             selectSpectralBands();
             recreateChart();
         });
+        filterButton.setToolTipText("Filter bands");
 
         showSpectrumForCursorButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
@@ -1143,9 +1147,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     ungroupedBandsList.add(availableSpectralBand);
                 }
             }
-            if (ungroupedBandsList.isEmpty()) {
-                spectra.addAll(Arrays.asList(autoGroupingSpectra));
-            } else {
+            spectra.addAll(Arrays.asList(autoGroupingSpectra));
+            if (!ungroupedBandsList.isEmpty()) {
                 int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
                 ++displayIndex;
                 final DisplayableSpectrum[] spectraFromUngroupedBands =
