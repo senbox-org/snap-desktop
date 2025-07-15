@@ -31,6 +31,8 @@ import org.esa.snap.rcp.preferences.general.SpectrumViewController;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.ui.*;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.*;
@@ -99,6 +101,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private static final String SUPPRESS_MESSAGE_KEY = "plugin.spectrum.tip";
 
     private boolean wasOpenedBefore = false;
+
+    private boolean recreatingChart = false;
+
+
 
     private final Map<RasterDataNode, DisplayableSpectrum[]> rasterToSpectraMap;
     private final Map<RasterDataNode, List<SpectrumBand>> rasterToSpectralBandsMap;
@@ -400,6 +406,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
     void setPrepareForUpdateMessage() {
         chartHandler.setCollectingSpectralInformationMessage();
     }
+
+    void setPlotChartMessage(String message) {
+        chartHandler.setCollectingSpectralInformationMessage(message);
+    }
+
 
     void clearPrepareForUpdateMessage() {
         chartHandler.setPlotMessage("");
@@ -978,6 +989,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 
     private void recreateChart(boolean showProgress) {
+        if (recreatingChart) {
+            // waiting
+            printDebugMsg("WARNING!!!! need to wait");
+        }
+        recreatingChart = true;
          printDebugMsg("INSIDE: recreateChart(boolean showProgress)");
         // System.out.println("SnapApp.getDefault().getInstanceName() = " + SnapApp.getDefault().getInstanceName() );
 
@@ -1060,6 +1076,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             updateUIState();
             printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS END");
         }
+
+        recreatingChart = false;
+
     }
 
 
@@ -1486,7 +1505,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             updateData(null, 0);
         }
         private void updateData(com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+            printDebugMsg("getSelectedSpectra: START");
             List<DisplayableSpectrum> spectra = getSelectedSpectra();
+            printDebugMsg("getSelectedSpectra: FINISH");
             chartUpdater.updateData(chart, spectra, pm, totalWorkPlanned);
         }
 
@@ -1540,6 +1561,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
         public void setCollectingSpectralInformationMessage() {
             setPlotMessage(MESSAGE_COLLECTING_SPECTRAL_INFORMATION);
         }
+
+        public void setCollectingSpectralInformationMessage(String message) {
+            setPlotMessage(message);
+        }
+
+
         public Map<Placemark, Map<Band, Double>> getPinToEnergies() {
             return chartUpdater.getPinToEnergies();
         }
@@ -1583,27 +1610,37 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         private void updateData(JFreeChart chart, List<DisplayableSpectrum> spectra, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             dataset = new XYSeriesCollection();
+
             if (rasterLevel >= 0) {
+
+                printDebugMsg("clearPrepareForUpdateMessage");
+                clearPrepareForUpdateMessage();
 
                 if (getDisplayedPins().length > 0 && isShowingCursorSpectrum()) {
                     totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / 2.0);
                 }
 
                 printDebugMsg("totalWorkPlanned=" + totalWorkPlanned);
-                printDebugMsg("START fillDatasetWithPinSeries");
+                printDebugMsg("fillDatasetWithPinSeries: START");
                 fillDatasetWithPinSeries(spectra, dataset, chart, pm, totalWorkPlanned);
-                printDebugMsg("Finish fillDatasetWithPinSeries");
+                printDebugMsg("fillDatasetWithPinSeries: FINISH");
 
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
-                printDebugMsg("START fillDatasetWithCursorSeries");
-                fillDatasetWithCursorSeries(spectra, dataset, chart, pm, totalWorkPlanned);
-                printDebugMsg("Finish fillDatasetWithCursorSeries");
+
+                if (isShowingCursorSpectrum()) {
+                    printDebugMsg("fillDatasetWithCursorSeries: START");
+                    fillDatasetWithCursorSeries(spectra, dataset, chart, pm, totalWorkPlanned);
+                    printDebugMsg("fillDatasetWithCursorSeries: FINISH");
+                }
 
             }
         }
+
+
+
 
         private void updateChart(JFreeChart chart, List<DisplayableSpectrum> spectra) {
             final XYPlot plot = chart.getXYPlot();
@@ -1676,24 +1713,138 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 return;
             }
 
+//            clearPrepareForUpdateMessage();
+
+            long start = System.currentTimeMillis();
+            printDebugMsg("fillDatasetWithCursorSeries: START");
+
             int workDone2 = 0;
             if (isShowingCursorSpectrum() && currentView != null) {
+                printDebugMsg("fillDatasetWithCursorSeries: START 2");
+
+
+
                 int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned2 / spectra.size());
 
+                int SPECTRA_THRESH = SpectrumViewController.getPreferenceCursorModeThreshBandCount();
+                int PIXELS_THRESH = SpectrumViewController.getPreferenceCursorModeThreshPixelCount();
+
+
+
+
+
+                // todo start new
+                int totalSpectralBandsSelected = 0;
+                int totalNumPix = 0;
                 for (DisplayableSpectrum spectrum : spectra) {
+                    final Band[] spectralBands = spectrum.getSelectedBands();
+                    totalSpectralBandsSelected += spectralBands.length;
+
+                    if (spectralBands.length > 0) {
+                        int width = spectralBands[0].getRasterSize().width;
+                        int height = spectralBands[0].getRasterSize().height;
+                        totalNumPix = width * height;
+                    }
+
+                }
+
+                if (totalSpectralBandsSelected > SPECTRA_THRESH) {
+                        if (totalNumPix > PIXELS_THRESH) {
+                            showSpectrumForCursorButton.setSelected(false);
+                            setPlotChartMessage("Cursor mode is not activated due to spectral band count exceeding threshold of '" + SPECTRA_THRESH + "' bands and the image raster area exceeding threshold of '" + PIXELS_THRESH + "' pixels.  See Preferences.");
+                            return;
+                        }
+                }
+
+
+                // todo end new
+
+                PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+                int tileSize = currentPerformanceParameters.getDefaultTileSize();
+                int cacheSize = currentPerformanceParameters.getCacheSize();
+                long vmXMX = currentPerformanceParameters.getVmXMX();
+
+
+                for (DisplayableSpectrum spectrum : spectra) {
+                    printDebugMsg("fillDatasetWithCursorSeries: spectra");
+
                     XYSeries series = new XYSeries(spectrum.getName());
                     final Band[] spectralBands = spectrum.getSelectedBands();
+
+
+
+//                    if (spectralBands.length > SPECTRA_THRESH) {
+//
+//                        if (spectralBands.length > 0) {
+//                            int width = spectralBands[0].getRasterSize().width;
+//                            int height = spectralBands[0].getRasterSize().height;
+//                            int numPix = width * height;
+//                            if (numPix > PIXELS_THRESH) {
+////                                setPlotChartMessage("Canceled due: File dimension area exceeds cursor mode threshold of '" + PIXELS_THRESH + "' pixels");
+//                                showSpectrumForCursorButton.setSelected(false);
+//                                setPlotChartMessage("Cursor mode is not activated due to spectral band count exceeding threshold of '" + SPECTRA_THRESH + "' bands and the image raster area exceeding threshold of '" + PIXELS_THRESH + "' pixels.  See Preferences.");
+//                                return;
+//                            }
+//                        }
+//
+//
+//                    }
+
+
+
 
                     int numBands = spectralBands.length;
                     double incrementLengthNumBands = (totalWorkPlannedPerSpectra > 0) ? numBands / totalWorkPlannedPerSpectra : numBands;
                     double nextIncrementFinishedBandCount = incrementLengthNumBands;
                     int bandCount = 0;
 
+                    boolean plotDisplaySetEmpty = false;
+                    clearPrepareForUpdateMessage();
+
+
                     if (!currentProduct.isMultiSize()) {
 
                         for (Band spectralBand : spectralBands) {
+                            printDebugMsg("fillDatasetWithCursorSeries:  spectralBand=" + spectralBand.getName());
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
+//                                chart.getXYPlot().setDataset(null);
+                                chartHandler.setEmptyPlot();
+//                                clearPrepareForUpdateMessage();
+                            }
+
+
+
+                            if (timeElapsed > 500) {
+                                setPlotChartMessage(
+                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
+                                                "Please maintain current mouse hover position until fully completed.\n" +
+                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
+                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
+                                                "Currently:" +  "\n" +
+                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+                                                "Cache Size (MB): " + cacheSize + "\n" +
+                                                "Tile Size: (pixels): " + tileSize + "\n" +
+                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+                                );
+                            }
+
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showSpectrumForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
+                                return;
+                            }
+
                             if (pm != null && pm.isCanceled()) {
                                 cancelActions();
+                                setPlotChartMessage("Chart not generated due to cancel");
                                 return;
                             }
                             final float wavelength = spectralBand.getSpectralWavelength();
@@ -1718,10 +1869,53 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
                             }
                         }
+
+                        clearPrepareForUpdateMessage();
+
                     } else {
+
+
                         for (Band spectralBand : spectralBands) {
+                            printDebugMsg("fillDatasetWithCursorSeries:  MultiSize spectralBand=" + spectralBand.getName());
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
+//                                chart.getXYPlot().setDataset(null);
+                                chartHandler.setEmptyPlot();
+//                                clearPrepareForUpdateMessage();
+                            }
+
+
+                            if (timeElapsed > 500) {
+                                setPlotChartMessage(
+                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
+                                                "Please maintain current mouse hover position until fully completed.\n" +
+                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
+                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
+                                                "Currently:" +  "\n" +
+                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+                                                "Cache Size (MB): " + cacheSize + "\n" +
+                                                "Tile Size: (pixels): " + tileSize + "\n" +
+                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+                                );
+                            }
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showSpectrumForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
+                                return;
+                            }
+
+
+
                             if (pm != null && pm.isCanceled()) {
                                 cancelActions();
+                                setPlotChartMessage("Chart not generated due to cancel");
                                 return;
                             }
                             final float wavelength = spectralBand.getSpectralWavelength();
@@ -1764,20 +1958,29 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             }
 
                         }
+
+                        clearPrepareForUpdateMessage();
+
                     }
                     if (pm != null && pm.isCanceled()) {
                         cancelActions();
+                        setPlotChartMessage("Chart not generated due to cancel");
                         return;
                     }
                     updateRenderer(dataset.getSeriesCount(), Color.BLACK, spectrum, chart);
                     if (pm != null && pm.isCanceled()) {
                         cancelActions();
+                        setPlotChartMessage("Chart not generated due to cancel");
                         return;
                     }
                     dataset.addSeries(series);
                 }
             }
+
+//            clearPrepareForUpdateMessage();
+
         }
+
 
         private void addToSeries(Band spectralBand, int x, int y, int level, XYSeries series, double wavelength) {
             final double energy = ProductUtils.getGeophysicalSampleAsDouble(spectralBand, x, y, level);
@@ -1827,6 +2030,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             printDebugMsg("createXYSeriesFromPin: spectra.size()=" + spectra.size());
             printDebugMsg("createXYSeriesFromPin: totalWorkPlannedPerSpectra=" + totalWorkPlannedPerSpectra);
 
+
+            long start = System.currentTimeMillis();
+
             for (DisplayableSpectrum spectrum : spectra) {
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
@@ -1851,20 +2057,35 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 double nextIncrementFinishedBandCount = incrementLengthNumBands;
                 int bandCount = 0;
 
+                clearPrepareForUpdateMessage();
+
                 for (Band spectralBand : spectralBands) {
+                    printDebugMsg("createXYSeriesFromPin: spectralBand=" + spectralBand);
+
+                    long finish = System.currentTimeMillis();
+                    long timeElapsed = finish - start;
+                    if (timeElapsed > 500) {
+                        setPlotChartMessage("Processing band=" + spectralBand.getName());
+                    }
+
+
+
                     if (pm != null && pm.isCanceled()) {
                         cancelActions();
                         return null;
                     }
                     double energy;
                     if (bandToEnergy.containsKey(spectralBand)) {
+                        printDebugMsg("createXYSeriesFromPin: bandToEnergy.containsKey=" + spectralBand);
                         energy = bandToEnergy.get(spectralBand);
                     } else {
                         energy = readEnergy(pin, spectralBand);
+                        printDebugMsg("createXYSeriesFromPin: !bandToEnergy.containsKey=" + spectralBand);
                         bandToEnergy.put(spectralBand, energy);
                     }
                     final float wavelength = spectralBand.getSpectralWavelength();
                     if (energy != spectralBand.getGeophysicalNoDataValue()) {
+                        printDebugMsg("createXYSeriesFromPin: series.add(wavelength, energy)" + wavelength);
                         series.add(wavelength, energy);
                     }
 
@@ -1886,6 +2107,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     }
 
                 }
+
+                clearPrepareForUpdateMessage();
+
 
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();

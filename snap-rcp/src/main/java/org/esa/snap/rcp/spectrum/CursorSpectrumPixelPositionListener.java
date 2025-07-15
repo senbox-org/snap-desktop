@@ -96,10 +96,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         protected Void doInBackground() throws Exception {
             if (shouldUpdateCursorPosition()) {
                 Waiter waiter = new Waiter();
+                printDebugMsg("Waiting START");
                 waiter.execute();
+                printDebugMsg("Waiting FINISH");
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
-                waiter.clearMessage();
+//                waiter.clearMessage();
             }
             return null;
         }
@@ -118,18 +120,27 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected Void doInBackground() throws Exception {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
 
             return null;
         }
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+
+//            topComponent.setPrepareForUpdateMessage();
         }
 
         void clearMessage() {
             topComponent.clearPrepareForUpdateMessage();
         }
     }
+
+    static void printDebugMsg(String msg) {
+        boolean debugOn = false;
+        if (debugOn) {
+            System.out.println(msg);
+        }
+    }
+
 }

@@ -19,20 +19,27 @@ class WorkerChain {
 
     synchronized void setOrExecuteNextWorker(SwingWorker w, boolean chained) {
         if (w == null) {
+            printDebugMsg("w == null");
             return;
         }
         if (workerIsRunning) {
+            printDebugMsg("workerIsRunning");
             if (chained) {
+                printDebugMsg("synchronizedWorkerChain.add(w)");
                 synchronizedWorkerChain.add(w);
             } else {
+                printDebugMsg("unchainedWorker = w");
                 unchainedWorker = w;
             }
         } else {
+            printDebugMsg("workerIsRunning = FALSE");
             if (chained) {
+                printDebugMsg("executeFirstWorkerInChain");
                 synchronizedWorkerChain.add(w);
                 executeFirstWorkerInChain();
             } else {
                 unchainedWorker = w;
+                printDebugMsg("w.execute");
                 w.execute();
             }
             workerIsRunning = true;
@@ -57,5 +64,12 @@ class WorkerChain {
 
     private void executeFirstWorkerInChain() {
         synchronizedWorkerChain.get(0).execute();
+    }
+
+    static void printDebugMsg(String msg) {
+        boolean debugOn = false;
+        if (debugOn) {
+            System.out.println(msg);
+        }
     }
 }
