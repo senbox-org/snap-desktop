@@ -64,16 +64,6 @@ public final class SpectrumViewController extends DefaultConfigController {
 
     private static final String PROPERTY_ROOT_KEY = "spectrum.view";
 
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_KEY = PROPERTY_ROOT_KEY + ".cursor.mode.thresh.band_count";
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_LABEL = "Cursor Mode Threshold (number of bands)";
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_TOOLTIP = "<html>Cursor mode inactive if number of spectral bands exceeds this threshold</html>";
-    public static int PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_DEFAULT = 200;
-
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_KEY = PROPERTY_ROOT_KEY + ".cursor.mode.thresh.pixel_count";
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_LABEL = "Cursor Mode Threshold (number of pixels)";
-    public static final String PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_TOOLTIP = "<html>Cursor mode inactive if number of pixels (total raster area) of each band exceeds this threshold</html>";
-    public static int PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_DEFAULT = 100 * 100;
-
     public static final String PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_KEY = PROPERTY_ROOT_KEY + ".xaxis.set.bounds";
     public static final String PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_LABEL = "Set Bounds X-Axis";
     public static final String PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_TOOLTIP = "Sets bounds of x-axis (uses X-Axis Min and X-Axis Max)";
@@ -172,9 +162,6 @@ public final class SpectrumViewController extends DefaultConfigController {
     @Override
     protected JPanel createPanel(BindingContext context) {
 
-
-        initPropertyDefaults(context, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_KEY, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_KEY, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_DEFAULT);
 
         initPropertyDefaults(context, PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_KEY, PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_DEFAULT);
         initPropertyDefaults(context, PROPERTY_SPECTRUM_VIEW_XAXIS_MIN_KEY, PROPERTY_SPECTRUM_VIEW_XAXIS_MIN_DEFAULT);
@@ -369,19 +356,6 @@ public final class SpectrumViewController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
 
-
-        @Preference(label = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_LABEL,
-                key = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_KEY,
-                description = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_TOOLTIP)
-        int spectrumViewCursorModeThreshBandCountDefault = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_DEFAULT;
-
-        @Preference(label = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_LABEL,
-                key = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_KEY,
-                description = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_TOOLTIP)
-        int spectrumViewCursorModeThreshPixelCountDefault = PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_DEFAULT;
-
-
-
         @Preference(label = PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_LABEL,
                 key = PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_KEY,
                 description = PROPERTY_SPECTRUM_VIEW_XAXIS_SET_BOUNDS_TOOLTIP)
@@ -466,17 +440,6 @@ public final class SpectrumViewController extends DefaultConfigController {
         boolean restoreDefaults = PROPERTY_RESTORE_DEFAULTS_DEFAULT;
     }
 
-
-
-    public static int getPreferenceCursorModeThreshBandCount() {
-        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyInt(PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_KEY, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_BAND_COUNT_DEFAULT);
-    }
-
-    public static int getPreferenceCursorModeThreshPixelCount() {
-        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyInt(PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_KEY, PROPERTY_SPECTRUM_VIEW_CURSOR_MODE_THRESH_PIXEL_COUNT_DEFAULT);
-    }
 
 
     public static boolean getPreferenceXaxisSetBounds() {

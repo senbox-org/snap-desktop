@@ -120,7 +120,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected Void doInBackground() throws Exception {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
 
             return null;
         }

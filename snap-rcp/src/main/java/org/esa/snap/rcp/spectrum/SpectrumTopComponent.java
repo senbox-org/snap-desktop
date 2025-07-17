@@ -1723,41 +1723,35 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 printDebugMsg("fillDatasetWithCursorSeries: START 2");
 
 
-
                 int totalWorkPlannedPerSpectra = (int) Math.floor(1.0 * totalWorkPlanned2 / spectra.size());
 
-                int SPECTRA_THRESH = SpectrumViewController.getPreferenceCursorModeThreshBandCount();
-                int PIXELS_THRESH = SpectrumViewController.getPreferenceCursorModeThreshPixelCount();
+//
+//                int SPECTRA_THRESH = SpectrumViewController.getPreferenceCursorModeThreshBandCount();
+//                int PIXELS_THRESH = SpectrumViewController.getPreferenceCursorModeThreshPixelCount();
+//
+//                int totalSpectralBandsSelected = 0;
+//                int totalNumPix = 0;
+//                for (DisplayableSpectrum spectrum : spectra) {
+//                    final Band[] spectralBands = spectrum.getSelectedBands();
+//                    totalSpectralBandsSelected += spectralBands.length;
+//
+//                    if (spectralBands.length > 0) {
+//                        int width = spectralBands[0].getRasterSize().width;
+//                        int height = spectralBands[0].getRasterSize().height;
+//                        totalNumPix = width * height;
+//                    }
+//
+//                }
+//
+//                if (totalSpectralBandsSelected > SPECTRA_THRESH) {
+//                        if (totalNumPix > PIXELS_THRESH) {
+//                            showSpectrumForCursorButton.setSelected(false);
+//                            setPlotChartMessage("Cursor mode is not activated due to spectral band count exceeding threshold of '" + SPECTRA_THRESH + "' bands and the image raster area exceeding threshold of '" + PIXELS_THRESH + "' pixels.  See Preferences.");
+//                            return;
+//                        }
+//                }
 
 
-
-
-
-                // todo start new
-                int totalSpectralBandsSelected = 0;
-                int totalNumPix = 0;
-                for (DisplayableSpectrum spectrum : spectra) {
-                    final Band[] spectralBands = spectrum.getSelectedBands();
-                    totalSpectralBandsSelected += spectralBands.length;
-
-                    if (spectralBands.length > 0) {
-                        int width = spectralBands[0].getRasterSize().width;
-                        int height = spectralBands[0].getRasterSize().height;
-                        totalNumPix = width * height;
-                    }
-
-                }
-
-                if (totalSpectralBandsSelected > SPECTRA_THRESH) {
-                        if (totalNumPix > PIXELS_THRESH) {
-                            showSpectrumForCursorButton.setSelected(false);
-                            setPlotChartMessage("Cursor mode is not activated due to spectral band count exceeding threshold of '" + SPECTRA_THRESH + "' bands and the image raster area exceeding threshold of '" + PIXELS_THRESH + "' pixels.  See Preferences.");
-                            return;
-                        }
-                }
-
-
-                // todo end new
 
                 PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
                 int tileSize = currentPerformanceParameters.getDefaultTileSize();
@@ -1809,28 +1803,31 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             long finish = System.currentTimeMillis();
                             long timeElapsed = finish - start;
 
-                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
-//                                chart.getXYPlot().setDataset(null);
-                                chartHandler.setEmptyPlot();
-//                                clearPrepareForUpdateMessage();
-                            }
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   spectralBand,  currentPerformanceParameters, true);
 
-
-
-                            if (timeElapsed > 500) {
-                                setPlotChartMessage(
-                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
-                                                "Please maintain current mouse hover position until fully completed.\n" +
-                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
-                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
-                                                "Currently:" +  "\n" +
-                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
-                                                "Cache Size (MB): " + cacheSize + "\n" +
-                                                "Tile Size: (pixels): " + tileSize + "\n" +
-                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
-                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
-                                );
-                            }
+//
+//                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
+////                                chart.getXYPlot().setDataset(null);
+//                                chartHandler.setEmptyPlot();
+////                                clearPrepareForUpdateMessage();
+//                            }
+//
+//
+//
+//                            if (timeElapsed > 500) {
+//                                setPlotChartMessage(
+//                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
+//                                                "Please maintain current mouse hover position until fully completed.\n" +
+//                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
+//                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
+//                                                "Currently:" +  "\n" +
+//                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+//                                                "Cache Size (MB): " + cacheSize + "\n" +
+//                                                "Tile Size: (pixels): " + tileSize + "\n" +
+//                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+//                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+//                                );
+//                            }
 
 
                             if (timeElapsed > 600000) {
@@ -1877,30 +1874,34 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
                         for (Band spectralBand : spectralBands) {
                             printDebugMsg("fillDatasetWithCursorSeries:  MultiSize spectralBand=" + spectralBand.getName());
+
+
                             long finish = System.currentTimeMillis();
                             long timeElapsed = finish - start;
 
-                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
-//                                chart.getXYPlot().setDataset(null);
-                                chartHandler.setEmptyPlot();
-//                                clearPrepareForUpdateMessage();
-                            }
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   spectralBand,  currentPerformanceParameters, true);
 
-
-                            if (timeElapsed > 500) {
-                                setPlotChartMessage(
-                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
-                                                "Please maintain current mouse hover position until fully completed.\n" +
-                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
-                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
-                                                "Currently:" +  "\n" +
-                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
-                                                "Cache Size (MB): " + cacheSize + "\n" +
-                                                "Tile Size: (pixels): " + tileSize + "\n" +
-                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
-                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
-                                );
-                            }
+//                            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
+////                                chart.getXYPlot().setDataset(null);
+//                                chartHandler.setEmptyPlot();
+////                                clearPrepareForUpdateMessage();
+//                            }
+//
+//
+//                            if (timeElapsed > 500) {
+//                                setPlotChartMessage(
+//                                        "Processing spectral band: " + spectralBand.getName() + "\n  \n" +
+//                                                "Please maintain current mouse hover position until fully completed.\n" +
+//                                                "Spectral data is being initialized for tile at cursor hover position.\n  \n" +
+//                                                "Note: see 'Performance Preferences' to optimize tile sizes with scene size.\n" +
+//                                                "Currently:" +  "\n" +
+//                                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+//                                                "Cache Size (MB): " + cacheSize + "\n" +
+//                                                "Tile Size: (pixels): " + tileSize + "\n" +
+//                                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+//                                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+//                                );
+//                            }
 
                             if (timeElapsed > 600000) {
                                 // it is taking too long
@@ -1982,6 +1983,48 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
 
+        private boolean timedPlotMessages(long timeElapsed, boolean plotDisplaySetEmpty, Band  band, PerformanceParameters currentPerformanceParameters, boolean isCursorMode) {
+
+            int tileSize = currentPerformanceParameters.getDefaultTileSize();
+            int cacheSize = currentPerformanceParameters.getCacheSize();
+            long vmXMX = currentPerformanceParameters.getVmXMX();
+
+            if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
+//                                chart.getXYPlot().setDataset(null);
+                chartHandler.setEmptyPlot();
+                plotDisplaySetEmpty = true;
+//                                clearPrepareForUpdateMessage();
+            }
+
+
+            String msg = "";
+
+            if (isCursorMode) {
+                msg = "Please maintain current mouse hover position until fully completed.\n" +
+                        "Spectral data is being initialized for tile at cursor hover position.";
+            } else {
+                msg = "Spectral data is being initialized for pinned tiles.";
+            }
+
+
+            if (timeElapsed > 500) {
+                setPlotChartMessage(
+                        "Processing spectral band: " + band.getName() + "\n  \n" +
+                                msg + "\n  \n" +
+                                "Note: see 'Performance Preferences' to optimize tile sizes relative to scene size.\n" +
+                                "Currently:" +  "\n" +
+                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+                                "Cache Size (MB): " + cacheSize + "\n" +
+                                "Tile Size: (pixels): " + tileSize + "\n" +
+                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+                );
+            }
+
+            return plotDisplaySetEmpty;
+
+        }
+
         private void addToSeries(Band spectralBand, int x, int y, int level, XYSeries series, double wavelength) {
             final double energy = ProductUtils.getGeophysicalSampleAsDouble(spectralBand, x, y, level);
             if (energy != spectralBand.getGeophysicalNoDataValue()) {
@@ -2032,6 +2075,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 
             long start = System.currentTimeMillis();
+            boolean plotDisplaySetEmpty = false;
+            PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+
 
             for (DisplayableSpectrum spectrum : spectra) {
                 if (pm != null && pm.isCanceled()) {
@@ -2064,9 +2110,13 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
                     long finish = System.currentTimeMillis();
                     long timeElapsed = finish - start;
-                    if (timeElapsed > 500) {
-                        setPlotChartMessage("Processing band=" + spectralBand.getName());
-                    }
+
+                    plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   spectralBand,  currentPerformanceParameters, false);
+
+//
+//                    if (timeElapsed > 500) {
+//                        setPlotChartMessage("Processing band=" + spectralBand.getName());
+//                    }
 
 
 
