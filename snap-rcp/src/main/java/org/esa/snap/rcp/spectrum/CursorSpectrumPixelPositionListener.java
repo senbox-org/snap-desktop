@@ -99,7 +99,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
                 waiter.execute();
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
-                waiter.clearMessage();
+//                waiter.clearMessage();
             }
             return null;
         }
