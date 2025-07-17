@@ -117,7 +117,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+
+//            topComponent.setPrepareForUpdateMessage();
+        }
+
+        void clearMessage() {
+            topComponent.clearPrepareForUpdateMessage();
         }
     }
 
