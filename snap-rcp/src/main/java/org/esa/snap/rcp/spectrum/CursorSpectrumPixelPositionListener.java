@@ -3,7 +3,7 @@ package org.esa.snap.rcp.spectrum;
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.ui.PixelPositionListener;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 
 public class CursorSpectrumPixelPositionListener implements PixelPositionListener {
@@ -42,6 +42,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
     private boolean shouldUpdateCursorPosition() {
         return topComponent.isVisible() && topComponent.isShowingCursorSpectrum();
+    }
+
+    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
+    interface WorkerChainSupport {
+
+        void removeWorkerAndStartNext(SwingWorker worker);
     }
 
     private class CursorSpectraRemover extends SwingWorker<Void, Void> {
@@ -93,6 +99,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
                 waiter.execute();
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
+//                waiter.clearMessage();
             }
             return null;
         }
@@ -112,24 +119,17 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected Void doInBackground() throws Exception {
             Thread.sleep(1000);
+
             return null;
         }
 
         @Override
         protected void done() {
-
-//            topComponent.setPrepareForUpdateMessage();
+            topComponent.setPrepareForUpdateMessage();
         }
 
         void clearMessage() {
             topComponent.clearPrepareForUpdateMessage();
         }
     }
-
-    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
-    static interface WorkerChainSupport {
-
-        void removeWorkerAndStartNext(SwingWorker worker);
-    }
-
 }
