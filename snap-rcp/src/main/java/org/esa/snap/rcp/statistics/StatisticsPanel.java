@@ -24,12 +24,7 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Mask;
-import org.esa.snap.core.datamodel.ProductNodeGroup;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.Stx;
-import org.esa.snap.core.datamodel.StxFactory;
-import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.statistics.output.Util;
@@ -365,7 +360,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         final Histogram histogram = stx.getHistogram();
 
         XIntervalSeries histogramSeries = new XIntervalSeries("Histogram");
-        int[] bins = histogram.getBins(0);
+        long[] bins = stx.getLongBins(0);
         for (int j = 0; j < bins.length; j++) {
             histogramSeries.add(histogram.getBinLowValue(0, j),
                                 histogram.getBinLowValue(0, j),
@@ -393,7 +388,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         ChartPanel percentilePanel = createChartPanel(percentileSeries, "Percentile (%)", "Value Threshold", new Color(127, 0, 0));
 
         Object[][] tableData = new Object[][]{
-                new Object[]{"#Pixels total:", histogram.getTotals()[0]},
+                new Object[]{"#Pixels total:", stx.getSampleCount()},
                 new Object[]{"Minimum:", stx.getMinimum()},
                 new Object[]{"Maximum:", stx.getMaximum()},
                 new Object[]{"Mean:", stx.getMean()},
