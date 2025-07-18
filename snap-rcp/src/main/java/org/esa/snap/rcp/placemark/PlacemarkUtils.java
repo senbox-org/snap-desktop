@@ -4,15 +4,17 @@ package org.esa.snap.rcp.placemark;
 import com.bc.ceres.swing.figure.Figure;
 import com.bc.ceres.swing.figure.FigureCollection;
 import com.bc.ceres.swing.figure.support.DefaultFigureStyle;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.ui.product.ProductSceneView;
-import org.esa.snap.ui.product.SimpleFeaturePointFigure;
-import org.opengis.feature.simple.SimpleFeature;
-
 import java.awt.Color;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkGroup;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.colormanip.DistinctColorGenerator;
+import org.esa.snap.ui.product.ProductSceneView;
 
 public class PlacemarkUtils {
+
+    private static final DistinctColorGenerator COLOR_GENERATOR = new DistinctColorGenerator();
 
     public static Color getPlacemarkColor(Placemark placemark) {
         return getPlacemarkColor(placemark, SnapApp.getDefault().getSelectedProductSceneView());
@@ -23,16 +25,7 @@ public class PlacemarkUtils {
         if (styleCss.contains(DefaultFigureStyle.FILL_COLOR.getName())) {
             return DefaultFigureStyle.createFromCss(styleCss).getFillColor();
         }
-        final Figure[] figures = getFigures(view);
-        for (Figure figure : figures) {
-            if (figure instanceof SimpleFeaturePointFigure) {
-                final SimpleFeature simpleFeature = ((SimpleFeaturePointFigure) figure).getSimpleFeature();
-                if (simpleFeature.getID().equals(placemark.getName())) {
-                    return figure.getNormalStyle().getFillColor();
-                }
-            }
-        }
-        return Color.BLUE;
+        return COLOR_GENERATOR.getNextDistinctColor();
     }
 
     private static Figure[] getFigures(ProductSceneView view) {
@@ -43,4 +36,15 @@ public class PlacemarkUtils {
         return figureCollection.getFigures();
     }
 
+    public static void rotatePinColor(Placemark placemark, Product product) {
+        boolean isPin = placemark.getDescriptor().getRoleName().equalsIgnoreCase("pin");
+        if (isPin && placemark.getStyleCss().isEmpty()) {
+            // rotate the color for pins
+            PlacemarkGroup placemarkGroup = product.getPinGroup();
+            String defaultStyleCss = placemarkGroup.getVectorDataNode().getDefaultStyleCss();
+            DefaultFigureStyle placemarkStyle = new DefaultFigureStyle(defaultStyleCss);
+            placemarkStyle.setFillColor(COLOR_GENERATOR.getNextDistinctColor());
+            placemark.setStyleCss(placemarkStyle.toCssString());
+        }
+    }
 }
