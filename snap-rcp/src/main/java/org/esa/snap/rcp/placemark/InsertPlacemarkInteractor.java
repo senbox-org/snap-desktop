@@ -86,7 +86,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
     private void insertPlacemark(ProductSceneView view) {
         Product product = view.getProduct();
         final String[] uniqueNameAndLabel = PlacemarkNameFactory.createUniqueNameAndLabel(placemarkDescriptor,
-                                                                                          product);
+                product);
         final String name = uniqueNameAndLabel[0];
         final String label = uniqueNameAndLabel[1];
         PixelPos rasterPos = new PixelPos(view.getCurrentPixelX() + 0.5f, view.getCurrentPixelY() + 0.5f);
@@ -101,12 +101,17 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
             return;
         }
         final Placemark newPlacemark = Placemark.createPointPlacemark(placemarkDescriptor, name, label, "",
-                                                                      rasterPos, null, product.getSceneGeoCoding());
+                rasterPos, null, product.getSceneGeoCoding());
         PlacemarkGroup placemarkGroup = placemarkDescriptor.getPlacemarkGroup(product);
         String defaultStyleCss = placemarkGroup.getVectorDataNode().getDefaultStyleCss();
-        if(newPlacemark.getStyleCss().isEmpty()) {
-            newPlacemark.setStyleCss(defaultStyleCss);
+        if(newPlacemark.getDescriptor().getRoleName().equalsIgnoreCase("pin")) {
+            PlacemarkUtils.rotatePinColor(newPlacemark, product);
+        } else {
+            if(newPlacemark.getStyleCss().isEmpty()) {
+                newPlacemark.setStyleCss(defaultStyleCss);
+            }
         }
+
         placemarkGroup.add(newPlacemark);
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         if (undoManager != null) {
@@ -120,8 +125,8 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
             return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
         }
         return Toolkit.getDefaultToolkit().createCustomCursor(cursorImage,
-                                                              placemarkDescriptor.getCursorHotSpot(),
-                                                              placemarkDescriptor.getRoleName());
+                placemarkDescriptor.getCursorHotSpot(),
+                placemarkDescriptor.getRoleName());
     }
 
     private ProductSceneView getProductSceneView(MouseEvent event) {
