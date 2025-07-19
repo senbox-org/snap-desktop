@@ -7,7 +7,7 @@ import java.awt.Color;
  * This class provides a set of predefined distinct colors and manages
  * the sequential assignment of these colors.
  */
-public class RotatingColorGenerator {
+public class CyclicColorGenerator {
     
     private static final Color[] DISTINCT_COLORS = new Color[]{
         new Color(0, 0, 255),     // Blue
@@ -28,7 +28,7 @@ public class RotatingColorGenerator {
      * array of distinct colors. The generator will cycle through these colors in
      * a round-robin manner when retrieving the next color.
      */
-    public RotatingColorGenerator() {
+    public CyclicColorGenerator() {
         this(DISTINCT_COLORS);
     }
 
@@ -40,7 +40,7 @@ public class RotatingColorGenerator {
      * @param colors the array of colors to be used for generating distinct colors
      * @throws IllegalArgumentException if the provided {@code colors} array is null or empty
      */
-    public RotatingColorGenerator(Color[] colors) {
+    public CyclicColorGenerator(Color[] colors) {
         if (colors == null || colors.length == 0) {
             throw new IllegalArgumentException("Colors array cannot be null or empty");
         }
