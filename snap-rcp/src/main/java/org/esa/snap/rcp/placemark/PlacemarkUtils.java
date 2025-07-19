@@ -9,12 +9,12 @@ import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.PlacemarkGroup;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.colormanip.DistinctColorGenerator;
+import org.esa.snap.rcp.colormanip.RotatingColorGenerator;
 import org.esa.snap.ui.product.ProductSceneView;
 
 public class PlacemarkUtils {
 
-    private static final DistinctColorGenerator COLOR_GENERATOR = new DistinctColorGenerator();
+    private static final RotatingColorGenerator COLOR_GENERATOR = new RotatingColorGenerator();
 
     public static Color getPlacemarkColor(Placemark placemark) {
         return getPlacemarkColor(placemark, SnapApp.getDefault().getSelectedProductSceneView());
