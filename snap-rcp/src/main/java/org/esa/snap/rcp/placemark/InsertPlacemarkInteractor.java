@@ -69,6 +69,10 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         }
     }
 
+    public PlacemarkDescriptor getPlacemarkDescriptor() {
+        return placemarkDescriptor;
+    }
+
     @Override
     public void mouseReleased(MouseEvent event) {
         if (started) {
@@ -83,7 +87,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
         }
     }
 
-    private void insertPlacemark(ProductSceneView view) {
+    protected void insertPlacemark(ProductSceneView view) {
         Product product = view.getProduct();
         final String[] uniqueNameAndLabel = PlacemarkNameFactory.createUniqueNameAndLabel(placemarkDescriptor,
                 product);
@@ -104,13 +108,7 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
                 rasterPos, null, product.getSceneGeoCoding());
         PlacemarkGroup placemarkGroup = placemarkDescriptor.getPlacemarkGroup(product);
         String defaultStyleCss = placemarkGroup.getVectorDataNode().getDefaultStyleCss();
-        if(newPlacemark.getDescriptor().getRoleName().equalsIgnoreCase("pin")) {
-            PlacemarkUtils.rotatePinColor(newPlacemark, product);
-        } else {
-            if(newPlacemark.getStyleCss().isEmpty()) {
-                newPlacemark.setStyleCss(defaultStyleCss);
-            }
-        }
+        updatePlacemarkStyle(newPlacemark, defaultStyleCss);
 
         placemarkGroup.add(newPlacemark);
         UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
@@ -118,6 +116,8 @@ public abstract class InsertPlacemarkInteractor extends FigureEditorInteractor {
             undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
         }
     }
+
+    protected abstract void updatePlacemarkStyle(Placemark placemark, String defaultStyleCss);
 
     private Cursor createCursor() {
         final Image cursorImage = placemarkDescriptor.getCursorImage();
