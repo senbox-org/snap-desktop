@@ -1917,6 +1917,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
             long vmXMX = currentPerformanceParameters.getVmXMX();
             int width = band.getRasterSize().width;
             int height = band.getRasterSize().height;
+            double sceneArea = (double) width * (double) height;
+            double tileArea = (double) tileSize * (double) tileSize;
+            String tileSizeNotice = "";
+            if (tileArea > (sceneArea / 4.0)) {
+                tileSizeNotice = "Note: reducing Tile Size may improve performance\n";
+            } else if (tileArea < (sceneArea/20.0)) {
+                tileSizeNotice = "Note: increasing Tile Size may improve performance\n";
+            }
 
             if (timeElapsed > 1000 && !plotDisplaySetEmpty) {
 //                                chart.getXYPlot().setDataset(null);
@@ -1941,6 +1949,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                         "Processing spectral band: " + band.getName() + "\n  \n" +
                                 msg + "\n  \n" +
                                 "Note: see 'Performance Preferences' to optimize tile sizes relative to scene size.\n" +
+                                tileSizeNotice +
                                 "Currently:" +  "\n" +
                                 "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
                                 "Cache Size (MB): " + cacheSize + "\n" +
@@ -2363,7 +2372,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     static void printDebugMsg(String msg) {
-        boolean debugOn = true;
+        boolean debugOn = false;
         if (debugOn) {
             System.out.println(msg);
         }

@@ -14,7 +14,7 @@
   ~ with this program; if not, see http://www.gnu.org/licenses/
   -->
 
-<html>
+<html xmlns:background-color="http://www.w3.org/1999/xhtml">
 <head>
     <title>Sentinel Toolbox Help - The Spectrum View</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -171,6 +171,66 @@
         Sets maximum bound of y-axis (blank entry uses auto-bounding to data)
 
 </pre>
+
+<h4>System Performance Notes:</h4>
+
+<p>
+    SeaDAS tools can become quite bogged down and slow, when working with large files such as the
+    NASA OB.DAAC PACE AOP Level-2 files (which are in NetCDF format, and are compressed,
+    and contain hundreds of spectral band).  There are several options the user can explore to
+    improve performance.
+</p>
+
+<ul>
+    <li><b>Modify Tile Size (in Preferences)</b><br>
+        Spectrum View processes the scene one tile at a time.<br><br>
+        For example: if a scene size is 1000 pixels by 1000 pixels,
+        and the tile size is 500 pixels (configurable in Preferences > Performance),
+        then the scene would be divided into 4 tiles (500 pixels by 500 pixels) for processing.  Spectrum View would
+        then only process the tiles marked for processing.
+        <br><br>
+        There are two Spectrum View modes to consider, pin mode and cursor mode.
+        <br>
+        <ul>
+            <li>Pin Mode<br>
+                Only the tiles which actually contain pins are processed.  Any tiles which do not contain pins are not processed.
+                Therefore, if there are only a few pins, or there a groupings of pins which do not span the full scene,
+                then setting tile size small can improve performance.
+            </li>
+            <li>Cursor Mode<br>
+                Only the tile which is located at the mouse cursor hover position is processed.  Small tiles are nice if you
+                plan to explore only a small section of the scene, but if you plan to move the cursor across all the image,
+                then for small tiles, each new tile encountered will trigger a processing.  While processing of a tile is
+                being done the cursor is ignored, however when processing of a tile is completed and the cursor has been moved
+                to a different tile, then the new tile will be processed.  So in cursor mode, make sure to place cursor in your
+                region of interest and then wait for processing to complete.
+            </li>
+        </ul>
+    </li>
+
+    <li><b>Modify File Compression</b><br>
+        NASA OB.DAAC Level-2 files (which are in NetCDF format) are compressed files which is beneficial regarding file storage space.
+        However, large compressed files can take longer to process within the Spectrum View.  One option to improve performance is to
+        reduce the compression of the file.  <br>
+        <ul>
+            <li>Converting an existing level2 file<br>
+                There are command line utilities for making an uncompressed copy of an existing level2 file.<br><br>
+                <table><tr><td background-color: #e9f0f0;>
+<pre>
+nccopy -d 0 L2fileIn L2fileOut
+</pre>
+                </td></tr></table>
+            </li>
+            <li>Creating a new level2 file (L2gen)<br>
+                You can create a new level-2 file from the level-1 files by using l2gen and including 'deflate=0' as one of the arguments.
+            </li>
+        </ul>
+
+
+    </li>
+</ul>
+
+
 
 <hr>
 </body>
