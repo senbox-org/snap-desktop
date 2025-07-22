@@ -408,7 +408,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     void setPlotChartMessage(String message) {
-        chartHandler.setCollectingSpectralInformationMessage(message);
+        chartHandler.setPlotMessage(message);
     }
 
 
@@ -637,15 +637,16 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showSpectrumForCursorButton.addActionListener(e -> {
             if (!showSpectrumForCursorButton.isSelected()) {
-                setPlotChartMessage("Cursor mode de-activated.");
+                setPlotChartMessage("Cursor Mode de-activated.");
+
             }
             recreateChart();
 
             if (showSpectrumForCursorButton.isSelected()) {
-                setPlotChartMessage("Cursor mode activated.  Hover cursor over the image.");
+                setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
+
             } 
 
-            //test1
 
 //            if (showSpectrumForCursorButton.isSelected()) {
 //                // System.out.println("Listening to showSpectrumForCursorButton - true");
@@ -1038,7 +1039,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
                             return null;
                         }
                         printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
-
 
                         chartHandler.updateChart();
 
@@ -1508,7 +1508,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
             }
             List<DisplayableSpectrum> spectra = getSelectedSpectra();
             chartUpdater.updateChart(chart, spectra);
-            System.out.println("HELLO 56");
 //            chart.getXYPlot().clearAnnotations();
         }
 
@@ -1550,16 +1549,19 @@ public class SpectrumTopComponent extends ToolTopComponent {
             chartUpdater.removeBandinformation(band);
         }
 
-        private void setPlotMessage(String messageText) {
+        public void setPlotMessage(String messageText) {
             chart.getXYPlot().clearAnnotations();
-            TextTitle tt = new TextTitle(messageText);
-            tt.setTextAlignment(HorizontalAlignment.RIGHT);
-            tt.setFont(chart.getLegend().getItemFont());
-            tt.setBackgroundPaint(new Color(200, 200, 255, 50));
-            tt.setFrame(new BlockBorder(Color.white));
-            tt.setPosition(RectangleEdge.BOTTOM);
-            XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
-            chart.getXYPlot().addAnnotation(message);
+            if (messageText != null && messageText.trim().length() > 0) {
+                TextTitle tt = new TextTitle(messageText);
+                tt.setTextAlignment(HorizontalAlignment.LEFT);
+                tt.setFont(chart.getLegend().getItemFont());
+                tt.setPaint(new Color(0, 50, 50, 255));
+                tt.setBackgroundPaint(new Color(230, 255, 255, 50));
+                tt.setFrame(new BlockBorder(new Color(230, 230, 230, 255)));
+                tt.setPosition(RectangleEdge.BOTTOM);
+                XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
+                chart.getXYPlot().addAnnotation(message);
+            }
         }
 
         public boolean showsValidCursorSpectra() {
@@ -1574,9 +1576,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             setPlotMessage(MESSAGE_COLLECTING_SPECTRAL_INFORMATION);
         }
 
-        public void setCollectingSpectralInformationMessage(String message) {
-            setPlotMessage(message);
-        }
+//        public void setPlotMessage2(String message) {
+//            setPlotMessage(message);
+//        }
 
 
         public Map<Placemark, Map<Band, Double>> getPinToEnergies() {
@@ -1627,7 +1629,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
                 printDebugMsg("clearPrepareForUpdateMessage");
 //                clearPrepareForUpdateMessage();
-                System.out.println("test4");
 
                 if (getDisplayedPins().length > 0 && isShowingCursorSpectrum()) {
                     totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / 2.0);
@@ -1731,13 +1732,16 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 //            clearPrepareForUpdateMessage();
 
+            boolean cursorOverScene = false;
+
+
             long start = System.currentTimeMillis();
             printDebugMsg("fillDatasetWithCursorSeries: START");
 
             int workDone2 = 0;
             if (isShowingCursorSpectrum() && currentView != null) {
 //                clearPrepareForUpdateMessage();
-//                System.out.println("test2");
+
 
 
                 printDebugMsg("fillDatasetWithCursorSeries: START 2");
@@ -1819,6 +1823,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
                                 showsValidCursorSpectra = true;
                             }
+                            cursorOverScene = pixelPosInRasterBounds;
 
                             bandCount++;
                             if (bandCount > nextIncrementFinishedBandCount) {
@@ -1893,6 +1898,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                 if (pixelPosInRasterBounds && isPixelValid(spectralBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                     addToSeries(spectralBand, rasterPixelX, rasterPixelY, rasterLevel, series, wavelength);
                                     showsValidCursorSpectra = true;
+                                    cursorOverScene = pixelPosInRasterBounds;
                                 }
                             } else {
                                 //todo [Multisize_products] use scenerastertransform here
@@ -1906,6 +1912,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                                         isPixelValid(spectralBand, rasterX, rasterY, level)) {
                                     addToSeries(spectralBand, rasterX, rasterY, level, series, wavelength);
                                     showsValidCursorSpectra = true;
+                                    cursorOverScene = true;
                                 }
                             }
 
@@ -1947,12 +1954,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
                 if (showsValidCursorSpectra) {
                     clearPrepareForUpdateMessage();
-                    System.out.println("test1");
                 } else {
-                    if (pixelPosInRasterBounds) {
-                        setPlotChartMessage("Cursor mode activated.  Data likely masked out at or NaN at cursor pixel position");
+                    if (cursorOverScene) {
+                        setPlotChartMessage("Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.");
                     } else {
-                        setPlotChartMessage("Cursor mode activated.  Hover cursor over the image.");
+                        setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
                     }
                 }
             }
@@ -2070,7 +2076,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
 
             clearPrepareForUpdateMessage();
-            System.out.println("test6");
 
 
             for (DisplayableSpectrum spectrum : spectra) {
@@ -2152,7 +2157,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 }
 
                 clearPrepareForUpdateMessage();
-                System.out.println("test7");
 
 
                 if (pm != null && pm.isCanceled()) {
