@@ -411,6 +411,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
         chartHandler.setPlotMessage(message);
     }
 
+    void setMessageCursorModeOff() {
+        chartHandler.setMessageCursorModeOff();
+    }
+    void setMessageCursorModeNan() {
+        chartHandler.setMessageCursorModeNan();
+    }
+    void setMessageCursorNotOnImage() {
+        chartHandler.setMessageCursorNotOnImage();
+    }
 
     void clearPrepareForUpdateMessage() {
         chartHandler.setPlotMessage("");
@@ -637,14 +646,15 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
         showSpectrumForCursorButton.addActionListener(e -> {
             if (!showSpectrumForCursorButton.isSelected()) {
-                setPlotChartMessage("Cursor Mode de-activated.");
+//                setPlotChartMessage("Cursor Mode de-activated.");
+                setMessageCursorModeOff();
 
             }
             recreateChart();
 
             if (showSpectrumForCursorButton.isSelected()) {
-                setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
-
+//                setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
+                setMessageCursorNotOnImage();
             } 
 
 
@@ -1349,6 +1359,12 @@ public class SpectrumTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_SPECTRA_SELECTED = "No spectra selected";
         private static final String MESSAGE_COLLECTING_SPECTRAL_INFORMATION = "Collecting data (possible memory limitations)...";
+        private static final String MESSAGE_CURSOR_MODE_OFF = "Cursor Mode de-activated.";
+        private static final String MESSAGE_CURSOR_MODE_NAN = "Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.";
+        private static final String MESSAGE_CURSOR_NOT_ON_IMAGE = "Cursor Mode activated.\n  \nHover cursor over the image.";
+
+
+
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1575,6 +1591,20 @@ public class SpectrumTopComponent extends ToolTopComponent {
         public void setCollectingSpectralInformationMessage() {
             setPlotMessage(MESSAGE_COLLECTING_SPECTRAL_INFORMATION);
         }
+
+        public void setMessageCursorNotOnImage() {
+            setPlotMessage(MESSAGE_CURSOR_NOT_ON_IMAGE);
+        }
+
+        public void setMessageCursorModeNan() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_NAN);
+        }
+
+        public void setMessageCursorModeOff() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_OFF);
+        }
+
+
 
 //        public void setPlotMessage2(String message) {
 //            setPlotMessage(message);
@@ -1956,9 +1986,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     clearPrepareForUpdateMessage();
                 } else {
                     if (cursorOverScene) {
-                        setPlotChartMessage("Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.");
+                        setMessageCursorModeNan();
+//                        setPlotChartMessage("Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.");
                     } else {
-                        setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
+                        setMessageCursorNotOnImage();
+//                        setPlotChartMessage("Cursor Mode activated.\n  \nHover cursor over the image.");
                     }
                 }
             }
