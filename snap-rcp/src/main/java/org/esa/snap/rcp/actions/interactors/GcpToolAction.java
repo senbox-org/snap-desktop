@@ -27,22 +27,10 @@ import org.openide.util.NbBundle.Messages;
 
 import javax.swing.*;
 
-@ActionID(
-        category = "Interactors",
-        id = "org.esa.snap.rcp.action.interactors.GcpToolAction"
-)
-@ActionRegistration(
-        displayName = "#CTL_GcpToolActionText",
-        lazy = false
-)
-@ActionReference(
-        path = "Toolbars/Tools",
-        position = 140
-)
-@Messages({
-                  "CTL_GcpToolActionText=GCP Tool",
-                  "CTL_GcpToolActionDescription=GCP placing tool"
-          })
+@ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.GcpToolAction")
+@ActionRegistration(displayName = "#CTL_GcpToolActionText", lazy = false)
+@ActionReference(path = "Toolbars/Tools", position = 140)
+@Messages({"CTL_GcpToolActionText=GCP Tool", "CTL_GcpToolActionDescription=GCP placing tool"})
 public class GcpToolAction extends ToolAction {
 
     @SuppressWarnings("UnusedDeclaration")

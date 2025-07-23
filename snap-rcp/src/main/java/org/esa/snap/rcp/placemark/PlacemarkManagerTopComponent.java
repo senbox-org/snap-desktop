@@ -288,6 +288,7 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         if (PlacemarkDialog.showEditPlacemarkDialog(
                 SwingUtilities.getWindowAncestor(this), product, newPlacemark, placemarkDescriptor)) {
             makePlacemarkNameUnique(newPlacemark);
+            PlacemarkUtils.rotatePinColor(newPlacemark, product);
             UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
             if (undoManager != null) {
                 undoManager.addEdit(UndoablePlacemarkActionFactory.createUndoablePlacemarkInsertion(product, newPlacemark, placemarkDescriptor));
@@ -489,6 +490,8 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 numPinsRenamed++;
                 placemark = createTransferrablePlacemark(placemark, targetProduct);
             }
+
+            PlacemarkUtils.rotatePinColor(placemark, product);
 
             PixelPos pixelPos = placemark.getPixelPos();
             boolean productContainsPixelPos = targetProduct.containsPixel(pixelPos);

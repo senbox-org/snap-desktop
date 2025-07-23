@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.placemark;
 
 import org.esa.snap.core.datamodel.GcpDescriptor;
+import org.esa.snap.core.datamodel.Placemark;
 
 /**
  * A tool used to create ground control points (single click), select (single click on a GCP) or
@@ -26,5 +27,13 @@ public class InsertGcpInteractor extends InsertPlacemarkInteractor {
 
     public InsertGcpInteractor() {
         super(GcpDescriptor.getInstance());
+    }
+
+    @Override
+    protected void updatePlacemarkStyle(Placemark placemark, String defaultStyleCss) {
+        if(placemark.getStyleCss().isEmpty()) {
+            placemark.setStyleCss(defaultStyleCss);
+        }
+
     }
 }
