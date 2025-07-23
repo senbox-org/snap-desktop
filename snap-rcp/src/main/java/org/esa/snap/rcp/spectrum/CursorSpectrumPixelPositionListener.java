@@ -69,6 +69,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected void done() {
             topComponent.updateChart();
+            if (topComponent.isShowingCursorSpectrum()) {
+                topComponent.setMessageCursorNotOnImage();
+            } else {
+//                topComponent.setPlotChartMessage("Cursor Mode is de-activated.");
+            }
+
             support.removeWorkerAndStartNext(this);
         }
     }
