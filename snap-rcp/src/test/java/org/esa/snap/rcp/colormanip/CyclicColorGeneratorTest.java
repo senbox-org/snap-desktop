@@ -3,11 +3,14 @@ package org.esa.snap.rcp.colormanip;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
+
+import com.bc.ceres.annotation.STTM;
 import org.junit.Test;
 
 public class CyclicColorGeneratorTest {
 
   @Test
+  @STTM("SNAP-4048")
   public void testGetNextDistinctColor_returnsColorsInCorrectOrder() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     assertEquals(new Color(0, 0, 255), generator.getNextDistinctColor());
@@ -21,6 +24,7 @@ public class CyclicColorGeneratorTest {
   }
 
   @Test
+  @STTM("SNAP-4048")
   public void testGetNextDistinctColor_repeatsAfterAllColors() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     for (int i = 0; i < generator.getColorCount(); i++) {
@@ -30,6 +34,7 @@ public class CyclicColorGeneratorTest {
   }
 
   @Test
+  @STTM("SNAP-4048")
   public void testGetNextDistinctColor_afterResetStartsFromFirstColor() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     generator.getNextDistinctColor();
@@ -45,6 +50,7 @@ public class CyclicColorGeneratorTest {
   }
 
   @Test
+  @STTM("SNAP-4048")
   public void testGetColorByIndex_returnsCorrectColorForValidIndex() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     assertEquals(new Color(0, 0, 255), generator.getColorByIndex(0));
@@ -58,18 +64,21 @@ public class CyclicColorGeneratorTest {
   }
 
   @Test(expected = IndexOutOfBoundsException.class)
+  @STTM("SNAP-4048")
   public void testGetColorByIndex_throwsExceptionForNegativeIndex() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     generator.getColorByIndex(-1);
   }
 
   @Test(expected = IndexOutOfBoundsException.class)
+  @STTM("SNAP-4048")
   public void testGetColorByIndex_throwsExceptionForIndexOutOfRange() {
     CyclicColorGenerator generator = new CyclicColorGenerator();
     generator.getColorByIndex(8);
   }
 
   @Test
+  @STTM("SNAP-4048")
   public void testConstructorWithCustomColors_usesProvidedColors() {
     Color[] customColors = {
         new Color(255, 255, 255), // White
@@ -84,6 +93,7 @@ public class CyclicColorGeneratorTest {
   }
 
   @Test
+  @STTM("SNAP-4048")
   public void testConstructorWithCustomColors_correctColorCount() {
     Color[] customColors = {
         new Color(255, 255, 255),
