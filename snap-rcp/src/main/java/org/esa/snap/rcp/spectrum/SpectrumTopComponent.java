@@ -1572,9 +1572,11 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 tt.setTextAlignment(HorizontalAlignment.LEFT);
                 tt.setFont(chart.getLegend().getItemFont());
                 tt.setPaint(new Color(0, 50, 50, 255));
-                tt.setBackgroundPaint(new Color(230, 255, 255, 50));
-                tt.setFrame(new BlockBorder(new Color(230, 230, 230, 255)));
+                tt.setBackgroundPaint(new Color(240, 240, 240, 150));
+                tt.setFrame(new BlockBorder(1,1,1,1, new Color(130, 130, 130, 150)));
                 tt.setPosition(RectangleEdge.BOTTOM);
+                tt.setPadding(10,10,10,10);
+                tt.setToolTipText("Operational display message");
                 XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
                 chart.getXYPlot().addAnnotation(message);
             }
