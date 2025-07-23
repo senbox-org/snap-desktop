@@ -2,11 +2,18 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 13.0.0
+    [SNAP-3641] Bug when writing flags to DIMAP, NetCDF and other formats
+    [SNAP-3697] Signed 8-Bit GeoTiff not read correctly
+    [SNAP-3888] Specific TIF files read differently (wrong?) than in other tools
+    [SNAP-3907] Statistics - Negative pixel count for very large image
+    [SNAP-3916] Graph Builder - File name is extended with file extension several times for ZNAP format
     [SNAP-3950] Project creation and XML file extension
     [SNAP-3949] Creation of project structure when opening non-existent project
     [SNAP-3948] Projects menu items enabled by default
-    [SNAP-3916] Graph Builder - File name is extended with file extension several times for ZNAP format
+    [SNAP-3969] Prevent fillValue zarr chunks
+    [SNAP-3978] OLCI L1 - correct FWHM, frame_offset, lambba0 and solar_flux mapping
     [SNAP-4008] Land-Sea-Mask Op does not correctly persist the source bands selection
+    [SNAP-4019] Improve GraphBuilder validation handling
 
 # New in SNAP 12.0.0
     [SNAP-3962] Colorpalettes lose label when persisted
