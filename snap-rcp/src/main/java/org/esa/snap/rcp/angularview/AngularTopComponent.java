@@ -166,77 +166,9 @@ public class AngularTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
-//                if (currentProduct.getName().contains("HARP")) {
-//                    List<Integer> waveLengths = new ArrayList<Integer>();
-//                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
-//                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
-//                        if (!waveLengths.contains(waveLength)) {
-//                            waveLengths.add(waveLength);
-//                            if (waveLengths.size()  == 4) {
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    String autoGroupingStr = "";
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
-//                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
-//                    currentProduct.setAutoGrouping(autoGroupingStr);
 
-//                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
-//                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
-//                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
-//                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
-//                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
-//                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
-//                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
-//                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
-//                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
-//                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
-//                    );
-//                };
                 if (currentProduct.getName().contains("SPEX")) {
-                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+                    String autoGroupingStr = "";
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "i_*_" + wvl + ":";
                     }
@@ -261,14 +193,10 @@ public class AngularTopComponent extends ToolTopComponent {
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "u_over_i_*_" + wvl + ":";
                     }
-                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
-                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
-                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
-                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
+                    autoGroupingStr += "i:i_stdev:i_polsample:i_polsample_stdev:" +
                             "aolp:aolp_stdev:dolp:dolp_stdev:" +
                             "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
-                            "qc:qc_polsample" +
+                            "qc:qc_polsample:" +
                             "scattering_angle:rotation_angle:" +
                             "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
                             "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
@@ -872,16 +800,16 @@ public class AngularTopComponent extends ToolTopComponent {
                 for (AngularBand availableAngularBand : availableAngularBands) {
                     final String bandName = availableAngularBand.getName();
                     availableAngularBand.setSelected(false);
-                    if (currentProduct.getName().contains("SPEX")) {
-                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    if (currentProduct.getName().contains("HARP2")) {
-                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
+//                    if (currentProduct.getName().contains("SPEX")) {
+//                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+//                            availableAngularBand.setSelected(true);
+//                        }
+//                    }
+//                    if (currentProduct.getName().contains("HARP2")) {
+//                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+//                            availableAngularBand.setSelected(true);
+//                        }
+//                    }
                     final int angularViewIndex = autoGrouping.indexOf(bandName);
                     if (angularViewIndex != -1) {
                         autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
