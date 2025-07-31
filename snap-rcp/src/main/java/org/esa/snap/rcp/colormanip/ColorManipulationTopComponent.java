@@ -57,6 +57,7 @@ public class ColorManipulationTopComponent extends TopComponent implements HelpC
 
     public ColorManipulationTopComponent() {
         setName(Bundle.CTL_ColorManipulationTopComponent_ComponentName());
+        ColorSchemeUtils.initColorManipulationDefaults();
         ColorManipulationFormImpl cmf = new ColorManipulationFormImpl(this, new ColorFormModel());
         setLayout(new BorderLayout());
         add(cmf.getContentPanel(), BorderLayout.CENTER);
