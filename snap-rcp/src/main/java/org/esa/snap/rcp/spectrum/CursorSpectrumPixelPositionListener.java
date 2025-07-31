@@ -3,7 +3,7 @@ package org.esa.snap.rcp.spectrum;
 import com.bc.ceres.glayer.support.ImageLayer;
 import org.esa.snap.ui.PixelPositionListener;
 
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 
 public class CursorSpectrumPixelPositionListener implements PixelPositionListener {
@@ -44,6 +44,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         return topComponent.isVisible() && topComponent.isShowingCursorSpectrum();
     }
 
+    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
+    interface WorkerChainSupport {
+
+        void removeWorkerAndStartNext(SwingWorker worker);
+    }
+
     private class CursorSpectraRemover extends SwingWorker<Void, Void> {
 
         private final WorkerChainSupport support;
@@ -63,6 +69,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected void done() {
             topComponent.updateChart();
+            if (topComponent.isShowingCursorSpectrum()) {
+                topComponent.setMessageCursorNotOnImage();
+            } else {
+//                topComponent.setPlotChartMessage("Cursor Mode is de-activated.");
+            }
+
             support.removeWorkerAndStartNext(this);
         }
     }
@@ -93,6 +105,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
                 waiter.execute();
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
+//                waiter.clearMessage();
             }
             return null;
         }
@@ -112,19 +125,17 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected Void doInBackground() throws Exception {
             Thread.sleep(1000);
+
             return null;
         }
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+//            topComponent.setPrepareForUpdateMessage();
+        }
+
+        void clearMessage() {
+            topComponent.clearPrepareForUpdateMessage();
         }
     }
-
-    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
-    static interface WorkerChainSupport {
-
-        void removeWorkerAndStartNext(SwingWorker worker);
-    }
-
 }
