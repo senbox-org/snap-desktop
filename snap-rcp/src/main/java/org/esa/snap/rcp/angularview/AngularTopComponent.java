@@ -138,9 +138,6 @@ public class AngularTopComponent extends ToolTopComponent {
     public List<AngularBand> sensor_zenith_Bands = new ArrayList<>();
     public List<AngularBand> scattering_angle_Bands = new ArrayList<>();
 
-    private int workDoneMaster = 0;
-    private int totalWorkPlannedMaster = 100;
-
     public AngularTopComponent() {
         // System.out.println("Angular View Tool is Open");
         angularViewToolIsOpen = false;
@@ -159,6 +156,136 @@ public class AngularTopComponent extends ToolTopComponent {
         return new HelpCtx(Bundle.CTL_AngularTopComponent_HelpId());
     }
 
+//    private void setCurrentView(ProductSceneView view) {
+//        ProductSceneView oldView = currentView;
+//        currentView = view;
+//        if (oldView != currentView) {
+//            if (oldView != null) {
+//                oldView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
+//            }
+//            if (currentView != null) {
+//                currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
+//                setCurrentProduct(currentView.getProduct());
+////                if (currentProduct.getName().contains("HARP")) {
+////                    List<Integer> waveLengths = new ArrayList<Integer>();
+////                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
+////                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
+////                        if (!waveLengths.contains(waveLength)) {
+////                            waveLengths.add(waveLength);
+////                            if (waveLengths.size()  == 4) {
+////                                break;
+////                            }
+////                        }
+////                    }
+////                    String autoGroupingStr = "";
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
+////                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
+////                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
+////                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
+////                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
+////                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
+////                    currentProduct.setAutoGrouping(autoGroupingStr);
+//
+////                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
+////                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
+////                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
+////                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
+////                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
+////                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
+////                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
+////                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
+////                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
+////                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
+////                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
+////                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
+////                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
+////                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
+////                    );
+////                };
+//                if (currentProduct.getName().contains("SPEX")) {
+//                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "i_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "aolp_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "dolp_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "q_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "u_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "qc_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "q_over_i_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "u_over_i_*_" + wvl + ":";
+//                    }
+//                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
+//                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
+//                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
+//                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
+//                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
+//                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
+//                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
+//                            "qc:qc_polsample" +
+//                            "scattering_angle:rotation_angle:" +
+//                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
+//                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
+//                            "obs_per_view:view_time_offsets:number_of_observations";
+//                    currentProduct.setAutoGrouping(autoGroupingStr);
+//                }
+//                if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
+//                    setUpAngularViews();
+//                }
+//                recreateChart();
+//
+//            }
+//            updateUIState();
+//        }
+//    }
+
+
     private void setCurrentView(ProductSceneView view) {
         ProductSceneView oldView = currentView;
         currentView = view;
@@ -169,77 +296,11 @@ public class AngularTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
-//                if (currentProduct.getName().contains("HARP")) {
-//                    List<Integer> waveLengths = new ArrayList<Integer>();
-//                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
-//                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
-//                        if (!waveLengths.contains(waveLength)) {
-//                            waveLengths.add(waveLength);
-//                            if (waveLengths.size()  == 4) {
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    String autoGroupingStr = "";
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
-//                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
-//                    currentProduct.setAutoGrouping(autoGroupingStr);
-
-//                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
-//                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
-//                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
-//                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
-//                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
-//                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
-//                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
-//                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
-//                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
-//                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
-//                    );
-//                };
                 if (currentProduct.getName().contains("SPEX")) {
-                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+                    String autoGroupingStr = "";
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "I_*_" + wvl + ":";
+//                    }
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "i_*_" + wvl + ":";
                     }
@@ -264,18 +325,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "u_over_i_*_" + wvl + ":";
                     }
-                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
-                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
-                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
-                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
-                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
-                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
-                            "qc:qc_polsample" +
-                            "scattering_angle:rotation_angle:" +
-                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
-                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
-                            "obs_per_view:view_time_offsets:number_of_observations";
+                    autoGroupingStr += "i_polesample_stdev:i_polesample:i_stdev:i:" +
+                            "aolp_stdev:aolp:dolp_stdev:dolp:" +
+                            "qc_polsample:qc:q_stdev:q:u_stdev:u:" +
+                            "u_over_i_stdev:u_over_i:q_over_i_stdev:q_over_i:" +
+                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:scattering_angle:rotation_angle:" +
+                            "number_of_observations:view_time_offsets";
                     currentProduct.setAutoGrouping(autoGroupingStr);
                 }
                 if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
@@ -287,6 +342,7 @@ public class AngularTopComponent extends ToolTopComponent {
             updateUIState();
         }
     }
+
 
     private Product getCurrentProduct() {
         return currentProduct;
@@ -706,14 +762,13 @@ public class AngularTopComponent extends ToolTopComponent {
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                totalWorkPlannedMaster = 100;
-                workDoneMaster = 0;
-                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
+                int totalWorkPlanned = 100;
+                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
                     // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
-                    updateData(0, 0, 0, true, pm, (totalWorkPlannedMaster - 10));
+                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
@@ -769,14 +824,13 @@ public class AngularTopComponent extends ToolTopComponent {
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                    totalWorkPlannedMaster = 100;
-                    workDoneMaster = 0;
-                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
+                    int totalWorkPlanned = 100;
+                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                     try {
                         // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm, (totalWorkPlannedMaster - 10));
+                        chartHandler.updateData(pm, (totalWorkPlanned - 10));
                         if (pm != null && pm.isCanceled()) {
                             cancelActions();
                             pm.done();
@@ -855,7 +909,6 @@ public class AngularTopComponent extends ToolTopComponent {
             if (autoGrouping != null) {
                 final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
                 DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
-
                 final Iterator<String[]> iterator = autoGrouping.iterator();
                 int i = 0;
                 while (iterator.hasNext()) {
@@ -870,14 +923,6 @@ public class AngularTopComponent extends ToolTopComponent {
                     final String angularViewName = angularViewNameBuilder.toString();
                     int symbolIndex = AngularViewShapeProvider.getValidIndex(i, false);
                     DisplayableAngularview angularView = new DisplayableAngularview(angularViewName, symbolIndex);
-                    if (angularViewName != null)  {
-                        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-                        if (view != null && view.getRaster().getName().startsWith(angularViewName)) {
-                            angularView.setSelected(i == selectedAngularViewIndex);
-                        } else {
-                            angularView.setSelected(false);
-                        }
-                    }
                     angularView.setSelected(i == selectedAngularViewIndex);
                     angularView.setLineStyle(AngularViewStrokeProvider.getStroke(i));
                     autoGroupingAngularViews[i++] = angularView;
@@ -886,16 +931,16 @@ public class AngularTopComponent extends ToolTopComponent {
                 for (AngularBand availableAngularBand : availableAngularBands) {
                     final String bandName = availableAngularBand.getName();
                     availableAngularBand.setSelected(false);
-                    if (currentProduct.getName().contains("SPEX")) {
-                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    if (currentProduct.getName().contains("HARP2")) {
-                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
+//                    if (currentProduct.getName().contains("SPEX")) {
+//                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+//                            availableAngularBand.setSelected(true);
+//                        }
+//                    }
+//                    if (currentProduct.getName().contains("HARP2")) {
+//                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
+//                            availableAngularBand.setSelected(true);
+//                        }
+//                    }
                     final int angularViewIndex = autoGrouping.indexOf(bandName);
                     if (angularViewIndex != -1) {
                         autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
@@ -1074,7 +1119,7 @@ public class AngularTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
-        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting data (possible memory limitations)...";
+        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1350,15 +1395,14 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
+        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             showsValidCursorAngularViews = false;
             if (modelP == null) {
                 return;
             }
-
-            int workDone2 = 0;
             if (isShowingCursorAngularView() && currentView != null) {
-                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
+                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
+                int workDone = 0;
 
                 for (DisplayableAngularview angularView : angularViews) {
                     XYSeries series = new XYSeries(angularView.getName());
@@ -1395,19 +1439,12 @@ public class AngularTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (bandCount > nextIncrementFinishedBandCount) {
-                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
-
-                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
-                                    if (totalWorkPlanned2 != 0) {
-                                        if (pm != null) {pm.worked(1);}
-                                    }
-                                    workDoneMaster++;
-                                    workDone2++;
+                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
+                                if (totalWorkPlanned != 0) {
+                                    if (pm != null) {pm.worked(1);}
                                 }
-
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
+                                workDone++;
                             }
                         }
                     } else {
@@ -1452,19 +1489,12 @@ public class AngularTopComponent extends ToolTopComponent {
                             }
 
                             bandCount++;
-                            if (bandCount > nextIncrementFinishedBandCount) {
-                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
-
-                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
-                                    if (totalWorkPlanned2 != 0) {
-                                        if (pm != null) {pm.worked(1);}
-                                    }
-                                    workDoneMaster++;
-                                    workDone2++;
+                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
+                                if (totalWorkPlanned != 0) {
+                                    if (pm != null) {pm.worked(1);}
                                 }
-
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
+                                workDone++;
                             }
                         }
                     }
@@ -1498,12 +1528,7 @@ public class AngularTopComponent extends ToolTopComponent {
         private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             Placemark[] pins = getDisplayedPins();
 
-            // it seems like most of the work is done on first pin so setting this to false for now
-            boolean splitWorkAcrossPins = false;
-            if (splitWorkAcrossPins) {
-                totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
-            }
-
+            totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
             // System.out.println("Number of pins =" + pins.length);
             // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
 
@@ -1517,12 +1542,12 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
-            int workDone2 = 0;
-            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
+            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
+            int workDone = 0;
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
@@ -1569,19 +1594,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     }
 
                     bandCount++;
-                    if (bandCount > nextIncrementFinishedBandCount) {
-                        System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                        System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
-
-                        if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
-                            if (totalWorkPlanned2 != 0) {
-                                if (pm != null) {pm.worked(1);}
-                            }
-                            workDoneMaster++;
-                            workDone2++;
+                    if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
+                        if (totalWorkPlanned != 0) {
+                            if (pm != null) {pm.worked(1);}
                         }
-
                         nextIncrementFinishedBandCount += incrementLengthNumBands;
+                        workDone++;
                     }
                 }
                 if (pm != null && pm.isCanceled()) {
