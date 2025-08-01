@@ -79,15 +79,17 @@ import java.util.List;
 import java.util.*;
 
 @TopComponent.Description(preferredID = "SpectrumTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.SPECTRUM_ICON,
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 80)
+
+
+@TopComponent.Registration(mode = PackageDefaults.SPECTRUM_WS_MODE, openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.SpectrumTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Optical"),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Toolbars/Spectral Angular View", position = 10)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SpectrumTopComponent_Name", preferredID = "SpectrumTopComponent")
 @NbBundle.Messages({"CTL_SpectrumTopComponent_Name=Spectrum View", "CTL_SpectrumTopComponent_HelpId=showSpectrumWnd"})
@@ -1569,7 +1571,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 TextTitle tt = new TextTitle(messageText);
                 tt.setTextAlignment(HorizontalAlignment.LEFT);
                 tt.setFont(chart.getLegend().getItemFont());
-                tt.setPaint(new Color(0, 50, 50, 255));
+                tt.setPaint(new Color(0, 0, 150, 255));
                 tt.setBackgroundPaint(new Color(240, 240, 240, 150));
                 tt.setFrame(new BlockBorder(1,1,1,1, new Color(130, 130, 130, 150)));
                 tt.setPosition(RectangleEdge.BOTTOM);
@@ -1947,18 +1949,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
 //                                clearPrepareForUpdateMessage();
             }
 
-            String workdoneStr = "| -";
+            String workdoneStr = workdone + "% " ;
             for (int i = 0; i < 100; i +=5) {
                 if (i < workdone) {
                     workdoneStr += "-";
-                } else {
-                    workdoneStr += "  ";
                 }
             }
-            workdoneStr += " |";
 
             String msg = "";
-
             if (isCursorMode) {
                 msg = "Please maintain current mouse hover position until fully completed.\n" +
                         "Spectral data is being initialized for tile at cursor hover position.";
