@@ -1571,7 +1571,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 TextTitle tt = new TextTitle(messageText);
                 tt.setTextAlignment(HorizontalAlignment.LEFT);
                 tt.setFont(chart.getLegend().getItemFont());
-                tt.setPaint(new Color(0, 50, 50, 255));
+                tt.setPaint(new Color(0, 0, 150, 255));
                 tt.setBackgroundPaint(new Color(240, 240, 240, 150));
                 tt.setFrame(new BlockBorder(1,1,1,1, new Color(130, 130, 130, 150)));
                 tt.setPosition(RectangleEdge.BOTTOM);
@@ -1949,18 +1949,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
 //                                clearPrepareForUpdateMessage();
             }
 
-            String workdoneStr = "| -";
+            String workdoneStr = workdone + "% " ;
             for (int i = 0; i < 100; i +=5) {
                 if (i < workdone) {
                     workdoneStr += "-";
-                } else {
-                    workdoneStr += "  ";
                 }
             }
-            workdoneStr += " |";
 
             String msg = "";
-
             if (isCursorMode) {
                 msg = "Please maintain current mouse hover position until fully completed.\n" +
                         "Spectral data is being initialized for tile at cursor hover position.";
