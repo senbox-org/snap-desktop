@@ -162,11 +162,13 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         collapseButton.addActionListener(new CollapseListener(index));
         final ImageIcon shapeIcon = SpectrumShapeProvider.getShapeIcon(spectrum.getSymbolIndex());
         spectraPanel.add(collapseButton);
+
         final TristateCheckBox tristateCheckBox = new TristateCheckBox();
         tristateCheckBox.setState(isSelected(spectrum));
         tristateCheckBox.addActionListener(new TristateCheckboxListener(index));
         tristateCheckBoxes[index] = tristateCheckBox;
         spectraPanel.add(tristateCheckBox);
+
         final JLabel spectrumNameLabel = new JLabel(spectrum.getName());
         Font font = spectrumNameLabel.getFont();
         font = new Font(font.getName(), Font.BOLD, font.getSize());
