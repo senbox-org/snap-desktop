@@ -9,6 +9,8 @@ import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
+import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
+import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.AbstractButton;
@@ -162,12 +164,13 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         collapseButton.addActionListener(new CollapseListener(index));
         final ImageIcon shapeIcon = AngularViewShapeProvider.getShapeIcon(angularView.getSymbolIndex());
         angularViewsPanel.add(collapseButton);
+
         final TristateCheckBox tristateCheckBox = new TristateCheckBox();
         tristateCheckBox.setState(isSelected(angularView));
-
         tristateCheckBox.addActionListener(new TristateCheckboxListener(index));
         tristateCheckBoxes[index] = tristateCheckBox;
         angularViewsPanel.add(tristateCheckBox);
+
         final JLabel angularViewNameLabel = new JLabel(angularView.getName());
         Font font = angularViewNameLabel.getFont();
         font = new Font(font.getName(), Font.BOLD, font.getSize());
@@ -218,7 +221,6 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         }
         return TristateCheckBox.STATE_UNSELECTED;
     }
-
 
     private void toggleCollapsed(int index) {
         final boolean isCollapsed = !collapsed[index];

@@ -19,6 +19,7 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.multilevel.MultiLevelModel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -29,12 +30,18 @@ import org.esa.snap.rcp.placemark.PlacemarkUtils;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.angularview.*;
+import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
+import org.esa.snap.ui.product.spectrum.SpectrumBand;
+import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
+import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYTitleAnnotation;
@@ -75,6 +82,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
@@ -101,12 +109,16 @@ public class AngularTopComponent extends ToolTopComponent {
 
     private static final String SUPPRESS_MESSAGE_KEY = "plugin.angular.tip";
 
+    private boolean wasOpenedBefore = false;
+
     private final Map<RasterDataNode, DisplayableAngularview[]> rasterToAngularMap;
     private final Map<RasterDataNode, List<AngularBand>> rasterToAngularBandsMap;
 
     private final ProductNodeListenerAdapter productNodeHandler;
     private final PinSelectionChangeListener pinSelectionChangeListener;
     private final PixelPositionListener pixelPositionListener;
+
+    private final BandGroupsManager bandGroupsManager;
 
     private AbstractButton filterButton;
     private AbstractButton showAngularViewsForCursorButton;
@@ -134,12 +146,12 @@ public class AngularTopComponent extends ToolTopComponent {
     private boolean isCodeInducedAxisChange;
     private boolean isUserInducedAutomaticAdjustmentChosen;
 
+    private int workDoneMaster = 0;
+    private int totalWorkPlannedMaster = 100;
+
     public List<AngularBand> sensor_azimuth_Bands = new ArrayList<>();
     public List<AngularBand> sensor_zenith_Bands = new ArrayList<>();
     public List<AngularBand> scattering_angle_Bands = new ArrayList<>();
-
-    private int workDoneMaster = 0;
-    private int totalWorkPlannedMaster = 100;
 
     public AngularTopComponent() {
         // System.out.println("Angular View Tool is Open");
@@ -151,13 +163,156 @@ public class AngularTopComponent extends ToolTopComponent {
         rasterToAngularMap = new HashMap<>();
         rasterToAngularBandsMap = new HashMap<>();
         pixelPositionListener = new CursorAngularViewPixelPositionListener(this);
+        bandGroupsManager = getBandGroupsManager();
         initUI();
     }
+
+    private BandGroupsManager getBandGroupsManager() {
+        final BandGroupsManager bandGroupsManager;
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+        } catch (IOException e) {
+            Dialogs.showError(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return bandGroupsManager;
+    }
+
 
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(Bundle.CTL_AngularTopComponent_HelpId());
     }
+
+//    private void setCurrentView(ProductSceneView view) {
+//        ProductSceneView oldView = currentView;
+//        currentView = view;
+//        if (oldView != currentView) {
+//            if (oldView != null) {
+//                oldView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
+//            }
+//            if (currentView != null) {
+//                currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
+//                setCurrentProduct(currentView.getProduct());
+////                if (currentProduct.getName().contains("HARP")) {
+////                    List<Integer> waveLengths = new ArrayList<Integer>();
+////                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
+////                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
+////                        if (!waveLengths.contains(waveLength)) {
+////                            waveLengths.add(waveLength);
+////                            if (waveLengths.size()  == 4) {
+////                                break;
+////                            }
+////                        }
+////                    }
+////                    String autoGroupingStr = "";
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    for (int i = 0; i < 4; i ++) {
+////                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
+////                    }
+////                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
+////                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
+////                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
+////                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
+////                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
+////                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
+////                    currentProduct.setAutoGrouping(autoGroupingStr);
+//
+////                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
+////                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
+////                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
+////                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
+////                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
+////                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
+////                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
+////                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
+////                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
+////                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
+////                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
+////                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
+////                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
+////                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
+////                    );
+////                };
+//                if (currentProduct.getName().contains("SPEX")) {
+//                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "i_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "aolp_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "dolp_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "q_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "u_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "qc_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "q_over_i_*_" + wvl + ":";
+//                    }
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "u_over_i_*_" + wvl + ":";
+//                    }
+//                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
+//                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
+//                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
+//                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
+//                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
+//                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
+//                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
+//                            "qc:qc_polsample" +
+//                            "scattering_angle:rotation_angle:" +
+//                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
+//                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
+//                            "obs_per_view:view_time_offsets:number_of_observations";
+//                    currentProduct.setAutoGrouping(autoGroupingStr);
+//                }
+//                if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
+//                    setUpAngularViews();
+//                }
+//                recreateChart();
+//
+//            }
+//            updateUIState();
+//        }
+//    }
+
 
     private void setCurrentView(ProductSceneView view) {
         ProductSceneView oldView = currentView;
@@ -169,77 +324,11 @@ public class AngularTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
-//                if (currentProduct.getName().contains("HARP")) {
-//                    List<Integer> waveLengths = new ArrayList<Integer>();
-//                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
-//                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
-//                        if (!waveLengths.contains(waveLength)) {
-//                            waveLengths.add(waveLength);
-//                            if (waveLengths.size()  == 4) {
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    String autoGroupingStr = "";
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
-//                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
-//                    currentProduct.setAutoGrouping(autoGroupingStr);
-
-//                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
-//                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
-//                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
-//                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
-//                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
-//                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
-//                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
-//                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
-//                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
-//                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
-//                    );
-//                };
                 if (currentProduct.getName().contains("SPEX")) {
-                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
+                    String autoGroupingStr = "";
+//                    for (int wvl = 380; wvl < 390; wvl++) {
+//                        autoGroupingStr += "I_*_" + wvl + ":";
+//                    }
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "i_*_" + wvl + ":";
                     }
@@ -264,18 +353,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     for (int wvl = 380; wvl < 390; wvl++) {
                         autoGroupingStr += "u_over_i_*_" + wvl + ":";
                     }
-                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
-                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
-                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
-                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
-                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
-                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
-                            "qc:qc_polsample" +
-                            "scattering_angle:rotation_angle:" +
-                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
-                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
-                            "obs_per_view:view_time_offsets:number_of_observations";
+                    autoGroupingStr += "i_polesample_stdev:i_polesample:i_stdev:i:" +
+                            "aolp_stdev:aolp:dolp_stdev:dolp:" +
+                            "qc_polsample:qc:q_stdev:q:u_stdev:u:" +
+                            "u_over_i_stdev:u_over_i:q_over_i_stdev:q_over_i:" +
+                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:scattering_angle:rotation_angle:" +
+                            "number_of_observations:view_time_offsets";
                     currentProduct.setAutoGrouping(autoGroupingStr);
                 }
                 if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
@@ -287,6 +370,7 @@ public class AngularTopComponent extends ToolTopComponent {
             updateUIState();
         }
     }
+
 
     private Product getCurrentProduct() {
         return currentProduct;
@@ -326,6 +410,24 @@ public class AngularTopComponent extends ToolTopComponent {
 
     void setPrepareForUpdateMessage() {
         chartHandler.setCollectingAngularInformationMessage();
+    }
+
+    void setPlotChartMessage(String message) {
+        chartHandler.setPlotMessage(message);
+    }
+
+    void setMessageCursorModeOff() {
+        chartHandler.setMessageCursorModeOff();
+    }
+    void setMessageCursorModeNan() {
+        chartHandler.setMessageCursorModeNan();
+    }
+    void setMessageCursorNotOnImage() {
+        chartHandler.setMessageCursorNotOnImage();
+    }
+
+    void clearPrepareForUpdateMessage() {
+        chartHandler.setPlotMessage("");
     }
 
 
@@ -464,14 +566,24 @@ public class AngularTopComponent extends ToolTopComponent {
 
         showAngularViewsForCursorButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
+
         showAngularViewsForCursorButton.addActionListener(e -> {
-            if (showAngularViewsForCursorButton.isSelected()) {
-                // System.out.println("Listening to showAngularViewsForCursorButton - true");
-                runProgressMonitorForCursor();
-            } else {
-                // System.out.println("Listening to showAngularViewsForCursorButton - false");
-                recreateChart();
+            if (!showAngularViewsForCursorButton.isSelected()) {
+                setMessageCursorModeOff();
             }
+            recreateChart();
+
+            if (showAngularViewsForCursorButton.isSelected()) {
+                setMessageCursorNotOnImage();
+            }
+
+//            if (showAngularViewsForCursorButton.isSelected()) {
+//                // System.out.println("Listening to showAngularViewsForCursorButton - true");
+//                runProgressMonitorForCursor();
+//            } else {
+//                // System.out.println("Listening to showAngularViewsForCursorButton - false");
+//                recreateChart();
+//            }
         });
 
         showAngularViewsForCursorButton.setName("showAngularViewsForCursorButton");
@@ -706,14 +818,13 @@ public class AngularTopComponent extends ToolTopComponent {
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                totalWorkPlannedMaster = 100;
-                workDoneMaster = 0;
-                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
+                int totalWorkPlanned = 100;
+                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
                     // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
 
-                    updateData(0, 0, 0, true, pm, (totalWorkPlannedMaster - 10));
+                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
                     chartHandler.setEmptyPlot();
 
                     if (pm != null && pm.isCanceled()) {
@@ -758,66 +869,84 @@ public class AngularTopComponent extends ToolTopComponent {
 
 
     private void recreateChart(boolean showProgress) {
-        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress)");
+
+        printDebugMsg("INSIDE: recreateChart(boolean showProgress)");
+        // System.out.println("SnapApp.getDefault().getInstanceName() = " + SnapApp.getDefault().getInstanceName() );
 
         if (showProgress) {
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 1");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 1");
 
             ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                    "Collecting Angular Data") {
+                    "Collecting Angular Data for Pins") {
 
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
                     totalWorkPlannedMaster = 100;
                     workDoneMaster = 0;
+                    if (pm == null) {
+                        return null;
+                    }
+
                     pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
                     try {
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm, (totalWorkPlannedMaster - 10));
-                        if (pm != null && pm.isCanceled()) {
+                        // Allow progress monitor to fill up to 95% -- to prevent its premature closing
+                        int work95Percent = (int) Math.floor(totalWorkPlannedMaster * 0.95);
+                        chartHandler.updateData(pm, work95Percent);
+                        if (pm.isCanceled()) {
                             cancelActions();
                             pm.done();
                             return null;
                         }
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
 
                         chartHandler.updateChart();
+
                         updateChart(true);
+                        if (workDoneMaster > totalWorkPlannedMaster) {
+                            pm.worked(1);
+                        }
+
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 4");
+
                         chartPanel.repaint();
+                        if (workDoneMaster > totalWorkPlannedMaster) {
+                            pm.worked(1);
+                        }
 
                         updateUIState();
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 3");
 
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 5");
                     } finally {
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS Finally");
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS Finally");
 
-                        if (pm != null && pm.isCanceled()) {
+                        if (pm.isCanceled()) {
                             cancelActions();
                             return null;
                         }
                         pm.done();
                     }
 
-                    // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END");
+                    printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS END");
 
                     return null;
                 }
             };
 
             pmSwingWorker.executeWithBlocking();
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END2");
-
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS END after blocking");
 
         } else {
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - NO PROGRESS");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS");
 
-            chartHandler.updateData(null, 0);
+            chartHandler.updateData();
             chartHandler.updateChart();
             chartPanel.repaint();
             updateUIState();
-            // System.out.println("INSIDE Angular View Tool: recreateChart(boolean showProgress) - NO PROGRESS END");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS END");
         }
     }
 
@@ -835,89 +964,189 @@ public class AngularTopComponent extends ToolTopComponent {
     }
 
     private void setUpAngularViews() {
+        printDebugMsg("setUpSpectra START");
         if (currentView == null) {
             return;
         }
-        DisplayableAngularview[] angularViews;
+
         final RasterDataNode raster = currentView.getRaster();
         final AngularBand[] availableAngularBands = getAvailableAngularBands(raster);
         if (availableAngularBands.length == 0) {
-            angularViews = new DisplayableAngularview[]{};
-        } else {
-//            if (currentProduct.getName().contains("HARP2")) {
-//                currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                        "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                        "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                        "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                        "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets");
-//            }
-            final BandGroup autoGrouping = currentProduct.getAutoGrouping();
-            if (autoGrouping != null) {
-                final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
-                DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
-
-                final Iterator<String[]> iterator = autoGrouping.iterator();
-                int i = 0;
-                while (iterator.hasNext()) {
-                    final String[] autoGroupingNameAsArray = iterator.next();
-                    StringBuilder angularViewNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
-                    if (autoGroupingNameAsArray.length > 1) {
-                        for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
-                            String autoGroupingNamePart = autoGroupingNameAsArray[j];
-                            angularViewNameBuilder.append("_").append(autoGroupingNamePart);
-                        }
-                    }
-                    final String angularViewName = angularViewNameBuilder.toString();
-                    int symbolIndex = AngularViewShapeProvider.getValidIndex(i, false);
-                    DisplayableAngularview angularView = new DisplayableAngularview(angularViewName, symbolIndex);
-                    if (angularViewName != null)  {
-                        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
-                        if (view != null && view.getRaster().getName().startsWith(angularViewName)) {
-                            angularView.setSelected(i == selectedAngularViewIndex);
-                        } else {
-                            angularView.setSelected(false);
-                        }
-                    }
-                    angularView.setSelected(i == selectedAngularViewIndex);
-                    angularView.setLineStyle(AngularViewStrokeProvider.getStroke(i));
-                    autoGroupingAngularViews[i++] = angularView;
-                }
-                List<AngularBand> ungroupedBandsList = new ArrayList<>();
-                for (AngularBand availableAngularBand : availableAngularBands) {
-                    final String bandName = availableAngularBand.getName();
-                    availableAngularBand.setSelected(false);
-                    if (currentProduct.getName().contains("SPEX")) {
-                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    if (currentProduct.getName().contains("HARP2")) {
-                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    final int angularViewIndex = autoGrouping.indexOf(bandName);
-                    if (angularViewIndex != -1) {
-                        autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
-                    } else {
-                        ungroupedBandsList.add(availableAngularBand);
-                    }
-                }
-                if (ungroupedBandsList.size() == 0) {
-                    angularViews = autoGroupingAngularViews;
-                } else {
-                    final DisplayableAngularview[] angularViewsFromUngroupedBands =
-                            createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[0]),
-                                    AngularViewShapeProvider.getValidIndex(i, false), i);
-                    angularViews = new DisplayableAngularview[autoGroupingAngularViews.length + angularViewsFromUngroupedBands.length];
-                    System.arraycopy(autoGroupingAngularViews, 0, angularViews, 0, autoGroupingAngularViews.length);
-                    System.arraycopy(angularViewsFromUngroupedBands, 0, angularViews, autoGroupingAngularViews.length, angularViewsFromUngroupedBands.length);
-                }
-            } else {
-                angularViews = createAngularViewsFromUngroupedBands(availableAngularBands, 1, 0);
-            }
+            rasterToAngularMap.put(raster, new DisplayableAngularview[0]);
+            return;
         }
-        rasterToAngularMap.put(raster, angularViews);
+
+
+        int displayIndex = 0;
+        final List<DisplayableAngularview> spectra = new ArrayList<>();
+        final BandGroup[] userBandGroups = bandGroupsManager.getGroupsMatchingProduct(currentProduct);
+        if (userBandGroups.length > 0) {
+            final DisplayableAngularview[] userGroupingSpectra = new DisplayableAngularview[userBandGroups.length];
+            for (int i = 0; i < userBandGroups.length; i++) {
+                final int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final BandGroup userBandGroup = userBandGroups[i];
+                final DisplayableAngularview autoGroupingAngularViews = new DisplayableAngularview(userBandGroup.getName(), symbolIndex);
+                autoGroupingAngularViews.setSelected(false);
+                autoGroupingAngularViews.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+
+                String[] bandNames = userBandGroup.getMatchingBandNames(currentProduct);
+                for (final String bandName : bandNames) {
+                    for (AngularBand availableAngularBand : availableAngularBands) {
+                        if (availableAngularBand.getName().equals(bandName)) {
+                            autoGroupingAngularViews.addBand(availableAngularBand);
+                        }
+                    }
+                }
+
+                userGroupingSpectra[i] = autoGroupingAngularViews;
+            }
+
+            spectra.addAll(Arrays.asList(userGroupingSpectra));
+        }
+
+
+        final BandGroup autoGrouping = currentProduct.getAutoGrouping();
+        if (autoGrouping != null) {
+            final int selectedAngularIndex = autoGrouping.indexOf(raster.getName());
+            DisplayableAngularview[] autoGroupingAngular = new DisplayableAngularview[autoGrouping.size()];
+            final Iterator<String[]> iterator = autoGrouping.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                final String[] autoGroupingNameAsArray = iterator.next();
+                StringBuilder angularNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
+                if (autoGroupingNameAsArray.length > 1) {
+                    for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
+                        String autoGroupingNamePart = autoGroupingNameAsArray[j];
+                        angularNameBuilder.append("_").append(autoGroupingNamePart);
+                    }
+                }
+                final String angularName = angularNameBuilder.toString();
+                int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                DisplayableAngularview angularView = new DisplayableAngularview(angularName, symbolIndex);
+                angularView.setSelected(i == selectedAngularIndex);
+                angularView.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+                autoGroupingAngular[i] = angularView;
+                i++;
+            }
+            List<AngularBand> ungroupedBandsList = new ArrayList<>();
+            for (AngularBand availableAngularBand : availableAngularBands) {
+                final String bandName = availableAngularBand.getName();
+                if (currentProduct.getName().contains("SPEX")) {
+                    availableAngularBand.setSelected(false);
+                }
+                final int spectrumIndex = autoGrouping.indexOf(bandName);
+                if (spectrumIndex != -1) {
+                    autoGroupingAngular[spectrumIndex].addBand(availableAngularBand);
+                } else {
+                    ungroupedBandsList.add(availableAngularBand);
+                }
+            }
+
+            spectra.addAll(Arrays.asList(autoGroupingAngular));
+            if (!ungroupedBandsList.isEmpty()) {
+                int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final DisplayableAngularview[] spectraFromUngroupedBands =
+                        createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[0]),
+                                validIndex, i);
+                spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+            }
+        } else {
+            DisplayableAngularview[] spectraFromUngroupedBands = createAngularViewsFromUngroupedBands(availableAngularBands, 1, 0);
+            spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+        }
+        rasterToAngularMap.put(raster, spectra.toArray(new DisplayableAngularview[0]));
+        printDebugMsg("setUpSpectra FINISH");
+
+
+
+
+//
+//
+//
+//
+//        if (currentView == null) {
+//            return;
+//        }
+//        DisplayableAngularview[] angularViews;
+//        final RasterDataNode raster = currentView.getRaster();
+//        final AngularBand[] availableAngularBands = getAvailableAngularBands(raster);
+//        if (availableAngularBands.length == 0) {
+//            angularViews = new DisplayableAngularview[]{};
+//        } else {
+////            if (currentProduct.getName().contains("HARP2")) {
+////                currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
+////                        "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
+////                        "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
+////                        "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
+////                        "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets");
+////            }
+//            final BandGroup autoGrouping = currentProduct.getAutoGrouping();
+//            if (autoGrouping != null) {
+//                final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
+//                DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
+//                final Iterator<String[]> iterator = autoGrouping.iterator();
+//                int i = 0;
+//                while (iterator.hasNext()) {
+//                    final String[] autoGroupingNameAsArray = iterator.next();
+//                    StringBuilder angularViewNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
+//                    if (autoGroupingNameAsArray.length > 1) {
+//                        for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
+//                            String autoGroupingNamePart = autoGroupingNameAsArray[j];
+//                            angularViewNameBuilder.append("_").append(autoGroupingNamePart);
+//                        }
+//                    }
+//                    final String angularViewName = angularViewNameBuilder.toString();
+//                    int symbolIndex = AngularViewShapeProvider.getValidIndex(i, false);
+//                    DisplayableAngularview angularView = new DisplayableAngularview(angularViewName, symbolIndex);
+//                    angularView.setSelected(i == selectedAngularViewIndex);
+//                    angularView.setLineStyle(AngularViewStrokeProvider.getStroke(i));
+//                    autoGroupingAngularViews[i++] = angularView;
+//                }
+//                List<AngularBand> ungroupedBandsList = new ArrayList<>();
+//                for (AngularBand availableAngularBand : availableAngularBands) {
+//                    final String bandName = availableAngularBand.getName();
+////                    availableAngularBand.setSelected(false);
+//                    if (currentProduct.getName().contains("SPEX")) {
+//                        availableAngularBand.setSelected(false);
+//                    }
+//
+//
+//                    final int angularViewIndex = autoGrouping.indexOf(bandName);
+//                    if (angularViewIndex != -1) {
+//                        autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
+//                    } else {
+//                        ungroupedBandsList.add(availableAngularBand);
+//                    }
+//                }
+//
+//                spectra.addAll(Arrays.asList(autoGroupingSpectra));
+//                if (!ungroupedBandsList.isEmpty()) {
+//                    int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+//                    ++displayIndex;
+//                    final DisplayableSpectrum[] spectraFromUngroupedBands =
+//                            createSpectraFromUngroupedBands(ungroupedBandsList.toArray(new SpectrumBand[0]),
+//                                    validIndex, i);
+//                    spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+//                }
+//
+//                if (ungroupedBandsList.size() == 0) {
+//                    angularViews = autoGroupingAngularViews;
+//                } else {
+//                    final DisplayableAngularview[] angularViewsFromUngroupedBands =
+//                            createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[0]),
+//                                    AngularViewShapeProvider.getValidIndex(i, false), i);
+//                    angularViews = new DisplayableAngularview[autoGroupingAngularViews.length + angularViewsFromUngroupedBands.length];
+//                    System.arraycopy(autoGroupingAngularViews, 0, angularViews, 0, autoGroupingAngularViews.length);
+//                    System.arraycopy(angularViewsFromUngroupedBands, 0, angularViews, autoGroupingAngularViews.length, angularViewsFromUngroupedBands.length);
+//                }
+//            } else {
+//                angularViews = createAngularViewsFromUngroupedBands(availableAngularBands, 1, 0);
+//            }
+//        }
+//        rasterToAngularMap.put(raster, angularViews);
     }
 
     //package local for testing
@@ -1030,6 +1259,13 @@ public class AngularTopComponent extends ToolTopComponent {
 
     @Override
     protected void componentOpened() {
+        if (this.wasOpenedBefore) {
+            // commenting out as this gets handled in the setCurrentView method
+//            setUpAngularViews();
+        } else {
+            this.wasOpenedBefore = true;
+        }
+
         // System.out.println("Listening Angular View Tool: componentOpened");
         angularViewToolIsOpen = true;
 
@@ -1074,7 +1310,10 @@ public class AngularTopComponent extends ToolTopComponent {
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
         private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
-        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting data (possible memory limitations)...";
+        private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
+        private static final String MESSAGE_CURSOR_MODE_OFF = "Cursor Mode de-activated.";
+        private static final String MESSAGE_CURSOR_MODE_NAN = "Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.";
+        private static final String MESSAGE_CURSOR_NOT_ON_IMAGE = "Cursor Mode activated.\n  \nHover cursor over the image.";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1158,6 +1397,10 @@ public class AngularTopComponent extends ToolTopComponent {
             chart.getXYPlot().clearAnnotations();
         }
 
+        private void updateData() {
+            updateData(null, 0);
+        }
+
         private void updateData(com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             List<DisplayableAngularview> angularViews = getSelectedAngularViews();
             chartUpdater.updateData(chart, angularViews, pm, totalWorkPlanned);
@@ -1189,16 +1432,21 @@ public class AngularTopComponent extends ToolTopComponent {
             chartUpdater.removeBandinformation(band);
         }
 
-        private void setPlotMessage(String messageText) {
+        public void setPlotMessage(String messageText) {
             chart.getXYPlot().clearAnnotations();
-            TextTitle tt = new TextTitle(messageText);
-            tt.setTextAlignment(HorizontalAlignment.RIGHT);
-            tt.setFont(chart.getLegend().getItemFont());
-            tt.setBackgroundPaint(new Color(200, 200, 255, 50));
-            tt.setFrame(new BlockBorder(Color.white));
-            tt.setPosition(RectangleEdge.BOTTOM);
-            XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
-            chart.getXYPlot().addAnnotation(message);
+            if (messageText != null && messageText.trim().length() > 0) {
+                TextTitle tt = new TextTitle(messageText);
+                tt.setTextAlignment(HorizontalAlignment.LEFT);
+                tt.setFont(chart.getLegend().getItemFont());
+                tt.setPaint(new Color(0, 0, 150, 255));
+                tt.setBackgroundPaint(new Color(240, 240, 240, 150));
+                tt.setFrame(new BlockBorder(1,1,1,1, new Color(130, 130, 130, 150)));
+                tt.setPosition(RectangleEdge.BOTTOM);
+                tt.setPadding(10,10,10,10);
+                tt.setToolTipText("Operational display message");
+                XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
+                chart.getXYPlot().addAnnotation(message);
+            }
         }
 
         public boolean showsValidCursorAngularViews() {
@@ -1211,6 +1459,18 @@ public class AngularTopComponent extends ToolTopComponent {
 
         public void setCollectingAngularInformationMessage() {
             setPlotMessage(MESSAGE_COLLECTING_ANGULAR_INFORMATION);
+        }
+
+        public void setMessageCursorNotOnImage() {
+            setPlotMessage(MESSAGE_CURSOR_NOT_ON_IMAGE);
+        }
+
+        public void setMessageCursorModeNan() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_NAN);
+        }
+
+        public void setMessageCursorModeOff() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_OFF);
         }
     }
 
@@ -1252,19 +1512,27 @@ public class AngularTopComponent extends ToolTopComponent {
 
         private void updateData(JFreeChart chart, List<DisplayableAngularview> angularViews, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             dataset = new XYSeriesCollection();
+
             if (rasterLevel >= 0) {
-                if (getDisplayedPins().length > 0 && isShowingCursorAngularView()) {
-                    totalWorkPlanned = totalWorkPlanned/2;
+                printDebugMsg("totalWorkPlanned=" + totalWorkPlanned);
+
+                if (getDisplayedPins().length > 0) {
+                    printDebugMsg("fillDatasetWithPinSeries: START");
+                    fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
+                    printDebugMsg("fillDatasetWithPinSeries: FINISH");
                 }
 
-                // System.out.println("totalWorkPlanned=" + totalWorkPlanned);
 
-                fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
-                fillDatasetWithCursorSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
+
+                if (isShowingCursorAngularView()) {
+                    printDebugMsg("fillDatasetWithCursorSeries: START");
+                    fillDatasetWithCursorSeries(angularViews, dataset, chart);
+                    printDebugMsg("fillDatasetWithCursorSeries: FINISH");
+                }
             }
         }
 
@@ -1350,31 +1618,58 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
+        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart) {
             showsValidCursorAngularViews = false;
             if (modelP == null) {
                 return;
             }
 
+            boolean cursorOverScene = false;
+
+            long start = System.currentTimeMillis();
+            printDebugMsg("fillDatasetWithCursorSeries: START");
+
             int workDone2 = 0;
+            int totalWorkPlanned2 = 100;
+
             if (isShowingCursorAngularView() && currentView != null) {
+                printDebugMsg("fillDatasetWithCursorSeries: START 2");
+
                 int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
 
+                PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+
                 for (DisplayableAngularview angularView : angularViews) {
+                    printDebugMsg("fillDatasetWithCursorSeries: spectra");
+
                     XYSeries series = new XYSeries(angularView.getName());
                     final Band[] angularBands = angularView.getSelectedBands();
 
                     int numBands = angularBands.length;
-                    double incrementLengthNumBands = (totalWorkPlannedPerAngularView > 0) ? numBands / totalWorkPlannedPerAngularView : numBands;
+                    double incrementLengthNumBands = (totalWorkPlannedPerAngularView > 0) ? (double) numBands / totalWorkPlannedPerAngularView : (double) numBands;
                     double nextIncrementFinishedBandCount = incrementLengthNumBands;
                     int bandCount = 0;
 
+                    boolean plotDisplaySetEmpty = false;
+
                     if (!currentProduct.isMultiSize()) {
                         for (Band angularBand : angularBands) {
-                            if (pm != null && pm.isCanceled()) {
-                                cancelActions();
+                            printDebugMsg("fillDatasetWithCursorSeries:  angularBand=" + angularBand.getName());
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, true, workDone2);
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showAngularViewsForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
                                 return;
                             }
+
+
                             final float viewAngle = angularBand.getAngularValue();
                             float angle_axis;
                             if (useSensorZenithButton.isSelected()) {
@@ -1394,16 +1689,13 @@ public class AngularTopComponent extends ToolTopComponent {
                                 showsValidCursorAngularViews = true;
                             }
 
+                            cursorOverScene = pixelPosInRasterBounds;
+
                             bandCount++;
                             if (bandCount > nextIncrementFinishedBandCount) {
-                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+                                printDebugMsg("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
 
-                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
-                                    if (totalWorkPlanned2 != 0) {
-                                        if (pm != null) {pm.worked(1);}
-                                    }
-                                    workDoneMaster++;
+                                if (workDone2 < totalWorkPlanned2) {
                                     workDone2++;
                                 }
 
@@ -1412,10 +1704,23 @@ public class AngularTopComponent extends ToolTopComponent {
                         }
                     } else {
                         for (Band angularBand : angularBands) {
-                            if (pm != null && pm.isCanceled()) {
-                                cancelActions();
+
+                            printDebugMsg("fillDatasetWithCursorSeries:  MultiSize spectralBand=" + angularBand.getName());
+
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, true, workDone2);
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showAngularViewsForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
                                 return;
                             }
+
                             final float viewAngle = angularBand.getAngularValue();
                             float angle_axis;
                             if (useSensorZenithButton.isSelected()) {
@@ -1435,6 +1740,7 @@ public class AngularTopComponent extends ToolTopComponent {
                                 if (pixelPosInRasterBounds && isPixelValid(angularBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                     addToSeries(angularBand, rasterPixelX, rasterPixelY, rasterLevel, series, angle_axis);
                                     showsValidCursorAngularViews = true;
+                                    cursorOverScene = pixelPosInRasterBounds;
                                 }
                             } else {
                                 //todo [Multisize_products] use scenerastertransform here
@@ -1448,19 +1754,16 @@ public class AngularTopComponent extends ToolTopComponent {
                                         isPixelValid(angularBand, rasterX, rasterY, level)) {
                                     addToSeries(angularBand, rasterX, rasterY, level, series, angle_axis);
                                     showsValidCursorAngularViews = true;
+                                    cursorOverScene = true;
                                 }
                             }
 
                             bandCount++;
-                            if (bandCount > nextIncrementFinishedBandCount) {
-                                System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                                System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
 
-                                if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
-                                    if (totalWorkPlanned2 != 0) {
-                                        if (pm != null) {pm.worked(1);}
-                                    }
-                                    workDoneMaster++;
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                printDebugMsg("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDone2 < totalWorkPlanned2) {
                                     workDone2++;
                                 }
 
@@ -1468,19 +1771,84 @@ public class AngularTopComponent extends ToolTopComponent {
                             }
                         }
                     }
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return;
-                    }
+
                     updateRenderer(dataset.getSeriesCount(), Color.BLACK, angularView, chart);
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return;
-                    }
+
                     dataset.addSeries(series);
                 }
+
+                if (showsValidCursorAngularViews) {
+                    clearPrepareForUpdateMessage();
+                } else {
+                    if (cursorOverScene) {
+                        setMessageCursorModeNan();
+                    } else {
+                        setMessageCursorNotOnImage();
+                    }
+                }
+
             }
         }
+
+        private boolean timedPlotMessages(long timeElapsed, boolean plotDisplaySetEmpty, Band  band, PerformanceParameters currentPerformanceParameters, boolean isCursorMode, int workdone) {
+
+            int tileSize = currentPerformanceParameters.getDefaultTileSize();
+            int cacheSize = currentPerformanceParameters.getCacheSize();
+            long vmXMX = currentPerformanceParameters.getVmXMX();
+            int width = band.getRasterSize().width;
+            int height = band.getRasterSize().height;
+            double sceneArea = (double) width * (double) height;
+            double tileArea = (double) tileSize * (double) tileSize;
+            String tileSizeNotice = "";
+            if (tileArea > (sceneArea / 4.0)) {
+                tileSizeNotice = "Note: reducing Tile Size may improve performance\n";
+            } else if (tileArea < (sceneArea/20.0)) {
+                tileSizeNotice = "Note: increasing Tile Size may improve performance\n";
+            }
+
+
+            if (timeElapsed > 500 && !plotDisplaySetEmpty) {
+//                                chart.getXYPlot().setDataset(null);
+                chartHandler.setEmptyPlot();
+                plotDisplaySetEmpty = true;
+//                                clearPrepareForUpdateMessage();
+            }
+
+            String workdoneStr = workdone + "% " ;
+            for (int i = 0; i < 100; i +=5) {
+                if (i < workdone) {
+                    workdoneStr += "-";
+                }
+            }
+
+            String msg = "";
+            if (isCursorMode) {
+                msg = "Please maintain current mouse hover position until fully completed.\n" +
+                        "Angular data is being initialized for tile at cursor hover position.";
+            } else {
+                msg = "Angular data is being initialized for pinned tiles.";
+            }
+
+
+            if (timeElapsed > 500) {
+                setPlotChartMessage(
+                        "Processing spectral band: " + band.getName() + "   Progress: "  + workdoneStr + "\n  \n" +
+                                msg + "\n  \n" +
+                                "Note: see 'Performance Preferences' to optimize tile sizes relative to scene size.\n" +
+                                tileSizeNotice +
+                                "Currently:" +  "\n" +
+                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+                                "Cache Size (MB): " + cacheSize + "\n" +
+                                "Tile Size: (pixels): " + tileSize + "\n" +
+                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+                );
+            }
+
+            return plotDisplaySetEmpty;
+
+        }
+
 
         private void addToSeries(Band angularBand, int x, int y, int level, XYSeries series, double wavelength) {
             final double energy = ProductUtils.getGeophysicalSampleAsDouble(angularBand, x, y, level);
@@ -1495,24 +1863,27 @@ public class AngularTopComponent extends ToolTopComponent {
             return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
-        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             Placemark[] pins = getDisplayedPins();
 
             // it seems like most of the work is done on first pin so setting this to false for now
             boolean splitWorkAcrossPins = false;
             if (splitWorkAcrossPins) {
-                totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
+                totalWorkPlanned2 = (int) Math.floor(1.0 * totalWorkPlanned2 / pins.length);
             }
 
-            // System.out.println("Number of pins =" + pins.length);
-            // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
+            printDebugMsg("Number of pins =" + pins.length);
+            printDebugMsg("(For each pin) totalWorkPlanned=" + totalWorkPlanned2);
 
             for (Placemark pin : pins) {
-                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned);
+                printDebugMsg("Processing a pin");
+                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned2);
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
+
+                printDebugMsg("Processing a pin (PART 2)");
                 pinSeries.forEach(dataset::addSeries);
             }
         }
@@ -1522,13 +1893,24 @@ public class AngularTopComponent extends ToolTopComponent {
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
             int workDone2 = 0;
+
             int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
+            printDebugMsg("createXYSeriesFromPin: spectra.size()=" + angularViews.size());
+            printDebugMsg("createXYSeriesFromPin: totalWorkPlannedPerSpectra=" + totalWorkPlannedPerAngleView);
+
+            long start = System.currentTimeMillis();
+            boolean plotDisplaySetEmpty = false;
+            PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+
+            clearPrepareForUpdateMessage();
+
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+
                 XYSeries series = new XYSeries(angularView.getName() + "_" + pin.getLabel());
                 final Band[] angularBands = angularView.getSelectedBands();
                 Map<Band, Double> bandToEnergy;
@@ -1540,11 +1922,34 @@ public class AngularTopComponent extends ToolTopComponent {
                 }
 
                 int numBands = angularBands.length;
-                double incrementLengthNumBands = (totalWorkPlannedPerAngleView > 0) ? numBands / totalWorkPlannedPerAngleView : numBands;
+                printDebugMsg("createXYSeriesFromPin: numBands=" + numBands);
+
+                double incrementLengthNumBands = (totalWorkPlannedPerAngleView > 0) ? (double) numBands / totalWorkPlannedPerAngleView : (double) numBands;
+                printDebugMsg("createXYSeriesFromPin: incrementLengthNumBands=" + incrementLengthNumBands);
+
                 double nextIncrementFinishedBandCount = incrementLengthNumBands;
                 int bandCount = 0;
 
                 for (Band angularBand : angularBands) {
+                    printDebugMsg("createXYSeriesFromPin: spectralBand=" + angularBand);
+
+                    long finish = System.currentTimeMillis();
+                    long timeElapsed = finish - start;
+
+                    plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, false, workDone2);
+
+//                    if (timeElapsed > 500) {
+//                        setPlotChartMessage("Processing band=" + spectralBand.getName());
+//                    }
+
+                    if (pm != null && pm.isCanceled()) {
+                        cancelActions();
+                        return null;
+                    }
+
+
+
+
                     double energy;
                     if (bandToEnergy.containsKey(angularBand)) {
                         energy = bandToEnergy.get(angularBand);
@@ -1558,6 +1963,8 @@ public class AngularTopComponent extends ToolTopComponent {
                         angle_axis = (float) get_sensor_zenith(viewAngle);
                     } else if (useSensorAzimuthButton.isSelected()){
                         angle_axis = (float) get_sensor_azimuth(viewAngle);
+                    } else if (useScatteringAngleButton.isSelected()){
+                        angle_axis = (float) get_scattering_angle(viewAngle);
                     } else {
                         angle_axis  = viewAngle;
                     }
@@ -1569,9 +1976,10 @@ public class AngularTopComponent extends ToolTopComponent {
                     }
 
                     bandCount++;
+
                     if (bandCount > nextIncrementFinishedBandCount) {
-                        System.out.println("workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
-                        System.out.println("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+                        printDebugMsg("createXYSeriesFromPin: workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                        printDebugMsg("createXYSeriesFromPin: workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
 
                         if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
                             if (totalWorkPlanned2 != 0) {
@@ -1584,17 +1992,28 @@ public class AngularTopComponent extends ToolTopComponent {
                         nextIncrementFinishedBandCount += incrementLengthNumBands;
                     }
                 }
+
+                clearPrepareForUpdateMessage();
+
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
-                updateRenderer(seriesIndex++, pinColor, angularView, chart);
+
+                printDebugMsg("createXYSeriesFromPin: test1");
+
+                updateRenderer(seriesIndex, pinColor, angularView, chart);
+                seriesIndex++;
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+                printDebugMsg("createXYSeriesFromPin: test2");
+
                 pinSeries.add(series);
+                printDebugMsg("createXYSeriesFromPin: test3");
             }
+
             return pinSeries;
         }
 
@@ -1887,6 +2306,13 @@ public class AngularTopComponent extends ToolTopComponent {
             recreateChart();
         }
 
+    }
+
+    static void printDebugMsg(String msg) {
+        boolean debugOn = false;
+        if (debugOn) {
+            System.out.println(msg);
+        }
     }
 
 }
