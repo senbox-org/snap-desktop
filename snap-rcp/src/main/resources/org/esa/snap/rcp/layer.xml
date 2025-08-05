@@ -197,6 +197,11 @@
             <attr name="position" intvalue="100"/>
         </folder>
 
+
+        <folder name="Angular View">
+            <attr name="position" intvalue="150"/>
+        </folder>
+
         <folder name="Clipboard"> <!-- defined by NetBeans -->
             <attr name="position" intvalue="200"/>
         </folder>
@@ -290,7 +295,7 @@
             <attr name="position" intvalue="673"/>
         </folder>
 
-        <folder name="Spectral Angular View">
+        <folder name="Spectrum View">
             <attr name="position" intvalue="674"/>
         </folder>
 
