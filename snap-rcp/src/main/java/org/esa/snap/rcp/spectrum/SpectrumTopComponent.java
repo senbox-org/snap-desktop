@@ -1172,9 +1172,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
             List<SpectrumBand> ungroupedBandsList = new ArrayList<>();
             for (SpectrumBand availableSpectralBand : availableSpectralBands) {
                 final String bandName = availableSpectralBand.getName();
-                if (currentProduct.getName().contains("SPEX")) {
-                    availableSpectralBand.setSelected(false);
-                }
+//                if (currentProduct.getName().contains("SPEX")) {
+//                    availableSpectralBand.setSelected(false);
+//                }
                 final int spectrumIndex = autoGrouping.indexOf(bandName);
                 if (spectrumIndex != -1) {
                     autoGroupingSpectra[spectrumIndex].addBand(availableSpectralBand);
