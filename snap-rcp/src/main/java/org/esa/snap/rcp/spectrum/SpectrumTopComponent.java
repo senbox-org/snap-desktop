@@ -624,7 +624,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         filterButton.setName("filterButton");
         filterButton.setEnabled(false);
         filterButton.addActionListener(e -> {
-
             final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
             if (selectedProductSceneView != null) {
                 selectedProductSceneView.addPixelPositionListener(pixelPositionListener);
@@ -945,64 +944,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
         return showSpectraForAllPinsButton.isSelected();
     }
 
+
     private  void recreateChart() {
         // System.out.println("INSIDE: recreateChart()");
-
         recreateChart(false);
-    }
-
-
-
-
-    private void runProgressMonitorForCursor() {
-        printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
-
-        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                "Collecting Spectral Data for cursor") {
-
-            @Override
-            protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-
-                totalWorkPlannedMaster = 100;
-                workDoneMaster = 0;
-                pm.beginTask("Collecting spectral data: this can take several minutes on larger files", totalWorkPlannedMaster);
-
-                try {
-                    printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
-
-                    updateData(0, 0, 0, true, pm, (totalWorkPlannedMaster - 10));
-                    chartHandler.setEmptyPlot();
-
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        pm.done();
-                        return null;
-                    }
-
-                    chartPanel.repaint();
-
-                    updateUIState();
-                    printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
-
-                } finally {
-                    printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
-
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return null;
-                    }
-                    pm.done();
-                }
-
-                printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS END");
-
-                return null;
-            }
-        };
-
-        pmSwingWorker.executeWithBlocking();
-        printDebugMsg("INSIDE: runProgressMonitorForCursor - PROGRESS END2 After Blocking");
-
     }
 
 
@@ -1077,7 +1022,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
             pmSwingWorker.executeWithBlocking();
             printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS END after blocking");
-
 
         } else {
             printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS");
@@ -1303,12 +1247,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
         final ProductSceneView selectedProductSceneView = getSelectedProductSceneView();
         if (selectedProductSceneView != null) {
-
-
             selectedProductSceneView.addPixelPositionListener(pixelPositionListener);
             setCurrentView(selectedProductSceneView);
-//            loadPreferences();
-//            updateChart(true);
         }
 
         loadPreferences();
@@ -1320,7 +1260,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         // System.out.println("Listening: componentClosed");
         spectrumViewToolIsOpen = false;
         loadingPreferences = false;
-
 
         showSpectraForAllPinsButton.setSelected(false);
         showSpectrumForCursorButton.setSelected(false);
