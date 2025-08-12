@@ -18,6 +18,7 @@ package org.esa.snap.rcp.worldmap;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;
@@ -87,7 +88,10 @@ public class WorldMapTopComponent extends ToolTopComponent {
         mainPane.setPreferredSize(new Dimension(320, 160));
 
         worldMapDataModel = new WorldMapPaneDataModel();
+
         final WorldMapPane worldMapPane = new WorldMapPane(worldMapDataModel);
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        worldMapPane.setPreferences(preferences);
         worldMapPane.setNavControlVisible(true);
         mainPane.add(worldMapPane, BorderLayout.CENTER);
 

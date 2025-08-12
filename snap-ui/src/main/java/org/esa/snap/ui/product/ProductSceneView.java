@@ -157,6 +157,7 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
+    public static final boolean PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT = false;
     /**
      * Name of properties which zoom the view when opening a band view window.
      */
@@ -876,7 +877,7 @@ public class ProductSceneView extends BasicView
         layerCanvas.setBackground(
                 configuration.getPropertyColor("image.background.color", DEFAULT_IMAGE_BACKGROUND_COLOR));
 
-        layerCanvasMouseHandler.setInvertZooming(configuration.getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, false));
+        layerCanvasMouseHandler.setInvertZooming(configuration.getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT));
 
         ImageLayer imageLayer = getBaseImageLayer();
         if (imageLayer != null) {
@@ -1598,7 +1599,7 @@ public class ProductSceneView extends BasicView
         private boolean invertZooming;
 
         public LayerCanvasMouseHandler() {
-            invertZooming = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, false);
+            invertZooming = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_INVERT_ZOOMING, ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT);
         }
 
         public void setInvertZooming(boolean invertZooming) {
