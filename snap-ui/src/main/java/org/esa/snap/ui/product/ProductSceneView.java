@@ -157,7 +157,7 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
-    public static final boolean PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT = false;
+    public static final boolean PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT = true;
     /**
      * Name of properties which zoom the view when opening a band view window.
      */
