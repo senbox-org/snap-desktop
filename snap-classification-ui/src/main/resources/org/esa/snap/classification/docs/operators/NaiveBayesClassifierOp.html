@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head><title>Help - Naive Bayes Classification</title>
+
+
+    <link href="../style.css" rel="stylesheet">
+</head>
+<body>
+<table class="header">
+    <tbody>
+    <tr class="header">
+        <td class="header">&nbsp; Naive Bayes Classification<br>
+        </td>
+        <td align="right" class="header"><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html"><img border="0"
+                                                                                                                                                       src="../images/snap_header.jpg"></a></td>
+    </tr>
+    </tbody>
+</table>
+
+<header>
+    <h1>Naive Bayes Classifier</h1>
+    <h4>Operator alias: <em>Naive-Bayes-Classifier</em> &middot; Category: <a href="SupervisedClassification.html"><em>Supervised Classification</em></a></h4>
+</header>
+
+<h2>Naive Bayes Classification</h2>
+<p>
+<p><strong>Naive Bayes</strong> is a probabilistic classifier based on applying Bayes' theorem with the <em>naïve</em> assumption that features are conditionally independent given the class.
+    In the <strong>Gaussian</strong> variant used for numeric features, each feature is modeled by a class-conditional normal distribution.</p>
+<p>Given a feature vector <code>x = (x<sub>1</sub>, …, x<sub>d</sub>)</code> and class <code>c</code>, the proportional form is:</p>
+<center><img src="../images/gnb_formulas_proportional.png" alt="P(c|x) ∝ P(c) ∏ N(x_j; μ_{c,j}, &sigma;_{c,j}^2)" height="75" /></center>
+<p>
+    where <code>P(c)</code> is the class prior, and <code>μ<sub>c,j</sub>, &sigma;<sub>c,j</sub></code> are the per-class mean and standard deviation for feature <code>j</code>.Prediction chooses <code>argmax<sub>c</sub> P(c | x)</code>.
+</p>
+<p>The fully normalized form is:</p>
+<center><img src="../images/gnb_formulas_normalized.png" alt="Normalized Naive Bayes posterior"  height="150"/></center>
+<p>For numerical stability, computation is performed in log-space:</p>
+<center><img src="../images/gnb_formulas_logspace.png" alt="log P(c|x) = log P(c) + Σ log N(…)"  height="75" /></center>
+<p>
+    The decision rule is:
+</p>
+<pre>
+class(x) = argmax<sub>c</sub> P(C = c) * ∏<sub>i</sub> P(X<sub>i</sub> = x<sub>i</sub> | C = c)
+    </pre>
+<p>
+    where <code>P(C = c)</code> is the prior probability of class <code>c</code> (estimated from training data), and the likelihood term <code>P(X<sub>i</sub> | C = c)</code> for numeric features is computed from the Gaussian probability density function.
+</p>
+<p>
+
+<h2>Operator Overview</h2>
+<p>
+    The Naive Bayes Classification operator integratesWEKA <code>weka.classifiers.bayes.NaiveBayes</code> classifier into SNAP. It supports training from a <em>label band/list of vectors</em> or loading a pre-trained model, and classifies per pixel in a tile-based fashion.
+</p>
+<ul>
+    <li><strong>Training</strong>: from a label band / list of vectors in the source product (supervised learning) or load a pre-trained model bundle.</li>
+    <li><strong>Features</strong>: user-selected input bands.</li>
+    <li><strong>Outputs</strong>: class label band and confidence band.</li>
+    <li><strong>Model management</strong>: models are saved/loaded under SNAP's <code>auxdata/classification/NaiveBayes</code> directory with an associated parameter XML.</li>
+</ul>
+<p >
+    <strong>Note:</strong> When classifying optical products, exclude clouds, shadows, water, or other unwanted areas using masks to help maintain the validity of the Gaussian assumptions and improve classification accuracy.
+</p>
+<p>
+    <strong>Note:</strong> For best results, use optical datasets (e.g., Sentinel-2) with surface reflectance or brightness temperature bands.
+</p>
+
+<h2>Inputs / Outputs</h2>
+<table>
+    <tr><th>Source Products (<code>sourceProducts</code>)</th><td>Any raster product (e.g., Sentinel-2 L1C/L2A) with numeric bands.</td></tr>
+    <tr><th>Target Product (<code>targetProduct</code>)</th><td>Copy of the source geocoding and metadata; adds bands:
+        <ul>
+            <li><code>nb_class</code> (for vector trained) or <code>predicted&lt;trainingBand&gt;</code> (for raster trained) (Int16): predicted class index</li>
+            <li><code>nb_confidence</code> (Float32): posterior probability of the predicted class in [0,1]</li>
+        </ul>
+    </td></tr>
+</table>
+
+<h2>Parameters</h2>
+<table style="border-width:0;" >
+    <tr>
+        <td style="border-width:0;" >
+            <table>
+                <thead>
+                <tr><th>Name</th><th>Type</th><th>Description</th><th>Default</th></tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><code>doLoadClassifier</code></td>
+                    <td>Boolean</td>
+                    <td>Choose to save or load classifier. If true, the operator will load a previously trained and saved classifier.</td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>savedClassifierName</code></td>
+                    <td>String</td>
+                    <td>The name of a previously trained and saved classifier. <br>Only used if <code>doLoadClassifier</code> is true.</td>
+                    <td>(empty)</td>
+                </tr>
+                <tr>
+                    <td><code>trainOnRaster</code></td>
+                    <td>Boolean</td>
+                    <td>Train on raster (<code>true</code>) or vector data (<code>false</code>)</td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td><code>numTrainSamples</code></td>
+                    <td>Integer</td>
+                    <td>The number of training samples, interval (1,*]</td>
+                    <td>5000</td>
+                </tr>
+                <tr>
+                    <td><code>trainingVectors</code></td>
+                    <td>String</td>
+                    <td>Name of the vectors that holds training labels.
+                        <br>The name of each vector is used as a class label and its position as a class code (e.g. 1, 2...) .
+                        <br>Only specified if <code>trainOnRaster=true</code>.
+                        <br>At least 2 vectors are required. If not specified, all the vectors of the first source product are used.
+                    </td>
+                    <td>(empty)</td>
+                </tr>
+                <tr>
+                    <td><code>trainingBands</code></td>
+                    <td>String</td>
+                    <td>Name of the band that holds training labels. Pixels with valid (non-NaN) values are used as training samples.
+                        <br>Values are interpreted as integer class codes (e.g. 0, 1, 2...).
+                        <br>Only specified if <code>trainOnRaster=false</code>.
+                        <br>If not specified, the first band of the first source product is used.
+                    </td>
+                    <td>(empty)</td>
+                </tr>
+                <tr>
+                    <td><code>doClassValQuantization</code></td>
+                    <td>Boolean</td>
+                    <td>Quantization for raster training. Ignored for vector training.</td>
+                    <td>true</td>
+                </tr>
+                <tr>
+                    <td><code>minClassValue</code></td>
+                    <td>Double</td>
+                    <td>Quantization min class value for raster training. Ignored for vector training or if <code>doClassValQuantization=false</code></td>
+                    <td>0.0</td>
+                </tr>
+                <tr>
+                    <td><code>classValStepSize</code></td>
+                    <td>Double</td>
+                    <td>Quantization step size for raster training. Ignored for vector training or if <code>doClassValQuantization=false</code></td>
+                    <td>5.0</td>
+                </tr>
+                <tr>
+                    <td><code>classLevels</code></td>
+                    <td>Double</td>
+                    <td>Quantization class levels for raster training. Ignored for vector training or if <code>doClassValQuantization=false</code></td>
+                    <td>101</td>
+                </tr>
+                <tr>
+                    <td><code>featureBands</code></td>
+                    <td>String array</td>
+                    <td>Names of bands used as features.<br>If not specified, all the bands of the first source product are used.</td>
+                    <td>(empty)</td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+        <td style="border-width:0;" valign="top">
+            <img src="../images/NaiveBaies_trainOnVector.jpg" width="650">
+            <br>
+            <img src="../images/NaiveBaies_trainOnRaster.jpg" width="650">
+        </td>
+    </tr>
+</table>
+
+<p class="note">
+    <strong>Note:</strong> All input bands (features and label) must have identical raster size. Pixels containing <code>NaN</code>
+    in any feature band are skipped for training and assigned <code>confidence = 0</code> during classification.
+</p>
+
+<h2>Trained model save / load</h2>
+<p>
+    When a model is trained, the operator writes a bundled model file under <code>~/.snap/auxdata/classification/NaiveBayes/</code>:
+</p>
+<ul>
+    <li><code>&lt;classifierName&gt;.model</code> - Java-serialized bundle containing the classifier, the header-only dataset, and the training instance count.</li>
+    <li><code>&lt;classifierName&gt;.xml</code> - associated XML with selected parameters (classes, feature bands, training band, etc.).</li>
+</ul>
+<p>
+    The saved models can be later used to classify other products.
+</p>
+
+<h2>References</h2>
+<ul>
+    <li>[R-1] Aggarwal, C.C.. <em>Data Classification: Algorithms and Applications</em>, CRC Press, 2014, Ch 3</li>
+    <li>[R-2] Hastie, Tibshirani, Friedman. <em>The Elements of Statistical Learning</em>, 2nd ed., Springer, 2009, Ch. 2 &amp; 6.</li>
+    <li>[R-3] Richards, Jia. <em>Remote Sensing Digital Image Analysis</em>, Springer, 2006, Ch 8</li>
+    <li>[R-4] <a href="https://scikit-learn.org/stable/modules/naive_bayes.html" target="_blank">https://scikit-learn.org/stable/modules/naive_bayes.html</a>></li>
+    <li>[R-5] <a href="https://weka.sourceforge.io/doc.stable/weka/classifiers/bayes/NaiveBayes.html" target="_blank">Weka 3 NaiveBayes Javadoc</a> — University of Waikato.</li>
+    <li>[R-6] <a href="https://waikato.github.io/weka-wiki/" target="_blank">Weka Wiki</a> — tutorials and usage examples.</li>
+    <li>[R-7] <a href="https://www.geeksforgeeks.org/machine-learning/naive-bayes-classifiers/" target="_blank">Scikit-Learn — Naive Bayes documentation.</a></li>
+    <li>[R-8] <a href="https://www.geeksforgeeks.org/machine-learning/gaussian-naive-bayes/" target="_blank"></a>Scikit-Learn — Gaussian Naive Bayes documentation.</a></li>
+    <li>[R-9] <a href="https://en.wikipedia.org/wiki/Naive_Bayes_classifier" target="_blank">Wikipedia — Naive Bayes classifier</a></li>
+</ul>
+</body>
+</html>
