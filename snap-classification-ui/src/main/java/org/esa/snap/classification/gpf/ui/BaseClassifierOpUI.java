@@ -49,6 +49,8 @@ import java.util.Map;
  */
 public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
+    private final boolean addEvaluationFields;
+
     private final JRadioButton loadBtn = new JRadioButton("Load and apply classifier", false);
     private final JRadioButton trainBtn = new JRadioButton("Train and apply classifier", true);
 
@@ -86,6 +88,12 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
     public BaseClassifierOpUI(final String classifierType) {
         this.classifierType = classifierType;
+        this.addEvaluationFields = true;
+    }
+
+    public BaseClassifierOpUI(final String classifierType, final boolean bAddEvalFields) {
+        this.classifierType = classifierType;
+        this.addEvaluationFields = bAddEvalFields;
     }
 
     @Override
@@ -122,19 +130,21 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
             }
         });
 
-        evaluateClassifier.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enablePowerSet();
-            }
-        });
+        if (addEvaluationFields) {
+            evaluateClassifier.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    enablePowerSet();
+                }
+            });
 
-        evaluateFeaturePowerSet.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enablePowerSet();
-            }
-        });
+            evaluateFeaturePowerSet.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    enablePowerSet();
+                }
+            });
+        }
 
         loadBtn.addItemListener(new ItemListener() {
             @Override
@@ -189,13 +199,17 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
                 resolve(BaseClassifier.CLASSIFIER_ROOT_FOLDER).resolve(classifierType);
     }
 
+    protected String getClassifierFileExtension(){
+        return BaseClassifier.CLASSIFIER_FILE_EXTENSION;
+    }
+
     private void populateClassifierNames() {
         final Path classifierDir = getClassifierFolder();
 
         final File folder = new File(classifierDir.toString());
         final File[] listOfFiles = folder.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
-                return pathname.isFile() && pathname.getName().endsWith(BaseClassifier.CLASSIFIER_FILE_EXTENSION);
+                return pathname.isFile() && pathname.getName().endsWith(getClassifierFileExtension());
             }
         });
         if (listOfFiles != null && listOfFiles.length > 0) {
@@ -216,7 +230,7 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
                                                             true, null);
             if (answer.equals(Dialogs.Answer.YES)) {
                 final Path classifierDir = getClassifierFolder();
-                final File classiferFile = classifierDir.resolve(name + BaseClassifier.CLASSIFIER_FILE_EXTENSION).toFile();
+                final File classiferFile = classifierDir.resolve(name + getClassifierFileExtension()).toFile();
                 if (classiferFile.exists()) {
                     if (deleteClassifier(classiferFile, name)) {
                         classifierNameComboBox.removeItem(name);
@@ -253,6 +267,9 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     protected abstract void setEnabled(final boolean enabled);
 
     private void enablePowerSet() {
+        if (!addEvaluationFields)
+                return;
+
         final boolean evalEnabled = evaluateClassifier.isEnabled() && evaluateClassifier.isSelected();
         evaluateFeaturePowerSet.setEnabled(evalEnabled);
         final boolean psEnabled = evaluateFeaturePowerSet.isSelected();
@@ -314,8 +331,10 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
 
         featureBandNames.setEnabled(doTraining);
 
-        evaluateClassifier.setEnabled(doTraining);
-        evaluateFeaturePowerSet.setEnabled(doTraining);
+        if (addEvaluationFields) {
+            evaluateClassifier.setEnabled(doTraining);
+            evaluateFeaturePowerSet.setEnabled(doTraining);
+        }
 
         setEnabled(doTraining);
     }
@@ -338,21 +357,24 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         String numSamples = String.valueOf(paramMap.get("numTrainSamples"));
         numTrainSamples.setText(numSamples);
 
-        Boolean eval = (Boolean) (paramMap.get("evaluateClassifier"));
-        if (eval != null) {
-            evaluateClassifier.setSelected(eval);
-        }
-        Boolean evalPS = (Boolean) (paramMap.get("evaluateFeaturePowerSet"));
-        if (evalPS != null) {
-            evaluateFeaturePowerSet.setSelected(evalPS);
-        }
-        Integer minPS = (Integer) (paramMap.get("minPowerSetSize"));
-        if (minPS != null) {
-            minPowerSetSize.setText(String.valueOf(minPS));
-        }
-        Integer maxPS = (Integer) (paramMap.get("maxPowerSetSize"));
-        if (maxPS != null) {
-            maxPowerSetSize.setText(String.valueOf(maxPS));
+        if (addEvaluationFields) {
+            Boolean eval = (Boolean) (paramMap.get("evaluateClassifier"));
+            if (eval != null) {
+                evaluateClassifier.setSelected(eval);
+            }
+
+            Boolean evalPS = (Boolean) (paramMap.get("evaluateFeaturePowerSet"));
+            if (evalPS != null) {
+                evaluateFeaturePowerSet.setSelected(evalPS);
+            }
+            Integer minPS = (Integer) (paramMap.get("minPowerSetSize"));
+            if (minPS != null) {
+                minPowerSetSize.setText(String.valueOf(minPS));
+            }
+            Integer maxPS = (Integer) (paramMap.get("maxPowerSetSize"));
+            if (maxPS != null) {
+                maxPowerSetSize.setText(String.valueOf(maxPS));
+            }
         }
 
         Boolean doQuant = (Boolean) (paramMap.get("doClassValQuantization"));
@@ -407,15 +429,19 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     public void updateParameters() {
         //System.out.println("BaseClassifierOpUI.updateParameters: called");
         paramMap.put("numTrainSamples", Integer.parseInt(numTrainSamples.getText()));
-        paramMap.put("evaluateClassifier", evaluateClassifier.isSelected());
-        paramMap.put("evaluateFeaturePowerSet", evaluateFeaturePowerSet.isSelected());
 
-        if(evaluateClassifier.isSelected() && evaluateFeaturePowerSet.isSelected()) {
-            if(!minPowerSetSize.getText().isEmpty()) {
-                paramMap.put("minPowerSetSize", Integer.parseInt(minPowerSetSize.getText()));
-            }
-            if(!maxPowerSetSize.getText().isEmpty()) {
-                paramMap.put("maxPowerSetSize", Integer.parseInt(maxPowerSetSize.getText()));
+        if (addEvaluationFields) {
+            paramMap.put("evaluateClassifier", evaluateClassifier.isSelected());
+
+            paramMap.put("evaluateFeaturePowerSet", evaluateFeaturePowerSet.isSelected());
+
+            if (evaluateClassifier.isSelected() && evaluateFeaturePowerSet.isSelected()) {
+                if (!minPowerSetSize.getText().isEmpty()) {
+                    paramMap.put("minPowerSetSize", Integer.parseInt(minPowerSetSize.getText()));
+                }
+                if (!maxPowerSetSize.getText().isEmpty()) {
+                    paramMap.put("maxPowerSetSize", Integer.parseInt(maxPowerSetSize.getText()));
+                }
             }
         }
 
@@ -536,24 +562,26 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         classifierPanel.add(radioPanel, classifiergbc);
         classifiergbc.gridx = 0;
 
-        classifiergbc.gridy++;
-        DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate classifier", evaluateClassifier);
-        classifiergbc.gridy++;
-        DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate Feature Power Set", evaluateFeaturePowerSet);
-        classifiergbc.gridy++;
+        if (addEvaluationFields) {
+            classifiergbc.gridy++;
+            DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate classifier", evaluateClassifier);
+            classifiergbc.gridy++;
+            DialogUtils.addComponent(classifierPanel, classifiergbc, "Evaluate Feature Power Set", evaluateFeaturePowerSet);
+            classifiergbc.gridy++;
 
-        final JPanel powerSetPanel = new JPanel(new FlowLayout());
-        minPowerSetSize.setColumns(4);
-        maxPowerSetSize.setColumns(4);
-        powerSetPanel.add(new JLabel("Min Power Set Size:"));
-        powerSetPanel.add(minPowerSetSize);
-        powerSetPanel.add(new JLabel("Max Power Set Size:"));
-        powerSetPanel.add(maxPowerSetSize);
+            final JPanel powerSetPanel = new JPanel(new FlowLayout());
+            minPowerSetSize.setColumns(4);
+            maxPowerSetSize.setColumns(4);
+            powerSetPanel.add(new JLabel("Min Power Set Size:"));
+            powerSetPanel.add(minPowerSetSize);
+            powerSetPanel.add(new JLabel("Max Power Set Size:"));
+            powerSetPanel.add(maxPowerSetSize);
 
-        classifiergbc.gridy++;
-        classifiergbc.gridx = 1;
-        classifierPanel.add(powerSetPanel, classifiergbc);
-        classifiergbc.gridx = 0;
+            classifiergbc.gridy++;
+            classifiergbc.gridx = 1;
+            classifierPanel.add(powerSetPanel, classifiergbc);
+            classifiergbc.gridx = 0;
+        }
 
         classifiergbc.gridy++;
         DialogUtils.addComponent(classifierPanel, classifiergbc, "Number of training samples", numTrainSamples);
