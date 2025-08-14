@@ -14,6 +14,7 @@
 					<tocitem text="Minimum Distance" target="MinimumDistanceClassifierOp"/>
 					<tocitem text="KNN" target="KNNClassifierOp"/>
 					<tocitem text="KD Tree KNN" target="KDTreeKNNClassifierOp"/>
+                    <tocitem text="Naive Bayes" target="NaiveBayesClassifierOp"/>
                 </tocitem>
             </tocitem>
         </tocitem>

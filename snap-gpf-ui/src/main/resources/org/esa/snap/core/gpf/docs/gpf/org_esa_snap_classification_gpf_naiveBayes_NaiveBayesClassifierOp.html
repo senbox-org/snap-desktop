@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Naive-Bayes-Classifier Operator</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Naive-Bayes-Classifier Operator</td>
+        <td class="header" align="right">
+            <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/general/overview/SnapOverview.html">
+                <img src="images/snap_header.jpg" border="0"/></a>
+        </td>
+    </tr>
+</table>
+<h1>Naive-Bayes-Classifier Operator Description</h1>
+<h2>Overview</h2>
+<table>
+  <tr><td><b>Name:</b></td><td><code>Naive-Bayes-Classifier</code></td></tr>
+  <tr><td><b>Full name:</b></td><td><code>org.esa.snap.classification.gpf.naivebayes.NaiveBayesClassifierOp</code></td></tr>
+  <tr><td><b>Purpose:</b></td><td>Weka Naive Bayes based classifier</td></tr>
+  <tr><td><b>Version:</b></td><td>null</td></tr>
+</table>
+<h2>Description</h2>
+<i>No description available.</i>
+<h2>Sources</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td><code>sourceProducts</code></td>
+  <td></td>
+</tr>
+</table>
+<h2>Parameters</h2>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Data Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Constraints</th>
+</tr>
+<tr>
+  <td><code>treeCount</code></td>
+  <td><code>int</code></td>
+  <td><code>10</code></td>
+  <td>The number of trees</td>
+  <td>interval: (1,*]</td>
+</tr>
+<tr>
+  <td><code>numTrainSamples</code></td>
+  <td><code>int</code></td>
+  <td><code>50000</code></td>
+  <td>The number of training samples</td>
+  <td>interval: (1,*]</td>
+</tr>
+<tr>
+  <td><code>savedClassifierName</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>The saved classifier name</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>doLoadClassifier</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>false</code></td>
+  <td>Choose to save or load classifier</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>doClassValQuantization</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>true</code></td>
+  <td>Quantization for raster training</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>minClassValue</code></td>
+  <td><code>Double</code></td>
+  <td><code>0.0</code></td>
+  <td>Quantization min class value for raster training</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>classValStepSize</code></td>
+  <td><code>Double</code></td>
+  <td><code>5.0</code></td>
+  <td>Quantization step size for raster training</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>classLevels</code></td>
+  <td><code>int</code></td>
+  <td><code>101</code></td>
+  <td>Quantization class levels for raster training</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>trainOnRaster</code></td>
+  <td><code>Boolean</code></td>
+  <td><code>false</code></td>
+  <td>Train on raster or vector data</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>trainingBands</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>Raster bands to train on</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>trainingVectors</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>Vectors to train on</td>
+  <td></td>
+</tr>
+<tr>
+  <td><code>featureBands</code></td>
+  <td><code>String[]</code></td>
+  <td><code></code></td>
+  <td>Names of bands to be used as features</td>
+  <td></td>
+</tr>
+<!--tr>
+  <td><code>labelSource</code></td>
+  <td><code>String</code></td>
+  <td><code></code></td>
+  <td>'VectorNodeName' or specific Attribute name</td>
+  <td></td>
+</tr-->
+</table>
+<hr/>
+</body>
+</html>
