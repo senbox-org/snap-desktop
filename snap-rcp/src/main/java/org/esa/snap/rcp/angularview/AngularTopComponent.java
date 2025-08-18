@@ -1139,7 +1139,9 @@ private void setCurrentView(ProductSceneView view) {
                         angularNameBuilder.append("_").append(autoGroupingNamePart);
                     }
                 }
-                final String angularName = angularNameBuilder.toString();
+
+                final String angularName = StringUtils.cleanUpGroupName(angularNameBuilder.toString());
+
                 int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
                 ++displayIndex;
                 DisplayableAngularview angularView = new DisplayableAngularview(angularName, symbolIndex);
