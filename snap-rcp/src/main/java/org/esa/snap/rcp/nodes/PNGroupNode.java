@@ -20,42 +20,10 @@ class PNGroupNode extends PNNodeBase {
 
     PNGroupNode(PNGroup group) {
         super(group, Lookups.fixed(group.getProduct()));
-//        setDisplayName(group.getDisplayName());
 
         String displayName = group.getDisplayName();
-
-        if (displayName.contains("#")) {
-            final String[] split = StringUtils.split(displayName, new char[]{'#'}, true);
-            final String groupName = split[0];
-            if (groupName.length() > 0) {
-                displayName = groupName;
-            }
-        } else {
-            if (displayName.startsWith("^")) {
-                displayName = displayName.substring(0);
-            }
-
-            if (displayName.endsWith("$")) {
-                displayName = displayName.substring(0, displayName.length() - 1);
-            }
-
-            if (displayName.startsWith("*")) {
-                displayName = displayName.substring(0);
-            }
-
-            if (displayName.endsWith("*")) {
-                displayName = displayName.substring(0, displayName.length() - 1);
-            }
-
-            if (displayName.endsWith("_")) {
-                displayName = displayName.substring(0, displayName.length() - 1);
-            }
-        }
-
-
+        displayName = StringUtils.cleanUpGroupName(displayName);
         setDisplayName(displayName);
-
-
 
         setIconBaseWithExtension("org/esa/snap/rcp/icons/RsGroup16.gif");
         nodeSupport = PNNodeSupport.create(this, group);
