@@ -597,16 +597,31 @@ public class SnapApp {
         String instanceName = getInstanceName();
 
         if (instanceName != null && instanceName.length() > 0) {
-            if (SystemUtils.isMainframeTitleIncludeVersion()) {
-                String version = SystemUtils.getReleaseVersion();
-                if (version != null && version.length() > 0) {
-                    return String.format("%s %s", instanceName, version);
+            String version = SystemUtils.getReleaseVersion();
+            if (SystemUtils.isMainframeTitleIncludeVersion() && version != null && version.length() > 0) {
+                version = version.trim();
+                if (version.endsWith(".0.0")) {
+                    version = version.replace(".0.0", "");
+                } else if (version.endsWith(".0")) {
+                    version = version.replace(".0", "");
                 }
+
+                if (version.contains("RC")) {
+                    version = version + " (Preliminary Release: For Testing Only)";
+                } else {
+                    String preferenceKey = SystemUtils.getApplicationContextId() + "." + "version.rc";
+                    String preferenceValue = Config.instance().preferences().get(preferenceKey, "0");
+                    if (!"0".equals(preferenceValue)) {
+                        version = version + "-  RC" + preferenceValue + " (Preliminary Release: For Testing Only)";
+                    }
+                }
+
+                return String.format("%s %s", instanceName, version);
             }
             return String.format("%s", instanceName);
         }
-            return String.format("[%s]", "Empty");
-        }
+        return String.format("[%s]", "Empty");
+    }
 
 
     /**
