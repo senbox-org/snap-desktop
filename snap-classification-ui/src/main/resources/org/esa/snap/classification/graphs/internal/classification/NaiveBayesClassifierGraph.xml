@@ -1,0 +1,47 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="ProductSet-Reader">
+    <operator>ProductSet-Reader</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <fileList/>
+    </parameters>
+  </node>
+  <node id="Naive-Bayes-Classifier">
+    <operator>Naive-Bayes-Classifier</operator>
+    <sources>
+      <sourceProduct refid="ProductSet-Reader"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <numTrainSamples>5000</numTrainSamples>
+      <savedClassifierName>naive-bayes-Classifier</savedClassifierName>
+      <doClassValQuantization>true</doClassValQuantization>
+      <minClassValue>0.0</minClassValue>
+      <classValStepSize>5.0</classValStepSize>
+      <classLevels>101</classLevels>
+      <!--labelSource>VectorNodeName</labelSource-->
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Naive-Bayes-Classifier"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>target.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Write">
+            <displayPosition x="462.0" y="118.0"/>
+    </node>
+    <node id="Naive-Bayes-Classifier">
+      <displayPosition x="237.0" y="118.0"/>
+    </node>
+    <node id="ProductSet-Reader">
+      <displayPosition x="44.0" y="117.0"/>
+    </node>
+  </applicationData>
+</graph>
