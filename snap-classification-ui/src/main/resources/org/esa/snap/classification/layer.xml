@@ -63,6 +63,16 @@
                 <attr name="ShortDescription" stringvalue="Minimum Distance based classifier"/>
                 <attr name="helpId" stringvalue="MinimumDistanceClassifierOp"/>
             </file>
+            <file name="org-esa-snap-classification-gpf-Naive-Bayes-Classifier-Action.instance">
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="delegate" methodvalue="org.esa.snap.graphbuilder.rcp.actions.GraphAction.create"/>
+                <attr name="displayName" stringvalue="Naive Bayes Classifier"/>
+                <attr name="graphFile" stringvalue="classification/NaiveBayesClassifierGraph.xml"/>
+                <attr name="dialogTitle" stringvalue="Naive Bayes Classifier"/>
+                <attr name="targetProductNameSuffix"  stringvalue="_NBClass"/>
+                <attr name="ShortDescription" stringvalue="Naive Bayes based classifier"/>
+                <attr name="helpId" stringvalue="NaiveBayesClassifierOp"/>
+            </file>
         </folder>
     </folder>
 
@@ -96,6 +106,10 @@
                         <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-MinimumDistance-Classifier-Action.instance"/>
                         <attr name="position" intvalue="700"/>
                     </file>
+                    <file name="org-esa-snap-classification-gpf-Naive-Bayes-Classifier-Action.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Operators/org-esa-snap-classification-gpf-Naive-Bayes-Classifier-Action.instance"/>
+                        <attr name="position" intvalue="800"/>
+                    </file>
                 </folder>
             </folder>
         </folder>
@@ -125,6 +139,10 @@
         <file name="org.esa.snap.classification.gpf.ui.MinimumDistanceClassifierOpUI">
             <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.MinimumDistanceClassifierOpUI"/>
             <attr name="operatorName" stringvalue="Minimum-Distance-Classifier"/>
+        </file>
+        <file name="org.esa.snap.classification.gpf.ui.NaiveBayesClassifierOpUI">
+            <attr name="operatorUIClass" stringvalue="org.esa.snap.classification.gpf.ui.NaiveBayesClassifierOpUI"/>
+            <attr name="operatorName" stringvalue="Naive-Bayes-Classifier"/>
         </file>
     </folder>
 
