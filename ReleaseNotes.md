@@ -17,6 +17,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-4019] Improve GraphBuilder validation handling
     [SNAP-4048] Add cyclic color assignment for placemarks
     [SNAP-4054] Tile size not properly intialized in NetCDF reader for certain products
+    [SNAP-4055] L3 Binning - Issues adding directories as input source
 
 # New in SNAP 12.0.0
     [SNAP-3962] Colorpalettes lose label when persisted
