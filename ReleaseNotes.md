@@ -16,6 +16,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-4008] Land-Sea-Mask Op does not correctly persist the source bands selection
     [SNAP-4019] Improve GraphBuilder validation handling
     [SNAP-4048] Add cyclic color assignment for placemarks
+    [SNAP-4054] Tile size not properly intialized in NetCDF reader for certain products
 
 # New in SNAP 12.0.0
     [SNAP-3962] Colorpalettes lose label when persisted
