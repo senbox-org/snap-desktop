@@ -1170,8 +1170,8 @@
         <MIN>5.0e4</MIN>
         <MAX>3.5e5</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <STANDARD_FILENAME>orange_red.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>orange_red.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>cell abundances of Prochlorococcus</COLORBAR_TITLE>
         <COLORBAR_LABELS>50000, 75000, 110000, 160000, 240000, 350000</COLORBAR_LABELS>
         <DESCRIPTION>cell abundances of Prochlorococcus</DESCRIPTION>
@@ -1191,13 +1191,13 @@
 
     <Scheme name="syncoccus_moana">
         <VERBOSE_NAME>Cell Abundances of Synechococcus</VERBOSE_NAME>
-        <MIN>0.0</MIN>
+        <MIN>2000</MIN>
         <MAX>1.0e4</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <STANDARD_FILENAME>blue_purple.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>blue_purple.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>cell abundances of Synechococcus</COLORBAR_TITLE>
-        <COLORBAR_LABELS>0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000</COLORBAR_LABELS>
+        <COLORBAR_LABELS>2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000</COLORBAR_LABELS>
         <DESCRIPTION>cell abundances of Synechococcus</DESCRIPTION>
     </Scheme>
 
@@ -1218,8 +1218,8 @@
         <MIN>300.0</MIN>
         <MAX>6000.0</MAX>
         <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <STANDARD_FILENAME>green_aqua.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>green_aqua.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>cell abundances of Picoeukaryotes</COLORBAR_TITLE>
         <COLORBAR_LABELS>300,600,1000,1600,2500,4000,6000</COLORBAR_LABELS>
         <DESCRIPTION>cell abundances of Picoeukaryotes</DESCRIPTION>
