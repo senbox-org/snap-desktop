@@ -546,7 +546,7 @@ public class SnapApp {
             } else {
                 title = sceneView.getSceneName();
             }
-            title = appendTitleSuffix(title);
+            title = getEmptyTitle() + " - " + appendTitleSuffix(title);
         } else {
             title = getEmptyTitle();
         }
@@ -566,7 +566,7 @@ public class SnapApp {
             } else {
                 title = node.getDisplayName();
             }
-            title = appendTitleSuffix(title);
+            title = getEmptyTitle() + " - " + appendTitleSuffix(title);
         } else {
             title = getEmptyTitle();
         }
@@ -602,27 +602,55 @@ public class SnapApp {
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
 
+        boolean isReleaseCandidate = false;
+        String NULL_RC_NUM = "0";
+        String rcNum = NULL_RC_NUM;
+
         if (instanceName != null && instanceName.length() > 0) {
             String version = SystemUtils.getReleaseVersion();
             if (SystemUtils.isMainframeTitleIncludeVersion() && version != null && version.length() > 0) {
                 version = version.trim();
-                if (version.endsWith(".0.0")) {
-                    version = version.replace(".0.0", "");
-                } else if (version.endsWith(".0")) {
-                    version = version.replace(".0", "");
-                }
 
                 if (version.contains("RC")) {
-                    version = version + " (Preliminary Release: For Testing Only)";
-                } else {
-                    String preferenceKey = SystemUtils.getApplicationContextId() + "." + "version.rc";
-                    String preferenceValue = Config.instance().preferences().get(preferenceKey, "0");
-                    if (!"0".equals(preferenceValue)) {
-                        version = version + "-  RC" + preferenceValue + " (Preliminary Release: For Testing Only)";
+                    String[] versionArray = version.split("RC");
+                    version = versionArray[0];
+                    version = version.trim();
+                    if (version.endsWith("-") || version.endsWith("_")) {
+                        version = version.substring(0, version.length() -1);
+                    }
+                    if (versionArray.length > 1) {
+                        isReleaseCandidate = true;
+                        rcNum = versionArray[1].trim();
+                        if (rcNum.startsWith("-") || rcNum.startsWith("_")) {
+                            rcNum = rcNum.substring(1);
+                        }
                     }
                 }
 
-                return String.format("%s %s", instanceName, version);
+                String preferenceVersionRCKey = SystemUtils.getApplicationContextId() + "." + "version.rc";
+                String preferenceVersionRCValue = Config.instance().preferences().get(preferenceVersionRCKey, NULL_RC_NUM);
+                if (!NULL_RC_NUM.equals(preferenceVersionRCValue)) {
+                    isReleaseCandidate = true;
+                    rcNum = preferenceVersionRCValue.trim();
+                }
+
+                String versionTitleMsg = version;
+
+                if (versionTitleMsg.endsWith(".0.0")) {
+                    versionTitleMsg = versionTitleMsg.replace(".0.0", "");
+                } else if (versionTitleMsg.endsWith(".0")) {
+                    versionTitleMsg = versionTitleMsg.replace(".0", "");
+                }
+
+                if (isReleaseCandidate) {
+                    String rcString = "";
+                    if (!NULL_RC_NUM.equals(rcNum)) {
+                        rcString = "RC-" + rcNum;
+                    }
+                    versionTitleMsg = versionTitleMsg + " (Preliminary Release Candidate " + rcString + ": For Testing Only)";
+                }
+
+                return String.format("%s %s", instanceName, versionTitleMsg);
             }
             return String.format("%s", instanceName);
         }

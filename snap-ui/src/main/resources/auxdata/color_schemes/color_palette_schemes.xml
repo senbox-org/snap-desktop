@@ -16,6 +16,82 @@
 
 
 
+<!--    START BGC -->
+
+    <Scheme name="chlor_a">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Chlorophyll a</VERBOSE_NAME>
+        <MIN>0.01</MIN>
+        <MAX>20.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="chlor_a_unc">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME>Chlorophyll a Uncertainty</VERBOSE_NAME>
+        <MIN>0.001</MIN>
+        <MAX>100.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0.001,0.01,0.1,1,10,100</COLORBAR_LABELS>
+        <DESCRIPTION>Uncertainty in Chlorophyll a concentration</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="carbon_phyto">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>120.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Phytoplankton Carbon</COLORBAR_TITLE>
+        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
+        <COLORBAR_LABELS>0,200,400,600,800,100,120</COLORBAR_LABELS>
+        <DESCRIPTION>Phytoplankton Carbon</DESCRIPTION>
+    </Scheme>
+
+
+    <Scheme name="carbon_phyto_unc">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>1000.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Phytoplankton Carbon standard uncertainty</COLORBAR_TITLE>
+        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
+        <COLORBAR_LABELS>0,200,400,600,800,1000</COLORBAR_LABELS>
+        <DESCRIPTION>Phytoplankton Carbon standard uncertainty</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="poc">
+        <PRIMARY>true</PRIMARY>
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>10</MIN>
+        <MAX>1000</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Particulate Organic Carbon</COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
+        <DESCRIPTION>Particulate Organic Carbon</DESCRIPTION>
+    </Scheme>
+
+
+    <!--    END BGC -->
+
+
+
+
     <!--    Standard OC Suites -->
 
     <Scheme name="angstrom">
@@ -93,64 +169,7 @@
     </Scheme>
 
 
-    <Scheme name="carbon_phyto">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME></VERBOSE_NAME>
-        <MIN>0.0</MIN>
-        <MAX>1000.0</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>Phytoplankton Carbon</COLORBAR_TITLE>
-        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
-        <COLORBAR_LABELS>0,200,400,600,800,1000</COLORBAR_LABELS>
-        <DESCRIPTION>Phytoplankton Carbon</DESCRIPTION>
-    </Scheme>
 
-
-    <Scheme name="carbon_phyto_unc">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME></VERBOSE_NAME>
-        <MIN>0.0</MIN>
-        <MAX>1000.0</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>Phytoplankton Carbon</COLORBAR_TITLE>
-        <!--        <COLORBAR_UNITS>[UNITS]</COLORBAR_UNITS>-->
-        <COLORBAR_LABELS>0,200,400,600,800,1000</COLORBAR_LABELS>
-        <DESCRIPTION>Phytoplankton Carbon</DESCRIPTION>
-    </Scheme>
-
-    <Scheme name="chlor_a">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME>Chlorophyll a</VERBOSE_NAME>
-        <MIN>0.01</MIN>
-        <MAX>20.0</MAX>
-        <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
-        <COLORBAR_LABELS>0.01,0.03,0.1,0.3,1,3,10,20</COLORBAR_LABELS>
-        <DESCRIPTION>Chlorophyll a concentration</DESCRIPTION>
-    </Scheme>
-
-
-
-
-
-    <Scheme name="chlor_a_unc">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME>Chlorophyll a Uncertainty</VERBOSE_NAME>
-        <MIN>0.001</MIN>
-        <MAX>100.0</MAX>
-        <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>Chlorophyll &lt;i&gt;a&lt;/i&gt; Concentration</COLORBAR_TITLE>
-        <COLORBAR_LABELS>0.001,0.01,0.1,1,10,100</COLORBAR_LABELS>
-        <DESCRIPTION>Uncertainty in Chlorophyll a concentration</DESCRIPTION>
-    </Scheme>
 
 
 
@@ -280,18 +299,6 @@
         <DESCRIPTION>Particulate Organic Carbon, D. Stramski, 2022 (hybrid version)</DESCRIPTION>
     </Scheme>
 
-    <Scheme name="poc">
-        <PRIMARY>true</PRIMARY>
-        <VERBOSE_NAME></VERBOSE_NAME>
-        <MIN>10</MIN>
-        <MAX>1000</MAX>
-        <LOG_SCALE>true</LOG_SCALE>
-        <STANDARD_FILENAME></STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE>Particulate Organic Carbon</COLORBAR_TITLE>
-        <COLORBAR_LABELS>10,30,100,300,1000</COLORBAR_LABELS>
-        <DESCRIPTION>Particulate Organic Carbon</DESCRIPTION>
-    </Scheme>
 
 
 
@@ -901,28 +908,7 @@
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Epsilon of aerosol correction</DESCRIPTION>
     </Scheme>
-    <Scheme name="EVI">
-        <VERBOSE_NAME/>
-        <MIN>-0.05</MIN>
-        <MAX>0.9152</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE></COLORBAR_TITLE>
-        <COLORBAR_LABELS></COLORBAR_LABELS>
-        <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
-    </Scheme>
-    <Scheme name="evi">
-        <VERBOSE_NAME/>
-        <MIN>-0.35</MIN>
-        <MAX>0.92</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE></COLORBAR_TITLE>
-        <COLORBAR_LABELS></COLORBAR_LABELS>
-        <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
-    </Scheme>
+
     <Scheme name="flag">
         <VERBOSE_NAME/>
         <MIN>0.0</MIN>
@@ -957,19 +943,6 @@
         <DESCRIPTION>Fluorescence Quantum Yield</DESCRIPTION>
     </Scheme>
 
-
-
-    <Scheme name="ndvi">
-        <VERBOSE_NAME/>
-        <MIN>-0.05</MIN>
-        <MAX>0.915200</MAX>
-        <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME>oceancolor_ndvi.cpd</UNIVERSAL_FILENAME>
-        <COLORBAR_TITLE></COLORBAR_TITLE>
-        <COLORBAR_LABELS></COLORBAR_LABELS>
-        <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
-    </Scheme>
 
 
 
@@ -1190,6 +1163,425 @@
 
 
 
+<!--    START MOANA-->
+
+    <Scheme name="prococcus_moana">
+        <VERBOSE_NAME>Cell Abundances of Prochlorococcus</VERBOSE_NAME>
+        <MIN>0</MIN>
+        <MAX>5.0e5</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>orange_red.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>orange_red.cpd</UNIVERSAL_FILENAME>
+<!--        <COLORBAR_TITLE>cell abundances of Prochlorococcus</COLORBAR_TITLE>-->
+        <COLORBAR_TITLE>Prochlorococcus cell abundances</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,1e5,2e5,3e5,4e5,5e5</COLORBAR_LABELS>
+<!--        <COLORBAR_LABELS>5, 8,13, 20,30, 50</COLORBAR_LABELS>-->
+<!--        <COLORBAR_LABEL_SCALING>1e-4</COLORBAR_LABEL_SCALING>-->
+<!--        <COLORBAR_UNITS>x 10^4 cells ml^-1</COLORBAR_UNITS>-->
+        <DESCRIPTION>cell abundances of Prochlorococcus</DESCRIPTION>
+    </Scheme>
+
+
+
+    <Scheme name="syncoccus_moana">
+        <VERBOSE_NAME>Cell Abundances of Synechococcus</VERBOSE_NAME>
+        <MIN>1000</MIN>
+        <MAX>1.5e4</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>blue_purple.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>blue_purple.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Synechococcus cell abundances</COLORBAR_TITLE>
+        <COLORBAR_LABELS>1e3,  1.8e3, 3e3, 4.5e3,7e3, 1e4, 1.5e4</COLORBAR_LABELS>
+<!--        <COLORBAR_LABELS>0, 3, 6, 9, 12, 15</COLORBAR_LABELS>-->
+<!--        <COLORBAR_LABEL_SCALING>1e-3</COLORBAR_LABEL_SCALING>-->
+<!--        <COLORBAR_UNITS>x 10^3 cells ml^-1</COLORBAR_UNITS>-->
+        <DESCRIPTION>cell abundances of Synechococcus</DESCRIPTION>
+    </Scheme>
+
+
+    <Scheme name="picoeuk_moana">
+        <VERBOSE_NAME>Cell Abundances of Picoeukaryotes</VERBOSE_NAME>
+        <MIN>300.0</MIN>
+        <MAX>30000.0</MAX>
+        <LOG_SCALE>true</LOG_SCALE>
+        <STANDARD_FILENAME>green_aqua.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>green_aqua.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Picoeukaryotes cell abundances</COLORBAR_TITLE>
+        <COLORBAR_LABELS>300, 1e3, 3e3, 1e4,3e4</COLORBAR_LABELS>
+<!--        <COLORBAR_LABELS>0.3, 1, 3, 10,30</COLORBAR_LABELS>-->
+<!--        <COLORBAR_LABEL_SCALING>1e-3</COLORBAR_LABEL_SCALING>-->
+<!--        <COLORBAR_UNITS>x 10^3 cells ml^-1</COLORBAR_UNITS>-->
+        <DESCRIPTION>cell abundances of Picoeukaryotes</DESCRIPTION>
+    </Scheme>
+
+
+
+    <!--    END MOANA-->
+
+
+
+
+    <!--START LANDVI-->
+
+    <Scheme name="ndvi">
+        <VERBOSE_NAME/>
+        <MIN>-0.05</MIN>
+        <MAX>0.915200</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>oceancolor_ndvi.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Vegetation Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="evi">
+        <VERBOSE_NAME/>
+        <MIN>-0.05</MIN>
+        <MAX>0.9152</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>oceancolor_ndvi.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Enhanced Vegetation Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ndii">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Infrared Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ndwi">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Water Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ndsi">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Normalized Difference Snow Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cci">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll-Carotenoid Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="pri">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Photochemical Reflectance Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cire">
+        <VERBOSE_NAME/>
+        <MIN>0.0</MIN>
+        <MAX>5.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_ndvi.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>oceancolor_ndvi.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Chlorophyll Index Red Edge</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="car">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Carotenoid Content Index</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="mari">
+        <VERBOSE_NAME/>
+        <MIN>-1.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>anomalies1_universal.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>anomalies1_universal.cpd</UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE></COLORBAR_TITLE>
+        <COLORBAR_LABELS></COLORBAR_LABELS>
+        <DESCRIPTION>Anthocyanin Reflectance Index</DESCRIPTION>
+    </Scheme>
+
+<!--    END LANDVI-->
+
+
+
+    <!--    START CLD-->
+
+    <Scheme name="cer_16">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Particle Effective Radius (1.6 um)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>30.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Effective Radius using 1.6 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,5,10,15,20,25,30</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Particle Effective Radius two-channel retrieval using the 1.6 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cer_21">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Particle Effective Radius (2.1 um)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>30.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Effective Radius using 2.1 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,5,10,15,20,25,30</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Particle Effective Radius two-channel retrieval using the 2.1 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cer_22">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Particle Effective Radius (2.2 um)</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>30.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Effective Radius using 2.2 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,5,10,15,20,25,30</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Particle Effective Radius two-channel retrieval using the 2.2 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cot_16">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Optical Thickness (1.6 um)</VERBOSE_NAME>
+        <MIN>1.0</MIN>
+        <MAX>150.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Optical Thickness using 1.6 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>1,25,50,75,100,125,150</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Optical Thickness two-channel retrieval using the 1.6 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cot_21">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Optical Thickness (2.1 um)</VERBOSE_NAME>
+        <MIN>1.0</MIN>
+        <MAX>150.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Optical Thickness using 2.1 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>1,25,50,75,100,125,150</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Optical Thickness two-channel retrieval using the 2.1 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cot_22">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Optical Thickness (2.2 um)</VERBOSE_NAME>
+        <MIN>1.0</MIN>
+        <MAX>150.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Optical Thickness using 2.2 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>1,25,50,75,100,125,150</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Optical Thickness two-channel retrieval using the 2.2 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cwp_16">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Column Water Path (1.6 um)</VERBOSE_NAME>
+        <MIN>10.0</MIN>
+        <MAX>250.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Water Path using 1.6 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,50,100,150,200,250</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Column Water Path two-channel retrieval using the 1.6 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cwp_21">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Column Water Path (2.1 um)</VERBOSE_NAME>
+        <MIN>10.0</MIN>
+        <MAX>250.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Water Path using 2.1 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,50,100,150,200,250</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Column Water Path two-channel retrieval using the 2.1 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cwp_22">
+        <!--        <PRIMARY>true</PRIMARY>-->
+        <VERBOSE_NAME>Cloud Column Water Path (2.2 um)</VERBOSE_NAME>
+        <MIN>10.0</MIN>
+        <MAX>250.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Water Path using 2.2 µm band (</COLORBAR_TITLE>
+        <COLORBAR_LABELS>10,50,100,150,200,250</COLORBAR_LABELS>
+        <DESCRIPTION>Cloud Column Water Path two-channel retrieval using the 2.2 um band and either the 0.65 um, 0.86 um, or 1.2 um band (specified in cld_non_abs_band)</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ctp">
+        <VERBOSE_NAME>Air pressure at the cloud top</VERBOSE_NAME>
+        <MIN>100.0</MIN>
+        <MAX>1050.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Top Pressure</COLORBAR_TITLE>
+        <COLORBAR_LABELS>100,250,500,750,1050</COLORBAR_LABELS>
+        <DESCRIPTION>Air pressure at the cloud top</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ctt">
+        <VERBOSE_NAME>Air temperature at the cloud top</VERBOSE_NAME>
+        <MIN>200.0</MIN>
+        <MAX>350.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Top Temperature</COLORBAR_TITLE>
+        <COLORBAR_LABELS>200,250,300,350</COLORBAR_LABELS>
+        <DESCRIPTION>Air temperature at the cloud top</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cth">
+        <VERBOSE_NAME>Height at the cloud top</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>10.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Top Height</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,2,4,6,8,10</COLORBAR_LABELS>
+        <DESCRIPTION>Height at the cloud top</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cth_cot">
+        <VERBOSE_NAME>Best cloud optical thickness made by cloud top height algorithm</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>50.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Optical Thickness using O2 A-band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,10,20,30,40,50</COLORBAR_LABELS>
+        <DESCRIPTION>Best cloud optical thickness made by cloud top height algorithm</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cld_phase_16">
+        <VERBOSE_NAME>Index of the cloud phase derived for the 1600 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>4.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Phase using 1.6 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,1,2,3,4</COLORBAR_LABELS>
+        <DESCRIPTION>Index of the cloud phase derived for the 1600 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cld_phase_21">
+        <VERBOSE_NAME>Index of the cloud phase derived for the 2100 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>4.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Phase using 2.1 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,1,2,3,4</COLORBAR_LABELS>
+        <DESCRIPTION>Index of the cloud phase derived for the 2100 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="cld_phase_22">
+        <VERBOSE_NAME>Index of the cloud phase derived for the 2200 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>4.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Cloud Phase using 2.2 µm band</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,1,2,3,4</COLORBAR_LABELS>
+        <DESCRIPTION>Index of the cloud phase derived for the 2200 nm products: 0 - no cloud mask, 1 - clear, 2 - water cloud, 3 - ice cloud, 4 - unknown, assume water cloud</DESCRIPTION>
+    </Scheme>
+
+    <Scheme name="ice_cloud">
+        <VERBOSE_NAME>Ice cloud fraction for this pixel: 0 - none, 1 - cloud</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Ice Cloud Fraction</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,0.25,0.5,0.75,1.0</COLORBAR_LABELS>
+        <DESCRIPTION>Ice cloud fraction for this pixel: 0 - none, 1 - cloud</DESCRIPTION>
+    </Scheme>
+
+
+    <Scheme name="water_cloud">
+        <VERBOSE_NAME>Water cloud fraction for this pixel: 0 - none, 1 - cloud</VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME></STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <COLORBAR_TITLE>Water Cloud Fraction</COLORBAR_TITLE>
+        <COLORBAR_LABELS>0,0.25,0.5,0.75,1.0</COLORBAR_LABELS>
+        <DESCRIPTION>Water cloud fraction for this pixel: 0 - none, 1 - cloud</DESCRIPTION>
+    </Scheme>
+
+
+    <!--    END CLD-->
+
+
+
+
+
     <Scheme name="bathymetry">
         <VERBOSE_NAME/>
         <MIN>10.0</MIN>
@@ -1297,6 +1689,10 @@
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Cyanobacteria Index</DESCRIPTION>
     </Scheme>
+
+
+
+
     <!--    <Scheme name="256PtLinear">-->
     <!--        <VERBOSE_NAME/>-->
     <!--        <MIN>0</MIN>-->
