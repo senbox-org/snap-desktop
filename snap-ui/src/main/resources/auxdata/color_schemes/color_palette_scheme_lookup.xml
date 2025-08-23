@@ -5,6 +5,34 @@
 
 
 
+<!--  START BGC-->
+
+  <KEY REGEX="^carbon_phyto$">
+    <SCHEME_ID>carbon_phyto</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^carbon_phyto_unc$">
+    <SCHEME_ID>carbon_phyto_unc</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^chlor_a_unc($|_.+)">
+    <SCHEME_ID>chlor_a_unc</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^chlor_a($|_.+)">
+    <SCHEME_ID>chlor_a</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^poc($|_.+)">
+    <SCHEME_ID>poc</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+<!--  END BGC-->
 
 
 
@@ -53,32 +81,6 @@
 
 
 
-  <KEY REGEX="^carbon_phyto$">
-    <SCHEME_ID>carbon_phyto</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <KEY REGEX="^carbon_phyto_unc$">
-    <SCHEME_ID>carbon_phyto_unc</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-
-
-  <KEY REGEX="^chlor_a_unc($|_.+)">
-    <SCHEME_ID>chlor_a_unc</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
-
-  <!--  <KEY REGEX="^chlor_a_ow.+">-->
-  <!--    <SCHEME_ID>NONE</SCHEME_ID>-->
-  <!--    <DESCRIPTION/>-->
-  <!--  </KEY>-->
-
-  <KEY REGEX="^chlor_a($|_.+)">
-    <SCHEME_ID>chlor_a</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
 
 
   <KEY REGEX="^ipar($|_.+)">
@@ -144,10 +146,7 @@
   </KEY>
 
 
-  <KEY REGEX="^poc($|_.+)">
-    <SCHEME_ID>poc</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
+
 
 <!--  <KEY REGEX="^poc_.+">-->
 <!--    <SCHEME_ID>poc_</SCHEME_ID>-->
@@ -292,6 +291,90 @@
 
 
 
+<!--  START MOANA-->
+
+  <KEY REGEX="^prococcus_moana($|_.+)">
+    <SCHEME_ID>prococcus_moana</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^syncoccus_moana($|_.+)">
+    <SCHEME_ID>syncoccus_moana</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^picoeuk_moana($|_.+)">
+    <SCHEME_ID>picoeuk_moana</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+<!--  END MOANA-->
+
+
+
+<!--  START LANDVI-->
+
+
+  <KEY REGEX="^ndvi($|_.+)">
+    <SCHEME_ID>ndvi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^evi($|_.+)">
+    <SCHEME_ID>evi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ndii($|_.+)">
+    <SCHEME_ID>ndii</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ndwi($|_.+)">
+    <SCHEME_ID>ndwi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ndsi($|_.+)">
+    <SCHEME_ID>ndsi</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cci($|_.+)">
+    <SCHEME_ID>cci</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^pri($|_.+)">
+    <SCHEME_ID>pri</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cire($|_.+)">
+    <SCHEME_ID>cire</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^car($|_.+)">
+    <SCHEME_ID>ndii</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^car($|_.+)">
+    <SCHEME_ID>ndii</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^mari($|_.+)">
+    <SCHEME_ID>mari</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+
+  <!--  END LANDVI-->
+
+
+
   <!--  START   Standard IOP Suites -->
 
 
@@ -366,11 +449,6 @@
   <!--  END   Standard IOP Suites -->
 
 
-
-  <KEY REGEX="^ndvi($|_.+)">
-    <SCHEME_ID>ndvi</SCHEME_ID>
-    <DESCRIPTION/>
-  </KEY>
 
 
 
@@ -464,6 +542,101 @@
 
 
   <!--  END   PACE HARP  -->
+
+
+<!--  START CLD-->
+
+  <KEY REGEX="^cer_16$">
+    <SCHEME_ID>cer_16</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cer_21$">
+    <SCHEME_ID>cer_21</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cer_22$">
+    <SCHEME_ID>cer_22</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cot_16$">
+    <SCHEME_ID>cot_16</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cot_21$">
+    <SCHEME_ID>cot_21</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cot_22$">
+    <SCHEME_ID>cot_22</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cwp_16$">
+    <SCHEME_ID>cwp_16</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cwp_21$">
+    <SCHEME_ID>cwp_21</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cwp_22$">
+    <SCHEME_ID>cwp_22</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ctp$">
+    <SCHEME_ID>ctp</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ctt$">
+    <SCHEME_ID>ctt</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cth$">
+    <SCHEME_ID>ctt</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cth_cot$">
+    <SCHEME_ID>ctt_cot</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cld_phase_16$">
+    <SCHEME_ID>cld_phase_16</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cld_phase_21$">
+    <SCHEME_ID>cld_phase_21</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^cld_phase_22$">
+    <SCHEME_ID>cld_phase_22</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^ice_cloud$">
+    <SCHEME_ID>ice_cloud</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <KEY REGEX="^water_cloud$">
+    <SCHEME_ID>water_cloud</SCHEME_ID>
+    <DESCRIPTION/>
+  </KEY>
+
+  <!--  END CLD-->
 
 
 
