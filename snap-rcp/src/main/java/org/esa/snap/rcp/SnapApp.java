@@ -647,7 +647,7 @@ public class SnapApp {
                     if (!NULL_RC_NUM.equals(rcNum)) {
                         rcString = "RC-" + rcNum;
                     }
-                    versionTitleMsg = versionTitleMsg + " (Preliminary Release Candidate " + rcString + ": For Testing Only)";
+                    versionTitleMsg = versionTitleMsg + " (Release Candidate " + rcString + ": For Testing Only)";
                 }
 
                 return String.format("%s %s", instanceName, versionTitleMsg);
