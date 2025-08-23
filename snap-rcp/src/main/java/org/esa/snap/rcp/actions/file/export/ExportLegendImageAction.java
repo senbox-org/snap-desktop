@@ -102,6 +102,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
     private static final String PROPERTY_UNITS_KEY2 = ColorBarLayerType.PROPERTY_UNITS_KEY + ".export";
     private static final String PROPERTY_UNITS_NULL_KEY2 = ColorBarLayerType.PROPERTY_UNITS_NULL_KEY + ".export";
+    private static final String PROPERTY_UNITS_NULL_SOURCE_KEY2 = ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_KEY + ".export";
 
 
     private static final String PROPERTY_CONVERT_CARET_KEY2 = ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY + ".export";
@@ -520,6 +521,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
         param = new Parameter(PROPERTY_UNITS_NULL_KEY2, imageLegend.getUnitsNull());
         param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_NULL_LABEL);
+        param.getProperties().setNumCols(24);
+        param.getProperties().setNullValueAllowed(true);
+        paramGroup.addParameter(param);
+
+        param = new Parameter(PROPERTY_UNITS_NULL_SOURCE_KEY2, imageLegend.getUnitsNullSource());
+        param.getProperties().setLabel(ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_LABEL);
         param.getProperties().setNumCols(24);
         param.getProperties().setNullValueAllowed(true);
         paramGroup.addParameter(param);
@@ -985,6 +992,9 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         value = legendParamGroup.getParameter(PROPERTY_UNITS_NULL_KEY2).getValue();
         imageLegend.setUnitsNull((String) value);
 
+        value = legendParamGroup.getParameter(PROPERTY_UNITS_NULL_SOURCE_KEY2).getValue();
+        imageLegend.setUnitsNullSource((String) value);
+
 
         value = legendParamGroup.getParameter(PROPERTY_CONVERT_CARET_KEY2).getValue();
         imageLegend.setConvertCaret((Boolean) value);
@@ -1197,6 +1207,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
         private Parameter titleTextParam;
         private Parameter unitsTextParam;
         private Parameter unitsNullParam;
+        private Parameter unitsNullSourceParam;
         private Parameter convertCaretParam;
         private Parameter unitsParenthesisParam;
 
@@ -1452,6 +1463,12 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
             unitsNullParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP);
             unitsNullParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP);
 
+            gbc.gridy++;
+            gbc.gridwidth = 1;
+            p.add(unitsNullSourceParam.getEditor().getLabelComponent(), gbc);
+            p.add(unitsNullSourceParam.getEditor().getEditorComponent(), gbc);
+            unitsNullSourceParam.getEditor().getLabelComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_TOOLTIP);
+            unitsNullSourceParam.getEditor().getEditorComponent().setToolTipText(ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_TOOLTIP);
 
             gbc.gridy++;
             gbc.gridwidth = 2;
@@ -1994,6 +2011,7 @@ public class ExportLegendImageAction extends AbstractExportImageAction {
 
             unitsTextParam = paramGroup.getParameter(PROPERTY_UNITS_KEY2);
             unitsNullParam = paramGroup.getParameter(PROPERTY_UNITS_NULL_KEY2);
+            unitsNullSourceParam = paramGroup.getParameter(PROPERTY_UNITS_NULL_SOURCE_KEY2);
 
 
             convertCaretParam = paramGroup.getParameter(PROPERTY_CONVERT_CARET_KEY2);

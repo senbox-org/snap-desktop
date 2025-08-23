@@ -1079,6 +1079,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 ColorBarLayerType.PROPERTY_UNITS_NULL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_KEY,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_DEFAULT,
+                ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY,
                 ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT,
                 ColorBarLayerType.PROPERTY_CONVERT_CARET_TYPE);
