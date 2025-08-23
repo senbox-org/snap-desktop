@@ -1174,7 +1174,7 @@
         <UNIVERSAL_FILENAME>orange_red.cpd</UNIVERSAL_FILENAME>
 <!--        <COLORBAR_TITLE>cell abundances of Prochlorococcus</COLORBAR_TITLE>-->
         <COLORBAR_TITLE>Prochlorococcus cell abundances</COLORBAR_TITLE>
-        <COLORBAR_LABELS>5e4, 8e4,1.3e5, 2e5,3e5, 5e5</COLORBAR_LABELS>
+        <COLORBAR_LABELS>0,1e5,2e5,3e5,4e5,5e5</COLORBAR_LABELS>
 <!--        <COLORBAR_LABELS>5, 8,13, 20,30, 50</COLORBAR_LABELS>-->
 <!--        <COLORBAR_LABEL_SCALING>1e-4</COLORBAR_LABEL_SCALING>-->
 <!--        <COLORBAR_UNITS>x 10^4 cells ml^-1</COLORBAR_UNITS>-->
@@ -1191,7 +1191,7 @@
         <STANDARD_FILENAME>blue_purple.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME>blue_purple.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE>Synechococcus cell abundances</COLORBAR_TITLE>
-        <COLORBAR_LABELS>0, 3e3, 6e3, 9e3, 1.2e4, 1.5e4</COLORBAR_LABELS>
+        <COLORBAR_LABELS>1e3,  1.8e3, 3e3, 4.5e3,7e3, 1e4, 1.5e4</COLORBAR_LABELS>
 <!--        <COLORBAR_LABELS>0, 3, 6, 9, 12, 15</COLORBAR_LABELS>-->
 <!--        <COLORBAR_LABEL_SCALING>1e-3</COLORBAR_LABEL_SCALING>-->
 <!--        <COLORBAR_UNITS>x 10^3 cells ml^-1</COLORBAR_UNITS>-->
