@@ -490,7 +490,8 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDescription(PROPERTY_LABEL_VALUES_COUNT_TOOLTIP);
 //        pd.setEnabled(PROPERTY_LABEL_VALUES_COUNT_ENABLED);
 
-        pd.setEnabled(enabled);
+        // todo commenting out, although this enablement works, having it disabled causes issues with it not getting enabled upon load of scheme with color bar labels
+//        pd.setEnabled(enabled);
 
         pd.setValueRange(new ValueRange(PROPERTY_LABEL_VALUES_COUNT_MIN, PROPERTY_LABEL_VALUES_COUNT_MAX));
 
@@ -516,7 +517,9 @@ public class ColorBarLayerEditor extends AbstractLayerConfigurationEditor {
         pd.setDisplayName(PROPERTY_LABEL_VALUES_ACTUAL_LABEL);
         pd.setDescription(PROPERTY_LABEL_VALUES_ACTUAL_TOOLTIP);
 //        pd.setEnabled(PROPERTY_LABEL_VALUES_ACTUAL_ENABLED);
-        pd.setEnabled(enabled);
+
+        // todo commenting out, although this enablement works, having it disabled causes issues with it not getting enabled upon load of scheme with color bar labels
+//        pd.setEnabled(enabled);
 
 
         pd.setDefaultConverter();
