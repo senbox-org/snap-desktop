@@ -124,6 +124,7 @@ public final class ColorBarLayerController extends DefaultConfigController {
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_KEY, ColorBarLayerType.PROPERTY_UNITS_DEFAULT);
 //        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_ALT_KEY, ColorBarLayerType.PROPERTY_UNITS_ALT_DEFAULT);
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_NULL_KEY, ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT);
+        initPropertyDefaults(context, ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_KEY, ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_DEFAULT);
 
 
         initPropertyDefaults(context, ColorBarLayerType.PROPERTY_CONVERT_CARET_KEY, ColorBarLayerType.PROPERTY_CONVERT_CARET_DEFAULT);
@@ -699,6 +700,10 @@ public final class ColorBarLayerController extends DefaultConfigController {
                 description = ColorBarLayerType.PROPERTY_UNITS_NULL_TOOLTIP)
         String unitsNull = ColorBarLayerType.PROPERTY_UNITS_NULL_DEFAULT;
 
+        @Preference(label = ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_LABEL,
+                key = ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_KEY,
+                description = ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_TOOLTIP)
+        String unitsNullSource = ColorBarLayerType.PROPERTY_UNITS_NULL_SOURCE_DEFAULT;
 
         @Preference(label = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_LABEL,
                 key = ColorBarLayerType.PROPERTY_UNITS_PARENTHESIS_KEY,
