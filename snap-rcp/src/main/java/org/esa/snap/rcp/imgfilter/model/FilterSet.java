@@ -81,6 +81,7 @@ public class FilterSet implements Filter.Listener {
     public static XStream createXStream() {
         final XStream xStream = Filter.createXStream();
         xStream.alias("filterSet", FilterSet.class);
+        xStream.allowTypes(new Class[]{Filter.class, FilterSet.class} );
         return xStream;
     }
 
