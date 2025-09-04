@@ -178,6 +178,10 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         }
     }
 
+    public void openProductSceneView() {
+        openProductSceneView(rasterDataNode);
+    }
+
     private void openProductSceneView(RasterDataNode rasterDataNode) {
         SnapApp snapApp = SnapApp.getDefault();
         snapApp.setStatusBarMessage(OPEN_IMAGE_VIEW_MESSAGE);
