@@ -17,10 +17,13 @@
 package org.esa.snap.timeseries.ui.player;
 
 import com.bc.ceres.glayer.support.ImageLayer;
-import com.bc.ceres.glevel.MultiLevelSource;
-import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
+import com.bc.ceres.multilevel.MultiLevelSource;
+//import com.bc.ceres.glevel.support.DefaultMultiLevelSource;
+import com.bc.ceres.multilevel.MultiLevelSource;
+
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
+import com.bc.ceres.multilevel.support.DefaultMultiLevelSource;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
 
 import java.awt.*;

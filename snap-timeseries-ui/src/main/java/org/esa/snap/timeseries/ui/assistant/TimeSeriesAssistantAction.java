@@ -20,6 +20,7 @@ import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.assistant.AssistantPane;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
@@ -34,7 +35,11 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_TimeSeriesAssistantActionName",
         iconBase = "org/esa/snap/timeseries/ui/icons/timeseries-new.gif"
 )
-@ActionReference(path = "Menu/Raster/Time Series", position = 20)
+//@ActionReference(path = "Menu/Raster/Time Series", position = 20)
+@ActionReferences({
+        @ActionReference(path = "Menu/Raster/Time Series", position = 10),
+        @ActionReference(path = "Toolbars/Time Series", position = 10)
+})
 @NbBundle.Messages({
         "CTL_TimeSeriesAssistantActionName=New Time Series",
         "CTL_TimeSeriesAssistantActionDescription=Create a new time series",

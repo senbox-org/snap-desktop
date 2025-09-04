@@ -65,10 +65,10 @@ import static org.esa.snap.timeseries.core.timeseries.datamodel.AbstractTimeSeri
         preferredID = "TimeSeriesGraphTopComponent"
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.graph.TimeSeriesGraphTopComponent")
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster/Time Series", position = 1220),
-        @ActionReference(path = "Toolbars/Time Series", position = 20)
-})
+//@ActionReferences({
+//        @ActionReference(path = "Menu/Raster/Time Series", position = 1220),
+//        @ActionReference(path = "Toolbars/Time Series", position = 20)
+//})
 @NbBundle.Messages({"CTL_TimeSeriesGraphTopComponentName=Time Series Graph"})
 public class TimeSeriesGraphTopComponent extends TopComponent {
 

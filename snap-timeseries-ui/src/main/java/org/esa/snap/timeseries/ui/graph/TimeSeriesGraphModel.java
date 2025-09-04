@@ -16,6 +16,7 @@
 
 package org.esa.snap.timeseries.ui.graph;
 
+import eu.esa.snap.core.datamodel.group.BandGroup;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.StringUtils;
@@ -413,7 +414,7 @@ class TimeSeriesGraphModel implements TimeSeriesGraphUpdater.TimeSeriesDataHandl
     private AxisMapping createDisplayAxisMapping(AbstractTimeSeries timeSeries) {
         final List<String> eoVariables = displayController.getEoVariablesToDisplay();
         if (eoVariables.size() == 0) {
-            final Product.AutoGrouping autoGrouping = this.getCurrentView().getProduct().getAutoGrouping();
+            final BandGroup autoGrouping = this.getCurrentView().getProduct().getAutoGrouping();
             eoVariables.addAll(autoGrouping.stream().map(strings -> strings[0]).collect(Collectors.toList()));
         }
         final List<String> insituVariables = displayController.getInsituVariablesToDisplay();

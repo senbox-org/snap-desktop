@@ -21,8 +21,10 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.glevel.MultiLevelSource;
+
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ColoredBandImageMultiLevelSource;
+import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.rcp.SnapApp;
@@ -70,10 +72,10 @@ import java.util.List;
         preferredID = "TimeSeriesPlayerTopComponent"
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.player.TimeSeriesPlayerTopComponent")
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster/Time Series", position = 1230),
-        @ActionReference(path = "Toolbars/Time Series", position = 30)
-})
+//@ActionReferences({
+//        @ActionReference(path = "Menu/Raster/Time Series", position = 1230),
+//        @ActionReference(path = "Toolbars/Time Series", position = 30)
+//})
 @NbBundle.Messages({
         "CTL_TimeSeriesPlayerTopComponentName=Time Series Player"
 })
@@ -170,7 +172,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
 
         if (!(baseImageLayer instanceof BlendImageLayer)) {
             final Band nextBand = bandList.get(nextIndex);
-            MultiLevelSource nextLevelSource = ColoredBandImageMultiLevelSource.create(nextBand, ProgressMonitor.NULL);
+            ColoredBandImageMultiLevelSource nextLevelSource = ColoredBandImageMultiLevelSource.create(nextBand, ProgressMonitor.NULL);
             final BlendImageLayer blendLayer = new BlendImageLayer(baseImageLayer.getMultiLevelSource(),
                     nextLevelSource);
 
@@ -185,7 +187,7 @@ public class TimeSeriesPlayerTopComponent extends TopComponent {
         }
     }
 
-    private void configureSceneView(ProductSceneView sceneView, MultiLevelSource multiLevelSource) {
+    private void configureSceneView(ProductSceneView sceneView, ColoredBandImageMultiLevelSource multiLevelSource) {
         // This is needed because sceneView must return correct ImageInfo
         try {
             final Field sceneImageField = ProductSceneView.class.getDeclaredField("sceneImage");

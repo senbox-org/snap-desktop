@@ -71,10 +71,10 @@ import java.util.List;
         preferredID = "TimeSeriesMatrixTopComponent"
 )
 @ActionID(category = "Window", id = "org.esa.snap.timeseries.ui.matrix.TimeSeriesMatrixTopComponent")
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster/Time Series", position = 1240, separatorAfter = 1250),
-        @ActionReference(path = "Toolbars/Time Series", position = 40)
-})
+//@ActionReferences({
+//        @ActionReference(path = "Menu/Raster/Time Series", position = 1240, separatorAfter = 1250),
+//        @ActionReference(path = "Toolbars/Time Series", position = 40)
+//})
 @NbBundle.Messages({ "CTL_TimeSeriesMatrixTopComponentName=Time Series Matrix" })
 public class TimeSeriesMatrixTopComponent extends TopComponent {
 
