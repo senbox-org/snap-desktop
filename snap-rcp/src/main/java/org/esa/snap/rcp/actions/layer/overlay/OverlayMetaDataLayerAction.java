@@ -19,8 +19,8 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 21)
 })
 @NbBundle.Messages({
-        "CTL_OverlayMetaDataLayerActionName=Annotation Metadata Overlay",
-        "CTL_OverlayMetaDataLayerActionToolTip=Show/hide Annotation Metadata Overlay for the selected image"
+        "CTL_OverlayMetaDataLayerActionName=Annotation Metadata Layer",
+        "CTL_OverlayMetaDataLayerActionToolTip=Annotation Metadata Layer -- adds layer to the selected image"
 })
 public final class OverlayMetaDataLayerAction extends AbstractOverlayAction {
 
