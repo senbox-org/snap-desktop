@@ -69,7 +69,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_Name=Filter Band",
-        "CTL_FilteredBandAction_ShortDescription=Filter Band Tool -- creates a new band by applying a filter to the current band"
+        "CTL_FilteredBandAction_ShortDescription=Filter Band Tool -- creates a new band by applying a filter to the selected band"
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
 
