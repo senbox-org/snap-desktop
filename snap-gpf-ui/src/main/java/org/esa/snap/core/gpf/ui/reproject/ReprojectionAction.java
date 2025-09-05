@@ -48,8 +48,8 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Toolbars/Raster", position = 60)
 })
 @NbBundle.Messages({
-        "CTL_ReprojectionAction_Name=Reprojection",
-        "CTL_ReprojectionAction_ShortDescription=Creates a reprojection of a file"
+        "CTL_ReprojectionAction_Name=Reproject",
+        "CTL_ReprojectionAction_ShortDescription=Reproject Tool -- creates a mapped reprojection of a file"
 })
 public final class ReprojectionAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
