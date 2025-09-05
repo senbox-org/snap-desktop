@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
         @ActionReference(path = "Toolbars/File Open", position = 10)
 })
 @NbBundle.Messages({
-        "CTL_OpenProductActionName=Open Product",
-        "CTL_OpenProductActionMenuText=Open Product...",
+        "CTL_OpenProductActionName=Open File",
+        "CTL_OpenProductActionMenuText=Open File...",
         "LBL_NoReaderFoundText=No appropriate product reader found.",
 
 })
