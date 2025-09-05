@@ -49,8 +49,8 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Toolbars/Raster", position = 50)
 })
 @NbBundle.Messages({
-        "CTL_MosaicAction_Name=Mosaicking",
-        "CTL_MosaicAction_ShortDescription=Creates a mosaic aggregation of multiple files"
+        "CTL_MosaicAction_Name=Mosaic",
+        "CTL_MosaicAction_ShortDescription=Mosaic Tool -- creates a mosaic aggregation of multiple files"
 })
 public final class MosaicAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 

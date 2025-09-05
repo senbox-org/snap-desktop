@@ -74,7 +74,7 @@ import java.util.stream.Collectors;
 })
 @NbBundle.Messages({
         "CTL_OpenRGBImageViewAction_Name=RGB Image",
-        "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
+        "CTL_OpenRGBImageViewAction_ShortDescription=RGB Image Tool -- creates a 3-channel RGB image view for the selected product"
 })
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
