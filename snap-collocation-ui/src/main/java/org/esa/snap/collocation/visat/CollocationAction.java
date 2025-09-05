@@ -49,7 +49,7 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CollocationAction_Name=Collocation",
-        "CTL_CollocationAction_ShortDescription=Creates a geographic collocation of two files"
+        "CTL_CollocationAction_ShortDescription=Collocation Tool -- creates a geographic collocation of two files"
 })
 public final class CollocationAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
