@@ -25,8 +25,8 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 0)
 })
 @NbBundle.Messages({
-        "CTL_OverlayNoDataLayerActionName=No-Data Overlay",
-        "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
+        "CTL_OverlayNoDataLayerActionName=No-Data Layer",
+        "CTL_OverlayNoDataLayerActionToolTip=No-Data Layer -- adds layer to the selected image"
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
 
