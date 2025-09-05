@@ -29,8 +29,8 @@ import java.beans.PropertyChangeListener;
         @ActionReference(path = "Toolbars/Overlay", position = 20)
 })
 @NbBundle.Messages({
-        "CTL_OverlayColorBarLayerActionName=" + ColorBarLayerType.COLOR_BAR_LAYER_NAME + " Overlay",
-        "CTL_OverlayColorBarLayerActionToolTip=Show/hide color bar overlay for the selected image"
+        "CTL_OverlayColorBarLayerActionName=" + ColorBarLayerType.COLOR_BAR_LAYER_NAME + " Layer",
+        "CTL_OverlayColorBarLayerActionToolTip=Color Bar Legend Layer -- adds layer to the selected image"
 })
 public final class OverlayColorBarLayerAction extends AbstractOverlayAction {
 
