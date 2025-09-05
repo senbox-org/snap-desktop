@@ -39,26 +39,20 @@ class MatrixCellRenderer extends DefaultTableCellRenderer {
         final String labelText;
         Color bgColor;
 
-        // todo could not figure this part out during the SNAP merge
-//        if (raster != null && rasterValue != null) {
-//            if (Double.isNaN(rasterValue)) { // value is invalid
-//                bgColor = invalidColor;
-//                labelText = "NaN";
-//            } else {
-//                final ImageInfo imageInfo = raster.getImageInfo();
-//                bgColor = ImageManager.computeColor(imageInfo, rasterValue);
-////                bgColor = raster.getImageInfo().getColorPaletteDef().computeColor(raster, rasterValue);
-//                labelText = valueFormatter.format(rasterValue);
-//            }
-//        } else { // outside of image or no raster set
-//            bgColor = Color.WHITE;
-//            labelText = "";
-//        }
-
-        // todo could not figure this part out during the SNAP merge this overrides the previous
-
-        bgColor = Color.WHITE;
-        labelText = valueFormatter.format(rasterValue);
+        if (raster != null && rasterValue != null) {
+            if (Double.isNaN(rasterValue)) { // value is invalid
+                bgColor = invalidColor;
+                labelText = "NaN";
+            } else {
+                final ImageInfo imageInfo = raster.getImageInfo();
+                bgColor = ImageManager.computeColor(imageInfo, rasterValue);
+//                bgColor = raster.getImageInfo().getColorPaletteDef().computeColor(raster, rasterValue);
+                labelText = valueFormatter.format(rasterValue);
+            }
+        } else { // outside of image or no raster set
+            bgColor = Color.WHITE;
+            labelText = "";
+        }
 
         label.setBackground(bgColor);
         label.setForeground(findForegroundColor(bgColor));
