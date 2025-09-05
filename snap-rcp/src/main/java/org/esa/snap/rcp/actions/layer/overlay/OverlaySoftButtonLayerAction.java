@@ -32,8 +32,8 @@ import static org.esa.snap.rcp.actions.window.OpenImageViewAction.getProductScen
         @ActionReference(path = "Toolbars/Soft Button", position = 22)
 })
 @NbBundle.Messages({
-        "CTL_OverlaySoftButtonLayerActionName=Soft Button Overlay(s)",
-        "CTL_OverlaySoftButtonLayerActionToolTip=Show/hide multiple layers"
+        "CTL_OverlaySoftButtonLayerActionName=Soft Button",
+        "CTL_OverlaySoftButtonLayerActionToolTip=Soft Button -- show/hide multiple layers at once"
 })
 public final class OverlaySoftButtonLayerAction extends AbstractOverlayAction {
 
