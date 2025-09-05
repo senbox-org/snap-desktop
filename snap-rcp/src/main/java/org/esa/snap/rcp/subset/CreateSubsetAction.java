@@ -58,7 +58,7 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset",
-        "CTL_CreateSubsetAction_ShortDescription=Subset Tool -- creates a subset (spatial, subsample, raster) of the current file"
+        "CTL_CreateSubsetAction_ShortDescription=Subset Tool -- creates a subset (spatial, subsample, band) of the selected file"
 })
 
 
