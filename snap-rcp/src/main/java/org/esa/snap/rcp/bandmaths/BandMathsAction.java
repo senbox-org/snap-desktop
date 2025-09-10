@@ -63,7 +63,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 })
 @Messages({
         "CTL_BandMathsAction_Name=Math Band",
-        "CTL_BandMathsAction_ShortDescription=Creates a new band using an arbitrary mathematical expression"
+        "CTL_BandMathsAction_ShortDescription=Math Band Tool -- creates a new band derived from a mathematical expression"
 })
 public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
