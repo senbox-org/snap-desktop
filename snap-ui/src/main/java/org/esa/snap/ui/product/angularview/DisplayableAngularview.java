@@ -42,9 +42,9 @@ public class DisplayableAngularview implements Angularview {
     public void addBand(AngularBand band) {
         Assert.notNull(band);
         bands.add(band);
-        if(band.isSelected()) {
-            setSelected(true);
-        }
+//        if(band.isSelected()) {
+//            setSelected(true);
+//        }
         updateUnit();
     }
 

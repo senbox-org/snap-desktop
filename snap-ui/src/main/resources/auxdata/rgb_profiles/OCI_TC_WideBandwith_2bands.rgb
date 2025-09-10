@@ -1,0 +1,10 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# Emulates bandwidth (only 2 points per color) of at least 20nm and avoids certain atmospheric absorption bands
+#
+name=OCI_TC_WideBandwidth_2bands
+red=log(((rhos_640 + rhos_670)/2)/0.01)/log(1/0.01)
+green=log(((rhos_540 + rhos_560)/2)/0.01)/log(1/0.01)
+blue=log(((rhos_420 + rhos_460)/2)/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_640) and \!nan(rhos_670) and \!nan(rhos_540) and \!nan(rhos_560) and \!nan(rhos_420) and \!nan(rhos_460)
+

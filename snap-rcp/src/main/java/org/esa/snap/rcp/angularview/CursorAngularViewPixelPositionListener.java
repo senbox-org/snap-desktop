@@ -44,6 +44,14 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
         return topComponent.isVisible() && topComponent.isShowingCursorAngularView();
     }
 
+
+    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
+    static interface WorkerChainSupport {
+
+        void removeWorkerAndStartNext(SwingWorker worker);
+    }
+
+
     private class CursorAngularViewRemover extends SwingWorker<Void, Void> {
 
         private final WorkerChainSupport support;
@@ -63,6 +71,12 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
         @Override
         protected void done() {
             topComponent.updateChart();
+            if (topComponent.isShowingCursorAngularView()) {
+                topComponent.setMessageCursorNotOnImage();
+            } else {
+//                topComponent.setPlotChartMessage("Cursor Mode is de-activated.");
+            }
+
             support.removeWorkerAndStartNext(this);
         }
     }
@@ -117,14 +131,9 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+//            topComponent.setPrepareForUpdateMessage();
         }
     }
 
-    //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
-    static interface WorkerChainSupport {
-
-        void removeWorkerAndStartNext(SwingWorker worker);
-    }
 
 }
