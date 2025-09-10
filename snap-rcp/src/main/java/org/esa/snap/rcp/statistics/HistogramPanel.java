@@ -295,13 +295,13 @@ class HistogramPanel extends ChartPagePanel {
         GridBagConstraints dataSourceOptionsConstraints = GridBagUtils.createConstraints(
                 "anchor=NORTHWEST,fill=HORIZONTAL,insets.top=2");
         GridBagUtils.addToPanel(dataSourceOptionsPanel, new JLabel(" "), dataSourceOptionsConstraints,
-                                "gridwidth=2,gridy=0,gridx=0,weightx=0");
+                "gridwidth=2,gridy=0,gridx=0,weightx=0");
         GridBagUtils.addToPanel(dataSourceOptionsPanel, numBinsLabel, dataSourceOptionsConstraints,
-                                "insets.top=2,insets.left=4,gridwidth=1,gridy=1,gridx=0,weightx=1");
+                "insets.top=2,insets.left=4,gridwidth=1,gridy=1,gridx=0,weightx=1");
         GridBagUtils.addToPanel(dataSourceOptionsPanel, numBinsField, dataSourceOptionsConstraints,
-                                "insets.top=0,insets.left=0,insets.right=2,gridwidth=1,gridy=1,gridx=1");
+                "insets.top=0,insets.left=0,insets.right=2,gridwidth=1,gridy=1,gridx=1");
         GridBagUtils.addToPanel(dataSourceOptionsPanel, histoLogCheck, dataSourceOptionsConstraints,
-                                "insets.right=0,gridwidth=2,gridy=2,gridx=0");
+                "insets.right=0,gridwidth=2,gridy=2,gridx=0");
 
         xAxisRangeControl.getBindingContext().bind(PROPERTY_NAME_LOG_SCALED, new JCheckBox("Log10 scaled"));
         xAxisRangeControl.getBindingContext().addPropertyChangeListener(PROPERTY_NAME_LOG_SCALED, new PropertyChangeListener() {
@@ -317,7 +317,7 @@ class HistogramPanel extends ChartPagePanel {
         GridBagConstraints displayOptionsConstraints = GridBagUtils.createConstraints(
                 "anchor=SOUTH,fill=HORIZONTAL,weightx=1");
         GridBagUtils.addToPanel(displayOptionsPanel, xAxisRangeControl.getPanel(), displayOptionsConstraints,
-                                "gridy=2");
+                "gridy=2");
 
         JPanel optionsPanel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints(
@@ -336,9 +336,9 @@ class HistogramPanel extends ChartPagePanel {
             return null;
         }
         return new HistogramPanelModel.HistogramConfig(getRaster(),
-                                                       histogramPlotConfig.useRoiMask ? histogramPlotConfig.roiMask.getName() : null,
-                                                       histogramPlotConfig.numBins,
-                                                       histogramPlotConfig.histogramLogScaled);
+                histogramPlotConfig.useRoiMask ? histogramPlotConfig.roiMask.getName() : null,
+                histogramPlotConfig.numBins,
+                histogramPlotConfig.histogramLogScaled);
     }
 
     private ChartPanel createChartPanel(JFreeChart chart) {
@@ -351,11 +351,11 @@ class HistogramPanel extends ChartPagePanel {
         ChartPanel chartPanel = new ChartPanel(chart);
 
         MaskSelectionToolSupport maskSelectionToolSupport = new MaskSelectionToolSupport(this,
-                                                                                         chartPanel,
-                                                                                         "histogram_plot_area",
-                                                                                         "Mask generated from selected histogram plot area",
-                                                                                         Color.RED,
-                                                                                         PlotAreaSelectionTool.AreaType.X_RANGE) {
+                chartPanel,
+                "histogram_plot_area",
+                "Mask generated from selected histogram plot area",
+                Color.RED,
+                PlotAreaSelectionTool.AreaType.X_RANGE) {
 
             @Override
             protected String createMaskExpression(PlotAreaSelectionTool.AreaType areaType, Shape shape) {
@@ -367,10 +367,10 @@ class HistogramPanel extends ChartPagePanel {
                 String bandName = BandArithmetic.createExternalName(getRaster().getName());
                 HistogramPanelModel.HistogramConfig currentConfig = createHistogramConfig();
                 return String.format("%s >= %s && %s <= %s",
-                                     bandName,
-                                     model.hasStx(currentConfig) ? model.getStx(currentConfig).getHistogramScaling().scaleInverse(x1) : x1,
-                                     bandName,
-                                     model.hasStx(currentConfig) ? model.getStx(currentConfig).getHistogramScaling().scaleInverse(x2) : x2);
+                        bandName,
+                        model.hasStx(currentConfig) ? model.getStx(currentConfig).getHistogramScaling().scaleInverse(x1) : x1,
+                        bandName,
+                        model.hasStx(currentConfig) ? model.getStx(currentConfig).getHistogramScaling().scaleInverse(x2) : x2);
             }
         };
 
@@ -613,17 +613,17 @@ class HistogramPanel extends ChartPagePanel {
                     setStx(stx);
                 } else {
                     Dialogs.showError("Either the selected ROI is empty or no pixels have been found within the minimum and maximum values specified.\n" +
-                                      "No valid histogram could be computed.\n");
+                            "No valid histogram could be computed.\n");
                     handleStxChange();
                 }
             } catch (ExecutionException e) {
                 if (histogramPlotConfig.useRoiMask) {
                     Dialogs.showError("An internal error occurred.\n" +
-                                      "No valid histogram could be computed.\n" +
-                                      "Possible reason: The selected ROI is empty.");
+                            "No valid histogram could be computed.\n" +
+                            "Possible reason: The selected ROI is empty.");
                 } else {
                     Dialogs.showError("An internal error occurred.\n" +
-                                      "No valid histogram could be computed. Reason:\n" + e.getMessage());
+                            "No valid histogram could be computed. Reason:\n" + e.getMessage());
                 }
                 handleStxChange();
             } catch (InterruptedException e) {
