@@ -40,8 +40,8 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 50)
 })
 @NbBundle.Messages({
-        "CTL_OverlayWorldMapLayerActionName=World Map Overlay",
-        "CTL_OverlayWorldMapLayerActionToolTip=Show/hide world map overlay for the selected image"
+        "CTL_OverlayWorldMapLayerActionName=World Map Layer",
+        "CTL_OverlayWorldMapLayerActionToolTip=World Map Layer -- adds layer to the selected image"
 })
 public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
 

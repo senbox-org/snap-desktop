@@ -104,6 +104,9 @@
             <folder name="Export">
                 <attr name="position" intvalue="500"/>
             </folder>
+            <folder name="Time Series">
+                <attr name="position" intvalue="550"/>
+            </folder>
         </folder>
 
         <folder name="Optical">
