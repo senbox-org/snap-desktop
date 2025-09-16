@@ -90,6 +90,7 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
         Collection<? extends RasterDataNode> selectedRasters = Utilities.actionsGlobalContext().lookupAll(RasterDataNode.class);
         String expression = selectedRasters.stream().map(ProductNode::getName).collect(Collectors.joining(" + "));
         BandMathsDialog bandMathsDialog = new BandMathsDialog(product, products, expression, HELP_ID);
+        bandMathsDialog.setResizable(false);
         bandMathsDialog.show();
     }
 
