@@ -65,7 +65,10 @@ public final class WorldMapLayerController extends DefaultConfigController {
     public static final String PROPERTY_KEY_WORLDMAP_TYPE = "worldmap.type";
 
     protected PropertySet createPropertySet() {
-        return createPropertySet(new WorldMapBean());
+        WorldMapBean bean = new WorldMapBean();
+        String persisted = SnapApp.getDefault().getPreferences().get(PROPERTY_KEY_WORLDMAP_TYPE, bean.worldMapLayerType);
+        bean.worldMapLayerType = persisted;
+        return createPropertySet(bean);
     }
 
     @Override
@@ -130,7 +133,7 @@ public final class WorldMapLayerController extends DefaultConfigController {
     static void updateProperty(JComboBox<WorldMapLayerType> box, Property property) throws ValidationException {
         final WorldMapLayerType selectedItem = (WorldMapLayerType) box.getSelectedItem();
         if (selectedItem != null) {
-            property.setValue(selectedItem.getLabel());
+            property.setValue(selectedItem.getName());
         }
     }
 
