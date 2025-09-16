@@ -198,6 +198,7 @@ public class AddLandCoverAction extends AbstractAction implements ContextAwareAc
 
         final ModalDialog dialog = new ModalDialog(SnapApp.getDefault().getMainFrame(), DIALOG_TITLE, ModalDialog.ID_OK_CANCEL, HELP_ID);
         dialog.setContent(parameterPanel);
+        dialog.setResizable(false);
         if (dialog.show() == ModalDialog.ID_OK) {
             return dialogData;
         }

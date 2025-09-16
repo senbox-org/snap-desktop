@@ -308,6 +308,7 @@ public class RGBImageProfilePane extends JPanel {
     public boolean showDialog(Window parent, String title, String helpId) {
         ModalDialog modalDialog = new ModalDialog(parent, title, ModalDialog.ID_OK_CANCEL_HELP, helpId);
         modalDialog.setContent(this);
+        modalDialog.setResizable(false);
         final int status = modalDialog.show();
         modalDialog.getJDialog().dispose();
         return status == ModalDialog.ID_OK;

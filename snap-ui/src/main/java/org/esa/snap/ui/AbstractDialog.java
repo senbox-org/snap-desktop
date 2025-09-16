@@ -227,6 +227,10 @@ public abstract class AbstractDialog {
         return buttonMap.get(buttonID);
     }
 
+    public void setResizable(boolean resizable) {
+        dialog.setResizable(resizable);
+    }
+
     /**
      * Shows the dialog. Overrides shall call {@code super.show()} at the end.
      *
