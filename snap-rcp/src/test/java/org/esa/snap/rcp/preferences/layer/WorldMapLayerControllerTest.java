@@ -28,12 +28,13 @@ public class WorldMapLayerControllerTest {
     public void testUpdateProperty() throws ValidationException {
         final JComboBox<WorldMapLayerType> comboBox = new JComboBox<>();
         final WorldMapLayerType mapLayerType = mock(WorldMapLayerType.class);
+        when(mapLayerType.getName()).thenReturn("GlobCoverLayerType");
         when(mapLayerType.getLabel()).thenReturn("woduwolle");
         comboBox.addItem(mapLayerType);
 
         final Property property = mock(Property.class);
 
         WorldMapLayerController.updateProperty(comboBox, property);
-        verify(property, times(1)).setValue("woduwolle");
+        verify(property, times(1)).setValue("GlobCoverLayerType");
     }
 }
