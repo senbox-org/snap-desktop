@@ -5,6 +5,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-1517] Empty results when using only Write operator with gpt
     [SNAP-3641] Bug when writing flags to DIMAP, NetCDF and other formats
     [SNAP-3697] Signed 8-Bit GeoTiff not read correctly
+    [SNAP-3762] World Map Layer
     [SNAP-3765] Create Filtered Band Error
     [SNAP-3841] Clumped UI elements of contextual dialogs on Product Explorer tab
     [SNAP-3888] Specific TIF files read differently (wrong?) than in other tools
