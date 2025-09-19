@@ -19,6 +19,7 @@ public class DisplayableAngularview implements Angularview {
     private String name;
     private Stroke lineStyle;
     private int symbolIndex;
+    private Color color = null;
     private int symbolSize;
     private boolean isSelected;
     private String unit;
@@ -146,6 +147,15 @@ public class DisplayableAngularview implements Angularview {
     public void setSymbolIndex(int symbolIndex) {
         this.symbolIndex = symbolIndex;
     }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
 
     public void updateUnit() {
         if (bands.size() > 0) {
