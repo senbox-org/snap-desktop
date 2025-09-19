@@ -131,6 +131,8 @@ public class AngularTopComponent extends ToolTopComponent {
     private JRadioButton useScatteringAngleButton;
     private JRadioButton useViewAngleButton;
 
+    private JCheckBox usePinColorCheckBox;
+
     private JCheckBox rangeXCheckBox;
     private JTextField rangeXLowerTextField;
     private JLabel rangeXLowerLabel;
@@ -150,7 +152,7 @@ public class AngularTopComponent extends ToolTopComponent {
     private boolean useRangeY;
     private double rangeYLower;
     private double rangeYUpper;
-    
+
 
     private boolean tipShown;
     private boolean angularViewToolIsOpen;
@@ -446,6 +448,9 @@ private void setCurrentView(ProductSceneView view) {
 
 
 
+        usePinColorCheckBox = new JCheckBox("Use Pin Color");
+        usePinColorCheckBox.setSelected(true);
+        usePinColorCheckBox.setToolTipText("<html>For pin mode: set the chart lines to match the colors of each pin<br>This has no effect on cursor mode<html>");
         rangeXCheckBox = new JCheckBox(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_LABEL);
         rangeXCheckBox.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_TOOLTIP);
 
@@ -536,7 +541,12 @@ private void setCurrentView(ProductSceneView view) {
             }
         });
 
-        
+
+        usePinColorCheckBox.addActionListener(e -> {
+            if (!loadingPreferences) {
+                recreateChart();
+            }
+        });
         
 
 
@@ -767,6 +777,9 @@ private void setCurrentView(ProductSceneView view) {
         gbc.gridy++;
         buttonPane.add(showGridButton, gbc);
 
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        buttonPane.add(usePinColorCheckBox, gbc);
 
         gbc.gridy++;
         gbc.gridwidth = 2;
@@ -1892,7 +1905,7 @@ private void setCurrentView(ProductSceneView view) {
                         }
                     }
 
-                    updateRenderer(dataset.getSeriesCount(), Color.BLACK, angularView, chart);
+                    updateRenderer(dataset.getSeriesCount(), null, angularView, chart);
 
                     dataset.addSeries(series);
                 }
@@ -2129,6 +2142,9 @@ private void setCurrentView(ProductSceneView view) {
 
                 printDebugMsg("createXYSeriesFromPin: test1");
 
+                if (!usePinColorCheckBox.isSelected()) {
+                    pinColor = null;
+                }
                 updateRenderer(seriesIndex, pinColor, angularView, chart);
                 seriesIndex++;
                 if (pm != null && pm.isCanceled()) {
@@ -2190,6 +2206,10 @@ private void setCurrentView(ProductSceneView view) {
             Shape symbol = angularView.getScaledShape();
             renderer.setSeriesShape(seriesIndex, symbol);
             renderer.setSeriesShapesVisible(seriesIndex, true);
+
+            if (seriesColor == null) {
+                seriesColor = angularView.getColor();
+            }
 
             renderer.setSeriesPaint(seriesIndex, seriesColor);
         }
@@ -2286,16 +2306,23 @@ private void setCurrentView(ProductSceneView view) {
             final List<DisplayableAngularview> angularViews = getSelectedAngularViews();
             for (Placemark pin : displayedPins) {
                 Paint pinPaint = PlacemarkUtils.getPlacemarkColor(pin, currentView);
+
+                if (!usePinColorCheckBox.isSelected()) {
+                    pinPaint = null;
+                }
+                final Paint pinPaintFinal = pinPaint;
+
                 angularViews.stream().filter(DisplayableAngularview::hasSelectedBands).forEach(angularView -> {
                     String legendLabel = pin.getLabel() + "_" + angularView.getName();
-                    LegendItem item = createLegendItem(angularView, pinPaint, legendLabel);
+
+                    LegendItem item = createLegendItem(angularView, pinPaintFinal, legendLabel);
                     itemCollection.add(item);
                 });
             }
             if (isShowingCursorAngularView() && showsValidCursorAngularViews()) {
                 angularViews.stream().filter(DisplayableAngularview::hasSelectedBands).forEach(angularView -> {
                     Paint defaultPaint = Color.BLACK;
-                    LegendItem item = createLegendItem(angularView, defaultPaint, angularView.getName());
+                    LegendItem item = createLegendItem(angularView, null, angularView.getName());
                     itemCollection.add(item);
                 });
             }
@@ -2307,6 +2334,9 @@ private void setCurrentView(ProductSceneView view) {
             Line2D lineShape = new Line2D.Double(0, 5, 40, 5);
             Stroke lineStyle = angularView.getLineStyle();
             Shape symbol = angularView.getScaledShape();
+            if (paint == null) {
+                paint = angularView.getColor();
+            }
             return new LegendItem(legendLabel, legendLabel, legendLabel, legendLabel,
                     true, symbol, false,
                     paint, true, paint, outlineStroke,
@@ -2436,7 +2466,7 @@ private void setCurrentView(ProductSceneView view) {
     }
 
     static void printDebugMsg(String msg) {
-        boolean debugOn = true;
+        boolean debugOn = false;
         if (debugOn) {
             System.out.println(msg);
         }
