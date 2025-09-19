@@ -3,8 +3,7 @@ package org.esa.snap.ui.product.angularview;
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.Band;
 
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
