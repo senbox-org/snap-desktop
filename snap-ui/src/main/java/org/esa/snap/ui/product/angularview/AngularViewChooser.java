@@ -7,6 +7,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
@@ -121,7 +122,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     }
 
     private void initangularViewsPanel() {
-        angularViewsPanelLayout = new TableLayout(7);
+        angularViewsPanelLayout = new TableLayout(8);
         angularViewsPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
         angularViewsPanelLayout.setTableWeightY(0.0);
         angularViewsPanelLayout.setTableWeightX(1.0);
@@ -137,11 +138,12 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         angularViewsPanel.add(new JLabel("Line Style"));
         angularViewsPanel.add(new JLabel("Symbol"));
         angularViewsPanel.add(new JLabel("Symbol Size"));
+        angularViewsPanel.add(new JLabel("Color"));
 
         for (int i = 0; i < angularViews.length; i++) {
             selectionAdmin.evaluateAngularViewSelections(angularViews[i]);
             addAngularViewComponentsToAngularViewsPanel(i);
-            angularViewsPanelLayout.setCellColspan((i * 2) + 2, 1, 6);
+            angularViewsPanelLayout.setCellColspan((i * 2) + 2, 1, 7);
             angularViewsPanel.add(new JLabel());
             bandTablePanels[i] = new JPanel(new BorderLayout());
             bandTablePanels[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -213,6 +215,50 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
             }
         });
         angularViewsPanel.add(shapeSizeComboBox);
+
+
+        // set group color
+        DisplayableAngularview displayableAngularview = angularViews[index];
+        final Band[] angularBands = displayableAngularview.getAngularBands();
+
+
+
+
+        if (angularView.getColor() == null) {
+            // initialize color
+            Color COLOR_DEFAULT = Color.BLACK;
+            Color colorThisBand = COLOR_DEFAULT;
+
+            // todo  working on differently coloring each group
+//            float angularBandSpectralWavelength = angularBands[0].getSpectralWavelength();
+//            System.out.println("angularBandSpectralWavelength=" + angularBandSpectralWavelength);
+//
+//            boolean isGroupedByWavelength = true;
+//            for (Band band : angularBands) {
+//                if (band.getSpectralWavelength() != angularBandSpectralWavelength) {
+//                    isGroupedByWavelength = false;
+//                    break;
+//                }
+//            }
+//            if (isGroupedByWavelength) {
+//                float TOLERANCE = (float) 1.0;
+//                if (angularBandSpectralWavelength > (440 - TOLERANCE) && angularBandSpectralWavelength < (440 + TOLERANCE)) {
+//                    colorThisBand = Color.RED;
+//                    angularView.setColor(colorThisBand);
+//                }
+//            }
+            angularView.setColor(colorThisBand);
+        }
+
+        ColorComboBox colorComboBox = new ColorComboBox(angularView.getColor());
+        colorComboBox.setPreferredSize(new Dimension(100, 20));
+        colorComboBox.setSelectedColor(angularView.getColor());
+        colorComboBox.addPropertyChangeListener(e -> {
+            final Color selectedColor = colorComboBox.getSelectedColor();
+            angularView.setColor(selectedColor);
+        });
+        angularViewsPanel.add(colorComboBox);
+
     }
 
     private static int isSelected(DisplayableAngularview angularview) {
