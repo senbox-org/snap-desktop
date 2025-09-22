@@ -278,6 +278,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
         if (!rasterToSpectralBandsMap.containsKey(currentRaster)) {
             rasterToSpectralBandsMap.put(currentRaster, new ArrayList<>());
         }
+        if (currentProduct == null) {
+            return new SpectrumBand[0];
+        }
+
         List<SpectrumBand> spectrumBands = rasterToSpectralBandsMap.get(currentRaster);
         Band[] bands = currentProduct.getBands();
         for (Band band : bands) {

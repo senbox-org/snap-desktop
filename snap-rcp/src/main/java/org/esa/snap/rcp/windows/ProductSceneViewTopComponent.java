@@ -10,6 +10,7 @@ import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionChangeListener;
 import eu.esa.snap.netbeans.docwin.DocumentTopComponent;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
@@ -106,13 +107,19 @@ public class ProductSceneViewTopComponent extends DocumentTopComponent<ProductNo
     @Override
     public void componentOpened() {
         LOG.info(">> componentOpened");
-        getDocument().getProduct().addProductNodeListener(nodeRenameHandler);
+        final Product product = getDocument().getProduct();
+        if (product != null) {
+            product.addProductNodeListener(nodeRenameHandler);
+        }
     }
 
     @Override
     public void componentClosed() {
         LOG.info(">> componentClosed");
-        getDocument().getProduct().removeProductNodeListener(nodeRenameHandler);
+        final Product product = getDocument().getProduct();
+        if (product != null) {
+            product.removeProductNodeListener(nodeRenameHandler);
+        }
     }
 
     @Override
