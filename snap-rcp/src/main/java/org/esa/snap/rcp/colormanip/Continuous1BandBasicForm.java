@@ -481,6 +481,9 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
         final ImageInfo imageInfo = formModel.getOriginalImageInfo();
         final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
+        if (cpd == null) {
+            return;
+        }
 
         final boolean logScaled = imageInfo.isLogScaled();
         final boolean discrete = cpd.isDiscrete();

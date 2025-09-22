@@ -809,7 +809,11 @@ public class ProductSceneView extends BasicView
      * @since BEAM 4.7
      */
     public Placemark[] getSelectedPins() {
-        return getSelectedPlacemarks(getProduct().getPinGroup());
+        final Product product = getProduct();
+        if (product == null) {
+            return new Placemark[0];
+        }
+        return getSelectedPlacemarks(product.getPinGroup());
     }
 
     /**

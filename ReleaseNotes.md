@@ -8,6 +8,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-3762] World Map Layer
     [SNAP-3765] Create Filtered Band Error
     [SNAP-3841] Clumped UI elements of contextual dialogs on Product Explorer tab
+    [SNAP-3860] NullPointerException on ProductSceneViewTopComponent
     [SNAP-3888] Specific TIF files read differently (wrong?) than in other tools
     [SNAP-3907] Statistics - Negative pixel count for very large image
     [SNAP-3916] Graph Builder - File name is extended with file extension several times for ZNAP format
