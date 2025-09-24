@@ -21,6 +21,7 @@ import org.esa.snap.core.datamodel.RGBImageProfile;
 import org.esa.snap.core.datamodel.RGBImageProfileManager;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.jexp.Parser;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.PropertyMap;
@@ -185,6 +186,15 @@ public class RGBImageProfilePane extends JPanel {
         add(layout.createVerticalSpacer());
 
         final RGBImageProfile[] registeredProfiles = RGBImageProfileManager.getInstance().getAllProfiles();
+        if (this.product != null) {
+            // to avoid multiple later calls of product.createBandArithmeticParser(),
+            // which might be time comsuming in case of products with a large number of bands,
+            // create a parser instance here and add to each registered profile
+            final Parser bandArithmeticParser = this.product.createBandArithmeticParser();
+            for (RGBImageProfile registeredProfile : registeredProfiles) {
+                registeredProfile.setBandArithmeticParser(bandArithmeticParser);
+            }
+        }
         addProfiles(registeredProfiles);
         if (this.product != null) {
             final RGBImageProfile productProfile = RGBImageProfile.getCurrentProfile(this.product);
