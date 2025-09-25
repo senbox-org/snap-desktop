@@ -79,7 +79,10 @@ public class VectorDataLayer extends Layer {
         updateFigureCollection();
 
         vectorDataChangeHandler = new VectorDataChangeHandler();
-        vectorDataNode.getProduct().addProductNodeListener(vectorDataChangeHandler);
+        Product product = vectorDataNode.getProduct();
+        if (product != null) {
+            product.addProductNodeListener(vectorDataChangeHandler);
+        }
         figureCollection.addChangeListener(new FigureChangeHandler());
     }
 

@@ -15,10 +15,7 @@
  */
 package org.esa.snap.ui.product;
 
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.VectorDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.BasicView;
 import org.esa.snap.ui.PopupMenuHandler;
@@ -55,7 +52,10 @@ public class ProductPlacemarkView extends BasicView implements ProductNodeView {
 
     public ProductPlacemarkView(VectorDataNode vectorDataNode) {
         this.vectorDataNode = vectorDataNode;
-        this.vectorDataNode.getProduct().addProductNodeListener(new PNL());
+        Product product = this.vectorDataNode.getProduct();
+        if (product != null) {
+            product.addProductNodeListener(new PNL());
+        }
         tableModel = new PlacemarkTableModel();
         JTable placemarkTable = new JTable();
         placemarkTable.setRowSorter(new TableRowSorter<>(tableModel));

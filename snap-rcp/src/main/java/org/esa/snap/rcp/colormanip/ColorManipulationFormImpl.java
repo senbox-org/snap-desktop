@@ -221,7 +221,10 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
         getFormModel().setProductSceneView(productSceneView);
         if (getFormModel().isValid()) {
-            getFormModel().getProductSceneView().getProduct().addProductNodeListener(productNodeListener);
+            Product product = getFormModel().getProductSceneView().getProduct();
+            if (product != null) {
+                product.addProductNodeListener(productNodeListener);
+            }
             getFormModel().getProductSceneView().addPropertyChangeListener(sceneViewChangeListener);
 
             if (getFormModel().isContinuous3BandImage() || getFormModel().isDiscrete1BandImage()) {
