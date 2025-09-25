@@ -267,7 +267,12 @@ public class ProductSceneView extends BasicView
         registerLayerCanvasListeners();
 
         this.rasterChangeHandler = new RasterChangeHandler();
-        getRaster().getProduct().addProductNodeListener(rasterChangeHandler);
+        Product product = getRaster().getProduct();
+        if (product != null) {
+            product.addProductNodeListener(rasterChangeHandler);
+        } else {
+            return;
+        }
 
         setMaskOverlayEnabled(true);
         setName(sceneImage.getName());

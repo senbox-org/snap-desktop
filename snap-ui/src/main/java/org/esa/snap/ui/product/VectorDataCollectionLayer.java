@@ -57,7 +57,10 @@ public class VectorDataCollectionLayer extends CollectionLayer {
         this.plc = plc;
 
         setId(ID);
-        vectorDataGroup.getProduct().addProductNodeListener(pnl);
+        Product product = vectorDataGroup.getProduct();
+        if (product != null) {
+            product.addProductNodeListener(pnl);
+        }
     }
 
     @Override
