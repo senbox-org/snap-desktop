@@ -117,7 +117,7 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+//            topComponent.setPrepareForUpdateMessage();
         }
     }
 

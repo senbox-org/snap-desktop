@@ -990,10 +990,6 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void productSceneViewSelected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
             // System.out.println("Listening Angular View Tool: productSceneViewSelected");
-            showAngularViewsForAllPinsButton.setSelected(false);
-            showAngularViewsForCursorButton.setSelected(false);
-            showAngularViewsForSelectedPinsButton.setSelected(false);
-
             view.addPixelPositionListener(pixelPositionListener);
             setCurrentView(view);
             updateChart(true);
@@ -1004,13 +1000,8 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void productSceneViewDeselected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
             // System.out.println("Listening Angular View Tool: productSceneViewDeselected");
-            showAngularViewsForAllPinsButton.setSelected(false);
-            showAngularViewsForCursorButton.setSelected(false);
-            showAngularViewsForSelectedPinsButton.setSelected(false);
-
             view.removePixelPositionListener(pixelPositionListener);
             setCurrentView(null);
-            chartHandler.setEmptyPlot();
         }
     }
 
@@ -1045,10 +1036,6 @@ public class AngularTopComponent extends ToolTopComponent {
             setCurrentView(null);
         }
 
-        if (currentProduct != null) {
-            currentProduct.removeProductNodeListener(productNodeHandler);
-        }
-
 
         chartHandler.setEmptyPlot();
         removeCursorAngularViewsFromDataset();
@@ -1063,7 +1050,7 @@ public class AngularTopComponent extends ToolTopComponent {
 
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
-        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
+        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular view selected";
         private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
 
         private final JFreeChart chart;
@@ -1162,7 +1149,7 @@ public class AngularTopComponent extends ToolTopComponent {
             } else if (getAllAngularViews().length == 0) {
                 setPlotMessage(MESSAGE_NO_AngularView_SELECTED);
             } else {
-                setPlotMessage(MESSAGE_NO_ANGULAR_BANDS);
+//                setPlotMessage(MESSAGE_NO_ANGULAR_BANDS);
             }
         }
 
@@ -1822,9 +1809,6 @@ public class AngularTopComponent extends ToolTopComponent {
         }
 
         private void removeBandFromAngularViews(Band band) {
-            if (currentView == null) {
-                return;
-            }
             DisplayableAngularview[] allAngularViews = rasterToAngularMap.get(currentView.getRaster());
             for (DisplayableAngularview displayableAngularView : allAngularViews) {
                 Band[] angularBands = displayableAngularView.getAngularBands();
