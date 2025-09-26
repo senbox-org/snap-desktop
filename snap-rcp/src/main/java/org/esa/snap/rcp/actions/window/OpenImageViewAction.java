@@ -20,6 +20,7 @@ import com.bc.ceres.swing.progress.DialogProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.netbeans.docwin.DocumentWindowManager;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.downloadable.DownloadStatusManager;
 import org.esa.snap.core.util.Debug;
@@ -238,8 +239,11 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
 
 
     private void openDocumentWindow(final ProductSceneView view) {
-
-        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(view.getProduct());
+        Product product = view.getProduct();
+        if (product == null) {
+            return;
+        }
+        UndoRedo.Manager undoManager = SnapApp.getDefault().getUndoManager(product);
         ProductSceneViewTopComponent productSceneViewWindow = new ProductSceneViewTopComponent(view, undoManager);
 
         DocumentWindowManager.getDefault().openWindow(productSceneViewWindow);
