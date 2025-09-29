@@ -11,7 +11,9 @@ import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
+import org.esa.snap.core.image.VirtualBandOpImage;
 import org.esa.snap.core.jexp.ParseException;
+import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -573,6 +575,22 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public boolean canDestroy() {
+            Band bandToBeDeleted = getProductNode();
+            Product product = bandToBeDeleted.getProduct();
+
+            for (Band band : product.getBands()) {
+                if (band instanceof VirtualBand vband) {
+                    String exp = vband.getExpression();
+                    Term term = VirtualBandOpImage.parseExpression(exp, product);
+                    RasterDataNode[] refRasters = BandArithmetic.getRefRasters(term);
+
+                    for (RasterDataNode ref : refRasters) {
+                        if (ref == bandToBeDeleted) {
+                            return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
 
