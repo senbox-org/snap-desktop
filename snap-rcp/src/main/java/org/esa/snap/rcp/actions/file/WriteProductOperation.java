@@ -3,7 +3,9 @@ package org.esa.snap.rcp.actions.file;
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
 import org.esa.snap.core.dataio.ProductIO;
+import org.esa.snap.core.dataio.ProductWriter;
 import org.esa.snap.core.dataio.dimap.DimapProductConstants;
+import org.esa.snap.core.dataio.dimap.DimapProductWriter;
 import org.esa.snap.core.datamodel.MetadataElement;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeList;
@@ -74,7 +76,15 @@ public class WriteProductOperation implements Runnable, Cancellable {
                                                                 "Cancellation of writing may lead to an unreadable product.\n\n"
                                                                         + "Do you really want to cancel the write process?",
                                                         false, null);
-        return answer == Dialogs.Answer.YES;
+        boolean cancel = answer == Dialogs.Answer.YES;
+        if (cancel) {
+            pm.setCanceled(cancel);
+            ProductWriter productWriter = product.getProductWriter();
+            if (productWriter instanceof DimapProductWriter dimapProductWriter) {
+                dimapProductWriter.setCanceled(cancel);
+            }
+        }
+        return cancel;
     }
 
     @Override
