@@ -1609,13 +1609,13 @@
         <MIN>-12000.0</MIN>
         <MAX>15000.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
-        <STANDARD_FILENAME>gray_scale.cpdthe</STANDARD_FILENAME>
+        <STANDARD_FILENAME>gray_scale.cpd</STANDARD_FILENAME>
         <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS>-12000,-6000,0,7500,15000</COLORBAR_LABELS>
         <DESCRIPTION>Elevation (with respect to sea-level in meters)</DESCRIPTION>
     </Scheme>
-    <Scheme name="topography">
+    <Scheme name="topography_green">
         <VERBOSE_NAME/>
         <MIN>5</MIN>
         <MAX>5000.0</MAX>
@@ -1626,13 +1626,13 @@
         <COLORBAR_LABELS>5,50,500,5000</COLORBAR_LABELS>
         <DESCRIPTION>Topography (with respect to sea-level in meters)</DESCRIPTION>
     </Scheme>
-    <Scheme name="topography_ETOP">
+    <Scheme name="topography">
         <VERBOSE_NAME/>
         <MIN>0</MIN>
         <MAX>8500.0</MAX>
         <LOG_SCALE>false</LOG_SCALE>
         <STANDARD_FILENAME>topography.cpd</STANDARD_FILENAME>
-        <UNIVERSAL_FILENAME></UNIVERSAL_FILENAME>
+        <UNIVERSAL_FILENAME>topography.cpd</UNIVERSAL_FILENAME>
         <COLORBAR_TITLE></COLORBAR_TITLE>
         <COLORBAR_LABELS></COLORBAR_LABELS>
         <DESCRIPTION>Topography (Colormap used in the ETOPO1 global relief map)</DESCRIPTION>
