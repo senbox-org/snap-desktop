@@ -1590,6 +1590,10 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                     new Object[]{"Fraction_Valid", percentFilled}
             };
 
+            //  todo SNAP 13 code has this but not sure if it would be needed due to extensive SeaDAS revisions
+            //            new Object[]{"#Pixels total:", histogram.getTotals()[0]},
+
+
         } else {
             totalPixels = new Object[][]{
                     new Object[]{"Valid_Pixels", validPixelCount}
@@ -1642,7 +1646,8 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                     new Object[]{"Bin_Max", histogram.getHighValue(0)}
             };
 
-            dataRows += binningInfo.length;
+
+                    dataRows += binningInfo.length;
         }
 
 
