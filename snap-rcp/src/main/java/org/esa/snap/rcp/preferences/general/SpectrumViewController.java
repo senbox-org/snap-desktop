@@ -22,16 +22,12 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
-import com.bc.ceres.swing.binding.Enablement;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import com.bc.ceres.swing.binding.PropertyPane;
-import org.checkerframework.checker.units.qual.C;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
-import org.esa.snap.rcp.statistics.StatisticsTopComponent;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
