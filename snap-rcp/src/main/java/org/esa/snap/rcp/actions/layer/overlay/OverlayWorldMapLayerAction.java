@@ -18,6 +18,7 @@ import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
 import org.esa.snap.core.layer.WorldMapLayerType;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -39,8 +40,8 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 50)
 })
 @NbBundle.Messages({
-        "CTL_OverlayWorldMapLayerActionName=World Map Overlay",
-        "CTL_OverlayWorldMapLayerActionToolTip=Show/hide world map overlay for the selected image"
+        "CTL_OverlayWorldMapLayerActionName=World Map Layer",
+        "CTL_OverlayWorldMapLayerActionToolTip=World Map Layer -- adds layer to the selected image"
 })
 public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
 
@@ -51,7 +52,7 @@ public final class OverlayWorldMapLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayWorldMapLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/WorldMapOverlay.png", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/WorldMapOverlay24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_WORLD_MAP_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayWorldMapLayerActionToolTip());
     }
 
