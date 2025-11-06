@@ -3,7 +3,6 @@ package org.esa.snap.rcp;
 import com.bc.ceres.core.ExtensionFactory;
 import com.bc.ceres.core.ExtensionManager;
 import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.core.VirtualDir;
 import com.bc.ceres.core.runtime.Version;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -397,11 +396,6 @@ public class SnapApp {
      */
     public void onStart() {
         engine = Engine.start(false);
-        try {
-            VirtualDir.clearTempFiles();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Fail to clear the temp directory of SNAP");
-        }
 
         initialiseLookAndFeel();
 
