@@ -26,6 +26,8 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 
+import java.awt.*;
+
 @ActionID(
         category = "Interactors",
         id = "org.esa.snap.rcp.action.interactors.PinToolAction"
@@ -44,16 +46,39 @@ import org.openide.util.NbBundle.Messages;
           })
 public class PinToolAction extends ToolAction {
 
+    private InsertPinInteractor pinInteractor;
+    private PinToolSplitButton pinToolSplitButton;
+
     @SuppressWarnings("UnusedDeclaration")
     public PinToolAction() {
         this(null);
     }
 
     public PinToolAction(Lookup lookup) {
-        super(lookup, new InsertPinInteractor());
+        super(lookup);
         putValue(NAME, Bundle.CTL_PinToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PinToolActionDescription());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.PIN_TOOL_ICON, false));
+
+
+        pinInteractor = new InsertPinInteractor();
+        setInteractor(pinInteractor);
+        pinToolSplitButton = new PinToolSplitButton(this);
+
+        // Set initial color on the pin interactor
+        pinInteractor.setCurrentColor(pinToolSplitButton.getCurrentColor());
+
+        // Add listener for color changes
+        pinToolSplitButton.addPropertyChangeListener(PinToolSplitButton.COLOR_PROPERTY, evt -> {
+            Color newColor = (Color) evt.getNewValue();
+            pinInteractor.setCurrentColor(newColor);
+        });
+    }
+
+
+    @Override
+    public Component getToolbarPresenter() {
+        return pinToolSplitButton;
     }
 
     @Override
