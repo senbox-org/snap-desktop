@@ -148,7 +148,7 @@ public class ProductSceneView extends BasicView
      * Name of property which switches display of af a navigation control in the image view.
      */
     public static final String PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN = "image.navControlShown";
-    public static final boolean PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT = true;
+    public static final boolean PREFERENCE_KEY_IMAGE_NAV_CONTROL_SHOWN_DEFAULT = false;
     /**
      * Name of property which switches display of af a navigation control in the image view.
      */
@@ -157,7 +157,7 @@ public class ProductSceneView extends BasicView
      * Name of property which inverts the zooming with the mouse wheel.
      */
     public static final String PREFERENCE_KEY_INVERT_ZOOMING = "image.reverseZooming";
-    public static final boolean PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT = false;
+    public static final boolean PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT = true;
     /**
      * Name of properties which zoom the view when opening a band view window.
      */
@@ -207,7 +207,7 @@ public class ProductSceneView extends BasicView
      * Name of property of selected pin
      */
     public static final String PROPERTY_NAME_SELECTED_PIN = "selectedPin";
-    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = new Color(51, 51, 51);
+    public static final Color DEFAULT_IMAGE_BACKGROUND_COLOR = Color.WHITE;
 
 
     private ProductSceneImage sceneImage;
