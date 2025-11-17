@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.actions.layer.overlay;
 
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -25,8 +26,8 @@ import org.openide.util.NbBundle;
         @ActionReference(path = "Toolbars/Overlay", position = 20)
 })
 @NbBundle.Messages({
-        "CTL_OverlayGraticuleLayerActionName=Map Gridlines Overlay",
-        "CTL_OverlayGraticuleLayerActionToolTip=Show/hide Map Gridlines overlay for the selected image"
+        "CTL_OverlayGraticuleLayerActionName=Map Gridlines Layer",
+        "CTL_OverlayGraticuleLayerActionToolTip=Map Gridlines Layer -- adds layer to the selected image"
 })
 public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
 
@@ -36,7 +37,7 @@ public final class OverlayGraticuleLayerAction extends AbstractOverlayAction {
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayGraticuleLayerActionName());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay.gif", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GraticuleOverlay24.gif", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.OVERLAY_GRATICULE_ICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OverlayGraticuleLayerActionToolTip());
     }
 
