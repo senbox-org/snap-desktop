@@ -22,7 +22,8 @@ public class AngularViewStrokeProvider {
             new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f, 1.0f}, 0.0f),
             new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{20.0f, 5.0f}, 0.0f),
             new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{1.0f, 5.0f}, 0.0f),
-            new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f, 10.0f, 1.0f, 10.0f}, 0.0f)
+            new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f, 10.0f, 1.0f, 10.0f}, 0.0f),
+            new BasicStroke(0.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{1.0f, 50.0f}, 0.0f)
     };
     private static final ImageIcon[] strokeIcons = convertStrokesToIcons();
     public static final Stroke EMPTY_STROKE = new EmptyStroke();
@@ -44,8 +45,11 @@ public class AngularViewStrokeProvider {
         final Graphics2D graphics = image.createGraphics();
         graphics.translate(-rectangle.x, -rectangle.y);
         graphics.setColor(Color.BLACK);
-        graphics.setStroke(stroke);
-        graphics.draw(strokeShape);
+        BasicStroke basicStroke = (BasicStroke) stroke;
+        if (basicStroke.getLineWidth() > 0) {
+            graphics.setStroke(stroke);
+            graphics.draw(strokeShape);
+        }
         graphics.dispose();
         return new ImageIcon(image);
     }
