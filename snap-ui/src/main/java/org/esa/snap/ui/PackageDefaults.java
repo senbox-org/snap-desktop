@@ -80,7 +80,7 @@ public class PackageDefaults  {
     public static final String PANNER_TOOL_TOOLBAR_NAME = "Interactors"; // differs from snap
 
     public static final String MAGIC_WAND_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
-    public static final String RANGE_FINDER_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
+    public static final String RANGE_FINDER_TOOLBAR_NAME = "Range Finder"; // differs from snap
     public static final String METADATA_PLOT_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
     public static final String GEO_CODING_TOOLBAR_NAME = "Miscellaneous"; // differs from snap
 
@@ -94,14 +94,14 @@ public class PackageDefaults  {
     public static final String GCP_TOOL_ACTION_TOOLBAR = "Ground Control Points"; // differs from snap
     public static final String GCP_MANAGER_TOOLBAR = "Ground Control Points"; // differs from snap
 
-    public static final String NEW_GEOMETRY_CONTAINER_TOOLBAR = "Geometry"; // differs from snap
+    public static final String NEW_GEOMETRY_CONTAINER_TOOLBAR = "Geometry Container"; // differs from snap
     public static final String GEOMETRY_TOGGLE_TOOLBAR = "Miscellaneous"; // differs from snap
     public static final String DRAW_RECTANGLE_TOOLBAR = "Geometry Shapes"; // differs from snap
     public static final String DRAW_ELLIPSE_TOOLBAR = "Geometry Shapes"; // differs from snap
     public static final String DRAW_POLYGON_TOOLBAR = "Geometry Shapes"; // differs from snap
 
-    public static final String DRAW_LINE_ICON_TOOLBAR = "Geometry Lines"; // differs from snap
-    public static final String DRAW_POLYLINE_TOOLBAR = "Geometry Lines"; // differs from snap
+    public static final String DRAW_LINE_ICON_TOOLBAR = "Geometry Shapes"; // differs from snap
+    public static final String DRAW_POLYLINE_TOOLBAR = "Geometry Shapes"; // differs from snap
 
     public static final String GPT_GRAPH_BUILDER_TOOLBAR = "GPT Processing"; // differs from snap
     public static final String GPT_BATCH_PROCESSING_TOOLBAR = "GPT Processing"; // differs from snap
