@@ -6,6 +6,7 @@
 package org.esa.snap.rcp.nodes;
 
 import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.util.StringUtils;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -19,7 +20,11 @@ class PNGroupNode extends PNNodeBase {
 
     PNGroupNode(PNGroup group) {
         super(group, Lookups.fixed(group.getProduct()));
-        setDisplayName(group.getDisplayName());
+
+        String displayName = group.getDisplayName();
+        displayName = StringUtils.cleanUpGroupName(displayName);
+        setDisplayName(displayName);
+
         setIconBaseWithExtension("org/esa/snap/rcp/icons/RsGroup16.gif");
         nodeSupport = PNNodeSupport.create(this, group);
     }
