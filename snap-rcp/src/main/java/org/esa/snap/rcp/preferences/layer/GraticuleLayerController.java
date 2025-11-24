@@ -51,7 +51,7 @@ import java.util.ArrayList;
         keywordsCategory = "Layer",
         id = "LayerGraticule")
 @org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_LayerGraticule=Graticule Layer",
+        "Options_DisplayName_LayerGraticule=Map Gridlines Layer",
         "Options_Keywords_LayerGraticule=layer, graticule"
 })
 public final class GraticuleLayerController extends DefaultConfigController {
@@ -112,6 +112,8 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRID_SPACING_LON_NAME, GraticuleLayerType.PROPERTY_GRID_SPACING_LON_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_TOLERANCE_KEY, GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT);
 
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
@@ -127,6 +129,7 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_NAME, GraticuleLayerType.PROPERTY_LABELS_ROTATION_LON_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_NAME, GraticuleLayerType.PROPERTY_LABELS_ROTATION_LAT_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME, GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME, GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME, GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT);
 
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_GRIDLINES_SECTION_NAME, true);
@@ -453,8 +456,19 @@ public final class GraticuleLayerController extends DefaultConfigController {
         @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL,
                 key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
                 description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
-                interval = "[0,20]")
+                interval = "[0,1000]")
         int minorSteps = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL,
+                key = GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
+                description = GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP)
+        boolean interpolateDefault = GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_TOLERANCE_LABEL,
+                key = GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
+                description = GraticuleLayerType.PROPERTY_TOLERANCE_TOOLTIP,
+                interval = "[0,100]")
+        double toleranceDefault = GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT;
 
         // Labels Section
 
@@ -552,6 +566,13 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 description = GraticuleLayerType.PROPERTY_LABELS_SIZE_TOOLTIP,
                 interval = GraticuleLayerType.PROPERTY_LABELS_SIZE_INTERVAL)
         int labelsSize = GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_LABEL,
+                key = GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME,
+                description = GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TOOLTIP,
+                interval = GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_INTERVAL)
+        int edgeLabelsSpacerDefault = GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT;
+
 
         @Preference(label = GraticuleLayerType.PROPERTY_LABELS_COLOR_LABEL,
                 key = GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
