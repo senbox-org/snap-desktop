@@ -19,6 +19,7 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.multilevel.MultiLevelModel;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.image.ImageManager;
 import org.esa.snap.core.util.ProductUtils;
@@ -26,15 +27,20 @@ import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.placemark.PlacemarkUtils;
+import org.esa.snap.rcp.preferences.general.AngularViewController;
 import org.esa.snap.rcp.statistics.XYPlotMarker;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.smart.configurator.ConfigurationOptimizer;
+import org.esa.snap.smart.configurator.PerformanceParameters;
 import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.angularview.*;
+import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
+import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYTitleAnnotation;
@@ -75,6 +81,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
@@ -83,12 +90,14 @@ import static java.lang.Math.abs;
 @TopComponent.Description(preferredID = "AngularTopComponent",
         iconBase = "org/esa/snap/rcp/icons/AngularView.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
-@TopComponent.Registration(mode = "Statistics", openAtStartup = false, position = 80)
+
+//@TopComponent.Registration(mode = "Statistics", openAtStartup = false, position = 80)
+@TopComponent.Registration(mode = "properties", openAtStartup = false, position = 80)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.AngularTopComponent")
 @ActionReferences({
 //        @ActionReference(path = "Menu/Optical", position = 0),
         @ActionReference(path = "Menu/View/Tool Windows/Angular"),
-        @ActionReference(path = "Toolbars/Spectral Angular View", position = 20)
+        @ActionReference(path = "Toolbars/Angular View", position = 11)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AngularTopComponent_Name", preferredID = "AngularTopComponent")
 @NbBundle.Messages({"CTL_AngularTopComponent_Name=Angular View", "CTL_AngularTopComponent_HelpId=showAngularViewWnd"})
@@ -101,12 +110,16 @@ public class AngularTopComponent extends ToolTopComponent {
 
     private static final String SUPPRESS_MESSAGE_KEY = "plugin.angular.tip";
 
+    private boolean wasOpenedBefore = false;
+
     private final Map<RasterDataNode, DisplayableAngularview[]> rasterToAngularMap;
     private final Map<RasterDataNode, List<AngularBand>> rasterToAngularBandsMap;
 
     private final ProductNodeListenerAdapter productNodeHandler;
     private final PinSelectionChangeListener pinSelectionChangeListener;
     private final PixelPositionListener pixelPositionListener;
+
+    private final BandGroupsManager bandGroupsManager;
 
     private AbstractButton filterButton;
     private AbstractButton showAngularViewsForCursorButton;
@@ -118,8 +131,33 @@ public class AngularTopComponent extends ToolTopComponent {
     private JRadioButton useScatteringAngleButton;
     private JRadioButton useViewAngleButton;
 
+    private JCheckBox usePinColorCheckBox;
+
+    private JCheckBox rangeXCheckBox;
+    private JTextField rangeXLowerTextField;
+    private JLabel rangeXLowerLabel;
+    private JTextField rangeXUpperTextField;
+    private JLabel rangeXUpperLabel;
+
+    private JCheckBox rangeYCheckBox;
+    private JTextField rangeYLowerTextField;
+    private JLabel rangeYLowerLabel;
+    private JTextField rangeYUpperTextField;
+    private JLabel rangeYUpperLabel;
+
+    private boolean useRangeX;
+    private double rangeXLower;
+    private double rangeXUpper;
+
+    private boolean useRangeY;
+    private double rangeYLower;
+    private double rangeYUpper;
+
+
     private boolean tipShown;
     private boolean angularViewToolIsOpen;
+    private boolean loadingPreferences;
+
     private boolean useViewAngle;
     private boolean useSensorZenith;
     private boolean useSensorAzimuth;
@@ -133,6 +171,9 @@ public class AngularTopComponent extends ToolTopComponent {
     private boolean rangeAxisAdjustmentIsFrozen;
     private boolean isCodeInducedAxisChange;
     private boolean isUserInducedAutomaticAdjustmentChosen;
+
+    private int workDoneMaster = 0;
+    private int totalWorkPlannedMaster = 100;
 
     public List<AngularBand> sensor_azimuth_Bands = new ArrayList<>();
     public List<AngularBand> sensor_zenith_Bands = new ArrayList<>();
@@ -148,142 +189,100 @@ public class AngularTopComponent extends ToolTopComponent {
         rasterToAngularMap = new HashMap<>();
         rasterToAngularBandsMap = new HashMap<>();
         pixelPositionListener = new CursorAngularViewPixelPositionListener(this);
+        bandGroupsManager = getBandGroupsManager();
         initUI();
     }
+
+    private BandGroupsManager getBandGroupsManager() {
+        final BandGroupsManager bandGroupsManager;
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+        } catch (IOException e) {
+            Dialogs.showError(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return bandGroupsManager;
+    }
+
 
     @Override
     public HelpCtx getHelpCtx() {
         return new HelpCtx(Bundle.CTL_AngularTopComponent_HelpId());
     }
 
-    private void setCurrentView(ProductSceneView view) {
-        ProductSceneView oldView = currentView;
-        currentView = view;
-        if (oldView != currentView) {
-            if (oldView != null) {
-                oldView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
-            }
-            if (currentView != null) {
-                currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
-                setCurrentProduct(currentView.getProduct());
-//                if (currentProduct.getName().contains("HARP")) {
-//                    List<Integer> waveLengths = new ArrayList<Integer>();
-//                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
-//                        int waveLength = (int) currentProduct.getBandAt(i).getSpectralWavelength();
-//                        if (!waveLengths.contains(waveLength)) {
-//                            waveLengths.add(waveLength);
-//                            if (waveLengths.size()  == 4) {
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    String autoGroupingStr = "";
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "qc_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "i_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "q_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "u_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "aolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    for (int i = 0; i < 4; i ++) {
-//                        autoGroupingStr += "dolp_variability_" + waveLengths.get(i) + "_*:";
-//                    }
-//                    autoGroupingStr += "I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:view_time_offsets:obs_per_view:number_of_observations:" +
-//                            "sensor_zenith_angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:scattering_angle:rotation_angle";
-//                    currentProduct.setAutoGrouping(autoGroupingStr);
 
-//                    currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                            "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                            "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                            "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                            "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets:" +
-//                            "i:i_*_550:i_*_667:i_*_867:i_*_440:q:q_*_550:q_*_667:q_*_867:q_*_440:" +
-//                            "qc:qc_*_550:qc_*_667:qc_*_867:qc_*_440:u:u_*_550:u_*_667:u_*_867:u_*_440: " +
-//                            "dolp:dolp_*_550:dolp_*_667:dolp_*_867:dolp_*_440:dolp:aolp:aolp_*_550:aolp_*_667:aolp_*_867:aolp_*_440:" +
-//                            "i_variability:i_variability_*_550:i_variability_*_667:i_variability_*_867:i_variability_*_440:" +
-//                            "q_variability:q_variability_*_550:q_variability_*_667:q_variability_*_867:q_variability_*_440:" +
-//                            "u_variability_*_550:u_variability_*_667:u_variability_*_867:u_variability_*_440:" +
-//                            "dolp_variability:dolp_variability_*_550:dolp_variability_*_667:dolp_variability_*_867:dolp_variability_*_440:" +
-//                            "dolp_variability:aolp_variability_*_550:aolp_variability_*_667:aolp_variability_*_867:aolp_variability_*_440:" +
-//                            "sensor_zenith-angle:sensor_azimuth_angle:solar_zenith_angle:solar_azimuth_angle:rotation_angle"
-//                    );
-//                };
-                if (currentProduct.getName().contains("SPEX")) {
-                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "i_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "aolp_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "dolp_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "q_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "u_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "qc_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "q_over_i_*_" + wvl + ":";
-                    }
-                    for (int wvl = 380; wvl < 390; wvl++) {
-                        autoGroupingStr += "u_over_i_*_" + wvl + ":";
-                    }
-                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
-                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
-                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noisefree:" +
-                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-                            "i:i_stdev:i_polsample:i_polsample_stdev:" +
-                            "aolp:aolp_stdev:dolp:dolp_stdev:" +
-                            "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
-                            "qc:qc_polsample" +
-                            "scattering_angle:rotation_angle:" +
-                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
-                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
-                            "obs_per_view:view_time_offsets:number_of_observations";
-                    currentProduct.setAutoGrouping(autoGroupingStr);
-                }
-                if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
-                    setUpAngularViews();
-                }
-                recreateChart();
-
-            }
-            updateUIState();
+private void setCurrentView(ProductSceneView view) {
+    ProductSceneView oldView = currentView;
+    currentView = view;
+    if (oldView != currentView) {
+        if (oldView != null) {
+            oldView.removePropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
         }
+        if (currentView != null) {
+            currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
+            setCurrentProduct(currentView.getProduct());
+
+            if (currentProduct.getName().contains("SPEX")) {
+                String autoGroupingStr = "";
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "i_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "aolp_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "dolp_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "q_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "u_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "qc_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "q_over_i_*_" + wvl + ":";
+                }
+                for (int wvl = 380; wvl < 390; wvl++) {
+                    autoGroupingStr += "u_over_i_*_" + wvl + ":";
+                }
+                autoGroupingStr += "i:i_stdev:i_polsample:i_polsample_stdev:" +
+                        "aolp:aolp_stdev:dolp:dolp_stdev:" +
+                        "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
+                        "qc:qc_polsample:" +
+                        "scattering_angle:rotation_angle:" +
+                        "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:" +
+                        "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
+                        "obs_per_view:view_time_offsets:number_of_observations";
+                currentProduct.setAutoGrouping(autoGroupingStr);
+            }
+//            if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
+//                setUpAngularViews();
+//            }
+//            recreateChart();
+
+
+            boolean showProgressMonitor = false;
+            if (getAllAngularViews() == null && getAllAngularViews().length == 0) {
+                showProgressMonitor = true;
+            }
+
+            if (!rasterToAngularMap.containsKey(currentView.getRaster())) {
+                showProgressMonitor = true;
+                setUpAngularViews();
+            }
+
+            recreateChart(showProgressMonitor);
+
+
+        }
+        updateUIState();
     }
+}
+
+
 
     private Product getCurrentProduct() {
         return currentProduct;
@@ -323,6 +322,24 @@ public class AngularTopComponent extends ToolTopComponent {
 
     void setPrepareForUpdateMessage() {
         chartHandler.setCollectingAngularInformationMessage();
+    }
+
+    void setPlotChartMessage(String message) {
+        chartHandler.setPlotMessage(message);
+    }
+
+    void setMessageCursorModeOff() {
+        chartHandler.setMessageCursorModeOff();
+    }
+    void setMessageCursorModeNan() {
+        chartHandler.setMessageCursorModeNan();
+    }
+    void setMessageCursorNotOnImage() {
+        chartHandler.setMessageCursorNotOnImage();
+    }
+
+    void clearPrepareForUpdateMessage() {
+        chartHandler.setPlotMessage("");
     }
 
 
@@ -404,7 +421,7 @@ public class AngularTopComponent extends ToolTopComponent {
         }
         useScatteringAngleButton.setEnabled((scattering_angle_Bands.size() != 0));
 
-        useViewAngleButton.setSelected((true));
+//        useViewAngleButton.setSelected((true));
     }
 
     private boolean isAngularBand(Band band) { return (band.getAngularBandIndex() != -1 );}
@@ -427,6 +444,112 @@ public class AngularTopComponent extends ToolTopComponent {
         rangeAxisAdjustmentIsFrozen = false;
         chart.getXYPlot().getDomainAxis().setAutoRange(false);
         domainAxisAdjustmentIsFrozen = false;
+
+
+
+
+        usePinColorCheckBox = new JCheckBox("Use Pin Color");
+        usePinColorCheckBox.setSelected(true);
+        usePinColorCheckBox.setToolTipText("<html>For pin mode: set the chart lines to match the colors of each pin<br>This has no effect on cursor mode<html>");
+        rangeXCheckBox = new JCheckBox(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_LABEL);
+        rangeXCheckBox.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_TOOLTIP);
+
+        rangeXLowerLabel = new JLabel(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MIN_LABEL);
+        rangeXLowerTextField = new JTextField("1234567890");
+        rangeXLowerLabel.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MIN_TOOLTIP);
+        rangeXLowerTextField.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MIN_TOOLTIP);
+        rangeXLowerTextField.setMinimumSize(rangeXLowerTextField.getPreferredSize());
+        rangeXLowerTextField.setPreferredSize(rangeXLowerTextField.getPreferredSize());
+
+        rangeXUpperLabel = new JLabel(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MAX_LABEL);
+        rangeXUpperTextField = new JTextField("1234567890");
+        rangeXUpperLabel.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MAX_TOOLTIP);
+        rangeXUpperTextField.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MAX_TOOLTIP);
+        rangeXUpperTextField.setMinimumSize(rangeXUpperTextField.getPreferredSize());
+        rangeXUpperTextField.setPreferredSize(rangeXUpperTextField.getPreferredSize());
+        rangeXUpperTextField.setText(AngularViewController.PROPERTY_ANGULAR_VIEW_XAXIS_MAX_DEFAULT);
+
+
+
+        rangeYCheckBox = new JCheckBox(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_SET_BOUNDS_LABEL);
+        rangeYCheckBox.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_SET_BOUNDS_TOOLTIP);
+
+        rangeYLowerLabel = new JLabel(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MIN_LABEL);
+        rangeYLowerTextField = new JTextField("1234567890");
+        rangeYLowerLabel.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MIN_TOOLTIP);
+        rangeYLowerTextField.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MIN_TOOLTIP);
+        rangeYLowerTextField.setMinimumSize(rangeYLowerTextField.getPreferredSize());
+        rangeYLowerTextField.setPreferredSize(rangeYLowerTextField.getPreferredSize());
+
+        rangeYUpperLabel = new JLabel(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MAX_LABEL);
+        rangeYUpperTextField = new JTextField("1234567890");
+        rangeYUpperLabel.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MAX_TOOLTIP);
+        rangeYUpperTextField.setToolTipText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MAX_TOOLTIP);
+        rangeYUpperTextField.setMinimumSize(rangeYUpperTextField.getPreferredSize());
+        rangeYUpperTextField.setPreferredSize(rangeYUpperTextField.getPreferredSize());
+        rangeYUpperTextField.setText(AngularViewController.PROPERTY_ANGULAR_VIEW_YAXIS_MAX_DEFAULT);
+
+
+        rangeXLowerTextField.addActionListener(e -> {
+            if (!loadingPreferences) {
+                updateChart(false);
+            }
+        });
+        rangeXUpperTextField.addActionListener(e -> {
+            if (!loadingPreferences) {
+                updateChart(false);
+            }
+        });
+
+        rangeYLowerTextField.addActionListener(e -> {
+            if (!loadingPreferences) {
+                updateChart(false);
+            }
+        });
+        rangeYUpperTextField.addActionListener(e -> {
+            if (!loadingPreferences) {
+                updateChart(false);
+            }
+        });
+
+
+        rangeXCheckBox.addActionListener(e -> {
+            rangeXLowerLabel.setEnabled(rangeXCheckBox.isSelected());
+            rangeXLowerTextField.setEnabled(rangeXCheckBox.isSelected());
+            rangeXUpperLabel.setEnabled(rangeXCheckBox.isSelected());
+            rangeXUpperTextField.setEnabled(rangeXCheckBox.isSelected());
+            if (!loadingPreferences) {
+                if (rangeXCheckBox.isSelected()) {
+                    updateChart(false);
+                } else {
+                    updateChart(true);
+                }
+            }
+        });
+
+        rangeYCheckBox.addActionListener(e -> {
+            rangeYLowerLabel.setEnabled(rangeYCheckBox.isSelected());
+            rangeYLowerTextField.setEnabled(rangeYCheckBox.isSelected());
+            rangeYUpperLabel.setEnabled(rangeYCheckBox.isSelected());
+            rangeYUpperTextField.setEnabled(rangeYCheckBox.isSelected());
+            if (!loadingPreferences) {
+                if (rangeYCheckBox.isSelected()) {
+                    updateChart(false);
+                } else {
+                    updateChart(true);
+                }
+            }
+        });
+
+
+        usePinColorCheckBox.addActionListener(e -> {
+            if (!loadingPreferences) {
+                recreateChart();
+            }
+        });
+        
+
+
         chartPanel = new ChartPanel(chart);
         chartHandler = new ChartHandler(chart);
         final XYPlotMarker plotMarker = new XYPlotMarker(chartPanel, new XYPlotMarker.Listener() {
@@ -461,14 +584,24 @@ public class AngularTopComponent extends ToolTopComponent {
 
         showAngularViewsForCursorButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
+
         showAngularViewsForCursorButton.addActionListener(e -> {
-            if (showAngularViewsForCursorButton.isSelected()) {
-                // System.out.println("Listening to showAngularViewsForCursorButton - true");
-                runProgressMonitorForCursor();
-            } else {
-                // System.out.println("Listening to showAngularViewsForCursorButton - false");
-                recreateChart();
+            if (!showAngularViewsForCursorButton.isSelected()) {
+                setMessageCursorModeOff();
             }
+            recreateChart();
+
+            if (showAngularViewsForCursorButton.isSelected()) {
+                setMessageCursorNotOnImage();
+            }
+
+//            if (showAngularViewsForCursorButton.isSelected()) {
+//                // System.out.println("Listening to showAngularViewsForCursorButton - true");
+//                runProgressMonitorForCursor();
+//            } else {
+//                // System.out.println("Listening to showAngularViewsForCursorButton - false");
+//                recreateChart();
+//            }
         });
 
         showAngularViewsForCursorButton.setName("showAngularViewsForCursorButton");
@@ -514,57 +647,95 @@ public class AngularTopComponent extends ToolTopComponent {
         showAngularViewsForAllPinsButton.setToolTipText("Show angular Views for all pins.");
 
         showGridButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SpectrumGrid24.gif"), true);
-        showGridButton.addActionListener(e -> chartHandler.setGridVisible(showGridButton.isSelected()));
+
+        showGridButton.addActionListener(e -> {
+            if (!loadingPreferences) {
+                chartHandler.setGridVisible(showGridButton.isSelected());
+            }
+        });
         showGridButton.setName("showGridButton");
         showGridButton.setToolTipText("Show diagram grid.");
+
 
         useViewAngleButton = new JRadioButton("View Angle");
         useViewAngleButton.setToolTipText("Use View Angle as x-axis.");
         useViewAngleButton.setName("useViewAngleButton");
+
         useSensorZenithButton = new JRadioButton("Sensor Zenith");
         useSensorZenithButton.setToolTipText("Use Sensor Zenith Angle as x-axis.");
         useSensorZenithButton.setName("useSensorZenith");
+
         useSensorAzimuthButton = new JRadioButton("Sensor Azimuth");
         useSensorAzimuthButton.setToolTipText("Use Sensor Azimuth as x-axis.");
         useSensorAzimuthButton.setName("useuseSensorAzimuthButton");
+
         useScatteringAngleButton = new JRadioButton("Scattering Angle");
         useScatteringAngleButton.setToolTipText("Use Scattering Angle as x-axis.");
         useScatteringAngleButton.setName("useScatteringAngleButton");
+
         final ButtonGroup angleAxisGroup = new ButtonGroup();
         angleAxisGroup.add(useViewAngleButton);
         angleAxisGroup.add(useSensorZenithButton);
         angleAxisGroup.add(useSensorAzimuthButton);
         angleAxisGroup.add(useScatteringAngleButton);
+
         useViewAngleButton.setSelected(true);
         useViewAngleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                useViewAngle = useViewAngleButton.isSelected();
-                recreateChart();
+                if (useViewAngleButton.isSelected()) {
+                    if (showAngularViewsForAllPinsButton.isSelected()
+                            || showAngularViewsForSelectedPinsButton.isSelected()) {
+                        recreateChart(true);
+                    } else if (showAngularViewsForCursorButton.isSelected()) {
+                        recreateChart();
+                    }
+                }
             }
         });
+
         useSensorZenithButton.setSelected(false);
         useSensorZenithButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                useSensorZenith = useSensorZenithButton.isSelected();
-                recreateChart();
+                if (useSensorZenithButton.isSelected()) {
+                    if (showAngularViewsForAllPinsButton.isSelected()
+                            || showAngularViewsForSelectedPinsButton.isSelected()) {
+                        recreateChart(true);
+                    } else if (showAngularViewsForCursorButton.isSelected()) {
+                        recreateChart();
+                    }
+                }
             }
         });
+
         useSensorAzimuthButton.setSelected(false);
         useSensorAzimuthButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                useSensorAzimuth = useSensorAzimuthButton.isSelected();
-                recreateChart();
+                if (useSensorAzimuthButton.isSelected()) {
+                    if (showAngularViewsForAllPinsButton.isSelected()
+                            || showAngularViewsForSelectedPinsButton.isSelected()) {
+                        recreateChart(true);
+                    } else if (showAngularViewsForCursorButton.isSelected()) {
+                        recreateChart();
+                    }
+                }
             }
         });
+
         useScatteringAngleButton.setSelected(false);
         useScatteringAngleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                useScatteringAngle = useScatteringAngleButton.isSelected();
-                recreateChart();
+                if (useScatteringAngleButton.isSelected()) {
+                    if (showAngularViewsForAllPinsButton.isSelected()
+                            || showAngularViewsForSelectedPinsButton.isSelected()) {
+                        recreateChart(true);
+                    } else if (showAngularViewsForCursorButton.isSelected()) {
+                        recreateChart();
+                    }
+                }
             }
         });
 
@@ -573,6 +744,8 @@ public class AngularTopComponent extends ToolTopComponent {
         angleButtonPanel.add(useSensorZenithButton);
         angleButtonPanel.add(useSensorAzimuthButton);
         angleButtonPanel.add(useScatteringAngleButton);
+
+
 
         AbstractButton exportAngularViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Export24.gif"),
                 false);
@@ -585,14 +758,17 @@ public class AngularTopComponent extends ToolTopComponent {
         helpButton.setToolTipText("Help.");
 
 
+
         final JPanel buttonPane = GridBagUtils.createPanel();
         final GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets.top = 2;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
         buttonPane.add(filterButton, gbc);
         gbc.gridy++;
+
         buttonPane.add(showAngularViewsForCursorButton, gbc);
         gbc.gridy++;
         buttonPane.add(showAngularViewsForSelectedPinsButton, gbc);
@@ -600,23 +776,72 @@ public class AngularTopComponent extends ToolTopComponent {
         buttonPane.add(showAngularViewsForAllPinsButton, gbc);
         gbc.gridy++;
         buttonPane.add(showGridButton, gbc);
+
         gbc.gridy++;
+        gbc.gridwidth = 2;
+        buttonPane.add(usePinColorCheckBox, gbc);
+
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        buttonPane.add(rangeXCheckBox, gbc);
+
+        gbc.gridy++;
+        gbc.gridx=0;
+        gbc.gridwidth = 1;
+        buttonPane.add(rangeXLowerLabel, gbc);
+        gbc.gridx=1;
+        buttonPane.add(rangeXLowerTextField, gbc);
+        gbc.gridy++;
+        gbc.gridx=0;
+        buttonPane.add(rangeXUpperLabel, gbc);
+        gbc.gridx=1;
+        buttonPane.add(rangeXUpperTextField, gbc);
+
+
+        gbc.gridy++;
+        gbc.gridx=0;
+        gbc.gridwidth = 2;
+        buttonPane.add(rangeYCheckBox, gbc);
+
+        gbc.gridy++;
+        gbc.gridx=0;
+        gbc.gridwidth = 1;
+        buttonPane.add(rangeYLowerLabel, gbc);
+        gbc.gridx=1;
+        buttonPane.add(rangeYLowerTextField, gbc);
+        gbc.gridy++;
+        gbc.gridx=0;
+        buttonPane.add(rangeYUpperLabel, gbc);
+        gbc.gridx=1;
+        buttonPane.add(rangeYUpperTextField, gbc);
+
+
+        gbc.gridwidth = 2;
+        gbc.gridy++;
+        gbc.gridx=0;
         buttonPane.add(exportAngularViewsButton, gbc);
+
         gbc.gridy++;
         buttonPane.add(angleButtonPanel,gbc);
+
         gbc.gridy++;
         gbc.insets.bottom = 0;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weighty = 1.0;
         gbc.gridwidth = 2;
         buttonPane.add(new JLabel(" "), gbc); // filler
+        gbc.gridy++;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.0;
-        gbc.gridy = 10;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.anchor = GridBagConstraints.SOUTHEAST;
         buttonPane.add(helpButton, gbc);
 
-        chartPanel.setPreferredSize(new Dimension(300, 200));
+
+
+
+
+
+//        chartPanel.setPreferredSize(new Dimension(400, 300));
         chartPanel.setBackground(Color.white);
         chartPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createBevelBorder(BevelBorder.LOWERED),
@@ -627,7 +852,11 @@ public class AngularTopComponent extends ToolTopComponent {
         mainPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         mainPane.add(BorderLayout.CENTER, chartPanel);
         mainPane.add(BorderLayout.EAST, buttonPane);
-        mainPane.setPreferredSize(new Dimension(320, 200));
+//        mainPane.setPreferredSize(new Dimension(450, 300));
+
+
+//        setPreferredSize(new Dimension(450, 300));
+        setMinimumSize(new Dimension(400, 400));
 
         SnapApp.getDefault().getProductManager().addListener(new ProductManager.Listener() {
             @Override
@@ -657,6 +886,7 @@ public class AngularTopComponent extends ToolTopComponent {
                     chartHandler.removePinInformation(pinGroup.get(i));
                 }
             }
+
         });
 
 
@@ -669,6 +899,74 @@ public class AngularTopComponent extends ToolTopComponent {
         add(mainPane, BorderLayout.CENTER);
         updateUIState();
     }
+
+    private void loadPreferences() {
+        loadingPreferences = true;
+
+        try {
+            chartHandler.chart.setTitle(AngularViewController.getPreferenceTitle());
+
+            rangeYCheckBox.setSelected(AngularViewController.getPreferenceYaxisSetBounds());
+            rangeYLowerTextField.setText(AngularViewController.getPreferenceYaxisMin());
+            rangeYUpperTextField.setText(AngularViewController.getPreferenceYaxisMax());
+
+            rangeXCheckBox.setSelected(AngularViewController.getPreferenceXaxisSetBounds());
+            rangeXLowerTextField.setText(AngularViewController.getPreferenceXaxisMin());
+            rangeXUpperTextField.setText(AngularViewController.getPreferenceXaxisMax());
+
+
+
+            Color gridlinesColor = AngularViewController.getPreferenceGridlinesColor();
+            chartHandler.chart.getXYPlot().setDomainGridlinePaint(gridlinesColor);
+            chartHandler.chart.getXYPlot().setRangeGridlinePaint(gridlinesColor);
+            chartHandler.chart.getXYPlot().setDomainMinorGridlinePaint(gridlinesColor);
+            chartHandler.chart.getXYPlot().setRangeMinorGridlinePaint(gridlinesColor);
+
+
+            Color plotBackgroundColor = AngularViewController.getPreferenceBackgroundColor();
+            chartHandler.chart.getPlot().setBackgroundPaint(plotBackgroundColor);
+            chartHandler.chart.getXYPlot().setBackgroundPaint(plotBackgroundColor);
+
+
+            Color foregroundColor = AngularViewController.PROPERTY_ANGULAR_VIEW_FOREGROUND_COLOR_DEFAULT;
+
+            chartHandler.chart.getXYPlot().getRangeAxis().setTickMarkPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getRangeAxis().setAxisLinePaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getDomainAxis().setTickMarkPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getDomainAxis().setAxisLinePaint(foregroundColor);
+            chartHandler.chart.getTitle().setPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getDomainAxis().setLabelPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getRangeAxis().setLabelPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getDomainAxis().setTickLabelPaint(foregroundColor);
+            chartHandler.chart.getXYPlot().getRangeAxis().setTickLabelPaint(foregroundColor);
+
+
+
+            Color marginBackgroundColor = AngularViewController.PROPERTY_ANGULAR_VIEW_MARGIN_BACKGROUND_COLOR_DEFAULT;
+            chartHandler.chart.setBackgroundPaint(marginBackgroundColor);
+
+            Color legendBackgroundColor = AngularViewController.PROPERTY_ANGULAR_VIEW_LEGEND_BACKGROUND_COLOR_DEFAULT;
+            chartHandler.chart.getLegend().setBackgroundPaint(legendBackgroundColor);
+
+
+            chartHandler.setGridVisible(AngularViewController.getPreferenceGridlinesShow());
+            showGridButton.setSelected(AngularViewController.getPreferenceGridlinesShow());
+
+            rangeXLowerLabel.setEnabled(rangeXCheckBox.isSelected());
+            rangeXLowerTextField.setEnabled(rangeXCheckBox.isSelected());
+            rangeXUpperLabel.setEnabled(rangeXCheckBox.isSelected());
+            rangeXUpperTextField.setEnabled(rangeXCheckBox.isSelected());
+            rangeYLowerLabel.setEnabled(rangeYCheckBox.isSelected());
+            rangeYLowerTextField.setEnabled(rangeYCheckBox.isSelected());
+            rangeYUpperLabel.setEnabled(rangeYCheckBox.isSelected());
+            rangeYUpperTextField.setEnabled(rangeYCheckBox.isSelected());
+        } catch (Exception e) {
+        }
+        loadingPreferences = false;
+
+
+    }
+    
 
     private void selectAngularBands() {
         final RasterDataNode currentRaster = currentView.getRaster();
@@ -692,127 +990,92 @@ public class AngularTopComponent extends ToolTopComponent {
         return showAngularViewsForAllPinsButton.isSelected();
     }
 
-
-
-    private void runProgressMonitorForCursor() {
-        // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
-
-        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                "Collecting Angular Data") {
-
-            @Override
-            protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-
-                int totalWorkPlanned = 100;
-                pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
-
-                try {
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
-
-                    updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
-                    chartHandler.setEmptyPlot();
-
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        pm.done();
-                        return null;
-                    }
-
-                    chartPanel.repaint();
-
-                    updateUIState();
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
-
-                } finally {
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
-
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return null;
-                    }
-                    pm.done();
-                }
-
-                // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END");
-
-                return null;
-            }
-        };
-
-        pmSwingWorker.executeWithBlocking();
-        // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END2");
-
-    }
-
-
-
+    
     private  void recreateChart() {
         // System.out.println("INSIDE Angular View: recreateChart()");
-
         recreateChart(false);
     }
 
 
     private void recreateChart(boolean showProgress) {
-        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress)");
+
+        printDebugMsg("INSIDE: recreateChart(boolean showProgress)");
+        // System.out.println("SnapApp.getDefault().getInstanceName() = " + SnapApp.getDefault().getInstanceName() );
 
         if (showProgress) {
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 1");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 1");
 
             ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
-                    "Collecting Angular Data") {
+                    "Collecting Angular Data for Pins") {
 
                 @Override
                 protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
 
-                    int totalWorkPlanned = 100;
-                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
+                    totalWorkPlannedMaster = 100;
+                    workDoneMaster = 0;
+                    if (pm == null) {
+                        return null;
+                    }
+
+                    pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlannedMaster);
 
                     try {
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 2");
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 2");
 
-                        chartHandler.updateData(pm, (totalWorkPlanned - 10));
-                        if (pm != null && pm.isCanceled()) {
+                        // Allow progress monitor to fill up to 95% -- to prevent its premature closing
+                        int work95Percent = (int) Math.floor(totalWorkPlannedMaster * 0.95);
+                        chartHandler.updateData(pm, work95Percent);
+                        if (pm.isCanceled()) {
                             cancelActions();
                             pm.done();
                             return null;
                         }
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 3");
 
                         chartHandler.updateChart();
+
                         updateChart(true);
+                        if (workDoneMaster > totalWorkPlannedMaster) {
+                            pm.worked(1);
+                        }
+
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 4");
+
                         chartPanel.repaint();
+                        if (workDoneMaster > totalWorkPlannedMaster) {
+                            pm.worked(1);
+                        }
 
                         updateUIState();
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS 3");
 
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS 5");
                     } finally {
-                        // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS Finally");
+                        printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS Finally");
 
-                        if (pm != null && pm.isCanceled()) {
+                        if (pm.isCanceled()) {
                             cancelActions();
                             return null;
                         }
                         pm.done();
                     }
 
-                    // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END");
+                    printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS END");
 
                     return null;
                 }
             };
 
             pmSwingWorker.executeWithBlocking();
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - PROGRESS END2");
-
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - PROGRESS END after blocking");
 
         } else {
-            // System.out.println("INSIDE Angular View: recreateChart(boolean showProgress) - NO PROGRESS");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS");
 
-            chartHandler.updateData(null, 0);
+            chartHandler.updateData();
             chartHandler.updateChart();
             chartPanel.repaint();
             updateUIState();
-            // System.out.println("INSIDE Angular View Tool: recreateChart(boolean showProgress) - NO PROGRESS END");
+            printDebugMsg("INSIDE: recreateChart(boolean showProgress) - NO PROGRESS END");
         }
     }
 
@@ -821,89 +1084,114 @@ public class AngularTopComponent extends ToolTopComponent {
     Placemark[] getDisplayedPins() {
         if (isShowingAngularViewsForSelectedPins() && currentView != null) {
             return currentView.getSelectedPins();
-        } else if (isShowingAngularViewsForAllPins() && getCurrentProduct() != null) {
-            ProductNodeGroup<Placemark> pinGroup = getCurrentProduct().getPinGroup();
+        } else if (isShowingAngularViewsForAllPins() && currentProduct != null) {
+            ProductNodeGroup<Placemark> pinGroup = currentProduct.getPinGroup();
             return pinGroup.toArray(new Placemark[pinGroup.getNodeCount()]);
         } else {
             return new Placemark[0];
         }
     }
+    
+    
 
     private void setUpAngularViews() {
+        printDebugMsg("setUpSpectra START");
         if (currentView == null) {
             return;
         }
-        DisplayableAngularview[] angularViews;
+
         final RasterDataNode raster = currentView.getRaster();
         final AngularBand[] availableAngularBands = getAvailableAngularBands(raster);
         if (availableAngularBands.length == 0) {
-            angularViews = new DisplayableAngularview[]{};
-        } else {
-//            if (currentProduct.getName().contains("HARP2")) {
-//                currentProduct.setAutoGrouping("I_*_549:I_*_669:I_*_867:I_*_441:Q_*_549:Q_*_669:Q_*_867:Q_*_441:" +
-//                        "U_*_549:U_*_669:U_*_867:U_*_441:DOLP_*_549:DOLP_*_669:DOLP_*_867:DOLP_*_441:" +
-//                        "I_noise_*_549:I_noise_*_669:I_noise_*_867:I_noise_*_441:Q_noise_*_549:Q_noise_*_669:Q_noise_*_867:Q_noise_*_441:" +
-//                        "U_noise_*_549:U_noise_*_669:U_noise_*_867:U_noise_*_441:DOLP_noise_*_549:DOLP_noise_*_669:DOLP_noise_*_867:DOLP_noise_*_441:" +
-//                        "Sensor_Zenith:Sensor_Azimuth:Solar_Zenith:Solar_Azimuth:obs_per_view:view_time_offsets");
-//            }
-            final BandGroup autoGrouping = currentProduct.getAutoGrouping();
-            if (autoGrouping != null) {
-                final int selectedAngularViewIndex = autoGrouping.indexOf(raster.getName());
-                DisplayableAngularview[] autoGroupingAngularViews = new DisplayableAngularview[autoGrouping.size()];
-                final Iterator<String[]> iterator = autoGrouping.iterator();
-                int i = 0;
-                while (iterator.hasNext()) {
-                    final String[] autoGroupingNameAsArray = iterator.next();
-                    StringBuilder angularViewNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
-                    if (autoGroupingNameAsArray.length > 1) {
-                        for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
-                            String autoGroupingNamePart = autoGroupingNameAsArray[j];
-                            angularViewNameBuilder.append("_").append(autoGroupingNamePart);
-                        }
-                    }
-                    final String angularViewName = angularViewNameBuilder.toString();
-                    int symbolIndex = AngularViewShapeProvider.getValidIndex(i, false);
-                    DisplayableAngularview angularView = new DisplayableAngularview(angularViewName, symbolIndex);
-                    angularView.setSelected(i == selectedAngularViewIndex);
-                    angularView.setLineStyle(AngularViewStrokeProvider.getStroke(i));
-                    autoGroupingAngularViews[i++] = angularView;
-                }
-                List<AngularBand> ungroupedBandsList = new ArrayList<>();
-                for (AngularBand availableAngularBand : availableAngularBands) {
-                    final String bandName = availableAngularBand.getName();
-                    availableAngularBand.setSelected(false);
-                    if (currentProduct.getName().contains("SPEX")) {
-                        if (bandName.contains("385") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    if (currentProduct.getName().contains("HARP2")) {
-                        if (bandName.contains("549") && availableAngularBand.getOriginalBand().getDescription().equals("I")) {
-                            availableAngularBand.setSelected(true);
-                        }
-                    }
-                    final int angularViewIndex = autoGrouping.indexOf(bandName);
-                    if (angularViewIndex != -1) {
-                        autoGroupingAngularViews[angularViewIndex].addBand(availableAngularBand);
-                    } else {
-                        ungroupedBandsList.add(availableAngularBand);
-                    }
-                }
-                if (ungroupedBandsList.size() == 0) {
-                    angularViews = autoGroupingAngularViews;
-                } else {
-                    final DisplayableAngularview[] angularViewsFromUngroupedBands =
-                            createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[0]),
-                                    AngularViewShapeProvider.getValidIndex(i, false), i);
-                    angularViews = new DisplayableAngularview[autoGroupingAngularViews.length + angularViewsFromUngroupedBands.length];
-                    System.arraycopy(autoGroupingAngularViews, 0, angularViews, 0, autoGroupingAngularViews.length);
-                    System.arraycopy(angularViewsFromUngroupedBands, 0, angularViews, autoGroupingAngularViews.length, angularViewsFromUngroupedBands.length);
-                }
-            } else {
-                angularViews = createAngularViewsFromUngroupedBands(availableAngularBands, 1, 0);
-            }
+            rasterToAngularMap.put(raster, new DisplayableAngularview[0]);
+            return;
         }
-        rasterToAngularMap.put(raster, angularViews);
+
+
+        int displayIndex = 0;
+        final List<DisplayableAngularview> spectra = new ArrayList<>();
+        final BandGroup[] userBandGroups = bandGroupsManager.getGroupsMatchingProduct(currentProduct);
+        if (userBandGroups.length > 0) {
+            final DisplayableAngularview[] userGroupingSpectra = new DisplayableAngularview[userBandGroups.length];
+            for (int i = 0; i < userBandGroups.length; i++) {
+                final int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final BandGroup userBandGroup = userBandGroups[i];
+                final DisplayableAngularview autoGroupingAngularViews = new DisplayableAngularview(userBandGroup.getName(), symbolIndex);
+                autoGroupingAngularViews.setSelected(false);
+                autoGroupingAngularViews.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+
+                String[] bandNames = userBandGroup.getMatchingBandNames(currentProduct);
+                for (final String bandName : bandNames) {
+                    for (AngularBand availableAngularBand : availableAngularBands) {
+                        if (availableAngularBand.getName().equals(bandName)) {
+                            autoGroupingAngularViews.addBand(availableAngularBand);
+                        }
+                    }
+                }
+
+                userGroupingSpectra[i] = autoGroupingAngularViews;
+            }
+
+            spectra.addAll(Arrays.asList(userGroupingSpectra));
+        }
+
+
+        final BandGroup autoGrouping = currentProduct.getAutoGrouping();
+        if (autoGrouping != null) {
+            final int selectedAngularIndex = autoGrouping.indexOf(raster.getName());
+            DisplayableAngularview[] autoGroupingAngular = new DisplayableAngularview[autoGrouping.size()];
+            final Iterator<String[]> iterator = autoGrouping.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                final String[] autoGroupingNameAsArray = iterator.next();
+                StringBuilder angularNameBuilder = new StringBuilder(autoGroupingNameAsArray[0]);
+                if (autoGroupingNameAsArray.length > 1) {
+                    for (int j = 1; j < autoGroupingNameAsArray.length; j++) {
+                        String autoGroupingNamePart = autoGroupingNameAsArray[j];
+                        angularNameBuilder.append("_").append(autoGroupingNamePart);
+                    }
+                }
+
+                final String angularName = StringUtils.cleanUpGroupName(angularNameBuilder.toString());
+
+                int symbolIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                DisplayableAngularview angularView = new DisplayableAngularview(angularName, symbolIndex);
+                angularView.setSelected(i == selectedAngularIndex);
+                angularView.setLineStyle(SpectrumStrokeProvider.getStroke(i));
+                autoGroupingAngular[i] = angularView;
+                i++;
+            }
+            List<AngularBand> ungroupedBandsList = new ArrayList<>();
+            for (AngularBand availableAngularBand : availableAngularBands) {
+                final String bandName = availableAngularBand.getName();
+//                if (currentProduct.getName().contains("SPEX")) {
+//                    availableAngularBand.setSelected(false);
+//                }
+                final int spectrumIndex = autoGrouping.indexOf(bandName);
+                if (spectrumIndex != -1) {
+                    autoGroupingAngular[spectrumIndex].addBand(availableAngularBand);
+                } else {
+                    ungroupedBandsList.add(availableAngularBand);
+                }
+            }
+
+            spectra.addAll(Arrays.asList(autoGroupingAngular));
+            if (!ungroupedBandsList.isEmpty()) {
+                int validIndex = SpectrumShapeProvider.getValidIndex(displayIndex, false);
+                ++displayIndex;
+                final DisplayableAngularview[] spectraFromUngroupedBands =
+                        createAngularViewsFromUngroupedBands(ungroupedBandsList.toArray(new AngularBand[0]),
+                                validIndex, i);
+                spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+            }
+        } else {
+            DisplayableAngularview[] spectraFromUngroupedBands = createAngularViewsFromUngroupedBands(availableAngularBands, 1, 0);
+            spectra.addAll(Arrays.asList(spectraFromUngroupedBands));
+        }
+        rasterToAngularMap.put(raster, spectra.toArray(new DisplayableAngularview[0]));
+        printDebugMsg("setUpSpectra FINISH");
     }
 
     //package local for testing
@@ -988,8 +1276,14 @@ public class AngularTopComponent extends ToolTopComponent {
 
     @Override
     protected void productSceneViewSelected(ProductSceneView view) {
+        
         if (angularViewToolIsOpen) {
             // System.out.println("Listening Angular View Tool: productSceneViewSelected");
+            showAngularViewsForAllPinsButton.setSelected(false);
+            showAngularViewsForCursorButton.setSelected(false);
+            showAngularViewsForSelectedPinsButton.setSelected(false);
+            loadingPreferences = false;
+
             view.addPixelPositionListener(pixelPositionListener);
             setCurrentView(view);
             updateChart(true);
@@ -1000,13 +1294,27 @@ public class AngularTopComponent extends ToolTopComponent {
     protected void productSceneViewDeselected(ProductSceneView view) {
         if (angularViewToolIsOpen) {
             // System.out.println("Listening Angular View Tool: productSceneViewDeselected");
+            showAngularViewsForAllPinsButton.setSelected(false);
+            showAngularViewsForCursorButton.setSelected(false);
+            showAngularViewsForSelectedPinsButton.setSelected(false);
+            loadingPreferences = false;
+
             view.removePixelPositionListener(pixelPositionListener);
             setCurrentView(null);
+            chartHandler.setEmptyPlot();
         }
     }
 
     @Override
     protected void componentOpened() {
+        if (this.wasOpenedBefore) {
+            // commenting out as this gets handled in the setCurrentView method
+//            setUpAngularViews();
+        } else {
+            this.wasOpenedBefore = true;
+        }
+
+        loadingPreferences = false;
         // System.out.println("Listening Angular View Tool: componentOpened");
         angularViewToolIsOpen = true;
 
@@ -1020,12 +1328,16 @@ public class AngularTopComponent extends ToolTopComponent {
             setCurrentView(selectedProductSceneView);
             updateChart(true);
         }
+
+        loadPreferences();
+        updateChart(true);
     }
 
     @Override
     protected void componentClosed() {
         // System.out.println("Listening Angular View Tool: componentClosed");
         angularViewToolIsOpen = false;
+        loadingPreferences = false;
 
         showAngularViewsForAllPinsButton.setSelected(false);
         showAngularViewsForCursorButton.setSelected(false);
@@ -1035,12 +1347,7 @@ public class AngularTopComponent extends ToolTopComponent {
             currentView.removePixelPositionListener(pixelPositionListener);
             setCurrentView(null);
         }
-
-        if (currentProduct != null) {
-            currentProduct.removeProductNodeListener(productNodeHandler);
-        }
-
-
+        
         chartHandler.setEmptyPlot();
         removeCursorAngularViewsFromDataset();
     }
@@ -1054,8 +1361,11 @@ public class AngularTopComponent extends ToolTopComponent {
 
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
-        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular view selected";
+        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
         private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
+        private static final String MESSAGE_CURSOR_MODE_OFF = "Cursor Mode de-activated.";
+        private static final String MESSAGE_CURSOR_MODE_NAN = "Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.";
+        private static final String MESSAGE_CURSOR_NOT_ON_IMAGE = "Cursor Mode activated.\n  \nHover cursor over the image.";
 
         private final JFreeChart chart;
         private final ChartUpdater chartUpdater;
@@ -1074,40 +1384,115 @@ public class AngularTopComponent extends ToolTopComponent {
         private void setAutomaticRangeAdjustments(boolean userInducesAutomaticAdjustment) {
             final XYPlot plot = chart.getXYPlot();
             boolean adjustmentHasChanged = false;
-            if (userInducesAutomaticAdjustment) {
-                if (!isUserInducedAutomaticAdjustmentChosen) {
-                    isUserInducedAutomaticAdjustmentChosen = true;
-                    if (!isAutomaticDomainAdjustmentSet()) {
+            
+//            if (userInducesAutomaticAdjustment) {
+//                if (!isUserInducedAutomaticAdjustmentChosen) {
+//                    isUserInducedAutomaticAdjustmentChosen = true;
+//                    if (!isAutomaticDomainAdjustmentSet()) {
+//                        plot.getDomainAxis().setAutoRange(true);
+//                        domainAxisAdjustmentIsFrozen = false;
+//                        adjustmentHasChanged = true;
+//                    }
+//                    if (!isAutomaticRangeAdjustmentSet()) {
+//                        plot.getRangeAxis().setAutoRange(true);
+//                        rangeAxisAdjustmentIsFrozen = false;
+//                        adjustmentHasChanged = true;
+//                    }
+//                }
+//            } else {
+//                if (isUserInducedAutomaticAdjustmentChosen) {
+//                    isUserInducedAutomaticAdjustmentChosen = false;
+//                    if (isAutomaticDomainAdjustmentSet()) {
+//                        plot.getDomainAxis().setAutoRange(false);
+//                        domainAxisAdjustmentIsFrozen = false;
+//                        adjustmentHasChanged = true;
+//                    }
+//                    if (isAutomaticRangeAdjustmentSet()) {
+//                        plot.getRangeAxis().setAutoRange(false);
+//                        rangeAxisAdjustmentIsFrozen = false;
+//                        adjustmentHasChanged = true;
+//                    }
+//                }
+//            }
+
+
+            domainAxisAdjustmentIsFrozen = false;
+            rangeAxisAdjustmentIsFrozen = false;
+
+            if (rangeXCheckBox.isSelected()) {
+                try {
+                    boolean validLower = false;
+                    boolean validUpper = false;
+                    if (rangeXLowerTextField.getText() != null && rangeXLowerTextField.getText().trim().length() > 0) {
+                        rangeXLower = Double.parseDouble(rangeXLowerTextField.getText());
+                        validLower = true;
+                    }
+
+                    if (rangeXUpperTextField.getText() != null && rangeXUpperTextField.getText().trim().length() > 0) {
+                        rangeXUpper = Double.parseDouble(rangeXUpperTextField.getText());
+                        validUpper = true;
+                    }
+
+                    if (validLower && validUpper) {
+                        plot.getDomainAxis().setRange(rangeXLower, rangeXUpper);
+                    } else {
                         plot.getDomainAxis().setAutoRange(true);
-                        domainAxisAdjustmentIsFrozen = false;
-                        adjustmentHasChanged = true;
+                        if (validLower) {
+                            plot.getDomainAxis().setLowerBound(rangeXLower);
+                        }
+                        if (validUpper) {
+                            plot.getDomainAxis().setUpperBound(rangeXUpper);
+                        }
                     }
-                    if (!isAutomaticRangeAdjustmentSet()) {
-                        plot.getRangeAxis().setAutoRange(true);
-                        rangeAxisAdjustmentIsFrozen = false;
-                        adjustmentHasChanged = true;
-                    }
+                    adjustmentHasChanged = true;
+                } catch (Exception e) {
                 }
             } else {
-                if (isUserInducedAutomaticAdjustmentChosen) {
-                    isUserInducedAutomaticAdjustmentChosen = false;
-                    if (isAutomaticDomainAdjustmentSet()) {
-                        plot.getDomainAxis().setAutoRange(false);
-                        domainAxisAdjustmentIsFrozen = false;
-                        adjustmentHasChanged = true;
-                    }
-                    if (isAutomaticRangeAdjustmentSet()) {
-                        plot.getRangeAxis().setAutoRange(false);
-                        rangeAxisAdjustmentIsFrozen = false;
-                        adjustmentHasChanged = true;
-                    }
-                }
+                plot.getDomainAxis().setAutoRange(true);
+                adjustmentHasChanged = true;
             }
+
+
+
+            if (rangeYCheckBox.isSelected()) {
+                try {
+                    boolean validLower = false;
+                    boolean validUpper = false;
+                    if (rangeYLowerTextField.getText() != null && rangeYLowerTextField.getText().trim().length() > 0) {
+                        rangeYLower = Double.parseDouble(rangeYLowerTextField.getText());
+                        validLower = true;
+                    }
+
+                    if (rangeYUpperTextField.getText() != null && rangeYUpperTextField.getText().trim().length() > 0) {
+                        rangeYUpper = Double.parseDouble(rangeYUpperTextField.getText());
+                        validUpper = true;
+                    }
+
+                    if (validLower && validUpper) {
+                        plot.getRangeAxis().setRange(rangeYLower, rangeYUpper);
+                    } else {
+                        plot.getRangeAxis().setAutoRange(true);
+                        if (validLower) {
+                            plot.getRangeAxis().setLowerBound(rangeYLower);
+                        }
+                        if (validUpper) {
+                            plot.getRangeAxis().setUpperBound(rangeYUpper);
+                        }
+                    }
+                    adjustmentHasChanged = true;
+                } catch (Exception e) {
+                }
+            } else {
+                plot.getRangeAxis().setAutoRange(true);
+                adjustmentHasChanged = true;
+            }
+
             if (adjustmentHasChanged) {
                 chartUpdater.invalidatePlotBounds();
             }
         }
 
+        
         private boolean isAutomaticDomainAdjustmentSet() {
             return chart.getXYPlot().getDomainAxis().isAutoRange();
         }
@@ -1136,7 +1521,11 @@ public class AngularTopComponent extends ToolTopComponent {
             }
             List<DisplayableAngularview> angularViews = getSelectedAngularViews();
             chartUpdater.updateChart(chart, angularViews);
-            chart.getXYPlot().clearAnnotations();
+//            chart.getXYPlot().clearAnnotations();
+        }
+
+        private void updateData() {
+            updateData(null, 0);
         }
 
         private void updateData(com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
@@ -1153,7 +1542,7 @@ public class AngularTopComponent extends ToolTopComponent {
             } else if (getAllAngularViews().length == 0) {
                 setPlotMessage(MESSAGE_NO_AngularView_SELECTED);
             } else {
-//                setPlotMessage(MESSAGE_NO_ANGULAR_BANDS);
+                setPlotMessage(MESSAGE_NO_ANGULAR_BANDS);
             }
         }
 
@@ -1170,16 +1559,21 @@ public class AngularTopComponent extends ToolTopComponent {
             chartUpdater.removeBandinformation(band);
         }
 
-        private void setPlotMessage(String messageText) {
+        public void setPlotMessage(String messageText) {
             chart.getXYPlot().clearAnnotations();
-            TextTitle tt = new TextTitle(messageText);
-            tt.setTextAlignment(HorizontalAlignment.RIGHT);
-            tt.setFont(chart.getLegend().getItemFont());
-            tt.setBackgroundPaint(new Color(200, 200, 255, 50));
-            tt.setFrame(new BlockBorder(Color.white));
-            tt.setPosition(RectangleEdge.BOTTOM);
-            XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
-            chart.getXYPlot().addAnnotation(message);
+            if (messageText != null && messageText.trim().length() > 0) {
+                TextTitle tt = new TextTitle(messageText);
+                tt.setTextAlignment(HorizontalAlignment.LEFT);
+                tt.setFont(chart.getLegend().getItemFont());
+                tt.setPaint(new Color(0, 0, 150, 255));
+                tt.setBackgroundPaint(new Color(240, 240, 240, 150));
+                tt.setFrame(new BlockBorder(1,1,1,1, new Color(130, 130, 130, 150)));
+                tt.setPosition(RectangleEdge.BOTTOM);
+                tt.setPadding(10,10,10,10);
+                tt.setToolTipText("Operational display message");
+                XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
+                chart.getXYPlot().addAnnotation(message);
+            }
         }
 
         public boolean showsValidCursorAngularViews() {
@@ -1192,6 +1586,18 @@ public class AngularTopComponent extends ToolTopComponent {
 
         public void setCollectingAngularInformationMessage() {
             setPlotMessage(MESSAGE_COLLECTING_ANGULAR_INFORMATION);
+        }
+
+        public void setMessageCursorNotOnImage() {
+            setPlotMessage(MESSAGE_CURSOR_NOT_ON_IMAGE);
+        }
+
+        public void setMessageCursorModeNan() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_NAN);
+        }
+
+        public void setMessageCursorModeOff() {
+            setPlotMessage(MESSAGE_CURSOR_MODE_OFF);
         }
     }
 
@@ -1233,19 +1639,27 @@ public class AngularTopComponent extends ToolTopComponent {
 
         private void updateData(JFreeChart chart, List<DisplayableAngularview> angularViews, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
             dataset = new XYSeriesCollection();
+
             if (rasterLevel >= 0) {
-                if (getDisplayedPins().length > 0 && isShowingCursorAngularView()) {
-                    totalWorkPlanned = totalWorkPlanned/2;
+                printDebugMsg("totalWorkPlanned=" + totalWorkPlanned);
+
+                if (getDisplayedPins().length > 0) {
+                    printDebugMsg("fillDatasetWithPinSeries: START");
+                    fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
+                    printDebugMsg("fillDatasetWithPinSeries: FINISH");
                 }
 
-                // System.out.println("totalWorkPlanned=" + totalWorkPlanned);
 
-                fillDatasetWithPinSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
-                fillDatasetWithCursorSeries(angularViews, dataset, chart, pm, totalWorkPlanned);
+
+                if (isShowingCursorAngularView()) {
+                    printDebugMsg("fillDatasetWithCursorSeries: START");
+                    fillDatasetWithCursorSeries(angularViews, dataset, chart);
+                    printDebugMsg("fillDatasetWithCursorSeries: FINISH");
+                }
             }
         }
 
@@ -1285,7 +1699,8 @@ public class AngularTopComponent extends ToolTopComponent {
                 unitToBeDisplayed = angularViews.get(0).getUnit();
                 int i = 1;
                 while (i < angularViews.size() && !unitToBeDisplayed.equals(DisplayableAngularview.MIXED_UNITS)) {
-                    DisplayableAngularview displayableAngularView = angularViews.get(i++);
+                    DisplayableAngularview displayableAngularView = angularViews.get(i);
+                    i++;
                     if (displayableAngularView.hasSelectedBands() && !unitToBeDisplayed.equals(displayableAngularView.getUnit())) {
                         unitToBeDisplayed = DisplayableAngularview.MIXED_UNITS;
                     }
@@ -1331,30 +1746,58 @@ public class AngularTopComponent extends ToolTopComponent {
             }
         }
 
-        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithCursorSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart) {
             showsValidCursorAngularViews = false;
             if (modelP == null) {
                 return;
             }
+
+            boolean cursorOverScene = false;
+
+            long start = System.currentTimeMillis();
+            printDebugMsg("fillDatasetWithCursorSeries: START");
+
+            int workDone2 = 0;
+            int totalWorkPlanned2 = 100;
+
             if (isShowingCursorAngularView() && currentView != null) {
-                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-                int workDone = 0;
+                printDebugMsg("fillDatasetWithCursorSeries: START 2");
+
+                int totalWorkPlannedPerAngularView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
+
+                PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
 
                 for (DisplayableAngularview angularView : angularViews) {
+                    printDebugMsg("fillDatasetWithCursorSeries: spectra");
+
                     XYSeries series = new XYSeries(angularView.getName());
                     final Band[] angularBands = angularView.getSelectedBands();
 
                     int numBands = angularBands.length;
-                    double incrementLengthNumBands = (totalWorkPlannedPerAngularView > 0) ? numBands / totalWorkPlannedPerAngularView : numBands;
+                    double incrementLengthNumBands = (totalWorkPlannedPerAngularView > 0) ? (double) numBands / totalWorkPlannedPerAngularView : (double) numBands;
                     double nextIncrementFinishedBandCount = incrementLengthNumBands;
                     int bandCount = 0;
 
+                    boolean plotDisplaySetEmpty = false;
+
                     if (!currentProduct.isMultiSize()) {
                         for (Band angularBand : angularBands) {
-                            if (pm != null && pm.isCanceled()) {
-                                cancelActions();
+                            printDebugMsg("fillDatasetWithCursorSeries:  angularBand=" + angularBand.getName());
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, true, workDone2);
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showAngularViewsForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
                                 return;
                             }
+
+
                             final float viewAngle = angularBand.getAngularValue();
                             float angle_axis;
                             if (useSensorZenithButton.isSelected()) {
@@ -1366,29 +1809,48 @@ public class AngularTopComponent extends ToolTopComponent {
                             } else {
                                 angle_axis  = viewAngle;
                             }
+                            printDebugMsg("Cursor 1. angle_axis=" + angle_axis);
                             if (abs(angle_axis) > 180.0) {
                                 return;
                             }
+                            printDebugMsg("Cursor 2. angle_axis=" + angle_axis);
                             if (pixelPosInRasterBounds && isPixelValid(angularBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                 addToSeries(angularBand, rasterPixelX, rasterPixelY, rasterLevel, series, angle_axis);
                                 showsValidCursorAngularViews = true;
                             }
 
+                            cursorOverScene = pixelPosInRasterBounds;
+
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                printDebugMsg("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDone2 < totalWorkPlanned2) {
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
                         }
                     } else {
                         for (Band angularBand : angularBands) {
-                            if (pm != null && pm.isCanceled()) {
-                                cancelActions();
+
+                            printDebugMsg("fillDatasetWithCursorSeries:  MultiSize spectralBand=" + angularBand.getName());
+
+                            long finish = System.currentTimeMillis();
+                            long timeElapsed = finish - start;
+
+                            plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, true, workDone2);
+
+                            if (timeElapsed > 600000) {
+                                // it is taking too long
+                                showAngularViewsForCursorButton.setSelected(false);
+                                chart.getXYPlot().setDataset(null);
+                                dataset.removeAllSeries();
+                                setPlotChartMessage("Chart not generated due to excessive processing time");
                                 return;
                             }
+
                             final float viewAngle = angularBand.getAngularValue();
                             float angle_axis;
                             if (useSensorZenithButton.isSelected()) {
@@ -1400,14 +1862,18 @@ public class AngularTopComponent extends ToolTopComponent {
                             } else {
                                 angle_axis  = viewAngle;
                             }
+                            printDebugMsg("Cursor B-1. angle_axis=" + angle_axis);
                             if (abs(angle_axis) > 180.0) {
                                 return;
                             }
+                            printDebugMsg("Cursor B-2. angle_axis=" + angle_axis);
+
                             final AffineTransform i2m = angularBand.getImageToModelTransform();
                             if (i2m.equals(currentView.getRaster().getImageToModelTransform())) {
                                 if (pixelPosInRasterBounds && isPixelValid(angularBand, rasterPixelX, rasterPixelY, rasterLevel)) {
                                     addToSeries(angularBand, rasterPixelX, rasterPixelY, rasterLevel, series, angle_axis);
                                     showsValidCursorAngularViews = true;
+                                    cursorOverScene = pixelPosInRasterBounds;
                                 }
                             } else {
                                 //todo [Multisize_products] use scenerastertransform here
@@ -1421,32 +1887,101 @@ public class AngularTopComponent extends ToolTopComponent {
                                         isPixelValid(angularBand, rasterX, rasterY, level)) {
                                     addToSeries(angularBand, rasterX, rasterY, level, series, angle_axis);
                                     showsValidCursorAngularViews = true;
+                                    cursorOverScene = true;
                                 }
                             }
 
                             bandCount++;
-                            if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                                if (totalWorkPlanned != 0) {
-                                    if (pm != null) {pm.worked(1);}
+
+                            if (bandCount > nextIncrementFinishedBandCount) {
+                                printDebugMsg("workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                                if (workDone2 < totalWorkPlanned2) {
+                                    workDone2++;
                                 }
+
                                 nextIncrementFinishedBandCount += incrementLengthNumBands;
-                                workDone++;
                             }
                         }
                     }
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return;
-                    }
-                    updateRenderer(dataset.getSeriesCount(), Color.BLACK, angularView, chart);
-                    if (pm != null && pm.isCanceled()) {
-                        cancelActions();
-                        return;
-                    }
+
+                    updateRenderer(dataset.getSeriesCount(), null, angularView, chart);
+
                     dataset.addSeries(series);
                 }
+
+                if (showsValidCursorAngularViews) {
+                    clearPrepareForUpdateMessage();
+                } else {
+                    if (cursorOverScene) {
+                        setMessageCursorModeNan();
+                    } else {
+                        setMessageCursorNotOnImage();
+                    }
+                }
+
             }
         }
+
+        private boolean timedPlotMessages(long timeElapsed, boolean plotDisplaySetEmpty, Band  band, PerformanceParameters currentPerformanceParameters, boolean isCursorMode, int workdone) {
+
+            int tileSize = currentPerformanceParameters.getDefaultTileSize();
+            int cacheSize = currentPerformanceParameters.getCacheSize();
+            long vmXMX = currentPerformanceParameters.getVmXMX();
+            int width = band.getRasterSize().width;
+            int height = band.getRasterSize().height;
+            double sceneArea = (double) width * (double) height;
+            double tileArea = (double) tileSize * (double) tileSize;
+            String tileSizeNotice = "";
+            if (tileArea > (sceneArea / 4.0)) {
+                tileSizeNotice = "Note: reducing Tile Size may improve performance\n";
+            } else if (tileArea < (sceneArea/20.0)) {
+                tileSizeNotice = "Note: increasing Tile Size may improve performance\n";
+            }
+
+
+            if (timeElapsed > 500 && !plotDisplaySetEmpty) {
+//                                chart.getXYPlot().setDataset(null);
+                chartHandler.setEmptyPlot();
+                plotDisplaySetEmpty = true;
+//                                clearPrepareForUpdateMessage();
+            }
+
+            String workdoneStr = workdone + "% " ;
+            for (int i = 0; i < 100; i +=5) {
+                if (i < workdone) {
+                    workdoneStr += "-";
+                }
+            }
+
+            String msg = "";
+            if (isCursorMode) {
+                msg = "Please maintain current mouse hover position until fully completed.\n" +
+                        "Angular data is being initialized for tile at cursor hover position.";
+            } else {
+                msg = "Angular data is being initialized for pinned tiles.";
+            }
+
+
+            if (timeElapsed > 500) {
+                setPlotChartMessage(
+                        "Processing spectral band: " + band.getName() + "   Progress: "  + workdoneStr + "\n  \n" +
+                                msg + "\n  \n" +
+                                "Note: see 'Performance Preferences' to optimize tile sizes relative to scene size.\n" +
+                                tileSizeNotice +
+                                "Currently:" +  "\n" +
+                                "Virtual Memory - Vmx (MB): " + vmXMX  + "\n" +
+                                "Cache Size (MB): " + cacheSize + "\n" +
+                                "Tile Size: (pixels): " + tileSize + "\n" +
+                                "Scene Width (pixels): " + currentView.getRaster().getRasterWidth() + "\n" +
+                                "Scene Height (pixels): " + currentView.getRaster().getRasterHeight()
+                );
+            }
+
+            return plotDisplaySetEmpty;
+
+        }
+
 
         private void addToSeries(Band angularBand, int x, int y, int level, XYSeries series, double wavelength) {
             final double energy = ProductUtils.getGeophysicalSampleAsDouble(angularBand, x, y, level);
@@ -1461,35 +1996,54 @@ public class AngularTopComponent extends ToolTopComponent {
             return x >= 0 && y >= 0 && x < levelImage.getWidth() && y < levelImage.getHeight();
         }
 
-        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private void fillDatasetWithPinSeries(List<DisplayableAngularview> angularViews, XYSeriesCollection dataset, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             Placemark[] pins = getDisplayedPins();
 
-            totalWorkPlanned = (int) Math.floor(1.0 * totalWorkPlanned / pins.length);
-            // System.out.println("Number of pins =" + pins.length);
-            // System.out.println("(For each pin) totalWorkPlanned=" + totalWorkPlanned);
+            // it seems like most of the work is done on first pin so setting this to false for now
+            boolean splitWorkAcrossPins = false;
+            if (splitWorkAcrossPins) {
+                totalWorkPlanned2 = (int) Math.floor(1.0 * totalWorkPlanned2 / pins.length);
+            }
+
+            printDebugMsg("Number of pins =" + pins.length);
+            printDebugMsg("(For each pin) totalWorkPlanned=" + totalWorkPlanned2);
 
             for (Placemark pin : pins) {
-                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned);
+                printDebugMsg("Processing a pin");
+                List<XYSeries> pinSeries = createXYSeriesFromPin(pin, dataset.getSeriesCount(), angularViews, chart, pm, totalWorkPlanned2);
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return;
                 }
+
+                printDebugMsg("Processing a pin (PART 2)");
                 pinSeries.forEach(dataset::addSeries);
             }
         }
 
-        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned) {
+        private List<XYSeries> createXYSeriesFromPin(Placemark pin, int seriesIndex, List<DisplayableAngularview> angularViews, JFreeChart chart, com.bc.ceres.core.ProgressMonitor pm, int totalWorkPlanned2) {
             List<XYSeries> pinSeries = new ArrayList<>();
             Color pinColor = PlacemarkUtils.getPlacemarkColor(pin, currentView);
 
-            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned / angularViews.size());
-            int workDone = 0;
+            int workDone2 = 0;
+
+            int totalWorkPlannedPerAngleView = (int) Math.floor(1.0 * totalWorkPlanned2 / angularViews.size());
+            printDebugMsg("createXYSeriesFromPin: spectra.size()=" + angularViews.size());
+            printDebugMsg("createXYSeriesFromPin: totalWorkPlannedPerSpectra=" + totalWorkPlannedPerAngleView);
+
+            long start = System.currentTimeMillis();
+            boolean plotDisplaySetEmpty = false;
+            PerformanceParameters currentPerformanceParameters = ConfigurationOptimizer.getInstance().getActualPerformanceParameters();
+
+            clearPrepareForUpdateMessage();
+
 
             for (DisplayableAngularview angularView : angularViews) {
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+
                 XYSeries series = new XYSeries(angularView.getName() + "_" + pin.getLabel());
                 final Band[] angularBands = angularView.getSelectedBands();
                 Map<Band, Double> bandToEnergy;
@@ -1501,11 +2055,34 @@ public class AngularTopComponent extends ToolTopComponent {
                 }
 
                 int numBands = angularBands.length;
-                double incrementLengthNumBands = (totalWorkPlannedPerAngleView > 0) ? numBands / totalWorkPlannedPerAngleView : numBands;
+                printDebugMsg("createXYSeriesFromPin: numBands=" + numBands);
+
+                double incrementLengthNumBands = (totalWorkPlannedPerAngleView > 0) ? (double) numBands / totalWorkPlannedPerAngleView : (double) numBands;
+                printDebugMsg("createXYSeriesFromPin: incrementLengthNumBands=" + incrementLengthNumBands);
+
                 double nextIncrementFinishedBandCount = incrementLengthNumBands;
                 int bandCount = 0;
 
                 for (Band angularBand : angularBands) {
+                    printDebugMsg("createXYSeriesFromPin: spectralBand=" + angularBand);
+
+                    long finish = System.currentTimeMillis();
+                    long timeElapsed = finish - start;
+
+                    plotDisplaySetEmpty = timedPlotMessages(timeElapsed,  plotDisplaySetEmpty,   angularBand,  currentPerformanceParameters, false, workDone2);
+
+//                    if (timeElapsed > 500) {
+//                        setPlotChartMessage("Processing band=" + spectralBand.getName());
+//                    }
+
+                    if (pm != null && pm.isCanceled()) {
+                        cancelActions();
+                        return null;
+                    }
+
+
+
+
                     double energy;
                     if (bandToEnergy.containsKey(angularBand)) {
                         energy = bandToEnergy.get(angularBand);
@@ -1513,42 +2090,73 @@ public class AngularTopComponent extends ToolTopComponent {
                         energy = readEnergy(pin, angularBand);
                         bandToEnergy.put(angularBand, energy);
                     }
+
                     final float viewAngle = angularBand.getAngularValue();
                     float angle_axis;
                     if (useSensorZenithButton.isSelected()) {
                         angle_axis = (float) get_sensor_zenith(viewAngle);
                     } else if (useSensorAzimuthButton.isSelected()){
                         angle_axis = (float) get_sensor_azimuth(viewAngle);
+                    } else if (useScatteringAngleButton.isSelected()){
+                        angle_axis = (float) get_scattering_angle(viewAngle);
                     } else {
                         angle_axis  = viewAngle;
                     }
+                    printDebugMsg("1. angle_axis=" + angle_axis);
                     if (abs(angle_axis) > 180.0) {
                         return pinSeries;
                     }
+                    printDebugMsg("2. angle_axis=" + angle_axis);
+
+
                     if (energy != angularBand.getGeophysicalNoDataValue()) {
+                        printDebugMsg("3. angle_axis=" + angle_axis);
+
                         series.add(angle_axis, energy);
                     }
 
                     bandCount++;
-                    if (workDone < totalWorkPlanned && bandCount > nextIncrementFinishedBandCount) {
-                        if (totalWorkPlanned != 0) {
-                            if (pm != null) {pm.worked(1);}
+
+                    if (bandCount > nextIncrementFinishedBandCount) {
+                        printDebugMsg("createXYSeriesFromPin: workDoneMaster=" + workDoneMaster + "  totalWorkPlannedMaster=" + totalWorkPlannedMaster);
+                        printDebugMsg("createXYSeriesFromPin: workDone2=" + workDone2 + "  totalWorkPlanned2=" + totalWorkPlanned2);
+
+                        if (workDoneMaster < totalWorkPlannedMaster && workDone2 < totalWorkPlanned2) {
+                            if (totalWorkPlanned2 != 0) {
+                                if (pm != null) {pm.worked(1);}
+                            }
+                            workDoneMaster++;
+                            workDone2++;
                         }
+
                         nextIncrementFinishedBandCount += incrementLengthNumBands;
-                        workDone++;
                     }
                 }
+
+                clearPrepareForUpdateMessage();
+
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
-                updateRenderer(seriesIndex++, pinColor, angularView, chart);
+
+                printDebugMsg("createXYSeriesFromPin: test1");
+
+                if (!usePinColorCheckBox.isSelected()) {
+                    pinColor = null;
+                }
+                updateRenderer(seriesIndex, pinColor, angularView, chart);
+                seriesIndex++;
                 if (pm != null && pm.isCanceled()) {
                     cancelActions();
                     return null;
                 }
+                printDebugMsg("createXYSeriesFromPin: test2");
+
                 pinSeries.add(series);
+                printDebugMsg("createXYSeriesFromPin: test3");
             }
+
             return pinSeries;
         }
 
@@ -1598,6 +2206,10 @@ public class AngularTopComponent extends ToolTopComponent {
             Shape symbol = angularView.getScaledShape();
             renderer.setSeriesShape(seriesIndex, symbol);
             renderer.setSeriesShapesVisible(seriesIndex, true);
+
+            if (seriesColor == null) {
+                seriesColor = angularView.getColor();
+            }
 
             renderer.setSeriesPaint(seriesIndex, seriesColor);
         }
@@ -1694,16 +2306,23 @@ public class AngularTopComponent extends ToolTopComponent {
             final List<DisplayableAngularview> angularViews = getSelectedAngularViews();
             for (Placemark pin : displayedPins) {
                 Paint pinPaint = PlacemarkUtils.getPlacemarkColor(pin, currentView);
+
+                if (!usePinColorCheckBox.isSelected()) {
+                    pinPaint = null;
+                }
+                final Paint pinPaintFinal = pinPaint;
+
                 angularViews.stream().filter(DisplayableAngularview::hasSelectedBands).forEach(angularView -> {
                     String legendLabel = pin.getLabel() + "_" + angularView.getName();
-                    LegendItem item = createLegendItem(angularView, pinPaint, legendLabel);
+
+                    LegendItem item = createLegendItem(angularView, pinPaintFinal, legendLabel);
                     itemCollection.add(item);
                 });
             }
             if (isShowingCursorAngularView() && showsValidCursorAngularViews()) {
                 angularViews.stream().filter(DisplayableAngularview::hasSelectedBands).forEach(angularView -> {
                     Paint defaultPaint = Color.BLACK;
-                    LegendItem item = createLegendItem(angularView, defaultPaint, angularView.getName());
+                    LegendItem item = createLegendItem(angularView, null, angularView.getName());
                     itemCollection.add(item);
                 });
             }
@@ -1715,6 +2334,9 @@ public class AngularTopComponent extends ToolTopComponent {
             Line2D lineShape = new Line2D.Double(0, 5, 40, 5);
             Stroke lineStyle = angularView.getLineStyle();
             Shape symbol = angularView.getScaledShape();
+            if (paint == null) {
+                paint = angularView.getColor();
+            }
             return new LegendItem(legendLabel, legendLabel, legendLabel, legendLabel,
                     true, symbol, false,
                     paint, true, paint, outlineStroke,
@@ -1813,9 +2435,6 @@ public class AngularTopComponent extends ToolTopComponent {
         }
 
         private void removeBandFromAngularViews(Band band) {
-            if (currentView == null) {
-                return;
-            }
             DisplayableAngularview[] allAngularViews = rasterToAngularMap.get(currentView.getRaster());
             for (DisplayableAngularview displayableAngularView : allAngularViews) {
                 Band[] angularBands = displayableAngularView.getAngularBands();
@@ -1844,6 +2463,13 @@ public class AngularTopComponent extends ToolTopComponent {
             recreateChart();
         }
 
+    }
+
+    static void printDebugMsg(String msg) {
+        boolean debugOn = false;
+        if (debugOn) {
+            System.out.println(msg);
+        }
     }
 
 }
