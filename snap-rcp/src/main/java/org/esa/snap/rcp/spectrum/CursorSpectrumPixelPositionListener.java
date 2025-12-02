@@ -69,6 +69,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected void done() {
             topComponent.updateChart();
+            if (topComponent.isShowingCursorSpectrum()) {
+                topComponent.setMessageCursorNotOnImage();
+            } else {
+//                topComponent.setPlotChartMessage("Cursor Mode is de-activated.");
+            }
+
             support.removeWorkerAndStartNext(this);
         }
     }
@@ -99,7 +105,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
                 waiter.execute();
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
-                waiter.clearMessage();
+//                waiter.clearMessage();
             }
             return null;
         }
@@ -125,7 +131,7 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
+//            topComponent.setPrepareForUpdateMessage();
         }
 
         void clearMessage() {
