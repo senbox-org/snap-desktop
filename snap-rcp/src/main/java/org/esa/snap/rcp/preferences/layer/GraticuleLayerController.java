@@ -160,6 +160,10 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_NAME, GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_TRANSPARENCY_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME, GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT);
 
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY, true);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY, GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY, GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT);
+
         restoreDefaults =  initPropertyDefaults(context, GraticuleLayerType.PROPERTY_RESTORE_DEFAULTS_NAME, GraticuleLayerType.PROPERTY_RESTORE_TO_DEFAULTS_DEFAULT);
 
 
@@ -706,6 +710,25 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 key = GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
                 description = GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TOOLTIP)
         Color insideLabelsBgColor = GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT;
+
+
+
+        // Flip Warning Section
+
+        @Preference(label = GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_LABEL,
+                key = GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY,
+                description = GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_TOOLTIP)
+        boolean flipWarningSection = true;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_LABEL,
+                key = GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY,
+                description = GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_TOOLTIP)
+        boolean flipWarningEnableDefault = GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_LABEL,
+                key = GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY,
+                description = GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_TOOLTIP)
+        Color flipWarningColorDefault = GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT;
 
 
         // Restore Defaults Section
