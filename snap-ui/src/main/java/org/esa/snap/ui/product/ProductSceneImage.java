@@ -1035,6 +1035,23 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
 
 
+
+        // Flip Warning Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_TYPE);
+
+
     }
 
 
