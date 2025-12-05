@@ -443,6 +443,28 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(innerLabelsBgColorPD);
 
 
+        // Flip Warning Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_TOOLTIP);
+
+        PropertyDescriptor flipWarningEnablePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY, Boolean.class);
+        flipWarningEnablePD.setDefaultValue(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT);
+        flipWarningEnablePD.setDisplayName(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_LABEL);
+        flipWarningEnablePD.setDescription(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_TOOLTIP);
+        flipWarningEnablePD.setDefaultConverter();
+        addPropertyDescriptor(flipWarningEnablePD);
+
+        PropertyDescriptor flipWarningColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY, Color.class);
+        flipWarningColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT);
+        flipWarningColorPD.setDisplayName(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_LABEL);
+        flipWarningColorPD.setDescription(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_TOOLTIP);
+        flipWarningColorPD.setDefaultConverter();
+        addPropertyDescriptor(flipWarningColorPD);
+
+
+
         BindingContext bindingContext = getBindingContext();
 
 
@@ -518,6 +540,15 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
         bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME, tickMarkEnabled,
                 GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+
+
+
+        boolean flipWarningEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY, flipWarningEnabled,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY, flipWarningEnabled);
+
 
 
     }
