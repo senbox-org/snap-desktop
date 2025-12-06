@@ -69,7 +69,7 @@ public class SeadasAboutBox extends JPanel {
 
 
 
-        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.png");
+        URL resourceUrl = SnapAboutBox.getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner2.png");
         if (resourceUrl == null) {
             resourceUrl = SnapAboutBox.class.getResource("about_seadas.png");
         }
