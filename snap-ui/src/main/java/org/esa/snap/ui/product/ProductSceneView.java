@@ -1068,7 +1068,10 @@ public class ProductSceneView extends BasicView
             thatGeoCoding.getPixelPos(geoCenter, imageCenter);
             if (imageCenter.isValid()) {
                 thatView.getBaseImageLayer().getImageToModelTransform().transform(imageCenter, modelCenter);
-                thatViewport.setZoomFactor(thisViewport.getZoomFactor(), modelCenter.getX(), modelCenter.getY());
+                double heightCoef = this.getModelBounds().getHeight() / thatView.getModelBounds().getHeight();
+                double widthCoef = this.getModelBounds().getWidth() / thatView.getModelBounds().getWidth();
+                double coef = Math.sqrt(heightCoef*widthCoef);
+                thatViewport.setZoomFactor(thisViewport.getZoomFactor()*coef, modelCenter.getX(), modelCenter.getY());
                 return true;
             }
         }
