@@ -551,8 +551,11 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         void updateDisplayName(Band band) {
             super.updateDisplayName(band);
-            if (band.getSpectralWavelength() > 0.0) {
-                setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+            float wvl = band.getSpectralWavelength();
+            if (wvl > 1e6) {
+                setDisplayName(String.format("%s (%.2f mm)", band.getName(), wvl / 1e6));
+            } else if (wvl > 0.0) {
+                setDisplayName(String.format("%s (%.1f nm)", band.getName(), wvl));
             }
         }
 
@@ -787,9 +790,17 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             StringBuilder tooltip = new StringBuilder();
             append(tooltip, band.getDescription());
             if (band.getSpectralWavelength() > 0.0) {
-                append(tooltip, String.format("%s nm", band.getSpectralWavelength()));
+                double wlNm = band.getSpectralWavelength();
+                boolean useMm = wlNm > 1e6;
+
+                double wl = useMm ? wlNm / 1e6 : wlNm;
+                String unit = useMm ? "mm" : "nm";
+                append(tooltip, String.format("%.1f %s", wl, unit));
+
                 if (band.getSpectralBandwidth() > 0.0) {
-                    append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
+                    double bwNm = band.getSpectralBandwidth();
+                    double bw = useMm ? bwNm / 1e6 : bwNm;
+                    append(tooltip, String.format("+/-%.3f %s", 0.5 * bw, unit));
                 }
             } else if (band.getDate() != null) {
                 append(tooltip, String.format("%s", band.getDate()));
