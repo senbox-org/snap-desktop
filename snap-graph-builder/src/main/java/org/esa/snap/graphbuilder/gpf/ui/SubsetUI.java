@@ -50,6 +50,7 @@ public class SubsetUI extends BaseOperatorUI {
     private static final String VECTOR_FILE_PARAMETER = "vectorFile";
 
     private final JList bandList = new JList();
+    private final JList tiePointGridList = new JList();
 
     private final JComboBox referenceCombo = new JComboBox();
     private final JTextField regionX = new JTextField("");
@@ -171,7 +172,8 @@ public class SubsetUI extends BaseOperatorUI {
 
     @Override
     public void initParameters() {
-        OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("sourceBands"));
+        OperatorUIUtils.initParamList(bandList, getBandNames(), (Object[])paramMap.get("bandNames"));
+        OperatorUIUtils.initParamList(tiePointGridList, getTiePointGridNames(), (Object[])paramMap.get("tiePointGridNames"));
 
         if(paramMap.get("copyMetadata") != null){
             copyMetadata.setSelected((Boolean)paramMap.get("copyMetadata"));
@@ -185,6 +187,12 @@ public class SubsetUI extends BaseOperatorUI {
             if (string.equals(_oldSelected)) {
                 referenceCombo.setSelectedItem(string);
             }
+        }
+        //enable or disable referenceCombo depending on sourceProduct
+        if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {
+            referenceCombo.setEnabled(false);
+        } else {
+            referenceCombo.setEnabled(true);
         }
 
         final Rectangle region = (Rectangle)paramMap.get("region");
@@ -269,6 +277,8 @@ public class SubsetUI extends BaseOperatorUI {
                 }
             }
         }
+        OperatorUIUtils.updateParamList(tiePointGridList, paramMap, "tiePointGridNames");
+
         int x=0, y=0, rasterReferenceWidth=1, rasterReferenceHeight=1,w=1,h=1;
         if(sourceProducts!=null && referenceCombo.getSelectedItem()!=null) {
             if(sourceProducts[0].isMultiSize()) {
@@ -293,6 +303,7 @@ public class SubsetUI extends BaseOperatorUI {
             subSamplingY.setValue(subSamplingYVal);
         }
         final String subSamplingXStr = subSamplingX.getValue().toString();
+      
         if (subSamplingXStr != null && !subSamplingXStr.isEmpty())
             paramMap.put("subSamplingX", Integer.parseInt(subSamplingXStr));
         final String subSamplingYStr = subSamplingY.getValue().toString();
@@ -506,6 +517,12 @@ public class SubsetUI extends BaseOperatorUI {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
         contentPane.add(new JScrollPane(bandList), gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        contentPane.add(new JLabel("Tie-Point Grids:"), gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 1;
+        contentPane.add(new JScrollPane(tiePointGridList), gbc);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
