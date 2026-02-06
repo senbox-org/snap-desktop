@@ -830,14 +830,24 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_MINOR_STEPS_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
-                GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT,
-                GraticuleLayerType.PROPERTY_INTERPOLATE_TYPE);
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
                 GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT,
                 GraticuleLayerType.PROPERTY_TOLERANCE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_TYPE);
 
         // Labels Section
 
@@ -913,6 +923,7 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME,
                 GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT,
                 GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TYPE);
+
         addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
                 GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT,
