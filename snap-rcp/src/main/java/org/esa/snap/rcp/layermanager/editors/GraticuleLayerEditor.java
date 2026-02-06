@@ -103,13 +103,14 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         numMinorStepsPD.setDefaultConverter();
         addPropertyDescriptor(numMinorStepsPD);
 
+        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
+        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
+        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
+        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
+        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
+        numMinorStepsCylindricalPD.setDefaultConverter();
+        addPropertyDescriptor(numMinorStepsCylindricalPD);
 
-        PropertyDescriptor interpolatePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, Boolean.class);
-        interpolatePD.setDefaultValue(GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
-        interpolatePD.setDisplayName(GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL);
-        interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
-        interpolatePD.setDefaultConverter();
-        addPropertyDescriptor(interpolatePD);
 
         PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_KEY, Double.class);
         tolerancePD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT);
@@ -119,7 +120,22 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         tolerancePD.setDefaultConverter();
         addPropertyDescriptor(tolerancePD);
 
+        PropertyDescriptor toleranceCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY, Double.class);
+        toleranceCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT);
+        toleranceCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_LABEL);
+        toleranceCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TOOLTIP);
+        toleranceCylindricalPD.setValueRange(new ValueRange(0, 100));
+        toleranceCylindricalPD.setDefaultConverter();
+        addPropertyDescriptor(toleranceCylindricalPD);
 
+
+
+        PropertyDescriptor interpolatePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, Boolean.class);
+        interpolatePD.setDefaultValue(GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
+        interpolatePD.setDisplayName(GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL);
+        interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
+        interpolatePD.setDefaultConverter();
+        addPropertyDescriptor(interpolatePD);
 
 
 
