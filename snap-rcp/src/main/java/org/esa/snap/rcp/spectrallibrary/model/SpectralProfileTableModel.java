@@ -12,7 +12,7 @@ import java.util.UUID;
 public class SpectralProfileTableModel extends AbstractTableModel {
 
 
-    private final String[] columns = {"Name", "Samples", "Id"};
+    private final String[] columns = {"Name", "Samples"};
     private List<SpectralProfile> profiles = List.of();
 
     public void setProfiles(List<SpectralProfile> profiles) {
@@ -57,7 +57,6 @@ public class SpectralProfileTableModel extends AbstractTableModel {
         return switch (columnIndex) {
             case 0 -> p.getName();
             case 1 -> p.getSignature().size();
-            case 2 -> p.getId().toString();
             default -> "";
         };
     }

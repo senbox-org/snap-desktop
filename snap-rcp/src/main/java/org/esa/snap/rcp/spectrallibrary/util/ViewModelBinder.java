@@ -32,7 +32,9 @@ public class ViewModelBinder {
         panel.getPreviewPanel().setSelectionListener(vm::setSelectedPreviewProfileId);
 
         panel.getLibraryTable().getSelectionModel().addListSelectionListener(e -> {
-            if (e.getValueIsAdjusting()) return;
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
             int viewRow = panel.getLibraryTable().getSelectedRow();
             if (viewRow < 0) {
                 vm.setSelectedLibraryProfileId(null);
