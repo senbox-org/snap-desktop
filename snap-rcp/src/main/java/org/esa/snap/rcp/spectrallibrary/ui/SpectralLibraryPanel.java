@@ -1,5 +1,7 @@
 package org.esa.snap.rcp.spectrallibrary.ui;
 
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -7,85 +9,141 @@ import java.awt.*;
 public class SpectralLibraryPanel extends JPanel {
 
 
+    // library actions
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
     private final JButton refreshButton = new JButton("Refresh");
-    private final JButton createFromProductButton = new JButton("New Library from Product");
-    private final JButton deleteLibraryButton = new JButton("Delete");
-    private final JButton removeSelectedProfileButton = new JButton("Remove Profile");
-
-    private final JButton addSelectedPreviewButton = new JButton("Add Selected Preview");
-    private final JButton addAllPreviewButton = new JButton("Add All Preview");
-    private final JToggleButton extractAtCursorToggle = new JToggleButton("Extract at Cursor");
-    private final JButton extractSelectedPinsButton = new JButton("Extract Selected Pins");
-    private final JButton extractAllPinsButton = new JButton("Extract All Pins");
-    private final JButton clearPreviewButton = new JButton("Clear Preview");
-
+    private final JButton createFromProductButton = new JButton("New Library from Product...");
+    private final JButton deleteLibraryButton = new JButton("Delete active Library");
     private final JButton importButton = new JButton("Import...");
     private final JButton exportButton = new JButton("Export...");
 
-    private final JLabel statusLabel = new JLabel(" ");
-
+    // profile table actions
     private final SpectralProfileTableModel libraryTableModel = new SpectralProfileTableModel();
     private final JTable libraryTable = new JTable(libraryTableModel);
+    private final JButton removeSelectedProfileButton = new JButton("Remove Profile");
 
+    // preview actions
     private final PreviewPanel previewPanel = new PreviewPanel();
+    private final JButton addSelectedPreviewButton = new JButton("Add Selected Preview");
+    private final JButton addAllPreviewButton = new JButton("Add All Preview");
+    private final JButton clearPreviewButton = new JButton("Clear Preview");
+    private final JToggleButton extractAtCursorToggle = new JToggleButton("Extract at Cursor");
+    private final JButton extractSelectedPinsButton = new JButton("Extract Selected Pins");
+    private final JButton extractAllPinsButton = new JButton("Extract All Pins");
+
+    // status actions
+    private final JLabel statusLabel = new JLabel(" ");
 
 
     public SpectralLibraryPanel() {
         super(new BorderLayout(6, 6));
 
-        libraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        libraryTable.setAutoCreateRowSorter(true);
-
-        add(buildToolbar(), BorderLayout.NORTH);
         add(buildCenter(), BorderLayout.CENTER);
         add(buildStatusBar(), BorderLayout.SOUTH);
     }
 
 
-    private JComponent buildToolbar() {
-        JToolBar tb = new JToolBar();
-        tb.setFloatable(false);
-
-        tb.add(new JLabel("Library: "));
-        libraryCombo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        tb.add(libraryCombo);
-
-        tb.addSeparator();
-        tb.add(refreshButton);
-        tb.add(importButton);
-        tb.add(exportButton);
-        tb.add(createFromProductButton);
-        tb.add(deleteLibraryButton);
-
-        tb.addSeparator();
-        tb.add(removeSelectedProfileButton);
-
-        tb.addSeparator();
-        tb.add(addSelectedPreviewButton);
-        tb.add(addAllPreviewButton);
-        tb.add(clearPreviewButton);
-
-        tb.addSeparator();
-        tb.add(extractAtCursorToggle);
-        tb.add(extractSelectedPinsButton);
-        tb.add(extractAllPinsButton);
-
-        return tb;
-    }
-
     private JComponent buildCenter() {
-        JPanel left = new JPanel(new BorderLayout(4, 4));
-        left.setBorder(BorderFactory.createTitledBorder("Library Profiles"));
-        left.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
+        previewPanel.setHeader(buildPreviewHeader());
 
         JPanel right = new JPanel(new BorderLayout(4, 4));
-        right.setBorder(BorderFactory.createTitledBorder("Preview (not saved)"));
+        right.setBorder(BorderFactory.createTitledBorder("Profile Extraction"));
         right.add(previewPanel, BorderLayout.CENTER);
 
+        JPanel left = buildLeftSide();
+
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
-        split.setResizeWeight(0.55);
+        split.setResizeWeight(0.5);
+        split.setDividerLocation(0.5);
+        split.setContinuousLayout(true);
+
         return split;
+    }
+
+
+    private JPanel buildLeftSide() {
+        JPanel left = new JPanel(new BorderLayout(4, 4));
+        left.setBorder(BorderFactory.createTitledBorder("Library"));
+
+        left.add(buildToolbar(), BorderLayout.NORTH);
+        left.add(buildLibraryTablePanel(), BorderLayout.CENTER);
+
+        return left;
+    }
+
+
+    private JComponent buildToolbar() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row1.add(importButton);
+        row1.add(exportButton);
+
+        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row2.add(createFromProductButton);
+
+        JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row3.add(new JLabel("Active Library: "));
+        libraryCombo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        row3.add(libraryCombo);
+
+        JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row4.add(refreshButton);
+        row4.add(deleteLibraryButton);
+
+        p.add(Box.createVerticalStrut(5));
+        p.add(row1);
+        p.add(Box.createVerticalStrut(5));
+        p.add(row2);
+        p.add(Box.createVerticalStrut(5));
+        p.add(row3);
+        p.add(Box.createVerticalStrut(5));
+        p.add(row4);
+        p.add(Box.createVerticalStrut(15));
+
+        return p;
+    }
+
+    private JComponent buildLibraryTablePanel() {
+        libraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        libraryTable.setAutoCreateRowSorter(true);
+
+        JPanel tablePanel = new JPanel(new BorderLayout(4, 4));
+        tablePanel.setBorder(BorderFactory.createTitledBorder("Library Profiles"));
+
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        header.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        header.add(removeSelectedProfileButton);
+
+        tablePanel.add(header, BorderLayout.NORTH);
+        tablePanel.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
+
+        return tablePanel;
+    }
+
+
+    private JComponent buildPreviewHeader() {
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row1.add(extractAtCursorToggle);
+        row1.add(extractSelectedPinsButton);
+        row1.add(extractAllPinsButton);
+
+        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row2.add(addSelectedPreviewButton);
+        row2.add(addAllPreviewButton);
+        row2.add(clearPreviewButton);
+
+        header.add(Box.createVerticalStrut(5));
+        header.add(row1);
+        header.add(Box.createVerticalStrut(5));
+        header.add(row2);
+        header.add(Box.createVerticalStrut(5));
+
+        return header;
     }
 
     private JComponent buildStatusBar() {
@@ -95,70 +153,63 @@ public class SpectralLibraryPanel extends JPanel {
         return p;
     }
 
-    public JComboBox<Object> getLibraryCombo() {
-        return libraryCombo; }
 
+    // library actions
+    public JComboBox<Object> getLibraryCombo() {
+        return libraryCombo;
+    }
     public JButton getRefreshButton() {
         return refreshButton;
     }
-
     public JButton getCreateFromProductButton() {
         return createFromProductButton;
     }
-
     public JButton getDeleteLibraryButton() {
         return deleteLibraryButton;
     }
+    public JButton getImportButton() {
+        return importButton;
+    }
+    public JButton getExportButton() {
+        return exportButton;
+    }
 
+    // profile table actions
+    public JTable getLibraryTable() {
+        return libraryTable;
+    }
+    public SpectralProfileTableModel getLibraryTableModel() {
+        return libraryTableModel;
+    }
     public JButton getRemoveSelectedProfileButton() {
         return removeSelectedProfileButton;
     }
 
+    // preview actions
+    public PreviewPanel getPreviewPanel() {
+        return previewPanel;
+    }
     public JButton getAddSelectedPreviewButton() {
         return addSelectedPreviewButton;
     }
-
     public JButton getAddAllPreviewButton() {
         return addAllPreviewButton;
     }
-
+    public JButton getClearPreviewButton() {
+        return clearPreviewButton;
+    }
     public JToggleButton getExtractAtCursorToggle() {
         return extractAtCursorToggle;
     }
-
     public JButton getExtractSelectedPinsButton() {
         return extractSelectedPinsButton;
     }
-
     public JButton getExtractAllPinsButton() {
         return extractAllPinsButton;
     }
 
-    public JButton getClearPreviewButton() {
-        return clearPreviewButton;
-    }
-
+    // status actions
     public JLabel getStatusLabel() {
         return statusLabel;
-    }
-
-    public JTable getLibraryTable() {
-        return libraryTable;
-    }
-
-    public SpectralProfileTableModel getLibraryTableModel() {
-        return libraryTableModel;
-    }
-
-    public PreviewPanel getPreviewPanel() {
-        return previewPanel;
-    }
-
-    public JButton getImportButton() {
-        return importButton;
-    }
-
-    public JButton getExportButton() {
-        return exportButton;
     }
 }

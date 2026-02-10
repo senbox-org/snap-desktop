@@ -27,7 +27,6 @@ public class PreviewPanel extends JPanel {
 
 
     private final XYSeriesCollection dataset = new XYSeriesCollection();
-
     private final JFreeChart chart = ChartFactory.createXYLineChart(
             "Preview",
             "Wavelength / Index",
@@ -40,6 +39,7 @@ public class PreviewPanel extends JPanel {
     );
 
     private final ChartPanel chartPanel = new ChartPanel(chart);
+    private final JPanel headerHost = new JPanel(new BorderLayout());
 
     private List<SpectralProfile> profiles = List.of();
     private UUID selectedProfileId;
@@ -56,11 +56,25 @@ public class PreviewPanel extends JPanel {
 
     public PreviewPanel() {
         super(new BorderLayout(4, 4));
-        chartPanel.setPreferredSize(new Dimension(350, 250));
+
+        chartPanel.setMinimumDrawHeight(0);
+        chartPanel.setMaximumDrawHeight(Integer.MAX_VALUE);
+
+        add(headerHost, BorderLayout.NORTH);
         add(chartPanel, BorderLayout.CENTER);
 
         configureRenderer();
         installClickSelection();
+    }
+
+
+    public void setHeader(JComponent header) {
+        headerHost.removeAll();
+        if (header != null) {
+            headerHost.add(header, BorderLayout.CENTER);
+        }
+        headerHost.revalidate();
+        headerHost.repaint();
     }
 
     public void setSelectionListener(Consumer<UUID> selectionListener) {

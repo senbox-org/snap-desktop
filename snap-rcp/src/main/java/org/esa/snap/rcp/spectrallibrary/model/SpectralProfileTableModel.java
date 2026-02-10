@@ -1,4 +1,4 @@
-package org.esa.snap.rcp.spectrallibrary.ui;
+package org.esa.snap.rcp.spectrallibrary.model;
 
 import org.esa.snap.speclib.model.SpectralProfile;
 
