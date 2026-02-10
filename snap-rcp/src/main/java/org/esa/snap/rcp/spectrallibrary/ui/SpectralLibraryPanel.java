@@ -14,6 +14,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton refreshButton = new JButton("Refresh");
     private final JButton createFromProductButton = new JButton("New Library from Product...");
     private final JButton deleteLibraryButton = new JButton("Delete active Library");
+    private final JButton renameLibraryButton = new JButton("Rename Active Library");
     private final JButton importButton = new JButton("Import...");
     private final JButton exportButton = new JButton("Export...");
 
@@ -90,6 +91,7 @@ public class SpectralLibraryPanel extends JPanel {
 
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row4.add(refreshButton);
+        row4.add(renameLibraryButton);
         row4.add(deleteLibraryButton);
 
         p.add(Box.createVerticalStrut(5));
@@ -166,6 +168,9 @@ public class SpectralLibraryPanel extends JPanel {
     }
     public JButton getDeleteLibraryButton() {
         return deleteLibraryButton;
+    }
+    public JButton getRenameLibraryButton() {
+        return renameLibraryButton;
     }
     public JButton getImportButton() {
         return importButton;

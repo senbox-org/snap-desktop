@@ -95,6 +95,22 @@ public class SpectralLibraryController {
         return ok;
     }
 
+    public boolean renameLibrary(UUID id, String newName) {
+        SpectralLibrary lib = service.renameLibrary(id, newName).orElse(null);
+        reloadLibraries();
+        if (lib != null) {
+            vm.setActiveLibraryId(lib.getId());
+            ensureActiveLibrary();
+            refreshActiveLibraryProfiles();
+
+            vm.setStatus(UiStatus.info("Library renamed to " + newName));
+            return true;
+        } else {
+            vm.setStatus(UiStatus.error("Library could not be renamed"));
+            return false;
+        }
+    }
+
     public void setActiveLibrary(UUID id) {
         vm.setActiveLibraryId(id);
         refreshActiveLibraryProfiles();

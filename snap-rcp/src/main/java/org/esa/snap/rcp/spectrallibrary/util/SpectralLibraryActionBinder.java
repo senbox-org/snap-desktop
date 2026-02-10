@@ -19,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 
 public class SpectralLibraryActionBinder {
@@ -105,7 +106,27 @@ public class SpectralLibraryActionBinder {
             vm.setStatus(UiStatus.info("Refreshed"));
         });
 
-        panel.getDeleteLibraryButton().addActionListener(e -> vm.getActiveLibraryId().ifPresent(controller::deleteLibrary));
+        panel.getDeleteLibraryButton().addActionListener(e -> {
+                int answer = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this library?");
+                if (answer == JOptionPane.YES_OPTION) {
+                    vm.getActiveLibraryId().ifPresent(controller::deleteLibrary);
+                }
+            }
+        );
+
+        panel.getRenameLibraryButton().addActionListener(e -> {
+            UUID uuid = vm.getActiveLibraryId().orElse(null);
+            String name = JOptionPane.showInputDialog(panel, "New Library name:", "New_Library");
+            if (name == null) {
+                return;
+            }
+            name = name.trim();
+            if (name.isEmpty()) {
+                return;
+            }
+
+            controller.renameLibrary(uuid, name);
+        });
 
         panel.getRemoveSelectedProfileButton().addActionListener(e -> controller.removeSelectedLibraryProfile());
 
