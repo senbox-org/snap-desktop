@@ -13,8 +13,10 @@ import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,6 +91,7 @@ public class SpectralLibraryActionBinder {
 
     public void bind() {
         wireToolbarBasics();
+        wireImportExport();
         wireExtractionPins();
         wireExtractionCursor();
         wirePreviewAddButtons();
@@ -135,6 +138,11 @@ public class SpectralLibraryActionBinder {
                 controller.setActiveLibrary(lib.getId());
             }
         });
+    }
+
+    private void wireImportExport() {
+        panel.getExportButton().addActionListener(e -> doExport());
+        panel.getImportButton().addActionListener(e -> doImport());
     }
 
 
@@ -271,6 +279,55 @@ public class SpectralLibraryActionBinder {
     private SpectralLibrary getSelectedLibraryFromCombo() {
         Object sel = panel.getLibraryCombo().getSelectedItem();
         return (sel instanceof SpectralLibrary lib) ? lib : null;
+    }
+
+
+
+
+    private void doImport() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import Spectral Library");
+        fileChooser.setApproveButtonText("Import");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Spectral Libraries (*.sli, *.hdr, *)", "sli", "hdr"));
+
+        int ok = fileChooser.showOpenDialog(panel);
+        if (ok != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        controller.importLibraryFromFile(file);
+    }
+
+    private void doExport() {
+        if (vm.getActiveLibraryId().isEmpty()) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export Spectral Library");
+        fileChooser.setApproveButtonText("Export");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("ENVI Spectral Library (*.sli)", "sli"));
+
+        String base = "spectral-library";
+        Object sel = panel.getLibraryCombo().getSelectedItem();
+        if (sel instanceof SpectralLibrary lib && lib.getName() != null && !lib.getName().isBlank()) {
+            base = lib.getName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+        }
+        fileChooser.setSelectedFile(new File(base + ".sli"));
+
+        int ok = fileChooser.showSaveDialog(panel);
+        if (ok != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".sli")) {
+            file = new File(file.getParentFile(), file.getName() + ".sli");
+        }
+
+        controller.exportActiveLibraryToFile(file);
     }
 }
 

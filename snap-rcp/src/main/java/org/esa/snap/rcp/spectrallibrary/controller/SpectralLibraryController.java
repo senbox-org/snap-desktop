@@ -8,10 +8,12 @@ import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
+import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.SpectralAxis;
 import org.esa.snap.speclib.model.SpectralLibrary;
 import org.esa.snap.speclib.model.SpectralProfile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,15 +24,17 @@ public class SpectralLibraryController {
 
 
     private final SpectralLibraryService service;
+    private final SpectralLibraryIO io;
     private final SpectralLibraryViewModel vm;
 
 
     public SpectralLibraryController(SpectralLibraryViewModel vm) {
-        this(EngineAccess.libraryService(), vm);
+        this(EngineAccess.libraryService(), EngineAccess.libraryIO(), vm);
     }
 
-    public SpectralLibraryController(SpectralLibraryService service, SpectralLibraryViewModel vm) {
+    public SpectralLibraryController(SpectralLibraryService service, SpectralLibraryIO io, SpectralLibraryViewModel vm) {
         this.service = service;
+        this.io = io;
         this.vm = vm;
     }
 
@@ -283,6 +287,68 @@ public class SpectralLibraryController {
         vm.setSelectedPreviewProfileId(pOpt.get().getId());
         vm.setStatus(UiStatus.info("Preview added"));
     }
+
+
+
+    public boolean exportActiveLibraryToFile(File file) {
+        Optional<UUID> idOpt = vm.getActiveLibraryId();
+        if (idOpt.isEmpty() || file == null) {
+            return false;
+        }
+
+        Optional<SpectralLibrary> libOpt = service.getLibrary(idOpt.get());
+        if (libOpt.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No active library to export"));
+            return false;
+        }
+
+        try {
+            io.write(libOpt.get(), file.toPath());
+            vm.setStatus(UiStatus.info("Exported: " + file.getName()));
+            return true;
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.error("Export failed: " + ex.getMessage()));
+            return false;
+        }
+    }
+
+    public Optional<SpectralLibrary> importLibraryFromFile(File file) {
+        if (file == null) {
+            return Optional.empty();
+        }
+        try {
+            SpectralLibrary imported = io.read(file.toPath());
+            String yUnit = imported.getDefaultYUnit().orElse("value");
+            SpectralLibrary persisted = service.createLibrary(
+                    imported.getName(),
+                    imported.getAxis(),
+                    yUnit
+            );
+
+            int added = 0;
+            for (SpectralProfile p : imported.getProfiles()) {
+                if (p == null) {
+                    continue;
+                }
+                try {
+                    service.addProfile(persisted.getId(), p);
+                    added++;
+                } catch (Throwable ignored) {
+                    // skip broken profiles, continue import
+                }
+            }
+
+            reloadLibraries();
+            vm.setActiveLibraryId(persisted.getId());
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.info("Imported: " + file.getName() + " (" + added + " profiles)"));
+            return Optional.of(persisted);
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.error("Import failed: " + ex.getMessage()));
+            return Optional.empty();
+        }
+    }
+
 
 
     private void ensureActiveLibrary() {

@@ -9,7 +9,7 @@ public class SpectralLibraryPanel extends JPanel {
 
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
     private final JButton refreshButton = new JButton("Refresh");
-    private final JButton createFromProductButton = new JButton("New from Product…");
+    private final JButton createFromProductButton = new JButton("New Library from Product");
     private final JButton deleteLibraryButton = new JButton("Delete");
     private final JButton removeSelectedProfileButton = new JButton("Remove Profile");
 
@@ -19,6 +19,9 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton extractSelectedPinsButton = new JButton("Extract Selected Pins");
     private final JButton extractAllPinsButton = new JButton("Extract All Pins");
     private final JButton clearPreviewButton = new JButton("Clear Preview");
+
+    private final JButton importButton = new JButton("Import...");
+    private final JButton exportButton = new JButton("Export...");
 
     private final JLabel statusLabel = new JLabel(" ");
 
@@ -50,6 +53,8 @@ public class SpectralLibraryPanel extends JPanel {
 
         tb.addSeparator();
         tb.add(refreshButton);
+        tb.add(importButton);
+        tb.add(exportButton);
         tb.add(createFromProductButton);
         tb.add(deleteLibraryButton);
 
@@ -147,5 +152,13 @@ public class SpectralLibraryPanel extends JPanel {
 
     public PreviewPanel getPreviewPanel() {
         return previewPanel;
+    }
+
+    public JButton getImportButton() {
+        return importButton;
+    }
+
+    public JButton getExportButton() {
+        return exportButton;
     }
 }
