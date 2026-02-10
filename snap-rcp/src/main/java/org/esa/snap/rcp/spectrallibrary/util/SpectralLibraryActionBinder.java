@@ -9,6 +9,7 @@ import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.SpectralLibrary;
+import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
 
@@ -17,6 +18,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -128,7 +130,47 @@ public class SpectralLibraryActionBinder {
             controller.renameLibrary(uuid, name);
         });
 
-        panel.getRemoveSelectedProfileButton().addActionListener(e -> controller.removeSelectedLibraryProfile());
+        panel.getRemoveSelectedProfilesButton().addActionListener(e -> {
+                UUID libId = vm.getActiveLibraryId().orElse(null);
+                if (libId == null) {
+                    return;
+                }
+
+                int[] viewRows = panel.getLibraryTable().getSelectedRows();
+                if (viewRows == null || viewRows.length == 0) {
+                    vm.setStatus(UiStatus.warn("No profiles selected"));
+                    return;
+                }
+
+                List<UUID> ids = new ArrayList<>(viewRows.length);
+                for (int viewRow : viewRows) {
+                    int modelRow = panel.getLibraryTable().convertRowIndexToModel(viewRow);
+                    ids.add(panel.getLibraryTableModel().getIdAt(modelRow));
+                }
+                controller.removeLibraryProfiles(libId, ids);
+            }
+        );
+
+        panel.getPreviewSelectedProfilesButton().addActionListener(e -> {
+            int[] viewRows = panel.getLibraryTable().getSelectedRows();
+            if (viewRows == null || viewRows.length == 0) {
+                vm.setStatus(UiStatus.warn("No profiles selected"));
+                return;
+            }
+
+            controller.clearPreview();
+
+            List<SpectralProfile> selected = new ArrayList<>(viewRows.length);
+            for (int viewRow : viewRows) {
+                int modelRow = panel.getLibraryTable().convertRowIndexToModel(viewRow);
+                SpectralProfile p = panel.getLibraryTableModel().getAt(modelRow);
+                if (p != null) {
+                    selected.add(p);
+                }
+            }
+
+            controller.setPreviewProfiles(selected);
+        });
 
         panel.getClearPreviewButton().addActionListener(e -> controller.clearPreview());
 

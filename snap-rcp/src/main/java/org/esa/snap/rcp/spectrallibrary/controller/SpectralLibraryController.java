@@ -146,17 +146,19 @@ public class SpectralLibraryController {
                 : UiStatus.warn("No profiles to add"));
     }
 
-    public void removeSelectedLibraryProfile() {
-        Optional<UUID> libId = vm.getActiveLibraryId();
-        Optional<UUID> pid = vm.getSelectedLibraryProfileId();
-        if (libId.isEmpty() || pid.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No library/profile selected"));
+    public void removeLibraryProfiles(UUID libraryId, List<UUID> profileIds) {
+        if (libraryId == null || profileIds == null || profileIds.isEmpty()) {
             return;
         }
-        boolean ok = service.removeProfile(libId.get(), pid.get());
+        int removed = 0;
+        for (UUID pid : profileIds) {
+            if (pid != null && service.removeProfile(libraryId, pid)) {
+                removed++;
+            }
+        }
         vm.setSelectedLibraryProfileId(null);
         refreshActiveLibraryProfiles();
-        vm.setStatus(ok ? UiStatus.info("Profile removed") : UiStatus.warn("Profile not removed"));
+        vm.setStatus(removed > 0 ? UiStatus.info("Removed (" + removed + ")") : UiStatus.warn("Nothing removed"));
     }
 
 
@@ -168,7 +170,9 @@ public class SpectralLibraryController {
 
     public void addSelectedPreviewToActiveLibrary() {
         UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
-        if (libId == null) return;
+        if (libId == null) {
+            return;
+        }
 
         Optional<SpectralProfile> selectedOpt = findSelectedPreviewProfile();
         if (selectedOpt.isEmpty()) {
