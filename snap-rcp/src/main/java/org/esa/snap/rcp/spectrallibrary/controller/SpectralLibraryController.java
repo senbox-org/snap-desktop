@@ -168,6 +168,68 @@ public class SpectralLibraryController {
         }
     }
 
+    public void renameProfileInActiveLibrary(UUID profileId, String newName) {
+        if (profileId == null) {
+            vm.setStatus(UiStatus.warn("No profile selected"));
+            return;
+        }
+        if (newName == null || newName.isBlank()) {
+            vm.setStatus(UiStatus.warn("Name is empty"));
+            return;
+        }
+
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
+        }
+
+        try {
+            boolean ok = service.renameProfile(libId, profileId, newName.trim());
+            if (ok) {
+                refreshActiveLibraryProfiles();
+                refresh();
+                vm.setStatus(UiStatus.info("Profile renamed"));
+            } else {
+                vm.setStatus(UiStatus.warn("Profile not changed"));
+            }
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.error("Rename failed: " + ex.getMessage()));
+        }
+    }
+
+    public void setAttributeInActiveLibrary(UUID profileId, String key, AttributeValue value) {
+        if (profileId == null) {
+            vm.setStatus(UiStatus.warn("No profile selected"));
+            return;
+        }
+        if (key == null || key.isBlank()) {
+            vm.setStatus(UiStatus.warn("Attribute key is empty"));
+            return;
+        }
+        if (value == null) {
+            vm.setStatus(UiStatus.warn("Attribute value missing"));
+            return;
+        }
+
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
+        }
+
+        try {
+            boolean ok = service.setProfileAttribute(libId, profileId, key.trim(), value);
+            if (ok) {
+                refreshActiveLibraryProfiles();
+                refresh();
+                vm.setStatus(UiStatus.info("Attribute updated: " + key.trim()));
+            } else {
+                vm.setStatus(UiStatus.warn("Attribute not changed"));
+            }
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.error("Update attribute failed: " + ex.getMessage()));
+        }
+    }
+
     public void addSelectedPreviewToActiveLibrary() {
         UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
         if (libId == null) {

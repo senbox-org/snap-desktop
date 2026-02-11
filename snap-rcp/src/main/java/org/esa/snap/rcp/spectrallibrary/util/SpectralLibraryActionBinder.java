@@ -6,6 +6,7 @@ import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.*;
@@ -249,6 +250,20 @@ public class SpectralLibraryActionBinder {
                 controller.setActiveLibrary(lib.getId());
             }
         });
+
+        panel.getLibraryTableModel().setEditHandler(
+                new SpectralProfileTableModel.ProfileEditHandler() {
+                    @Override
+                    public void rename(UUID profileId, String newName) {
+                        controller.renameProfileInActiveLibrary(profileId, newName);
+                    }
+
+                    @Override
+                    public void setAttr(UUID profileId, String key, AttributeValue value) {
+                        controller.setAttributeInActiveLibrary(profileId, key, value);
+                    }
+                }
+        );
     }
 
     private void wireImportExport() {
