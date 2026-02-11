@@ -9,9 +9,7 @@ import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
-import org.esa.snap.speclib.model.SpectralAxis;
-import org.esa.snap.speclib.model.SpectralLibrary;
-import org.esa.snap.speclib.model.SpectralProfile;
+import org.esa.snap.speclib.model.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -126,26 +124,6 @@ public class SpectralLibraryController {
         vm.setLibraryProfiles(libOpt.map(SpectralLibrary::getProfiles).orElse(List.of()));
     }
 
-    public void addProfilesToActiveLibrary(List<SpectralProfile> profiles) {
-        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
-        if (libId == null) {
-            return;
-        }
-
-        int added = 0;
-        if (profiles != null) {
-            for (SpectralProfile p : profiles) {
-                if (p == null) continue;
-                service.addProfile(libId, p);
-                added++;
-            }
-        }
-        refreshActiveLibraryProfiles();
-        vm.setStatus(added > 0 ?
-                UiStatus.info("Profiles added (" + added + ")")
-                : UiStatus.warn("No profiles to add"));
-    }
-
     public void removeLibraryProfiles(UUID libraryId, List<UUID> profileIds) {
         if (libraryId == null || profileIds == null || profileIds.isEmpty()) {
             return;
@@ -166,6 +144,27 @@ public class SpectralLibraryController {
         vm.setPreviewProfiles(safeCopyWithoutNulls(profiles));
         vm.setSelectedPreviewProfileId(null);
         vm.setStatus(UiStatus.info("Preview updated (" + vm.getPreviewProfiles().size() + ")"));
+    }
+
+    public void addAttributeToActiveLibrary(AttributeDef def, AttributeValue fillValue) {
+        if (def == null || fillValue == null) {
+            vm.setStatus(UiStatus.warn("Attribute definition/value missing"));
+            return;
+        }
+
+        Optional<UUID> idOpt = vm.getActiveLibraryId();
+        if (idOpt.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        try {
+            service.addAttributeToLibrary(idOpt.get(), def, fillValue);
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.info("Attribute added: " + def.getKey()));
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.error("Add attribute failed: " + ex.getMessage()));
+        }
     }
 
     public void addSelectedPreviewToActiveLibrary() {

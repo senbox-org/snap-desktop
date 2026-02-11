@@ -23,6 +23,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JTable libraryTable = new JTable(libraryTableModel);
     private final JButton removeSelectedProfilesButton = new JButton("Remove Profiles");
     private final JButton previewSelectedProfilesButton = new JButton("Preview Selected Profiles");
+    private final JButton addAttributeButton = new JButton("Add Attribute...");
 
     // preview actions
     private final PreviewPanel previewPanel = new PreviewPanel();
@@ -119,6 +120,7 @@ public class SpectralLibraryPanel extends JPanel {
         header.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         header.add(previewSelectedProfilesButton);
         header.add(removeSelectedProfilesButton);
+        header.add(addAttributeButton);
 
         tablePanel.add(header, BorderLayout.NORTH);
         tablePanel.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
@@ -193,6 +195,9 @@ public class SpectralLibraryPanel extends JPanel {
     }
     public JButton getPreviewSelectedProfilesButton() {
         return previewSelectedProfilesButton;
+    }
+    public JButton getAddAttributeButton() {
+        return addAttributeButton;
     }
 
     // preview actions

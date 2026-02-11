@@ -8,20 +8,20 @@ import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
-import org.esa.snap.speclib.model.SpectralLibrary;
-import org.esa.snap.speclib.model.SpectralProfile;
+import org.esa.snap.speclib.model.*;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 
 public class SpectralLibraryActionBinder {
@@ -171,6 +171,54 @@ public class SpectralLibraryActionBinder {
 
             controller.setPreviewProfiles(selected);
         });
+
+        panel.getAddAttributeButton().addActionListener(e -> {
+            Optional<UUID> libId = vm.getActiveLibraryId();
+            if (libId.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No active library"));
+                return;
+            }
+
+            Optional<AttributeDialogResult> resOpt = showAddAttributeDialog(panel);
+            if (resOpt.isEmpty()) {
+                return;
+            }
+
+            AttributeDialogResult res = resOpt.get();
+
+            if (res.key == null || res.key.isBlank()) {
+                vm.setStatus(UiStatus.warn("Attribute key is empty"));
+                return;
+            }
+
+            AttributeValue defaultValue = null;
+            try {
+                defaultValue = parseAttributeValue(res.type, res.defaultValueText);
+            } catch (IllegalArgumentException ex) {
+                vm.setStatus(UiStatus.warn("Invalid default value: " + ex.getMessage()));
+                return;
+            }
+
+            AttributeDef def = new AttributeDef(
+                    res.key.trim(),
+                    res.type,
+                    false,
+                    defaultValue,
+                    null,
+                    null
+            );
+
+            AttributeValue fillValue;
+            try {
+                fillValue = parseAttributeValue(res.type, res.defaultValueText);
+            } catch (IllegalArgumentException ex) {
+                vm.setStatus(UiStatus.warn("Invalid default value: " + ex.getMessage()));
+                return;
+            }
+
+            controller.addAttributeToActiveLibrary(def, fillValue);
+            }
+        );
 
         panel.getClearPreviewButton().addActionListener(e -> controller.clearPreview());
 
@@ -391,6 +439,324 @@ public class SpectralLibraryActionBinder {
         }
 
         controller.exportActiveLibraryToFile(file);
+    }
+
+
+    private static Optional<AttributeDialogResult> showAddAttributeDialog(Component parent) {
+        JTextField keyField = new JTextField(20);
+
+        JComboBox<AttributeType> typeCombo = new JComboBox<>(AttributeType.values());
+        typeCombo.setSelectedItem(AttributeType.STRING);
+
+        JTextField defaultField = new JTextField(20);
+        JLabel defaultHint = new JLabel(" ");
+        defaultHint.setForeground(Color.GRAY);
+
+        JPanel form = new JPanel(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(4, 4, 4, 4);
+        gc.anchor = GridBagConstraints.WEST;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.weightx = 1.0;
+
+        int r = 0;
+        gc.gridx = 0; gc.gridy = r; gc.weightx = 0;
+        form.add(new JLabel("Key:"), gc);
+        gc.gridx = 1; gc.gridy = r; gc.weightx = 1;
+        form.add(keyField, gc);
+
+        r++;
+        gc.gridx = 0; gc.gridy = r; gc.weightx = 0;
+        form.add(new JLabel("Type:"), gc);
+        gc.gridx = 1; gc.gridy = r; gc.weightx = 1;
+        form.add(typeCombo, gc);
+
+        r++;
+        gc.gridx = 0; gc.gridy = r; gc.weightx = 0;
+        form.add(new JLabel("Default value:"), gc);
+        gc.gridx = 1; gc.gridy = r; gc.weightx = 1;
+        form.add(defaultField, gc);
+
+        r++;
+        gc.gridx = 1; gc.gridy = r; gc.weightx = 1;
+        form.add(defaultHint, gc);
+
+
+        Runnable updateHint = () -> {
+            AttributeType t = (AttributeType) typeCombo.getSelectedItem();
+            if (t == null) {
+                t = AttributeType.STRING;
+            }
+
+            String ex = exampleFor(t);
+            defaultHint.setText(ex == null || ex.isBlank() ? " " : ("Example: " + ex));
+
+            boolean supported = t != AttributeType.EMBEDDED_SPECTRUM;
+            defaultField.setEnabled(supported);
+
+            installPlaceholder(defaultField, supported ? (ex == null ? "" : ex) : "");
+            if (!supported) {
+                defaultField.setText("");
+            }
+        };
+        typeCombo.addActionListener(e -> updateHint.run());
+        updateHint.run();
+
+        int rc = JOptionPane.showConfirmDialog(
+                parent,
+                form,
+                "Add Attribute to Library",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (rc != JOptionPane.OK_OPTION) {
+            return Optional.empty();
+        }
+
+        String key = keyField.getText();
+        AttributeType type = (AttributeType) typeCombo.getSelectedItem();
+        if (type == null) {
+            type = AttributeType.STRING;
+        }
+
+        String rawDefault = defaultField.getText();
+        if (isShowingPlaceholder(defaultField)) {
+            rawDefault = "";
+        }
+
+        return Optional.of(new AttributeDialogResult(
+                key,
+                type,
+                rawDefault
+        ));
+    }
+
+    private static String exampleFor(AttributeType t) {
+        if (t == null) {
+            return "";
+        }
+        return switch (t) {
+            case STRING -> "attribute_value";
+            case INT -> "42";
+            case LONG -> "12345678900";
+            case DOUBLE -> "0.123";
+            case BOOLEAN -> "true";
+            case STRING_LIST -> "a,b,c";
+            case DOUBLE_ARRAY -> "0.1,0.2,0.3";
+            case INT_ARRAY -> "1,2,3";
+            case STRING_MAP -> "k1=v1,k2=v2";
+            default -> "";
+        };
+    }
+
+    private static void installPlaceholder(JTextField field, String placeholder) {
+        field.putClientProperty("placeholderText", placeholder == null ? "" : placeholder);
+
+        if (field.getText().trim().isEmpty() && !placeholder.isBlank()) {
+            field.setForeground(Color.GRAY);
+            field.setText(placeholder);
+        }
+
+        for (var l : field.getFocusListeners()) {
+            if (l.getClass().getName().equals(PlaceholderFocusListener.class.getName())) {
+                return;
+            }
+        }
+        field.addFocusListener(new PlaceholderFocusListener());
+    }
+
+    private static boolean isShowingPlaceholder(JTextField field) {
+        String ph = (String) field.getClientProperty("placeholderText");
+        return ph != null
+                && !ph.isBlank()
+                && Color.GRAY.equals(field.getForeground())
+                && ph.equals(field.getText());
+    }
+
+
+
+    private static AttributeValue parseAttributeValue(AttributeType type, String raw) {
+        String s = raw == null ? "" : raw.trim();
+
+        if (s.isEmpty()) {
+            throw new IllegalArgumentException("value must not be empty");
+        }
+
+        return switch (type) {
+            case STRING -> AttributeValue.ofString(s);
+            case INT -> {
+                try {
+                    yield AttributeValue.ofInt(Integer.parseInt(s));
+                }
+                catch (NumberFormatException e) { throw new IllegalArgumentException("expected int"); }
+            }
+            case LONG -> {
+                try {
+                    yield AttributeValue.ofLong(Long.parseLong(s));
+                }
+                catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("expected long");
+                }
+            }
+            case DOUBLE -> {
+                try {
+                    yield AttributeValue.ofDouble(Double.parseDouble(s));
+                }
+                catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("expected double");
+                }
+            }
+            case BOOLEAN -> {
+                String sl = s.toLowerCase();
+                if (sl.equals("true") || sl.equals("1") || sl.equals("yes")) {
+                    yield AttributeValue.ofBoolean(true);
+                }
+                if (sl.equals("false") || sl.equals("0") || sl.equals("no")) {
+                    yield AttributeValue.ofBoolean(false);
+                }
+                throw new IllegalArgumentException("expected true/false");
+            }
+            case STRING_LIST -> AttributeValue.ofStringList(parseStringList(s));
+            case DOUBLE_ARRAY -> AttributeValue.ofDoubleArray(parseDoubleArray(s));
+            case INT_ARRAY -> AttributeValue.ofIntArray(parseIntArray(s));
+            case STRING_MAP -> AttributeValue.ofStringMap(parseStringMap(s));
+            case EMBEDDED_SPECTRUM -> throw new IllegalArgumentException("EMBEDDED_SPECTRUM is not supported via manual input yet");
+        };
+    }
+
+    private static List<String> parseStringList(String s) {
+        // comma-separated: a,b,c
+        String[] parts = s.split(",");
+        List<String> out = new ArrayList<>();
+        for (String p : parts) {
+            String t = p.trim();
+            if (!t.isEmpty()) {
+                out.add(t);
+            }
+        }
+        if (out.isEmpty()) {
+            throw new IllegalArgumentException("string list is empty");
+        }
+        return out;
+    }
+
+    private static double[] parseDoubleArray(String s) {
+        // comma-separated numbers
+        String[] parts = s.split(",");
+        double[] out = new double[parts.length];
+        int n = 0;
+        for (String p : parts) {
+            String t = p.trim();
+            if (t.isEmpty()) {
+                continue;
+            }
+            try {
+                out[n++] = Double.parseDouble(t);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("invalid double: " + t);
+            }
+        }
+        if (n == 0) {
+            throw new IllegalArgumentException("double array is empty");
+        }
+        if (n == out.length) {
+            return out;
+        }
+        return Arrays.copyOf(out, n);
+    }
+
+    private static int[] parseIntArray(String s) {
+        // comma-separated numbers
+        String[] parts = s.split(",");
+        int[] out = new int[parts.length];
+        int n = 0;
+        for (String p : parts) {
+            String t = p.trim();
+            if (t.isEmpty()) {
+                continue;
+            }
+            try {
+                out[n++] = Integer.parseInt(t);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("invalid int: " + t);
+            }
+        }
+        if (n == 0) {
+            throw new IllegalArgumentException("int array is empty");
+        }
+        if (n == out.length) {
+            return out;
+        }
+        return Arrays.copyOf(out, n);
+    }
+
+    private static Map<String, String> parseStringMap(String s) {
+        // format: key1=value1, key2=value2
+        // comma-separated pairs, '=' separates key/value
+        String[] pairs = s.split(",");
+        Map<String, String> out = new LinkedHashMap<>();
+        for (String pair : pairs) {
+            String t = pair.trim();
+            if (t.isEmpty()) {
+                continue;
+            }
+
+            int eq = t.indexOf('=');
+            if (eq <= 0) {
+                throw new IllegalArgumentException("invalid map entry (expected key=value): " + t);
+            }
+
+            String k = t.substring(0, eq).trim();
+            String v = t.substring(eq + 1).trim();
+
+            if (k.isEmpty()) {
+                throw new IllegalArgumentException("empty map key");
+            }
+            out.put(k, v);
+        }
+        if (out.isEmpty()) {
+            throw new IllegalArgumentException("map is empty");
+        }
+        return out;
+    }
+
+
+    private static final class AttributeDialogResult {
+        final String key;
+        final AttributeType type;
+        final String defaultValueText;
+
+        private AttributeDialogResult(String key, AttributeType type, String defaultValueText) {
+            this.key = key;
+            this.type = type;
+            this.defaultValueText = defaultValueText;
+        }
+    }
+
+    private static final class PlaceholderFocusListener extends FocusAdapter {
+        @Override
+        public void focusGained(FocusEvent e) {
+            JTextField field = (JTextField) e.getComponent();
+            if (isShowingPlaceholder(field)) {
+                field.setText("");
+                field.setForeground(UIManager.getColor("TextField.foreground"));
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            JTextField field = (JTextField) e.getComponent();
+            String ph = (String) field.getClientProperty("placeholderText");
+            if (ph == null || ph.isBlank()) {
+                return;
+            }
+
+            if (field.getText().trim().isEmpty()) {
+                field.setForeground(Color.GRAY);
+                field.setText(ph);
+            }
+        }
     }
 }
 
