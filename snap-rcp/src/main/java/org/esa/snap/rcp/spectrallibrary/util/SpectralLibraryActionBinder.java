@@ -445,7 +445,10 @@ public class SpectralLibraryActionBinder {
     private static Optional<AttributeDialogResult> showAddAttributeDialog(Component parent) {
         JTextField keyField = new JTextField(20);
 
-        JComboBox<AttributeType> typeCombo = new JComboBox<>(AttributeType.values());
+        AttributeType[] allowed = Arrays.stream(AttributeType.values())
+                .filter(t -> t != AttributeType.EMBEDDED_SPECTRUM)
+                .toArray(AttributeType[]::new);
+        JComboBox<AttributeType> typeCombo = new JComboBox<>(allowed);
         typeCombo.setSelectedItem(AttributeType.STRING);
 
         JTextField defaultField = new JTextField(20);
@@ -481,7 +484,6 @@ public class SpectralLibraryActionBinder {
         gc.gridx = 1; gc.gridy = r; gc.weightx = 1;
         form.add(defaultHint, gc);
 
-
         Runnable updateHint = () -> {
             AttributeType t = (AttributeType) typeCombo.getSelectedItem();
             if (t == null) {
@@ -489,14 +491,12 @@ public class SpectralLibraryActionBinder {
             }
 
             String ex = exampleFor(t);
-            defaultHint.setText(ex == null || ex.isBlank() ? " " : ("Example: " + ex));
+            defaultHint.setText(ex.isBlank() ? " " : ("Example: " + ex));
 
-            boolean supported = t != AttributeType.EMBEDDED_SPECTRUM;
-            defaultField.setEnabled(supported);
+            defaultField.setEnabled(true);
 
-            installPlaceholder(defaultField, supported ? (ex == null ? "" : ex) : "");
-            if (!supported) {
-                defaultField.setText("");
+            if (defaultField.getText().trim().isEmpty() || isShowingPlaceholder(defaultField)) {
+                installPlaceholder(defaultField, ex);
             }
         };
         typeCombo.addActionListener(e -> updateHint.run());
@@ -522,7 +522,7 @@ public class SpectralLibraryActionBinder {
 
         String rawDefault = defaultField.getText();
         if (isShowingPlaceholder(defaultField)) {
-            rawDefault = "";
+            rawDefault = (String) defaultField.getClientProperty("placeholderText");
         }
 
         return Optional.of(new AttributeDialogResult(

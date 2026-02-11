@@ -160,6 +160,7 @@ public class SpectralLibraryController {
 
         try {
             service.addAttributeToLibrary(idOpt.get(), def, fillValue);
+            reloadLibraries();
             refreshActiveLibraryProfiles();
             vm.setStatus(UiStatus.info("Attribute added: " + def.getKey()));
         } catch (Exception ex) {

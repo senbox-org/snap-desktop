@@ -47,6 +47,7 @@ public class ViewModelBinder {
 
         updateLibraries(vm.getLibraries());
         updateActiveLibrarySelection(vm.getActiveLibraryId());
+        applyActiveLibraryToTable();
         panel.getLibraryTableModel().setProfiles(vm.getLibraryProfiles());
         panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
         panel.getPreviewPanel().setSelectedProfileId(vm.getSelectedPreviewProfileId().orElse(null));
@@ -63,10 +64,12 @@ public class ViewModelBinder {
                     case SpectralLibraryViewModel.PROP_LIBRARIES -> {
                         updateLibraries(vm.getLibraries());
                         updateActiveLibrarySelection(vm.getActiveLibraryId());
+                        applyActiveLibraryToTable();
                         updatePreviewAxisFromActiveLibrary();
                     }
                     case SpectralLibraryViewModel.PROP_ACTIVE_LIBRARY_ID -> {
                         updateActiveLibrarySelection(vm.getActiveLibraryId());
+                        applyActiveLibraryToTable();
                         updatePreviewAxisFromActiveLibrary();
                     }
                     case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES ->
@@ -108,6 +111,11 @@ public class ViewModelBinder {
                 return;
             }
         }
+    }
+
+    private void applyActiveLibraryToTable() {
+        SpectralLibrary lib = getSelectedLibraryFromCombo();
+        panel.getLibraryTableModel().setSchema(lib != null ? lib.getSchema() : null);
     }
 
     private void updatePreviewAxisFromActiveLibrary() {
