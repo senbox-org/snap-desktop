@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +48,9 @@ public class PreviewPanel extends JPanel {
     private double[] xAxisOrNull;
     private Consumer<UUID> selectionListener;
 
-    private final Stroke normalStroke = new BasicStroke(1.2f);
-    private final Stroke selectedStroke = new BasicStroke(2.6f);
-    private final float normalAlpha = 0.35f;
+    private final Stroke normalStroke = new BasicStroke(1.8f);
+    private final Stroke selectedStroke = new BasicStroke(3.2f);
+    private final float normalAlpha = 0.65f;
     private final float selectedAlpha = 1.0f;
     private final List<Paint> basePaints = new ArrayList<>();
 
@@ -137,8 +138,12 @@ public class PreviewPanel extends JPanel {
         plot.setDomainGridlinesVisible(true);
         plot.setRangeGridlinesVisible(true);
 
-        XYLineAndShapeRenderer r = new XYLineAndShapeRenderer(true, false);
+        XYLineAndShapeRenderer r = new XYLineAndShapeRenderer(true, true);
         r.setDefaultStroke(normalStroke);
+
+        r.setDefaultShape(new Ellipse2D.Double(-3, -3, 6, 6));
+        r.setDefaultShapesFilled(true);
+
         plot.setRenderer(r);
     }
 
@@ -210,7 +215,7 @@ public class PreviewPanel extends JPanel {
             }
         }
 
-        double thresholdPx = 18.0;
+        double thresholdPx = 28.0;
         if (bestSeries >= 0 && best <= thresholdPx * thresholdPx) {
             return profileIdBySeriesIndex(bestSeries);
         }
