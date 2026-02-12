@@ -12,10 +12,7 @@ import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 public class SpectralLibraryController {
@@ -281,7 +278,8 @@ public class SpectralLibraryController {
                                        List<Band> bands,
                                        List<Placemark> pins,
                                        int level,
-                                       String namePrefix) {
+                                       String namePrefix,
+                                       Set<String> selectedBandNames) {
         if (product == null || axis == null || bands == null || pins == null) {
             return;
         }
@@ -319,7 +317,8 @@ public class SpectralLibraryController {
             );
 
             if (pOpt.isPresent()) {
-                preview.add(pOpt.get());
+                SpectralProfile spectralProfile = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+                preview.add(spectralProfile);
                 added++;
             }
         }
@@ -337,7 +336,8 @@ public class SpectralLibraryController {
                                        int x,
                                        int y,
                                        int level,
-                                       String name) {
+                                       String name,
+                                       Set<String> selectedBandNames) {
         if (product == null || axis == null || bands == null || bands.isEmpty()) {
             return;
         }
@@ -364,7 +364,8 @@ public class SpectralLibraryController {
         }
 
         List<SpectralProfile> preview = new ArrayList<>(vm.getPreviewProfiles());
-        preview.add(pOpt.get());
+        SpectralProfile spectralProfile = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+        preview.add(spectralProfile);
         vm.setPreviewProfiles(safeCopyWithoutNulls(preview));
         vm.setSelectedPreviewProfileId(pOpt.get().getId());
         vm.setStatus(UiStatus.info("Preview added"));
@@ -486,5 +487,27 @@ public class SpectralLibraryController {
             }
         }
         return List.copyOf(out);
+    }
+
+    private static SpectralProfile maskUnselectedToNaN(SpectralProfile p, List<Band> bands, Set<String> selected) {
+        if (p == null || selected == null || selected.isEmpty()) {
+            return p;
+        }
+
+        var sig = p.getSignature();
+
+        double[] y = sig.getValues();
+        String yUnit = sig.getYUnitOrNull();
+
+        for (int i = 0; i < bands.size() && i < y.length; i++) {
+            Band b = bands.get(i);
+            if (b != null && !selected.contains(b.getName())) {
+                y[i] = Double.NaN;
+            }
+        }
+
+        SpectralSignature maskedSig = SpectralSignature.of(y, yUnit);
+
+        return new SpectralProfile(p.getId(), p.getName(), maskedSig, p.getAttributes(), p.getSourceRef().orElse(null));
     }
 }

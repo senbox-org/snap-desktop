@@ -48,6 +48,7 @@ public class SpectralLibraryActionBinder {
 
     private ProductSceneView currentView;
     private volatile Map<String, Set<String>> selectedBandsBySpectrum = null;
+    private volatile Map<String, Set<String>> allBandsBySpectrum = null;
     private volatile String defaultSpectrumGroupName = null;
 
     private BandGroupsManager bandGroupsManager;
@@ -359,7 +360,7 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, "pin_" + sanitizeId(chosen.getName()));
+            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, "pin_" + sanitizeId(chosen.getName()), null);
             return;
         }
 
@@ -368,7 +369,9 @@ public class SpectralLibraryActionBinder {
             String groupName = e.getKey();
             Set<String> names = e.getValue();
 
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
+
             if (bands.isEmpty()) {
                 continue;
             }
@@ -387,7 +390,8 @@ public class SpectralLibraryActionBinder {
                     bands,
                     pins,
                     level,
-                    "pin_" + sanitizeId(groupName)
+                    "pin_" + sanitizeId(groupName),
+                    names
             );
         }
 
@@ -499,7 +503,7 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(chosen.getName()));
+            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(chosen.getName()), null);
             return;
         }
 
@@ -508,7 +512,8 @@ public class SpectralLibraryActionBinder {
             String groupName = e.getKey();
             Set<String> names = e.getValue();
 
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
             if (bands.isEmpty()) {
                 continue;
             }
@@ -527,7 +532,8 @@ public class SpectralLibraryActionBinder {
                     cursorX,
                     cursorY,
                     level,
-                    "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(groupName)
+                    "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(groupName),
+                    names
             );
             extracted++;
         }
@@ -628,27 +634,41 @@ public class SpectralLibraryActionBinder {
 
             DisplayableSpectrum[] chosen = chooser.getSpectra();
             Map<String, Set<String>> selectedBySpec = new LinkedHashMap<>();
+            Map<String, Set<String>> allBySpec = new LinkedHashMap<>();
 
             for (DisplayableSpectrum s : chosen) {
-                if (s == null || !s.isSelected()) {
+                if (s == null) {
                     continue;
                 }
+
+                Set<String> all = new LinkedHashSet<>();
+                for (Band sb : s.getSpectralBands()) {
+                    if (sb != null) {
+                        all.add(sb.getName());
+                    }
+                }
+                if (!all.isEmpty()) {
+                    allBySpec.put(s.getName(), Collections.unmodifiableSet(all));
+                }
+
                 Band[] selBands = s.getSelectedBands();
                 if (selBands == null || selBands.length == 0) {
                     continue;
                 }
-                Set<String> names = new LinkedHashSet<>();
+
+                Set<String> sel = new LinkedHashSet<>();
                 for (Band b : selBands) {
                     if (b != null) {
-                        names.add(b.getName());
+                        sel.add(b.getName());
                     }
                 }
-                if (!names.isEmpty()) {
-                    selectedBySpec.put(s.getName(), Collections.unmodifiableSet(names));
+                if (!sel.isEmpty()) {
+                    selectedBySpec.put(s.getName(), Collections.unmodifiableSet(sel));
                 }
             }
 
             selectedBandsBySpectrum = selectedBySpec.isEmpty() ? null : Collections.unmodifiableMap(selectedBySpec);
+            allBandsBySpectrum = allBySpec.isEmpty() ? null : Collections.unmodifiableMap(allBySpec);
 
             vm.setStatus(selectedBandsBySpectrum == null
                     ? UiStatus.info("Band filter cleared (all spectral bands)")
