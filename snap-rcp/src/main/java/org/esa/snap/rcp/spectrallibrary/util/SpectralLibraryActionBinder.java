@@ -651,6 +651,10 @@ public class SpectralLibraryActionBinder {
                     allBySpec.put(s.getName(), Collections.unmodifiableSet(all));
                 }
 
+                if (!s.isSelected()) {
+                    continue;
+                }
+
                 Band[] selBands = s.getSelectedBands();
                 if (selBands == null || selBands.length == 0) {
                     continue;
@@ -690,11 +694,9 @@ public class SpectralLibraryActionBinder {
         }
 
         Map<String, Set<String>> preSel = selectedBandsBySpectrum;
-
         List<DisplayableSpectrum> spectra = new ArrayList<>();
         Set<String> usedBandNames = new HashSet<>();
 
-        DisplayableSpectrum preferredDefault = null;
 
         BandGroupsManager bgm = getBandGroupsManagerOrNull();
         if (bgm != null) {
@@ -706,23 +708,26 @@ public class SpectralLibraryActionBinder {
 
                 Set<String> wanted = preSel != null ? preSel.get(s.getName()) : null;
 
+                boolean isDefaultGroup = (defaultSpectrumGroupName != null)
+                        ? defaultSpectrumGroupName.equals(s.getName())
+                        : (gi == 0);
+
                 for (String bandName : g.getMatchingBandNames(product)) {
                     Band b = product.getBand(bandName);
                     if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
                         continue;
                     }
-                    boolean selected = (wanted == null) || wanted.contains(b.getName());
+                    boolean selected = (preSel == null)
+                            ? isDefaultGroup
+                            : (wanted != null && wanted.contains(b.getName()));
                     s.addBand(new SpectrumBand(b, selected));
                     usedBandNames.add(b.getName());
                 }
 
                 if (preSel != null) {
-                    s.setSelected(s.getSelectedBands().length > 0);
+                    s.setSelected(wanted != null && s.getSelectedBands().length > 0);
                 } else {
-                    s.setSelected(false);
-                    if (preferredDefault == null && s.getSpectralBands().length > 0) {
-                        preferredDefault = s;
-                    }
+                    s.setSelected(isDefaultGroup);
                 }
 
                 if (s.getSpectralBands().length > 0) {
@@ -748,13 +753,10 @@ public class SpectralLibraryActionBinder {
                 if (preSel != null) {
                     s.setSelected(false);
                 } else {
-                    boolean isDefault = (i == selectedSpectrumIndex && selectedSpectrumIndex >= 0);
+                    boolean isDefault = (defaultSpectrumGroupName != null)
+                            ? defaultSpectrumGroupName.equals(name)
+                            : (selectedSpectrumIndex >= 0 ? (i == selectedSpectrumIndex) : (i == 0));
                     s.setSelected(isDefault);
-                    if (isDefault) {
-                        preferredDefault = s;
-                    } else if (preferredDefault == null) {
-                        preferredDefault = s;
-                    }
                 }
 
                 autoSpectra.add(s);
@@ -766,15 +768,21 @@ public class SpectralLibraryActionBinder {
                 if (idx >= 0 && idx < autoSpectra.size()) {
                     DisplayableSpectrum s = autoSpectra.get(idx);
                     Set<String> wanted = preSel != null ? preSel.get(s.getName()) : null;
-                    boolean selected = (wanted == null) || wanted.contains(b.getName());
+                    boolean isDefaultGroup = (defaultSpectrumGroupName != null)
+                            ? defaultSpectrumGroupName.equals(s.getName())
+                            : (selectedSpectrumIndex >= 0 ? (idx == selectedSpectrumIndex) : (idx == 0));
+                    boolean selected = (preSel == null)
+                            ? isDefaultGroup
+                            : (wanted != null && wanted.contains(b.getName()));
                     s.addBand(new SpectrumBand(b, selected));
                     usedBandNames.add(b.getName());
                 }
             }
 
             if (preSel != null) {
-                for (DisplayableSpectrum s : autoSpectra) {
-                    s.setSelected(s.getSelectedBands().length > 0);
+                for (DisplayableSpectrum s2 : autoSpectra) {
+                    Set<String> wanted2 = preSel.get(s2.getName());
+                    s2.setSelected(wanted2 != null && s2.getSelectedBands().length > 0);
                 }
             }
 
@@ -787,19 +795,21 @@ public class SpectralLibraryActionBinder {
 
         for (Band b : spectralBands) {
             if (!usedBandNames.contains(b.getName())) {
-                boolean selected = (wantedRest == null) || wantedRest.contains(b.getName());
+                boolean isDefaultGroup = (defaultSpectrumGroupName != null)
+                        ? defaultSpectrumGroupName.equals(rest.getName())
+                        : false;
+                boolean selected = (preSel == null)
+                        ? isDefaultGroup
+                        : (wantedRest != null && wantedRest.contains(b.getName()));
                 rest.addBand(new SpectrumBand(b, selected));
             }
         }
 
         if (rest.getSpectralBands().length > 0) {
             if (preSel != null) {
-                rest.setSelected(rest.getSelectedBands().length > 0);
+                rest.setSelected(wantedRest != null && rest.getSelectedBands().length > 0);
             } else {
                 rest.setSelected(false);
-                if (preferredDefault == null) {
-                    preferredDefault = rest;
-                }
             }
             spectra.add(rest);
         }
