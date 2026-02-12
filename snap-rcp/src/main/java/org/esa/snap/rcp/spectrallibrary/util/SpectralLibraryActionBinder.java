@@ -15,6 +15,7 @@ import org.esa.snap.rcp.spectrallibrary.ui.AddAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
+import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
@@ -628,7 +629,7 @@ public class SpectralLibraryActionBinder {
             }
 
             SpectrumChooser chooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(panel), spectra);
-            if (chooser.show() != org.esa.snap.ui.AbstractDialog.ID_OK) {
+            if (chooser.show() != AbstractDialog.ID_OK) {
                 return;
             }
 

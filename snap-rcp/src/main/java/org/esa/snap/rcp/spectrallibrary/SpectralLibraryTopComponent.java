@@ -6,6 +6,7 @@ import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.speclib.model.SpectralLibrary;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -54,7 +55,7 @@ public class SpectralLibraryTopComponent extends ToolTopComponent {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                           boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof org.esa.snap.speclib.model.SpectralLibrary lib) {
+                if (value instanceof SpectralLibrary lib) {
                     setText(lib.getName());
                 }
                 return this;
