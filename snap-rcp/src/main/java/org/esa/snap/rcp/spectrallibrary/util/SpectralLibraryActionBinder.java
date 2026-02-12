@@ -1,9 +1,12 @@
 package org.esa.snap.rcp.spectrallibrary.util;
 
 import com.bc.ceres.glayer.support.ImageLayer;
+import eu.esa.snap.core.datamodel.group.BandGroup;
+import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
@@ -14,6 +17,10 @@ import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
+import org.esa.snap.ui.product.spectrum.SpectrumBand;
+import org.esa.snap.ui.product.spectrum.SpectrumChooser;
+import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -40,6 +47,10 @@ public class SpectralLibraryActionBinder {
     private volatile boolean cursorValid = false;
 
     private ProductSceneView currentView;
+    private volatile Map<String, Set<String>> selectedBandsBySpectrum = null;
+    private volatile String defaultSpectrumGroupName = null;
+
+    private BandGroupsManager bandGroupsManager;
 
     private final PixelPositionListener cursorTracker = new PixelPositionListener() {
         @Override
@@ -101,6 +112,7 @@ public class SpectralLibraryActionBinder {
         wireExtractionPins();
         wireExtractionCursor();
         wirePreviewAddButtons();
+        wireBandFilter();
     }
 
 
@@ -287,34 +299,101 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
-        List<Band> bands = BandSelectionUtils.getSpectralBands(product);
-        if (bands.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No spectral bands in product"));
-            return;
-        }
-
         List<Placemark> pins = selectedOnly
                 ? Arrays.asList(view.getSelectedPins())
                 : Arrays.asList(product.getPinGroup().toArray(new Placemark[0]));
 
-        pins = pins.stream().filter(p -> p != null).toList();
+        pins = pins.stream().filter(Objects::nonNull).toList();
         if (pins.isEmpty()) {
             vm.setStatus(UiStatus.warn(selectedOnly ? "No selected pins" : "No pins in product"));
             return;
         }
 
         int level = 0;
-        String yUnit = lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT);
+        Map<String, Set<String>> sel = selectedBandsBySpectrum;
 
-        controller.extractPreviewFromPins(
-                product,
-                lib.getAxis(),
-                yUnit,
-                bands,
-                pins,
-                level,
-                "pin"
-        );
+        if (sel == null || sel.isEmpty()) {
+            DisplayableSpectrum[] spectra = buildSpectraForChooser(product, view.getRaster());
+            String group = defaultSpectrumGroupName;
+
+            DisplayableSpectrum chosen = null;
+            if (group != null) {
+                for (DisplayableSpectrum s : spectra) {
+                    if (s != null && group.equals(s.getName())) {
+                        chosen = s; break;
+                    }
+                }
+            }
+            if (chosen == null) {
+                for (DisplayableSpectrum s : spectra) {
+                    if (s != null && s.isSelected()) {
+                        chosen = s; break;
+                    }
+                }
+            }
+            if (chosen == null && spectra.length > 0) {
+                chosen = spectra[0];
+            }
+
+            if (chosen == null) {
+                vm.setStatus(UiStatus.warn("No spectral bands available"));
+                return;
+            }
+
+            Set<String> names = new LinkedHashSet<>();
+            for (Band b : chosen.getSelectedBands()) {
+                if (b != null) {
+                    names.add(b.getName());
+                }
+            }
+
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
+                return;
+            }
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, "pin_" + sanitizeId(chosen.getName()));
+            return;
+        }
+
+        int totalBands = 0;
+        for (var e : sel.entrySet()) {
+            String groupName = e.getKey();
+            Set<String> names = e.getValue();
+
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                continue;
+            }
+            totalBands += bands.size();
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewFromPins(
+                    product,
+                    axis,
+                    unitToUse,
+                    bands,
+                    pins,
+                    level,
+                    "pin_" + sanitizeId(groupName)
+            );
+        }
+
+        vm.setStatus(totalBands == 0
+                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
+                : UiStatus.info("Extracted " + sel.size() + " spectrum group(s)"));
     }
 
 
@@ -370,25 +449,93 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
-        List<Band> bands = BandSelectionUtils.getSpectralBands(product);
-        if (bands.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No spectral bands in product"));
+        int level = (cursorLevel >= 0) ? cursorLevel : ImageLayer.getLevel(view.getRaster().getMultiLevelModel(), view.getViewport());
+        Map<String, Set<String>> sel = selectedBandsBySpectrum;
+
+        if (sel == null || sel.isEmpty()) {
+            DisplayableSpectrum[] spectra = buildSpectraForChooser(product, view.getRaster());
+            String group = defaultSpectrumGroupName;
+
+            DisplayableSpectrum chosen = null;
+            if (group != null) {
+                for (DisplayableSpectrum s : spectra) {
+                    if (s != null && group.equals(s.getName())) {
+                        chosen = s; break;
+                    }
+                }
+            }
+            if (chosen == null) {
+                for (DisplayableSpectrum s : spectra) {
+                    if (s != null && s.isSelected()) {
+                        chosen = s; break;
+                    }
+                }
+            }
+            if (chosen == null && spectra.length > 0) {
+                chosen = spectra[0];
+            }
+
+            if (chosen == null) {
+                vm.setStatus(UiStatus.warn("No spectral bands available"));
+                return;
+            }
+
+            Set<String> names = new LinkedHashSet<>();
+            for (Band b : chosen.getSelectedBands()) {
+                if (b != null) {
+                    names.add(b.getName());
+                }
+            }
+
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
+                return;
+            }
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(chosen.getName()));
             return;
         }
 
-        int level = (cursorLevel >= 0) ? cursorLevel : ImageLayer.getLevel(view.getRaster().getMultiLevelModel(), view.getViewport());
-        String yUnit = lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT);
+        int extracted = 0;
+        for (var e : sel.entrySet()) {
+            String groupName = e.getKey();
+            Set<String> names = e.getValue();
 
-        controller.extractPreviewAtCursor(
-                product,
-                lib.getAxis(),
-                yUnit,
-                bands,
-                cursorX,
-                cursorY,
-                level,
-                "cursor_" + cursorX + "_" + cursorY
-        );
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                continue;
+            }
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewAtCursor(
+                    product,
+                    axis,
+                    unitToUse,
+                    bands,
+                    cursorX,
+                    cursorY,
+                    level,
+                    "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(groupName)
+            );
+            extracted++;
+        }
+
+        vm.setStatus(extracted == 0
+                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
+                : UiStatus.info("Extracted " + extracted + " spectrum group(s) at cursor"));
+
     }
 
 
@@ -450,6 +597,240 @@ public class SpectralLibraryActionBinder {
         }
 
         controller.exportActiveLibraryToFile(file);
+    }
+
+    private void wireBandFilter() {
+        panel.getFilterButton().setEnabled(true);
+        panel.getFilterButton().addActionListener(e -> {
+            ProductSceneView view = viewProvider.getSelectedProductSceneView();
+            if (view == null || view.getProduct() == null) {
+                vm.setStatus(UiStatus.warn("No product view selected"));
+                return;
+            }
+
+            Product product = view.getProduct();
+            RasterDataNode raster = view.getRaster();
+            if (raster == null) {
+                vm.setStatus(UiStatus.warn("No raster selected"));
+                return;
+            }
+
+            DisplayableSpectrum[] spectra = buildSpectraForChooser(product, raster);
+            if (spectra.length == 0) {
+                vm.setStatus(UiStatus.warn("No spectral bands available"));
+                return;
+            }
+
+            SpectrumChooser chooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(panel), spectra);
+            if (chooser.show() != org.esa.snap.ui.AbstractDialog.ID_OK) {
+                return;
+            }
+
+            DisplayableSpectrum[] chosen = chooser.getSpectra();
+            Map<String, Set<String>> selectedBySpec = new LinkedHashMap<>();
+
+            for (DisplayableSpectrum s : chosen) {
+                if (s == null || !s.isSelected()) {
+                    continue;
+                }
+                Band[] selBands = s.getSelectedBands();
+                if (selBands == null || selBands.length == 0) {
+                    continue;
+                }
+                Set<String> names = new LinkedHashSet<>();
+                for (Band b : selBands) {
+                    if (b != null) {
+                        names.add(b.getName());
+                    }
+                }
+                if (!names.isEmpty()) {
+                    selectedBySpec.put(s.getName(), Collections.unmodifiableSet(names));
+                }
+            }
+
+            selectedBandsBySpectrum = selectedBySpec.isEmpty() ? null : Collections.unmodifiableMap(selectedBySpec);
+
+            vm.setStatus(selectedBandsBySpectrum == null
+                    ? UiStatus.info("Band filter cleared (all spectral bands)")
+                    : UiStatus.info("Band filter set: " + selectedBandsBySpectrum.size() + " spectrum group(s)"));
+        });
+    }
+
+    private DisplayableSpectrum[] buildSpectraForChooser(Product product, RasterDataNode raster) {
+        List<Band> spectralBands = new ArrayList<>();
+
+        for (Band b : product.getBands()) {
+            if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
+                continue;
+            }
+            spectralBands.add(b);
+        }
+        if (spectralBands.isEmpty()) {
+            return new DisplayableSpectrum[0];
+        }
+
+        Map<String, Set<String>> preSel = selectedBandsBySpectrum;
+
+        List<DisplayableSpectrum> spectra = new ArrayList<>();
+        Set<String> usedBandNames = new HashSet<>();
+
+        DisplayableSpectrum preferredDefault = null;
+
+        BandGroupsManager bgm = getBandGroupsManagerOrNull();
+        if (bgm != null) {
+            BandGroup[] groups = bgm.getGroupsMatchingProduct(product);
+            for (int gi = 0; gi < groups.length; gi++) {
+                BandGroup g = groups[gi];
+                DisplayableSpectrum s = new DisplayableSpectrum(g.getName(), gi);
+                s.setLineStyle(SpectrumStrokeProvider.getStroke(gi));
+
+                Set<String> wanted = preSel != null ? preSel.get(s.getName()) : null;
+
+                for (String bandName : g.getMatchingBandNames(product)) {
+                    Band b = product.getBand(bandName);
+                    if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
+                        continue;
+                    }
+                    boolean selected = (wanted == null) || wanted.contains(b.getName());
+                    s.addBand(new SpectrumBand(b, selected));
+                    usedBandNames.add(b.getName());
+                }
+
+                if (preSel != null) {
+                    s.setSelected(s.getSelectedBands().length > 0);
+                } else {
+                    s.setSelected(false);
+                    if (preferredDefault == null && s.getSpectralBands().length > 0) {
+                        preferredDefault = s;
+                    }
+                }
+
+                if (s.getSpectralBands().length > 0) {
+                    spectra.add(s);
+                }
+            }
+        }
+
+        var auto = product.getAutoGrouping();
+        List<DisplayableSpectrum> autoSpectra = new ArrayList<>();
+        if (auto != null) {
+            int base = spectra.size();
+            int selectedSpectrumIndex = (raster != null) ? auto.indexOf(raster.getName()) : -1;
+
+            int i = 0;
+            Iterator<String[]> it = auto.iterator();
+
+            while (it.hasNext()) {
+                String name = String.join("_", it.next());
+                DisplayableSpectrum s = new DisplayableSpectrum(name, base + i);
+                s.setLineStyle(SpectrumStrokeProvider.getStroke(base + i));
+
+                if (preSel != null) {
+                    s.setSelected(false);
+                } else {
+                    boolean isDefault = (i == selectedSpectrumIndex && selectedSpectrumIndex >= 0);
+                    s.setSelected(isDefault);
+                    if (isDefault) {
+                        preferredDefault = s;
+                    } else if (preferredDefault == null) {
+                        preferredDefault = s;
+                    }
+                }
+
+                autoSpectra.add(s);
+                i++;
+            }
+
+            for (Band b : spectralBands) {
+                int idx = auto.indexOf(b.getName());
+                if (idx >= 0 && idx < autoSpectra.size()) {
+                    DisplayableSpectrum s = autoSpectra.get(idx);
+                    Set<String> wanted = preSel != null ? preSel.get(s.getName()) : null;
+                    boolean selected = (wanted == null) || wanted.contains(b.getName());
+                    s.addBand(new SpectrumBand(b, selected));
+                    usedBandNames.add(b.getName());
+                }
+            }
+
+            if (preSel != null) {
+                for (DisplayableSpectrum s : autoSpectra) {
+                    s.setSelected(s.getSelectedBands().length > 0);
+                }
+            }
+
+            spectra.addAll(autoSpectra);
+        }
+
+        DisplayableSpectrum rest = new DisplayableSpectrum("Ungrouped spectral bands", spectra.size());
+        rest.setLineStyle(SpectrumStrokeProvider.getStroke(spectra.size()));
+        Set<String> wantedRest = preSel != null ? preSel.get(rest.getName()) : null;
+
+        for (Band b : spectralBands) {
+            if (!usedBandNames.contains(b.getName())) {
+                boolean selected = (wantedRest == null) || wantedRest.contains(b.getName());
+                rest.addBand(new SpectrumBand(b, selected));
+            }
+        }
+
+        if (rest.getSpectralBands().length > 0) {
+            if (preSel != null) {
+                rest.setSelected(rest.getSelectedBands().length > 0);
+            } else {
+                rest.setSelected(false);
+                if (preferredDefault == null) {
+                    preferredDefault = rest;
+                }
+            }
+            spectra.add(rest);
+        }
+
+        if (preSel == null) {
+            DisplayableSpectrum chosenDefault = null;
+
+            if (auto != null) {
+                int idx = auto.indexOf(raster.getName());
+                if (idx >= 0) {
+                    for (DisplayableSpectrum s : spectra) {
+                        if (s.isSelected()) {
+                            chosenDefault = s;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (chosenDefault == null && !spectra.isEmpty()) {
+                chosenDefault = spectra.get(0);
+                chosenDefault.setSelected(true);
+            }
+
+            if (chosenDefault != null) {
+                defaultSpectrumGroupName = chosenDefault.getName();
+            }
+        }
+
+        return spectra.toArray(new DisplayableSpectrum[0]);
+    }
+
+
+    private BandGroupsManager getBandGroupsManagerOrNull() {
+        if (bandGroupsManager != null) {
+            return bandGroupsManager;
+        }
+        try {
+            bandGroupsManager = BandGroupsManager.getInstance();
+            return bandGroupsManager;
+        } catch (Exception ex) {
+            vm.setStatus(UiStatus.warn("BandGroupsManager not available: " + ex.getMessage()));
+            return null;
+        }
+    }
+
+    private static String sanitizeId(String s) {
+        if (s == null) {
+            return "group";
+        }
+        return s.trim().replaceAll("[^a-zA-Z0-9_\\-]+", "_");
     }
 }
 

@@ -1,6 +1,8 @@
 package org.esa.snap.rcp.spectrallibrary.ui;
 
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
+import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +35,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JToggleButton extractAtCursorToggle = new JToggleButton("Extract at Cursor");
     private final JButton extractSelectedPinsButton = new JButton("Extract Selected Pins");
     private final JButton extractAllPinsButton = new JButton("Extract All Pins");
+    private AbstractButton filterButton;
 
     // status actions
     private final JLabel statusLabel = new JLabel(" ");
@@ -133,6 +136,14 @@ public class SpectralLibraryPanel extends JPanel {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
 
+        filterButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Filter24.gif"), false);
+        filterButton.setName("filterButton");
+        filterButton.setToolTipText("Filter spectra by bands or band groups");
+        filterButton.setEnabled(false);
+
+        JPanel row0 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row0.add(filterButton);
+
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row1.add(extractAtCursorToggle);
         row1.add(extractSelectedPinsButton);
@@ -143,6 +154,8 @@ public class SpectralLibraryPanel extends JPanel {
         row2.add(addAllPreviewButton);
         row2.add(clearPreviewButton);
 
+        header.add(Box.createVerticalStrut(5));
+        header.add(row0);
         header.add(Box.createVerticalStrut(5));
         header.add(row1);
         header.add(Box.createVerticalStrut(5));
@@ -221,6 +234,9 @@ public class SpectralLibraryPanel extends JPanel {
     }
     public JButton getExtractAllPinsButton() {
         return extractAllPinsButton;
+    }
+    public AbstractButton getFilterButton() {
+        return filterButton;
     }
 
     // status actions

@@ -71,7 +71,7 @@ public class SpectralLibraryController {
     }
 
     public SpectralLibrary createLibraryFromBands(String name, List<Band> bands) {
-        SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+        SpectralAxis axis = SpectralAxisUtils.axisFromReferenceSpectralGroup(bands);
         String yUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
         if (yUnit == null || yUnit.isBlank()) {
             yUnit = "value";

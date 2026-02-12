@@ -47,28 +47,45 @@ public class SpectralAxisUtils {
     public static String defaultYUnitFromBands(List<Band> bands) {
         Objects.requireNonNull(bands, "bands must not be null");
 
-        String unit = null;
+        String yUnit = null;
         for (Band b : bands) {
-            if (b == null) {
-                continue;
-            }
-            if (b.isFlagBand()) {
-                continue;
-            }
-            if (b.getSpectralWavelength() <= 0.0f) {
-                continue;
-            }
-
+            if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) continue;
             String u = b.getUnit();
-            if (u == null || u.isBlank()) {
-                return null;
-            }
-            if (unit == null) {
-                unit = u;
-            } else if (!unit.equals(u)) {
-                return null;
+            if (u != null && !u.isBlank()) {
+                yUnit = u;
+                break;
             }
         }
-        return unit;
+        return yUnit;
+    }
+
+    public static SpectralAxis axisFromReferenceSpectralGroup(List<Band> bands) {
+        List<Band> spectral = new ArrayList<>();
+        for (Band b : bands) {
+            if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
+                continue;
+            }
+            spectral.add(b);
+        }
+        spectral.sort(Comparator.comparingDouble(Band::getSpectralWavelength));
+        if (spectral.isEmpty()) {
+            throw new IllegalArgumentException("No spectral bands (wavelength > 0) found");
+        }
+
+        List<Double> uniqueWl = new ArrayList<>();
+        double last = Double.NaN;
+        for (Band b : spectral) {
+            double wl = b.getSpectralWavelength();
+            if (uniqueWl.isEmpty() || Double.compare(wl, last) != 0) {
+                uniqueWl.add(wl);
+                last = wl;
+            }
+        }
+
+        double[] wl = new double[uniqueWl.size()];
+        for (int i = 0; i < uniqueWl.size(); i++) {
+            wl[i] = uniqueWl.get(i);
+        }
+        return new SpectralAxis(wl, "nm");
     }
 }

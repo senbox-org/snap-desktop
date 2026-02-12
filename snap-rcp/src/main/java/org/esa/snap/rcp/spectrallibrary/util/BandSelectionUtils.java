@@ -6,28 +6,40 @@ import org.esa.snap.core.datamodel.Product;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 
 public final class BandSelectionUtils {
 
 
     public static List<Band> getSpectralBands(Product product) {
+        return getSpectralBands(product, null);
+    }
+
+
+    public static List<Band> getSpectralBands(Product product, Set<String> allowedBandNames) {
         if (product == null) {
             return List.of();
         }
 
+        boolean filter = allowedBandNames != null && !allowedBandNames.isEmpty();
+
         List<Band> out = new ArrayList<>();
-        for (Band b : product.getBands()) {
-            if (b == null) {
+        for (Band band : product.getBands()) {
+            if (band == null) {
                 continue;
             }
-            if (b.isFlagBand()) {
+            if (band.isFlagBand()) {
                 continue;
             }
-            if (b.getSpectralWavelength() <= 0.0f) {
+            if (band.getSpectralWavelength() <= 0.0f) {
                 continue;
             }
-            out.add(b);
+
+            if (filter && !allowedBandNames.contains(band.getName())) {
+                continue;
+            }
+            out.add(band);
         }
 
         out.sort(Comparator.comparingDouble(Band::getSpectralWavelength));
