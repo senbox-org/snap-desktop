@@ -18,7 +18,7 @@ import java.awt.*;
 
 @TopComponent.Description(
         preferredID = "SpectralLibraryTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif" // TODO change picture
+        iconBase = "org/esa/snap/rcp/icons/Spectrum.gif"
 )
 @TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 85)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.spectrallibrary.SpectralLibraryTopComponent")
