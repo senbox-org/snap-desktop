@@ -245,9 +245,35 @@ public class SpectralLibraryController {
             vm.setStatus(UiStatus.warn("No preview profile selected"));
             return;
         }
-        service.addProfile(libId, selectedOpt.get());
-        refreshActiveLibraryProfiles();
-        vm.setStatus(UiStatus.info("Profile added"));
+
+        SpectralProfile sel = selectedOpt.get();
+        UUID selId = sel.getId();
+        if (selId == null) {
+            vm.setStatus(UiStatus.warn("Selected profile has no ID"));
+            return;
+        }
+
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        for (SpectralProfile p : lib.getProfiles()) {
+            if (p != null && selId.equals(p.getId())) {
+                vm.setStatus(UiStatus.info("Profile already exists (skipped)"));
+                return;
+            }
+        }
+
+        try {
+            service.addProfile(libId, sel);
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.info("Profile added"));
+        } catch (Throwable t) {
+            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
+            refreshActiveLibraryProfiles();
+        }
     }
 
     public void addAllPreviewToActiveLibrary() {
@@ -262,14 +288,58 @@ public class SpectralLibraryController {
             return;
         }
 
-        int added = 0;
-        for (SpectralProfile p : preview) {
-            if (p == null) continue;
-            service.addProfile(libId, p);
-            added++;
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
         }
+
+        Set<UUID> existingIds = new HashSet<>();
+        for (SpectralProfile p : lib.getProfiles()) {
+            if (p != null && p.getId() != null) {
+                existingIds.add(p.getId());
+            }
+        }
+
+        int added = 0;
+        int skipped = 0;
+        int failed = 0;
+
+        for (SpectralProfile p : preview) {
+            if (p == null || p.getId() == null) {
+                continue;
+            }
+
+            if (existingIds.contains(p.getId())) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                service.addProfile(libId, p);
+                existingIds.add(p.getId());
+                added++;
+            } catch (Throwable t) {
+                failed++;
+            }
+        }
+
         refreshActiveLibraryProfiles();
-        vm.setStatus(UiStatus.info("Profiles added (" + added + ")"));
+
+        if (added > 0) {
+            String msg = "Profiles added (" + added + ")";
+            if (skipped > 0) {
+                msg += ", skipped (" + skipped + ")";
+            }
+            if (failed > 0) {
+                msg += ", failed (" + failed + ")";
+            }
+            vm.setStatus(UiStatus.info(msg));
+        } else if (skipped > 0 && failed == 0) {
+            vm.setStatus(UiStatus.warn("Nothing added (all already existed: " + skipped + ")"));
+        } else {
+            vm.setStatus(UiStatus.warn("Nothing added"));
+        }
     }
 
     public void clearPreview() {
