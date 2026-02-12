@@ -37,9 +37,9 @@ public class SpectralLibraryTopComponent extends ToolTopComponent {
 
 
     private final SpectralLibraryViewModel vm = new SpectralLibraryViewModel();
-    private final SpectralLibraryController controller = new SpectralLibraryController(vm);
-
     private final SpectralLibraryPanel panel = new SpectralLibraryPanel();
+
+    private final SpectralLibraryController controller = new SpectralLibraryController(vm, panel.getPreviewPanel());
 
     private final ViewModelBinder vmBinder = new ViewModelBinder(vm, panel);
     private final SpectralLibraryActionBinder actionBinder = new SpectralLibraryActionBinder(vm, controller, panel, this::getSelectedProductSceneView);

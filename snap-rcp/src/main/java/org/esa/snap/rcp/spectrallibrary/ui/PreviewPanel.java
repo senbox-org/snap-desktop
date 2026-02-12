@@ -2,12 +2,18 @@ package org.esa.snap.rcp.spectrallibrary.ui;
 
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.jfree.chart.*;
+import org.jfree.chart.annotations.XYTitleAnnotation;
+import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -25,7 +31,6 @@ import java.util.function.Consumer;
 
 
 public class PreviewPanel extends JPanel {
-
 
     private final XYSeriesCollection dataset = new XYSeriesCollection();
     private final JFreeChart chart = ChartFactory.createXYLineChart(
@@ -53,6 +58,8 @@ public class PreviewPanel extends JPanel {
     private final float normalAlpha = 0.65f;
     private final float selectedAlpha = 1.0f;
     private final List<Paint> basePaints = new ArrayList<>();
+
+    private XYTitleAnnotation busyAnnotation;
 
 
     public PreviewPanel() {
@@ -130,6 +137,36 @@ public class PreviewPanel extends JPanel {
         selectedProfileId = null;
         dataset.removeAllSeries();
         applyHighlight();
+    }
+
+    public void showBusyMessage(String text) {
+        XYPlot plot = chart.getXYPlot();
+        plot.clearAnnotations();
+
+        String msg = (text == null || text.isBlank()) ? "Working..." : text;
+
+        TextTitle tt = new TextTitle(msg);
+        tt.setTextAlignment(HorizontalAlignment.RIGHT);
+        tt.setFont(chart.getLegend() != null ? chart.getLegend().getItemFont() : getFont());
+        tt.setBackgroundPaint(new Color(200, 200, 255, 50));
+        tt.setFrame(new BlockBorder(Color.white));
+        tt.setPosition(RectangleEdge.BOTTOM);
+
+        busyAnnotation = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
+        plot.addAnnotation(busyAnnotation);
+
+        chartPanel.repaint();
+    }
+
+    public void clearBusyMessage() {
+        XYPlot plot = chart.getXYPlot();
+        if (busyAnnotation != null) {
+            plot.removeAnnotation(busyAnnotation);
+            busyAnnotation = null;
+        } else {
+            plot.clearAnnotations();
+        }
+        chartPanel.repaint();
     }
 
 

@@ -5,14 +5,17 @@ import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
+import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.*;
+import java.util.function.Supplier;
 
 
 public class SpectralLibraryController {
@@ -22,15 +25,19 @@ public class SpectralLibraryController {
     private final SpectralLibraryIO io;
     private final SpectralLibraryViewModel vm;
 
+    private final PreviewPanel previewPanel;
+    private SwingWorker<ExtractResult, Void> currentExtractWorker;
 
-    public SpectralLibraryController(SpectralLibraryViewModel vm) {
-        this(EngineAccess.libraryService(), EngineAccess.libraryIO(), vm);
+
+    public SpectralLibraryController(SpectralLibraryViewModel vm, PreviewPanel previewPanel) {
+        this(EngineAccess.libraryService(), EngineAccess.libraryIO(), vm, previewPanel);
     }
 
-    public SpectralLibraryController(SpectralLibraryService service, SpectralLibraryIO io, SpectralLibraryViewModel vm) {
+    public SpectralLibraryController(SpectralLibraryService service, SpectralLibraryIO io, SpectralLibraryViewModel vm, PreviewPanel previewPanel) {
         this.service = service;
         this.io = io;
         this.vm = vm;
+        this.previewPanel = Objects.requireNonNull(previewPanel, "previewPanel must not be null");
     }
 
 
@@ -290,43 +297,38 @@ public class SpectralLibraryController {
         String unit = normalizeUnit(yUnit);
         String prefix = (namePrefix == null || namePrefix.isBlank()) ? "pin" : namePrefix.trim();
 
-        List<SpectralProfile> preview = new ArrayList<>(vm.getPreviewProfiles());
-        int added = 0;
+        startExtractAsync(() -> {
+            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
+            int added = 0;
 
-        for (Placemark pin : pins) {
-            if (pin == null || pin.getPixelPos() == null) {
-                continue;
+            for (Placemark pin : pins) {
+                if (pin == null || pin.getPixelPos() == null) {
+                    continue;
+                }
+
+                int px = (int) Math.floor(pin.getPixelPos().getX());
+                int py = (int) Math.floor(pin.getPixelPos().getY());
+
+                String label = pin.getLabel();
+                if (label == null || label.isBlank()) {
+                    label = "pin";
+                }
+
+                String pname = prefix + "_" + label;
+
+                Optional<SpectralProfile> pOpt = service.extractProfile(
+                        pname, axis, bands, px, py, level, unit, product.getName()
+                );
+
+                if (pOpt.isPresent()) {
+                    out.add(maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames));
+                    added++;
+                }
             }
 
-            int x = (int) Math.floor(pin.getPixelPos().getX());
-            int y = (int) Math.floor(pin.getPixelPos().getY());
-
-            String label = pin.getLabel();
-            if (label == null || label.isBlank()) label = "pin";
-            String name = prefix + "_" + label;
-
-            Optional<SpectralProfile> pOpt = service.extractProfile(
-                    name,
-                    axis,
-                    bands,
-                    x,
-                    y,
-                    level,
-                    unit,
-                    product.getName()
-            );
-
-            if (pOpt.isPresent()) {
-                SpectralProfile spectralProfile = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-                preview.add(spectralProfile);
-                added++;
-            }
-        }
-
-        vm.setPreviewProfiles(safeCopyWithoutNulls(preview));
-        vm.setSelectedPreviewProfileId(null);
-        vm.setStatus(added > 0 ? UiStatus.info("Preview extracted (" + added + ")")
-                : UiStatus.warn("No spectra extracted"));
+            UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
+            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+        }, "Extracting spectra from pins...");
     }
 
     public void extractPreviewAtCursor(Product product,
@@ -346,29 +348,31 @@ public class SpectralLibraryController {
         }
 
         String unit = normalizeUnit(yUnit);
+        String profileName = name.trim();
 
-        Optional<SpectralProfile> pOpt = service.extractProfile(
-                name.trim(),
-                axis,
-                bands,
-                x,
-                y,
-                level,
-                unit,
-                product.getName()
-        );
+        startExtractAsync(() -> {
+            Optional<SpectralProfile> pOpt = service.extractProfile(
+                    profileName,
+                    axis,
+                    bands,
+                    x,
+                    y,
+                    level,
+                    unit,
+                    product.getName()
+            );
 
-        if (pOpt.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No spectrum extracted"));
-            return;
-        }
+            if (pOpt.isEmpty()) {
+                return ExtractResult.noSpectrum();
+            }
 
-        List<SpectralProfile> preview = new ArrayList<>(vm.getPreviewProfiles());
-        SpectralProfile spectralProfile = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-        preview.add(spectralProfile);
-        vm.setPreviewProfiles(safeCopyWithoutNulls(preview));
-        vm.setSelectedPreviewProfileId(pOpt.get().getId());
-        vm.setStatus(UiStatus.info("Preview added"));
+            SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+
+            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
+            out.add(masked);
+
+            return ExtractResult.success(safeCopyWithoutNulls(out), masked.getId());
+        }, "Extracting spectrum...");
     }
 
 
@@ -509,5 +513,78 @@ public class SpectralLibraryController {
         SpectralSignature maskedSig = SpectralSignature.of(y, yUnit);
 
         return new SpectralProfile(p.getId(), p.getName(), maskedSig, p.getAttributes(), p.getSourceRef().orElse(null));
+    }
+
+
+    private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg) {
+        if (currentExtractWorker != null && !currentExtractWorker.isDone()) {
+            currentExtractWorker.cancel(true);
+        }
+
+        previewPanel.showBusyMessage(busyMsg);
+
+        currentExtractWorker = new SwingWorker<>() {
+            @Override
+            protected ExtractResult doInBackground() {
+                try {
+                    return job.get();
+                } catch (Throwable t) {
+                    return ExtractResult.error("Extract failed: " + t.getMessage());
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (isCancelled()) {
+                        return;
+                    }
+
+                    ExtractResult r = get();
+
+                    if (r.profiles != null) {
+                        vm.setPreviewProfiles(r.profiles);
+                        vm.setSelectedPreviewProfileId(r.selectedId);
+                    }
+
+                    vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                } catch (Exception ex) {
+                    vm.setStatus(UiStatus.error("Extract failed: " + ex.getMessage()));
+                } finally {
+                    previewPanel.clearBusyMessage();
+                }
+            }
+        };
+
+        currentExtractWorker.execute();
+    }
+
+    private static final class ExtractResult {
+        final List<SpectralProfile> profiles;
+        final UUID selectedId;
+        final UiStatus status;
+
+        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status) {
+            this.profiles = profiles;
+            this.selectedId = selectedId;
+            this.status = status;
+        }
+
+        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId) {
+            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"));
+        }
+
+        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added) {
+            UiStatus st = added > 0 ? UiStatus.info("Preview extracted (" + added + ")") : UiStatus.warn("No spectra extracted");
+            return new ExtractResult(profiles, selectedId, st);
+        }
+
+        static ExtractResult noSpectrum() {
+            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"));
+        }
+
+        static ExtractResult error(String msg) {
+            return new ExtractResult(null, null, UiStatus.error(msg));
+        }
     }
 }
