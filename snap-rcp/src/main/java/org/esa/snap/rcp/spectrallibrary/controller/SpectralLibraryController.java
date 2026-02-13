@@ -16,10 +16,14 @@ import javax.swing.*;
 import java.io.File;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 
 public class SpectralLibraryController {
 
+
+    private static final String PROFILE_PREFIX = "Profile_";
+    private static final Pattern NAME_PATTERN = Pattern.compile("^Profile_(\\d+)$");
 
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
@@ -355,7 +359,6 @@ public class SpectralLibraryController {
                                        List<Band> bands,
                                        List<Placemark> pins,
                                        int level,
-                                       String namePrefix,
                                        Set<String> selectedBandNames) {
         if (product == null || axis == null || bands == null || pins == null) {
             return;
@@ -364,12 +367,17 @@ public class SpectralLibraryController {
             return;
         }
 
-        String unit = normalizeUnit(yUnit);
-        String prefix = (namePrefix == null || namePrefix.isBlank()) ? "pin" : namePrefix.trim();
-
         startExtractAsync(() -> {
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             int added = 0;
+
+            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+            if (libId == null) {
+                return ExtractResult.error("No active library");
+            }
+
+            Set<String> used = new HashSet<>();
+            String unit = normalizeUnit(yUnit);
 
             for (Placemark pin : pins) {
                 if (pin == null || pin.getPixelPos() == null) {
@@ -379,16 +387,9 @@ public class SpectralLibraryController {
                 int px = (int) Math.floor(pin.getPixelPos().getX());
                 int py = (int) Math.floor(pin.getPixelPos().getY());
 
-                String label = pin.getLabel();
-                if (label == null || label.isBlank()) {
-                    label = "pin";
-                }
+                String profileName = nextAutoProfileName(libId, out, used);
 
-                String pname = prefix + "_" + label;
-
-                Optional<SpectralProfile> pOpt = service.extractProfile(
-                        pname, axis, bands, px, py, level, unit, product.getName()
-                );
+                Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, px, py, level, unit, product.getName());
 
                 if (pOpt.isPresent()) {
                     out.add(maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames));
@@ -408,29 +409,24 @@ public class SpectralLibraryController {
                                        int x,
                                        int y,
                                        int level,
-                                       String name,
                                        Set<String> selectedBandNames) {
         if (product == null || axis == null || bands == null || bands.isEmpty()) {
             return;
         }
-        if (name == null || name.isBlank()) {
-            return;
-        }
 
         String unit = normalizeUnit(yUnit);
-        String profileName = name.trim();
 
         startExtractAsync(() -> {
-            Optional<SpectralProfile> pOpt = service.extractProfile(
-                    profileName,
-                    axis,
-                    bands,
-                    x,
-                    y,
-                    level,
-                    unit,
-                    product.getName()
-            );
+            List<SpectralProfile> preview = vm.getPreviewProfiles();
+            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+
+            if (libId == null) {
+                return ExtractResult.error("No active library");
+            }
+
+            String profileName = nextAutoProfileName(libId, preview, null);
+
+            Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, x, y, level, unit, product.getName());
 
             if (pOpt.isEmpty()) {
                 return ExtractResult.noSpectrum();
@@ -586,6 +582,80 @@ public class SpectralLibraryController {
     }
 
 
+    private String nextAutoProfileName(UUID libId,
+                                       Collection<SpectralProfile> preview,
+                                       Set<String> reserved) {
+
+        Set<String> used = new HashSet<>();
+        int max = 0;
+
+        if (libId != null) {
+            SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+            if (lib != null) {
+                for (SpectralProfile p : lib.getProfiles()) {
+                    String n = nameOf(p);
+                    if (n != null) {
+                        used.add(n);
+                        max = Math.max(max, extractAutoIndex(n));
+                    }
+                }
+            }
+        }
+
+        if (preview != null) {
+            for (SpectralProfile p : preview) {
+                String n = nameOf(p);
+                if (n != null) {
+                    used.add(n);
+                    max = Math.max(max, extractAutoIndex(n));
+                }
+            }
+        }
+
+        if (reserved != null) {
+            for (String n : reserved) {
+                if (n != null && !n.isBlank()) {
+                    used.add(n.trim());
+                }
+            }
+        }
+
+        int next = max + 1;
+        String candidate;
+        do {
+            candidate = PROFILE_PREFIX + next++;
+        } while (used.contains(candidate));
+
+        if (reserved != null) {
+            reserved.add(candidate);
+        }
+        return candidate;
+    }
+
+    private static String nameOf(SpectralProfile p) {
+        if (p == null || p.getName() == null) {
+            return null;
+        }
+        String n = p.getName().trim();
+        return n.isEmpty() ? null : n;
+    }
+
+    private int extractAutoIndex(String name) {
+        if (name == null) {
+            return 0;
+        }
+        var m = NAME_PATTERN.matcher(name.trim());
+        if (!m.matches()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+
     private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg) {
         if (currentExtractWorker != null && !currentExtractWorker.isDone()) {
             currentExtractWorker.cancel(true);
@@ -628,6 +698,7 @@ public class SpectralLibraryController {
 
         currentExtractWorker.execute();
     }
+
 
     private static final class ExtractResult {
         final List<SpectralProfile> profiles;

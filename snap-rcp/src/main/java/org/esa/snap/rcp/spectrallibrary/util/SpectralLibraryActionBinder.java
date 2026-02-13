@@ -361,11 +361,12 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, "pin_" + sanitizeId(chosen.getName()), null);
+            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, null);
             return;
         }
 
         int totalBands = 0;
+
         for (var e : sel.entrySet()) {
             String groupName = e.getKey();
             Set<String> names = e.getValue();
@@ -384,16 +385,7 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewFromPins(
-                    product,
-                    axis,
-                    unitToUse,
-                    bands,
-                    pins,
-                    level,
-                    "pin_" + sanitizeId(groupName),
-                    names
-            );
+            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, names);
         }
 
         vm.setStatus(totalBands == 0
@@ -504,11 +496,12 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(chosen.getName()), null);
+            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, null);
             return;
         }
 
         int extracted = 0;
+
         for (var e : sel.entrySet()) {
             String groupName = e.getKey();
             Set<String> names = e.getValue();
@@ -525,17 +518,7 @@ public class SpectralLibraryActionBinder {
                     ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
                     : groupUnit;
 
-            controller.extractPreviewAtCursor(
-                    product,
-                    axis,
-                    unitToUse,
-                    bands,
-                    cursorX,
-                    cursorY,
-                    level,
-                    "cursor_" + cursorX + "_" + cursorY + "_" + sanitizeId(groupName),
-                    names
-            );
+            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, names);
             extracted++;
         }
 
@@ -854,13 +837,6 @@ public class SpectralLibraryActionBinder {
             vm.setStatus(UiStatus.warn("BandGroupsManager not available: " + ex.getMessage()));
             return null;
         }
-    }
-
-    private static String sanitizeId(String s) {
-        if (s == null) {
-            return "group";
-        }
-        return s.trim().replaceAll("[^a-zA-Z0-9_\\-]+", "_");
     }
 }
 
