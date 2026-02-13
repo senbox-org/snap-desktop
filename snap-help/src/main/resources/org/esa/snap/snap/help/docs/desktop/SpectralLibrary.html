@@ -54,27 +54,100 @@
 </p>
 <ul>
     <li><b>Library</b> - manages spectral libraries and stored profiles (add/remove/rename, attributes, import/export).</li>
-    <li><b>Preview</b> - shows extracted spectral profiles (e.g. from cursor position or pins).</li>
+    <li><b>Spectral Profile Extraction</b> - shows extracted spectral profiles (e.g. from cursor position or pins).</li>
 </ul>
 
-<p class="inote">
-    <b>Note:</b> This page is currently a placeholder. Detailed workflow and screenshots will be added once the tool is finalized.
-</p>
-
-<h4>Library</h4>
+<h4>Workflow</h4>
 
 <p>
-    Libraries store spectral profiles persistently. You can create a new library, rename or delete it,
-    and add profiles from the preview.
+    The Spectral Library Tool is designed around the concept of an <b>active spectral library</b>.
+    The active library defines the wavelength axis (band set) used for preview and storage of spectral profiles.
+    Therefore, the first step is always to make sure a library is available and active.
 </p>
 
+<ol>
+    <li>
+        <b>Create or import a library</b><br>
+        Start by either importing an existing library from file, or creating a new one from an open product.
+        Creating a library from a product initializes the library axis from the product's spectral bands.
+    </li>
+    <li>
+        <b>Select the active library</b><br>
+        Use the library combo box to switch between all libraries currently held in memory.
+        The selected library becomes the <i>active</i> library and is used as target for profile storage and preview.
+        An active library can be renamed or removed from memory.
+    </li>
+    <li>
+        <b>Manage stored profiles</b><br>
+        All profiles contained in the active library are listed in the profiles table.
+        Selected table entries can be deleted from the active library and can be previewed in the chart.
+    </li>
+    <li>
+        <b>Configure extraction (requires an open Product Scene View)</b><br>
+        The <b>Spectral Profile Extraction</b> panel is only useful when a library is active because the tool needs a
+        wavelength axis for display and storage.
+        To configure filters and to perform extraction operations, a Product Scene View must be open so the tool can
+        derive the available spectral bands and read pixel spectra.
+    </li>
+    <li>
+        <b>Filter the band set</b><br>
+        You can limit the extraction and display to <b>band groups</b> or to <b>individual bands</b>.
+        This is helpful when products contain many bands (e.g. multiple resolutions or derived bands) and you only want a
+        consistent subset.
+    </li>
+    <li>
+        <b>Extract spectral profiles</b><br>
+        Spectra can be extracted
+        (a) via a <b>cursor click</b> in the Product Scene View, or
+        (b) from <b>pins</b> that have been placed in the view (selected pins or all pins).
+        The extracted profiles appear in the preview chart.
+    </li>
+    <li>
+        <b>Preview and store results</b><br>
+        From the chart you can either add <b>all</b> currently displayed profiles to the active library,
+        or select a single profile in the chart and add <b>only that one</b>.
+        The preview can be cleared by removing the currently displayed profiles from the chart, which resets the preview area.
+    </li>
+</ol>
 
-<h4>Preview</h4>
+<h4>Custom Attributes</h4>
 
 <p>
-    Use the extraction actions to generate spectral profiles and inspect them in the preview chart.
-    You can click a curve in the chart to select a profile (the selected profile is highlighted).
+    Spectral profiles may carry additional metadata beyond name and spectrum values.
+    The tool supports <b>custom attributes</b> that can be defined per library and shown as additional columns in the profiles table.
 </p>
+
+<ul>
+    <li>
+        <b>Define attributes</b> - Add new attributes to the active library (e.g. material name, class, site, instrument setup).
+        Attributes can use different data types (e.g. strings, numbers, booleans, ...) and may provide default values.
+    </li>
+    <li>
+        <b>Edit values</b> - Attribute values are editable directly in the profiles table for each stored profile.
+        This allows you to curate libraries after importing or extracting new profiles.
+    </li>
+    <li>
+        <b>Table visibility</b> - Attributes are displayed as columns to support quick inspection, sorting, and comparison of profiles.
+    </li>
+</ul>
+
+<h4>File Formats</h4>
+
+<p>
+    Libraries can be imported and exported in common formats. The primary goal is interoperability with established tooling
+    while still allowing SNAP-specific extensions where needed.
+</p>
+
+<ul>
+    <li>
+        <b>ENVI Spectral Library (SLI)</b> - A widely used binary+header format where spectra are stored as rows sharing a common
+        wavelength axis.
+    </li>
+    <li>
+        <b>CSV-based exchange</b> - Custom attributes can be preserved through a CSV-based exchange format that stores spectra
+        together with attribute columns.
+    </li>
+</ul>
 
 
 <h4>Tool Buttons</h4>
@@ -86,6 +159,24 @@
 
 <table cellpadding=2 cellspacing=0 border=0>
     <tr>
+        <td><img src="images/icons/Import24.gif"></td>
+        <td>
+            Import new library from file.
+        </td>
+    </tr>
+    <tr>
+        <td><img src="images/icons/Export24.gif"></td>
+        <td>
+            Export active library to file.
+        </td>
+    </tr>
+    <tr>
+        <td><img src="images/icons/Update24.gif"></td>
+        <td>
+            Refresh active library and profiles table.
+        </td>
+    </tr>
+    <tr>
         <td><img src="images/icons/Filter24.gif"></td>
         <td>
             Configure bands/band group selection for spectra retrieval.
@@ -94,31 +185,19 @@
     <tr>
         <td><img src="images/icons/CursorSpectrum24.gif"></td>
         <td>
-            Extract a spectral profile through a cursor click.
+            Extract spectral profile through a cursor click in Product Scene View.
         </td>
     </tr>
     <tr>
         <td><img src="images/icons/SelectedPinSpectra24.gif"></td>
         <td>
-            Extract spectral profile for the selected pins.
+            Extract spectral profile for selected pins.
         </td>
     </tr>
     <tr>
         <td><img src="images/icons/PinSpectra24.gif"></td>
         <td>
             Extract spectral profiles for all pins.
-        </td>
-    </tr>
-    <tr>
-        <td><img src="images/icons/Export24.gif"></td>
-        <td>
-            Export the active library to a file.
-        </td>
-    </tr>
-    <tr>
-        <td><img src="images/icons/Import24.gif"></td>
-        <td>
-            Import new library from a file (e.g. Envi).
         </td>
     </tr>
     <tr>

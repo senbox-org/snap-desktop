@@ -17,17 +17,17 @@ public class SpectralLibraryPanel extends JPanel {
 
     // library actions
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
-    private final JButton refreshButton = new JButton("Refresh");
+    private AbstractButton refreshButton;
     private final JButton createFromProductButton = new JButton("New Library from Product...");
     private final JButton deleteLibraryButton = new JButton("Delete Active Library");
     private final JButton renameLibraryButton = new JButton("Rename Active Library");
-    private final JButton importButton = new JButton("Import...");
-    private final JButton exportButton = new JButton("Export...");
+    private AbstractButton importButton;
+    private AbstractButton exportButton;
 
     // profile table actions
     private final SpectralProfileTableModel libraryTableModel = new SpectralProfileTableModel();
     private final JTable libraryTable = new JTable(libraryTableModel);
-    private final JButton removeSelectedProfilesButton = new JButton("Remove Profiles");
+    private final JButton removeSelectedProfilesButton = new JButton("Remove Selected Profiles");
     private final JButton previewSelectedProfilesButton = new JButton("Preview Selected Profiles");
     private final JButton addAttributeButton = new JButton("Add Attribute...");
 
@@ -36,9 +36,9 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton addSelectedPreviewButton = new JButton("Add Selected Preview");
     private final JButton addAllPreviewButton = new JButton("Add All Preview");
     private final JButton clearPreviewButton = new JButton("Clear Preview");
-    private final JToggleButton extractAtCursorToggle = new JToggleButton("Extract at Cursor");
-    private final JButton extractSelectedPinsButton = new JButton("Extract Selected Pins");
-    private final JButton extractAllPinsButton = new JButton("Extract All Pins");
+    private AbstractButton extractAtCursorToggle;
+    private AbstractButton extractSelectedPinsButton;
+    private AbstractButton extractAllPinsButton;
     private AbstractButton filterButton;
 
     // status actions
@@ -59,7 +59,7 @@ public class SpectralLibraryPanel extends JPanel {
         previewPanel.setHeader(buildPreviewHeader());
 
         JPanel right = new JPanel(new BorderLayout(4, 4));
-        right.setBorder(BorderFactory.createTitledBorder("Profile Extraction"));
+        right.setBorder(BorderFactory.createTitledBorder("Spectral Profile Extraction"));
         right.add(previewPanel, BorderLayout.CENTER);
 
         JPanel left = buildLeftSide();
@@ -88,6 +88,21 @@ public class SpectralLibraryPanel extends JPanel {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
+        importButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Import24.gif"), false);
+        importButton.setName("importButton");
+        importButton.setToolTipText("Import Spectral Library from file.");
+        importButton.setEnabled(true);
+
+        exportButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Export24.gif"), false);
+        exportButton.setName("exportButton");
+        exportButton.setToolTipText("Export Spectral Library to file.");
+        exportButton.setEnabled(true);
+
+        refreshButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Update24.gif"), false);
+        refreshButton.setName("refreshButton");
+        refreshButton.setToolTipText("Refresh Profiles Table of Active Library.");
+        refreshButton.setEnabled(true);
+
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row1.add(importButton);
         row1.add(exportButton);
@@ -99,9 +114,10 @@ public class SpectralLibraryPanel extends JPanel {
         row3.add(new JLabel("Active Library: "));
         libraryCombo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         row3.add(libraryCombo);
+        row3.add(Box.createHorizontalStrut(5));
+        row3.add(refreshButton);
 
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        row4.add(refreshButton);
         row4.add(renameLibraryButton);
         row4.add(deleteLibraryButton);
 
@@ -144,21 +160,42 @@ public class SpectralLibraryPanel extends JPanel {
 
         filterButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Filter24.gif"), false);
         filterButton.setName("filterButton");
-        filterButton.setToolTipText("Filter spectra by bands or band groups");
-        filterButton.setEnabled(false);
+        filterButton.setToolTipText("Filter Spectra by Bands/Band Groups");
+        filterButton.setEnabled(true);
+
+        extractAtCursorToggle = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/CursorSpectrum24.gif"), true);
+        extractAtCursorToggle.setName("extractAtCursorToggle");
+        extractAtCursorToggle.setToolTipText("Extract Spectrum at Cursor Position (by Click in view).");
+        extractAtCursorToggle.setEnabled(true);
+        extractAtCursorToggle.setSelected(false);
+
+        extractSelectedPinsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SelectedPinSpectra24.gif"), false);
+        extractSelectedPinsButton.setName("extractSelectedPinsButton");
+        extractSelectedPinsButton.setToolTipText("Extract Spectrum for Selected Pins.");
+        extractSelectedPinsButton.setEnabled(true);
+
+        extractAllPinsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/PinSpectra24.gif"), false);
+        extractAllPinsButton.setName("extractAllPinsButton");
+        extractAllPinsButton.setToolTipText("Extract Spectrum for All Pins.");
+        extractAllPinsButton.setEnabled(true);
 
         JPanel row0 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row0.add(new JLabel("Filter Spectra by bands/band groups: "));
         row0.add(filterButton);
 
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row1.add(new JLabel("Extraction Operations: "));
         row1.add(extractAtCursorToggle);
         row1.add(extractSelectedPinsButton);
         row1.add(extractAllPinsButton);
 
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row2.add(new JLabel("Add to Active Library: "));
         row2.add(addSelectedPreviewButton);
         row2.add(addAllPreviewButton);
-        row2.add(clearPreviewButton);
+
+        JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row3.add(clearPreviewButton);
 
         header.add(Box.createVerticalStrut(5));
         header.add(row0);
@@ -167,6 +204,9 @@ public class SpectralLibraryPanel extends JPanel {
         header.add(Box.createVerticalStrut(5));
         header.add(row2);
         header.add(Box.createVerticalStrut(5));
+        header.add(row3);
+        header.add(Box.createVerticalStrut(5));
+
 
         return header;
     }
@@ -190,7 +230,7 @@ public class SpectralLibraryPanel extends JPanel {
     public JComboBox<Object> getLibraryCombo() {
         return libraryCombo;
     }
-    public JButton getRefreshButton() {
+    public AbstractButton getRefreshButton() {
         return refreshButton;
     }
     public JButton getCreateFromProductButton() {
@@ -202,10 +242,10 @@ public class SpectralLibraryPanel extends JPanel {
     public JButton getRenameLibraryButton() {
         return renameLibraryButton;
     }
-    public JButton getImportButton() {
+    public AbstractButton getImportButton() {
         return importButton;
     }
-    public JButton getExportButton() {
+    public AbstractButton getExportButton() {
         return exportButton;
     }
 
@@ -239,13 +279,13 @@ public class SpectralLibraryPanel extends JPanel {
     public JButton getClearPreviewButton() {
         return clearPreviewButton;
     }
-    public JToggleButton getExtractAtCursorToggle() {
+    public AbstractButton getExtractAtCursorToggle() {
         return extractAtCursorToggle;
     }
-    public JButton getExtractSelectedPinsButton() {
+    public AbstractButton getExtractSelectedPinsButton() {
         return extractSelectedPinsButton;
     }
-    public JButton getExtractAllPinsButton() {
+    public AbstractButton getExtractAllPinsButton() {
         return extractAllPinsButton;
     }
     public AbstractButton getFilterButton() {

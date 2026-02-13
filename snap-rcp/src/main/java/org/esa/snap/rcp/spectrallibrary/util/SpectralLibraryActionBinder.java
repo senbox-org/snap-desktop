@@ -607,7 +607,6 @@ public class SpectralLibraryActionBinder {
     }
 
     private void wireBandFilter() {
-        panel.getFilterButton().setEnabled(true);
         panel.getFilterButton().addActionListener(e -> {
             ProductSceneView view = viewProvider.getSelectedProductSceneView();
             if (view == null || view.getProduct() == null) {
