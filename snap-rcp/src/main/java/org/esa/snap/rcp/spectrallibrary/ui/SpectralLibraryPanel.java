@@ -1,6 +1,8 @@
 package org.esa.snap.rcp.spectrallibrary.ui;
 
+import org.esa.snap.rcp.actions.help.HelpAction;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
+import org.esa.snap.rcp.windows.ToolTopComponent;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
@@ -10,6 +12,8 @@ import java.awt.*;
 
 public class SpectralLibraryPanel extends JPanel {
 
+
+    private ToolTopComponent ownerTopComponent = null;
 
     // library actions
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
@@ -39,10 +43,12 @@ public class SpectralLibraryPanel extends JPanel {
 
     // status actions
     private final JLabel statusLabel = new JLabel(" ");
+    private AbstractButton helpButton;
 
 
-    public SpectralLibraryPanel() {
+    public SpectralLibraryPanel(ToolTopComponent ownerTopComponent) {
         super(new BorderLayout(6, 6));
+        this.ownerTopComponent = ownerTopComponent;
 
         add(buildCenter(), BorderLayout.CENTER);
         add(buildStatusBar(), BorderLayout.SOUTH);
@@ -168,7 +174,14 @@ public class SpectralLibraryPanel extends JPanel {
     private JComponent buildStatusBar() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+        helpButton = ToolButtonFactory.createButton(new HelpAction(ownerTopComponent), false);
+        helpButton.setName("helpButton");
+        helpButton.setToolTipText("Help.");
+
+
         p.add(statusLabel, BorderLayout.CENTER);
+        p.add(helpButton, BorderLayout.EAST);
         return p;
     }
 

@@ -12,6 +12,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
+import org.openide.util.HelpCtx;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,12 +33,15 @@ import java.awt.*;
         displayName = "#CTL_SpectralLibraryTopComponent_Name",
         preferredID = "SpectralLibraryTopComponent"
 )
-@NbBundle.Messages({"CTL_SpectralLibraryTopComponent_Name=Spectral Library"})
+@NbBundle.Messages({
+        "CTL_SpectralLibraryTopComponent_Name=Spectral Library",
+        "CTL_SpectralLibraryTopComponent_HelpId=showSpectralLibraryTool"
+})
 public class SpectralLibraryTopComponent extends ToolTopComponent {
 
 
     private final SpectralLibraryViewModel vm = new SpectralLibraryViewModel();
-    private final SpectralLibraryPanel panel = new SpectralLibraryPanel();
+    private final SpectralLibraryPanel panel = new SpectralLibraryPanel(this);
 
     private final SpectralLibraryController controller = new SpectralLibraryController(vm, panel.getPreviewPanel());
 
@@ -70,6 +74,11 @@ public class SpectralLibraryTopComponent extends ToolTopComponent {
     @Override
     protected void componentOpened() {
         controller.init();
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx(Bundle.CTL_SpectralLibraryTopComponent_HelpId());
     }
 
 }
