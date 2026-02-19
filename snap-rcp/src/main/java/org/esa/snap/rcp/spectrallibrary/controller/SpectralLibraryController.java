@@ -1,8 +1,6 @@
 package org.esa.snap.rcp.spectrallibrary.controller;
 
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
@@ -24,6 +22,7 @@ public class SpectralLibraryController {
 
     private static final String PROFILE_PREFIX = "Profile_";
     private static final Pattern NAME_PATTERN = Pattern.compile("^Profile_(\\d+)$");
+    private static final String ATTR_WKT = "wkt";
 
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
@@ -272,11 +271,13 @@ public class SpectralLibraryController {
 
         try {
             service.addProfile(libId, sel);
+            reloadLibraries();
             refreshActiveLibraryProfiles();
             vm.setStatus(UiStatus.info("Profile added"));
         } catch (Throwable t) {
-            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
+            reloadLibraries();
             refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
         }
     }
 
@@ -328,6 +329,7 @@ public class SpectralLibraryController {
             }
         }
 
+        reloadLibraries();
         refreshActiveLibraryProfiles();
 
         if (added > 0) {
@@ -392,7 +394,10 @@ public class SpectralLibraryController {
                 Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, px, py, level, unit, product.getName());
 
                 if (pOpt.isPresent()) {
-                    out.add(maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames));
+                    SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+                    masked = withWktIfPossible(product, px, py, masked);
+
+                    out.add(masked);
                     added++;
                 }
             }
@@ -433,6 +438,7 @@ public class SpectralLibraryController {
             }
 
             SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+            masked = withWktIfPossible(product, x, y, masked);
 
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             out.add(masked);
@@ -697,6 +703,31 @@ public class SpectralLibraryController {
         };
 
         currentExtractWorker.execute();
+    }
+
+
+    private static SpectralProfile withWktIfPossible(Product product, int x, int y, SpectralProfile profile) {
+        String wkt = wktPointForPixel(product, x, y);
+        if (wkt != null && !wkt.isBlank()) {
+            profile = profile.withAttribute(ATTR_WKT, AttributeValue.ofString(wkt));
+        }
+        return profile;
+    }
+
+
+    private static String wktPointForPixel(Product product, int x, int y) {
+        var gc = product.getSceneGeoCoding();
+        if (gc == null) {
+            return null;
+        }
+
+        PixelPos px = new PixelPos(x, y);
+        GeoPos gp = gc.getGeoPos(px, null);
+
+        if (gp == null || !gp.isValid()) {
+            return null;
+        }
+        return "POINT (" + gp.lon + " " + gp.lat + ")";
     }
 
 
