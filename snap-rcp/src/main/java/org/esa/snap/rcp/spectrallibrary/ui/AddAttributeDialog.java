@@ -8,17 +8,26 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Optional;
 
 
 public class AddAttributeDialog {
 
 
+    private static final EnumSet<AttributeType> UI_DENIED_TYPES = EnumSet.of(
+            AttributeType.STRING_LIST,
+            AttributeType.DOUBLE_ARRAY,
+            AttributeType.INT_ARRAY,
+            AttributeType.STRING_MAP,
+            AttributeType.EMBEDDED_SPECTRUM
+    );
+
     public static Optional<AttributeDialogResult> show(Component parent) {
         JTextField keyField = new JTextField(20);
 
         AttributeType[] allowed = Arrays.stream(AttributeType.values())
-                .filter(t -> t != AttributeType.EMBEDDED_SPECTRUM)
+                .filter(t -> !UI_DENIED_TYPES.contains(t))
                 .toArray(AttributeType[]::new);
         JComboBox<AttributeType> typeCombo = new JComboBox<>(allowed);
         typeCombo.setSelectedItem(AttributeType.STRING);
@@ -66,10 +75,10 @@ public class AddAttributeDialog {
             defaultHint.setText(ex.isBlank() ? " " : ("Example: " + ex));
 
             defaultField.setEnabled(true);
+            installPlaceholder(defaultField, ex);
 
-            if (defaultField.getText().trim().isEmpty() || isShowingPlaceholder(defaultField)) {
-                installPlaceholder(defaultField, ex);
-            }
+            defaultField.setForeground(Color.GRAY);
+            defaultField.setText(ex);
         };
         typeCombo.addActionListener(e -> updateHint.run());
         updateHint.run();

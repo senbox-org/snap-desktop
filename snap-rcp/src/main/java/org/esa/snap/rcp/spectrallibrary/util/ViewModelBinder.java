@@ -144,12 +144,29 @@ public class ViewModelBinder {
             panel.getStatusLabel().setText(" ");
             return;
         }
+
         String prefix = switch (status.severity()) {
             case IDLE -> "";
             case INFO -> "Info: ";
             case WARN -> "Warn: ";
             case ERROR -> "Error: ";
         };
-        panel.getStatusLabel().setText(prefix + status.message());
+
+        String color = switch (status.severity()) {
+            case IDLE, INFO -> "#00C853"; // greem
+            default -> "#FF1744"; // red
+        };
+
+        String msg = esc(status.message());
+        String html = "<html><span style='color:" + color + "; font-weight:bold;'>" + esc(prefix) + "</span>" + msg + "</html>";
+
+        panel.getStatusLabel().setText(html);
+    }
+
+    private static String esc(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
     }
 }
