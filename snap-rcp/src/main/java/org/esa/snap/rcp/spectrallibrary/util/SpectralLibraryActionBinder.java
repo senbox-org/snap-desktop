@@ -3,10 +3,7 @@ package org.esa.snap.rcp.spectrallibrary.util;
 import com.bc.ceres.glayer.support.ImageLayer;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
@@ -18,15 +15,19 @@ import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.PixelPositionListener;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.esa.snap.ui.product.SimpleFeatureFigure;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.product.spectrum.SpectrumBand;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -285,6 +286,7 @@ public class SpectralLibraryActionBinder {
     private void wireExtractionPins() {
         panel.getExtractSelectedPinsButton().addActionListener(e -> extractPins(true));
         panel.getExtractAllPinsButton().addActionListener(e -> extractPins(false));
+        panel.getExtractSelectedGeometryButton().addActionListener(e -> extractFromGeometry());
     }
 
     private void extractPins(boolean selectedOnly) {
@@ -315,39 +317,7 @@ public class SpectralLibraryActionBinder {
         Map<String, Set<String>> sel = selectedBandsBySpectrum;
 
         if (sel == null || sel.isEmpty()) {
-            DisplayableSpectrum[] spectra = buildSpectraForChooser(product, view.getRaster());
-            String group = defaultSpectrumGroupName;
-
-            DisplayableSpectrum chosen = null;
-            if (group != null) {
-                for (DisplayableSpectrum s : spectra) {
-                    if (s != null && group.equals(s.getName())) {
-                        chosen = s; break;
-                    }
-                }
-            }
-            if (chosen == null) {
-                for (DisplayableSpectrum s : spectra) {
-                    if (s != null && s.isSelected()) {
-                        chosen = s; break;
-                    }
-                }
-            }
-            if (chosen == null && spectra.length > 0) {
-                chosen = spectra[0];
-            }
-
-            if (chosen == null) {
-                vm.setStatus(UiStatus.warn("No spectral bands available"));
-                return;
-            }
-
-            Set<String> names = new LinkedHashSet<>();
-            for (Band b : chosen.getSelectedBands()) {
-                if (b != null) {
-                    names.add(b.getName());
-                }
-            }
+            Set<String> names = getBandNames(view);
 
             List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
             if (bands.isEmpty()) {
@@ -391,6 +361,88 @@ public class SpectralLibraryActionBinder {
         vm.setStatus(totalBands == 0
                 ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
                 : UiStatus.info("Extracted " + sel.size() + " spectrum group(s)"));
+    }
+
+
+    private void extractFromGeometry() {
+        ProductSceneView view = viewProvider.getSelectedProductSceneView();
+        if (view == null || view.getProduct() == null) {
+            vm.setStatus(UiStatus.warn("No product view selected"));
+            return;
+        }
+
+        SpectralLibrary lib = getSelectedLibraryFromCombo();
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library (axis required)"));
+            return;
+        }
+
+        SimpleFeatureFigure[] geometries = view.getFeatureFigures(true);
+        if (geometries == null || geometries.length == 0) {
+            vm.setStatus(UiStatus.warn("No Geometry selected in ProductSceneView."));
+            return;
+        }
+
+        List<PixelPos> allPixels = new ArrayList<>();
+        for (SimpleFeatureFigure f : geometries) {
+            Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
+            List<PixelPos> pixels = pixelsFromGeometry(view, geometry);
+            allPixels.addAll(pixels);
+        }
+
+        if (allPixels.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No pixels found in geometries."));
+        }
+
+        Product product = view.getProduct();
+        int level = 0;
+
+        Map<String, Set<String>> sel = selectedBandsBySpectrum;
+
+        if (sel == null || sel.isEmpty()) {
+            Set<String> names = getBandNames(view);
+
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
+                return;
+            }
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewFromPixels(product, axis, unitToUse, bands, allPixels, level, null);
+            return;
+        }
+
+        int totalBands = 0;
+        for (var e : sel.entrySet()) {
+            String groupName = e.getKey();
+            Set<String> selectedNames = e.getValue();
+
+            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
+            if (bands.isEmpty()) {
+                continue;
+            }
+
+            totalBands += bands.size();
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            controller.extractPreviewFromPixels(product, axis, unitToUse, bands, allPixels, level, selectedNames);
+        }
+
+        vm.setStatus(totalBands == 0
+                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
+                : UiStatus.info("Extracted spectra from geometries (" + allPixels.size() + " pixel(s))..."));
     }
 
 
@@ -450,39 +502,7 @@ public class SpectralLibraryActionBinder {
         Map<String, Set<String>> sel = selectedBandsBySpectrum;
 
         if (sel == null || sel.isEmpty()) {
-            DisplayableSpectrum[] spectra = buildSpectraForChooser(product, view.getRaster());
-            String group = defaultSpectrumGroupName;
-
-            DisplayableSpectrum chosen = null;
-            if (group != null) {
-                for (DisplayableSpectrum s : spectra) {
-                    if (s != null && group.equals(s.getName())) {
-                        chosen = s; break;
-                    }
-                }
-            }
-            if (chosen == null) {
-                for (DisplayableSpectrum s : spectra) {
-                    if (s != null && s.isSelected()) {
-                        chosen = s; break;
-                    }
-                }
-            }
-            if (chosen == null && spectra.length > 0) {
-                chosen = spectra[0];
-            }
-
-            if (chosen == null) {
-                vm.setStatus(UiStatus.warn("No spectral bands available"));
-                return;
-            }
-
-            Set<String> names = new LinkedHashSet<>();
-            for (Band b : chosen.getSelectedBands()) {
-                if (b != null) {
-                    names.add(b.getName());
-                }
-            }
+            Set<String> names = getBandNames(view);
 
             List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
             if (bands.isEmpty()) {
@@ -838,5 +858,76 @@ public class SpectralLibraryActionBinder {
             return null;
         }
     }
+
+
+    private static List<PixelPos> pixelsFromGeometry(ProductSceneView view, Geometry modelGeom) {
+        if (modelGeom == null || modelGeom.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        AffineTransform m2i = view.getBaseImageLayer().getModelToImageTransform();
+        AffineTransformation jtsTx = new AffineTransformation(
+                m2i.getScaleX(), m2i.getShearX(), m2i.getTranslateX(),
+                m2i.getShearY(), m2i.getScaleY(), m2i.getTranslateY()
+        );
+
+        Geometry pixGeom = jtsTx.transform(modelGeom);
+
+        Envelope env = pixGeom.getEnvelopeInternal();
+        int minX = (int) Math.floor(env.getMinX());
+        int maxX = (int) Math.ceil (env.getMaxX());
+        int minY = (int) Math.floor(env.getMinY());
+        int maxY = (int) Math.ceil (env.getMaxY());
+
+        int w = view.getBaseImageLayer().getImage().getWidth();
+        int h = view.getBaseImageLayer().getImage().getHeight();
+        minX = Math.max(0, minX); minY = Math.max(0, minY);
+        maxX = Math.min(w - 1, maxX); maxY = Math.min(h - 1, maxY);
+
+        GeometryFactory gf = pixGeom.getFactory();
+        ArrayList<PixelPos> pixels = new ArrayList<>();
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                Point p = gf.createPoint(new Coordinate(x, y));
+                if (pixGeom.covers(p)) {
+                    pixels.add(new PixelPos(x, y));
+                }
+            }
+        }
+        return pixels;
+    }
+
+    private Set<String> getBandNames(ProductSceneView view) {
+        DisplayableSpectrum[] spectra = buildSpectraForChooser(view.getProduct(), view.getRaster());
+        String group = defaultSpectrumGroupName;
+
+        DisplayableSpectrum chosen = null;
+        if (group != null) {
+            for (DisplayableSpectrum s : spectra) {
+                if (s != null && group.equals(s.getName())) { chosen = s; break; }
+            }
+        }
+        if (chosen == null) {
+            for (DisplayableSpectrum s : spectra) {
+                if (s != null && s.isSelected()) { chosen = s; break; }
+            }
+        }
+        if (chosen == null && spectra.length > 0) chosen = spectra[0];
+
+        if (chosen == null) {
+            return Set.of();
+        }
+
+        Set<String> names = new LinkedHashSet<>();
+        for (Band b : chosen.getSelectedBands()) {
+            if (b != null) {
+                names.add(b.getName());
+            }
+        }
+
+        return names;
+    }
+
 }
 

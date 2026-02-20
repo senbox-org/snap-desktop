@@ -731,6 +731,51 @@ public class SpectralLibraryController {
     }
 
 
+    public void extractPreviewFromPixels(Product product,
+                                         SpectralAxis axis,
+                                         String yUnit,
+                                         List<Band> bands,
+                                         List<PixelPos> pixels,
+                                         int level,
+                                         Set<String> selectedBandNames) {
+        if (product == null || axis == null || bands == null || pixels == null) {
+            return;
+        }
+        if (bands.isEmpty() || pixels.isEmpty()) {
+            return;
+        }
+
+        startExtractAsync(() -> {
+            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
+            int added = 0;
+
+            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+            if (libId == null) {
+                return ExtractResult.error("No active library");
+            }
+
+            String unit = normalizeUnit(yUnit);
+            Set<String> used = new HashSet<>();
+
+            String baseName = nextAutoProfileName(libId, out, used);
+            List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
+
+            if (!extractedProfiles.isEmpty()) {
+                for (int ii = 0; ii < extractedProfiles.size(); ii++) {
+                    SpectralProfile masked = maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
+                    masked = withWktIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
+
+                    out.add(masked);
+                    added++;
+                }
+            }
+
+            UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
+            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+        }, "Extracting spectra from geometry...");
+    }
+
+
     private static final class ExtractResult {
         final List<SpectralProfile> profiles;
         final UUID selectedId;
