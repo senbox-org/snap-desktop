@@ -112,8 +112,7 @@ public class SpectralLibraryActionBinder {
         wireToolbarBasics();
         wireTableEditing();
         wireImportExport();
-        wireExtractionPins();
-        wireExtractionCursor();
+        wireExtraction();
         wirePreviewAddButtons();
         wireBandFilter();
     }
@@ -282,171 +281,9 @@ public class SpectralLibraryActionBinder {
         panel.getImportButton().addActionListener(e -> doImport());
     }
 
-
-    private void wireExtractionPins() {
+    private void wireExtraction() {
         panel.getExtractSelectedPinsButton().addActionListener(e -> extractPins(true));
         panel.getExtractAllPinsButton().addActionListener(e -> extractPins(false));
-        panel.getExtractSelectedGeometryButton().addActionListener(e -> extractFromGeometry());
-    }
-
-    private void extractPins(boolean selectedOnly) {
-        ProductSceneView view = viewProvider.getSelectedProductSceneView();
-        if (view == null || view.getProduct() == null) {
-            vm.setStatus(UiStatus.warn("No product view selected"));
-            return;
-        }
-        Product product = view.getProduct();
-
-        SpectralLibrary lib = getSelectedLibraryFromCombo();
-        if (lib == null) {
-            vm.setStatus(UiStatus.warn("No active library (axis required)"));
-            return;
-        }
-
-        List<Placemark> pins = selectedOnly
-                ? Arrays.asList(view.getSelectedPins())
-                : Arrays.asList(product.getPinGroup().toArray(new Placemark[0]));
-
-        pins = pins.stream().filter(Objects::nonNull).toList();
-        if (pins.isEmpty()) {
-            vm.setStatus(UiStatus.warn(selectedOnly ? "No selected pins" : "No pins in product"));
-            return;
-        }
-
-        int level = 0;
-        Map<String, Set<String>> sel = selectedBandsBySpectrum;
-
-        if (sel == null || sel.isEmpty()) {
-            Set<String> names = getBandNames(view);
-
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
-            if (bands.isEmpty()) {
-                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
-                return;
-            }
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, null);
-            return;
-        }
-
-        int totalBands = 0;
-
-        for (var e : sel.entrySet()) {
-            String groupName = e.getKey();
-            Set<String> names = e.getValue();
-
-            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
-
-            if (bands.isEmpty()) {
-                continue;
-            }
-            totalBands += bands.size();
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewFromPins(product, axis, unitToUse, bands, pins, level, names);
-        }
-
-        vm.setStatus(totalBands == 0
-                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
-                : UiStatus.info("Extracted " + sel.size() + " spectrum group(s)"));
-    }
-
-
-    private void extractFromGeometry() {
-        ProductSceneView view = viewProvider.getSelectedProductSceneView();
-        if (view == null || view.getProduct() == null) {
-            vm.setStatus(UiStatus.warn("No product view selected"));
-            return;
-        }
-
-        SpectralLibrary lib = getSelectedLibraryFromCombo();
-        if (lib == null) {
-            vm.setStatus(UiStatus.warn("No active library (axis required)"));
-            return;
-        }
-
-        SimpleFeatureFigure[] geometries = view.getFeatureFigures(true);
-        if (geometries == null || geometries.length == 0) {
-            vm.setStatus(UiStatus.warn("No Geometry selected in ProductSceneView."));
-            return;
-        }
-
-        List<PixelPos> allPixels = new ArrayList<>();
-        for (SimpleFeatureFigure f : geometries) {
-            Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
-            List<PixelPos> pixels = pixelsFromGeometry(view, geometry);
-            allPixels.addAll(pixels);
-        }
-
-        if (allPixels.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No pixels found in geometries."));
-        }
-
-        Product product = view.getProduct();
-        int level = 0;
-
-        Map<String, Set<String>> sel = selectedBandsBySpectrum;
-
-        if (sel == null || sel.isEmpty()) {
-            Set<String> names = getBandNames(view);
-
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
-            if (bands.isEmpty()) {
-                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
-                return;
-            }
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewFromPixels(product, axis, unitToUse, bands, allPixels, level, null);
-            return;
-        }
-
-        int totalBands = 0;
-        for (var e : sel.entrySet()) {
-            String groupName = e.getKey();
-            Set<String> selectedNames = e.getValue();
-
-            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
-            if (bands.isEmpty()) {
-                continue;
-            }
-
-            totalBands += bands.size();
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewFromPixels(product, axis, unitToUse, bands, allPixels, level, selectedNames);
-        }
-
-        vm.setStatus(totalBands == 0
-                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
-                : UiStatus.info("Extracted spectra from geometries (" + allPixels.size() + " pixel(s))..."));
-    }
-
-
-    private void wireExtractionCursor() {
         panel.getExtractAtCursorToggle().addActionListener(e -> {
             boolean armed = panel.getExtractAtCursorToggle().isSelected();
             if (armed) {
@@ -456,157 +293,12 @@ public class SpectralLibraryActionBinder {
                 detachCursorHooks();
             }
         });
+        panel.getExtractSelectedGeometryButton().addActionListener(e -> extractFromGeometry());
     }
-
-    private void attachCursorHooks() {
-        ProductSceneView view = viewProvider.getSelectedProductSceneView();
-        if (view == null) {
-            vm.setStatus(UiStatus.warn("No product view selected"));
-            panel.getExtractAtCursorToggle().setSelected(false);
-            return;
-        }
-
-        detachCursorHooks();
-        currentView = view;
-        currentView.addPixelPositionListener(cursorTracker);
-        currentView.getLayerCanvas().addMouseListener(clickListener);
-
-        vm.setStatus(UiStatus.info("Cursor extraction armed (click in view)"));
-    }
-
-    private void detachCursorHooks() {
-        if (currentView != null) {
-            currentView.removePixelPositionListener(cursorTracker);
-            currentView.getLayerCanvas().removeMouseListener(clickListener);
-        }
-        currentView = null;
-        cursorValid = false;
-        cursorX = cursorY = cursorLevel = -1;
-    }
-
-    private void extractCursorOnce() {
-        ProductSceneView view = currentView != null ? currentView : viewProvider.getSelectedProductSceneView();
-        if (view == null || view.getProduct() == null) {
-            return;
-        }
-
-        Product product = view.getProduct();
-
-        SpectralLibrary lib = getSelectedLibraryFromCombo();
-        if (lib == null) {
-            vm.setStatus(UiStatus.warn("No active library (axis required)"));
-            return;
-        }
-
-        int level = (cursorLevel >= 0) ? cursorLevel : ImageLayer.getLevel(view.getRaster().getMultiLevelModel(), view.getViewport());
-        Map<String, Set<String>> sel = selectedBandsBySpectrum;
-
-        if (sel == null || sel.isEmpty()) {
-            Set<String> names = getBandNames(view);
-
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
-            if (bands.isEmpty()) {
-                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
-                return;
-            }
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, null);
-            return;
-        }
-
-        int extracted = 0;
-
-        for (var e : sel.entrySet()) {
-            String groupName = e.getKey();
-            Set<String> names = e.getValue();
-
-            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
-            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
-            if (bands.isEmpty()) {
-                continue;
-            }
-
-            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
-            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
-            String unitToUse = (groupUnit == null || groupUnit.isBlank())
-                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
-                    : groupUnit;
-
-            controller.extractPreviewAtCursor(product, axis, unitToUse, bands, cursorX, cursorY, level, names);
-            extracted++;
-        }
-
-        vm.setStatus(extracted == 0
-                ? UiStatus.warn("Band filter selected, but no matching spectral bands found")
-                : UiStatus.info("Extracted " + extracted + " spectrum group(s) at cursor"));
-
-    }
-
 
     private void wirePreviewAddButtons() {
         panel.getAddAllPreviewButton().addActionListener(e -> controller.addAllPreviewToLibrary());
         panel.getAddSelectedPreviewButton().addActionListener(e -> controller.addSelectedPreviewToLibrary());
-    }
-
-
-    private SpectralLibrary getSelectedLibraryFromCombo() {
-        Object sel = panel.getLibraryCombo().getSelectedItem();
-        return (sel instanceof SpectralLibrary lib) ? lib : null;
-    }
-
-
-
-
-    private void doImport() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Import Spectral Library");
-        fileChooser.setApproveButtonText("Import");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Spectral Libraries (*.sli, *.hdr, *)", "sli", "hdr"));
-
-        int ok = fileChooser.showOpenDialog(panel);
-        if (ok != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        File file = fileChooser.getSelectedFile();
-        controller.importLibraryFromFile(file);
-    }
-
-    private void doExport() {
-        if (vm.getActiveLibraryId().isEmpty()) {
-            vm.setStatus(UiStatus.warn("No active library"));
-            return;
-        }
-
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Export Spectral Library");
-        fileChooser.setApproveButtonText("Export");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("ENVI Spectral Library (*.sli)", "sli"));
-
-        String base = "spectral-library";
-        Object sel = panel.getLibraryCombo().getSelectedItem();
-        if (sel instanceof SpectralLibrary lib && lib.getName() != null && !lib.getName().isBlank()) {
-            base = lib.getName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
-        }
-        fileChooser.setSelectedFile(new File(base + ".sli"));
-
-        int ok = fileChooser.showSaveDialog(panel);
-        if (ok != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        File file = fileChooser.getSelectedFile();
-        if (!file.getName().toLowerCase().endsWith(".sli")) {
-            file = new File(file.getParentFile(), file.getName() + ".sli");
-        }
-
-        controller.exportActiveLibraryToFile(file);
     }
 
     private void wireBandFilter() {
@@ -681,6 +373,121 @@ public class SpectralLibraryActionBinder {
                     ? UiStatus.info("Band filter cleared (all spectral bands)")
                     : UiStatus.info("Band filter set: " + selectedBandsBySpectrum.size() + " spectrum group(s)"));
         });
+    }
+
+    private void extractPins(boolean selectedOnly) {
+        ProductSceneView view = viewProvider.getSelectedProductSceneView();
+        if (view == null || view.getProduct() == null) {
+            vm.setStatus(UiStatus.warn("No product view selected"));
+            return;
+        }
+
+        SpectralLibrary lib = getSelectedLibraryFromCombo();
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library (axis required)"));
+            return;
+        }
+
+        Product product = view.getProduct();
+        List<Placemark> pins = selectedOnly
+                ? Arrays.asList(view.getSelectedPins())
+                : Arrays.asList(product.getPinGroup().toArray(new Placemark[0]));
+        pins = pins.stream().filter(Objects::nonNull).toList();
+
+        if (pins.isEmpty()) {
+            vm.setStatus(UiStatus.warn(selectedOnly ? "No selected pins" : "No pins in product"));
+            return;
+        }
+
+        int level = 0;
+        List<Placemark> finalPins = pins;
+        withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
+                -> controller.extractPreviewFromPins(p, axis, unit, bands, finalPins, level, selectedNames));
+    }
+
+    private void attachCursorHooks() {
+        ProductSceneView view = viewProvider.getSelectedProductSceneView();
+        if (view == null) {
+            vm.setStatus(UiStatus.warn("No product view selected"));
+            panel.getExtractAtCursorToggle().setSelected(false);
+            return;
+        }
+
+        detachCursorHooks();
+        currentView = view;
+        currentView.addPixelPositionListener(cursorTracker);
+        currentView.getLayerCanvas().addMouseListener(clickListener);
+
+        vm.setStatus(UiStatus.info("Cursor extraction armed (click in view)"));
+    }
+
+    private void detachCursorHooks() {
+        if (currentView != null) {
+            currentView.removePixelPositionListener(cursorTracker);
+            currentView.getLayerCanvas().removeMouseListener(clickListener);
+        }
+        currentView = null;
+        cursorValid = false;
+        cursorX = cursorY = cursorLevel = -1;
+    }
+
+    private void extractFromGeometry() {
+        ProductSceneView view = viewProvider.getSelectedProductSceneView();
+        if (view == null || view.getProduct() == null) {
+            vm.setStatus(UiStatus.warn("No product view selected"));
+            return;
+        }
+
+        SpectralLibrary lib = getSelectedLibraryFromCombo();
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library (axis required)"));
+            return;
+        }
+
+        SimpleFeatureFigure[] geometries = view.getFeatureFigures(true);
+        if (geometries == null || geometries.length == 0) {
+            vm.setStatus(UiStatus.warn("No Geometry selected in ProductSceneView."));
+            return;
+        }
+
+        List<PixelPos> allPixels = new ArrayList<>();
+        for (SimpleFeatureFigure f : geometries) {
+            Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
+            List<PixelPos> pixels = pixelsFromGeometry(view, geometry);
+            allPixels.addAll(pixels);
+        }
+
+        if (allPixels.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No pixels found in geometries."));
+        }
+
+        int level = 0;
+        withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
+                -> controller.extractPreviewFromPixels(p, axis, unit, bands, allPixels, level, selectedNames));
+    }
+
+    private void extractCursorOnce() {
+        ProductSceneView view = currentView != null ? currentView : viewProvider.getSelectedProductSceneView();
+        if (view == null || view.getProduct() == null) {
+            vm.setStatus(UiStatus.warn("No product view selected"));
+            return;
+        }
+
+        SpectralLibrary lib = getSelectedLibraryFromCombo();
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library (axis required)"));
+            return;
+        }
+
+        int level = (cursorLevel >= 0) ? cursorLevel : ImageLayer.getLevel(view.getRaster().getMultiLevelModel(), view.getViewport());
+        withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
+                -> controller.extractPreviewAtCursor(p, axis, unit, bands, cursorX, cursorY, level, selectedNames));
+    }
+
+
+    private SpectralLibrary getSelectedLibraryFromCombo() {
+        Object sel = panel.getLibraryCombo().getSelectedItem();
+        return (sel instanceof SpectralLibrary lib) ? lib : null;
     }
 
     private DisplayableSpectrum[] buildSpectraForChooser(Product product, RasterDataNode raster) {
@@ -929,5 +736,107 @@ public class SpectralLibraryActionBinder {
         return names;
     }
 
+    private void doImport() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import Spectral Library");
+        fileChooser.setApproveButtonText("Import");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Spectral Libraries (*.sli, *.hdr, *)", "sli", "hdr"));
+
+        int ok = fileChooser.showOpenDialog(panel);
+        if (ok != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        controller.importLibraryFromFile(file);
+    }
+
+    private void doExport() {
+        if (vm.getActiveLibraryId().isEmpty()) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export Spectral Library");
+        fileChooser.setApproveButtonText("Export");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("ENVI Spectral Library (*.sli)", "sli"));
+
+        String base = "spectral-library";
+        Object sel = panel.getLibraryCombo().getSelectedItem();
+        if (sel instanceof SpectralLibrary lib && lib.getName() != null && !lib.getName().isBlank()) {
+            base = lib.getName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+        }
+        fileChooser.setSelectedFile(new File(base + ".sli"));
+
+        int ok = fileChooser.showSaveDialog(panel);
+        if (ok != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".sli")) {
+            file = new File(file.getParentFile(), file.getName() + ".sli");
+        }
+
+        controller.exportActiveLibraryToFile(file);
+    }
+
+
+    @FunctionalInterface
+    private interface ExtractionInvoker {
+        void invoke(Product product, SpectralAxis axis, String unitToUse, List<Band> bands, Set<String> selectedBandNamesOrNull);
+    }
+
+
+    private void withResolvedBandSelection(ProductSceneView view,
+                                           SpectralLibrary lib,
+                                           ExtractionInvoker invoker) {
+        Product product = view.getProduct();
+        Map<String, Set<String>> sel = selectedBandsBySpectrum;
+
+        if (sel == null || sel.isEmpty()) {
+            Set<String> names = getBandNames(view);
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, names);
+            if (bands.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No spectral bands in default group"));
+                return;
+            }
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            invoker.invoke(product, axis, unitToUse, bands, null);
+            return;
+        }
+
+        int totalBands = 0;
+        for (var e : sel.entrySet()) {
+            String groupName = e.getKey();
+            Set<String> selectedNames = e.getValue();
+
+            Set<String> allNames = (allBandsBySpectrum != null) ? allBandsBySpectrum.get(groupName) : null;
+            List<Band> bands = BandSelectionUtils.getSpectralBands(product, allNames);
+            if (bands.isEmpty()) {
+                continue;
+            }
+            totalBands += bands.size();
+
+            SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+            String groupUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+            String unitToUse = (groupUnit == null || groupUnit.isBlank())
+                    ? lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT)
+                    : groupUnit;
+
+            invoker.invoke(product, axis, unitToUse, bands, selectedNames);
+        }
+
+        if (totalBands == 0) {
+            vm.setStatus(UiStatus.warn("Band filter selected, but no matching spectral bands found"));
+        }
+    }
 }
 

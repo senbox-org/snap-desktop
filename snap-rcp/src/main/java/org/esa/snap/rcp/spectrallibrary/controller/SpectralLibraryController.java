@@ -55,17 +55,167 @@ public class SpectralLibraryController {
         vm.setStatus(UiStatus.info("Refreshed"));
     }
 
-    public void addSelectedPreviewToLibrary() {
-        addSelectedPreviewToActiveLibrary();
-    }
-
-    public void addAllPreviewToLibrary() {
-        addAllPreviewToActiveLibrary();
-    }
-
     public void reloadLibraries() {
         List<SpectralLibrary> libs = service.listLibraries();
         vm.setLibraries(libs);
+    }
+
+    private void ensureActiveLibrary() {
+        if (vm.getActiveLibraryId().isPresent()) {
+            return;
+        }
+
+        var libs = vm.getLibraries();
+        if (!libs.isEmpty()) {
+            vm.setActiveLibraryId(libs.get(0).getId());
+            return;
+        }
+
+        vm.setStatus(UiStatus.warn("No library yet. Create one from a product (axis required)."));
+    }
+
+    public void refreshActiveLibraryProfiles() {
+        Optional<UUID> idOpt = vm.getActiveLibraryId();
+        if (idOpt.isEmpty()) {
+            vm.setLibraryProfiles(List.of());
+            return;
+        }
+        Optional<SpectralLibrary> libOpt = service.getLibrary(idOpt.get());
+        vm.setLibraryProfiles(libOpt.map(SpectralLibrary::getProfiles).orElse(List.of()));
+    }
+
+    public void addSelectedPreviewToLibrary() {
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
+        }
+
+        Optional<SpectralProfile> selectedOpt = findSelectedPreviewProfile();
+        if (selectedOpt.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No preview profile selected"));
+            return;
+        }
+
+        SpectralProfile sel = selectedOpt.get();
+        UUID selId = sel.getId();
+        if (selId == null) {
+            vm.setStatus(UiStatus.warn("Selected profile has no ID"));
+            return;
+        }
+
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        for (SpectralProfile p : lib.getProfiles()) {
+            if (p != null && selId.equals(p.getId())) {
+                vm.setStatus(UiStatus.info("Profile already exists (skipped)"));
+                return;
+            }
+        }
+
+        try {
+            service.addProfile(libId, sel);
+            reloadLibraries();
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.info("Profile added"));
+        } catch (Throwable t) {
+            reloadLibraries();
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
+        }
+    }
+
+    public void addAllPreviewToLibrary() {
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
+        }
+
+        List<SpectralProfile> preview = vm.getPreviewProfiles();
+        if (preview.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No preview profiles"));
+            return;
+        }
+
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        Set<UUID> existingIds = new HashSet<>();
+        for (SpectralProfile p : lib.getProfiles()) {
+            if (p != null && p.getId() != null) {
+                existingIds.add(p.getId());
+            }
+        }
+
+        int added = 0;
+        int skipped = 0;
+        int failed = 0;
+
+        for (SpectralProfile p : preview) {
+            if (p == null || p.getId() == null) {
+                continue;
+            }
+
+            if (existingIds.contains(p.getId())) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                service.addProfile(libId, p);
+                existingIds.add(p.getId());
+                added++;
+            } catch (Throwable t) {
+                failed++;
+            }
+        }
+
+        reloadLibraries();
+        refreshActiveLibraryProfiles();
+
+        if (added > 0) {
+            String msg = "Profiles added (" + added + ")";
+            if (skipped > 0) {
+                msg += ", skipped (" + skipped + ")";
+            }
+            if (failed > 0) {
+                msg += ", failed (" + failed + ")";
+            }
+            vm.setStatus(UiStatus.info(msg));
+        } else if (skipped > 0 && failed == 0) {
+            vm.setStatus(UiStatus.warn("Nothing added (all already existed: " + skipped + ")"));
+        } else {
+            vm.setStatus(UiStatus.warn("Nothing added"));
+        }
+    }
+
+    private Optional<UUID> requireActiveLibraryIdOrWarn() {
+        Optional<UUID> idOpt = vm.getActiveLibraryId();
+        if (idOpt.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No active library selected"));
+        }
+        return idOpt;
+    }
+
+    private Optional<SpectralProfile> findSelectedPreviewProfile() {
+        Optional<UUID> selId = vm.getSelectedPreviewProfileId();
+        if (selId.isEmpty()) {
+            return Optional.empty();
+        }
+
+        UUID id = selId.get();
+        for (SpectralProfile p : vm.getPreviewProfiles()) {
+            if (p != null && id.equals(p.getId())) {
+                return Optional.of(p);
+            }
+        }
+        return Optional.empty();
     }
 
     public SpectralLibrary createLibrary(String name, SpectralAxis axis, String defaultYUnit) {
@@ -119,16 +269,6 @@ public class SpectralLibraryController {
     public void setActiveLibrary(UUID id) {
         vm.setActiveLibraryId(id);
         refreshActiveLibraryProfiles();
-    }
-
-    public void refreshActiveLibraryProfiles() {
-        Optional<UUID> idOpt = vm.getActiveLibraryId();
-        if (idOpt.isEmpty()) {
-            vm.setLibraryProfiles(List.of());
-            return;
-        }
-        Optional<SpectralLibrary> libOpt = service.getLibrary(idOpt.get());
-        vm.setLibraryProfiles(libOpt.map(SpectralLibrary::getProfiles).orElse(List.of()));
     }
 
     public void removeLibraryProfiles(UUID libraryId, List<UUID> profileIds) {
@@ -237,117 +377,6 @@ public class SpectralLibraryController {
         }
     }
 
-    public void addSelectedPreviewToActiveLibrary() {
-        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
-        if (libId == null) {
-            return;
-        }
-
-        Optional<SpectralProfile> selectedOpt = findSelectedPreviewProfile();
-        if (selectedOpt.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No preview profile selected"));
-            return;
-        }
-
-        SpectralProfile sel = selectedOpt.get();
-        UUID selId = sel.getId();
-        if (selId == null) {
-            vm.setStatus(UiStatus.warn("Selected profile has no ID"));
-            return;
-        }
-
-        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
-        if (lib == null) {
-            vm.setStatus(UiStatus.warn("No active library"));
-            return;
-        }
-
-        for (SpectralProfile p : lib.getProfiles()) {
-            if (p != null && selId.equals(p.getId())) {
-                vm.setStatus(UiStatus.info("Profile already exists (skipped)"));
-                return;
-            }
-        }
-
-        try {
-            service.addProfile(libId, sel);
-            reloadLibraries();
-            refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Profile added"));
-        } catch (Throwable t) {
-            reloadLibraries();
-            refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
-        }
-    }
-
-    public void addAllPreviewToActiveLibrary() {
-        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
-        if (libId == null) {
-            return;
-        }
-
-        List<SpectralProfile> preview = vm.getPreviewProfiles();
-        if (preview.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No preview profiles"));
-            return;
-        }
-
-        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
-        if (lib == null) {
-            vm.setStatus(UiStatus.warn("No active library"));
-            return;
-        }
-
-        Set<UUID> existingIds = new HashSet<>();
-        for (SpectralProfile p : lib.getProfiles()) {
-            if (p != null && p.getId() != null) {
-                existingIds.add(p.getId());
-            }
-        }
-
-        int added = 0;
-        int skipped = 0;
-        int failed = 0;
-
-        for (SpectralProfile p : preview) {
-            if (p == null || p.getId() == null) {
-                continue;
-            }
-
-            if (existingIds.contains(p.getId())) {
-                skipped++;
-                continue;
-            }
-
-            try {
-                service.addProfile(libId, p);
-                existingIds.add(p.getId());
-                added++;
-            } catch (Throwable t) {
-                failed++;
-            }
-        }
-
-        reloadLibraries();
-        refreshActiveLibraryProfiles();
-
-        if (added > 0) {
-            String msg = "Profiles added (" + added + ")";
-            if (skipped > 0) {
-                msg += ", skipped (" + skipped + ")";
-            }
-            if (failed > 0) {
-                msg += ", failed (" + failed + ")";
-            }
-            vm.setStatus(UiStatus.info(msg));
-        } else if (skipped > 0 && failed == 0) {
-            vm.setStatus(UiStatus.warn("Nothing added (all already existed: " + skipped + ")"));
-        } else {
-            vm.setStatus(UiStatus.warn("Nothing added"));
-        }
-    }
-
     public void clearPreview() {
         vm.setPreviewProfiles(List.of());
         vm.setSelectedPreviewProfileId(null);
@@ -447,7 +476,49 @@ public class SpectralLibraryController {
         }, "Extracting spectrum...");
     }
 
+    public void extractPreviewFromPixels(Product product,
+                                         SpectralAxis axis,
+                                         String yUnit,
+                                         List<Band> bands,
+                                         List<PixelPos> pixels,
+                                         int level,
+                                         Set<String> selectedBandNames) {
+        if (product == null || axis == null || bands == null || pixels == null) {
+            return;
+        }
+        if (bands.isEmpty() || pixels.isEmpty()) {
+            return;
+        }
 
+        startExtractAsync(() -> {
+            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
+            int added = 0;
+
+            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+            if (libId == null) {
+                return ExtractResult.error("No active library");
+            }
+
+            String unit = normalizeUnit(yUnit);
+            Set<String> used = new HashSet<>();
+
+            String baseName = nextAutoProfileName(libId, out, used);
+            List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
+
+            if (!extractedProfiles.isEmpty()) {
+                for (int ii = 0; ii < extractedProfiles.size(); ii++) {
+                    SpectralProfile masked = maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
+                    masked = withWktIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
+
+                    out.add(masked);
+                    added++;
+                }
+            }
+
+            UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
+            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+        }, "Extracting spectra from geometry...");
+    }
 
     public boolean exportActiveLibraryToFile(File file) {
         Optional<UUID> idOpt = vm.getActiveLibraryId();
@@ -508,44 +579,6 @@ public class SpectralLibraryController {
         }
     }
 
-
-
-    private void ensureActiveLibrary() {
-        if (vm.getActiveLibraryId().isPresent()) {
-            return;
-        }
-
-        var libs = vm.getLibraries();
-        if (!libs.isEmpty()) {
-            vm.setActiveLibraryId(libs.get(0).getId());
-            return;
-        }
-
-        vm.setStatus(UiStatus.warn("No library yet. Create one from a product (axis required)."));
-    }
-
-    private Optional<UUID> requireActiveLibraryIdOrWarn() {
-        Optional<UUID> idOpt = vm.getActiveLibraryId();
-        if (idOpt.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No active library selected"));
-        }
-        return idOpt;
-    }
-
-    private Optional<SpectralProfile> findSelectedPreviewProfile() {
-        Optional<UUID> selId = vm.getSelectedPreviewProfileId();
-        if (selId.isEmpty()) {
-            return Optional.empty();
-        }
-
-        UUID id = selId.get();
-        for (SpectralProfile p : vm.getPreviewProfiles()) {
-            if (p != null && id.equals(p.getId())) {
-                return Optional.of(p);
-            }
-        }
-        return Optional.empty();
-    }
 
     private static String normalizeUnit(String yUnit) {
         String unit = (yUnit == null) ? "" : yUnit.trim();
@@ -661,6 +694,30 @@ public class SpectralLibraryController {
         }
     }
 
+    private static SpectralProfile withWktIfPossible(Product product, int x, int y, SpectralProfile profile) {
+        String wkt = wktPointForPixel(product, x, y);
+        if (wkt != null && !wkt.isBlank()) {
+            profile = profile.withAttribute(ATTR_WKT, AttributeValue.ofString(wkt));
+        }
+        return profile;
+    }
+
+
+    private static String wktPointForPixel(Product product, int x, int y) {
+        var gc = product.getSceneGeoCoding();
+        if (gc == null) {
+            return null;
+        }
+
+        PixelPos px = new PixelPos(x, y);
+        GeoPos gp = gc.getGeoPos(px, null);
+
+        if (gp == null || !gp.isValid()) {
+            return null;
+        }
+        return "POINT (" + gp.lon + " " + gp.lat + ")";
+    }
+
 
     private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg) {
         if (currentExtractWorker != null && !currentExtractWorker.isDone()) {
@@ -704,77 +761,6 @@ public class SpectralLibraryController {
 
         currentExtractWorker.execute();
     }
-
-
-    private static SpectralProfile withWktIfPossible(Product product, int x, int y, SpectralProfile profile) {
-        String wkt = wktPointForPixel(product, x, y);
-        if (wkt != null && !wkt.isBlank()) {
-            profile = profile.withAttribute(ATTR_WKT, AttributeValue.ofString(wkt));
-        }
-        return profile;
-    }
-
-
-    private static String wktPointForPixel(Product product, int x, int y) {
-        var gc = product.getSceneGeoCoding();
-        if (gc == null) {
-            return null;
-        }
-
-        PixelPos px = new PixelPos(x, y);
-        GeoPos gp = gc.getGeoPos(px, null);
-
-        if (gp == null || !gp.isValid()) {
-            return null;
-        }
-        return "POINT (" + gp.lon + " " + gp.lat + ")";
-    }
-
-
-    public void extractPreviewFromPixels(Product product,
-                                         SpectralAxis axis,
-                                         String yUnit,
-                                         List<Band> bands,
-                                         List<PixelPos> pixels,
-                                         int level,
-                                         Set<String> selectedBandNames) {
-        if (product == null || axis == null || bands == null || pixels == null) {
-            return;
-        }
-        if (bands.isEmpty() || pixels.isEmpty()) {
-            return;
-        }
-
-        startExtractAsync(() -> {
-            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
-            int added = 0;
-
-            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
-            if (libId == null) {
-                return ExtractResult.error("No active library");
-            }
-
-            String unit = normalizeUnit(yUnit);
-            Set<String> used = new HashSet<>();
-
-            String baseName = nextAutoProfileName(libId, out, used);
-            List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
-
-            if (!extractedProfiles.isEmpty()) {
-                for (int ii = 0; ii < extractedProfiles.size(); ii++) {
-                    SpectralProfile masked = maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
-                    masked = withWktIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
-
-                    out.add(masked);
-                    added++;
-                }
-            }
-
-            UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
-        }, "Extracting spectra from geometry...");
-    }
-
 
     private static final class ExtractResult {
         final List<SpectralProfile> profiles;
