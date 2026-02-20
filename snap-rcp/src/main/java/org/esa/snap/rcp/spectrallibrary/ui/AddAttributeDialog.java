@@ -16,6 +16,7 @@ public class AddAttributeDialog {
 
 
     private static final EnumSet<AttributeType> UI_DENIED_TYPES = EnumSet.of(
+            AttributeType.INSTANT,
             AttributeType.STRING_LIST,
             AttributeType.DOUBLE_ARRAY,
             AttributeType.INT_ARRAY,

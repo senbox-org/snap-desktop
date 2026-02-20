@@ -12,6 +12,7 @@ import org.esa.snap.speclib.model.*;
 
 import javax.swing.*;
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -23,6 +24,8 @@ public class SpectralLibraryController {
     private static final String PROFILE_PREFIX = "Profile_";
     private static final Pattern NAME_PATTERN = Pattern.compile("^Profile_(\\d+)$");
     private static final String ATTR_WKT = "wkt";
+    private static final String ATTR_PRODUCT_NAME = "product_name";
+    private static final String ATTR_DATE_TIME = "time";
 
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
@@ -424,7 +427,7 @@ public class SpectralLibraryController {
 
                 if (pOpt.isPresent()) {
                     SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-                    masked = withWktIfPossible(product, px, py, masked);
+                    masked = withDefaultAttributesIfPossible(product, px, py, masked);
 
                     out.add(masked);
                     added++;
@@ -467,7 +470,7 @@ public class SpectralLibraryController {
             }
 
             SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-            masked = withWktIfPossible(product, x, y, masked);
+            masked = withDefaultAttributesIfPossible(product, x, y, masked);
 
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             out.add(masked);
@@ -508,7 +511,7 @@ public class SpectralLibraryController {
             if (!extractedProfiles.isEmpty()) {
                 for (int ii = 0; ii < extractedProfiles.size(); ii++) {
                     SpectralProfile masked = maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
-                    masked = withWktIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
+                    masked = withDefaultAttributesIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
 
                     out.add(masked);
                     added++;
@@ -694,6 +697,13 @@ public class SpectralLibraryController {
         }
     }
 
+    private static SpectralProfile withDefaultAttributesIfPossible(Product product, int x, int y, SpectralProfile profile) {
+        profile = withWktIfPossible(product, x, y, profile);
+        profile = withProductNameIfPossible(product, profile);
+        profile = withDateTimeIfPossible(product, profile);
+        return profile;
+    }
+
     private static SpectralProfile withWktIfPossible(Product product, int x, int y, SpectralProfile profile) {
         String wkt = wktPointForPixel(product, x, y);
         if (wkt != null && !wkt.isBlank()) {
@@ -716,6 +726,23 @@ public class SpectralLibraryController {
             return null;
         }
         return "POINT (" + gp.lon + " " + gp.lat + ")";
+    }
+
+    private static SpectralProfile withProductNameIfPossible(Product product, SpectralProfile profile) {
+        String name = product.getName();
+        if (name != null) {
+            profile = profile.withAttribute(ATTR_PRODUCT_NAME, AttributeValue.ofString(name));
+        }
+        return profile;
+    }
+
+    private static SpectralProfile withDateTimeIfPossible(Product product, SpectralProfile profile) {
+        ProductData.UTC startTime = product.getStartTime();
+        if (startTime != null) {
+            Instant instant = startTime.getAsCalendar().toInstant();
+            profile = profile.withAttribute(ATTR_DATE_TIME, AttributeValue.ofInstant(instant));
+        }
+        return profile;
     }
 
 
