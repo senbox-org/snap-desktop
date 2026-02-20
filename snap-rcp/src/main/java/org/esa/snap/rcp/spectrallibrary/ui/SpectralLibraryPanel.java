@@ -39,7 +39,7 @@ public class SpectralLibraryPanel extends JPanel {
     private AbstractButton extractAtCursorToggle;
     private AbstractButton extractSelectedPinsButton;
     private AbstractButton extractAllPinsButton;
-    private AbstractButton extractSelectedGeometryButton;
+//    private AbstractButton extractSelectedGeometryButton;
     private AbstractButton filterButton;
 
     // status actions
@@ -180,10 +180,10 @@ public class SpectralLibraryPanel extends JPanel {
         extractAllPinsButton.setToolTipText("Extract Spectrum for All Pins.");
         extractAllPinsButton.setEnabled(true);
 
-        extractSelectedGeometryButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/DrawRectangleTool24.gif"), false);
-        extractSelectedGeometryButton.setName("extractSelectedGeometryButton");
-        extractSelectedGeometryButton.setToolTipText("Extract Spectrum for All Pixels within Selected Geometry.");
-        extractSelectedGeometryButton.setEnabled(true);
+//        extractSelectedGeometryButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/DrawRectangleTool24.gif"), false);
+//        extractSelectedGeometryButton.setName("extractSelectedGeometryButton");
+//        extractSelectedGeometryButton.setToolTipText("Extract Spectrum for All Pixels within Selected Geometry.");
+//        extractSelectedGeometryButton.setEnabled(true);
 
         JPanel row0 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row0.add(new JLabel("Filter Spectra by bands/band groups: "));
@@ -194,7 +194,7 @@ public class SpectralLibraryPanel extends JPanel {
         row1.add(extractAtCursorToggle);
         row1.add(extractSelectedPinsButton);
         row1.add(extractAllPinsButton);
-        row1.add(extractSelectedGeometryButton);
+//        row1.add(extractSelectedGeometryButton);
 
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row2.add(new JLabel("Add to Active Library: "));
@@ -296,9 +296,9 @@ public class SpectralLibraryPanel extends JPanel {
         return extractAllPinsButton;
     }
 
-    public AbstractButton getExtractSelectedGeometryButton() {
-        return extractSelectedGeometryButton;
-    }
+//    public AbstractButton getExtractSelectedGeometryButton() {
+//        return extractSelectedGeometryButton;
+//    }
 
     public AbstractButton getFilterButton() {
         return filterButton;

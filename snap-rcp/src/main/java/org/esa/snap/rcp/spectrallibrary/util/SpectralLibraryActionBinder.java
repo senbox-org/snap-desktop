@@ -293,7 +293,7 @@ public class SpectralLibraryActionBinder {
                 detachCursorHooks();
             }
         });
-        panel.getExtractSelectedGeometryButton().addActionListener(e -> extractFromGeometry());
+//        panel.getExtractSelectedGeometryButton().addActionListener(e -> extractFromGeometry());
     }
 
     private void wirePreviewAddButtons() {
