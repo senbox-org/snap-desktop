@@ -117,6 +117,9 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_TOLERANCE_KEY, GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY, GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT);
 
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT);
+
+
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SOUTH_NAME, GraticuleLayerType.PROPERTY_LABELS_SOUTH_DEFAULT);
@@ -489,6 +492,47 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 key = GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
                 description = GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP)
         boolean interpolateDefault = GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT;
+
+
+
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_LABEL,
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLatGlobalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT;
+
+
+
+
+        @Preference(label = "AUTO-SPACING: Lon Spacing (Global)",
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,1000]")
+        int two = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+        @Preference(label = "AUTO-SPACING: Lon Spacing (Semi-Global)",
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,1000]")
+        int five = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+
+        @Preference(label = "AUTO-SPACING: Lat Spacing (Global - Cylindrical)",
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,1000]")
+        int six = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+        @Preference(label = "AUTO-SPACING: Lon Spacing (Global - Cylindrical)",
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,1000]")
+        int seven = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+
+
 
 
         // Labels Section
