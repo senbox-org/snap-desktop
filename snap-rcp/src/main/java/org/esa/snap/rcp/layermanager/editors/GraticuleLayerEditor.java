@@ -64,6 +64,16 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+        PropertyDescriptor modePd = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MODE_KEY, String.class);
+        modePd.setDefaultValue(GraticuleLayerType.PROPERTY_MODE_DEFAULT);
+        modePd.setValueSet(new ValueSet(GraticuleLayerType.getModeOptionsArray()));
+        modePd.setDisplayName(GraticuleLayerType.PROPERTY_MODE_LABEL);
+        modePd.setDescription(GraticuleLayerType.PROPERTY_MODE_TOOLTIP);
+        modePd.setDefaultConverter();
+        addPropertyDescriptor(modePd);
+        
+        
+
         // Grid Spacing Section
 
         addSectionBreak(GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
@@ -94,6 +104,15 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
         numGridLinesPD.setDefaultConverter();
         addPropertyDescriptor(numGridLinesPD);
+
+
+
+        // Line Precision Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_TOOLTIP);
+
 
         PropertyDescriptor numMinorStepsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, Integer.class);
         numMinorStepsPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
@@ -136,6 +155,8 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
         interpolatePD.setDefaultConverter();
         addPropertyDescriptor(interpolatePD);
+
+
 
 
 

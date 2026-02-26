@@ -801,6 +801,11 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_MODE_KEY,
+                GraticuleLayerType.PROPERTY_MODE_DEFAULT,
+                GraticuleLayerType.PROPERTY_MODE_TYPE);
+
 
         // Grid Spacing Section
 
@@ -876,6 +881,14 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
                 GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT,
                 GraticuleLayerType.PROPERTY_INTERPOLATE_TYPE);
+
+
+        // Line Precision Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY);
+
+
 
         // Labels Section
 

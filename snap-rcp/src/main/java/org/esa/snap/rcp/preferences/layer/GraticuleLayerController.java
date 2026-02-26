@@ -124,6 +124,9 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT);
 
 
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY, true);
+
+
 
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
@@ -467,36 +470,6 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 interval = "[2,40]")
         int numGridLines = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT;
 
-        @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL,
-                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
-                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
-                interval = "[0,1000]")
-        int minorSteps = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL,
-                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME,
-                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP,
-                interval = "[0,1000]")
-        int minorStepsCylindrical = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT;
-
-
-        @Preference(label = GraticuleLayerType.PROPERTY_TOLERANCE_LABEL,
-                key = GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
-                description = GraticuleLayerType.PROPERTY_TOLERANCE_TOOLTIP,
-                interval = "[0,100]")
-        double toleranceDefault = GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT;
-
-        @Preference(label = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_LABEL,
-                key = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY,
-                description = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TOOLTIP,
-                interval = "[0,100]")
-        double toleranceCylindricalDefault = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT;
-
-
-        @Preference(label = GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL,
-                key = GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
-                description = GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP)
-        boolean interpolateDefault = GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT;
 
 
 
@@ -542,6 +515,45 @@ public final class GraticuleLayerController extends DefaultConfigController {
         double autoSpacingLonGlobalCylindricalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT;
 
 
+
+        // Line Precision Section
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_LABEL,
+                key = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY,
+                description = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_TOOLTIP)
+        boolean linePrecisionSection = true;
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL,
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP,
+                interval = "[0,1000]")
+        int minorSteps = GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL,
+                key = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME,
+                description = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP,
+                interval = "[0,1000]")
+        int minorStepsCylindrical = GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT;
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_TOLERANCE_LABEL,
+                key = GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
+                description = GraticuleLayerType.PROPERTY_TOLERANCE_TOOLTIP,
+                interval = "[0,100]")
+        double toleranceDefault = GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT;
+
+        @Preference(label = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_LABEL,
+                key = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY,
+                description = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TOOLTIP,
+                interval = "[0,100]")
+        double toleranceCylindricalDefault = GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT;
+
+
+        @Preference(label = GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL,
+                key = GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
+                description = GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP)
+        boolean interpolateDefault = GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT;
 
 
 
