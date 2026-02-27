@@ -20,7 +20,7 @@
     <parent>
         <artifactId>snap-desktop</artifactId>
         <groupId>org.esa.snap</groupId>
-        <version>13.0.1-SNAPSHOT</version>
+        <version>13.0.1</version>
     </parent>
 
     <artifactId>snap-collocation-ui</artifactId>
