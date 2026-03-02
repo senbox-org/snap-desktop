@@ -64,11 +64,24 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+
+        PropertyDescriptor modePd = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MODE_KEY, String.class);
+        modePd.setDefaultValue(GraticuleLayerType.PROPERTY_MODE_DEFAULT);
+        modePd.setValueSet(new ValueSet(GraticuleLayerType.getModeOptionsArray()));
+        modePd.setDisplayName(GraticuleLayerType.PROPERTY_MODE_LABEL);
+        modePd.setDescription(GraticuleLayerType.PROPERTY_MODE_TOOLTIP);
+        modePd.setDefaultConverter();
+        addPropertyDescriptor(modePd);
+
+
         // Grid Spacing Section
 
         addSectionBreak(GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
                 GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_LABEL,
                 GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_TOOLTIP);
+
+
+
 
         PropertyDescriptor gridSpacingLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME, Double.class);
         gridSpacingLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
@@ -87,13 +100,22 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(gridSpacingLonPD);
 
 
-        PropertyDescriptor numGridLinesPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, Integer.class);
-        numGridLinesPD.setDefaultValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
-        numGridLinesPD.setValueRange(new ValueRange(0, 40));
-        numGridLinesPD.setDisplayName(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL);
-        numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
-        numGridLinesPD.setDefaultConverter();
-        addPropertyDescriptor(numGridLinesPD);
+//        PropertyDescriptor numGridLinesPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, Integer.class);
+//        numGridLinesPD.setDefaultValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
+//        numGridLinesPD.setValueRange(new ValueRange(0, 40));
+//        numGridLinesPD.setDisplayName(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL);
+//        numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
+//        numGridLinesPD.setDefaultConverter();
+//        addPropertyDescriptor(numGridLinesPD);
+
+
+
+        // Line Precision Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_TOOLTIP);
+
 
         PropertyDescriptor numMinorStepsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, Integer.class);
         numMinorStepsPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
@@ -103,13 +125,13 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         numMinorStepsPD.setDefaultConverter();
         addPropertyDescriptor(numMinorStepsPD);
 
-        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
-        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
-        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
-        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
-        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
-        numMinorStepsCylindricalPD.setDefaultConverter();
-        addPropertyDescriptor(numMinorStepsCylindricalPD);
+//        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
+//        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
+//        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
+//        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
+//        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
+//        numMinorStepsCylindricalPD.setDefaultConverter();
+//        addPropertyDescriptor(numMinorStepsCylindricalPD);
 
 
         PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_KEY, Double.class);
