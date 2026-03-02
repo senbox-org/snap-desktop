@@ -117,6 +117,18 @@ public final class GraticuleLayerController extends DefaultConfigController {
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_TOLERANCE_KEY, GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY, GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT);
 
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_DEFAULT);
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_KEY, GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT);
+
+
+        initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY, true);
+
+
+
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SECTION_NAME, true);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_NORTH_NAME, GraticuleLayerType.PROPERTY_LABELS_NORTH_DEFAULT);
         initPropertyDefaults(context, GraticuleLayerType.PROPERTY_LABELS_SOUTH_NAME, GraticuleLayerType.PROPERTY_LABELS_SOUTH_DEFAULT);
@@ -458,6 +470,68 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 description = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP,
                 interval = "[2,40]")
         int numGridLines = GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT;
+
+
+
+
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLatGlobalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLonGlobalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLatHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLonHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLatGlobalCylindricalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLonGlobalCylindricalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT;
+
+
+
+        // Line Precision Section
+
+        @Preference(label = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_LABEL,
+                key = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY,
+                description = GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_TOOLTIP)
+        boolean linePrecisionSection = true;
+
 
         @Preference(label = GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL,
                 key = GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
