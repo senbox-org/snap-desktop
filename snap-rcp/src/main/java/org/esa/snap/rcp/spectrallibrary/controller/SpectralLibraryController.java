@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 public class SpectralLibraryController {
 
 
-    private static final String PROFILE_PREFIX = "Profile_";
-    private static final Pattern NAME_PATTERN = Pattern.compile("^Profile_(\\d+)$");
+    private static final String PROFILE_PREFIX = "Spectrum_";
+    private static final Pattern NAME_PATTERN = Pattern.compile("^Spectrum_(\\d+)$");
     private static final String ATTR_WKT = "wkt";
     private static final String ATTR_PRODUCT_NAME = "product_name";
     private static final String ATTR_DATE_TIME = "time";
