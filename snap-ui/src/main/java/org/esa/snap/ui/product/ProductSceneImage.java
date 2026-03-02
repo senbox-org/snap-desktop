@@ -416,6 +416,11 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_MODE_KEY,
+                GraticuleLayerType.PROPERTY_MODE_DEFAULT,
+                GraticuleLayerType.PROPERTY_MODE_TYPE);
+
 
         // Grid Spacing Section
 
@@ -459,9 +464,51 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_TYPE);
+
+
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
                 GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT,
                 GraticuleLayerType.PROPERTY_INTERPOLATE_TYPE);
+
+
+        // Line Precision Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY);
+
+
 
         // Labels Section
 
