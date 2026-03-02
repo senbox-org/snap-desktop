@@ -6,7 +6,6 @@ import org.jfree.chart.annotations.XYTitleAnnotation;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -24,9 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 
@@ -57,9 +55,15 @@ public class PreviewPanel extends JPanel {
     private final Stroke selectedStroke = new BasicStroke(3.2f);
     private final float normalAlpha = 0.65f;
     private final float selectedAlpha = 1.0f;
-    private final List<Paint> basePaints = new ArrayList<>();
 
     private XYTitleAnnotation busyAnnotation;
+
+    private static final Color[] DEFAULT_PALETTE = {
+            new Color(31,119,180), new Color(255,127,14), new Color(44,160,44), new Color(214,39,40),
+            new Color(148,103,189), new Color(140,86,75), new Color(227,119,194), new Color(127,127,127),
+            new Color(188,189,34), new Color(23,190,207)
+    };
+    private final Map<UUID, Paint> paintByProfileId = new HashMap<>();
 
 
     public PreviewPanel() {
@@ -270,10 +274,6 @@ public class PreviewPanel extends JPanel {
 
     private void rebuildDataset() {
         dataset.removeAllSeries();
-        basePaints.clear();
-
-        XYPlot plot = chart.getXYPlot();
-        DrawingSupplier ds = plot.getDrawingSupplier();
 
         for (SpectralProfile p : profiles) {
             XYSeries s = new XYSeries(p.getName(), false, true);
@@ -295,10 +295,7 @@ public class PreviewPanel extends JPanel {
             }
 
             dataset.addSeries(s);
-            basePaints.add(ds.getNextPaint());
         }
-
-        applyHighlight();
     }
 
     private void applyHighlight() {
@@ -315,10 +312,7 @@ public class PreviewPanel extends JPanel {
             boolean isSelected = sel != null && sel.equals(pid);
 
             r.setSeriesStroke(s, isSelected ? selectedStroke : normalStroke);
-
-            Paint base = (s < basePaints.size() && basePaints.get(s) != null)
-                    ? basePaints.get(s)
-                    : r.getDefaultPaint();
+            Paint base = getOrCreatePaint(pid);
 
             r.setSeriesPaint(s, applyAlpha(base, isSelected ? selectedAlpha : normalAlpha));
         }
@@ -331,5 +325,24 @@ public class PreviewPanel extends JPanel {
             return new Color(c.getRed(), c.getGreen(), c.getBlue(), Math.round(alpha * 255f));
         }
         return base;
+    }
+
+    public void applyProfilePaints(Map<UUID, ? extends Paint> paints) {
+        if (paints == null || paints.isEmpty()) {
+            return;
+        }
+
+        paintByProfileId.putAll(paints);
+        applyHighlight();
+    }
+
+    private Paint getOrCreatePaint(UUID id) {
+        if (id == null) {
+            return Color.GRAY;
+        }
+
+        return paintByProfileId.computeIfAbsent(id, pid ->
+                DEFAULT_PALETTE[(pid.hashCode() & 0x7fffffff) % DEFAULT_PALETTE.length]
+        );
     }
 }

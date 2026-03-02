@@ -4,6 +4,7 @@ import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
+import org.esa.snap.rcp.spectrallibrary.util.PreviewUtils;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
@@ -11,9 +12,11 @@ import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.time.Instant;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -412,6 +415,7 @@ public class SpectralLibraryController {
 
             Set<String> used = new HashSet<>();
             String unit = normalizeUnit(yUnit);
+            Map<UUID, Color> overrides = new HashMap<>();
 
             for (Placemark pin : pins) {
                 if (pin == null || pin.getPixelPos() == null) {
@@ -430,12 +434,13 @@ public class SpectralLibraryController {
                     masked = withDefaultAttributesIfPossible(product, px, py, masked);
 
                     out.add(masked);
+                    overrides.put(masked.getId(), PreviewUtils.colorFromPlacemark(pin));
                     added++;
                 }
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added, overrides);
         }, "Extracting spectra from pins...");
     }
 
@@ -461,6 +466,7 @@ public class SpectralLibraryController {
                 return ExtractResult.error("No active library");
             }
 
+            Map<UUID, Color> overrides = new HashMap<>();
             String profileName = nextAutoProfileName(libId, preview, null);
 
             Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, x, y, level, unit, product.getName());
@@ -471,11 +477,12 @@ public class SpectralLibraryController {
 
             SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
             masked = withDefaultAttributesIfPossible(product, x, y, masked);
+            overrides.put(masked.getId(), Color.BLACK);
 
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             out.add(masked);
 
-            return ExtractResult.success(safeCopyWithoutNulls(out), masked.getId());
+            return ExtractResult.success(safeCopyWithoutNulls(out), masked.getId(), overrides);
         }, "Extracting spectrum...");
     }
 
@@ -519,7 +526,7 @@ public class SpectralLibraryController {
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added, Collections.emptyMap());
         }, "Extracting spectra from geometry...");
     }
 
@@ -773,6 +780,9 @@ public class SpectralLibraryController {
                     ExtractResult r = get();
 
                     if (r.profiles != null) {
+                        if (r.paintOverrides != null && !r.paintOverrides.isEmpty()) {
+                            previewPanel.applyProfilePaints(r.paintOverrides);
+                        }
                         vm.setPreviewProfiles(r.profiles);
                         vm.setSelectedPreviewProfileId(r.selectedId);
                     }
@@ -793,28 +803,30 @@ public class SpectralLibraryController {
         final List<SpectralProfile> profiles;
         final UUID selectedId;
         final UiStatus status;
+        final Map<UUID, Color> paintOverrides;
 
-        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status) {
+        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status, Map<UUID, Color> paintOverrides) {
             this.profiles = profiles;
             this.selectedId = selectedId;
             this.status = status;
+            this.paintOverrides = paintOverrides;
         }
 
-        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId) {
-            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"));
+        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId, Map<UUID, Color> paintOverrides) {
+            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"), paintOverrides);
         }
 
-        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added) {
+        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added, Map<UUID, Color> paintOverrides) {
             UiStatus st = added > 0 ? UiStatus.info("Preview extracted (" + added + ")") : UiStatus.warn("No spectra extracted");
-            return new ExtractResult(profiles, selectedId, st);
+            return new ExtractResult(profiles, selectedId, st, paintOverrides);
         }
 
         static ExtractResult noSpectrum() {
-            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"));
+            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"), Collections.emptyMap());
         }
 
         static ExtractResult error(String msg) {
-            return new ExtractResult(null, null, UiStatus.error(msg));
+            return new ExtractResult(null, null, UiStatus.error(msg), Collections.emptyMap());
         }
     }
 }
