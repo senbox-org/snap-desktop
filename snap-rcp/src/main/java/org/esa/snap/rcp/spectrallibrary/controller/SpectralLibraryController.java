@@ -3,6 +3,7 @@ package org.esa.snap.rcp.spectrallibrary.controller;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
+import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
 import org.esa.snap.rcp.spectrallibrary.util.PreviewUtils;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
@@ -10,6 +11,7 @@ import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
+import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 
 import javax.swing.*;
 import java.awt.*;
@@ -122,8 +124,15 @@ public class SpectralLibraryController {
             }
         }
 
+        Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
+        if (attrsOpt.isEmpty()) {
+            return;
+        }
+
+        SpectralProfile toAdd = applyAttributes(sel, attrsOpt.get());
+
         try {
-            service.addProfile(libId, sel);
+            service.addProfile(libId, toAdd);
             reloadLibraries();
             refreshActiveLibraryProfiles();
             vm.setStatus(UiStatus.info("Profile added"));
@@ -152,6 +161,13 @@ public class SpectralLibraryController {
             return;
         }
 
+        Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
+        if (attrsOpt.isEmpty()) {
+            return;
+        }
+
+        Map<String, AttributeValue> attrs = attrsOpt.get();
+
         Set<UUID> existingIds = new HashSet<>();
         for (SpectralProfile p : lib.getProfiles()) {
             if (p != null && p.getId() != null) {
@@ -174,7 +190,7 @@ public class SpectralLibraryController {
             }
 
             try {
-                service.addProfile(libId, p);
+                service.addProfile(libId, applyAttributes(p, attrs));
                 existingIds.add(p.getId());
                 added++;
             } catch (Throwable t) {
@@ -222,6 +238,51 @@ public class SpectralLibraryController {
             }
         }
         return Optional.empty();
+    }
+
+    private Optional<Map<String, AttributeValue>> askAttributesForPreviewAdd() {
+        Optional<List<AddPreviewAttributeDialog.AttributeSpec>> specsOpt = AddPreviewAttributeDialog.show(previewPanel);
+
+        if (specsOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<AddPreviewAttributeDialog.AttributeSpec> specs = specsOpt.get();
+        if (specs.isEmpty()) {
+            return Optional.of(Collections.emptyMap());
+        }
+
+        Map<String, AttributeValue> out = new LinkedHashMap<>();
+        for (var s : specs) {
+            if (s == null || s.key() == null || s.key().trim().isEmpty()) {
+                continue;
+            }
+
+            AttributeType t = (s.type() != null) ? s.type() : AttributeType.STRING;
+            try {
+                AttributeValue v = SpectralLibraryAttributeValueParser.parseForType(t, s.valueText());
+                out.put(s.key().trim(), v);
+            } catch (IllegalArgumentException ex) {
+                vm.setStatus(UiStatus.warn("Invalid value for '" + s.key().trim() + "': " + ex.getMessage()));
+                return Optional.empty();
+            }
+        }
+        return Optional.of(out.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(out));
+    }
+
+    private static SpectralProfile applyAttributes(SpectralProfile p, Map<String, AttributeValue> attrs) {
+        if (p == null || attrs == null || attrs.isEmpty()) {
+            return p;
+        }
+
+        SpectralProfile out = p;
+        for (var e : attrs.entrySet()) {
+            if (e.getKey() == null || e.getKey().isBlank() || e.getValue() == null) {
+                continue;
+            }
+            out = out.withAttribute(e.getKey().trim(), e.getValue());
+        }
+        return out;
     }
 
     public SpectralLibrary createLibrary(String name, SpectralAxis axis, String defaultYUnit) {
