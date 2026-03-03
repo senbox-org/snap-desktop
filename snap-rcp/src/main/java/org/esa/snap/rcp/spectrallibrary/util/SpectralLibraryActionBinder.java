@@ -186,7 +186,7 @@ public class SpectralLibraryActionBinder {
                 }
             }
 
-            controller.setPreviewProfiles(selected);
+            controller.setPreviewProfilesLimited(selected);
         });
 
         panel.getAddAttributeButton().addActionListener(e -> {

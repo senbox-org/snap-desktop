@@ -32,6 +32,9 @@ public class SpectralLibraryController {
     private static final String ATTR_PRODUCT_NAME = "product_name";
     private static final String ATTR_DATE_TIME = "time";
 
+    private static final int PREVIEW_DISPLAY_LIMIT = 10_000;
+    private List<SpectralProfile> lastExtractedAllProfiles = List.of();
+
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
     private final SpectralLibraryViewModel vm;
@@ -149,7 +152,9 @@ public class SpectralLibraryController {
             return;
         }
 
-        List<SpectralProfile> preview = vm.getPreviewProfiles();
+        List<SpectralProfile> preview = !lastExtractedAllProfiles.isEmpty()
+                ? lastExtractedAllProfiles
+                : vm.getPreviewProfiles();
         if (preview.isEmpty()) {
             vm.setStatus(UiStatus.warn("No preview profiles"));
             return;
@@ -354,10 +359,18 @@ public class SpectralLibraryController {
     }
 
 
-    public void setPreviewProfiles(List<SpectralProfile> profiles) {
-        vm.setPreviewProfiles(safeCopyWithoutNulls(profiles));
-        vm.setSelectedPreviewProfileId(null);
-        vm.setStatus(UiStatus.info("Preview updated (" + vm.getPreviewProfiles().size() + ")"));
+    public void setPreviewProfilesLimited(List<SpectralProfile> allProfiles) {
+        lastExtractedAllProfiles = safeCopyWithoutNulls(allProfiles);
+        List<SpectralProfile> display = limitForDisplay(lastExtractedAllProfiles);
+
+        vm.setPreviewProfiles(display);
+        vm.setSelectedPreviewProfileId(display.isEmpty() ? null : display.get(display.size() - 1).getId());
+
+        if (lastExtractedAllProfiles.size() > display.size()) {
+            vm.setStatus(UiStatus.warn("Preview limited: showing " + display.size() + " of " + lastExtractedAllProfiles.size()));
+        } else {
+            vm.setStatus(UiStatus.info("Preview updated (" + display.size() + ")"));
+        }
     }
 
     public void addAttributeToActiveLibrary(AttributeDef def, AttributeValue fillValue) {
@@ -445,6 +458,7 @@ public class SpectralLibraryController {
     }
 
     public void clearPreview() {
+        lastExtractedAllProfiles = List.of();
         vm.setPreviewProfiles(List.of());
         vm.setSelectedPreviewProfileId(null);
         vm.setStatus(UiStatus.idle());
@@ -841,14 +855,25 @@ public class SpectralLibraryController {
                     ExtractResult r = get();
 
                     if (r.profiles != null) {
+                        lastExtractedAllProfiles = r.profiles;
+                        List<SpectralProfile> display = limitForDisplay(r.profiles);
+
                         if (r.paintOverrides != null && !r.paintOverrides.isEmpty()) {
                             previewPanel.applyProfilePaints(r.paintOverrides);
                         }
-                        vm.setPreviewProfiles(r.profiles);
-                        vm.setSelectedPreviewProfileId(r.selectedId);
-                    }
 
-                    vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                        vm.setPreviewProfiles(display);
+                        UUID sel = containsId(display, r.selectedId) ? r.selectedId : (display.isEmpty() ? null : display.get(display.size()-1).getId());
+                        vm.setSelectedPreviewProfileId(sel);
+
+                        if (r.profiles.size() > display.size()) {
+                            vm.setStatus(UiStatus.warn("Preview limited: showing " + display.size() + " of " + r.profiles.size()));
+                        } else {
+                            vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                        }
+                    } else {
+                        vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                    }
                 } catch (Exception ex) {
                     vm.setStatus(UiStatus.error("Extract failed: " + ex.getMessage()));
                 } finally {
@@ -859,6 +884,42 @@ public class SpectralLibraryController {
 
         currentExtractWorker.execute();
     }
+
+    private static List<SpectralProfile> limitForDisplay(List<SpectralProfile> all) {
+        if (all == null || all.isEmpty()) {
+            return List.of();
+        }
+
+        List<SpectralProfile> clean = safeCopyWithoutNulls(all);
+        int n = clean.size();
+        if (n <= PREVIEW_DISPLAY_LIMIT) {
+            return clean;
+        }
+
+        if (PREVIEW_DISPLAY_LIMIT == 1) {
+            return List.of(clean.get(n - 1));
+        }
+
+        List<SpectralProfile> out = new ArrayList<>(PREVIEW_DISPLAY_LIMIT);
+        for (int i = 0; i < PREVIEW_DISPLAY_LIMIT; i++) {
+            int idx = (int) (((long) i * (n - 1)) / (PREVIEW_DISPLAY_LIMIT - 1L));
+            out.add(clean.get(idx));
+        }
+        return List.copyOf(out);
+    }
+
+    private static boolean containsId(List<SpectralProfile> list, UUID id) {
+        if (id == null || list == null) {
+            return false;
+        }
+        for (SpectralProfile p : list) {
+            if (p != null && id.equals(p.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private static final class ExtractResult {
         final List<SpectralProfile> profiles;
