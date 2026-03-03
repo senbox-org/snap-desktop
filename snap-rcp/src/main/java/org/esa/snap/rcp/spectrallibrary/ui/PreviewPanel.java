@@ -31,16 +31,7 @@ import java.util.function.Consumer;
 public class PreviewPanel extends JPanel {
 
     private final XYSeriesCollection dataset = new XYSeriesCollection();
-    private final JFreeChart chart = ChartFactory.createXYLineChart(
-            "Preview",
-            "Wavelength / Index",
-            "Value",
-            dataset,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
-    );
+    private final JFreeChart chart = ChartFactory.createXYLineChart("Preview", "Wavelength / Index", "Value", dataset, PlotOrientation.VERTICAL, true, true, false);
 
     private final ChartPanel chartPanel = new ChartPanel(chart);
     private final JPanel headerHost = new JPanel(new BorderLayout());
@@ -65,18 +56,58 @@ public class PreviewPanel extends JPanel {
     };
     private final Map<UUID, Paint> paintByProfileId = new HashMap<>();
 
+    private final DefaultListModel<LegendEntry> legendModel = new DefaultListModel<>();
+    private final JList<LegendEntry> legendList = new JList<>(legendModel);
+    private final JScrollPane legendScroll = new JScrollPane(legendList);
+
+    private record LegendEntry(UUID id, String name) {}
+
 
     public PreviewPanel() {
         super(new BorderLayout(4, 4));
 
         chartPanel.setMinimumDrawHeight(0);
         chartPanel.setMaximumDrawHeight(Integer.MAX_VALUE);
+        chart.removeLegend();
+        legendScroll.setPreferredSize(new Dimension(1, 100));
+        legendScroll.setVisible(false);
 
         add(headerHost, BorderLayout.NORTH);
         add(chartPanel, BorderLayout.CENTER);
+        add(legendScroll, BorderLayout.SOUTH);
 
         configureRenderer();
         installClickSelection();
+
+        legendList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        legendList.setVisibleRowCount(-1);
+        legendList.setCellRenderer((list, entry, index, isSelected, cellHasFocus) -> {
+            JLabel l = new JLabel(entry == null ? "" : entry.name());
+            l.setOpaque(true);
+            l.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
+            l.setBackground(isSelected ? UIManager.getColor("List.selectionBackground") : UIManager.getColor("List.background"));
+            l.setForeground(isSelected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground"));
+
+            if (entry != null) {
+                Paint p = getOrCreatePaint(entry.id());
+                Color c = (p instanceof Color cc) ? cc : Color.GRAY;
+                l.setIcon(makeColorIcon(c));
+            }
+            return l;
+        });
+
+        legendList.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
+            LegendEntry le = legendList.getSelectedValue();
+            if (le != null) {
+                setSelectedProfileId(le.id());
+                if (selectionListener != null) {
+                    selectionListener.accept(le.id());
+                }
+            }
+        });
     }
 
 
@@ -95,6 +126,7 @@ public class PreviewPanel extends JPanel {
 
     public void setProfiles(List<SpectralProfile> profiles) {
         this.profiles = profiles == null ? List.of() : List.copyOf(profiles);
+        updateLegendModel();
         rebuildDataset();
         applyHighlight();
     }
@@ -140,6 +172,8 @@ public class PreviewPanel extends JPanel {
         profiles = List.of();
         selectedProfileId = null;
         dataset.removeAllSeries();
+        legendList.clearSelection();
+        updateLegendModel();
         applyHighlight();
     }
 
@@ -318,6 +352,7 @@ public class PreviewPanel extends JPanel {
         }
 
         chartPanel.repaint();
+        legendList.repaint();
     }
 
     private Paint applyAlpha(Paint base, float alpha) {
@@ -344,5 +379,41 @@ public class PreviewPanel extends JPanel {
         return paintByProfileId.computeIfAbsent(id, pid ->
                 DEFAULT_PALETTE[(pid.hashCode() & 0x7fffffff) % DEFAULT_PALETTE.length]
         );
+    }
+
+    private static Icon makeColorIcon(Color c) {
+        return new Icon() {
+            @Override public int getIconWidth() {
+                return 12;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 12;
+            }
+
+            @Override
+            public void paintIcon(Component comp, Graphics g, int x, int y) {
+                g.setColor(Color.DARK_GRAY);
+                g.drawRect(x, y, 11, 11);
+                g.setColor(c);
+                g.fillRect(x + 1, y + 1, 10, 10);
+            }
+        };
+    }
+
+    private void updateLegendModel() {
+        legendModel.clear();
+        for (SpectralProfile p : profiles) {
+            if (p == null) {
+                continue;
+            }
+            legendModel.addElement(new LegendEntry(p.getId(), p.getName()));
+        }
+
+        boolean hasProfiles = !profiles.isEmpty();
+        legendScroll.setVisible(hasProfiles);
+        legendScroll.revalidate();
+        legendScroll.repaint();
     }
 }
