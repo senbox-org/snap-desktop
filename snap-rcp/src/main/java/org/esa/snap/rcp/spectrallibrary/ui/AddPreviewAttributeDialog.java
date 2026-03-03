@@ -24,9 +24,27 @@ public class AddPreviewAttributeDialog {
 
 
     public static Optional<List<AttributeSpec>> show(Component parent) {
-        JCheckBox enable = new JCheckBox("Assign attribute(s) to the profile(s) you add");
+        JCheckBox enable = new JCheckBox("Assign Attributes to the Profiles");
         enable.setSelected(false);
 
+        int rc0 = JOptionPane.showConfirmDialog(
+                parent,
+                enable,
+                "Add to Library",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+        if (rc0 != JOptionPane.OK_OPTION) {
+            return Optional.empty();
+        }
+        if (!enable.isSelected()) {
+            return Optional.of(List.of());
+        }
+
+        return showTableDialog(parent);
+    }
+
+    private static Optional<List<AttributeSpec>> showTableDialog(Component parent) {
         JLabel hint = new JLabel(" ");
         hint.setForeground(Color.GRAY);
 
@@ -38,10 +56,9 @@ public class AddPreviewAttributeDialog {
                     default -> String.class;
                 };
             }
-
             @Override
             public boolean isCellEditable(int row, int column) {
-                return enable.isSelected();
+                return true;
             }
         };
 
@@ -56,7 +73,6 @@ public class AddPreviewAttributeDialog {
 
         int visibleRows = 8;
         table.setPreferredScrollableViewportSize(new Dimension(560, table.getRowHeight() * visibleRows));
-
         JScrollPane scroll = new JScrollPane(table);
 
         JButton addBtn = new JButton("Add new attribute");
@@ -66,9 +82,8 @@ public class AddPreviewAttributeDialog {
         table.setRowSelectionInterval(0, 0);
 
         Runnable updateRemoveEnabled = () -> {
-            boolean on = enable.isSelected();
             boolean hasSel = table.getSelectedRow() >= 0;
-            removeBtn.setEnabled(on && hasSel && model.getRowCount() > 1);
+            removeBtn.setEnabled(hasSel && model.getRowCount() > 1);
         };
 
         addBtn.addActionListener(e -> {
@@ -81,14 +96,13 @@ public class AddPreviewAttributeDialog {
 
         removeBtn.addActionListener(e -> {
             int viewRow = table.getSelectedRow();
-            if (viewRow < 0) {
-                return;
-            }
-            if (model.getRowCount() <= 1) {
-                return;
-            }
+            if (viewRow < 0 || model.getRowCount() <= 1) return;
 
             int row = table.convertRowIndexToModel(viewRow);
+            if (table.isEditing()) {
+                table.getCellEditor().stopCellEditing();
+            }
+
             model.removeRow(row);
 
             int newRow = Math.min(row, model.getRowCount() - 1);
@@ -101,29 +115,17 @@ public class AddPreviewAttributeDialog {
             updateHintFromSelection(table, model, hint);
         });
 
-        addBtn.setEnabled(false);
-        removeBtn.setEnabled(false);
-        table.setEnabled(false);
-
-        enable.addActionListener(e -> {
-            boolean on = enable.isSelected();
-            table.setEnabled(on);
-            addBtn.setEnabled(on);
-            updateRemoveEnabled.run();
-            updateHintFromSelection(table, model, hint);
-        });
-
+        updateRemoveEnabled.run();
+        updateHintFromSelection(table, model, hint);
 
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
-            if (e.getValueIsAdjusting()) {
-                return;
-            }
+            if (e.getValueIsAdjusting()) return;
             updateRemoveEnabled.run();
             updateHintFromSelection(table, model, hint);
         });
 
         model.addTableModelListener(e -> {
-            if (e.getColumn() == COL_TYPE || e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+            if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == COL_TYPE) {
                 updateHintFromSelection(table, model, hint);
             }
         });
@@ -139,7 +141,6 @@ public class AddPreviewAttributeDialog {
         south.add(buttons);
 
         JPanel root = new JPanel(new BorderLayout(6, 6));
-        root.add(enable, BorderLayout.NORTH);
         root.add(scroll, BorderLayout.CENTER);
         root.add(south, BorderLayout.SOUTH);
 
@@ -150,31 +151,21 @@ public class AddPreviewAttributeDialog {
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
-
         if (rc != JOptionPane.OK_OPTION) {
             return Optional.empty();
-        }
-
-        if (!enable.isSelected()) {
-            return Optional.of(List.of());
         }
 
         LinkedHashMap<String, AttributeSpec> out = new LinkedHashMap<>();
         for (int r = 0; r < model.getRowCount(); r++) {
             String key = asTrimmedString(model.getValueAt(r, COL_KEY));
-            if (key.isEmpty()) {
-                continue;
-            }
+            if (key.isEmpty()) continue;
 
             AttributeType type = (AttributeType) model.getValueAt(r, COL_TYPE);
-            if (type == null) {
-                type = AttributeType.STRING;
-            }
+            if (type == null) type = AttributeType.STRING;
 
             String value = asString(model.getValueAt(r, COL_VALUE));
             out.put(key, new AttributeSpec(key, type, value));
         }
-
         return Optional.of(List.copyOf(out.values()));
     }
 
@@ -185,17 +176,23 @@ public class AddPreviewAttributeDialog {
     }
 
     private static void updateHintFromSelection(JTable table, DefaultTableModel model, JLabel hint) {
-        if (!table.isEnabled()) {
+        if (!table.isEnabled() || model.getRowCount() == 0 || model.getColumnCount() <= COL_TYPE) {
             hint.setText(" ");
             return;
         }
-        int viewRow = table.getSelectedRow();
 
+        int viewRow = table.getSelectedRow();
         if (viewRow < 0) {
             hint.setText(" ");
             return;
         }
+
         int row = table.convertRowIndexToModel(viewRow);
+        if (row < 0 || row >= model.getRowCount()) {
+            hint.setText(" ");
+            return;
+        }
+
         Object tObj = model.getValueAt(row, COL_TYPE);
         AttributeType t = (tObj instanceof AttributeType at) ? at : AttributeType.STRING;
 
