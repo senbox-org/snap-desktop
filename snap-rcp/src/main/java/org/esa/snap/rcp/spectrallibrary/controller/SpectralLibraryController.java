@@ -135,10 +135,10 @@ public class SpectralLibraryController {
         SpectralProfile toAdd = applyAttributes(sel, attrsOpt.get());
 
         try {
-            service.addProfile(libId, toAdd);
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, List.of(toAdd));
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Profile added"));
+            vm.setStatus(r.added() > 0 ? UiStatus.info("Profile added") : UiStatus.info("Profile already exists (skipped)"));
         } catch (Throwable t) {
             reloadLibraries();
             refreshActiveLibraryProfiles();
@@ -180,46 +180,25 @@ public class SpectralLibraryController {
             }
         }
 
-        int added = 0;
-        int skipped = 0;
-        int failed = 0;
-
+        List<SpectralProfile> toAdd = new ArrayList<>(preview.size());
         for (SpectralProfile p : preview) {
-            if (p == null || p.getId() == null) {
+            if (p == null) {
                 continue;
             }
-
-            if (existingIds.contains(p.getId())) {
-                skipped++;
-                continue;
-            }
-
-            try {
-                service.addProfile(libId, applyAttributes(p, attrs));
-                existingIds.add(p.getId());
-                added++;
-            } catch (Throwable t) {
-                failed++;
-            }
+            toAdd.add(applyAttributes(p, attrs));
         }
+
+        SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
 
         reloadLibraries();
         refreshActiveLibraryProfiles();
 
-        if (added > 0) {
-            String msg = "Profiles added (" + added + ")";
-            if (skipped > 0) {
-                msg += ", skipped (" + skipped + ")";
-            }
-            if (failed > 0) {
-                msg += ", failed (" + failed + ")";
-            }
-            vm.setStatus(UiStatus.info(msg));
-        } else if (skipped > 0 && failed == 0) {
-            vm.setStatus(UiStatus.warn("Nothing added (all already existed: " + skipped + ")"));
-        } else {
-            vm.setStatus(UiStatus.warn("Nothing added"));
-        }
+        int added = r.added();
+        int skipped = r.skippedExisting();
+        vm.setStatus(added > 0
+                ? UiStatus.info("Profiles added (" + added + ")" + (skipped > 0 ? ", skipped (" + skipped + ")" : ""))
+                : (skipped > 0 ? UiStatus.warn("Nothing added (all already existed: " + skipped + ")") : UiStatus.warn("Nothing added")));
+
     }
 
     private Optional<UUID> requireActiveLibraryIdOrWarn() {
@@ -640,18 +619,9 @@ public class SpectralLibraryController {
                     yUnit
             );
 
-            int added = 0;
-            for (SpectralProfile p : imported.getProfiles()) {
-                if (p == null) {
-                    continue;
-                }
-                try {
-                    service.addProfile(persisted.getId(), p);
-                    added++;
-                } catch (Throwable ignored) {
-                    // skip broken profiles, continue import
-                }
-            }
+            List<SpectralProfile> toAdd = safeCopyWithoutNulls(imported.getProfiles());
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(persisted.getId(), toAdd);
+            int added = r.added();
 
             reloadLibraries();
             vm.setActiveLibraryId(persisted.getId());

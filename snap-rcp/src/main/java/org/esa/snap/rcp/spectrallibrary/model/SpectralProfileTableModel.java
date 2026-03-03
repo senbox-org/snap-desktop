@@ -25,7 +25,7 @@ public class SpectralProfileTableModel extends AbstractTableModel {
 
 
     public void setProfiles(List<SpectralProfile> profiles) {
-        this.profiles = profiles == null ? List.of() : List.copyOf(profiles);
+        this.profiles = profiles == null ? List.of() : profiles;
         fireTableDataChanged();
     }
 

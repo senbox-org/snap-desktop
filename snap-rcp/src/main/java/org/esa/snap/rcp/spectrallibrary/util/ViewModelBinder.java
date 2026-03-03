@@ -5,6 +5,7 @@ import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.SpectralAxis;
 import org.esa.snap.speclib.model.SpectralLibrary;
+import org.esa.snap.speclib.model.SpectralProfile;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;
@@ -72,8 +73,18 @@ public class ViewModelBinder {
                         applyActiveLibraryToTable();
                         updatePreviewAxisFromActiveLibrary();
                     }
-                    case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES ->
-                            panel.getLibraryTableModel().setProfiles(vm.getLibraryProfiles());
+                    case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES -> {
+                        List<SpectralProfile> ps = vm.getLibraryProfiles();
+
+                        if (ps != null && ps.size() > 50_000) {
+                            panel.getLibraryTable().setRowSorter(null);
+                        } else {
+                            if (panel.getLibraryTable().getRowSorter() == null) {
+                                panel.getLibraryTable().setAutoCreateRowSorter(true);
+                            }
+                        }
+                            panel.getLibraryTableModel().setProfiles(ps);
+                    }
                     case SpectralLibraryViewModel.PROP_PREVIEW_PROFILES ->
                             panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
                     case SpectralLibraryViewModel.PROP_SELECTED_PREVIEW_PROFILE_ID ->

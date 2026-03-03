@@ -137,7 +137,7 @@ public class SpectralLibraryPanel extends JPanel {
 
     private JComponent buildLibraryTablePanel() {
         libraryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        libraryTable.setAutoCreateRowSorter(true);
+        libraryTable.setAutoCreateRowSorter(false);
 
         JPanel tablePanel = new JPanel(new BorderLayout(4, 4));
         tablePanel.setBorder(BorderFactory.createTitledBorder("Library Profiles"));

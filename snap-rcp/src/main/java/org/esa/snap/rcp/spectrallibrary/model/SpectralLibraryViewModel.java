@@ -66,7 +66,7 @@ public class SpectralLibraryViewModel {
     }
 
     public void setLibraryProfiles(List<SpectralProfile> profiles) {
-        List<SpectralProfile> newList = profiles == null ? List.of() : List.copyOf(profiles);
+        List<SpectralProfile> newList = profiles == null ? List.of() : profiles;
         this.libraryProfiles = newList;
         pcs.firePropertyChange(PROP_LIBRARY_PROFILES, null, newList);
     }
