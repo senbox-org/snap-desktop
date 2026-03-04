@@ -798,6 +798,11 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
 
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_MODE_KEY,
+                GraticuleLayerType.PROPERTY_MODE_DEFAULT,
+                GraticuleLayerType.PROPERTY_MODE_TYPE);
+
 
         // Grid Spacing Section
 
@@ -824,6 +829,67 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME,
                 GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT,
                 GraticuleLayerType.PROPERTY_MINOR_STEPS_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
+                GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT,
+                GraticuleLayerType.PROPERTY_TOLERANCE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_CYLINDRICAL_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_KEY,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_DEFAULT,
+                GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_CYLINDRICAL_TYPE);
+
+
+
+
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_KEY,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT,
+                GraticuleLayerType.PROPERTY_INTERPOLATE_TYPE);
+
+
+        // Line Precision Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY);
+
 
 
         // Labels Section
@@ -895,6 +961,11 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_LABELS_SIZE_NAME,
                 GraticuleLayerType.PROPERTY_LABELS_SIZE_DEFAULT,
                 GraticuleLayerType.PROPERTY_LABELS_SIZE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME,
+                GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT,
+                GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME,
@@ -1020,6 +1091,23 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_NAME,
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_DEFAULT,
                 GraticuleLayerType.PROPERTY_INSIDE_LABELS_BG_COLOR_TYPE);
+
+
+
+        // Flip Warning Section
+
+        addSectionPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_TYPE);
+
+        addPropertyToLayerConfiguration(configuration, layer,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_TYPE);
 
 
     }
