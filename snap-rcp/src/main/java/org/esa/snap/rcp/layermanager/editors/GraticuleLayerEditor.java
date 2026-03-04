@@ -125,13 +125,13 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         numMinorStepsPD.setDefaultConverter();
         addPropertyDescriptor(numMinorStepsPD);
 
-//        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
-//        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
-//        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
-//        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
-//        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
-//        numMinorStepsCylindricalPD.setDefaultConverter();
-//        addPropertyDescriptor(numMinorStepsCylindricalPD);
+        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
+        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
+        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
+        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
+        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
+        numMinorStepsCylindricalPD.setDefaultConverter();
+        addPropertyDescriptor(numMinorStepsCylindricalPD);
 
 
         PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_KEY, Double.class);
