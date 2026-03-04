@@ -474,6 +474,21 @@ public final class GraticuleLayerController extends DefaultConfigController {
 
 
 
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLatHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT;
+
+
+        @Preference(
+                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY,
+                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_LABEL,
+                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_TOOLTIP,
+                interval = "[0,90]")
+        double autoSpacingLonHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT;
+
 
 
         @Preference(
@@ -491,21 +506,6 @@ public final class GraticuleLayerController extends DefaultConfigController {
                 interval = "[0,90]")
         double autoSpacingLonGlobalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_GLOBAL_DEFAULT;
 
-
-        @Preference(
-                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_KEY,
-                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_LABEL,
-                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_TOOLTIP,
-                interval = "[0,90]")
-        double autoSpacingLatHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_HEMISPHERICAL_DEFAULT;
-
-
-        @Preference(
-                key = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_KEY,
-                label = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_LABEL,
-                description = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_TOOLTIP,
-                interval = "[0,90]")
-        double autoSpacingLonHemisphericalDefault = GraticuleLayerType.PROPERTY_AUTO_SPACING_LON_HEMISPHERICAL_DEFAULT;
 
 
         @Preference(
