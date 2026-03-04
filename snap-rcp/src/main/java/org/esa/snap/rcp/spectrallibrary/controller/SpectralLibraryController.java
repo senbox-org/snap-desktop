@@ -279,8 +279,10 @@ public class SpectralLibraryController {
     }
 
     public SpectralLibrary createLibraryFromBands(String name, List<Band> bands) {
-        SpectralAxis axis = SpectralAxisUtils.axisFromReferenceSpectralGroup(bands);
-        String yUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+        SpectralAxisUtils.AxisBandSelection sel = SpectralAxisUtils.selectAxisBandsUniqueByWavelength(bands);
+        SpectralAxis axis = SpectralAxisUtils.axisFromOrderedBands(sel.bandsOrdered());
+        String yUnit = SpectralAxisUtils.defaultYUnitFromBands(sel.bandsOrdered());
+
         if (yUnit == null || yUnit.isBlank()) {
             yUnit = "value";
         }
