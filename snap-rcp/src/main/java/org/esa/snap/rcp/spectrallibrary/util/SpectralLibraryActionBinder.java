@@ -54,6 +54,9 @@ public class SpectralLibraryActionBinder {
 
     private BandGroupsManager bandGroupsManager;
 
+    private final Map<UUID, FilterState> filterStateByLibrary = new HashMap<>();
+    private UUID lastActiveLibraryId = null;
+
     private final PixelPositionListener cursorTracker = new PixelPositionListener() {
         @Override
         public void pixelPosChanged(ImageLayer imageLayer,
@@ -238,7 +241,6 @@ public class SpectralLibraryActionBinder {
             }
             Product product = view.getProduct();
 
-            List<Band> bands = Arrays.asList(product.getBands());
             String name = JOptionPane.showInputDialog(panel, "Library name:", "Library");
             if (name == null) {
                 return;
@@ -248,18 +250,39 @@ public class SpectralLibraryActionBinder {
                 return;
             }
 
+            saveFilterState(lastActiveLibraryId != null ? lastActiveLibraryId : vm.getActiveLibraryId().orElse(null));
+
             List<Band> orderedCandidates = collectBandsInAutoGroupingOrder(product);
             defaultAxisBandNames = SpectralAxisUtils.selectAxisBandsUniqueByWavelength(orderedCandidates).bandNames();
             selectedBandsBySpectrum = null;
 
-            controller.createLibraryFromBands(name, orderedCandidates);
+            SpectralLibrary created = controller.createLibraryFromBands(name, orderedCandidates);
+            UUID newId = created != null ? created.getId() : vm.getActiveLibraryId().orElse(null);
+
+            saveFilterState(newId);
+            lastActiveLibraryId = newId;
         });
 
         panel.getLibraryCombo().addActionListener(e -> {
             Object sel = panel.getLibraryCombo().getSelectedItem();
-            if (sel instanceof SpectralLibrary lib) {
-                controller.setActiveLibrary(lib.getId());
+            if (!(sel instanceof SpectralLibrary lib) || lib.getId() == null) {
+                return;
             }
+
+            UUID newId = lib.getId();
+            UUID curId = vm.getActiveLibraryId().orElse(null);
+            if (Objects.equals(curId, newId)) {
+                return;
+            }
+
+            saveFilterState(curId);
+            controller.setActiveLibrary(newId);
+
+            ProductSceneView view = viewProvider.getSelectedProductSceneView();
+            Product product = view != null ? view.getProduct() : null;
+            restoreOrInitFilterState(newId, product);
+
+            lastActiveLibraryId = newId;
         });
     }
 
@@ -370,6 +393,7 @@ public class SpectralLibraryActionBinder {
             }
 
             selectedBandsBySpectrum = selectedBySpec.isEmpty() ? null : Collections.unmodifiableMap(selectedBySpec);
+            saveFilterState(vm.getActiveLibraryId().orElse(null));
         });
     }
 
@@ -816,6 +840,70 @@ public class SpectralLibraryActionBinder {
             }
         }
         return out;
+    }
+
+    private void saveFilterState(UUID libraryId) {
+        if (libraryId == null) {
+            return;
+        }
+        filterStateByLibrary.put(libraryId, new FilterState(copyMapOfSets(selectedBandsBySpectrum), copySet(defaultAxisBandNames)));
+    }
+
+    private void restoreOrInitFilterState(UUID libraryId, Product product) {
+        if (libraryId == null) {
+            selectedBandsBySpectrum = null;
+            defaultAxisBandNames = null;
+            return;
+        }
+
+        FilterState st = filterStateByLibrary.get(libraryId);
+        if (st != null) {
+            selectedBandsBySpectrum = st.selectedBandsBySpectrumOrNull;
+            defaultAxisBandNames = st.defaultAxisBandNamesOrNull;
+            return;
+        }
+
+        selectedBandsBySpectrum = null;
+        defaultAxisBandNames = (product != null) ? SpectralAxisUtils
+                .selectAxisBandsUniqueByWavelength(collectBandsInAutoGroupingOrder(product))
+                .bandNames()
+                : null;
+
+        saveFilterState(libraryId);
+    }
+
+    private static Set<String> copySet(Set<String> in) {
+        if (in == null || in.isEmpty()) {
+            return null;
+        }
+        return Collections.unmodifiableSet(new LinkedHashSet<>(in));
+    }
+
+    private static Map<String, Set<String>> copyMapOfSets(Map<String, Set<String>> in) {
+        if (in == null || in.isEmpty()) {
+            return null;
+        }
+
+        LinkedHashMap<String, Set<String>> out = new LinkedHashMap<>();
+        for (var e : in.entrySet()) {
+            if (e.getKey() == null || e.getKey().isBlank() || e.getValue() == null || e.getValue().isEmpty()) {
+                continue;
+            }
+            out.put(e.getKey(), Collections.unmodifiableSet(new LinkedHashSet<>(e.getValue())));
+        }
+
+        return out.isEmpty() ? null : Collections.unmodifiableMap(out);
+    }
+
+
+    private static final class FilterState {
+        final Map<String, Set<String>> selectedBandsBySpectrumOrNull;
+        final Set<String> defaultAxisBandNamesOrNull;
+
+        FilterState(Map<String, Set<String>> selected, Set<String> axisNames) {
+            this.selectedBandsBySpectrumOrNull = selected;
+            this.defaultAxisBandNamesOrNull = axisNames;
+        }
     }
 }
 
