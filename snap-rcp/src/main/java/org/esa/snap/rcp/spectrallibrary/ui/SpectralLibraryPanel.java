@@ -41,6 +41,8 @@ public class SpectralLibraryPanel extends JPanel {
     private AbstractButton extractAllPinsButton;
     private AbstractButton extractSelectedGeometryButton;
     private AbstractButton filterButton;
+    private final JTextField profilePrefixField = new JTextField("Spectrum_", 18);
+
 
     // status actions
     private final JLabel statusLabel = new JLabel(" ");
@@ -189,6 +191,10 @@ public class SpectralLibraryPanel extends JPanel {
         row0.add(new JLabel("Filter Spectra by bands/band groups: "));
         row0.add(filterButton);
 
+        JPanel row0_1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row0_1.add(new JLabel("Name prefix: "));
+        row0_1.add(profilePrefixField);
+
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row1.add(new JLabel("Extraction Operations: "));
         row1.add(extractAtCursorToggle);
@@ -207,13 +213,14 @@ public class SpectralLibraryPanel extends JPanel {
         header.add(Box.createVerticalStrut(5));
         header.add(row0);
         header.add(Box.createVerticalStrut(5));
+        header.add(row0_1);
+        header.add(Box.createVerticalStrut(5));
         header.add(row1);
         header.add(Box.createVerticalStrut(5));
         header.add(row2);
         header.add(Box.createVerticalStrut(5));
         header.add(row3);
         header.add(Box.createVerticalStrut(5));
-
 
         return header;
     }
@@ -302,6 +309,10 @@ public class SpectralLibraryPanel extends JPanel {
 
     public AbstractButton getFilterButton() {
         return filterButton;
+    }
+
+    public String getProfileNamePrefix() {
+        return profilePrefixField.getText();
     }
 
     // status actions

@@ -20,14 +20,12 @@ import java.time.Instant;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 
 public class SpectralLibraryController {
 
 
     private static final String PROFILE_PREFIX = "Spectrum_";
-    private static final Pattern NAME_PATTERN = Pattern.compile("^Spectrum_(\\d+)$");
     private static final String ATTR_WKT = "wkt";
     private static final String ATTR_PRODUCT_NAME = "product_name";
     private static final String ATTR_DATE_TIME = "time";
@@ -446,13 +444,7 @@ public class SpectralLibraryController {
     }
 
 
-    public void extractPreviewFromPins(Product product,
-                                       SpectralAxis axis,
-                                       String yUnit,
-                                       List<Band> bands,
-                                       List<Placemark> pins,
-                                       int level,
-                                       Set<String> selectedBandNames) {
+    public void extractPreviewFromPins(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<Placemark> pins, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || pins == null) {
             return;
         }
@@ -481,7 +473,8 @@ public class SpectralLibraryController {
                 int px = (int) Math.floor(pin.getPixelPos().getX());
                 int py = (int) Math.floor(pin.getPixelPos().getY());
 
-                String profileName = nextAutoProfileName(libId, out, used);
+                String prefix = normalizePrefix(namePrefix);
+                String profileName = nextAutoProfileName(prefix, libId, out, used, false);
 
                 Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, px, py, level, unit, product.getName());
 
@@ -500,14 +493,7 @@ public class SpectralLibraryController {
         }, "Extracting spectra from pins...");
     }
 
-    public void extractPreviewAtCursor(Product product,
-                                       SpectralAxis axis,
-                                       String yUnit,
-                                       List<Band> bands,
-                                       int x,
-                                       int y,
-                                       int level,
-                                       Set<String> selectedBandNames) {
+    public void extractPreviewAtCursor(Product product, SpectralAxis axis, String yUnit, List<Band> bands, int x, int y, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || bands.isEmpty()) {
             return;
         }
@@ -523,7 +509,8 @@ public class SpectralLibraryController {
             }
 
             Map<UUID, Color> overrides = new HashMap<>();
-            String profileName = nextAutoProfileName(libId, preview, null);
+            String prefix = normalizePrefix(namePrefix);
+            String profileName = nextAutoProfileName(prefix, libId, preview, null, false);
 
             Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, x, y, level, unit, product.getName());
 
@@ -542,13 +529,7 @@ public class SpectralLibraryController {
         }, "Extracting spectrum...");
     }
 
-    public void extractPreviewFromPixels(Product product,
-                                         SpectralAxis axis,
-                                         String yUnit,
-                                         List<Band> bands,
-                                         List<PixelPos> pixels,
-                                         int level,
-                                         Set<String> selectedBandNames) {
+    public void extractPreviewFromPixels(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<PixelPos> pixels, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || pixels == null) {
             return;
         }
@@ -568,7 +549,8 @@ public class SpectralLibraryController {
             String unit = normalizeUnit(yUnit);
             Set<String> used = new HashSet<>();
 
-            String baseName = nextAutoProfileName(libId, out, used);
+            String prefix = normalizePrefix(namePrefix);
+            String baseName = nextAutoProfileName(prefix, libId, out, used, true);
             List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
 
             if (!extractedProfiles.isEmpty()) {
@@ -677,10 +659,22 @@ public class SpectralLibraryController {
         return new SpectralProfile(p.getId(), p.getName(), maskedSig, p.getAttributes(), p.getSourceRef().orElse(null));
     }
 
+    private static String normalizePrefix(String raw) {
+        String p = raw == null ? "" : raw.trim();
+        if (p.isEmpty()) {
+            return PROFILE_PREFIX;
+        }
 
-    private String nextAutoProfileName(UUID libId,
+        p = p.replaceAll("\\s+", "_").replaceAll("[\\\\/:*?\"<>|]", "_");
+        return p.endsWith("_") ? p : (p + "_");
+    }
+
+    private String nextAutoProfileName(String prefix,
+                                       UUID libId,
                                        Collection<SpectralProfile> preview,
-                                       Set<String> reserved) {
+                                       Set<String> reserved,
+                                       boolean isGeometry) {
+        prefix = normalizePrefix(prefix);
 
         Set<String> used = new HashSet<>();
         int max = 0;
@@ -692,7 +686,7 @@ public class SpectralLibraryController {
                     String n = nameOf(p);
                     if (n != null) {
                         used.add(n);
-                        max = Math.max(max, extractAutoIndex(n));
+                        max = Math.max(max, extractAutoIndex(prefix, n));
                     }
                 }
             }
@@ -703,23 +697,25 @@ public class SpectralLibraryController {
                 String n = nameOf(p);
                 if (n != null) {
                     used.add(n);
-                    max = Math.max(max, extractAutoIndex(n));
+                    max = Math.max(max, extractAutoIndex(prefix, n));
                 }
             }
         }
 
         if (reserved != null) {
             for (String n : reserved) {
-                if (n != null && !n.isBlank()) {
-                    used.add(n.trim());
-                }
+                if (n != null && !n.isBlank()) used.add(n.trim());
             }
         }
 
         int next = max + 1;
         String candidate;
         do {
-            candidate = PROFILE_PREFIX + next++;
+            if (isGeometry) {
+                candidate = prefix;
+            } else {
+                candidate = prefix + next++;
+            }
         } while (used.contains(candidate));
 
         if (reserved != null) {
@@ -736,16 +732,26 @@ public class SpectralLibraryController {
         return n.isEmpty() ? null : n;
     }
 
-    private int extractAutoIndex(String name) {
-        if (name == null) {
+    private static int extractAutoIndex(String prefix, String name) {
+        if (prefix == null || name == null) {
             return 0;
         }
-        var m = NAME_PATTERN.matcher(name.trim());
-        if (!m.matches()) {
+        String n = name.trim();
+        if (!n.startsWith(prefix)) {
             return 0;
         }
+
+        int i = prefix.length();
+        int j = i;
+        while (j < n.length() && Character.isDigit(n.charAt(j))) {
+            j++;
+        }
+        if (j == i) {
+            return 0;
+        }
+
         try {
-            return Integer.parseInt(m.group(1));
+            return Integer.parseInt(n.substring(i, j));
         } catch (NumberFormatException e) {
             return 0;
         }

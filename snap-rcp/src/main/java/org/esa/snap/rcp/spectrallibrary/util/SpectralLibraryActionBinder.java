@@ -423,8 +423,9 @@ public class SpectralLibraryActionBinder {
 
         int level = 0;
         List<Placemark> finalPins = pins;
+        final String prefix = panel.getProfileNamePrefix();
         withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
-                -> controller.extractPreviewFromPins(p, axis, unit, bands, finalPins, level, selectedNames));
+                -> controller.extractPreviewFromPins(p, axis, unit, bands, finalPins, level, selectedNames, prefix));
     }
 
     private void attachCursorHooks() {
@@ -484,8 +485,9 @@ public class SpectralLibraryActionBinder {
         }
 
         int level = 0;
+        final String prefix = panel.getProfileNamePrefix();
         withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
-                -> controller.extractPreviewFromPixels(p, axis, unit, bands, allPixels, level, selectedNames));
+                -> controller.extractPreviewFromPixels(p, axis, unit, bands, allPixels, level, selectedNames, prefix));
     }
 
     private void extractCursorOnce() {
@@ -502,8 +504,9 @@ public class SpectralLibraryActionBinder {
         }
 
         int level = (cursorLevel >= 0) ? cursorLevel : ImageLayer.getLevel(view.getRaster().getMultiLevelModel(), view.getViewport());
+        final String prefix = panel.getProfileNamePrefix();
         withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
-                -> controller.extractPreviewAtCursor(p, axis, unit, bands, cursorX, cursorY, level, selectedNames));
+                -> controller.extractPreviewAtCursor(p, axis, unit, bands, cursorX, cursorY, level, selectedNames, prefix));
     }
 
 
