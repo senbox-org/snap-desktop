@@ -249,7 +249,6 @@ public class SpectralLibraryActionBinder {
             }
 
             List<Band> orderedCandidates = collectBandsInAutoGroupingOrder(product);
-            System.out.println("NUM CANDIDATES: " + orderedCandidates.size());
             defaultAxisBandNames = SpectralAxisUtils.selectAxisBandsUniqueByWavelength(orderedCandidates).bandNames();
             selectedBandsBySpectrum = null;
 

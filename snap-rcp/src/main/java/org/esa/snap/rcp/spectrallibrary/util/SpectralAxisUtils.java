@@ -110,7 +110,6 @@ public class SpectralAxisUtils {
         Objects.requireNonNull(bands, "bands must not be null");
         LinkedHashMap<Long, Band> bestByWl = new LinkedHashMap<>();
 
-        System.out.println();
         for (Band b : bands) {
             if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
                 continue;
@@ -120,9 +119,7 @@ public class SpectralAxisUtils {
             long key = Math.round(wl * 1_000_000d);
 
             Band cur = bestByWl.get(key);
-            System.out.println("CURRENT: " + (cur != null ? cur.getName() : "null") );
             if (cur == null || isBetterAxisBand(b, cur)) {
-                System.out.println("PUT BAND: " + b.getName());
                 bestByWl.put(key, b);
             }
         }
