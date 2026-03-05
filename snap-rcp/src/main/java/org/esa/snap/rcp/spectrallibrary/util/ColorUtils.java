@@ -2,12 +2,50 @@ package org.esa.snap.rcp.spectrallibrary.util;
 
 import org.esa.snap.core.datamodel.Placemark;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 
-public class PreviewUtils {
+public class ColorUtils {
+
+
+    public static final Color[] DEFAULT_PALETTE = {
+            new Color(31,119,180), new Color(255,127,14), new Color(44,160,44), new Color(214,39,40),
+            new Color(148,103,189), new Color(140,86,75), new Color(227,119,194), new Color(127,127,127),
+            new Color(188,189,34), new Color(23,190,207)
+    };
+
+
+    public static Color defaultColor(UUID id) {
+        if (id == null) {
+            return UIManager.getColor("Label.disabledForeground");
+        }
+        return ColorUtils.DEFAULT_PALETTE[(id.hashCode() & 0x7fffffff) % ColorUtils.DEFAULT_PALETTE.length];
+    }
+
+    public static Icon makeColorIcon(Color c) {
+        return new Icon() {
+            @Override public int getIconWidth() {
+                return 12;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 12;
+            }
+
+            @Override
+            public void paintIcon(Component comp, Graphics g, int x, int y) {
+                g.setColor(Color.DARK_GRAY);
+                g.drawRect(x, y, 11, 11);
+                g.setColor(c);
+                g.fillRect(x + 1, y + 1, 10, 10);
+            }
+        };
+    }
 
 
     public static Color colorFromPlacemark(Placemark pm) {

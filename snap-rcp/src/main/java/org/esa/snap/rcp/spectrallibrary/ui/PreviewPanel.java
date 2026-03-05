@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.spectrallibrary.ui;
 
+import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYTitleAnnotation;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 
 public class PreviewPanel extends JPanel {
 
+
     private final XYSeriesCollection dataset = new XYSeriesCollection();
     private final JFreeChart chart = ChartFactory.createXYLineChart("Preview", "Wavelength / Index", "Value", dataset, PlotOrientation.VERTICAL, true, true, false);
 
@@ -50,12 +52,7 @@ public class PreviewPanel extends JPanel {
 
     private XYTitleAnnotation busyAnnotation;
 
-    private static final Color[] DEFAULT_PALETTE = {
-            new Color(31,119,180), new Color(255,127,14), new Color(44,160,44), new Color(214,39,40),
-            new Color(148,103,189), new Color(140,86,75), new Color(227,119,194), new Color(127,127,127),
-            new Color(188,189,34), new Color(23,190,207)
-    };
-    private final Map<UUID, Paint> paintByProfileId = new HashMap<>();
+    private final Map<UUID, Paint> basePaintById = new HashMap<>();
 
     private final DefaultListModel<LegendEntry> legendModel = new DefaultListModel<>();
     private final JList<LegendEntry> legendList = new JList<>(legendModel);
@@ -92,7 +89,7 @@ public class PreviewPanel extends JPanel {
             if (entry != null) {
                 Paint p = getOrCreatePaint(entry.id());
                 Color c = (p instanceof Color cc) ? cc : Color.GRAY;
-                l.setIcon(makeColorIcon(c));
+                l.setIcon(ColorUtils.makeColorIcon(c));
             }
             return l;
         });
@@ -144,29 +141,9 @@ public class PreviewPanel extends JPanel {
         applyHighlight();
     }
 
-    public List<SpectralProfile> getProfilesSnapshot() {
-        return new ArrayList<>(profiles);
-    }
-
     public void setSelectedProfileId(UUID id) {
         this.selectedProfileId = id;
         applyHighlight();
-    }
-
-    public UUID getSelectedProfileId() {
-        return selectedProfileId;
-    }
-
-    public List<SpectralProfile> getSelectedProfiles() {
-        if (selectedProfileId == null) {
-            return List.of();
-        }
-        for (SpectralProfile p : profiles) {
-            if (selectedProfileId.equals(p.getId())) {
-                return List.of(p);
-            }
-        }
-        return List.of();
     }
 
     public void clear() {
@@ -411,45 +388,26 @@ public class PreviewPanel extends JPanel {
         return base;
     }
 
-    public void applyProfilePaints(Map<UUID, ? extends Paint> paints) {
-        if (paints == null || paints.isEmpty()) {
-            return;
+    public void setProfilePaints(Map<UUID, ? extends Paint> paints) {
+        basePaintById.clear();
+        if (paints != null && !paints.isEmpty()) {
+            basePaintById.putAll(paints);
         }
-
-        paintByProfileId.putAll(paints);
         applyHighlight();
     }
 
     private Paint getOrCreatePaint(UUID id) {
         if (id == null) {
-            return Color.GRAY;
+            return Color.BLUE;
         }
 
-        return paintByProfileId.computeIfAbsent(id, pid ->
-                DEFAULT_PALETTE[(pid.hashCode() & 0x7fffffff) % DEFAULT_PALETTE.length]
-        );
+        Paint p = basePaintById.get(id);
+        if (p != null) {
+            return p;
+        }
+        return ColorUtils.DEFAULT_PALETTE[(id.hashCode() & 0x7fffffff) % ColorUtils.DEFAULT_PALETTE.length];
     }
 
-    private static Icon makeColorIcon(Color c) {
-        return new Icon() {
-            @Override public int getIconWidth() {
-                return 12;
-            }
-
-            @Override
-            public int getIconHeight() {
-                return 12;
-            }
-
-            @Override
-            public void paintIcon(Component comp, Graphics g, int x, int y) {
-                g.setColor(Color.DARK_GRAY);
-                g.drawRect(x, y, 11, 11);
-                g.setColor(c);
-                g.fillRect(x + 1, y + 1, 10, 10);
-            }
-        };
-    }
 
     private void updateLegendModel() {
         legendModel.clear();

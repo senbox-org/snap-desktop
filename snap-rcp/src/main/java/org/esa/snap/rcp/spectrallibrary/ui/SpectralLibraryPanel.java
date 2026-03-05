@@ -7,6 +7,8 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 
 
@@ -30,6 +32,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton removeSelectedProfilesButton = new JButton("Remove Selected Profiles");
     private final JButton previewSelectedProfilesButton = new JButton("Preview Selected Profiles");
     private final JButton addAttributeButton = new JButton("Add Attribute...");
+    private final JButton changePreviewColorButton = new JButton("Set Preview Color for Selected Profiles...");
 
     // preview actions
     private final PreviewPanel previewPanel = new PreviewPanel();
@@ -140,15 +143,24 @@ public class SpectralLibraryPanel extends JPanel {
     private JComponent buildLibraryTablePanel() {
         libraryTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         libraryTable.setAutoCreateRowSorter(false);
+        installColorColumnRenderer();
 
         JPanel tablePanel = new JPanel(new BorderLayout(4, 4));
         tablePanel.setBorder(BorderFactory.createTitledBorder("Library Profiles"));
 
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        header.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        header.add(previewSelectedProfilesButton);
-        header.add(removeSelectedProfilesButton);
-        header.add(addAttributeButton);
+        JPanel header1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JPanel header2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        header1.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
+        header2.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
+        header1.add(removeSelectedProfilesButton);
+        header1.add(addAttributeButton);
+        header2.add(previewSelectedProfilesButton);
+        header2.add(changePreviewColorButton);
+
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.add(header1);
+        header.add(header2);
 
         tablePanel.add(header, BorderLayout.NORTH);
         tablePanel.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
@@ -279,6 +291,9 @@ public class SpectralLibraryPanel extends JPanel {
     public JButton getAddAttributeButton() {
         return addAttributeButton;
     }
+    public JButton getChangePreviewColorButton() {
+        return changePreviewColorButton;
+    }
 
     // preview actions
     public PreviewPanel getPreviewPanel() {
@@ -318,5 +333,59 @@ public class SpectralLibraryPanel extends JPanel {
     // status actions
     public JLabel getStatusLabel() {
         return statusLabel;
+    }
+
+
+
+    public void installColorColumnRenderer() {
+        int modelIdx = libraryTableModel.getColorColumnIndex();
+        int viewIdx = libraryTable.convertColumnIndexToView(modelIdx);
+        if (viewIdx < 0) {
+            return;
+        }
+
+        TableColumn col = libraryTable.getColumnModel().getColumn(viewIdx);
+        col.setCellRenderer(new ColorSwatchRenderer());
+        col.setMaxWidth(70);
+        col.setPreferredWidth(70);
+        col.setResizable(false);
+    }
+
+
+    private static final class ColorSwatchRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            JLabel l = (JLabel) super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
+            l.setHorizontalAlignment(SwingConstants.CENTER);
+
+            Color c = (value instanceof Color cc) ? cc : null;
+            l.setIcon(new ColorIcon(c != null ? c : UIManager.getColor("Label.disabledForeground")));
+            return l;
+        }
+    }
+
+    private static final class ColorIcon implements Icon {
+        private final Color c;
+
+        ColorIcon(Color c) {
+            this.c = c;
+        }
+
+        @Override public int getIconWidth()  {
+            return 18;
+        }
+        @Override public int getIconHeight() {
+            return 12;
+        }
+
+        @Override
+        public void paintIcon(Component comp, Graphics g, int x, int y) {
+            g.setColor(Color.DARK_GRAY);
+            g.drawRect(x, y, getIconWidth() - 1, getIconHeight() - 1);
+            g.setColor(c != null ? c : Color.GRAY);
+            g.fillRect(x + 1, y + 1, getIconWidth() - 2, getIconHeight() - 2);
+        }
     }
 }

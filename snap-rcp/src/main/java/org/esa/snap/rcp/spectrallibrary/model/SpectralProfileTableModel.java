@@ -1,32 +1,43 @@
 package org.esa.snap.rcp.spectrallibrary.model;
 
+import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
 import org.esa.snap.speclib.model.AttributeSchema;
 import org.esa.snap.speclib.model.AttributeType;
 import org.esa.snap.speclib.model.AttributeValue;
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 public class SpectralProfileTableModel extends AbstractTableModel {
 
 
-    private static final int COL_NAME = 0;
-    private static final int COL_SAMPLES = 1;
+    private static final int COL_COLOR = 0;
+    private static final int COL_NAME = 1;
+    private static final int COL_SAMPLES = 2;
 
-    private final List<String> baseColumns = List.of("Name", "Samples");
+    private final List<String> baseColumns = List.of("Color", "Name", "Samples");
     private List<String> attributeKeys = List.of();
     private List<SpectralProfile> profiles = List.of();
 
     private AttributeSchema schema;
     private ProfileEditHandler editHandler;
 
+    private Map<UUID, Color> profileColors = Map.of();
+
 
     public void setProfiles(List<SpectralProfile> profiles) {
         this.profiles = profiles == null ? List.of() : profiles;
         fireTableDataChanged();
+    }
+
+    public int getColorColumnIndex() {
+        return COL_COLOR;
     }
 
     public SpectralProfile getAt(int row) {
@@ -79,6 +90,11 @@ public class SpectralProfileTableModel extends AbstractTableModel {
     public Object getValueAt(int row, int col) {
         SpectralProfile p = profiles.get(row);
 
+        if (col == COL_COLOR) {
+            UUID id = (p != null) ? p.getId() : null;
+            Color c = (id != null) ? profileColors.get(id) : null;
+            return (c != null) ? c : ColorUtils.defaultColor(id);
+        }
         if (col == COL_NAME) {
             return p.getName();
         }
@@ -101,11 +117,15 @@ public class SpectralProfileTableModel extends AbstractTableModel {
             return;
         }
 
-        if (columnIndex == 0) {
+        if (columnIndex == COL_NAME) {
             String nn = String.valueOf(aValue).trim();
             if (!nn.isEmpty()) {
                 editHandler.rename(p.getId(), nn);
             }
+            return;
+        }
+
+        if (columnIndex < baseColumns.size()) {
             return;
         }
 
@@ -117,10 +137,13 @@ public class SpectralProfileTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int col) {
-        if (col == 1) {
+        if (col == COL_COLOR) {
+            return Color.class;
+        }
+        if (col == COL_SAMPLES) {
             return Integer.class;
         }
-        if (col >= 2) {
+        if (col >= baseColumns.size()) {
             String key = attributeKeys.get(col - baseColumns.size());
             AttributeType t = schema != null && schema.find(key).isPresent() ? schema.find(key).get().getType() : AttributeType.STRING;
             if (t == AttributeType.BOOLEAN) {
@@ -140,9 +163,22 @@ public class SpectralProfileTableModel extends AbstractTableModel {
     }
 
 
+    public void setProfileColors(Map<UUID, Color> colors) {
+        this.profileColors = (colors == null) ? Map.of() : Map.copyOf(colors);
+        if (getRowCount() > 0) {
+            fireTableRowsUpdated(0, getRowCount() - 1);
+        } else {
+            fireTableDataChanged();
+        }
+    }
+
+
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex != 1;
+        if (columnIndex == COL_COLOR || columnIndex == COL_SAMPLES) {
+            return false;
+        }
+        return true;
     }
 
 

@@ -21,13 +21,12 @@ import org.esa.snap.ui.product.spectrum.SpectrumBand;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.AffineTransformation;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -112,6 +111,7 @@ public class SpectralLibraryActionBinder {
 
     public void bind() {
         wireToolbarBasics();
+        wireProfileColorButton();
         wireTableEditing();
         wireImportExport();
         wireExtraction();
@@ -252,8 +252,8 @@ public class SpectralLibraryActionBinder {
 
             saveFilterState(lastActiveLibraryId != null ? lastActiveLibraryId : vm.getActiveLibraryId().orElse(null));
 
-            List<Band> orderedCandidates = collectBandsInAutoGroupingOrder(product);
-            defaultAxisBandNames = SpectralAxisUtils.selectAxisBandsUniqueByWavelength(orderedCandidates).bandNames();
+            List<Band> orderedCandidates = SpectralLibraryUtils.collectBandsInAutoGroupingOrder(product);
+            defaultAxisBandNames = SpectralLibraryUtils.selectAxisBandsUniqueByWavelength(orderedCandidates).bandNames();
             selectedBandsBySpectrum = null;
 
             SpectralLibrary created = controller.createLibraryFromBands(name, orderedCandidates);
@@ -283,6 +283,45 @@ public class SpectralLibraryActionBinder {
             restoreOrInitFilterState(newId, product);
 
             lastActiveLibraryId = newId;
+        });
+    }
+
+    private void wireProfileColorButton() {
+        panel.getChangePreviewColorButton().addActionListener(e -> {
+            UUID libId = vm.getActiveLibraryId().orElse(null);
+            if (libId == null) {
+                vm.setStatus(UiStatus.warn("No active library"));
+                return;
+            }
+
+            int[] viewRows = panel.getLibraryTable().getSelectedRows();
+            if (viewRows == null || viewRows.length == 0) {
+                vm.setStatus(UiStatus.warn("No profiles selected"));
+                return;
+            }
+
+            UUID firstId = panel.getLibraryTableModel().getIdAt(panel.getLibraryTable().convertRowIndexToModel(viewRows[0]));
+            Color initial = vm.getProfileColors(libId).get(firstId);
+            if (initial == null) {
+                initial = Color.BLUE;
+            }
+
+            Color chosen = JColorChooser.showDialog(panel, "Choose Preview Color", initial);
+            if (chosen == null) {
+                return;
+            }
+
+            Map<UUID, Color> updates = new HashMap<>();
+            for (int vr : viewRows) {
+                int mr = panel.getLibraryTable().convertRowIndexToModel(vr);
+                UUID pid = panel.getLibraryTableModel().getIdAt(mr);
+                if (pid != null) {
+                    updates.put(pid, chosen);
+                }
+            }
+
+            vm.setProfileColors(libId, updates);
+            vm.setStatus(UiStatus.info("Preview color set (" + updates.size() + ")"));
         });
     }
 
@@ -476,7 +515,7 @@ public class SpectralLibraryActionBinder {
         List<PixelPos> allPixels = new ArrayList<>();
         for (SimpleFeatureFigure f : geometries) {
             Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
-            List<PixelPos> pixels = pixelsFromGeometry(view, geometry);
+            List<PixelPos> pixels = SpectralLibraryUtils.pixelsFromGeometry(view, geometry);
             allPixels.addAll(pixels);
         }
 
@@ -676,43 +715,6 @@ public class SpectralLibraryActionBinder {
     }
 
 
-    private static List<PixelPos> pixelsFromGeometry(ProductSceneView view, Geometry modelGeom) {
-        if (modelGeom == null || modelGeom.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        AffineTransform m2i = view.getBaseImageLayer().getModelToImageTransform();
-        AffineTransformation jtsTx = new AffineTransformation(
-                m2i.getScaleX(), m2i.getShearX(), m2i.getTranslateX(),
-                m2i.getShearY(), m2i.getScaleY(), m2i.getTranslateY()
-        );
-
-        Geometry pixGeom = jtsTx.transform(modelGeom);
-
-        Envelope env = pixGeom.getEnvelopeInternal();
-        int minX = (int) Math.floor(env.getMinX());
-        int maxX = (int) Math.ceil (env.getMaxX());
-        int minY = (int) Math.floor(env.getMinY());
-        int maxY = (int) Math.ceil (env.getMaxY());
-
-        int w = view.getBaseImageLayer().getImage().getWidth();
-        int h = view.getBaseImageLayer().getImage().getHeight();
-        minX = Math.max(0, minX); minY = Math.max(0, minY);
-        maxX = Math.min(w - 1, maxX); maxY = Math.min(h - 1, maxY);
-
-        GeometryFactory gf = pixGeom.getFactory();
-        ArrayList<PixelPos> pixels = new ArrayList<>();
-
-        for (int y = minY; y <= maxY; y++) {
-            for (int x = minX; x <= maxX; x++) {
-                Point p = gf.createPoint(new Coordinate(x, y));
-                if (pixGeom.covers(p)) {
-                    pixels.add(new PixelPos(x, y));
-                }
-            }
-        }
-        return pixels;
-    }
 
     private void doImport() {
         JFileChooser fileChooser = new JFileChooser();
@@ -792,15 +794,15 @@ public class SpectralLibraryActionBinder {
         }
 
         List<Band> bands = BandSelectionUtils.getSpectralBands(product, axisNames);
-        bands = SpectralAxisUtils.sortSpectralBandsByWavelength(bands);
+        bands = SpectralLibraryUtils.sortSpectralBandsByWavelength(bands);
         if (bands.isEmpty()) {
             vm.setStatus(UiStatus.warn("No spectral bands in axis selection"));
             return;
         }
 
-        SpectralAxis axis = SpectralAxisUtils.axisFromOrderedBands(bands);
+        SpectralAxis axis = SpectralLibraryUtils.axisFromOrderedBands(bands);
 
-        String unitToUse = Optional.ofNullable(SpectralAxisUtils.defaultYUnitFromBands(bands))
+        String unitToUse = Optional.ofNullable(SpectralLibraryUtils.defaultYUnitFromBands(bands))
                 .filter(u -> !u.isBlank())
                 .orElse(lib.getDefaultYUnit().orElse(DEFAULT_Y_UNIT));
 
@@ -810,46 +812,14 @@ public class SpectralLibraryActionBinder {
     private Set<String> getAllowedBands(Product product) {
         return defaultAxisBandNames != null
                 ? defaultAxisBandNames
-                : SpectralAxisUtils.selectAxisBandsUniqueByWavelength(Arrays.asList(product.getBands())).bandNames();
-    }
-
-    private static List<Band> collectBandsInAutoGroupingOrder(Product product) {
-        List<Band> out = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-
-        var auto = product.getAutoGrouping();
-        if (auto != null) {
-            Iterator<String[]> it = auto.iterator();
-            while (it.hasNext()) {
-                String[] group = it.next();
-                if (group == null) {
-                    continue;
-                }
-                for (String bn : group) {
-                    if (bn == null) {
-                        continue;
-                    }
-                    Band b = product.getBand(bn);
-                    if (b != null && seen.add(bn)) {
-                        out.add(b);
-                    }
-                }
-            }
-        }
-
-        for (Band b : product.getBands()) {
-            if (b != null && b.getName() != null && seen.add(b.getName())) {
-                out.add(b);
-            }
-        }
-        return out;
+                : SpectralLibraryUtils.selectAxisBandsUniqueByWavelength(Arrays.asList(product.getBands())).bandNames();
     }
 
     private void saveFilterState(UUID libraryId) {
         if (libraryId == null) {
             return;
         }
-        filterStateByLibrary.put(libraryId, new FilterState(copyMapOfSets(selectedBandsBySpectrum), copySet(defaultAxisBandNames)));
+        filterStateByLibrary.put(libraryId, new FilterState(SpectralLibraryUtils.copyMapOfSets(selectedBandsBySpectrum), SpectralLibraryUtils.copySet(defaultAxisBandNames)));
     }
 
     private void restoreOrInitFilterState(UUID libraryId, Product product) {
@@ -867,35 +837,12 @@ public class SpectralLibraryActionBinder {
         }
 
         selectedBandsBySpectrum = null;
-        defaultAxisBandNames = (product != null) ? SpectralAxisUtils
-                .selectAxisBandsUniqueByWavelength(collectBandsInAutoGroupingOrder(product))
+        defaultAxisBandNames = (product != null) ? SpectralLibraryUtils
+                .selectAxisBandsUniqueByWavelength(SpectralLibraryUtils.collectBandsInAutoGroupingOrder(product))
                 .bandNames()
                 : null;
 
         saveFilterState(libraryId);
-    }
-
-    private static Set<String> copySet(Set<String> in) {
-        if (in == null || in.isEmpty()) {
-            return null;
-        }
-        return Collections.unmodifiableSet(new LinkedHashSet<>(in));
-    }
-
-    private static Map<String, Set<String>> copyMapOfSets(Map<String, Set<String>> in) {
-        if (in == null || in.isEmpty()) {
-            return null;
-        }
-
-        LinkedHashMap<String, Set<String>> out = new LinkedHashMap<>();
-        for (var e : in.entrySet()) {
-            if (e.getKey() == null || e.getKey().isBlank() || e.getValue() == null || e.getValue().isEmpty()) {
-                continue;
-            }
-            out.put(e.getKey(), Collections.unmodifiableSet(new LinkedHashSet<>(e.getValue())));
-        }
-
-        return out.isEmpty() ? null : Collections.unmodifiableMap(out);
     }
 
 
