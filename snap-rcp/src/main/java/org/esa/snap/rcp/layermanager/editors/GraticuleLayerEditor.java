@@ -64,14 +64,15 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-
-        PropertyDescriptor modePd = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MODE_KEY, String.class);
-        modePd.setDefaultValue(GraticuleLayerType.PROPERTY_MODE_DEFAULT);
-        modePd.setValueSet(new ValueSet(GraticuleLayerType.getModeOptionsArray()));
-        modePd.setDisplayName(GraticuleLayerType.PROPERTY_MODE_LABEL);
-        modePd.setDescription(GraticuleLayerType.PROPERTY_MODE_TOOLTIP);
-        modePd.setDefaultConverter();
-        addPropertyDescriptor(modePd);
+// todo TEMP disabling for release as this is not ready
+        
+//        PropertyDescriptor modePd = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MODE_KEY, String.class);
+//        modePd.setDefaultValue(GraticuleLayerType.PROPERTY_MODE_DEFAULT);
+//        modePd.setValueSet(new ValueSet(GraticuleLayerType.getModeOptionsArray()));
+//        modePd.setDisplayName(GraticuleLayerType.PROPERTY_MODE_LABEL);
+//        modePd.setDescription(GraticuleLayerType.PROPERTY_MODE_TOOLTIP);
+//        modePd.setDefaultConverter();
+//        addPropertyDescriptor(modePd);
 
 
         // Grid Spacing Section
@@ -134,18 +135,18 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(numMinorStepsCylindricalPD);
 
 
-        PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_KEY, Double.class);
-        tolerancePD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT);
-        tolerancePD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_LABEL);
-        tolerancePD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_TOOLTIP);
+        PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_KEY, Double.class);
+        tolerancePD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_DEFAULT);
+        tolerancePD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_LABEL);
+        tolerancePD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_TOOLTIP);
         tolerancePD.setValueRange(new ValueRange(0, 100));
         tolerancePD.setDefaultConverter();
         addPropertyDescriptor(tolerancePD);
 
-        PropertyDescriptor toleranceCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY, Double.class);
-        toleranceCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT);
-        toleranceCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_LABEL);
-        toleranceCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TOOLTIP);
+        PropertyDescriptor toleranceCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_KEY, Double.class);
+        toleranceCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_DEFAULT);
+        toleranceCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_LABEL);
+        toleranceCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_TOOLTIP);
         toleranceCylindricalPD.setValueRange(new ValueRange(0, 100));
         toleranceCylindricalPD.setDefaultConverter();
         addPropertyDescriptor(toleranceCylindricalPD);
