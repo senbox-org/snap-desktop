@@ -279,13 +279,14 @@ public class ExportImageAction extends AbstractExportImageAction {
 
         final BufferedImage bufferedImage = new BufferedImage(dimension.width, dimension.height, imageType);
 
-        final BufferedImageRendering imageRendering = createRendering(view, fullScene, geoReferenced, bufferedImage);
-        if (!alphaChannel) {
-            final Graphics2D graphics = imageRendering.getGraphics();
-            graphics.setColor(view.getLayerCanvas().getBackground());
-            graphics.fillRect(0, 0, dimension.width, dimension.height);
+        try (final BufferedImageRendering imageRendering = createRendering(view, fullScene, geoReferenced, bufferedImage)) {
+            if (!alphaChannel) {
+                final Graphics2D graphics = imageRendering.getGraphics();
+                graphics.setColor(view.getLayerCanvas().getBackground());
+                graphics.fillRect(0, 0, dimension.width, dimension.height);
+            }
+            view.getRootLayer().render(imageRendering);
         }
-        view.getRootLayer().render(imageRendering);
 
         return bufferedImage;
     }
