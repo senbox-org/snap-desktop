@@ -156,7 +156,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         String msg;
         if (t instanceof OperatorCancelException) {
             msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
             showErrorDialog(msg);
 
             return;
@@ -164,10 +164,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product initialisation.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during the target product initialisation.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -181,10 +181,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
         if (isInternalException(t)) {
             msg = MessageFormat.format("An internal error occurred during the target product processing.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         } else {
             msg = MessageFormat.format("A problem occurred during the target product processing.\n{0}",
-                                       formatThrowable(t));
+                    formatThrowable(t));
         }
         appContext.handleError(msg, t);
     }
@@ -195,8 +195,8 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
 
     private String formatThrowable(Throwable t) {
         return MessageFormat.format("Type: {0}\nMessage: {1}\n",
-                                    t.getClass().getSimpleName(),
-                                    t.getMessage());
+                t.getClass().getSimpleName(),
+                t.getMessage());
     }
 
     protected boolean canApply() {
@@ -216,7 +216,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productName, appContext.getApplicationName()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
+                        getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -231,7 +231,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         productFile.getPath()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
-                                                                 getTitle(), JOptionPane.YES_NO_OPTION);
+                        getTitle(), JOptionPane.YES_NO_OPTION);
                 if (answer != JOptionPane.YES_OPTION) {
                     return false;
                 }
@@ -329,8 +329,20 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             pm.beginTask("Writing...", model.isOpenInAppSelected() ? 100 : 95);
             saveTime = 0L;
             Product product = null;
+
+            // Keep a stable reference for unpinning in finally even if targetProduct becomes null later.
+            final Product pinnedProduct = this.targetProduct;
+            boolean pinned = false;
+
             try {
                 long t0 = System.currentTimeMillis();
+
+                //pin the product to prevent premature disposal in the OperatorContext.dispose() method
+                if (pinnedProduct != null) {
+                    appContext.getProductManager().addProduct(pinnedProduct);
+                    pinned = true;
+                }
+
                 Operator execOp = null;
                 if (targetProduct.getProductReader() instanceof OperatorProductReader) {
                     final OperatorProductReader opReader = (OperatorProductReader) targetProduct.getProductReader();
@@ -339,6 +351,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                         execOp = operator;
                     }
                 }
+
                 if (execOp == null) {
                     WriteOp writeOp = new WriteOp(targetProduct, model.getProductFile(), model.getFormatName());
                     writeOp.setDeleteOutputOnFailure(true);
@@ -351,6 +364,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                 executor.execute(SubProgressMonitor.create(pm, 95));
 
                 saveTime = System.currentTimeMillis() - t0;
+
                 if (model.isOpenInAppSelected()) {
                     File targetFile = model.getProductFile();
                     if (!targetFile.exists())
@@ -364,6 +378,12 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                 }
             } finally {
                 pm.done();
+
+                // Use pinnedProduct, not targetProduct, because targetProduct may be null now.
+                if (pinned && pinnedProduct != null) {
+                    appContext.getProductManager().removeProduct(pinnedProduct);
+                }
+                // Dispose processing product if still present (e.g., when not opening in app, or if read failed).
                 if (targetProduct != null) {
                     targetProduct.dispose();
                     targetProduct = null;
@@ -373,6 +393,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
+
             return product;
         }
 
@@ -380,10 +401,13 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         protected void done() {
             final TargetProductSelectorModel model = getTargetProductSelector().getModel();
             long totalSaveTime = saveTime + createTargetProductTime;
+
             try {
                 final Product targetProduct = get();
                 if (model.isOpenInAppSelected()) {
-                    appContext.getProductManager().addProduct(targetProduct);
+                    if (targetProduct != null) {
+                        appContext.getProductManager().addProduct(targetProduct);
+                    }
                     showSaveAndOpenInAppInfo(totalSaveTime);
                 } else {
                     showSaveInfo(totalSaveTime);
