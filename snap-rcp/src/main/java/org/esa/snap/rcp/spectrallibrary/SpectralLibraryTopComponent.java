@@ -19,11 +19,11 @@ import java.awt.*;
 
 
 @TopComponent.Description(
-        preferredID = "SpectralLibraryTopComponent",
+        preferredID = "SpectralLibraryTopComponent2",
         iconBase = "org/esa/snap/rcp/icons/Spectrum.gif"
 )
-@TopComponent.Registration(mode = "Spectrum", openAtStartup = false, position = 85)
-@ActionID(category = "Window", id = "org.esa.snap.rcp.spectrallibrary.SpectralLibraryTopComponent")
+@TopComponent.Registration(mode = "SpectralLibrary", openAtStartup = false, position = 85)
+@ActionID(category = "Window", id = "org.esa.snap.rcp.spectrallibrary.SpectralLibraryTopComponent2")
 @ActionReferences({
         @ActionReference(path = "Menu/Optical", position = 1),
         @ActionReference(path = "Menu/View/Tool Windows"),
@@ -31,7 +31,7 @@ import java.awt.*;
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_SpectralLibraryTopComponent_Name",
-        preferredID = "SpectralLibraryTopComponent"
+        preferredID = "SpectralLibraryTopComponent2"
 )
 @NbBundle.Messages({
         "CTL_SpectralLibraryTopComponent_Name=Spectral Library",
