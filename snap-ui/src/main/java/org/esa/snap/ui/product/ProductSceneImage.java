@@ -48,7 +48,6 @@ import org.esa.snap.core.layer.ProductLayerContext;
 import org.esa.snap.core.layer.RasterImageLayerType;
 import org.esa.snap.core.layer.RgbImageLayerType;
 import org.esa.snap.core.util.PropertyMap;
-import org.esa.snap.ui.PackageDefaults;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -836,14 +835,14 @@ public class ProductSceneImage implements ProductLayerContext {
                 GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TOLERANCE_KEY,
-                GraticuleLayerType.PROPERTY_TOLERANCE_DEFAULT,
-                GraticuleLayerType.PROPERTY_TOLERANCE_TYPE);
+                GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_KEY,
+                GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_DEFAULT,
+                GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
-                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_KEY,
-                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_DEFAULT,
-                GraticuleLayerType.PROPERTY_TOLERANCE_CYLINDRICAL_TYPE);
+                GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_KEY,
+                GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_DEFAULT,
+                GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_TYPE);
 
         addPropertyToLayerConfiguration(configuration, layer,
                 GraticuleLayerType.PROPERTY_AUTO_SPACING_LAT_GLOBAL_KEY,
