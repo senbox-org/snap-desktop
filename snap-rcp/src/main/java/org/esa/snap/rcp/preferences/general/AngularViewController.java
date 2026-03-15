@@ -60,6 +60,11 @@ public final class AngularViewController extends DefaultConfigController {
 
     private static final String PROPERTY_ROOT_KEY = "angular.view";
 
+    public static final String PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.range_domain.section";
+    public static final String PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_LABEL = "Plot Range & Domain";
+    public static final String PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_TOOLTIP = "Sets plot range and domain";
+
+
     public static final String PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_KEY = PROPERTY_ROOT_KEY + ".xaxis.set.bounds";
     public static final String PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_LABEL = "Set Bounds X-Axis";
     public static final String PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_TOOLTIP = "Sets bounds of x-axis (uses X-Axis Min and X-Axis Max)";
@@ -90,6 +95,14 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_YAXIS_MAX_LABEL = "Y-Axis Max";
     public static final String PROPERTY_ANGULAR_VIEW_YAXIS_MAX_TOOLTIP = "Sets maximum bound of x-axis (blank entry uses auto-bounding to data)";
     public static String PROPERTY_ANGULAR_VIEW_YAXIS_MAX_DEFAULT = "";
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.graphics.section";
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_LABEL = "Plot Graphics";
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_TOOLTIP = "Sets formatting of plot graphics";
+
+
 
     public static final String PROPERTY_ANGULAR_VIEW_TITLE_KEY = PROPERTY_ROOT_KEY + ".plot.title";
     public static final String PROPERTY_ANGULAR_VIEW_TITLE_LABEL = "Plot Title";
@@ -128,6 +141,239 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_TOOLTIP = "show plot gridlines";
     public static boolean PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_DEFAULT = true;
 
+
+
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_LABEL = "Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector)";
+    public static String PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_LABEL = "Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector)";
+    public static String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_LABEL = "Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size";
+    public static String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT_INT = 3;
+
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.color";
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_LABEL = "Plot Color";
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 1";
+    public static Color PROPERTY_ANGULAR_VIEW_PLOT_COLOR_DEFAULT = Color.BLACK;
+    
+    
+    
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.group1.section";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_LABEL = "Plot Graphics: Group 1";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 1";
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group1.wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_LABEL = "Group 1 - Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 1<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT = 440.0;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group1.tolerance";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_LABEL = "Group 1 - Tolerance (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 1<br>Matches for wavelength +/- tolerance</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT = 5;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group1.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_LABEL = "Group 1 - Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector) for Group 1";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group1.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_LABEL = "Group 1 - Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector) for Group 1";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.group1.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_LABEL = "Group 1 - Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size for Group 1";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT_INT = 3;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group1.color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_LABEL = "Group 1 - Plot Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 1";
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT = Color.BLUE;
+
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.group2.section";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_LABEL = "Plot Graphics: Group 2";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 2";
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group2.wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_LABEL = "Group 2 - Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 2<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT = 549.0;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group2.tolerance";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_LABEL = "Group 2 - Tolerance (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 2<br>Matches for wavelength +/- tolerance</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT = 5;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group2.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_LABEL = "Group 2 - Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector) for Group 2";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group2.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_LABEL = "Group 2 - Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector) for Group 2";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.group2.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_LABEL = "Group 2 - Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size for Group 2";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT_INT = 3;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group2.color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_LABEL = "Group2 (549nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 2";
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT = new Color(0,180,0);;
+
+
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.group3.section";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_LABEL = "Plot Graphics: Group 3";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 3";
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group3.wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_LABEL = "Group 3 - Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 3<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT = 664.0;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group3.tolerance";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_LABEL = "Group 3 - Tolerance (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 3<br>Matches for wavelength +/- tolerance</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT = 5;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group3.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_LABEL = "Group 3 - Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector) for Group 3";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group3.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_LABEL = "Group 3 - Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector) for Group 3";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.group3.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_LABEL = "Group 3 - Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size for Group 3";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT_INT = 3;
+    
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group3.color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_LABEL = "Group3 (664nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 3";
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT = Color.RED ;
+
+
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.group4.section";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_LABEL = "Plot Graphics: Group 4";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 4";
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group4.wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_LABEL = "Group 4 - Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 4<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT = 865.0;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group4.tolerance";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_LABEL = "Group 4 - Tolerance (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 4<br>Matches for wavelength +/- tolerance</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT = 5;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group4.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_LABEL = "Group 4 - Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector) for Group 4";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group4.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_LABEL = "Group 4 - Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector) for Group 4";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.group4.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_LABEL = "Group 4 - Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size for Group 4";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT_INT = 3;
+    
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group4.color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_LABEL = "Group4 (865nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 4";
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT = Color.BLACK;
+
+
+
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.group5.section";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_LABEL = "Plot Graphics: Group 5";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 5";
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group5.wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_LABEL = "Group 5 - Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT = -1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group5.tolerance";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_LABEL = "Group 5 - Tolerance (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 5<br>Matches for wavelength +/- tolerance</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT = 5;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group5.line_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_LABEL = "Group 5 - Plot Line Type (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector) for Group 5";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group5.symbol_index";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_LABEL = "Group 5 - Plot Symbol (Index)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector) for Group 5";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT = "1";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT_INT = 1;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.group5.symbol_size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_LABEL = "Group 5 - Plot Symbol Size";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size for Group 5";
+    public static String PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT = "3";
+    public static int PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT_INT = 3;
+
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group5.color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_LABEL = "Group 5 - Plot Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 5";
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT = Color.BLACK;
+    
+    
+
+
     // Restore to defaults
 
 
@@ -159,6 +405,8 @@ public final class AngularViewController extends DefaultConfigController {
     protected JPanel createPanel(BindingContext context) {
 
 
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_KEY, true);
+
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_KEY, PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_XAXIS_MIN_KEY, PROPERTY_ANGULAR_VIEW_XAXIS_MIN_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_XAXIS_MAX_KEY, PROPERTY_ANGULAR_VIEW_XAXIS_MAX_DEFAULT);
@@ -166,7 +414,10 @@ public final class AngularViewController extends DefaultConfigController {
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_YAXIS_SET_BOUNDS_KEY, PROPERTY_ANGULAR_VIEW_YAXIS_SET_BOUNDS_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_YAXIS_MIN_KEY, PROPERTY_ANGULAR_VIEW_YAXIS_MIN_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_YAXIS_MAX_KEY, PROPERTY_ANGULAR_VIEW_YAXIS_MAX_DEFAULT);
-        
+
+
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_KEY, true);
+
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_TITLE_KEY, PROPERTY_ANGULAR_VIEW_TITLE_DEFAULT);
 
 //        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_FOREGROUND_COLOR_KEY, PROPERTY_ANGULAR_VIEW_FOREGROUND_COLOR_DEFAULT);
@@ -176,7 +427,67 @@ public final class AngularViewController extends DefaultConfigController {
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GRIDLINE_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GRIDLINE_COLOR_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_KEY, PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_DEFAULT);
 
+
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_PLOT_COLOR_KEY, PROPERTY_ANGULAR_VIEW_PLOT_COLOR_DEFAULT);
         
+        
+        
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_KEY, true);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT);
+
+        
+        
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_KEY, true);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT);
+
+
+
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_KEY, true);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT);
+
+
+
+
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_KEY, true);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT);
+
+        
+        
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_KEY, true);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT);
+
+
         restoreDefaults =  initPropertyDefaults(context, PROPERTY_RESTORE_DEFAULTS_NAME, PROPERTY_RESTORE_DEFAULTS_DEFAULT);
 
 
@@ -351,7 +662,14 @@ public final class AngularViewController extends DefaultConfigController {
 
     @SuppressWarnings("UnusedDeclaration")
     static class GeneralLayerBean {
-        
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_TOOLTIP)
+        boolean rangeDomainSection = true;
+
         @Preference(label = PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_LABEL,
                 key = PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_KEY,
                 description = PROPERTY_ANGULAR_VIEW_XAXIS_SET_BOUNDS_TOOLTIP)
@@ -381,6 +699,13 @@ public final class AngularViewController extends DefaultConfigController {
                 key = PROPERTY_ANGULAR_VIEW_YAXIS_MAX_KEY,
                 description = PROPERTY_ANGULAR_VIEW_YAXIS_MAX_TOOLTIP)
         String angularViewYaxisMaxDefault = PROPERTY_ANGULAR_VIEW_YAXIS_MAX_DEFAULT;
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_PLOT_GRAPHICS_SECTION_TOOLTIP)
+        boolean plotGraphicsSection = true;
 
         @Preference(label = PROPERTY_ANGULAR_VIEW_TITLE_LABEL,
                 key = PROPERTY_ANGULAR_VIEW_TITLE_KEY,
@@ -421,6 +746,255 @@ public final class AngularViewController extends DefaultConfigController {
 
 
 
+
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_LINE_INDEX_TOOLTIP)
+        String angularViewLineIndexDefault = PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_TOOLTIP)
+        String angularViewSymbolIndexDefault = PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_TOOLTIP)
+        String angularViewSymbolSizeDefault = PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_PLOT_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_PLOT_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_PLOT_COLOR_TOOLTIP)
+        Color angularViewColorDefault = PROPERTY_ANGULAR_VIEW_PLOT_COLOR_DEFAULT;
+
+        
+        
+        
+
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_TOOLTIP)
+        boolean group1Section = true;
+        
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_LABEL,
+                interval = "[-1, 1000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_TOOLTIP)
+        double angularViewGroup1WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_LABEL,
+                interval = "[0, 50]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_TOOLTIP)
+        double angularViewGroup1ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT;
+        
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_TOOLTIP)
+        String angularViewGroup1LineIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT;
+        
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_TOOLTIP)
+        String angularViewGroup1SymbolIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_TOOLTIP)
+        String angularViewGroup1SymbolSizeDefault = PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_TOOLTIP)
+        Color angularViewGroup1ColorDefault = PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT;
+
+
+
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_TOOLTIP)
+        boolean group2Section = true;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_LABEL,
+                interval = "[-1, 1000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_TOOLTIP)
+        double angularViewGroup2WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_LABEL,
+                interval = "[0, 50]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_TOOLTIP)
+        double angularViewGroup2ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_TOOLTIP)
+        String angularViewGroup2LineIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_TOOLTIP)
+        String angularViewGroup2SymbolIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_TOOLTIP)
+        String angularViewGroup2SymbolSizeDefault = PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT;
+        
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_TOOLTIP)
+        Color angularViewGroup2ColorDefault = PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT;
+
+
+
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_TOOLTIP)
+        boolean group3Section = true;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_LABEL,
+                interval = "[-1, 1000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_TOOLTIP)
+        double angularViewGroup3WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_LABEL,
+                interval = "[0, 50]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_TOOLTIP)
+        double angularViewGroup3ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_TOOLTIP)
+        String angularViewGroup3LineIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_TOOLTIP)
+        String angularViewGroup3SymbolIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_TOOLTIP)
+        String angularViewGroup3SymbolSizeDefault = PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_TOOLTIP)
+        Color angularViewGroup3ColorDefault = PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT;
+
+
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_TOOLTIP)
+        boolean group4Section = true;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_LABEL,
+                interval = "[-1, 1000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_TOOLTIP)
+        double angularViewGroup4WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_LABEL,
+                interval = "[0, 50]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_TOOLTIP)
+        double angularViewGroup4ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_TOOLTIP)
+        String angularViewGroup4LineIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_TOOLTIP)
+        String angularViewGroup4SymbolIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_TOOLTIP)
+        String angularViewGroup4SymbolSizeDefault = PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT;
+        
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_TOOLTIP)
+        Color angularViewGroup4ColorDefault = PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT;
+
+
+
+
+        @Preference(key = PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_LABEL    ,
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_TOOLTIP)
+        boolean group5Section = true;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_LABEL,
+                interval = "[-1, 1000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_TOOLTIP)
+        double angularViewGroup5WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_LABEL,
+                interval = "[0, 50]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_TOOLTIP)
+        double angularViewGroup5ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_TOOLTIP)
+        String angularViewGroup5LineIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_LABEL,
+                valueSet = {"0","1","2","3","4","5","6","7","8","9","10"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_TOOLTIP)
+        String angularViewGroup5SymbolIndexDefault = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_LABEL,
+                valueSet = {"1","2","3","4","5","6","7","8","9"},
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_TOOLTIP)
+        String angularViewGroup5SymbolSizeDefault = PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT;
+
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_LABEL,
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_TOOLTIP)
+        Color angularViewGroup5ColorDefault = PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT;
+        
 
         
         // Restore Defaults
@@ -499,6 +1073,235 @@ public final class AngularViewController extends DefaultConfigController {
 
 
 
+
+
+    public static int getPreferenceLineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceSymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceSymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferencePlotColor() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_PLOT_COLOR_KEY, PROPERTY_ANGULAR_VIEW_PLOT_COLOR_DEFAULT);
+    }
+    
+    
+    
+
+
+    public static double getPreferenceGroup1Wavelength() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT);
+    }
+
+    public static double getPreferenceGroup1Tolerance() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT);
+    }
+
+    public static int getPreferenceGroup1LineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup1SymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup1SymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferenceGroup1Color() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT);
+    }
+
+
+
+
+
+
+
+
+    public static double getPreferenceGroup2Wavelength() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT);
+    }
+
+    public static double getPreferenceGroup2Tolerance() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT);
+    }
+
+    public static int getPreferenceGroup2LineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup2SymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup2SymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferenceGroup2Color() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT);
+    }
+
+
+
+
+
+
+
+    public static double getPreferenceGroup3Wavelength() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT);
+    }
+
+    public static double getPreferenceGroup3Tolerance() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT);
+    }
+
+    public static int getPreferenceGroup3LineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup3SymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup3SymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferenceGroup3Color() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT);
+    }
+
+
+
+
+
+    
+    
+
+    public static double getPreferenceGroup4Wavelength() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT);
+    }
+
+    public static double getPreferenceGroup4Tolerance() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT);
+    }
+
+    public static int getPreferenceGroup4LineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup4SymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup4SymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferenceGroup4Color() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public static double getPreferenceGroup5Wavelength() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT);
+    }
+
+    public static double getPreferenceGroup5Tolerance() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT);
+    }
+
+    public static int getPreferenceGroup5LineIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue = preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup5SymbolIndex() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT_INT);
+    }
+
+    public static int getPreferenceGroup5SymbolSize() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        String stringValue =  preferences.getPropertyString(PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT);
+        return convertStringToInt(stringValue, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT_INT);
+    }
+
+    public static Color getPreferenceGroup5Color() {
+        final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
+        return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT);
+    }
+
+
+
+
+
+
     public static Color getPreferenceGridlinesColor() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
         return preferences.getPropertyColor(PROPERTY_ANGULAR_VIEW_GRIDLINE_COLOR_KEY, PROPERTY_ANGULAR_VIEW_GRIDLINE_COLOR_DEFAULT);
@@ -508,4 +1311,16 @@ public final class AngularViewController extends DefaultConfigController {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
         return preferences.getPropertyBool(PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_KEY, PROPERTY_ANGULAR_VIEW_GRIDLINE_SHOW_DEFAULT);
     }
+
+    private static int convertStringToInt(String stringValue, int defaultIntValue) {
+        int intValue;
+        try {
+            intValue = Integer.valueOf(stringValue);
+        } catch (Exception e) {
+            intValue = defaultIntValue;
+        }
+
+        return intValue;
+    }
+
 }
