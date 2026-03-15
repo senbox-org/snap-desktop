@@ -15,16 +15,7 @@ import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -120,8 +111,9 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     private int group5SymbolIndex = 1;
     private int group5SymbolSize = 3;
     private Color group5Color = Color.BLACK;
-    
-    
+
+
+
     
     public AngularViewChooser(Window parent, DisplayableAngularview[] originalangularViews,
                               int lineIndex, int symbolIndex, int symbolSize, Color plotColor,
@@ -206,6 +198,19 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         
         initUI();
     }
+
+    public AngularViewChooser(Window parent, DisplayableAngularview[] originalangularViews) {
+
+        this(parent, originalangularViews,
+                1, 1, 3, Color.BLACK,
+                -1, 0, 1, 1, 3, Color.BLACK,
+                -1, 0, 1, 1, 3, Color.BLACK,
+                -1, 0, 1, 1, 3, Color.BLACK,
+                -1, 0, 1, 1, 3, Color.BLACK,
+                -1, 0, 1, 1, 3, Color.BLACK
+        );
+    }
+
 
     private void initUI() {
         final JPanel content = new JPanel(new BorderLayout());
