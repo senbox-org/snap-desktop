@@ -4,6 +4,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.TristateCheckBox;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.util.ArrayUtils;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
@@ -73,7 +74,66 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     private boolean[] collapsed;
     private TableLayout angularViewsPanelLayout;
 
-    public AngularViewChooser(Window parent, DisplayableAngularview[] originalangularViews) {
+
+
+    private int lineIndex = 1;
+    private int symbolIndex = 1;
+    private int symbolSize = 3;
+    private Color plotColor = Color.BLACK;
+    
+    
+
+    private double group1Wavelength = -1;
+    private double group1Tolerance = 1;
+    private int group1LineIndex = 1;
+    private int group1SymbolIndex = 1;
+    private int group1SymbolSize = 3;
+    private Color group1Color = Color.BLACK;
+
+    private double group2Wavelength = -1;
+    private double group2Tolerance = 1;
+    private int group2LineIndex = 1;
+    private int group2SymbolIndex = 1;
+    private int group2SymbolSize = 3;
+    private Color group2Color = Color.BLACK;
+
+
+    private double group3Wavelength = -1;
+    private double group3Tolerance = 1;
+    private int group3LineIndex = 1;
+    private int group3SymbolIndex = 1;
+    private int group3SymbolSize = 3;
+    private Color group3Color = Color.BLACK;
+
+
+    private double group4Wavelength = -1;
+    private double group4Tolerance = 1;
+    private int group4LineIndex = 1;
+    private int group4SymbolIndex = 1;
+    private int group4SymbolSize = 3;
+    private Color group4Color = Color.BLACK;
+
+
+    private double group5Wavelength = -1;
+    private double group5Tolerance = 1;
+    private int group5LineIndex = 1;
+    private int group5SymbolIndex = 1;
+    private int group5SymbolSize = 3;
+    private Color group5Color = Color.BLACK;
+    
+    
+    
+    public AngularViewChooser(Window parent, DisplayableAngularview[] originalangularViews,
+                              int lineIndex, int symbolIndex, int symbolSize, Color plotColor,
+                              double group1Wavelength, double group1Tolerance, int group1LineIndex, int group1SymbolIndex, int group1SymbolSize, Color group1Color,
+                              double group2Wavelength, double group2Tolerance, int group2LineIndex, int group2SymbolIndex, int group2SymbolSize, Color group2Color,
+                              double group3Wavelength, double group3Tolerance, int group3LineIndex, int group3SymbolIndex, int group3SymbolSize, Color group3Color,
+                              double group4Wavelength, double group4Tolerance, int group4LineIndex, int group4SymbolIndex, int group4SymbolSize, Color group4Color,
+                              double group5Wavelength, double group5Tolerance, int group5LineIndex, int group5SymbolIndex, int group5SymbolSize, Color group5Color
+    ) {
+
+
+                
         super(parent, "Available Spectra", ModalDialog.ID_OK_CANCEL_HELP, "AngularViewChooser");
         if (originalangularViews != null) {
             this.originalangularViews = originalangularViews;
@@ -95,6 +155,55 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         Arrays.fill(collapsed, true);
         bandTablePanels = new JPanel[angularViews.length];
         tristateCheckBoxes = new TristateCheckBox[angularViews.length];
+
+
+        this.lineIndex = lineIndex;
+        this.symbolIndex = symbolIndex;
+        this.symbolSize = symbolSize;
+        this.plotColor = plotColor;
+        
+        
+        this.group1Wavelength = group1Wavelength;
+        this.group1Tolerance = group1Tolerance;
+        this.group1LineIndex = group1LineIndex;
+        this.group1SymbolIndex = group1SymbolIndex;
+        this.group1SymbolSize = group1SymbolSize;
+        this.group1Color = group1Color;
+
+
+        this.group2Wavelength = group2Wavelength;
+        this.group2Tolerance = group2Tolerance;
+        this.group2LineIndex = group2LineIndex;
+        this.group2SymbolIndex = group2SymbolIndex;
+        this.group2SymbolSize = group2SymbolSize;
+        this.group2Color = group2Color;
+
+
+        this.group3Wavelength = group3Wavelength;
+        this.group3Tolerance = group3Tolerance;
+        this.group3LineIndex = group3LineIndex;
+        this.group3SymbolIndex = group3SymbolIndex;
+        this.group3SymbolSize = group3SymbolSize;
+        this.group3Color = group3Color;
+
+
+        this.group4Wavelength = group4Wavelength;
+        this.group4Tolerance = group4Tolerance;
+        this.group4LineIndex = group4LineIndex;
+        this.group4SymbolIndex = group4SymbolIndex;
+        this.group4SymbolSize = group4SymbolSize;
+        this.group4Color = group4Color;
+
+
+
+        this.group5Wavelength = group5Wavelength;
+        this.group5Tolerance = group5Tolerance;
+        this.group5LineIndex = group5LineIndex;
+        this.group5SymbolIndex = group5SymbolIndex;
+        this.group5SymbolSize = group5SymbolSize;
+        this.group5Color = group5Color;
+        
+        
         initUI();
     }
 
@@ -155,6 +264,8 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     }
 
     private void addAngularViewComponentsToAngularViewsPanel(int index) {
+
+
         DisplayableAngularview angularView = angularViews[index];
         ImageIcon strokeIcon;
         if (angularView.isDefaultOrRemainingBandsAngularView()) {
@@ -162,6 +273,8 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         } else {
             strokeIcon = AngularViewStrokeProvider.getStrokeIcon(angularView.getLineStyle());
         }
+
+
         AbstractButton collapseButton = ToolButtonFactory.createButton(icons[0], false);
         collapseButton.addActionListener(new CollapseListener(index));
         final ImageIcon shapeIcon = AngularViewShapeProvider.getShapeIcon(angularView.getSymbolIndex());
@@ -182,9 +295,11 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         JComboBox<ImageIcon> strokeComboBox;
         if (angularView.isDefaultOrRemainingBandsAngularView()) {
             strokeComboBox = new JComboBox<>(new ImageIcon[]{strokeIcon});
+            strokeComboBox.setSelectedIndex(1);
             strokeComboBox.setEnabled(false);
         } else {
             strokeComboBox = new JComboBox<>(AngularViewStrokeProvider.getStrokeIcons());
+            strokeComboBox.setSelectedIndex(1);
             strokeComboBox.addActionListener(
                     e -> angularView.setLineStyle(
                             AngularViewStrokeProvider.getStroke((ImageIcon) strokeComboBox.getSelectedItem())));
@@ -208,6 +323,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         });
         angularViewsPanel.add(shapeComboBox);
         shapeSizeComboBox.setSelectedItem(angularView.getSymbolSize());
+
         shapeSizeComboBox.addActionListener(e -> {
             final String selectedItem = shapeSizeComboBox.getSelectedItem().toString();
             if (!selectedItem.equals("")) {
@@ -223,32 +339,100 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
 
 
 
+        //  set default graphic settingw
+        
+        int mainLineIndex = lineIndex;
+        int mainSymbolIndex = symbolIndex;
+        int mainSymbolSize = symbolSize;
+        Color mainPlotColor = plotColor;
+        
+ 
+        
 
-        if (angularView.getColor() == null) {
+
+
+//        if (angularView.getColor() == null) {
             // initialize color
             Color COLOR_DEFAULT = Color.BLACK;
             Color colorThisBand = COLOR_DEFAULT;
 
             // todo  working on differently coloring each group
-//            float angularBandSpectralWavelength = angularBands[0].getSpectralWavelength();
+            float angularBandSpectralWavelength = angularBands[0].getSpectralWavelength();
 //            System.out.println("angularBandSpectralWavelength=" + angularBandSpectralWavelength);
+
+            boolean isGroupedByWavelength = true;
+            for (Band band : angularBands) {
+                if (band.getSpectralWavelength() != angularBandSpectralWavelength) {
+                    isGroupedByWavelength = false;
+                    break;
+                }
+            }
+            if (isGroupedByWavelength) {
 //
-//            boolean isGroupedByWavelength = true;
-//            for (Band band : angularBands) {
-//                if (band.getSpectralWavelength() != angularBandSpectralWavelength) {
-//                    isGroupedByWavelength = false;
-//                    break;
-//                }
-//            }
-//            if (isGroupedByWavelength) {
-//                float TOLERANCE = (float) 1.0;
-//                if (angularBandSpectralWavelength > (440 - TOLERANCE) && angularBandSpectralWavelength < (440 + TOLERANCE)) {
-//                    colorThisBand = Color.RED;
-//                    angularView.setColor(colorThisBand);
-//                }
-//            }
-            angularView.setColor(colorThisBand);
-        }
+//                // Make sure all selections within bounds
+//                group1LineIndex = confineIntToBounds(group1LineIndex, 0, (strokeComboBox.getRegisteredKeyStrokes().length - 1));
+//                group1SymbolIndex = confineIntToBounds(group1SymbolIndex, 0, (shapeComboBox.getRegisteredKeyStrokes().length - 1));
+//                group1SymbolSize = confineIntToBounds(group1SymbolSize, 1, 9);
+//                int group1SymbolSizeIndex = group1SymbolSize -1;
+
+
+
+
+//                float TOLERANCE = (float) 2.0;
+                if (angularBandSpectralWavelength >= (group1Wavelength - group1Tolerance) && angularBandSpectralWavelength <= (group1Wavelength + group1Tolerance)) {
+                    mainLineIndex = group1LineIndex;
+                    mainSymbolIndex = group1SymbolIndex;
+                    mainSymbolSize = group1SymbolSize;
+                    mainPlotColor = group1Color;
+
+                } else if (angularBandSpectralWavelength >= (group2Wavelength - group2Tolerance) && angularBandSpectralWavelength <= (group2Wavelength + group2Tolerance)) {
+                    mainLineIndex = group2LineIndex;
+                    mainSymbolIndex = group2SymbolIndex;
+                    mainSymbolSize = group2SymbolSize;
+                    mainPlotColor = group2Color;
+
+                } else if (angularBandSpectralWavelength >= (group3Wavelength - group3Tolerance) && angularBandSpectralWavelength <= (group3Wavelength + group3Tolerance)) {
+                    mainLineIndex = group3LineIndex;
+                    mainSymbolIndex = group3SymbolIndex;
+                    mainSymbolSize = group3SymbolSize;
+                    mainPlotColor = group3Color;
+
+
+                } else if (angularBandSpectralWavelength >= (group4Wavelength - group4Tolerance) && angularBandSpectralWavelength <= (group4Wavelength + group4Tolerance)) {
+                    mainLineIndex = group4LineIndex;
+                    mainSymbolIndex = group4SymbolIndex;
+                    mainSymbolSize = group4SymbolSize;
+                    mainPlotColor = group4Color;
+
+
+                } else if (angularBandSpectralWavelength >= (group5Wavelength - group5Tolerance) && angularBandSpectralWavelength <= (group5Wavelength + group5Tolerance)) {
+                    mainLineIndex = group5LineIndex;
+                    mainSymbolIndex = group5SymbolIndex;
+                    mainSymbolSize = group5SymbolSize;
+                    mainPlotColor = group5Color;
+
+                }
+            }
+
+//            angularView.setColor(colorThisBand);
+//        }
+
+
+        
+        // Make sure all selections within bounds
+        mainLineIndex = confineIntToBounds(mainLineIndex, 0, (strokeComboBox.getRegisteredKeyStrokes().length - 1));
+        mainSymbolIndex = confineIntToBounds(mainSymbolIndex, 0, (shapeComboBox.getRegisteredKeyStrokes().length - 1));
+        mainSymbolSize = confineIntToBounds(mainSymbolSize, 1, 9);
+        int mainSymbolSizeIndex = mainSymbolSize - 1;
+
+
+        strokeComboBox.setSelectedIndex(mainLineIndex);
+        shapeComboBox.setSelectedIndex(mainSymbolIndex);
+        shapeSizeComboBox.setSelectedIndex(mainSymbolSizeIndex);
+        angularView.setColor(mainPlotColor);
+
+
+
 
         ColorComboBox colorComboBox = new ColorComboBox(angularView.getColor());
         colorComboBox.setPreferredSize(new Dimension(100, 20));
@@ -259,6 +443,18 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         });
         angularViewsPanel.add(colorComboBox);
 
+    }
+
+
+
+    private static int confineIntToBounds(int intValue, int minValue, int maxValue) {
+        if (intValue < minValue) {
+            intValue = minValue;
+        } else if (intValue > maxValue) {
+            intValue = maxValue;
+        }
+
+        return intValue;
     }
 
     private static int isSelected(DisplayableAngularview angularview) {
