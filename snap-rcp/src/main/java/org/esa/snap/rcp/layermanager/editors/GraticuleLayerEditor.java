@@ -64,11 +64,25 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
+// todo TEMP disabling for release as this is not ready
+
+//        PropertyDescriptor modePd = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MODE_KEY, String.class);
+//        modePd.setDefaultValue(GraticuleLayerType.PROPERTY_MODE_DEFAULT);
+//        modePd.setValueSet(new ValueSet(GraticuleLayerType.getModeOptionsArray()));
+//        modePd.setDisplayName(GraticuleLayerType.PROPERTY_MODE_LABEL);
+//        modePd.setDescription(GraticuleLayerType.PROPERTY_MODE_TOOLTIP);
+//        modePd.setDefaultConverter();
+//        addPropertyDescriptor(modePd);
+
+
         // Grid Spacing Section
 
         addSectionBreak(GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_NAME,
                 GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_LABEL,
                 GraticuleLayerType.PROPERTY_GRID_SPACING_SECTION_TOOLTIP);
+
+
+
 
         PropertyDescriptor gridSpacingLatPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_NAME, Double.class);
         gridSpacingLatPD.setDefaultValue(GraticuleLayerType.PROPERTY_GRID_SPACING_LAT_DEFAULT);
@@ -87,21 +101,68 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(gridSpacingLonPD);
 
 
-        PropertyDescriptor numGridLinesPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, Integer.class);
-        numGridLinesPD.setDefaultValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
-        numGridLinesPD.setValueRange(new ValueRange(0, 40));
-        numGridLinesPD.setDisplayName(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL);
-        numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
-        numGridLinesPD.setDefaultConverter();
-        addPropertyDescriptor(numGridLinesPD);
+//        PropertyDescriptor numGridLinesPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_NAME, Integer.class);
+//        numGridLinesPD.setDefaultValue(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_DEFAULT);
+//        numGridLinesPD.setValueRange(new ValueRange(0, 40));
+//        numGridLinesPD.setDisplayName(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_LABEL);
+//        numGridLinesPD.setDescription(GraticuleLayerType.PROPERTY_NUM_GRID_LINES_TOOLTIP);
+//        numGridLinesPD.setDefaultConverter();
+//        addPropertyDescriptor(numGridLinesPD);
+
+
+
+        // Line Precision Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_KEY,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_LINE_PRECISION_SECTION_TOOLTIP);
+
 
         PropertyDescriptor numMinorStepsPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_NAME, Integer.class);
         numMinorStepsPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_DEFAULT);
-        numMinorStepsPD.setValueRange(new ValueRange(0, 20));
+        numMinorStepsPD.setValueRange(new ValueRange(0, 1000));
         numMinorStepsPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_LABEL);
         numMinorStepsPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_TOOLTIP);
         numMinorStepsPD.setDefaultConverter();
         addPropertyDescriptor(numMinorStepsPD);
+
+        PropertyDescriptor numMinorStepsCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_NAME, Integer.class);
+        numMinorStepsCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_DEFAULT);
+        numMinorStepsCylindricalPD.setValueRange(new ValueRange(0, 1000));
+        numMinorStepsCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_LABEL);
+        numMinorStepsCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_MINOR_STEPS_CYLINDRICAL_TOOLTIP);
+        numMinorStepsCylindricalPD.setDefaultConverter();
+        addPropertyDescriptor(numMinorStepsCylindricalPD);
+
+
+        PropertyDescriptor tolerancePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_KEY, Double.class);
+        tolerancePD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_DEFAULT);
+        tolerancePD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_LABEL);
+        tolerancePD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_PARALLELS_TOOLTIP);
+        tolerancePD.setValueRange(new ValueRange(0, 100));
+        tolerancePD.setDefaultConverter();
+        addPropertyDescriptor(tolerancePD);
+
+        PropertyDescriptor toleranceCylindricalPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_KEY, Double.class);
+        toleranceCylindricalPD.setDefaultValue(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_DEFAULT);
+        toleranceCylindricalPD.setDisplayName(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_LABEL);
+        toleranceCylindricalPD.setDescription(GraticuleLayerType.PROPERTY_TOLERANCE_MERIDIANS_TOOLTIP);
+        toleranceCylindricalPD.setValueRange(new ValueRange(0, 100));
+        toleranceCylindricalPD.setDefaultConverter();
+        addPropertyDescriptor(toleranceCylindricalPD);
+
+
+
+        PropertyDescriptor interpolatePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, Boolean.class);
+        interpolatePD.setDefaultValue(GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
+        interpolatePD.setDisplayName(GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL);
+        interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
+        interpolatePD.setDefaultConverter();
+        addPropertyDescriptor(interpolatePD);
+
+
+
+
 
         // Labels Section
 
@@ -230,6 +291,15 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         labelSizePD.setValueRange(new ValueRange(GraticuleLayerType.PROPERTY_LABELS_SIZE_VALUE_MIN, GraticuleLayerType.PROPERTY_LABELS_SIZE_VALUE_MAX));
         labelSizePD.setDefaultConverter();
         addPropertyDescriptor(labelSizePD);
+
+        PropertyDescriptor edgeLabelsSpacerPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME, Integer.class);
+        edgeLabelsSpacerPD.setDefaultValue(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT);
+        edgeLabelsSpacerPD.setDisplayName(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_LABEL);
+        edgeLabelsSpacerPD.setDescription(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TOOLTIP);
+        edgeLabelsSpacerPD.setValueRange(new ValueRange(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MIN, GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MAX));
+        edgeLabelsSpacerPD.setDefaultConverter();
+        addPropertyDescriptor(edgeLabelsSpacerPD);
+
 
         PropertyDescriptor labelColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME, Color.class);
         labelColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_LABELS_COLOR_DEFAULT);
@@ -412,6 +482,28 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         addPropertyDescriptor(innerLabelsBgColorPD);
 
 
+        // Flip Warning Section
+
+        addSectionBreak(GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_KEY,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_LABEL,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_SECTION_TOOLTIP);
+
+        PropertyDescriptor flipWarningEnablePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY, Boolean.class);
+        flipWarningEnablePD.setDefaultValue(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_DEFAULT);
+        flipWarningEnablePD.setDisplayName(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_LABEL);
+        flipWarningEnablePD.setDescription(GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_TOOLTIP);
+        flipWarningEnablePD.setDefaultConverter();
+        addPropertyDescriptor(flipWarningEnablePD);
+
+        PropertyDescriptor flipWarningColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY, Color.class);
+        flipWarningColorPD.setDefaultValue(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_DEFAULT);
+        flipWarningColorPD.setDisplayName(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_LABEL);
+        flipWarningColorPD.setDescription(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_TOOLTIP);
+        flipWarningColorPD.setDefaultConverter();
+        addPropertyDescriptor(flipWarningColorPD);
+
+
+
         BindingContext bindingContext = getBindingContext();
 
 
@@ -487,6 +579,15 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
         bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_TICKMARKS_COLOR_NAME, tickMarkEnabled,
                 GraticuleLayerType.PROPERTY_TICKMARKS_SHOW_NAME, tickMarkEnabled);
+
+
+
+        boolean flipWarningEnabled = (Boolean) bindingContext.getPropertySet().getValue(
+                GraticuleLayerType.PROPERTY_GRIDLINES_SHOW_NAME);
+
+        bindingContext.bindEnabledState(GraticuleLayerType.PROPERTY_FLIP_WARNING_COLOR_KEY, flipWarningEnabled,
+                GraticuleLayerType.PROPERTY_FLIP_WARNING_ENABLE_KEY, flipWarningEnabled);
+
 
 
     }

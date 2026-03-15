@@ -1,0 +1,10 @@
+# RGB-Image Profile
+# A false color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+# Delineates snow from ice
+#
+name=OCI_FALSE_COLOR_2131_1249_445
+red=log(rhos_2131/0.01)/log(1/0.01)
+green=log(rhos_1249/0.01)/log(1/0.01)
+blue=log(rhos_465/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_2131) and \!nan(rhos_1249) and \!nan(rhos_465)
