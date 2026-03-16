@@ -224,30 +224,35 @@ private void setCurrentView(ProductSceneView view) {
 
             if (currentProduct.getName().contains("SPEX")) {
                 String autoGroupingStr = "";
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "i_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "aolp_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "dolp_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "q_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "u_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "qc_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "q_over_i_*_" + wvl + ":";
-                }
-                for (int wvl = 380; wvl < 390; wvl++) {
-                    autoGroupingStr += "u_over_i_*_" + wvl + ":";
-                }
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "i_*_" + wvl + ":";
+//                }
+                autoGroupingStr += "i_*_385:i_*_440:i_*_443:i_*_548:i_*_550:i_*_668:i_*_670:i_*_748:i_*_750:";
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "aolp_*_" + wvl + ":";
+//                }
+                autoGroupingStr += "aolp_*_385:aolp_*_443:aolp_*_548:aolp_*_668:aolp_*_748:";
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "dolp_*_" + wvl + ":";
+//                }
+                autoGroupingStr += "dolp_*_385:dolp_*_443:dolp_*_548:dolp_*_668:dolp_*_748:";
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "q_*_" + wvl + ":";
+//                }
+                autoGroupingStr += "q_*_385:q_*_443:q_*_548:q_*_668:q_*_748:";
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "u_*_" + wvl + ":";
+//                }
+                autoGroupingStr += "u_*_385:u_*_443:u_*_548:u_*_668:u_*_748:";
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "qc_*_" + wvl + ":";
+//                }
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "q_over_i_*_" + wvl + ":";
+//                }
+//                for (int wvl = 380; wvl < 390; wvl++) {
+//                    autoGroupingStr += "u_over_i_*_" + wvl + ":";
+//                }
                 autoGroupingStr += "i:i_stdev:i_polsample:i_polsample_stdev:" +
                         "aolp:aolp_stdev:dolp:dolp_stdev:" +
                         "q:q_stdev:u:u_stdev:q_over_i:q_over_i_stdev:u:u_over_i:u_over_i_stdev:" +
