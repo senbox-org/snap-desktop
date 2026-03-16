@@ -153,12 +153,12 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        PropertyDescriptor interpolatePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, Boolean.class);
-        interpolatePD.setDefaultValue(GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
-        interpolatePD.setDisplayName(GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL);
-        interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
-        interpolatePD.setDefaultConverter();
-        addPropertyDescriptor(interpolatePD);
+//        PropertyDescriptor interpolatePD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_INTERPOLATE_KEY, Boolean.class);
+//        interpolatePD.setDefaultValue(GraticuleLayerType.PROPERTY_INTERPOLATE_DEFAULT);
+//        interpolatePD.setDisplayName(GraticuleLayerType.PROPERTY_INTERPOLATE_LABEL);
+//        interpolatePD.setDescription(GraticuleLayerType.PROPERTY_INTERPOLATE_TOOLTIP);
+//        interpolatePD.setDefaultConverter();
+//        addPropertyDescriptor(interpolatePD);
 
 
 
@@ -292,13 +292,13 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         labelSizePD.setDefaultConverter();
         addPropertyDescriptor(labelSizePD);
 
-        PropertyDescriptor edgeLabelsSpacerPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME, Integer.class);
-        edgeLabelsSpacerPD.setDefaultValue(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT);
-        edgeLabelsSpacerPD.setDisplayName(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_LABEL);
-        edgeLabelsSpacerPD.setDescription(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TOOLTIP);
-        edgeLabelsSpacerPD.setValueRange(new ValueRange(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MIN, GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MAX));
-        edgeLabelsSpacerPD.setDefaultConverter();
-        addPropertyDescriptor(edgeLabelsSpacerPD);
+//        PropertyDescriptor edgeLabelsSpacerPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_NAME, Integer.class);
+//        edgeLabelsSpacerPD.setDefaultValue(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_DEFAULT);
+//        edgeLabelsSpacerPD.setDisplayName(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_LABEL);
+//        edgeLabelsSpacerPD.setDescription(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_TOOLTIP);
+//        edgeLabelsSpacerPD.setValueRange(new ValueRange(GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MIN, GraticuleLayerType.PROPERTY_EDGE_LABELS_SPACER_VALUE_MAX));
+//        edgeLabelsSpacerPD.setDefaultConverter();
+//        addPropertyDescriptor(edgeLabelsSpacerPD);
 
 
         PropertyDescriptor labelColorPD = new PropertyDescriptor(GraticuleLayerType.PROPERTY_LABELS_COLOR_NAME, Color.class);
