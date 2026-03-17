@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
-public class SpectralAxisUtilsTest {
+public class SpectralLibraryUtilsTest {
 
 
     @Test
@@ -31,7 +31,7 @@ public class SpectralAxisUtilsTest {
         bands.add(flag);
         bands.add(band(600f, "reflectance"));
 
-        SpectralAxis axis = SpectralAxisUtils.axisFromBands(bands);
+        SpectralAxis axis = SpectralLibraryUtils.axisFromBands(bands);
 
         assertEquals(3, axis.size());
         assertArrayEquals(new double[]{500, 600, 700}, axis.getWavelengths(), 0.0);
@@ -52,13 +52,13 @@ public class SpectralAxisUtilsTest {
         bands.add(flag);
 
         assertThrows(IllegalArgumentException.class, () ->
-                SpectralAxisUtils.axisFromBands(bands));
+                SpectralLibraryUtils.axisFromBands(bands));
     }
 
     @Test
     @STTM("SNAP-4128")
     public void test_axisFromBands_throwsOnNullList() {
-        assertThrows(NullPointerException.class, () -> SpectralAxisUtils.axisFromBands(null));
+        assertThrows(NullPointerException.class, () -> SpectralLibraryUtils.axisFromBands(null));
     }
 
 
@@ -83,7 +83,7 @@ public class SpectralAxisUtilsTest {
         bands.add(band(650f, "reflectance"));
         bands.add(band(700f, "radiance"));
 
-        String u = SpectralAxisUtils.defaultYUnitFromBands(bands);
+        String u = SpectralLibraryUtils.defaultYUnitFromBands(bands);
 
         assertEquals("reflectance", u);
     }
@@ -103,14 +103,14 @@ public class SpectralAxisUtilsTest {
         bands.add(band(-1f, "reflectance"));
         bands.add(flagBlank);
 
-        assertNull(SpectralAxisUtils.defaultYUnitFromBands(bands));
-        assertNull(SpectralAxisUtils.defaultYUnitFromBands(List.of()));
+        assertNull(SpectralLibraryUtils.defaultYUnitFromBands(bands));
+        assertNull(SpectralLibraryUtils.defaultYUnitFromBands(List.of()));
     }
 
     @Test
     @STTM("SNAP-4128")
     public void test_defaultYUnitFromBands_throwsOnNullList() {
-        assertThrows(NullPointerException.class, () -> SpectralAxisUtils.defaultYUnitFromBands(null));
+        assertThrows(NullPointerException.class, () -> SpectralLibraryUtils.defaultYUnitFromBands(null));
     }
 
 
@@ -131,7 +131,7 @@ public class SpectralAxisUtilsTest {
         bands.add(band(600f, "x"));
         bands.add(band(600f, "x"));
 
-        SpectralAxis axis = SpectralAxisUtils.axisFromReferenceSpectralGroup(bands);
+        SpectralAxis axis = SpectralLibraryUtils.axisFromReferenceSpectralGroup(bands);
 
         assertEquals(3, axis.size());
         assertArrayEquals(new double[]{500, 600, 700}, axis.getWavelengths(), 0.0);
@@ -152,7 +152,7 @@ public class SpectralAxisUtilsTest {
         bands.add(flag);
 
         assertThrows(IllegalArgumentException.class, () -> {
-                SpectralAxisUtils.axisFromReferenceSpectralGroup(bands);
+                SpectralLibraryUtils.axisFromReferenceSpectralGroup(bands);
             }
         );
     }

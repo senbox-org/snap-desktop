@@ -5,16 +5,20 @@ import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.SpectralAxis;
 import org.esa.snap.speclib.model.SpectralLibrary;
+import org.esa.snap.speclib.model.SpectralProfile;
 
 import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 
 public class ViewModelBinder {
+
 
     private final SpectralLibraryViewModel vm;
     private final SpectralLibraryPanel panel;
@@ -56,6 +60,7 @@ public class ViewModelBinder {
     }
 
 
+
     private class VmListener implements PropertyChangeListener {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
@@ -70,16 +75,34 @@ public class ViewModelBinder {
                     case SpectralLibraryViewModel.PROP_ACTIVE_LIBRARY_ID -> {
                         updateActiveLibrarySelection(vm.getActiveLibraryId());
                         applyActiveLibraryToTable();
+                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
+                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
                         updatePreviewAxisFromActiveLibrary();
                     }
-                    case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES ->
-                            panel.getLibraryTableModel().setProfiles(vm.getLibraryProfiles());
+                    case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES -> {
+                        List<SpectralProfile> ps = vm.getLibraryProfiles();
+
+                        if (ps != null && ps.size() > 50_000) {
+                            panel.getLibraryTable().setRowSorter(null);
+                        } else {
+                            if (panel.getLibraryTable().getRowSorter() == null) {
+                                panel.getLibraryTable().setAutoCreateRowSorter(true);
+                            }
+                        }
+                        panel.getLibraryTableModel().setProfiles(ps);
+                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
+                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
+                    }
                     case SpectralLibraryViewModel.PROP_PREVIEW_PROFILES ->
                             panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
                     case SpectralLibraryViewModel.PROP_SELECTED_PREVIEW_PROFILE_ID ->
                             panel.getPreviewPanel().setSelectedProfileId(vm.getSelectedPreviewProfileId().orElse(null));
                     case SpectralLibraryViewModel.PROP_STATUS ->
                             updateStatus(vm.getStatus());
+                    case SpectralLibraryViewModel.PROP_PROFILE_COLORS -> {
+                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
+                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
+                    }
                     default -> {}
                 }
             };
@@ -93,14 +116,18 @@ public class ViewModelBinder {
 
     private void updateLibraries(List<SpectralLibrary> libs) {
         DefaultComboBoxModel<Object> m = new DefaultComboBoxModel<>();
-        for (SpectralLibrary l : libs) m.addElement(l);
+        for (SpectralLibrary l : libs) {
+            m.addElement(l);
+        }
         panel.getLibraryCombo().setModel(m);
     }
 
     private void updateActiveLibrarySelection(Optional<UUID> idOpt) {
         ComboBoxModel<Object> m = panel.getLibraryCombo().getModel();
         if (idOpt.isEmpty()) {
-            if (m.getSize() > 0) panel.getLibraryCombo().setSelectedIndex(0);
+            if (m.getSize() > 0) {
+                panel.getLibraryCombo().setSelectedIndex(0);
+            }
             return;
         }
         UUID id = idOpt.get();
@@ -116,6 +143,7 @@ public class ViewModelBinder {
     private void applyActiveLibraryToTable() {
         SpectralLibrary lib = getSelectedLibraryFromCombo();
         panel.getLibraryTableModel().setSchema(lib != null ? lib.getSchema() : null);
+        panel.installColorColumnRenderer();
     }
 
     private void updatePreviewAxisFromActiveLibrary() {
