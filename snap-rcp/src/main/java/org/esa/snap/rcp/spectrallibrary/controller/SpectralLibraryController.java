@@ -7,11 +7,17 @@ import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
 import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralLibraryUtils;
+import org.esa.snap.rcp.spectrallibrary.util.WktUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -596,6 +602,70 @@ public class SpectralLibraryController {
             return Optional.empty();
         }
     }
+
+
+    public void addProfilesAsVectorLayer(Product product, List<UUID> profileIds, String layerName) {
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
+        }
+
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
+
+        Map<UUID, SpectralProfile> profilesById = new LinkedHashMap<>();
+        for (SpectralProfile profile : lib.getProfiles()) {
+            if (profile != null && profile.getId() != null) {
+                profilesById.put(profile.getId(), profile);
+            }
+        }
+
+        List<SpectralProfile> selectedProfiles = new ArrayList<>();
+        for (UUID profileId : profileIds) {
+            SpectralProfile profile = profilesById.get(profileId);
+            if (profile != null) {
+                selectedProfiles.add(profile);
+            }
+        }
+
+        if (selectedProfiles.isEmpty()) {
+            vm.setStatus(UiStatus.warn("Selected profiles not found in active library"));
+            return;
+        }
+
+        DefaultFeatureCollection collection = WktUtils.createEmptyFeaturecollection(layerName);
+        SimpleFeatureType featureType = collection.getSchema();
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
+        WKTReader reader = new WKTReader();
+
+        int added = 0;
+        for (SpectralProfile profile : selectedProfiles) {
+            if (WktUtils.addProfileGeometryToCollection(collection, profile, layerName, added, reader, featureBuilder)) {
+                added++;
+            }
+        }
+
+        if (added == 0) {
+            vm.setStatus(UiStatus.warn("No valid WKT geometry could be added to the vector layer"));
+            return;
+        }
+
+        VectorDataNode vectorDataNode = new VectorDataNode(layerName, collection.getSchema());
+        for (SimpleFeature feature : collection) {
+            vectorDataNode.getFeatureCollection().add(feature);
+        }
+
+        if (product.getVectorDataGroup().get(layerName) == null) {
+            product.getVectorDataGroup().add(vectorDataNode);
+            vm.setStatus(UiStatus.info("Vector layer added (" + added + " features)"));
+        } else {
+            vm.setStatus(UiStatus.warn("Vector layer '" + layerName + "' already exists."));
+        }
+    }
+
 
 
     private String nextAutoProfileName(String prefix,
