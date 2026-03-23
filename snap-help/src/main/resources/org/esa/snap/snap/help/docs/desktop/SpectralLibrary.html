@@ -73,6 +73,13 @@
             can be previewed in the chart.
         </li>
         <li>
+            <b>Create a vector layer from stored profile coordinates</b><br>
+            Select one or more profiles in the table and use <b>Add Selected Profiles as Vector Layer</b> to create a
+            vector layer in the currently selected product. Only profiles with a <code>wkt</code> attribute are used; profiles
+            without valid <code>wkt</code> are skipped. The resulting vector layer can be used as input geometry,
+            e.g. in supervised classification operators.
+        </li>
+        <li>
             <b>Configure extraction (requires an open Product Scene View)</b><br> To configure band filters
             and to perform extraction operations, a Product Scene View must be open so the tool can derive the
             available spectral bands and read pixel spectra.
@@ -133,7 +140,11 @@
             <b>Automatic extraction metadata</b> - Extracted profiles may automatically include basic metadata such as:
             <ul>
                 <li>
-                    <code>wkt</code> (point geometry for the pixel)
+                    <code>wkt</code> (point geometry for the pixel)<br />
+                    Profiles containing a <code>wkt</code> attribute can be transferred to the currently
+                    selected product as a vector layer via <b>Add Selected Profiles as Vector Layer</b>.
+                    This is useful when stored sample locations shall be reused in downstream processing,
+                    e.g. supervised classification operators.
                 </li>
                 <li>
                     <code>product_name</code> (source product name)
