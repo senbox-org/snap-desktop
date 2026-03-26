@@ -111,6 +111,7 @@ public class SpectralLibraryActionBinder {
 
     public void bind() {
         wireToolbarBasics();
+        wireAddProfilesCoordinatesToVectorLayer();
         wireProfileColorButton();
         wireTableEditing();
         wireImportExport();
@@ -283,6 +284,52 @@ public class SpectralLibraryActionBinder {
             restoreOrInitFilterState(newId, product);
 
             lastActiveLibraryId = newId;
+        });
+    }
+
+    private void wireAddProfilesCoordinatesToVectorLayer() {
+        panel.getAddProfilesCoordinatesToVectorLayer().addActionListener(e -> {
+            ProductSceneView view = viewProvider.getSelectedProductSceneView();
+            Product product = view != null ? view.getProduct() : null;
+
+            if (product == null) {
+                vm.setStatus(UiStatus.warn("No product view selected"));
+                return;
+            }
+
+            int[] viewRows = panel.getLibraryTable().getSelectedRows();
+            if (viewRows == null || viewRows.length == 0) {
+                vm.setStatus(UiStatus.warn("No profiles selected"));
+                return;
+            }
+
+            final List<UUID> selectedProfiles = new ArrayList<>();
+            for (int vr : viewRows) {
+                int mr = panel.getLibraryTable().convertRowIndexToModel(vr);
+                UUID pid = panel.getLibraryTableModel().getIdAt(mr);
+                if (pid != null) {
+                    selectedProfiles.add(pid);
+                }
+            }
+
+            String defaultLayerName = "spectral_profiles";
+            String layerName = JOptionPane.showInputDialog(
+                    panel,
+                    "Vector layer name:",
+                    defaultLayerName
+            );
+
+            if (layerName == null) {
+                return;
+            }
+
+            layerName = layerName.trim();
+            if (layerName.isEmpty()) {
+                vm.setStatus(UiStatus.warn("Layer name is empty"));
+                return;
+            }
+
+            controller.addProfilesAsVectorLayer(product, selectedProfiles, layerName);
         });
     }
 
