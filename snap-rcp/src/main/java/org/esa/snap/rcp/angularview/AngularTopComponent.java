@@ -222,7 +222,15 @@ private void setCurrentView(ProductSceneView view) {
             currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
             setCurrentProduct(currentView.getProduct());
 
-            if (currentProduct.getName().contains("SPEX")) {
+            if (currentProduct.getProductType().contains("SPEX Level-2")) {
+                String autoGroupingStr ="";
+                autoGroupingStr += "Rrs1:Rrs1_*_443:Rrs1_*_548:Rrs1_*_668:Rrs1_*_748:Rrs2_*_443:Rrs2_*_548:Rrs2_*_668:Rrs2_*_748:" +
+                        "mask_dolp_*_443:mask_dolp_*_548:mask_dolp_*_668:mask_dolp_*_748:mask_ref_*_443:mask_ref_*_548:mask_ref_*_668:mask_ref_*_748:" ;
+                autoGroupingStr += "angstrom:fmf:" +
+                        "aot_*:aot_fine:aot_coarse:mi_:mi_fine:mi_coarse:mr:mr_fine:mr_coarse:ssa:ssa_fine:ssa_coarse:"+
+                        "Rrs1:Rrs1_mean:Rrs1_std:Rrs2:Rrs2_mean:Rrs2_std:mask_dolp:mask_ref:" ;
+                currentProduct.setAutoGrouping(autoGroupingStr);
+            } else if (currentProduct.getName().contains("SPEX")) {
                 String autoGroupingStr = "";
 //                for (int wvl = 380; wvl < 390; wvl++) {
 //                    autoGroupingStr += "i_*_" + wvl + ":";
